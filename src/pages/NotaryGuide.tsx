@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -201,6 +202,10 @@ const ronSteps = [
 export default function NotaryGuide() {
   const [searchTerm, setSearchTerm] = useState("");
   const { user } = useAuth();
+  useEffect(() => {
+    document.title = "What Can Be Notarized? — Shane Goble Notary";
+    return () => { document.title = "Shane Goble Notary — Ohio Notary Public | In-Person & RON"; };
+  }, []);
 
   const filteredCategories = documentCategories.map((cat) => ({
     ...cat,

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,11 @@ const signingTypes = [
 export default function LoanSigningServices() {
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    document.title = "Loan Signing Services — Shane Goble Notary";
+    return () => { document.title = "Shane Goble Notary — Ohio Notary Public | In-Person & RON"; };
+  }, []);
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({
     companyName: "",

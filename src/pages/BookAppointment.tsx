@@ -101,6 +101,12 @@ export default function BookAppointment() {
   const [serviceTypes, setServiceTypes] = useState<string[]>(fallbackServiceTypes);
   const [serviceDescriptions, setServiceDescriptions] = useState<Record<string, string>>({});
 
+  // Dynamic page title
+  useEffect(() => {
+    document.title = "Book Appointment — Shane Goble Notary";
+    return () => { document.title = "Shane Goble Notary — Ohio Notary Public | In-Person & RON"; };
+  }, []);
+
   // Load pricing settings + dynamic services
   useEffect(() => {
     supabase.from("platform_settings").select("setting_key, setting_value").then(({ data }) => {

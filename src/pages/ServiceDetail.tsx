@@ -69,6 +69,16 @@ export default function ServiceDetail() {
     load();
   }, [serviceId]);
 
+  // Dynamic page title
+  useEffect(() => {
+    if (service) {
+      document.title = `${service.name} — Shane Goble Notary`;
+    } else if (!loading) {
+      document.title = "Service Not Found — Shane Goble Notary";
+    }
+    return () => { document.title = "Shane Goble Notary — Ohio Notary Public | In-Person & RON"; };
+  }, [service, loading]);
+
   const formatPrice = (s: ServiceData) => {
     if (s.pricing_model === "custom") return "Custom Quote";
     const from = Number(s.price_from || 0);
