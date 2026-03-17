@@ -86,11 +86,13 @@ export default function AdminApostille() {
     const { error } = await supabase.from("apostille_requests").update({
       notes: editNotes || null,
       fee: parseFloat(editFee) || 0,
+      destination_country: editDestCountry || null,
+      document_count: parseInt(editDocCount) || 1,
       updated_at: new Date().toISOString(),
     } as any).eq("id", editOpen.id);
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); }
     else {
-      setRequests(prev => prev.map(r => r.id === editOpen.id ? { ...r, notes: editNotes, fee: parseFloat(editFee) || 0 } : r));
+      setRequests(prev => prev.map(r => r.id === editOpen.id ? { ...r, notes: editNotes, fee: parseFloat(editFee) || 0, destination_country: editDestCountry || null, document_count: parseInt(editDocCount) || 1 } : r));
       toast({ title: "Request updated" });
       setEditOpen(null);
     }
