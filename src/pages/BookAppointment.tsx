@@ -100,6 +100,13 @@ export default function BookAppointment() {
   // Dynamic services from DB
   const [serviceTypes, setServiceTypes] = useState<string[]>(fallbackServiceTypes);
   const [serviceDescriptions, setServiceDescriptions] = useState<Record<string, string>>({});
+  const [serviceCategories, setServiceCategories] = useState<Record<string, string>>({});
+
+  const NOTARIZATION_CATEGORIES = ["notarization", "authentication"];
+  const requiresNotarizationType = (svcName: string) => {
+    const cat = serviceCategories[svcName];
+    return !cat || NOTARIZATION_CATEGORIES.includes(cat);
+  };
 
   // Dynamic page title
   useEffect(() => {
@@ -116,12 +123,17 @@ export default function BookAppointment() {
         setPricingSettings(settings);
       }
     });
-    supabase.from("services").select("name, short_description").eq("is_active", true).order("display_order").then(({ data }) => {
+    supabase.from("services").select("name, short_description, category").eq("is_active", true).order("display_order").then(({ data }) => {
       if (data && data.length > 0) {
         setServiceTypes(data.map((s: any) => s.name));
         const descs: Record<string, string> = {};
-        data.forEach((s: any) => { if (s.short_description) descs[s.name] = s.short_description; });
+        const cats: Record<string, string> = {};
+        data.forEach((s: any) => { 
+          if (s.short_description) descs[s.name] = s.short_description;
+          cats[s.name] = s.category;
+        });
         setServiceDescriptions(descs);
+        setServiceCategories(cats);
       }
     });
   }, []);
