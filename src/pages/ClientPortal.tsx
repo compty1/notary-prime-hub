@@ -852,7 +852,7 @@ export default function ClientPortal() {
                 })}
                 {payingPaymentId && (
                   <PaymentForm
-                    amount={parseFloat(payments.find(p => p.id === payingPaymentId)?.amount || "0")}
+                    defaultAmount={parseFloat(payments.find(p => p.id === payingPaymentId)?.amount || "0")}
                     onSuccess={async () => {
                       // Mark payment as paid
                       await supabase.from("payments").update({ status: "paid", paid_at: new Date().toISOString(), method: "stripe" } as any).eq("id", payingPaymentId);
