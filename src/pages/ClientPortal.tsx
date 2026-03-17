@@ -103,6 +103,7 @@ export default function ClientPortal() {
   const [apostilleForm, setApostilleForm] = useState({ document_description: "", notes: "", destination_country: "", document_count: "1" });
   const [submittingApostille, setSubmittingApostille] = useState(false);
   const [payingPaymentId, setPayingPaymentId] = useState<string | null>(null);
+  const [zoomLink, setZoomLink] = useState<string>("");
 
   useEffect(() => {
     if (!user) return;
@@ -124,6 +125,9 @@ export default function ClientPortal() {
       if (svcRes.data) setServices(svcRes.data);
       if (corrRes.data) setCorrespondence(corrRes.data);
       if (apoRes.data) setApostilleRequests(apoRes.data);
+      // Fetch Zoom link
+      const { data: zoomSetting } = await supabase.from("platform_settings").select("setting_value").eq("setting_key", "zoom_meeting_link").single();
+      if (zoomSetting?.setting_value) setZoomLink(zoomSetting.setting_value);
       if (profileRes.data) {
         setProfile(profileRes.data);
         setProfileForm({
@@ -449,6 +453,9 @@ export default function ClientPortal() {
                         <div className="flex items-center gap-2">
                           {appt.notarization_type === "ron" && isSessionNear(appt) && <Link to={`/ron-session?id=${appt.id}`}><Button size="sm" className="bg-emerald-600 text-white hover:bg-emerald-700"><Video className="mr-1 h-3 w-3" /> Join</Button></Link>}
                           {appt.notarization_type === "ron" && !isSessionNear(appt) && <Button size="sm" variant="outline" className="text-xs" onClick={() => setTechCheckOpen(true)}><Wifi className="mr-1 h-3 w-3" /> Tech Check</Button>}
+                          {zoomLink && (appt.service_type || "").toLowerCase().includes("consult") && (
+                            <a href={zoomLink} target="_blank" rel="noopener noreferrer"><Button size="sm" variant="outline" className="text-xs"><Video className="mr-1 h-3 w-3" /> Zoom</Button></a>
+                          )}
                           <Link to={`/book?rebook=${appt.id}`}><Button size="sm" variant="outline" className="text-xs"><RefreshCw className="mr-1 h-3 w-3" /> Reschedule</Button></Link>
                           <Button size="sm" variant="ghost" className="text-xs text-destructive hover:text-destructive" onClick={() => setCancelDialogId(appt.id)}>Cancel</Button>
                           <Badge className={statusColors[appt.status] || "bg-muted text-muted-foreground"}>{appt.status.replace(/_/g, " ")}</Badge>
@@ -954,6 +961,26 @@ export default function ClientPortal() {
                 <Sparkles className="mr-1 h-3 w-3" /> {showWizard ? "Hide Guide" : "Not Sure What You Need?"}
               </Button>
             </div>
+
+            {/* Digitize Documents Card */}
+            <Card className="border-accent/30 bg-accent/5">
+              <CardContent className="flex items-center justify-between p-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/20">
+                    <FileText className="h-5 w-5 text-accent" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">Digitize Documents</h3>
+                    <p className="text-xs text-muted-foreground">Upload scanned documents and convert them to editable digital formats with AI-powered OCR</p>
+                  </div>
+                </div>
+                <Link to="/digitize">
+                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">
+                    <ArrowRight className="mr-1 h-3 w-3" /> Start
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
             {showWizard && (
               <DocumentWizard
                 onSelectService={(svc) => { setShowWizard(false); navigate(`/book?service=${encodeURIComponent(svc)}`); }}

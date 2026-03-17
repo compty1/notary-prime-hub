@@ -17,3 +17,9 @@ verify_jwt = false
 
 [functions.discover-leads]
 verify_jwt = false
+
+[functions.ocr-digitize]
+verify_jwt = false
+
+[functions.client-assistant]
+verify_jwt = false
