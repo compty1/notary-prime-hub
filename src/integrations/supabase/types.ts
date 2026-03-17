@@ -248,6 +248,7 @@ export type Database = {
           is_admin: boolean | null
           message: string
           read: boolean | null
+          recipient_id: string | null
           sender_id: string
         }
         Insert: {
@@ -257,6 +258,7 @@ export type Database = {
           is_admin?: boolean | null
           message: string
           read?: boolean | null
+          recipient_id?: string | null
           sender_id: string
         }
         Update: {
@@ -266,6 +268,7 @@ export type Database = {
           is_admin?: boolean | null
           message?: string
           read?: boolean | null
+          recipient_id?: string | null
           sender_id?: string
         }
         Relationships: []
