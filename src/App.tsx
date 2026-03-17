@@ -86,6 +86,8 @@ const App = () => (
               <Route path="resources" element={<AdminResources />} />
               <Route path="ai-assistant" element={<AdminAIAssistant />} />
               <Route path="audit-log" element={<AdminAuditLog />} />
+              <Route path="team" element={<AdminTeam />} />
+              <Route path="email-management" element={<AdminEmailManagement />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
             <Route path="*" element={<NotFound />} />
