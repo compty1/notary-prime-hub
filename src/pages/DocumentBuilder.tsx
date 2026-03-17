@@ -99,10 +99,14 @@ const getSteps = (docType: DocType): StepConfig[] => {
 };
 
 export default function DocumentBuilder() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [docType, setDocType] = useState<DocType | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [showPreview, setShowPreview] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const steps = docType ? getSteps(docType) : [];
   const progress = docType ? ((currentStep + 1) / (steps.length + 1)) * 100 : 0;
