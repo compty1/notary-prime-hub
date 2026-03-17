@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Package, Plus, Loader2, Truck, FileText, Pencil } from "lucide-react";
+import { Package, Plus, Loader2, Truck, FileText, Pencil, ExternalLink, Globe } from "lucide-react";
 import { motion } from "framer-motion";
 
 const statusColors: Record<string, string> = {
