@@ -6,10 +6,21 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, ShieldX, Calendar, FileText, User, Building2, Loader2, ArrowLeft } from "lucide-react";
 
+interface ESealRecord {
+  id: string;
+  document_name: string;
+  notarized_at: string;
+  signer_name: string | null;
+  notary_name: string;
+  commissioned_state: string;
+  verification_note: string | null;
+  status: string;
+}
+
 export default function VerifySeal() {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
-  const [record, setRecord] = useState<any>(null);
+  const [record, setRecord] = useState<ESealRecord | null>(null);
 
   useEffect(() => {
     const run = async () => {
@@ -17,11 +28,11 @@ export default function VerifySeal() {
         setLoading(false);
         return;
       }
-      const { data } = await supabase
+      const { data } = await (supabase
         .from("e_seal_verifications" as any)
         .select("*")
         .eq("id", id)
-        .maybeSingle();
+        .maybeSingle() as any);
       setRecord(data || null);
       setLoading(false);
     };
