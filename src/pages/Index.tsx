@@ -393,7 +393,9 @@ export default function Index() {
               <h4 className="mb-3 font-display text-sm font-semibold text-primary-foreground">Quick Links</h4>
               <div className="space-y-2 text-sm">
                 <Link to="/book" className="block hover:text-accent">Book Appointment</Link>
-                <Link to="/notary-guide" className="block hover:text-accent">Notary Guide</Link>
+                <Link to="/services" className="block hover:text-accent">All Services</Link>
+                <Link to="/templates" className="block hover:text-accent">Document Templates</Link>
+                <Link to="/fee-calculator" className="block hover:text-accent">Pricing</Link>
                 <Link to="/ron-info" className="block hover:text-accent">RON Information</Link>
                 <Link to="/login" className="block hover:text-accent">Client Portal</Link>
               </div>
