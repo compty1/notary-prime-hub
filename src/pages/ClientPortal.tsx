@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,7 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
-import { Calendar, Clock, MapPin, Monitor, Plus, LogOut, Shield, FileText, RefreshCw, Video, CheckCircle, Mic, Camera as CameraIcon, Wifi, XCircle, User, Pencil, Save, Loader2, Upload, Download, FolderOpen, QrCode, ArrowRight } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Calendar, Clock, MapPin, Monitor, Plus, LogOut, Shield, FileText, RefreshCw, Video, CheckCircle, Mic, Camera as CameraIcon, Wifi, XCircle, User, Pencil, Save, Loader2, Upload, Download, FolderOpen, QrCode, ArrowRight, MessageSquare, Send, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { QRCodeSVG } from "qrcode.react";
@@ -68,6 +69,17 @@ export default function ClientPortal() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
 
+  // Chat state
+  const [chatMessages, setChatMessages] = useState<any[]>([]);
+  const [chatInput, setChatInput] = useState("");
+  const [sendingChat, setSendingChat] = useState(false);
+  const chatEndRef = React.useRef<HTMLDivElement>(null);
+
+  // AI explain
+  const [explaining, setExplaining] = useState(false);
+  const [explanation, setExplanation] = useState<string | null>(null);
+  const [explainDialogOpen, setExplainDialogOpen] = useState(false);
+
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
@@ -92,6 +104,26 @@ export default function ClientPortal() {
       setLoading(false);
     };
     fetchData();
+
+    // Load chat messages
+    supabase.from("chat_messages").select("*").eq("sender_id", user.id).order("created_at").then(({ data }) => {
+      if (data) setChatMessages(data);
+    });
+
+    // Subscribe to new chat messages (admin replies)
+    const channel = supabase.channel("client-chat")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages" }, (payload) => {
+        const msg = payload.new as any;
+        if (msg.sender_id === user.id || msg.is_admin) {
+          setChatMessages(prev => {
+            if (prev.some(m => m.id === msg.id)) return prev;
+            return [...prev, msg];
+          });
+        }
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, [user]);
 
   const upcoming = appointments.filter((a) => ["scheduled", "confirmed", "id_verification", "kba_pending"].includes(a.status));
@@ -180,6 +212,43 @@ export default function ClientPortal() {
 
   const qrUrl = `${window.location.origin}/portal`;
 
+  const sendChatMessage = async () => {
+    if (!chatInput.trim() || !user) return;
+    setSendingChat(true);
+    const { error } = await supabase.from("chat_messages").insert({
+      sender_id: user.id, message: chatInput.trim(), is_admin: false,
+    });
+    if (error) toast({ title: "Error sending message", variant: "destructive" });
+    else setChatInput("");
+    setSendingChat(false);
+  };
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages]);
+
+  const explainDocument = async (doc: any) => {
+    setExplaining(true);
+    setExplanation(null);
+    setExplainDialogOpen(true);
+    try {
+      const { data: fileData, error } = await supabase.storage.from("documents").download(doc.file_path);
+      if (error) throw error;
+      const text = await fileData.text();
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/explain-document`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        body: JSON.stringify({ documentText: text, fileName: doc.file_name }),
+      });
+      const result = await resp.json();
+      if (result.error) throw new Error(result.error);
+      setExplanation(result.explanation + "\n\n" + result.disclaimer);
+    } catch (e: any) {
+      setExplanation("Could not analyze this document. " + (e.message || ""));
+    }
+    setExplaining(false);
+  };
+
   return (
     <div className="min-h-screen bg-muted/30">
       <nav className="border-b border-border/50 bg-background/80 backdrop-blur-lg">
@@ -210,10 +279,11 @@ export default function ClientPortal() {
         </motion.div>
 
         <Tabs defaultValue="appointments" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="appointments"><Calendar className="mr-1 h-4 w-4" /> Appointments</TabsTrigger>
             <TabsTrigger value="documents"><FileText className="mr-1 h-4 w-4" /> My Documents</TabsTrigger>
             <TabsTrigger value="status"><Shield className="mr-1 h-4 w-4" /> Status Tracker</TabsTrigger>
+            <TabsTrigger value="chat"><MessageSquare className="mr-1 h-4 w-4" /> Chat</TabsTrigger>
           </TabsList>
 
           {/* APPOINTMENTS TAB */}
@@ -324,6 +394,7 @@ export default function ClientPortal() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
+                        <Button size="sm" variant="ghost" onClick={() => explainDocument(doc)} title="AI Explain"><Sparkles className="h-3 w-3" /></Button>
                         <Badge className={docStatusColors[doc.status] || "bg-muted text-muted-foreground"}>{doc.status.replace(/_/g, " ")}</Badge>
                         <Button size="sm" variant="outline" onClick={() => downloadDocument(doc)}><Download className="h-3 w-3" /></Button>
                       </div>
@@ -370,8 +441,59 @@ export default function ClientPortal() {
               </div>
             )}
           </TabsContent>
+
+          {/* CHAT TAB */}
+          <TabsContent value="chat" className="space-y-4">
+            <h2 className="font-display text-xl font-semibold">Live Chat</h2>
+            <Card className="border-border/50">
+              <CardContent className="p-4">
+                <div className="h-80 overflow-y-auto space-y-3 mb-4">
+                  {chatMessages.length === 0 && (
+                    <p className="text-center text-sm text-muted-foreground py-8">No messages yet. Send a message to get started!</p>
+                  )}
+                  {chatMessages.map((msg) => (
+                    <div key={msg.id} className={`flex ${msg.is_admin ? "justify-start" : "justify-end"}`}>
+                      <div className={`max-w-[75%] rounded-lg px-3 py-2 text-sm ${msg.is_admin ? "bg-muted text-foreground" : "bg-accent text-accent-foreground"}`}>
+                        <p>{msg.message}</p>
+                        <p className="mt-1 text-[10px] opacity-60">{new Date(msg.created_at).toLocaleTimeString()}</p>
+                      </div>
+                    </div>
+                  ))}
+                  <div ref={chatEndRef} />
+                </div>
+                <div className="flex gap-2">
+                  <Textarea
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    placeholder="Type a message..."
+                    className="min-h-[40px] resize-none"
+                    rows={1}
+                    onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChatMessage(); } }}
+                  />
+                  <Button onClick={sendChatMessage} disabled={sendingChat || !chatInput.trim()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+                    {sendingChat ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
+
+      {/* AI Explain Dialog */}
+      <Dialog open={explainDialogOpen} onOpenChange={setExplainDialogOpen}>
+        <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogHeader><DialogTitle className="font-display flex items-center gap-2"><Sparkles className="h-5 w-5 text-accent" /> AI Document Explanation</DialogTitle></DialogHeader>
+          {explaining ? (
+            <div className="flex flex-col items-center py-8 gap-3">
+              <Loader2 className="h-8 w-8 animate-spin text-accent" />
+              <p className="text-sm text-muted-foreground">Analyzing document...</p>
+            </div>
+          ) : explanation ? (
+            <div className="prose prose-sm max-w-none text-foreground whitespace-pre-wrap text-sm">{explanation}</div>
+          ) : null}
+        </DialogContent>
+      </Dialog>
 
       {/* Cancel Dialog */}
       <Dialog open={!!cancelDialogId} onOpenChange={() => setCancelDialogId(null)}>

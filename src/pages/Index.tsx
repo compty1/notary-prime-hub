@@ -64,7 +64,7 @@ export default function Index() {
             </div>
           </Link>
           <div className="hidden items-center gap-6 md:flex">
-            <a href="#services" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Services</a>
+            <Link to="/services" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Services</Link>
             <a href="#how-it-works" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">How It Works</a>
             <Link to="/templates" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Templates</Link>
             <Link to="/fee-calculator" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Pricing</Link>
@@ -88,11 +88,11 @@ export default function Index() {
             </SheetTrigger>
             <SheetContent side="right" className="w-64">
               <div className="mt-8 flex flex-col gap-4">
-                <a href="#services" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Services</a>
+                <Link to="/services" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Services</Link>
                 <a href="#how-it-works" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>How It Works</a>
-                <Link to="/notary-guide" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Notary Guide</Link>
+                <Link to="/templates" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Templates</Link>
+                <Link to="/fee-calculator" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Pricing</Link>
                 <Link to="/ron-info" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>RON Info</Link>
-                <a href="#faq" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>FAQ</a>
                 <hr className="border-border" />
                 <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="outline" className="w-full">Sign In</Button>
@@ -393,7 +393,9 @@ export default function Index() {
               <h4 className="mb-3 font-display text-sm font-semibold text-primary-foreground">Quick Links</h4>
               <div className="space-y-2 text-sm">
                 <Link to="/book" className="block hover:text-accent">Book Appointment</Link>
-                <Link to="/notary-guide" className="block hover:text-accent">Notary Guide</Link>
+                <Link to="/services" className="block hover:text-accent">All Services</Link>
+                <Link to="/templates" className="block hover:text-accent">Document Templates</Link>
+                <Link to="/fee-calculator" className="block hover:text-accent">Pricing</Link>
                 <Link to="/ron-info" className="block hover:text-accent">RON Information</Link>
                 <Link to="/login" className="block hover:text-accent">Client Portal</Link>
               </div>

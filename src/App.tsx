@@ -34,6 +34,8 @@ import AdminTemplates from "./pages/admin/AdminTemplates";
 import AdminApostille from "./pages/admin/AdminApostille";
 import AdminChat from "./pages/admin/AdminChat";
 import AdminBusinessClients from "./pages/admin/AdminBusinessClients";
+import AdminServices from "./pages/admin/AdminServices";
+import Services from "./pages/Services";
 import NotFound from "./pages/NotFound";
 import TermsPrivacy from "./pages/TermsPrivacy";
 import AppointmentConfirmation from "./pages/AppointmentConfirmation";
@@ -55,6 +57,7 @@ const App = () => (
             <Route path="/book" element={<BookAppointment />} />
             <Route path="/notary-guide" element={<NotaryGuide />} />
             <Route path="/ron-info" element={<RonInfo />} />
+            <Route path="/services" element={<Services />} />
             <Route path="/terms" element={<TermsPrivacy />} />
             <Route path="/templates" element={<DocumentTemplates />} />
             <Route path="/builder" element={<DocumentBuilder />} />
@@ -75,6 +78,7 @@ const App = () => (
               <Route path="apostille" element={<AdminApostille />} />
               <Route path="chat" element={<AdminChat />} />
               <Route path="business-clients" element={<AdminBusinessClients />} />
+              <Route path="services" element={<AdminServices />} />
               <Route path="resources" element={<AdminResources />} />
               <Route path="ai-assistant" element={<AdminAIAssistant />} />
               <Route path="audit-log" element={<AdminAuditLog />} />
