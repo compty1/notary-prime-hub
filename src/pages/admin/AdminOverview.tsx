@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Users, CheckCircle, Clock, DollarSign, Plus, BookMarked, FileText, AlertTriangle, Video } from "lucide-react";
+import { Calendar, Users, CheckCircle, Clock, DollarSign, Plus, BookMarked, FileText, AlertTriangle, Video, RefreshCw } from "lucide-react";
 import { motion } from "framer-motion";
 
 const statusColors: Record<string, string> = {
@@ -27,61 +27,79 @@ const formatTime = (timeStr: string) => {
 
 export default function AdminOverview() {
   const [appointments, setAppointments] = useState<any[]>([]);
+  const [profiles, setProfiles] = useState<Record<string, string>>({});
   const [stats, setStats] = useState({ total: 0, upcoming: 0, completed: 0, clients: 0, revenue: 0 });
   const [loading, setLoading] = useState(true);
   const [commissionAlert, setCommissionAlert] = useState<{ tone: string; text: string } | null>(null);
   const [eoAlert, setEoAlert] = useState<string | null>(null);
   const [bondAlert, setBondAlert] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const [
-        { count: totalAppts },
-        { count: upcomingCount },
-        { count: completedCount },
-        { count: clientCount },
-        { data: recentAppts },
-        { data: journalData },
-        { data: settingsData },
-      ] = await Promise.all([
-        supabase.from("appointments").select("*", { count: "exact", head: true }),
-        supabase.from("appointments").select("*", { count: "exact", head: true }).in("status", ["scheduled", "confirmed"]),
-        supabase.from("appointments").select("*", { count: "exact", head: true }).eq("status", "completed"),
-        supabase.from("profiles").select("*", { count: "exact", head: true }),
-        supabase.from("appointments").select("*").order("scheduled_date", { ascending: false }).limit(10),
-        supabase.from("notary_journal").select("fees_charged"),
-        supabase.from("platform_settings").select("setting_key, setting_value"),
-      ]);
+  const fetchData = useCallback(async () => {
+    const [
+      { count: totalAppts },
+      { count: upcomingCount },
+      { count: completedCount },
+      { count: clientCount },
+      { data: recentAppts },
+      { data: journalData },
+      { data: settingsData },
+      { data: profileData },
+    ] = await Promise.all([
+      supabase.from("appointments").select("*", { count: "exact", head: true }),
+      supabase.from("appointments").select("*", { count: "exact", head: true }).in("status", ["scheduled", "confirmed"]),
+      supabase.from("appointments").select("*", { count: "exact", head: true }).eq("status", "completed"),
+      supabase.from("profiles").select("*", { count: "exact", head: true }),
+      supabase.from("appointments").select("*").order("scheduled_date", { ascending: false }).limit(10),
+      supabase.from("notary_journal").select("fees_charged"),
+      supabase.from("platform_settings").select("setting_key, setting_value"),
+      supabase.from("profiles").select("user_id, full_name, email"),
+    ]);
 
-      const totalRevenue = (journalData || []).reduce((sum: number, j: any) => sum + (parseFloat(j.fees_charged) || 0), 0);
-      if (recentAppts) setAppointments(recentAppts);
-      setStats({ total: totalAppts || 0, upcoming: upcomingCount || 0, completed: completedCount || 0, clients: clientCount || 0, revenue: totalRevenue });
+    // Build profiles map
+    if (profileData) {
+      const map: Record<string, string> = {};
+      profileData.forEach((p: any) => { map[p.user_id] = p.full_name || p.email || p.user_id.slice(0, 8); });
+      setProfiles(map);
+    }
 
-      // Check commission/E&O/bond expiration
-      if (settingsData) {
-        const s: Record<string, string> = {};
-        settingsData.forEach((item: any) => { s[item.setting_key] = item.setting_value; });
-        const now = new Date();
-        const checkExpiry = (dateStr: string | undefined, reminderDays: number) => {
-          if (!dateStr) return null;
-          const exp = new Date(dateStr);
-          const days = Math.ceil((exp.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-          if (days < 0) return { tone: "destructive", text: `Expired ${Math.abs(days)} days ago` };
-          if (days <= reminderDays) return { tone: "warning", text: `Expires in ${days} days` };
-          return null;
-        };
-        const commResult = checkExpiry(s.commission_expiration_date, parseInt(s.commission_renewal_reminder_days || "90"));
-        if (commResult) setCommissionAlert({ tone: commResult.tone === "destructive" ? "border-destructive bg-destructive/10 text-destructive" : "border-amber-500 bg-amber-50 text-amber-800", text: `Commission: ${commResult.text}` });
-        const eoResult = checkExpiry(s.eo_expiration_date, 60);
-        if (eoResult) setEoAlert(`E&O Insurance: ${eoResult.text}`);
-        const bondResult = checkExpiry(s.bond_expiration_date, 60);
-        if (bondResult) setBondAlert(`Surety Bond: ${bondResult.text}`);
-      }
+    const totalRevenue = (journalData || []).reduce((sum: number, j: any) => sum + (parseFloat(j.fees_charged) || 0), 0);
+    if (recentAppts) setAppointments(recentAppts);
+    setStats({ total: totalAppts || 0, upcoming: upcomingCount || 0, completed: completedCount || 0, clients: clientCount || 0, revenue: totalRevenue });
 
-      setLoading(false);
-    };
-    fetchData();
+    if (settingsData) {
+      const s: Record<string, string> = {};
+      settingsData.forEach((item: any) => { s[item.setting_key] = item.setting_value; });
+      const now = new Date();
+      const checkExpiry = (dateStr: string | undefined, reminderDays: number) => {
+        if (!dateStr) return null;
+        const exp = new Date(dateStr);
+        const days = Math.ceil((exp.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        if (days < 0) return { tone: "destructive", text: `Expired ${Math.abs(days)} days ago` };
+        if (days <= reminderDays) return { tone: "warning", text: `Expires in ${days} days` };
+        return null;
+      };
+      const commResult = checkExpiry(s.commission_expiration_date, parseInt(s.commission_renewal_reminder_days || "90"));
+      if (commResult) setCommissionAlert({ tone: commResult.tone === "destructive" ? "border-destructive bg-destructive/10 text-destructive" : "border-amber-500 bg-amber-50 text-amber-800", text: `Commission: ${commResult.text}` });
+      const eoResult = checkExpiry(s.eo_expiration_date, 60);
+      if (eoResult) setEoAlert(`E&O Insurance: ${eoResult.text}`);
+      const bondResult = checkExpiry(s.bond_expiration_date, 60);
+      if (bondResult) setBondAlert(`Surety Bond: ${bondResult.text}`);
+    }
+
+    setLoading(false);
   }, []);
+
+  useEffect(() => {
+    fetchData();
+    // Auto-refresh every 60 seconds
+    const interval = setInterval(fetchData, 60000);
+    return () => clearInterval(interval);
+  }, [fetchData]);
+
+  const getClientName = (clientId: string) => profiles[clientId] || "Unknown";
+
+  const today = new Date().toISOString().split("T")[0];
+  const todayCount = appointments.filter(a => a.scheduled_date === today && !["cancelled", "no_show"].includes(a.status)).length;
 
   const statCards = [
     { label: "Total Appointments", value: stats.total, icon: Calendar, color: "text-blue-600" },
@@ -97,9 +115,9 @@ export default function AdminOverview() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="font-display text-2xl font-bold text-foreground">Dashboard Overview</h1>
+        <Button variant="ghost" size="sm" onClick={fetchData}><RefreshCw className="mr-1 h-3 w-3" /> Refresh</Button>
       </div>
 
-      {/* Commission / E&O / Bond Alert Banners */}
       {(commissionAlert || eoAlert || bondAlert) && (
         <div className="mb-6 space-y-2">
           {commissionAlert && (
@@ -121,9 +139,8 @@ export default function AdminOverview() {
         </div>
       )}
 
-      {/* Quick Actions */}
       <div className="mb-6 flex flex-wrap gap-2">
-        <Link to="/admin/appointments"><Button size="sm" variant="outline"><Calendar className="mr-1 h-3 w-3" /> Today's Appointments</Button></Link>
+        <Link to={`/admin/appointments`}><Button size="sm" variant="outline"><Calendar className="mr-1 h-3 w-3" /> Today's Appointments {todayCount > 0 && `(${todayCount})`}</Button></Link>
         <Link to="/admin/journal"><Button size="sm" variant="outline"><BookMarked className="mr-1 h-3 w-3" /> New Journal Entry</Button></Link>
         <Link to="/admin/documents"><Button size="sm" variant="outline"><FileText className="mr-1 h-3 w-3" /> Review Documents</Button></Link>
         <Link to="/admin/availability"><Button size="sm" variant="outline"><Clock className="mr-1 h-3 w-3" /> Set Availability</Button></Link>
@@ -156,6 +173,7 @@ export default function AdminOverview() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead><tr className="border-b border-border/50">
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Client</th>
                   <th className="px-4 py-3 text-left font-medium text-muted-foreground">Date</th>
                   <th className="px-4 py-3 text-left font-medium text-muted-foreground">Time</th>
                   <th className="px-4 py-3 text-left font-medium text-muted-foreground">Service</th>
@@ -165,9 +183,10 @@ export default function AdminOverview() {
                 <tbody>
                   {appointments.map((a) => (
                     <tr key={a.id} className="border-b border-border/30 last:border-0 hover:bg-muted/30">
+                      <td className="px-4 py-3 font-medium">{getClientName(a.client_id)}</td>
                       <td className="px-4 py-3">{formatDate(a.scheduled_date)}</td>
                       <td className="px-4 py-3">{formatTime(a.scheduled_time)}</td>
-                      <td className="px-4 py-3 font-medium">{a.service_type}</td>
+                      <td className="px-4 py-3">{a.service_type}</td>
                       <td className="px-4 py-3 capitalize">{a.notarization_type.replace("_", " ")}</td>
                       <td className="px-4 py-3"><Badge className={statusColors[a.status] || "bg-muted"}>{a.status.replace(/_/g, " ")}</Badge></td>
                     </tr>

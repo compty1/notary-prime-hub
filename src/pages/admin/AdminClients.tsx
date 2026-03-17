@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Users, Search, Phone, Calendar, Star, Clock, MapPin, Monitor, CheckCircle, Mail, Download, Save, Loader2 } from "lucide-react";
+import { Users, Search, Phone, Calendar, Star, MapPin, Monitor, Mail, Download, Save, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 
 const statusColors: Record<string, string> = {
   scheduled: "bg-blue-100 text-blue-800",
@@ -20,8 +21,11 @@ const statusColors: Record<string, string> = {
 
 const formatDate = (dateStr: string) => new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
+const PAGE_SIZE = 30;
+
 export default function AdminClients() {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [profiles, setProfiles] = useState<any[]>([]);
   const [appointments, setAppointments] = useState<any[]>([]);
   const [search, setSearch] = useState("");
@@ -29,6 +33,7 @@ export default function AdminClients() {
   const [selectedClient, setSelectedClient] = useState<any>(null);
   const [adminNotes, setAdminNotes] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,13 +63,16 @@ export default function AdminClients() {
     (p.address || "").toLowerCase().includes(search.toLowerCase())
   );
 
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginated = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
   const openClient = (p: any) => {
     setSelectedClient(p);
     setAdminNotes(p.admin_notes || "");
   };
 
   const saveAdminNotes = async () => {
-    if (!selectedClient) return;
+    if (!selectedClient || !user) return;
     setSavingNotes(true);
     const { error } = await supabase.from("profiles").update({ admin_notes: adminNotes || null } as any).eq("user_id", selectedClient.user_id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -72,6 +80,11 @@ export default function AdminClients() {
       toast({ title: "Notes saved" });
       setProfiles((prev) => prev.map((p) => p.user_id === selectedClient.user_id ? { ...p, admin_notes: adminNotes } : p));
       setSelectedClient({ ...selectedClient, admin_notes: adminNotes });
+      // Audit log for profile update
+      await supabase.from("audit_log").insert({
+        user_id: user.id, action: "client_profile_updated", entity_type: "profile",
+        entity_id: selectedClient.user_id, details: { updated_field: "admin_notes" },
+      });
     }
     setSavingNotes(false);
   };
@@ -97,18 +110,19 @@ export default function AdminClients() {
           <Download className="mr-1 h-3 w-3" /> Export CSV
         </Button>
       </div>
-      <div className="relative mb-6">
+      <div className="relative mb-4">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input placeholder="Search by name, email, phone, or address..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
+        <Input placeholder="Search by name, email, phone, or address..." value={search} onChange={(e) => { setSearch(e.target.value); setPage(0); }} className="pl-10" />
       </div>
+      <p className="mb-4 text-xs text-muted-foreground">{filtered.length} client{filtered.length !== 1 ? "s" : ""}</p>
 
       {loading ? (
         <div className="flex justify-center py-12"><div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" /></div>
-      ) : filtered.length === 0 ? (
+      ) : paginated.length === 0 ? (
         <Card className="border-border/50"><CardContent className="flex flex-col items-center py-12 text-center"><Users className="mb-4 h-12 w-12 text-muted-foreground/50" /><p className="text-muted-foreground">No clients found</p></CardContent></Card>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((p) => {
+          {paginated.map((p) => {
             const stats = getClientStats(p.user_id);
             return (
               <Card key={p.id} className="cursor-pointer border-border/50 transition-shadow hover:shadow-md" onClick={() => openClient(p)}>
@@ -137,6 +151,16 @@ export default function AdminClients() {
         </div>
       )}
 
+      {totalPages > 1 && (
+        <div className="mt-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">Page {page + 1} of {totalPages}</p>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(page - 1)}><ChevronLeft className="h-4 w-4" /></Button>
+            <Button variant="outline" size="sm" disabled={page >= totalPages - 1} onClick={() => setPage(page + 1)}><ChevronRight className="h-4 w-4" /></Button>
+          </div>
+        </div>
+      )}
+
       <Dialog open={!!selectedClient} onOpenChange={() => setSelectedClient(null)}>
         <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader><DialogTitle className="font-display">{selectedClient?.full_name || "Client Details"}</DialogTitle></DialogHeader>
@@ -157,8 +181,6 @@ export default function AdminClients() {
                   <div className="rounded-lg bg-muted/50 p-3 text-center"><p className="text-xl font-bold text-emerald-600">{stats.completed}</p><p className="text-xs text-muted-foreground">Completed</p></div>
                   <div className="rounded-lg bg-muted/50 p-3 text-center"><p className="text-xs font-bold text-foreground">{stats.lastVisit ? formatDate(stats.lastVisit) : "—"}</p><p className="text-xs text-muted-foreground">Last Visit</p></div>
                 </div>
-
-                {/* Admin Notes */}
                 <div>
                   <Label className="text-sm font-semibold">Admin Notes (internal)</Label>
                   <Textarea value={adminNotes} onChange={(e) => setAdminNotes(e.target.value)} rows={3} placeholder="Preferences, history, special instructions..." className="mt-1" />
@@ -166,7 +188,6 @@ export default function AdminClients() {
                     {savingNotes ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Save className="mr-1 h-3 w-3" />} Save Notes
                   </Button>
                 </div>
-
                 <div>
                   <h4 className="mb-2 text-sm font-semibold text-foreground">Appointment History</h4>
                   {stats.appointments.length === 0 ? (

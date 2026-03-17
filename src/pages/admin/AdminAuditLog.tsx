@@ -9,10 +9,33 @@ import { ScrollText, Search, ChevronLeft, ChevronRight, Download } from "lucide-
 
 const actionColors: Record<string, string> = {
   appointment_status_changed: "bg-blue-100 text-blue-800",
+  appointment_created_by_admin: "bg-blue-100 text-blue-800",
   journal_entry_created: "bg-emerald-100 text-emerald-800",
   document_status_changed: "bg-yellow-100 text-yellow-800",
   ron_session_saved: "bg-purple-100 text-purple-800",
+  payment_marked_paid: "bg-green-100 text-green-800",
+  apostille_status_changed: "bg-cyan-100 text-cyan-800",
+  correspondence_sent: "bg-indigo-100 text-indigo-800",
+  verification_created: "bg-teal-100 text-teal-800",
+  verification_revoked: "bg-red-100 text-red-800",
+  client_profile_updated: "bg-violet-100 text-violet-800",
+  business_verification_changed: "bg-orange-100 text-orange-800",
 };
+
+const allActions = [
+  { value: "appointment_status_changed", label: "Status Changes" },
+  { value: "appointment_created_by_admin", label: "Admin Created Appts" },
+  { value: "journal_entry_created", label: "Journal Entries" },
+  { value: "document_status_changed", label: "Document Changes" },
+  { value: "ron_session_saved", label: "RON Sessions" },
+  { value: "payment_marked_paid", label: "Payments" },
+  { value: "apostille_status_changed", label: "Apostille" },
+  { value: "correspondence_sent", label: "Correspondence" },
+  { value: "verification_created", label: "Verifications Created" },
+  { value: "verification_revoked", label: "Verifications Revoked" },
+  { value: "client_profile_updated", label: "Profile Updates" },
+  { value: "business_verification_changed", label: "Business Verification" },
+];
 
 const PAGE_SIZE = 25;
 
@@ -47,10 +70,7 @@ export default function AdminAuditLog() {
     if (!data || data.length === 0) return;
     const headers = ["Timestamp", "Action", "Entity Type", "Entity ID", "Details"];
     const rows = data.map((log) => [
-      new Date(log.created_at).toISOString(),
-      log.action,
-      log.entity_type || "",
-      log.entity_id || "",
+      new Date(log.created_at).toISOString(), log.action, log.entity_type || "", log.entity_id || "",
       log.details ? JSON.stringify(log.details) : "",
     ]);
     const csv = [headers, ...rows].map((r) => r.map((c) => `"${c}"`).join(",")).join("\n");
@@ -64,9 +84,7 @@ export default function AdminAuditLog() {
     <div>
       <div className="mb-2 flex items-center justify-between">
         <h1 className="font-display text-2xl font-bold text-foreground">Audit Log</h1>
-        <Button variant="outline" size="sm" onClick={exportCSV}>
-          <Download className="mr-1 h-3 w-3" /> Export CSV
-        </Button>
+        <Button variant="outline" size="sm" onClick={exportCSV}><Download className="mr-1 h-3 w-3" /> Export CSV</Button>
       </div>
       <p className="mb-6 text-sm text-muted-foreground">Ohio RON compliance — all digital transactions are logged with timestamps.</p>
 
@@ -76,13 +94,10 @@ export default function AdminAuditLog() {
           <Input placeholder="Search actions..." value={search} onChange={(e) => { setSearch(e.target.value); setPage(0); }} className="pl-10" />
         </div>
         <Select value={filterAction} onValueChange={(v) => { setFilterAction(v); setPage(0); }}>
-          <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-52"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Actions</SelectItem>
-            <SelectItem value="appointment_status_changed">Status Changes</SelectItem>
-            <SelectItem value="journal_entry_created">Journal Entries</SelectItem>
-            <SelectItem value="document_status_changed">Document Changes</SelectItem>
-            <SelectItem value="ron_session_saved">RON Sessions</SelectItem>
+            {allActions.map(a => <SelectItem key={a.value} value={a.value}>{a.label}</SelectItem>)}
           </SelectContent>
         </Select>
       </div>
@@ -111,7 +126,7 @@ export default function AdminAuditLog() {
                         </td>
                         <td className="px-4 py-3"><Badge className={`text-xs ${actionColors[log.action] || "bg-muted text-muted-foreground"}`}>{log.action.replace(/_/g, " ")}</Badge></td>
                         <td className="px-4 py-3 text-xs">{log.entity_type || "—"}</td>
-                        <td className="px-4 py-3 text-xs text-muted-foreground max-w-[300px] truncate">
+                        <td className="px-4 py-3 text-xs text-muted-foreground max-w-[300px] truncate" title={log.details ? JSON.stringify(log.details) : ""}>
                           {log.details ? Object.entries(log.details as Record<string, any>).map(([k, v]) => `${k}: ${v}`).join(", ") : "—"}
                         </td>
                       </tr>
