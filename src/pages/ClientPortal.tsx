@@ -752,7 +752,7 @@ export default function ClientPortal() {
             </div>
             {showWizard && (
               <DocumentWizard
-                onSelectService={(svc) => { setShowWizard(false); }}
+                onSelectService={(svc) => { setShowWizard(false); navigate(`/book?service=${encodeURIComponent(svc)}`); }}
                 onClose={() => setShowWizard(false)}
               />
             )}
