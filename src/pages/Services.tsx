@@ -112,7 +112,7 @@ export default function Services() {
       {/* Hero */}
       <section className="bg-gradient-navy py-16">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="mb-4 font-display text-4xl font-bold text-primary-foreground md:text-5xl">Our Services</h1>
+          <h1 className="mb-4 font-display text-4xl font-bold text-primary-foreground md:text-5xl">Services</h1>
           <p className="mx-auto max-w-2xl text-lg text-primary-foreground/70">
             Fast, secure notary and document services for individuals and businesses in Ohio.
             Transparent pricing, secure storage, and business plans available.
