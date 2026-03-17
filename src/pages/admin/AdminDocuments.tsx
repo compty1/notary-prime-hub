@@ -209,6 +209,9 @@ export default function AdminDocuments() {
                   </div>
 
                   <div className="flex items-center gap-2 flex-wrap justify-end">
+                    <Button size="sm" variant="ghost" className="text-xs" onClick={() => openPreview(doc)}>
+                      <Eye className="mr-1 h-3 w-3" /> Preview
+                    </Button>
                     <Button size="sm" variant="ghost" className="text-xs" onClick={() => downloadDocument(doc)}>
                       <Download className="mr-1 h-3 w-3" /> Download
                     </Button>
