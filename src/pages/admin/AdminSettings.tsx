@@ -103,8 +103,8 @@ export default function AdminSettings() {
     const key = type === "cert" ? "commission_certificate_path" : "seal_image_path";
     updateValue(key, filePath);
     if (type === "seal") {
-      const { data: urlData } = supabase.storage.from("documents").getPublicUrl(filePath);
-      if (urlData) setSealPreviewUrl(urlData.publicUrl);
+      const { data: urlData } = await supabase.storage.from("documents").createSignedUrl(filePath, 3600);
+      if (urlData?.signedUrl) setSealPreviewUrl(urlData.signedUrl);
     }
     toast({ title: `${type === "cert" ? "Certificate" : "Seal image"} uploaded` });
     setter(false);
