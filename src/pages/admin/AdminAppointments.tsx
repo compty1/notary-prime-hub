@@ -327,6 +327,13 @@ export default function AdminAppointments() {
                       {statusFlow[appt.status].replace(/_/g, " ")}
                     </Button>
                   )}
+                  {appt.notarization_type === "ron" && ["kba_pending", "in_session"].includes(appt.status) && (
+                    <Link to={`/ron-session?id=${appt.id}`}>
+                      <Button size="sm" className="bg-purple-600 text-white hover:bg-purple-700 text-xs">
+                        <Video className="mr-1 h-3 w-3" /> Launch Session
+                      </Button>
+                    </Link>
+                  )}
                   {appt.status === "completed" && (
                     <Button size="sm" variant="ghost" className="text-xs" onClick={() => setReceiptAppt(appt)}>
                       <Printer className="mr-1 h-3 w-3" /> Receipt
