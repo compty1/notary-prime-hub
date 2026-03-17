@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { MapPin, Monitor, Calendar, FileText, CheckCircle, ChevronLeft, ChevronRight, Shield, Clock, Camera, Loader2, Sparkles, AlertTriangle, LocateFixed, DollarSign } from "lucide-react";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
 
 type Step = 1 | 2 | 3 | 4;
 type NotarizationType = "in_person" | "ron";
