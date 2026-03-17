@@ -14,16 +14,293 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      appointments: {
+        Row: {
+          admin_notes: string | null
+          client_id: string
+          created_at: string
+          id: string
+          location: string | null
+          notarization_type: Database["public"]["Enums"]["notarization_type"]
+          notes: string | null
+          scheduled_date: string
+          scheduled_time: string
+          service_type: string
+          status: Database["public"]["Enums"]["appointment_status"]
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          client_id: string
+          created_at?: string
+          id?: string
+          location?: string | null
+          notarization_type?: Database["public"]["Enums"]["notarization_type"]
+          notes?: string | null
+          scheduled_date: string
+          scheduled_time: string
+          service_type: string
+          status?: Database["public"]["Enums"]["appointment_status"]
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          client_id?: string
+          created_at?: string
+          id?: string
+          location?: string | null
+          notarization_type?: Database["public"]["Enums"]["notarization_type"]
+          notes?: string | null
+          scheduled_date?: string
+          scheduled_time?: string
+          service_type?: string
+          status?: Database["public"]["Enums"]["appointment_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      audit_log: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          ip_address: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      documents: {
+        Row: {
+          appointment_id: string | null
+          created_at: string
+          file_name: string
+          file_path: string
+          id: string
+          status: Database["public"]["Enums"]["document_status"]
+          updated_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          created_at?: string
+          file_name: string
+          file_path: string
+          id?: string
+          status?: Database["public"]["Enums"]["document_status"]
+          updated_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          appointment_id?: string | null
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          id?: string
+          status?: Database["public"]["Enums"]["document_status"]
+          updated_at?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notarization_sessions: {
+        Row: {
+          appointment_id: string
+          bluenotary_session_url: string | null
+          completed_at: string | null
+          created_at: string
+          id: string
+          id_verified: boolean | null
+          kba_completed: boolean | null
+          session_type: Database["public"]["Enums"]["notarization_type"]
+          started_at: string | null
+          status: Database["public"]["Enums"]["appointment_status"]
+          updated_at: string
+        }
+        Insert: {
+          appointment_id: string
+          bluenotary_session_url?: string | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          id_verified?: boolean | null
+          kba_completed?: boolean | null
+          session_type?: Database["public"]["Enums"]["notarization_type"]
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["appointment_status"]
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string
+          bluenotary_session_url?: string | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          id_verified?: boolean | null
+          kba_completed?: boolean | null
+          session_type?: Database["public"]["Enums"]["notarization_type"]
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["appointment_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notarization_sessions_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          address: string | null
+          city: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          state: string | null
+          updated_at: string
+          user_id: string
+          zip: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id: string
+          zip?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id?: string
+          zip?: string | null
+        }
+        Relationships: []
+      }
+      time_slots: {
+        Row: {
+          created_at: string
+          day_of_week: number
+          end_time: string
+          id: string
+          is_available: boolean
+          specific_date: string | null
+          start_time: string
+        }
+        Insert: {
+          created_at?: string
+          day_of_week: number
+          end_time: string
+          id?: string
+          is_available?: boolean
+          specific_date?: string | null
+          start_time: string
+        }
+        Update: {
+          created_at?: string
+          day_of_week?: number
+          end_time?: string
+          id?: string
+          is_available?: boolean
+          specific_date?: string | null
+          start_time?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "client"
+      appointment_status:
+        | "scheduled"
+        | "confirmed"
+        | "id_verification"
+        | "kba_pending"
+        | "in_session"
+        | "completed"
+        | "cancelled"
+        | "no_show"
+      document_status:
+        | "uploaded"
+        | "pending_review"
+        | "approved"
+        | "notarized"
+        | "rejected"
+      notarization_type: "in_person" | "ron"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +427,26 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "client"],
+      appointment_status: [
+        "scheduled",
+        "confirmed",
+        "id_verification",
+        "kba_pending",
+        "in_session",
+        "completed",
+        "cancelled",
+        "no_show",
+      ],
+      document_status: [
+        "uploaded",
+        "pending_review",
+        "approved",
+        "notarized",
+        "rejected",
+      ],
+      notarization_type: ["in_person", "ron"],
+    },
   },
 } as const
