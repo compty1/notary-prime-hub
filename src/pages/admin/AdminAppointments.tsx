@@ -163,7 +163,32 @@ export default function AdminAppointments() {
 
       if (newStatus === "completed") {
         const appt = appointments.find((a) => a.id === id);
-        if (appt) setQuickJournalAppt(appt);
+        if (appt) {
+          setQuickJournalAppt(appt);
+          // Send review request email
+          try {
+            const clientProfile = profiles.find(p => p.user_id === appt.client_id);
+            if (clientProfile?.email) {
+              await supabase.from("client_correspondence").insert({
+                client_id: appt.client_id,
+                subject: "How was your notarization experience?",
+                body: `Your ${appt.service_type} appointment has been completed. We'd love to hear your feedback! Please visit your Client Portal to leave a review.`,
+                direction: "outbound",
+                to_address: clientProfile.email,
+                status: "sent",
+              });
+              await supabase.functions.invoke("send-correspondence", {
+                body: {
+                  to: clientProfile.email,
+                  subject: "How was your notarization experience?",
+                  body: `Your ${appt.service_type} appointment has been completed. We'd love to hear your feedback! Please visit your Client Portal to leave a review.`,
+                },
+              });
+            }
+          } catch (reviewEmailErr) {
+            console.error("Review request email error:", reviewEmailErr);
+          }
+        }
       }
       fetchData();
     }

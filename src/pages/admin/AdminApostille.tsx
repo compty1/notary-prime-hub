@@ -221,6 +221,10 @@ export default function AdminApostille() {
                 <p className="font-medium">{editOpen.document_description}</p>
                 <p className="text-xs text-muted-foreground mt-1">Status: {editOpen.status.replace(/_/g, " ")}</p>
               </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Destination Country</Label><Input value={editDestCountry} onChange={(e) => setEditDestCountry(e.target.value)} placeholder="e.g. Germany" /></div>
+                <div><Label>Document Count</Label><Input type="number" min="1" value={editDocCount} onChange={(e) => setEditDocCount(e.target.value)} /></div>
+              </div>
               <div><Label>Fee ($)</Label><Input type="number" step="0.01" value={editFee} onChange={(e) => setEditFee(e.target.value)} /></div>
               <div><Label>Notes</Label><Textarea value={editNotes} onChange={(e) => setEditNotes(e.target.value)} rows={3} /></div>
             </div>

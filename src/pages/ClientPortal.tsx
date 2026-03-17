@@ -977,6 +977,9 @@ export default function ClientPortal() {
                       <Link to={`/book?type=${svc.name.toLowerCase().includes("remote") ? "ron" : "in_person"}&service=${encodeURIComponent(svc.name)}`}>
                         <Button size="sm" className="text-xs bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button>
                       </Link>
+                      <Link to={`/services/${svc.id}`}>
+                        <Button size="sm" variant="outline" className="text-xs">View Details</Button>
+                      </Link>
                     </div>
                   </CardContent>
                 </Card>
