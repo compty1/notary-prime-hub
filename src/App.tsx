@@ -88,6 +88,8 @@ const App = () => (
               <Route path="/verify/:id" element={<VerifySeal />} />
               <Route path="/terms" element={<TermsPrivacy />} />
               <Route path="/templates" element={<DocumentTemplates />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/digitize" element={<ProtectedRoute><DocumentDigitize /></ProtectedRoute>} />
               <Route path="/builder" element={<DocumentBuilder />} />
               <Route path="/fee-calculator" element={<FeeCalculator />} />
               <Route path="/portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
