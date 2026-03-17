@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
@@ -78,25 +79,25 @@ const App = () => (
             <Route path="/ron-session" element={<ProtectedRoute><BlueNotarySession /></ProtectedRoute>} />
             <Route path="/business-portal" element={<ProtectedRoute><BusinessPortal /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>}>
-              <Route index element={<AdminOverview />} />
-              <Route path="appointments" element={<AdminAppointments />} />
-              <Route path="clients" element={<AdminClients />} />
-              <Route path="availability" element={<AdminAvailability />} />
-              <Route path="documents" element={<AdminDocuments />} />
-              <Route path="journal" element={<AdminJournal />} />
-              <Route path="revenue" element={<AdminRevenue />} />
-              <Route path="templates" element={<AdminTemplates />} />
-              <Route path="apostille" element={<AdminApostille />} />
-              <Route path="chat" element={<AdminChat />} />
-              <Route path="business-clients" element={<AdminBusinessClients />} />
-              <Route path="services" element={<AdminServices />} />
-              <Route path="resources" element={<AdminResources />} />
-              <Route path="ai-assistant" element={<AdminAIAssistant />} />
-              <Route path="audit-log" element={<AdminAuditLog />} />
-              <Route path="team" element={<AdminTeam />} />
-              <Route path="email-management" element={<AdminEmailManagement />} />
-              <Route path="leads" element={<AdminLeadPortal />} />
-              <Route path="settings" element={<AdminSettings />} />
+              <Route index element={<ErrorBoundary fallbackMessage="Overview failed to load"><AdminOverview /></ErrorBoundary>} />
+              <Route path="appointments" element={<ErrorBoundary fallbackMessage="Appointments failed to load"><AdminAppointments /></ErrorBoundary>} />
+              <Route path="clients" element={<ErrorBoundary fallbackMessage="Clients failed to load"><AdminClients /></ErrorBoundary>} />
+              <Route path="availability" element={<ErrorBoundary fallbackMessage="Availability failed to load"><AdminAvailability /></ErrorBoundary>} />
+              <Route path="documents" element={<ErrorBoundary fallbackMessage="Documents failed to load"><AdminDocuments /></ErrorBoundary>} />
+              <Route path="journal" element={<ErrorBoundary fallbackMessage="Journal failed to load"><AdminJournal /></ErrorBoundary>} />
+              <Route path="revenue" element={<ErrorBoundary fallbackMessage="Revenue failed to load"><AdminRevenue /></ErrorBoundary>} />
+              <Route path="templates" element={<ErrorBoundary fallbackMessage="Templates failed to load"><AdminTemplates /></ErrorBoundary>} />
+              <Route path="apostille" element={<ErrorBoundary fallbackMessage="Apostille failed to load"><AdminApostille /></ErrorBoundary>} />
+              <Route path="chat" element={<ErrorBoundary fallbackMessage="Chat failed to load"><AdminChat /></ErrorBoundary>} />
+              <Route path="business-clients" element={<ErrorBoundary fallbackMessage="Business clients failed to load"><AdminBusinessClients /></ErrorBoundary>} />
+              <Route path="services" element={<ErrorBoundary fallbackMessage="Services failed to load"><AdminServices /></ErrorBoundary>} />
+              <Route path="resources" element={<ErrorBoundary fallbackMessage="Resources failed to load"><AdminResources /></ErrorBoundary>} />
+              <Route path="ai-assistant" element={<ErrorBoundary fallbackMessage="AI Assistant failed to load"><AdminAIAssistant /></ErrorBoundary>} />
+              <Route path="audit-log" element={<ErrorBoundary fallbackMessage="Audit log failed to load"><AdminAuditLog /></ErrorBoundary>} />
+              <Route path="team" element={<ErrorBoundary fallbackMessage="Team failed to load"><AdminTeam /></ErrorBoundary>} />
+              <Route path="email-management" element={<ErrorBoundary fallbackMessage="Email management failed to load"><AdminEmailManagement /></ErrorBoundary>} />
+              <Route path="leads" element={<ErrorBoundary fallbackMessage="Lead portal failed to load"><AdminLeadPortal /></ErrorBoundary>} />
+              <Route path="settings" element={<ErrorBoundary fallbackMessage="Settings failed to load"><AdminSettings /></ErrorBoundary>} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

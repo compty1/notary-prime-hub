@@ -9,11 +9,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, ChevronRight, Eye, Loader2, DollarSign, Plus, Video } from "lucide-react";
+import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, ChevronRight, Eye, Loader2, DollarSign, Plus, Video, ChevronLeft, Filter } from "lucide-react";
 import { Link } from "react-router-dom";
 
+const PAGE_SIZE = 20;
 const statuses = ["scheduled", "confirmed", "id_verification", "kba_pending", "in_session", "completed", "cancelled", "no_show"];
 
 const statusFlow: Record<string, string> = {
@@ -47,6 +49,9 @@ export default function AdminAppointments() {
   const [profiles, setProfiles] = useState<any[]>([]);
   const [services, setServices] = useState<any[]>([]);
   const [filter, setFilter] = useState("all");
+  const [dateRange, setDateRange] = useState("all");
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [receiptAppt, setReceiptAppt] = useState<any>(null);
@@ -78,21 +83,39 @@ export default function AdminAppointments() {
   const { toast } = useToast();
   const { user } = useAuth();
 
+  const getDateFilter = () => {
+    const today = new Date();
+    const fmt = (d: Date) => d.toISOString().split("T")[0];
+    if (dateRange === "today") return { from: fmt(today), to: fmt(today) };
+    if (dateRange === "week") {
+      const end = new Date(today); end.setDate(end.getDate() + 7);
+      return { from: fmt(today), to: fmt(end) };
+    }
+    if (dateRange === "month") {
+      const end = new Date(today); end.setMonth(end.getMonth() + 1);
+      return { from: fmt(today), to: fmt(end) };
+    }
+    return null;
+  };
+
   const fetchData = async () => {
-    let query = supabase.from("appointments").select("*").order("scheduled_date", { ascending: false });
+    let query = supabase.from("appointments").select("*").order("scheduled_date", { ascending: false }).range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
     if (filter !== "all") query = query.eq("status", filter as any);
+    const df = getDateFilter();
+    if (df) query = query.gte("scheduled_date", df.from).lte("scheduled_date", df.to);
     const [{ data: appts }, { data: profs }, { data: svcs }] = await Promise.all([
       query,
       supabase.from("profiles").select("*"),
       supabase.from("services").select("name").eq("is_active", true),
     ]);
-    if (appts) setAppointments(appts);
+    if (appts) { setAppointments(appts); setHasMore(appts.length === PAGE_SIZE); }
     if (profs) setProfiles(profs);
     if (svcs) setServices(svcs);
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, [filter]);
+  useEffect(() => { setPage(0); }, [filter, dateRange]);
+  useEffect(() => { fetchData(); }, [filter, dateRange, page]);
 
   useEffect(() => {
     const channel = supabase
@@ -253,6 +276,14 @@ export default function AdminAppointments() {
         entity_type: "appointment",
         details: { client_id: newAppt.client_id, service_type: newAppt.service_type },
       });
+      // Send email notification for admin-created appointment
+      try {
+        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-appointment-emails`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+          body: JSON.stringify({ appointment_id: newAppt.client_id, emailType: "confirmation" }),
+        });
+      } catch {}
       setShowCreateDialog(false);
       setNewAppt({ client_id: "", service_type: "", notarization_type: "in_person", scheduled_date: "", scheduled_time: "", location: "", notes: "", estimated_price: "" });
       fetchData();
@@ -262,14 +293,23 @@ export default function AdminAppointments() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="font-display text-2xl font-bold text-foreground">Appointments</h1>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 flex-wrap">
           <Button onClick={() => setShowCreateDialog(true)} className="bg-accent text-accent-foreground hover:bg-gold-dark">
-            <Plus className="mr-1 h-4 w-4" /> New Appointment
+            <Plus className="mr-1 h-4 w-4" /> New
           </Button>
+          <Select value={dateRange} onValueChange={setDateRange}>
+            <SelectTrigger className="w-32"><Filter className="mr-1 h-3 w-3" /><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Dates</SelectItem>
+              <SelectItem value="today">Today</SelectItem>
+              <SelectItem value="week">This Week</SelectItem>
+              <SelectItem value="month">This Month</SelectItem>
+            </SelectContent>
+          </Select>
           <Select value={filter} onValueChange={setFilter}>
-            <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Statuses</SelectItem>
               {statuses.map((s) => (
@@ -353,6 +393,16 @@ export default function AdminAppointments() {
               </CardContent>
             </Card>
           ))}
+          {/* Pagination */}
+          <div className="flex items-center justify-between pt-2">
+            <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(p => p - 1)}>
+              <ChevronLeft className="mr-1 h-3 w-3" /> Previous
+            </Button>
+            <span className="text-xs text-muted-foreground">Page {page + 1}</span>
+            <Button variant="outline" size="sm" disabled={!hasMore} onClick={() => setPage(p => p + 1)}>
+              Next <ChevronRight className="ml-1 h-3 w-3" />
+            </Button>
+          </div>
         </div>
       )}
 

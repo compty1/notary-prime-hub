@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Building2, CheckCircle, Clock, XCircle, Search, Loader2 } from "lucide-react";
+import { Building2, CheckCircle, XCircle, Search, Loader2, Users, Mail } from "lucide-react";
 import { motion } from "framer-motion";
 
 const verificationColors: Record<string, string> = {
@@ -17,15 +17,34 @@ const verificationColors: Record<string, string> = {
 
 export default function AdminBusinessClients() {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [businesses, setBusinesses] = useState<any[]>([]);
+  const [memberCounts, setMemberCounts] = useState<Record<string, number>>({});
+  const [ownerProfiles, setOwnerProfiles] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    supabase.from("business_profiles").select("*").order("created_at", { ascending: false }).then(({ data }) => {
-      if (data) setBusinesses(data);
+    const load = async () => {
+      const [{ data: biz }, { data: members }, { data: profiles }] = await Promise.all([
+        supabase.from("business_profiles").select("*").order("created_at", { ascending: false }),
+        supabase.from("business_members").select("business_id"),
+        supabase.from("profiles").select("user_id, full_name, email, phone"),
+      ]);
+      if (biz) setBusinesses(biz);
+      if (members) {
+        const counts: Record<string, number> = {};
+        members.forEach((m: any) => { counts[m.business_id] = (counts[m.business_id] || 0) + 1; });
+        setMemberCounts(counts);
+      }
+      if (profiles) {
+        const map: Record<string, any> = {};
+        profiles.forEach((p: any) => { map[p.user_id] = p; });
+        setOwnerProfiles(map);
+      }
       setLoading(false);
-    });
+    };
+    load();
   }, []);
 
   const updateVerification = async (id: string, status: string) => {
@@ -34,6 +53,11 @@ export default function AdminBusinessClients() {
     else {
       setBusinesses((prev) => prev.map((b) => b.id === id ? { ...b, verification_status: status } : b));
       toast({ title: `Business ${status}` });
+      await supabase.from("audit_log").insert({
+        user_id: user?.id, action: "business_verification_changed",
+        entity_type: "business_profile", entity_id: id,
+        details: { new_status: status },
+      });
     }
   };
 
@@ -60,37 +84,50 @@ export default function AdminBusinessClients() {
         </CardContent></Card>
       ) : (
         <div className="space-y-4">
-          {filtered.map((biz) => (
-            <motion.div key={biz.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <Card className="border-border/50">
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Building2 className="h-4 w-4 text-accent" />
-                        <span className="font-medium">{biz.business_name}</span>
-                        <Badge className={verificationColors[biz.verification_status]}>{biz.verification_status}</Badge>
+          {filtered.map((biz) => {
+            const owner = ownerProfiles[biz.created_by];
+            return (
+              <motion.div key={biz.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <Card className="border-border/50">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <Building2 className="h-4 w-4 text-accent" />
+                          <span className="font-medium">{biz.business_name}</span>
+                          <Badge className={verificationColors[biz.verification_status]}>{biz.verification_status}</Badge>
+                        </div>
+                        {biz.ein && <p className="text-xs text-muted-foreground">EIN: {biz.ein}</p>}
+                        {biz.business_type && <p className="text-xs text-muted-foreground">Type: {biz.business_type}</p>}
+                        {owner && (
+                          <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
+                            {owner.full_name && <span>Owner: {owner.full_name}</span>}
+                            {owner.email && <span className="flex items-center gap-1"><Mail className="h-3 w-3" />{owner.email}</span>}
+                            {owner.phone && <span>{owner.phone}</span>}
+                          </div>
+                        )}
+                        <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1"><Users className="h-3 w-3" /> {memberCounts[biz.id] || 0} members</span>
+                          <span>Registered: {new Date(biz.created_at).toLocaleDateString()}</span>
+                        </div>
+                        {biz.authorized_signers && Array.isArray(biz.authorized_signers) && biz.authorized_signers.length > 0 && (
+                          <p className="text-xs text-muted-foreground mt-1">Authorized Signers: {(biz.authorized_signers as string[]).join(", ")}</p>
+                        )}
                       </div>
-                      {biz.ein && <p className="text-xs text-muted-foreground">EIN: {biz.ein}</p>}
-                      {biz.business_type && <p className="text-xs text-muted-foreground">Type: {biz.business_type}</p>}
-                      {biz.authorized_signers && Array.isArray(biz.authorized_signers) && biz.authorized_signers.length > 0 && (
-                        <p className="text-xs text-muted-foreground mt-1">Authorized Signers: {(biz.authorized_signers as string[]).join(", ")}</p>
-                      )}
-                      <p className="text-xs text-muted-foreground mt-1">Registered: {new Date(biz.created_at).toLocaleDateString()}</p>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" className="text-xs" onClick={() => updateVerification(biz.id, "verified")}>
+                          <CheckCircle className="mr-1 h-3 w-3" /> Verify
+                        </Button>
+                        <Button size="sm" variant="outline" className="text-xs text-destructive" onClick={() => updateVerification(biz.id, "rejected")}>
+                          <XCircle className="mr-1 h-3 w-3" /> Reject
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline" className="text-xs" onClick={() => updateVerification(biz.id, "verified")}>
-                        <CheckCircle className="mr-1 h-3 w-3" /> Verify
-                      </Button>
-                      <Button size="sm" variant="outline" className="text-xs text-destructive" onClick={() => updateVerification(biz.id, "rejected")}>
-                        <XCircle className="mr-1 h-3 w-3" /> Reject
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          })}
         </div>
       )}
     </div>

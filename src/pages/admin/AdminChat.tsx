@@ -76,6 +76,16 @@ export default function AdminChat() {
     return conv[conv.length - 1];
   };
 
+  const selectConversation = async (clientId: string) => {
+    setSelectedUser(clientId);
+    // Mark all messages from this client as read
+    await supabase.from("chat_messages").update({ read: true } as any)
+      .eq("sender_id", clientId).eq("is_admin", false).eq("read", false);
+    setAllMessages(prev => prev.map(m => 
+      m.sender_id === clientId && !m.is_admin ? { ...m, read: true } : m
+    ));
+  };
+
   const sendMessage = async () => {
     if (!message.trim() || !user || !selectedUser) return;
     setSending(true);
@@ -86,11 +96,7 @@ export default function AdminChat() {
       recipient_id: selectedUser,
     } as any);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else {
-      setMessage("");
-      // Mark client messages as read
-      await supabase.from("chat_messages").update({ read: true } as any).eq("sender_id", selectedUser).eq("is_admin", false);
-    }
+    else setMessage("");
     setSending(false);
   };
 
@@ -117,7 +123,7 @@ export default function AdminChat() {
                   const unread = getUnreadCount(uid);
                   const name = profiles[uid] || uid.slice(0, 8);
                   return (
-                    <div key={uid} onClick={() => setSelectedUser(uid)}
+                    <div key={uid} onClick={() => selectConversation(uid)}
                       className={`flex items-center gap-2 p-3 rounded-lg cursor-pointer transition-colors ${selectedUser === uid ? "bg-accent/10" : "hover:bg-muted"}`}>
                       <User className="h-5 w-5 text-muted-foreground" />
                       <div className="flex-1 min-w-0">

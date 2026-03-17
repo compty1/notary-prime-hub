@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { useQueryClient } from "@tanstack/react-query";
 
 type UserRole = "admin" | "client" | "notary";
 
@@ -35,6 +34,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Session timeout: periodically check if session is still valid
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (!session) return;
+      const { data: { session: current }, error } = await supabase.auth.getSession();
+      if (error || !current) {
+        setSession(null);
+        setUser(null);
+        setRoles([]);
+      }
+    }, 5 * 60 * 1000); // Check every 5 minutes
+    return () => clearInterval(interval);
+  }, [session]);
+
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
@@ -67,7 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       password,
       options: {
         data: { full_name: fullName },
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: `${window.location.origin}/portal`,
       },
     });
     return { error };
