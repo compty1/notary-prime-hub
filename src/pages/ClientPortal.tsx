@@ -772,7 +772,7 @@ export default function ClientPortal() {
                     </div>
                     {svc.description && <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{svc.description}</p>}
                     <div className="flex gap-2 mt-3">
-                      <Link to={`/book?type=${svc.name.toLowerCase().includes("remote") ? "ron" : "in_person"}`}>
+                      <Link to={`/book?type=${svc.name.toLowerCase().includes("remote") ? "ron" : "in_person"}&service=${encodeURIComponent(svc.name)}`}>
                         <Button size="sm" className="text-xs bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button>
                       </Link>
                     </div>
