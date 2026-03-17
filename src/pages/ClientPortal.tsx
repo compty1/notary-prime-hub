@@ -433,6 +433,25 @@ export default function ClientPortal() {
                           if (data?.signedUrl) window.open(data.signedUrl, "_blank");
                         }} title="Preview"><Eye className="h-3 w-3" /></Button>
                         <Button size="sm" variant="ghost" onClick={() => explainDocument(doc)} title="AI Explain"><Sparkles className="h-3 w-3" /></Button>
+                        {!doc.appointment_id && upcoming.length > 0 && (
+                          <Select onValueChange={async (apptId) => {
+                            const { error } = await supabase.from("documents").update({ appointment_id: apptId }).eq("id", doc.id);
+                            if (error) toast({ title: "Error", variant: "destructive" });
+                            else {
+                              toast({ title: "Document linked to appointment" });
+                              setDocuments(prev => prev.map(d => d.id === doc.id ? { ...d, appointment_id: apptId } : d));
+                            }
+                          }}>
+                            <SelectTrigger className="h-7 w-28 text-[10px]"><SelectValue placeholder="Attach..." /></SelectTrigger>
+                            <SelectContent>
+                              {upcoming.map(a => (
+                                <SelectItem key={a.id} value={a.id} className="text-xs">
+                                  {a.service_type.substring(0, 20)} — {new Date(a.scheduled_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
                         <Badge className={docStatusColors[doc.status] || "bg-muted text-muted-foreground"}>{doc.status.replace(/_/g, " ")}</Badge>
                         <Button size="sm" variant="outline" onClick={() => downloadDocument(doc)}><Download className="h-3 w-3" /></Button>
                       </div>
