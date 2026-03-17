@@ -403,7 +403,24 @@ export default function BookAppointment() {
       ? `${data.clientAddress}, ${data.clientCity}, ${data.clientState} ${data.clientZip}`.trim()
       : (data.location || location);
 
-    const { error } = await supabase.from("appointments").insert({
+    // Check daily appointment cap
+    const maxPerDay = parseInt(pricingSettings.max_appointments_per_day || "0");
+    if (maxPerDay > 0) {
+      const bookDate = data.date || date;
+      const { count } = await supabase
+        .from("appointments")
+        .select("*", { count: "exact", head: true })
+        .eq("scheduled_date", bookDate)
+        .neq("status", "cancelled" as any)
+        .neq("status", "no_show" as any);
+      if (count && count >= maxPerDay) {
+        toast({ title: "Day is fully booked", description: `Maximum ${maxPerDay} appointments per day. Please choose another date.`, variant: "destructive" });
+        setSubmitting(false);
+        return;
+      }
+    }
+
+    const { data: insertedData, error } = await supabase.from("appointments").insert({
       client_id: userId,
       service_type: data.serviceType || serviceType,
       notarization_type: data.notarizationType || notarizationType,
@@ -413,13 +430,13 @@ export default function BookAppointment() {
       client_address: (data.notarizationType || notarizationType) === "in_person" ? fullAddress : null,
       estimated_price: estimatedPrice,
       notes: fullNotes || null,
-    });
+    }).select("id").single();
 
     if (error) {
       toast({ title: "Booking failed", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Appointment booked!", description: "You'll receive a confirmation email shortly." });
-      navigate("/portal");
+      navigate(`/confirmation?id=${insertedData.id}`);
     }
     setSubmitting(false);
   };
