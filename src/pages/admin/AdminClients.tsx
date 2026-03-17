@@ -211,6 +211,15 @@ export default function AdminClients() {
                   <Button size="sm" onClick={saveAdminNotes} disabled={savingNotes} className="mt-2 bg-accent text-accent-foreground hover:bg-gold-dark">
                     {savingNotes ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Save className="mr-1 h-3 w-3" />} Save Notes
                   </Button>
+                  {selectedClient.email && (
+                    <Button size="sm" variant="outline" className="mt-2 ml-2" onClick={() => {
+                      setMessageClient(selectedClient);
+                      setMessageSubject(`Message from Shane Goble Notary`);
+                      setMessageBody("");
+                    }}>
+                      <Mail className="mr-1 h-3 w-3" /> Message
+                    </Button>
+                  )}
                 </div>
                 <div>
                   <h4 className="mb-2 text-sm font-semibold text-foreground">Appointment History</h4>
