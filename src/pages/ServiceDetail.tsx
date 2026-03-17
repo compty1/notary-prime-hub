@@ -78,7 +78,6 @@ export default function ServiceDetail() {
     }
     return () => { document.title = "Shane Goble Notary — Ohio Notary Public | In-Person & RON"; };
   }, [service, loading]);
-  }, [serviceId]);
 
   const formatPrice = (s: ServiceData) => {
     if (s.pricing_model === "custom") return "Custom Quote";
