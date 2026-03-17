@@ -328,6 +328,75 @@ export default function BookAppointment() {
                     </Select>
                   </div>
 
+                  {/* Document Auto-Detect */}
+                  <div className="rounded-lg border border-dashed border-accent/30 bg-accent/5 p-4">
+                    <p className="mb-2 flex items-center gap-2 text-sm font-medium">
+                      <Sparkles className="h-4 w-4 text-accent" />
+                      Upload your document for AI analysis (optional)
+                    </p>
+                    <p className="mb-3 text-xs text-muted-foreground">
+                      We'll identify the notarization type, who needs to be present, and any special requirements.
+                    </p>
+                    <Input
+                      type="file"
+                      accept="image/*,.pdf"
+                      onChange={handleDocScan}
+                      disabled={docScanning}
+                      className="text-xs"
+                    />
+                    {docScanning && (
+                      <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                        <Loader2 className="h-3 w-3 animate-spin" /> Analyzing document...
+                      </div>
+                    )}
+                    {docAnalysis && !docAnalysis.error && (
+                      <div className="mt-2 space-y-2 rounded bg-emerald-50 p-3 text-xs text-emerald-800">
+                        <div className="flex items-center gap-1 font-medium">
+                          <CheckCircle className="h-3 w-3" />
+                          {docAnalysis.document_name} — {docAnalysis.notarization_method}
+                        </div>
+                        <div className="text-emerald-700">
+                          <p>Signers: {docAnalysis.signers_required} • Witnesses: {docAnalysis.witnesses_required}</p>
+                          {docAnalysis.who_must_be_present?.length > 0 && (
+                            <p className="mt-1">Present: {docAnalysis.who_must_be_present.join(", ")}</p>
+                          )}
+                          {!docAnalysis.ron_eligible && (
+                            <p className="mt-1 font-medium text-amber-700">⚠ Not eligible for RON</p>
+                          )}
+                        </div>
+                        {docAnalysis.special_requirements?.length > 0 && (
+                          <div className="rounded bg-amber-50 p-2 text-amber-700">
+                            {docAnalysis.special_requirements.map((r: string, i: number) => (
+                              <p key={i} className="flex items-start gap-1"><AlertTriangle className="mt-0.5 h-3 w-3 flex-shrink-0" /> {r}</p>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Batch Notarization */}
+                  <div>
+                    <Label>Number of Documents</Label>
+                    <div className="mt-1 flex items-center gap-2">
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <Button
+                          key={n}
+                          type="button"
+                          size="sm"
+                          variant={documentCount === n ? "default" : "outline"}
+                          className={documentCount === n ? "bg-accent text-accent-foreground" : ""}
+                          onClick={() => setDocumentCount(n)}
+                        >
+                          {n}
+                        </Button>
+                      ))}
+                      <span className="text-xs text-muted-foreground">
+                        {documentCount > 1 ? "Same session, separate journal entries" : ""}
+                      </span>
+                    </div>
+                  </div>
+
                   {/* ID Pre-Scan */}
                   <div className="rounded-lg border border-dashed border-accent/30 bg-accent/5 p-4">
                     <p className="mb-2 flex items-center gap-2 text-sm font-medium">
