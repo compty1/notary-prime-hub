@@ -4,6 +4,8 @@
   <url><loc>https://shanegoblenotary.com/services</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://shanegoblenotary.com/book</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://shanegoblenotary.com/ron-info</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://shanegoblenotary.com/ron-check</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://shanegoblenotary.com/loan-signing</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://shanegoblenotary.com/notary-guide</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://shanegoblenotary.com/fee-calculator</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://shanegoblenotary.com/templates</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
