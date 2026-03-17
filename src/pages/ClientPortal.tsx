@@ -212,6 +212,43 @@ export default function ClientPortal() {
 
   const qrUrl = `${window.location.origin}/portal`;
 
+  const sendChatMessage = async () => {
+    if (!chatInput.trim() || !user) return;
+    setSendingChat(true);
+    const { error } = await supabase.from("chat_messages").insert({
+      sender_id: user.id, message: chatInput.trim(), is_admin: false,
+    });
+    if (error) toast({ title: "Error sending message", variant: "destructive" });
+    else setChatInput("");
+    setSendingChat(false);
+  };
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages]);
+
+  const explainDocument = async (doc: any) => {
+    setExplaining(true);
+    setExplanation(null);
+    setExplainDialogOpen(true);
+    try {
+      const { data: fileData, error } = await supabase.storage.from("documents").download(doc.file_path);
+      if (error) throw error;
+      const text = await fileData.text();
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/explain-document`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        body: JSON.stringify({ documentText: text, fileName: doc.file_name }),
+      });
+      const result = await resp.json();
+      if (result.error) throw new Error(result.error);
+      setExplanation(result.explanation + "\n\n" + result.disclaimer);
+    } catch (e: any) {
+      setExplanation("Could not analyze this document. " + (e.message || ""));
+    }
+    setExplaining(false);
+  };
+
   return (
     <div className="min-h-screen bg-muted/30">
       <nav className="border-b border-border/50 bg-background/80 backdrop-blur-lg">
