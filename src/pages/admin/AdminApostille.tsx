@@ -105,9 +105,14 @@ export default function AdminApostille() {
           <h1 className="font-display text-2xl font-bold">Apostille Workflow</h1>
           <p className="text-sm text-muted-foreground">Track apostille requests: intake → processing → delivery</p>
         </div>
-        <Button size="sm" onClick={() => setCreateOpen(true)} className="bg-accent text-accent-foreground hover:bg-gold-dark">
-          <Plus className="mr-1 h-4 w-4" /> New Request
-        </Button>
+        <div className="flex items-center gap-2">
+          <a href="https://www.ohiosos.gov/businesses/apostilles-authentications/" target="_blank" rel="noopener noreferrer">
+            <Button size="sm" variant="outline"><ExternalLink className="mr-1 h-3 w-3" /> Ohio SOS Portal</Button>
+          </a>
+          <Button size="sm" onClick={() => setCreateOpen(true)} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+            <Plus className="mr-1 h-4 w-4" /> New Request
+          </Button>
+        </div>
       </div>
 
       {loading ? (
