@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Search, FileText, Users, Shield, AlertTriangle, CheckCircle, BookOpen, ExternalLink, GraduationCap, Scale, Gavel } from "lucide-react";
+import { Search, FileText, Users, Shield, AlertTriangle, CheckCircle, BookOpen, ExternalLink, GraduationCap, Scale, Gavel, Globe, Briefcase, Video, Package, Mail } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const documentGuides = [
@@ -119,6 +119,287 @@ const documentGuides = [
         ],
         whoPresent: "Principal + 2 qualified witnesses.",
         warnings: ["Witness restrictions are strict — verify each witness is eligible", "This document has serious life-and-death implications — ensure the principal understands"],
+      },
+    ],
+  },
+  {
+    category: "I-9 Employment Verification",
+    icon: "📝",
+    guides: [
+      {
+        title: "I-9 Authorized Representative Procedure",
+        tags: ["I-9", "employment", "verification"],
+        steps: [
+          "Confirm you are acting as an Authorized Representative for the employer, NOT as a notary",
+          "Do NOT use your notary seal or stamp — this is NOT a notarial act",
+          "The employer must provide you with the I-9 form (or the employee brings it)",
+          "Review Section 1 — confirm the employee has completed it",
+          "Examine the employee's identity and work authorization documents from List A, or List B + List C",
+          "Verify the documents appear genuine and relate to the employee presenting them",
+          "Complete Section 2: record document titles, issuing authority, document numbers, and expiration dates",
+          "Sign and date Section 2 as 'Authorized Representative'",
+          "Return the completed I-9 to the employer — do NOT keep copies of employee documents unless employer instructs you to",
+          "Bill as a separate service — this is NOT subject to Ohio's $5 notary fee cap",
+        ],
+        whoPresent: "The employee in person. The employer does NOT need to be present — that's why they hired you.",
+        warnings: [
+          "DO NOT notarize the I-9 form — there is no notarial certificate on it",
+          "DO NOT give immigration or legal advice",
+          "DO NOT determine whether documents are fraudulent — only that they 'reasonably appear genuine'",
+          "You cannot do I-9 verification remotely — the employee MUST be physically present",
+          "Keep records of the date, employee name, and employer for your own records (separate from notary journal)",
+        ],
+      },
+      {
+        title: "I-9 Re-verification (Section 3)",
+        tags: ["I-9", "re-verification", "employment"],
+        steps: [
+          "Employer contacts you for re-verification of expiring work authorization",
+          "Meet with the employee in person",
+          "Examine the new or renewed work authorization document",
+          "Complete Section 3 of the existing I-9 form",
+          "Sign and date as Authorized Representative",
+          "Return to employer",
+        ],
+        whoPresent: "The employee. Must be in-person.",
+        warnings: ["Only work authorization documents need re-verification, NOT identity documents", "Do NOT ask for more documents than required — this could be discriminatory"],
+      },
+    ],
+  },
+  {
+    category: "Apostille & International",
+    icon: "🌍",
+    guides: [
+      {
+        title: "Apostille Facilitation (Ohio SOS)",
+        tags: ["apostille", "international", "authentication"],
+        steps: [
+          "Receive the client's document — determine if it's a public document eligible for apostille",
+          "Eligible documents: birth/death certificates, court documents, notarized documents, articles of incorporation",
+          "If the document needs notarization first, notarize it before submitting for apostille",
+          "Complete the Ohio Secretary of State Apostille Request Form",
+          "Include payment: $10 per document (check or money order payable to 'Ohio Secretary of State')",
+          "Submit to: Ohio Secretary of State, 22 N. Fourth St., Columbus, OH 43215",
+          "Processing: standard is 5-7 business days; expedited (additional $10/doc) is 1-2 business days",
+          "Track the request and notify client when completed",
+          "Mail or deliver the apostilled document to the client",
+          "Bill client for: your service fee + apostille fees + postage/shipping",
+        ],
+        whoPresent: "Client provides documents — they don't need to be present for the SOS submission.",
+        warnings: [
+          "Some countries require consular legalization INSTEAD of apostille — check if the destination country is a Hague Convention member",
+          "Ohio SOS only apostilles Ohio-originated documents",
+          "Federal documents (FBI checks, etc.) must go through the U.S. Department of State",
+        ],
+      },
+      {
+        title: "Consular Legalization Preparation",
+        tags: ["consular", "international", "legalization"],
+        steps: [
+          "Determine if the destination country is NOT a Hague Convention member — requires consular legalization",
+          "Notarize the document if needed",
+          "Obtain Ohio SOS authentication (NOT apostille — request 'authentication for non-Hague countries')",
+          "Contact the relevant embassy/consulate for their specific requirements",
+          "Prepare the submission packet per consulate requirements",
+          "Advise client on processing times (can be weeks to months)",
+          "Track and follow up",
+        ],
+        whoPresent: "Client may need to appear at the consulate depending on the country's requirements.",
+        warnings: ["Each consulate has unique requirements — always check before submitting", "Some countries require certified translations of documents"],
+      },
+    ],
+  },
+  {
+    category: "Document Preparation",
+    icon: "📄",
+    guides: [
+      {
+        title: "Clerical Document Field-Filling",
+        tags: ["document prep", "clerical", "field-filling"],
+        steps: [
+          "Client provides the blank form/template or you retrieve from your template library",
+          "Confirm you are ONLY filling in factual information provided by the client — NOT drafting legal language",
+          "Fill in standard fields: names, addresses, dates, property descriptions, etc.",
+          "Read back all filled fields to the client for verification",
+          "Have the client review the completed document before signing",
+          "If the document also needs notarization, proceed with the notarization after review",
+          "Bill document preparation and notarization as separate line items",
+        ],
+        whoPresent: "The client (to provide information and review).",
+        warnings: [
+          "NEVER draft legal language, select legal terms, or advise which form to use — this is unauthorized practice of law",
+          "Only fill in factual information the client provides",
+          "Document 'Prepared by: [Your name], at the direction of [Client name]' on the document",
+        ],
+      },
+      {
+        title: "PDF Services (OCR, Merge, Split, Redaction)",
+        tags: ["PDF", "digital", "OCR"],
+        steps: [
+          "Receive the client's document(s) digitally or scan physical copies",
+          "For OCR: run optical character recognition to make scanned PDFs searchable/selectable",
+          "For merge: combine multiple PDFs into a single document in client-specified order",
+          "For split: separate a multi-page PDF into individual documents",
+          "For redaction: use a proper redaction tool (NOT just black boxes) to permanently remove sensitive information",
+          "Quality check: verify the output is correct, all pages present, redactions complete",
+          "Deliver the processed file(s) to the client securely",
+          "Bill based on complexity and page count",
+        ],
+        whoPresent: "Can be done remotely — client provides files digitally.",
+        warnings: [
+          "For redaction: ALWAYS use proper redaction tools — simply placing black boxes does NOT remove underlying text",
+          "Maintain confidentiality of all client documents",
+          "Delete working copies after delivery per your data retention policy",
+        ],
+      },
+    ],
+  },
+  {
+    category: "RON Session Management",
+    icon: "🖥️",
+    guides: [
+      {
+        title: "BlueNotary RON Session Setup & Execution",
+        tags: ["RON", "remote", "BlueNotary", "online"],
+        steps: [
+          "Verify you have an active Ohio RON commission and authorization",
+          "Log into BlueNotary platform and create a new session",
+          "Upload the document(s) to be notarized to the session",
+          "Send the session invitation link to the signer(s) via email",
+          "Signer completes Knowledge-Based Authentication (KBA) — they must answer 5 questions correctly",
+          "Signer completes ID verification (credential analysis)",
+          "Once both KBA and ID verification pass, begin the live video session",
+          "During session: verify signer identity on camera, confirm willingness",
+          "Walk through each document — signer applies electronic signature",
+          "Apply your electronic notary seal and signature",
+          "Complete the session — BlueNotary auto-generates the recording",
+          "Download the notarized document and recording for your records",
+          "Record in notary journal with RON-specific fields: session ID, KBA result, recording reference",
+          "Deliver notarized document to signer via BlueNotary or email",
+        ],
+        whoPresent: "Signer(s) via live audio-video connection. Must be real-time, not pre-recorded.",
+        warnings: [
+          "RON sessions MUST be recorded and stored for minimum 10 years per ORC §147.66",
+          "Signer must be in a jurisdiction that recognizes Ohio RON (most U.S. states do)",
+          "If KBA fails 2 attempts, the session must be terminated",
+          "Ensure stable internet connection for both parties",
+          "Signer cannot use a virtual background — face must be clearly visible",
+        ],
+      },
+      {
+        title: "RON Tech Issues & Troubleshooting",
+        tags: ["RON", "technical", "troubleshooting"],
+        steps: [
+          "If signer's camera isn't working: have them try a different browser (Chrome recommended)",
+          "If audio issues: check microphone permissions in browser settings",
+          "If KBA fails: signer may retry once — if second attempt fails, session must be terminated and rescheduled",
+          "If connection drops mid-session: reconnect within 5 minutes — if longer, restart the session",
+          "If signer is in a foreign country: verify RON is permitted for that jurisdiction",
+          "Document all technical issues in your journal notes",
+        ],
+        whoPresent: "N/A — troubleshooting guide.",
+        warnings: ["Never skip KBA or ID verification due to technical issues", "If you cannot verify the signer's identity via video, do NOT proceed"],
+      },
+    ],
+  },
+  {
+    category: "Business & Bulk Services",
+    icon: "🏢",
+    guides: [
+      {
+        title: "Business Client Onboarding",
+        tags: ["business", "onboarding", "corporate"],
+        steps: [
+          "Meet with the business representative to understand their notarization needs",
+          "Verify the business entity: request articles of incorporation, operating agreement, or corporate resolution",
+          "Identify authorized signers — request a list with titles and authorization documentation",
+          "Set up a business profile in the system with all authorized signers",
+          "Discuss pricing: volume discounts, monthly billing, or per-notarization pricing",
+          "Establish preferred scheduling: walk-in availability, scheduled appointments, or on-site visits",
+          "Provide the business with a dedicated booking link or account",
+          "Set up recurring appointment schedule if applicable (e.g., weekly I-9 verification)",
+          "Document all agreements and authorized signer information securely",
+        ],
+        whoPresent: "Business representative with authority to establish the service agreement.",
+        warnings: [
+          "Each individual signer must still present valid ID at time of notarization",
+          "Corporate resolutions can expire — verify authorization is current",
+          "Maintain a file for each business client with their authorized signer list",
+        ],
+      },
+      {
+        title: "Bulk Notarization Workflow",
+        tags: ["bulk", "batch", "volume"],
+        steps: [
+          "Receive the batch of documents from the client or employer",
+          "Review each document — identify which require notarization and which certificate type",
+          "Organize documents by signer if multiple signers are involved",
+          "Schedule a block of time appropriate for the volume (estimate 5-10 min per document)",
+          "Process each document individually — verify ID, complete certificate, apply seal",
+          "Create a journal entry for EACH notarized document (do NOT batch journal entries)",
+          "Quality check: ensure all seals are legible, all certificates complete",
+          "Deliver completed documents and provide an itemized invoice",
+        ],
+        whoPresent: "All signers (may rotate in one at a time for bulk processing).",
+        warnings: [
+          "Each document is a separate notarial act — charge accordingly",
+          "Do NOT rush through bulk notarizations — each one carries the same legal weight",
+          "If a signer seems confused about any document, pause and address their concerns",
+        ],
+      },
+    ],
+  },
+  {
+    category: "Witness Coordination",
+    icon: "👥",
+    guides: [
+      {
+        title: "Witness Services & Coordination",
+        tags: ["witness", "coordination", "estate"],
+        steps: [
+          "Determine how many witnesses are required for the document (varies by document type)",
+          "Verify witness eligibility — disinterested parties, not beneficiaries, competent adults",
+          "If providing witness services: you or your staff can serve as witnesses if not otherwise disqualified",
+          "If coordinating external witnesses: confirm availability and eligibility before the appointment",
+          "At the appointment: introduce witnesses to the signer, explain their role",
+          "Witnesses observe the signing and sign the document themselves",
+          "If a self-proving affidavit is involved: administer oath to witnesses as well",
+          "Record witness names and information in your journal",
+        ],
+        whoPresent: "Signer + required number of witnesses + notary.",
+        warnings: [
+          "The NOTARY generally should NOT serve as a witness AND notary on the same document",
+          "Witnesses must be disinterested — they should have no stake in the document",
+          "For Ohio wills: exactly TWO witnesses required, neither can be a beneficiary",
+        ],
+      },
+    ],
+  },
+  {
+    category: "Virtual Mailroom",
+    icon: "📬",
+    guides: [
+      {
+        title: "Virtual Mailroom Operations",
+        tags: ["mailroom", "mail", "forwarding"],
+        steps: [
+          "Client signs up for virtual mailroom service and provides forwarding preferences",
+          "Receive client's mail at your registered address",
+          "Log each piece of mail received: date, sender, type (letter, package, legal document)",
+          "Scan the exterior of the envelope and notify the client",
+          "Per client instructions: open and scan contents, forward to another address, hold for pickup, or shred",
+          "For time-sensitive mail (court documents, government notices): notify client immediately",
+          "Maintain a mail log accessible to the client through the portal",
+          "Process forwarding requests within 24 hours",
+          "Bill monthly based on the service tier (basic scan, full open-and-scan, forwarding)",
+        ],
+        whoPresent: "N/A — this is an ongoing service, not an appointment-based activity.",
+        warnings: [
+          "NEVER open mail marked 'Personal' or 'Confidential' without explicit written client permission",
+          "Maintain strict confidentiality of all mail contents",
+          "Legal mail (subpoenas, court orders) should be flagged and client notified immediately",
+          "Keep records of all mail received and actions taken for at least 1 year",
+        ],
       },
     ],
   },
@@ -249,17 +530,17 @@ export default function AdminResources() {
     <div>
       <div className="mb-6">
         <h1 className="font-display text-2xl font-bold text-foreground">Resource Bank</h1>
-        <p className="text-sm text-muted-foreground">Complete notary reference: guides, forms, Ohio law, and resources for new notaries</p>
+        <p className="text-sm text-muted-foreground">Complete notary reference: guides, forms, Ohio law, and resources for all services</p>
       </div>
 
       <div className="relative mb-6">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input placeholder="Search guides (e.g., 'jurat', 'deed', 'coercion')..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
+        <Input placeholder="Search guides (e.g., 'I-9', 'apostille', 'RON', 'jurat')..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
       </div>
 
       <Tabs defaultValue="guides" className="space-y-6">
         <TabsList className="flex-wrap">
-          <TabsTrigger value="guides"><BookOpen className="mr-1 h-4 w-4" /> Guides</TabsTrigger>
+          <TabsTrigger value="guides"><BookOpen className="mr-1 h-4 w-4" /> Service Guides</TabsTrigger>
           <TabsTrigger value="compliance"><Shield className="mr-1 h-4 w-4" /> Compliance</TabsTrigger>
           <TabsTrigger value="new-notary"><GraduationCap className="mr-1 h-4 w-4" /> New Notary Guide</TabsTrigger>
           <TabsTrigger value="ohio-law"><Gavel className="mr-1 h-4 w-4" /> Ohio Law & Forms</TabsTrigger>
@@ -285,9 +566,9 @@ export default function AdminResources() {
                       </AccordionTrigger>
                       <AccordionContent>
                         <div className="space-y-4 pb-2">
-                          <div className="rounded-lg bg-blue-50 p-3">
-                            <p className="flex items-center gap-1.5 text-xs font-semibold text-blue-800"><Users className="h-3 w-3" /> Who Must Be Present</p>
-                            <p className="mt-1 text-sm text-blue-700">{guide.whoPresent}</p>
+                          <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 p-3">
+                            <p className="flex items-center gap-1.5 text-xs font-semibold text-blue-800 dark:text-blue-300"><Users className="h-3 w-3" /> Who Must Be Present</p>
+                            <p className="mt-1 text-sm text-blue-700 dark:text-blue-400">{guide.whoPresent}</p>
                           </div>
                           <div>
                             <p className="mb-2 text-xs font-semibold text-muted-foreground">Step-by-Step Procedure</p>
@@ -301,11 +582,11 @@ export default function AdminResources() {
                             </div>
                           </div>
                           {guide.warnings.length > 0 && (
-                            <div className="rounded-lg bg-amber-50 p-3">
-                              <p className="flex items-center gap-1.5 text-xs font-semibold text-amber-800"><AlertTriangle className="h-3 w-3" /> Important Warnings</p>
+                            <div className="rounded-lg bg-amber-50 dark:bg-amber-950/30 p-3">
+                              <p className="flex items-center gap-1.5 text-xs font-semibold text-amber-800 dark:text-amber-300"><AlertTriangle className="h-3 w-3" /> Important Warnings</p>
                               <ul className="mt-1 space-y-1">
                                 {guide.warnings.map((w, k) => (
-                                  <li key={k} className="flex items-start gap-1.5 text-sm text-amber-700">
+                                  <li key={k} className="flex items-start gap-1.5 text-sm text-amber-700 dark:text-amber-400">
                                     <span className="mt-1.5 h-1 w-1 flex-shrink-0 rounded-full bg-amber-500" />{w}
                                   </li>
                                 ))}
