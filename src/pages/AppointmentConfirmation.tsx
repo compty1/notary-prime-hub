@@ -253,7 +253,6 @@ export default function AppointmentConfirmation() {
             <TechCheck />
           </div>
         )}
-        </div>
 
         {/* Phase 5.4: Cross-sell (after tech check) */}
         {crossSells.length > 0 && (
