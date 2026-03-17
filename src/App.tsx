@@ -34,6 +34,7 @@ const LoanSigningServices = lazy(() => import("./pages/LoanSigningServices"));
 const ServiceDetail = lazy(() => import("./pages/ServiceDetail"));
 const About = lazy(() => import("./pages/About"));
 const DocumentDigitize = lazy(() => import("./pages/DocumentDigitize"));
+const JoinPlatform = lazy(() => import("./pages/JoinPlatform"));
 
 // Admin pages
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
