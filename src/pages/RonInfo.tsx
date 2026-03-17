@@ -63,6 +63,10 @@ const ronFaqs = [
 
 export default function RonInfo() {
   const { user } = useAuth();
+  useEffect(() => {
+    document.title = "Remote Online Notarization (RON) — Shane Goble Notary";
+    return () => { document.title = "Shane Goble Notary — Ohio Notary Public | In-Person & RON"; };
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
