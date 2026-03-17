@@ -734,11 +734,11 @@ export default function BookAppointment() {
                   )}
 
                   {date && !loadingSlots && availableSlots.length === 0 && suggestedSlots.length > 0 && (
-                    <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
-                      <p className="mb-2 flex items-center gap-1.5 text-sm font-medium text-amber-800">
-                        <AlertTriangle className="h-4 w-4" /> No availability on this date
-                      </p>
-                      <p className="mb-3 text-xs text-amber-700">Here are the nearest available slots:</p>
+                     <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
+                       <p className="mb-2 flex items-center gap-1.5 text-sm font-medium text-destructive">
+                         <AlertTriangle className="h-4 w-4" /> No availability on this date
+                       </p>
+                       <p className="mb-3 text-xs text-muted-foreground">Here are the nearest available slots:</p>
                       <div className="space-y-2">
                         {suggestedSlots.map((s, i) => (
                           <Button
