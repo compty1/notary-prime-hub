@@ -5,8 +5,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Calendar, Clock, MapPin, Monitor, Plus, LogOut, Shield, FileText, RefreshCw, Video, CheckCircle, Mic, Camera as CameraIcon, Wifi, XCircle } from "lucide-react";
+import { Calendar, Clock, MapPin, Monitor, Plus, LogOut, Shield, FileText, RefreshCw, Video, CheckCircle, Mic, Camera as CameraIcon, Wifi, XCircle, User, Pencil, Save, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 
@@ -21,6 +23,18 @@ const statusColors: Record<string, string> = {
   no_show: "bg-gray-100 text-gray-800",
 };
 
+const formatDate = (dateStr: string) => {
+  return new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+};
+
+const formatTime = (timeStr: string) => {
+  const [h, m] = timeStr.split(":");
+  const hour = parseInt(h);
+  const ampm = hour >= 12 ? "PM" : "AM";
+  const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+  return `${displayHour}:${m} ${ampm}`;
+};
+
 export default function ClientPortal() {
   const { user, signOut, isAdmin } = useAuth();
   const { toast } = useToast();
@@ -29,11 +43,17 @@ export default function ClientPortal() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [cancelDialogId, setCancelDialogId] = useState<string | null>(null);
+  const [cancelling, setCancelling] = useState(false);
   const [techCheckOpen, setTechCheckOpen] = useState(false);
   const [techResults, setTechResults] = useState<{ camera: boolean | null; mic: boolean | null; connection: boolean | null }>({
     camera: null, mic: null, connection: null,
   });
   const [techChecking, setTechChecking] = useState(false);
+
+  // Profile editing
+  const [editProfileOpen, setEditProfileOpen] = useState(false);
+  const [profileForm, setProfileForm] = useState({ full_name: "", phone: "", address: "", city: "", state: "", zip: "" });
+  const [savingProfile, setSavingProfile] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -43,7 +63,17 @@ export default function ClientPortal() {
         supabase.from("profiles").select("*").eq("user_id", user.id).single(),
       ]);
       if (apptRes.data) setAppointments(apptRes.data);
-      if (profileRes.data) setProfile(profileRes.data);
+      if (profileRes.data) {
+        setProfile(profileRes.data);
+        setProfileForm({
+          full_name: profileRes.data.full_name || "",
+          phone: profileRes.data.phone || "",
+          address: profileRes.data.address || "",
+          city: profileRes.data.city || "",
+          state: profileRes.data.state || "",
+          zip: profileRes.data.zip || "",
+        });
+      }
       setLoading(false);
     };
     fetchData();
@@ -54,46 +84,60 @@ export default function ClientPortal() {
   const past = appointments.filter((a) => ["completed", "cancelled", "no_show"].includes(a.status));
 
   const cancelAppointment = async (id: string) => {
+    setCancelling(true);
     const { error } = await supabase.from("appointments").update({ status: "cancelled" as any }).eq("id", id);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Appointment cancelled" });
+      toast({ title: "Appointment cancelled", description: "Your appointment has been cancelled successfully." });
       setAppointments((prev) => prev.map((a) => a.id === id ? { ...a, status: "cancelled" } : a));
     }
+    setCancelling(false);
     setCancelDialogId(null);
+  };
+
+  const saveProfile = async () => {
+    if (!user || !profile) return;
+    setSavingProfile(true);
+    const { error } = await supabase.from("profiles").update({
+      full_name: profileForm.full_name,
+      phone: profileForm.phone || null,
+      address: profileForm.address || null,
+      city: profileForm.city || null,
+      state: profileForm.state || null,
+      zip: profileForm.zip || null,
+    }).eq("user_id", user.id);
+
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Profile updated" });
+      setProfile({ ...profile, ...profileForm });
+      setEditProfileOpen(false);
+    }
+    setSavingProfile(false);
   };
 
   const isSessionNear = (appt: any) => {
     const now = new Date();
     const sessionDate = new Date(`${appt.scheduled_date}T${appt.scheduled_time}`);
     const diff = sessionDate.getTime() - now.getTime();
-    return diff <= 15 * 60 * 1000 && diff > -60 * 60 * 1000; // 15 min before to 1 hr after
+    return diff <= 15 * 60 * 1000 && diff > -60 * 60 * 1000;
   };
 
   const runTechCheck = async () => {
     setTechChecking(true);
     setTechResults({ camera: null, mic: null, connection: null });
-
-    // Check camera
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       stream.getTracks().forEach((t) => t.stop());
       setTechResults((prev) => ({ ...prev, camera: true }));
-    } catch {
-      setTechResults((prev) => ({ ...prev, camera: false }));
-    }
-
-    // Check mic
+    } catch { setTechResults((prev) => ({ ...prev, camera: false })); }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach((t) => t.stop());
       setTechResults((prev) => ({ ...prev, mic: true }));
-    } catch {
-      setTechResults((prev) => ({ ...prev, mic: false }));
-    }
-
-    // Check connection
+    } catch { setTechResults((prev) => ({ ...prev, mic: false })); }
     setTechResults((prev) => ({ ...prev, connection: navigator.onLine }));
     setTechChecking(false);
   };
@@ -118,11 +162,16 @@ export default function ClientPortal() {
       </nav>
 
       <div className="container mx-auto max-w-4xl px-4 py-8">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-          <h1 className="font-display text-3xl font-bold text-foreground">
-            Welcome{profile?.full_name ? `, ${profile.full_name}` : ""}
-          </h1>
-          <p className="text-muted-foreground">Manage your notarization appointments</p>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 flex items-start justify-between">
+          <div>
+            <h1 className="font-display text-3xl font-bold text-foreground">
+              Welcome{profile?.full_name ? `, ${profile.full_name}` : ""}
+            </h1>
+            <p className="text-muted-foreground">Manage your notarization appointments</p>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => setEditProfileOpen(true)}>
+            <Pencil className="mr-1 h-3 w-3" /> Edit Profile
+          </Button>
         </motion.div>
 
         <div className="mb-6 flex items-center justify-between">
@@ -150,7 +199,6 @@ export default function ClientPortal() {
           </Card>
         ) : (
           <div className="mb-8 space-y-4">
-            {/* Active sessions first */}
             {inSession.map((appt) => (
               <Card key={appt.id} className="border-2 border-purple-300 bg-purple-50/50">
                 <CardContent className="p-4">
@@ -164,7 +212,7 @@ export default function ClientPortal() {
                         <p className="text-sm text-muted-foreground">Session in progress</p>
                       </div>
                     </div>
-                    <Link to="/ron-session">
+                    <Link to={`/ron-session?id=${appt.id}`}>
                       <Button className="bg-purple-600 text-white hover:bg-purple-700">
                         <Video className="mr-1 h-4 w-4" /> Rejoin Session
                       </Button>
@@ -186,30 +234,38 @@ export default function ClientPortal() {
                         <div>
                           <p className="font-medium text-foreground">{appt.service_type}</p>
                           <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {appt.scheduled_date}</span>
-                            <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {appt.scheduled_time}</span>
+                            <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {formatDate(appt.scheduled_date)}</span>
+                            <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {formatTime(appt.scheduled_time)}</span>
                           </div>
+                          {appt.location && appt.location !== "Remote" && (
+                            <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+                              <MapPin className="h-3 w-3" /> {appt.location}
+                            </p>
+                          )}
+                          {appt.estimated_price && (
+                            <p className="mt-1 text-xs text-muted-foreground">Est. ${parseFloat(appt.estimated_price).toFixed(2)}</p>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        {/* One-click RON launch */}
                         {appt.notarization_type === "ron" && isSessionNear(appt) && (
-                          <Link to="/ron-session">
+                          <Link to={`/ron-session?id=${appt.id}`}>
                             <Button size="sm" className="bg-emerald-600 text-white hover:bg-emerald-700">
                               <Video className="mr-1 h-3 w-3" /> Join
                             </Button>
                           </Link>
                         )}
                         {appt.notarization_type === "ron" && !isSessionNear(appt) && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-xs"
-                            onClick={() => { setTechCheckOpen(true); runTechCheck(); }}
-                          >
+                          <Button size="sm" variant="outline" className="text-xs" onClick={() => { setTechCheckOpen(true); runTechCheck(); }}>
                             <Wifi className="mr-1 h-3 w-3" /> Tech Check
                           </Button>
                         )}
+                        {/* Reschedule */}
+                        <Link to={`/book?rebook=${appt.id}`}>
+                          <Button size="sm" variant="outline" className="text-xs">
+                            <RefreshCw className="mr-1 h-3 w-3" /> Reschedule
+                          </Button>
+                        </Link>
                         <Button
                           size="sm"
                           variant="ghost"
@@ -240,7 +296,7 @@ export default function ClientPortal() {
                   <CardContent className="flex items-center justify-between p-4">
                     <div>
                       <p className="font-medium text-foreground">{appt.service_type}</p>
-                      <p className="text-sm text-muted-foreground">{appt.scheduled_date}</p>
+                      <p className="text-sm text-muted-foreground">{formatDate(appt.scheduled_date)}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       {appt.status === "completed" && (
@@ -271,7 +327,55 @@ export default function ClientPortal() {
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCancelDialogId(null)}>Keep Appointment</Button>
-            <Button variant="destructive" onClick={() => cancelDialogId && cancelAppointment(cancelDialogId)}>Cancel Appointment</Button>
+            <Button variant="destructive" onClick={() => cancelDialogId && cancelAppointment(cancelDialogId)} disabled={cancelling}>
+              {cancelling ? "Cancelling..." : "Cancel Appointment"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Profile Dialog */}
+      <Dialog open={editProfileOpen} onOpenChange={setEditProfileOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center gap-2">
+              <User className="h-5 w-5 text-accent" /> Edit Profile
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Full Name</Label>
+              <Input value={profileForm.full_name} onChange={(e) => setProfileForm({ ...profileForm, full_name: e.target.value })} />
+            </div>
+            <div>
+              <Label>Phone</Label>
+              <Input value={profileForm.phone} onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })} placeholder="(614) 555-1234" />
+            </div>
+            <div>
+              <Label>Address</Label>
+              <Input value={profileForm.address} onChange={(e) => setProfileForm({ ...profileForm, address: e.target.value })} />
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <Label>City</Label>
+                <Input value={profileForm.city} onChange={(e) => setProfileForm({ ...profileForm, city: e.target.value })} />
+              </div>
+              <div>
+                <Label>State</Label>
+                <Input value={profileForm.state} onChange={(e) => setProfileForm({ ...profileForm, state: e.target.value })} maxLength={2} />
+              </div>
+              <div>
+                <Label>Zip</Label>
+                <Input value={profileForm.zip} onChange={(e) => setProfileForm({ ...profileForm, zip: e.target.value })} maxLength={5} />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditProfileOpen(false)}>Cancel</Button>
+            <Button onClick={saveProfile} disabled={savingProfile} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+              {savingProfile ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />}
+              Save Profile
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -328,7 +432,7 @@ export default function ClientPortal() {
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => { runTechCheck(); }}>Re-run Check</Button>
+            <Button variant="outline" onClick={() => runTechCheck()}>Re-run Check</Button>
             <Button onClick={() => setTechCheckOpen(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>

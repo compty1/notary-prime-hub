@@ -3,7 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash2 } from "lucide-react";
@@ -44,6 +43,16 @@ export default function AdminAvailability() {
     fetchSlots();
   };
 
+  const updateSlotTime = async (id: string, field: "start_time" | "end_time", value: string) => {
+    const { error } = await supabase.from("time_slots").update({ [field]: value }).eq("id", id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      // Update local state
+      setSlots((prev) => prev.map((s) => s.id === id ? { ...s, [field]: value } : s));
+    }
+  };
+
   if (loading) {
     return <div className="flex justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" /></div>;
   }
@@ -68,9 +77,21 @@ export default function AdminAvailability() {
                 ) : (
                   <div className="space-y-2">
                     {daySlots.map((slot) => (
-                      <div key={slot.id} className="flex items-center gap-4 rounded-lg border border-border/50 p-3">
+                      <div key={slot.id} className="flex items-center gap-3 rounded-lg border border-border/50 p-3">
                         <Switch checked={slot.is_available} onCheckedChange={() => toggleSlot(slot.id, slot.is_available)} />
-                        <span className="text-sm font-medium">{slot.start_time} — {slot.end_time}</span>
+                        <Input
+                          type="time"
+                          value={slot.start_time}
+                          onChange={(e) => updateSlotTime(slot.id, "start_time", e.target.value)}
+                          className="w-28"
+                        />
+                        <span className="text-sm text-muted-foreground">to</span>
+                        <Input
+                          type="time"
+                          value={slot.end_time}
+                          onChange={(e) => updateSlotTime(slot.id, "end_time", e.target.value)}
+                          className="w-28"
+                        />
                         <Button variant="ghost" size="sm" onClick={() => deleteSlot(slot.id)} className="ml-auto text-destructive">
                           <Trash2 className="h-4 w-4" />
                         </Button>
