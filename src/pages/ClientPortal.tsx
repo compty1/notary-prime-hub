@@ -394,6 +394,7 @@ export default function ClientPortal() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
+                        <Button size="sm" variant="ghost" onClick={() => explainDocument(doc)} title="AI Explain"><Sparkles className="h-3 w-3" /></Button>
                         <Badge className={docStatusColors[doc.status] || "bg-muted text-muted-foreground"}>{doc.status.replace(/_/g, " ")}</Badge>
                         <Button size="sm" variant="outline" onClick={() => downloadDocument(doc)}><Download className="h-3 w-3" /></Button>
                       </div>
