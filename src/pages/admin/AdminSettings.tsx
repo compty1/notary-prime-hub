@@ -259,8 +259,13 @@ export default function AdminSettings() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div><Label>BlueNotary Iframe URL</Label><Input value={editValues.bluenotary_iframe_url || ""} onChange={(e) => updateValue("bluenotary_iframe_url", e.target.value)} placeholder="https://app.bluenotary.us/your-session" /></div>
-            <div><Label>BlueNotary API Key</Label><Input type="password" value={editValues.bluenotary_api_key || ""} onChange={(e) => updateValue("bluenotary_api_key", e.target.value)} placeholder="Enter your API key" /></div>
+            <div>
+              <Label>OneNotary API Status</Label>
+              <div className="mt-1 flex items-center gap-2">
+                <Badge className="bg-emerald-100 text-emerald-800 text-xs">Connected</Badge>
+                <span className="text-xs text-muted-foreground">API token configured as server secret — manage in Lovable Cloud settings</span>
+              </div>
+            </div>
             <div><Label>KBA Platform URL</Label><Input value={editValues.kba_platform_url || ""} onChange={(e) => updateValue("kba_platform_url", e.target.value)} placeholder="https://kba-platform.com/session" /></div>
           </CardContent>
         </Card>
