@@ -27,6 +27,8 @@ export default function AdminDocuments() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [verificationByDoc, setVerificationByDoc] = useState<Record<string, any>>({});
   const [sealingId, setSealingId] = useState<string | null>(null);
+  const [previewDoc, setPreviewDoc] = useState<any>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const fetchDocs = async () => {
     const [docsRes, verificationsRes] = await Promise.all([
