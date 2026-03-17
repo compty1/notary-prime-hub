@@ -46,7 +46,22 @@ const DIGITAL_ONLY_SERVICES = new Set([
   "Subscription Plans",
   "ID / KYC Verification",
   "Background Check Coordination",
+  "Document Translation",
 ]);
+
+const COMMON_LANGUAGES = [
+  "English", "Spanish", "French", "German", "Portuguese", "Italian", "Chinese (Simplified)",
+  "Chinese (Traditional)", "Japanese", "Korean", "Arabic", "Russian", "Hindi", "Vietnamese",
+  "Tagalog", "Polish", "Ukrainian", "Romanian", "Dutch", "Greek", "Turkish", "Hebrew",
+  "Thai", "Swahili", "Amharic", "Somali", "Nepali", "Bengali", "Urdu", "Persian (Farsi)",
+];
+
+const TRANSLATION_DOC_TYPES = [
+  "Birth Certificate", "Marriage Certificate", "Death Certificate", "Divorce Decree",
+  "Diploma / Degree", "Transcript", "Driver's License", "Passport", "Court Document",
+  "Medical Record", "Immigration Document", "Contract / Agreement", "Power of Attorney",
+  "Business Document", "Other",
+];
 
 // Hague Convention member countries
 const HAGUE_COUNTRIES = [
@@ -148,6 +163,12 @@ export default function BookAppointment() {
   const [hireStartDate, setHireStartDate] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [customDocCount, setCustomDocCount] = useState(false);
+
+  // Translation-specific intake fields
+  const [sourceLanguage, setSourceLanguage] = useState("English");
+  const [targetLanguage, setTargetLanguage] = useState("");
+  const [translationDocType, setTranslationDocType] = useState("");
+  const [translationPageCount, setTranslationPageCount] = useState("1");
 
   const NOTARIZATION_CATEGORIES = ["notarization", "authentication"];
   const requiresNotarizationType = (svcName: string) => {
@@ -534,6 +555,12 @@ export default function BookAppointment() {
     if (cat === "business") {
       if (companyName) parts.push(`[Company: ${companyName}]`);
     }
+    if (serviceType.toLowerCase().includes("translation")) {
+      if (sourceLanguage) parts.push(`[Source Language: ${sourceLanguage}]`);
+      if (targetLanguage) parts.push(`[Target Language: ${targetLanguage}]`);
+      if (translationDocType) parts.push(`[Doc Type: ${translationDocType}]`);
+      if (translationPageCount) parts.push(`[Pages: ${translationPageCount}]`);
+    }
     return parts.join("\n");
   };
 
@@ -719,8 +746,8 @@ export default function BookAppointment() {
     const cat = currentCategory;
     const svcLower = serviceType.toLowerCase();
 
-    // No special intake for document_services or business_services
-    if (cat === "document_services" || cat === "business_services") return null;
+    // No special intake for business_services (but document_services may include translation)
+    if (cat === "business_services") return null;
 
     // Check if any fields are relevant for this service
     const showApostille = cat === "authentication" || svcLower.includes("apostille");
@@ -731,9 +758,10 @@ export default function BookAppointment() {
     const showBusiness = cat === "business" && !DIGITAL_ONLY_SERVICES.has(serviceType);
     const showRonOnboarding = svcLower.includes("ron onboarding");
     const showWorkflow = svcLower.includes("workflow") && !svcLower.includes("ron");
+    const showTranslation = svcLower.includes("translation");
 
     // If no category-specific fields apply, return null
-    if (!showApostille && !showImmigration && !showRealEstate && !showI9 && !showEmployer && !showBusiness && !showRonOnboarding && !showWorkflow) return null;
+    if (!showApostille && !showImmigration && !showRealEstate && !showI9 && !showEmployer && !showBusiness && !showRonOnboarding && !showWorkflow && !showTranslation) return null;
 
     return (
       <div className="space-y-3 rounded-lg border border-border/50 bg-muted/30 p-4">
@@ -921,6 +949,53 @@ export default function BookAppointment() {
             </div>
           </>
         )}
+
+        {showTranslation && (
+          <>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Source Language</Label>
+                <Select value={sourceLanguage} onValueChange={setSourceLanguage}>
+                  <SelectTrigger><SelectValue placeholder="Original language" /></SelectTrigger>
+                  <SelectContent>
+                    {COMMON_LANGUAGES.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Target Language *</Label>
+                <Select value={targetLanguage} onValueChange={setTargetLanguage}>
+                  <SelectTrigger><SelectValue placeholder="Translate to..." /></SelectTrigger>
+                  <SelectContent>
+                    {COMMON_LANGUAGES.filter(l => l !== sourceLanguage).map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Document Type</Label>
+                <Select value={translationDocType} onValueChange={setTranslationDocType}>
+                  <SelectTrigger><SelectValue placeholder="Select type..." /></SelectTrigger>
+                  <SelectContent>
+                    {TRANSLATION_DOC_TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Page Count</Label>
+                <Input type="number" min="1" value={translationPageCount} onChange={(e) => setTranslationPageCount(e.target.value)} />
+              </div>
+            </div>
+            <div className="rounded-lg border border-accent/20 bg-accent/5 p-3 text-xs text-muted-foreground space-y-1">
+              <p className="font-medium text-foreground">📄 How it works:</p>
+              <p>1. Upload your document during booking or in your portal after booking</p>
+              <p>2. Our AI translates your document with a Certificate of Translation Accuracy</p>
+              <p>3. Review the translated document in your portal</p>
+              <p>4. If notarization of the translation is needed, we can schedule that too</p>
+            </div>
+          </>
+        )}
       </div>
     );
   };
@@ -1057,6 +1132,18 @@ export default function BookAppointment() {
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">USCIS Form</span>
             <span className="font-medium">{uscisForm}</span>
+          </div>
+        )}
+        {targetLanguage && (
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Translation</span>
+            <span className="font-medium">{sourceLanguage} → {targetLanguage}</span>
+          </div>
+        )}
+        {translationDocType && (
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Document</span>
+            <span className="font-medium">{translationDocType} ({translationPageCount} page{parseInt(translationPageCount) !== 1 ? "s" : ""})</span>
           </div>
         )}
         {employerName && (
