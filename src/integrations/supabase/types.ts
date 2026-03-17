@@ -566,6 +566,8 @@ export type Database = {
           id: string
           id_verified: boolean | null
           kba_completed: boolean | null
+          onenotary_session_id: string | null
+          participant_link: string | null
           session_type: Database["public"]["Enums"]["notarization_type"]
           started_at: string | null
           status: Database["public"]["Enums"]["appointment_status"]
@@ -579,6 +581,8 @@ export type Database = {
           id?: string
           id_verified?: boolean | null
           kba_completed?: boolean | null
+          onenotary_session_id?: string | null
+          participant_link?: string | null
           session_type?: Database["public"]["Enums"]["notarization_type"]
           started_at?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
@@ -592,6 +596,8 @@ export type Database = {
           id?: string
           id_verified?: boolean | null
           kba_completed?: boolean | null
+          onenotary_session_id?: string | null
+          participant_link?: string | null
           session_type?: Database["public"]["Enums"]["notarization_type"]
           started_at?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
@@ -805,6 +811,7 @@ export type Database = {
           id: string
           phone: string | null
           state: string | null
+          stripe_customer_id: string | null
           updated_at: string
           user_id: string
           zip: string | null
@@ -819,6 +826,7 @@ export type Database = {
           id?: string
           phone?: string | null
           state?: string | null
+          stripe_customer_id?: string | null
           updated_at?: string
           user_id: string
           zip?: string | null
@@ -833,6 +841,7 @@ export type Database = {
           id?: string
           phone?: string | null
           state?: string | null
+          stripe_customer_id?: string | null
           updated_at?: string
           user_id?: string
           zip?: string | null
