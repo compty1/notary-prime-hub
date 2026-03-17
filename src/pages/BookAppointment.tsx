@@ -411,8 +411,9 @@ export default function BookAppointment() {
     setNotarizationType(appt.notarization_type);
     setServiceType(appt.service_type);
     if (appt.location && appt.location !== "Remote") setLocation(appt.location);
+    setRebookingId(appt.id);
     setStep(3);
-    toast({ title: "Details pre-filled", description: "Just pick a new date and time!" });
+    toast({ title: "Details pre-filled", description: "Pick a new date and time to reschedule." });
   };
 
   const submitBooking = async (userId: string, bookingData?: any) => {
