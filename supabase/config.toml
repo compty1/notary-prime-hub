@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.get-stripe-config]
 verify_jwt = false
+
+[functions.discover-leads]
+verify_jwt = false
