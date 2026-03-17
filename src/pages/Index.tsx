@@ -37,6 +37,20 @@ const fallbackTestimonials = [
   { name: "Lisa K.", text: "Best notary experience I've had. Will definitely use again for our business documents.", rating: 5 },
 ];
 
+  const steps = [
+    { num: "01", title: "Book", desc: "Choose in-person or remote and select your time slot" },
+    { num: "02", title: "Verify", desc: "Complete identity verification and KBA for RON sessions" },
+    { num: "03", title: "Sign", desc: "Documents notarized securely with digital seal" },
+  ];
+
+  const faqs = [
+    { q: "What is Remote Online Notarization (RON)?", a: "RON allows you to have documents notarized via a secure video call from anywhere. Ohio authorizes RON under Ohio Revised Code §147.65-.66, making it fully legal and binding." },
+    { q: "What identification do I need?", a: "You'll need a valid government-issued photo ID (driver's license, passport, or state ID). For RON sessions, you'll also complete Knowledge-Based Authentication (KBA) questions." },
+    { q: "How long does a notarization take?", a: "Most notarizations take 10-15 minutes for in-person sessions. RON sessions may take 20-30 minutes including the identity verification process." },
+    { q: "What areas do you serve for in-person notarization?", a: "I serve Franklin County and the greater Columbus, Ohio metropolitan area for in-person notarizations. Mobile notary services are available within a 30-mile radius." },
+    { q: "Is RON notarization accepted everywhere?", a: "RON notarizations performed under Ohio law are recognized in all 50 states. However, some specific transactions may have unique requirements. Contact me to confirm for your situation." },
+  ];
+
 export default function Index() {
   const [serviceType, setServiceType] = useState<"in_person" | "ron">("in_person");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -44,6 +58,38 @@ export default function Index() {
   const [contactForm, setContactForm] = useState({ name: "", email: "", phone: "", service: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
   const [lastSubmitTime, setLastSubmitTime] = useState(0);
+
+  // Dynamic services from DB
+  const [dbServices, setDbServices] = useState<any[]>([]);
+  const [dbReviews, setDbReviews] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Fetch top services from DB
+    supabase.from("services").select("name, short_description, icon, category")
+      .eq("is_active", true).order("display_order").limit(6)
+      .then(({ data }) => { if (data && data.length > 0) setDbServices(data); });
+
+    // Fetch 5-star reviews
+    supabase.from("reviews").select("rating, comment, created_at, client_id")
+      .eq("rating", 5).order("created_at", { ascending: false }).limit(3)
+      .then(async ({ data: reviews }) => {
+        if (!reviews || reviews.length === 0) return;
+        const clientIds = [...new Set(reviews.map(r => r.client_id))];
+        const { data: profiles } = await supabase.from("profiles").select("user_id, full_name").in("user_id", clientIds);
+        const enriched = reviews.map(r => ({
+          name: profiles?.find(p => p.user_id === r.client_id)?.full_name?.split(" ")[0] || "Client",
+          text: r.comment || "Excellent service!",
+          rating: r.rating,
+        }));
+        if (enriched.length > 0) setDbReviews(enriched);
+      });
+  }, []);
+
+  const services = dbServices.length > 0
+    ? dbServices.map(s => ({ icon: FileText, title: s.name, desc: s.short_description || s.category }))
+    : fallbackServices;
+
+  const testimonials = dbReviews.length > 0 ? dbReviews : fallbackTestimonials;
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
