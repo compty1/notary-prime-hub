@@ -149,6 +149,12 @@ export default function BookAppointment() {
   const [companyName, setCompanyName] = useState("");
   const [customDocCount, setCustomDocCount] = useState(false);
 
+  // Translation-specific intake fields
+  const [sourceLanguage, setSourceLanguage] = useState("English");
+  const [targetLanguage, setTargetLanguage] = useState("");
+  const [translationDocType, setTranslationDocType] = useState("");
+  const [translationPageCount, setTranslationPageCount] = useState("1");
+
   const NOTARIZATION_CATEGORIES = ["notarization", "authentication"];
   const requiresNotarizationType = (svcName: string) => {
     const cat = serviceCategories[svcName];
