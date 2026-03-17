@@ -55,6 +55,13 @@ export default function BookAppointment() {
   const [idScanning, setIdScanning] = useState(false);
   const [idData, setIdData] = useState<any>(null);
 
+  // Document auto-detect
+  const [docScanning, setDocScanning] = useState(false);
+  const [docAnalysis, setDocAnalysis] = useState<any>(null);
+
+  // Batch notarization
+  const [documentCount, setDocumentCount] = useState(1);
+
   // Returning client recognition
   const [profile, setProfile] = useState<any>(null);
   const [pastAppointments, setPastAppointments] = useState<any[]>([]);
@@ -156,6 +163,55 @@ export default function BookAppointment() {
     }
   };
 
+  const handleDocScan = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setDocScanning(true);
+    try {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64 = (reader.result as string).split(",")[1];
+        const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/detect-document`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ imageBase64: base64, fileName: file.name }),
+        });
+        const data = await resp.json();
+        if (data.error) {
+          toast({ title: "Document analysis issue", description: data.error, variant: "destructive" });
+        } else {
+          setDocAnalysis(data);
+          // Auto-select service type based on document analysis
+          if (data.document_type) {
+            const mapped: Record<string, string> = {
+              "Real Estate": "Real Estate Documents",
+              "Legal": "Affidavits & Sworn Statements",
+              "Estate Planning": "Estate Planning Documents",
+              "Business": "Business Documents",
+              "Personal": "Other",
+            };
+            const match = mapped[data.document_type];
+            if (match && !serviceType) setServiceType(match);
+          }
+          // Auto-set RON eligibility warning
+          if (data.ron_eligible === false && notarizationType === "ron") {
+            toast({ title: "RON not recommended", description: "This document type may not be eligible for remote notarization.", variant: "destructive" });
+          }
+          toast({ title: "Document analyzed", description: `${data.document_name} — ${data.notarization_method}` });
+        }
+        setDocScanning(false);
+      };
+      reader.readAsDataURL(file);
+    } catch {
+      toast({ title: "Analysis failed", description: "Could not process the document.", variant: "destructive" });
+      setDocScanning(false);
+    }
+  };
+
   const handleRebook = (appt: any) => {
     setNotarizationType(appt.notarization_type);
     setServiceType(appt.service_type);
@@ -186,6 +242,13 @@ export default function BookAppointment() {
     }
 
     setSubmitting(true);
+    const fullNotes = [
+      notes,
+      documentCount > 1 ? `[Batch: ${documentCount} documents]` : "",
+      docAnalysis ? `[AI Detected: ${docAnalysis.document_name} — ${docAnalysis.notarization_method}]` : "",
+      idData ? `[ID Pre-scanned: ${idData.id_type} — ${idData.full_name}]` : "",
+    ].filter(Boolean).join("\n");
+
     const { error } = await supabase.from("appointments").insert({
       client_id: user.id,
       service_type: serviceType,
@@ -193,7 +256,7 @@ export default function BookAppointment() {
       scheduled_date: date,
       scheduled_time: time,
       location: notarizationType === "in_person" ? location : "Remote",
-      notes,
+      notes: fullNotes || null,
     });
 
     if (error) {
@@ -319,6 +382,75 @@ export default function BookAppointment() {
                         ))}
                       </SelectContent>
                     </Select>
+                  </div>
+
+                  {/* Document Auto-Detect */}
+                  <div className="rounded-lg border border-dashed border-accent/30 bg-accent/5 p-4">
+                    <p className="mb-2 flex items-center gap-2 text-sm font-medium">
+                      <Sparkles className="h-4 w-4 text-accent" />
+                      Upload your document for AI analysis (optional)
+                    </p>
+                    <p className="mb-3 text-xs text-muted-foreground">
+                      We'll identify the notarization type, who needs to be present, and any special requirements.
+                    </p>
+                    <Input
+                      type="file"
+                      accept="image/*,.pdf"
+                      onChange={handleDocScan}
+                      disabled={docScanning}
+                      className="text-xs"
+                    />
+                    {docScanning && (
+                      <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                        <Loader2 className="h-3 w-3 animate-spin" /> Analyzing document...
+                      </div>
+                    )}
+                    {docAnalysis && !docAnalysis.error && (
+                      <div className="mt-2 space-y-2 rounded bg-emerald-50 p-3 text-xs text-emerald-800">
+                        <div className="flex items-center gap-1 font-medium">
+                          <CheckCircle className="h-3 w-3" />
+                          {docAnalysis.document_name} — {docAnalysis.notarization_method}
+                        </div>
+                        <div className="text-emerald-700">
+                          <p>Signers: {docAnalysis.signers_required} • Witnesses: {docAnalysis.witnesses_required}</p>
+                          {docAnalysis.who_must_be_present?.length > 0 && (
+                            <p className="mt-1">Present: {docAnalysis.who_must_be_present.join(", ")}</p>
+                          )}
+                          {!docAnalysis.ron_eligible && (
+                            <p className="mt-1 font-medium text-amber-700">⚠ Not eligible for RON</p>
+                          )}
+                        </div>
+                        {docAnalysis.special_requirements?.length > 0 && (
+                          <div className="rounded bg-amber-50 p-2 text-amber-700">
+                            {docAnalysis.special_requirements.map((r: string, i: number) => (
+                              <p key={i} className="flex items-start gap-1"><AlertTriangle className="mt-0.5 h-3 w-3 flex-shrink-0" /> {r}</p>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Batch Notarization */}
+                  <div>
+                    <Label>Number of Documents</Label>
+                    <div className="mt-1 flex items-center gap-2">
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <Button
+                          key={n}
+                          type="button"
+                          size="sm"
+                          variant={documentCount === n ? "default" : "outline"}
+                          className={documentCount === n ? "bg-accent text-accent-foreground" : ""}
+                          onClick={() => setDocumentCount(n)}
+                        >
+                          {n}
+                        </Button>
+                      ))}
+                      <span className="text-xs text-muted-foreground">
+                        {documentCount > 1 ? "Same session, separate journal entries" : ""}
+                      </span>
+                    </div>
                   </div>
 
                   {/* ID Pre-Scan */}
@@ -465,6 +597,18 @@ export default function BookAppointment() {
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">ID Verified</span>
                         <span className="font-medium flex items-center gap-1"><Shield className="h-3 w-3 text-emerald-500" /> {idData.id_type}</span>
+                      </div>
+                    )}
+                    {documentCount > 1 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Documents</span>
+                        <span className="font-medium">{documentCount} documents (batch session)</span>
+                      </div>
+                    )}
+                    {docAnalysis && !docAnalysis.error && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Detected</span>
+                        <span className="font-medium">{docAnalysis.document_name} ({docAnalysis.notarization_method})</span>
                       </div>
                     )}
                     {notes && (
