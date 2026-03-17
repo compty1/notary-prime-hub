@@ -88,11 +88,11 @@ export default function Index() {
             </SheetTrigger>
             <SheetContent side="right" className="w-64">
               <div className="mt-8 flex flex-col gap-4">
-                <a href="#services" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Services</a>
+                <Link to="/services" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Services</Link>
                 <a href="#how-it-works" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>How It Works</a>
-                <Link to="/notary-guide" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Notary Guide</Link>
+                <Link to="/templates" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Templates</Link>
+                <Link to="/fee-calculator" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Pricing</Link>
                 <Link to="/ron-info" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>RON Info</Link>
-                <a href="#faq" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>FAQ</a>
                 <hr className="border-border" />
                 <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="outline" className="w-full">Sign In</Button>
