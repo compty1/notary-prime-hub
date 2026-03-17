@@ -29,13 +29,21 @@ const fallbackServiceTypes = [
   "Other",
 ];
 
-const DIGITAL_ONLY_CATEGORIES = new Set(["recurring", "consulting"]);
+const DIGITAL_ONLY_CATEGORIES = new Set(["recurring", "consulting", "document_services", "business_services"]);
 const DIGITAL_ONLY_SERVICES = new Set([
   "Document Storage Vault",
   "Cloud Document Storage", 
   "Virtual Mailroom",
   "Compliance Reminders",
   "Document Retention",
+  // Business category services that don't need physical presence
+  "Notary API Access",
+  "White-Label Notarization",
+  "Registered Agent Service",
+  "Subscription Plans",
+  // Verification services that can be remote
+  "ID / KYC Verification",
+  "Background Check Coordination",
 ]);
 
 // Hague Convention member countries
