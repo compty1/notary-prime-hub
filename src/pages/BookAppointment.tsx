@@ -1134,6 +1134,18 @@ export default function BookAppointment() {
             <span className="font-medium">{uscisForm}</span>
           </div>
         )}
+        {targetLanguage && (
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Translation</span>
+            <span className="font-medium">{sourceLanguage} → {targetLanguage}</span>
+          </div>
+        )}
+        {translationDocType && (
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Document</span>
+            <span className="font-medium">{translationDocType} ({translationPageCount} page{parseInt(translationPageCount) !== 1 ? "s" : ""})</span>
+          </div>
+        )}
         {employerName && (
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Employer</span>
