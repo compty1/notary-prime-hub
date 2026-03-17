@@ -460,7 +460,7 @@ export default function BookAppointment() {
       }
     }
 
-    const { data: insertedData, error } = await supabase.from("appointments").insert({
+    const appointmentPayload = {
       client_id: userId,
       service_type: data.serviceType || serviceType,
       notarization_type: data.notarizationType || notarizationType,
@@ -470,27 +470,46 @@ export default function BookAppointment() {
       client_address: (data.notarizationType || notarizationType) === "in_person" ? fullAddress : null,
       estimated_price: estimatedPrice,
       notes: fullNotes || null,
-    }).select("id").single();
+    };
 
-    if (error) {
-      localStorage.removeItem(BOOKING_STORAGE_KEY);
-      toast({ title: "Booking failed", description: error.message, variant: "destructive" });
-    } else {
-      localStorage.removeItem(BOOKING_STORAGE_KEY);
-      // Trigger confirmation email via edge function
-      try {
-        const { error: emailError } = await supabase.functions.invoke("send-appointment-emails", {
-          body: { appointmentId: insertedData.id, emailType: "confirmation" },
-        });
-        if (emailError) {
-          console.error("Confirmation email error:", emailError);
-        }
-      } catch (emailErr) {
-        console.error("Failed to trigger confirmation email:", emailErr);
+    let appointmentResultId: string;
+
+    if (rebookingId) {
+      // Reschedule: update existing appointment
+      const { error } = await supabase.from("appointments").update({
+        ...appointmentPayload,
+        status: "scheduled" as any,
+      }).eq("id", rebookingId);
+      if (error) {
+        toast({ title: "Reschedule failed", description: error.message, variant: "destructive" });
+        setSubmitting(false);
+        return;
       }
-      toast({ title: "Appointment booked!", description: "You'll receive a confirmation email shortly." });
-      navigate(`/confirmation?id=${insertedData.id}`);
+      appointmentResultId = rebookingId;
+    } else {
+      // New booking
+      const { data: insertedData, error } = await supabase.from("appointments").insert(appointmentPayload).select("id").single();
+      if (error) {
+        localStorage.removeItem(BOOKING_STORAGE_KEY);
+        toast({ title: "Booking failed", description: error.message, variant: "destructive" });
+        setSubmitting(false);
+        return;
+      }
+      appointmentResultId = insertedData.id;
     }
+
+    localStorage.removeItem(BOOKING_STORAGE_KEY);
+    // Trigger confirmation email
+    try {
+      const { error: emailError } = await supabase.functions.invoke("send-appointment-emails", {
+        body: { appointmentId: appointmentResultId, emailType: "confirmation" },
+      });
+      if (emailError) console.error("Confirmation email error:", emailError);
+    } catch (emailErr) {
+      console.error("Failed to trigger confirmation email:", emailErr);
+    }
+    toast({ title: rebookingId ? "Appointment rescheduled!" : "Appointment booked!", description: "You'll receive a confirmation email shortly." });
+    navigate(`/confirmation?id=${appointmentResultId}`);
     setSubmitting(false);
   };
 
