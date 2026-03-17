@@ -638,20 +638,20 @@ export default function BookAppointment() {
                       </div>
                     )}
                     {docAnalysis && !docAnalysis.error && (
-                      <div className="mt-2 space-y-2 rounded bg-emerald-50 p-3 text-xs text-emerald-800">
-                        <div className="flex items-center gap-1 font-medium">
-                          <CheckCircle className="h-3 w-3" />
-                          {docAnalysis.document_name} — {docAnalysis.notarization_method}
-                        </div>
-                        <div className="text-emerald-700">
-                          <p>Signers: {docAnalysis.signers_required} • Witnesses: {docAnalysis.witnesses_required}</p>
-                          {docAnalysis.who_must_be_present?.length > 0 && (
-                            <p className="mt-1">Present: {docAnalysis.who_must_be_present.join(", ")}</p>
-                          )}
-                          {!docAnalysis.ron_eligible && (
-                            <p className="mt-1 font-medium text-amber-700">⚠ Not eligible for RON</p>
-                          )}
-                        </div>
+                       <div className="mt-2 space-y-2 rounded bg-accent/10 p-3 text-xs text-foreground">
+                         <div className="flex items-center gap-1 font-medium">
+                           <CheckCircle className="h-3 w-3 text-accent" />
+                           {docAnalysis.document_name} — {docAnalysis.notarization_method}
+                         </div>
+                         <div className="text-muted-foreground">
+                           <p>Signers: {docAnalysis.signers_required} • Witnesses: {docAnalysis.witnesses_required}</p>
+                           {docAnalysis.who_must_be_present?.length > 0 && (
+                             <p className="mt-1">Present: {docAnalysis.who_must_be_present.join(", ")}</p>
+                           )}
+                           {!docAnalysis.ron_eligible && (
+                             <p className="mt-1 font-medium text-destructive">⚠ Not eligible for RON</p>
+                           )}
+                         </div>
                         {docAnalysis.special_requirements?.length > 0 && (
                           <div className="rounded bg-amber-50 p-2 text-amber-700">
                             {docAnalysis.special_requirements.map((r: string, i: number) => (
