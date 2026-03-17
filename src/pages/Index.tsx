@@ -319,6 +319,9 @@ export default function Index() {
         </div>
       </section>
 
+      {/* "What Do I Need?" AI Helper */}
+      <WhatDoINeed />
+
       {/* Services */}
       <section id="services" className="py-20">
         <div className="container mx-auto px-4">
