@@ -16,6 +16,7 @@ import {
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye } from "lucide-react";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 const navItems = [
   { title: "Overview", url: "/admin", icon: LayoutDashboard },
