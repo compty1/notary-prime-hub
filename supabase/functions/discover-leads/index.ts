@@ -2,7 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 Deno.serve(async (req) => {
@@ -11,7 +11,7 @@ Deno.serve(async (req) => {
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     const supabase = createClient(
@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
     const token = authHeader.replace("Bearer ", "");
     const { data: claimsData, error: claimsErr } = await supabase.auth.getClaims(token);
     if (claimsErr || !claimsData?.claims) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     const { action, searchQueries } = await req.json();
@@ -37,7 +37,6 @@ Deno.serve(async (req) => {
     );
 
     if (action === "discover") {
-      // Use AI to generate targeted search queries for notary leads
       const queries = searchQueries || [
         "title company Columbus Ohio needs notary",
         "real estate closing attorney Franklin County Ohio",
@@ -69,18 +68,31 @@ Return ONLY a JSON array of objects with these exact fields. No markdown, no exp
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
+          model: "google/gemini-3-flash-preview",
           messages: [{ role: "user", content: aiPrompt }],
           temperature: 0.7,
         }),
       });
 
-      if (!aiResp.ok) throw new Error("AI request failed");
+      if (!aiResp.ok) {
+        if (aiResp.status === 429) {
+          return new Response(JSON.stringify({ error: "Rate limit exceeded. Please wait a moment and try again." }), {
+            status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        if (aiResp.status === 402) {
+          return new Response(JSON.stringify({ error: "AI credits exhausted. Please add credits in workspace settings." }), {
+            status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const errText = await aiResp.text();
+        console.error("AI gateway error:", aiResp.status, errText);
+        throw new Error(`AI request failed: ${aiResp.status}`);
+      }
 
       const aiData = await aiResp.json();
       const content = aiData.choices?.[0]?.message?.content || "[]";
       
-      // Parse JSON from AI response (handle markdown code blocks)
       let leads;
       try {
         const jsonStr = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
@@ -89,7 +101,6 @@ Return ONLY a JSON array of objects with these exact fields. No markdown, no exp
         leads = [];
       }
 
-      // Dedupe and insert
       let inserted = 0;
       for (const lead of leads) {
         if (!lead.business_name) continue;
@@ -125,7 +136,6 @@ Return ONLY a JSON array of objects with these exact fields. No markdown, no exp
     }
 
     if (action === "enrich") {
-      // Enrich existing leads with AI-generated contact suggestions
       const { data: leadsToEnrich } = await serviceRoleClient
         .from("leads")
         .select("*")
@@ -153,13 +163,25 @@ Return ONLY a JSON array. No markdown.`;
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
+          model: "google/gemini-3-flash-preview",
           messages: [{ role: "user", content: enrichPrompt }],
           temperature: 0.3,
         }),
       });
 
-      if (!aiResp.ok) throw new Error("AI enrichment failed");
+      if (!aiResp.ok) {
+        if (aiResp.status === 429) {
+          return new Response(JSON.stringify({ error: "Rate limit exceeded. Please wait and try again." }), {
+            status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        if (aiResp.status === 402) {
+          return new Response(JSON.stringify({ error: "AI credits exhausted." }), {
+            status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        throw new Error("AI enrichment failed");
+      }
 
       const aiData = await aiResp.json();
       const content = aiData.choices?.[0]?.message?.content || "[]";

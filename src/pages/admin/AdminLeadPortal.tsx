@@ -172,8 +172,12 @@ export default function AdminLeadPortal() {
         body: { action: "discover" },
       });
       if (error) throw error;
-      toast({ title: "AI Discovery Complete", description: `Found ${data.found} leads, inserted ${data.inserted} new ones.` });
-      fetchLeads();
+      if (data?.error) {
+        toast({ title: "Discovery issue", description: data.error, variant: "destructive" });
+      } else {
+        toast({ title: "AI Discovery Complete", description: `Found ${data.found} leads, inserted ${data.inserted} new ones.` });
+        fetchLeads();
+      }
     } catch (e: any) {
       toast({ title: "Discovery error", description: e.message, variant: "destructive" });
     }
@@ -187,8 +191,12 @@ export default function AdminLeadPortal() {
         body: { action: "enrich" },
       });
       if (error) throw error;
-      toast({ title: "Enrichment Complete", description: `Enriched ${data.enriched} leads with outreach tips.` });
-      fetchLeads();
+      if (data?.error) {
+        toast({ title: "Enrichment issue", description: data.error, variant: "destructive" });
+      } else {
+        toast({ title: "Enrichment Complete", description: `Enriched ${data.enriched} leads with outreach tips.` });
+        fetchLeads();
+      }
     } catch (e: any) {
       toast({ title: "Enrichment error", description: e.message, variant: "destructive" });
     }
