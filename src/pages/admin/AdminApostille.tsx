@@ -185,6 +185,10 @@ export default function AdminApostille() {
               </Select>
             </div>
             <div><Label>Document Description</Label><Input value={newDesc} onChange={(e) => setNewDesc(e.target.value)} placeholder="e.g., Birth Certificate for international use" /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Destination Country</Label><Input value={newDestCountry} onChange={(e) => setNewDestCountry(e.target.value)} placeholder="e.g. Germany" /></div>
+              <div><Label>Document Count</Label><Input type="number" min="1" value={newDocCount} onChange={(e) => setNewDocCount(e.target.value)} /></div>
+            </div>
             <div><Label>Fee ($)</Label><Input type="number" step="0.01" value={newFee} onChange={(e) => setNewFee(e.target.value)} placeholder="75.00" /></div>
             <div><Label>Notes</Label><Textarea value={newNotes} onChange={(e) => setNewNotes(e.target.value)} placeholder="Additional details..." /></div>
           </div>
