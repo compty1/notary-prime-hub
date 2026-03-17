@@ -70,6 +70,8 @@ export default function AdminAppointments() {
   const [messageSubject, setMessageSubject] = useState("");
   const [messageBody, setMessageBody] = useState("");
   const [sendingMessage, setSendingMessage] = useState(false);
+  const [showKBA, setShowKBA] = useState(false);
+  const [showTranslation, setShowTranslation] = useState(false);
   const [newAppt, setNewAppt] = useState({
     client_id: "",
     service_type: "",
