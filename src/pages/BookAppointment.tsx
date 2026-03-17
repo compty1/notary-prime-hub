@@ -55,6 +55,13 @@ export default function BookAppointment() {
   const [idScanning, setIdScanning] = useState(false);
   const [idData, setIdData] = useState<any>(null);
 
+  // Document auto-detect
+  const [docScanning, setDocScanning] = useState(false);
+  const [docAnalysis, setDocAnalysis] = useState<any>(null);
+
+  // Batch notarization
+  const [documentCount, setDocumentCount] = useState(1);
+
   // Returning client recognition
   const [profile, setProfile] = useState<any>(null);
   const [pastAppointments, setPastAppointments] = useState<any[]>([]);
