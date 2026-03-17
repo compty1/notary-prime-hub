@@ -109,11 +109,16 @@ export default function AppointmentConfirmation() {
   const { user } = useAuth();
   const [appointment, setAppointment] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [zoomLink, setZoomLink] = useState<string>("");
 
   useEffect(() => {
     if (!appointmentId || !user) { setLoading(false); return; }
-    supabase.from("appointments").select("*").eq("id", appointmentId).single().then(({ data }) => {
-      if (data) setAppointment(data);
+    Promise.all([
+      supabase.from("appointments").select("*").eq("id", appointmentId).single(),
+      supabase.from("platform_settings").select("setting_value").eq("setting_key", "zoom_meeting_link").single(),
+    ]).then(([apptRes, zoomRes]) => {
+      if (apptRes.data) setAppointment(apptRes.data);
+      if (zoomRes.data?.setting_value) setZoomLink(zoomRes.data.setting_value);
       setLoading(false);
     });
   }, [appointmentId, user]);
