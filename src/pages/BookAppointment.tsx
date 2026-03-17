@@ -30,18 +30,20 @@ const fallbackServiceTypes = [
 ];
 
 const DIGITAL_ONLY_CATEGORIES = new Set(["recurring", "consulting", "document_services", "business_services"]);
+const LOCATION_REQUIRED_SERVICES = new Set([
+  "Closing Coordination",
+  "Bulk Notarization",
+]);
 const DIGITAL_ONLY_SERVICES = new Set([
   "Document Storage Vault",
   "Cloud Document Storage", 
   "Virtual Mailroom",
   "Compliance Reminders",
   "Document Retention",
-  // Business category services that don't need physical presence
   "Notary API Access",
   "White-Label Notarization",
   "Registered Agent Service",
   "Subscription Plans",
-  // Verification services that can be remote
   "ID / KYC Verification",
   "Background Check Coordination",
 ]);
