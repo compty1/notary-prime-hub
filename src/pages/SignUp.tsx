@@ -31,6 +31,7 @@ export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [signupSuccess, setSignupSuccess] = useState(false);
 
   const strength = useMemo(() => getPasswordStrength(password), [password]);
 
@@ -47,8 +48,7 @@ export default function SignUp() {
     if (error) {
       toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Check your email", description: "We sent a confirmation link to verify your account." });
-      navigate("/login");
+      setSignupSuccess(true);
     }
     setSubmitting(false);
   };
