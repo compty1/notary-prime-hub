@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { MapPin, Monitor, Calendar, FileText, CheckCircle, ChevronLeft, ChevronRight, Shield, Clock, Camera, Loader2, Sparkles, AlertTriangle, LocateFixed, DollarSign } from "lucide-react";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
 
 type Step = 1 | 2 | 3 | 4;
 type NotarizationType = "in_person" | "ron";
@@ -49,6 +50,19 @@ export default function BookAppointment() {
   const [clientState, setClientState] = useState("OH");
   const [clientZip, setClientZip] = useState("");
   const [locatingUser, setLocatingUser] = useState(false);
+  const [userLat, setUserLat] = useState<number | null>(null);
+  const [userLon, setUserLon] = useState<number | null>(null);
+
+  // Get user's location on mount for autocomplete biasing
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => { setUserLat(pos.coords.latitude); setUserLon(pos.coords.longitude); },
+        () => {},
+        { timeout: 5000 }
+      );
+    }
+  }, []);
 
   // Progressive signup fields
   const [guestName, setGuestName] = useState("");
@@ -802,10 +816,18 @@ export default function BookAppointment() {
                           Use My Location
                         </Button>
                       </div>
-                      <Input
-                        placeholder="Street address"
+                      <AddressAutocomplete
                         value={clientAddress}
-                        onChange={(e) => setClientAddress(e.target.value)}
+                        onChange={setClientAddress}
+                        userLat={userLat}
+                        userLon={userLon}
+                        onSelect={(s) => {
+                          setClientAddress(s.address);
+                          setClientCity(s.city);
+                          setClientState(s.state);
+                          setClientZip(s.zip);
+                          setLocation(s.fullAddress);
+                        }}
                       />
                       <div className="grid grid-cols-3 gap-2">
                         <Input
@@ -827,7 +849,7 @@ export default function BookAppointment() {
                         />
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Common meeting spots: coffee shops, libraries, bank lobbies, or your home/office
+                        Search for a business, address, or landmark — suggestions appear as you type
                       </p>
                     </div>
                   )}
