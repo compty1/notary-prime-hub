@@ -255,6 +255,21 @@ export default function AppointmentConfirmation() {
           </ol>
         </div>
 
+        {/* Zoom link for consultation appointments */}
+        {zoomLink && (appointment.service_type || "").toLowerCase().includes("consult") && (
+          <div className="mt-4 rounded-lg border border-accent/30 bg-accent/5 p-4 text-left">
+            <p className="mb-2 text-sm font-medium text-foreground flex items-center gap-2">
+              <Video className="h-4 w-4 text-accent" /> Zoom Meeting
+            </p>
+            <p className="text-xs text-muted-foreground mb-3">Your consultation will take place via Zoom. Click below to join when it's time.</p>
+            <a href={zoomLink} target="_blank" rel="noopener noreferrer">
+              <Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark gap-2">
+                <Video className="h-4 w-4" /> Join Zoom Meeting
+              </Button>
+            </a>
+          </div>
+        )}
+
         {/* TechCheck for RON appointments */}
         {appointment.notarization_type === "ron" && (
           <div className="mt-4">
