@@ -29,6 +29,8 @@ export default function BusinessPortal() {
   const [inviteEmail, setInviteEmail] = useState("");
   const [form, setForm] = useState({ business_name: "", ein: "", business_type: "", signers: "" });
 
+  const [memberProfiles, setMemberProfiles] = useState<Record<string, any>>({});
+
   useEffect(() => {
     if (!user) return;
     Promise.all([
@@ -39,9 +41,21 @@ export default function BusinessPortal() {
     ]).then(([bizRes, docRes, apptRes, payRes]) => {
       if (bizRes.data) {
         setBusiness(bizRes.data);
-        // Load team members
-        supabase.from("business_members").select("*").eq("business_id", bizRes.data.id).then(({ data }) => {
-          if (data) setMembers(data);
+        // Load team members with their profile info
+        supabase.from("business_members").select("*").eq("business_id", bizRes.data.id).then(async ({ data }) => {
+          if (data) {
+            setMembers(data);
+            // Fetch profiles for all member user_ids
+            const userIds = data.map((m: any) => m.user_id);
+            if (userIds.length > 0) {
+              const { data: profs } = await supabase.from("profiles").select("user_id, full_name, email").in("user_id", userIds);
+              if (profs) {
+                const map: Record<string, any> = {};
+                profs.forEach((p: any) => { map[p.user_id] = p; });
+                setMemberProfiles(map);
+              }
+            }
+          }
         });
       }
       if (docRes.data) setDocuments(docRes.data);
