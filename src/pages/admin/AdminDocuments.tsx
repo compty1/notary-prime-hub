@@ -5,8 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { FileText, Download, CheckCircle, XCircle, Loader2, ShieldCheck, ShieldX, ExternalLink } from "lucide-react";
+import { FileText, Download, CheckCircle, XCircle, Loader2, ShieldCheck, ShieldX, ExternalLink, Eye } from "lucide-react";
 
 const docStatuses = ["uploaded", "pending_review", "approved", "notarized", "rejected"];
 
