@@ -53,6 +53,27 @@ export default function SignUp() {
     setSubmitting(false);
   };
 
+  if (signupSuccess) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
+        <Card className="w-full max-w-md border-border/50">
+          <CardContent className="flex flex-col items-center py-12 text-center">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
+              <Shield className="h-8 w-8 text-emerald-600" />
+            </div>
+            <h2 className="font-display text-2xl font-bold text-foreground mb-2">Check Your Email</h2>
+            <p className="text-muted-foreground mb-2">We sent a verification link to</p>
+            <p className="font-medium text-foreground mb-4">{email}</p>
+            <p className="text-sm text-muted-foreground mb-6">Click the link in the email to verify your account, then sign in.</p>
+            <Link to="/login">
+              <Button className="bg-accent text-accent-foreground hover:bg-gold-dark">Go to Sign In</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
       <Card className="w-full max-w-md border-border/50">
