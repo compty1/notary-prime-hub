@@ -265,11 +265,30 @@ export default function ClientPortal() {
 
   const qrUrl = `${window.location.origin}/portal`;
 
+  // Load staff users for chat recipient selector
+  useEffect(() => {
+    const loadStaff = async () => {
+      const { data: roles } = await supabase.from("user_roles").select("user_id, role").in("role", ["admin", "notary"]);
+      if (!roles || roles.length === 0) return;
+      const userIds = [...new Set(roles.map(r => r.user_id))];
+      const { data: profiles } = await supabase.from("profiles").select("user_id, full_name").in("user_id", userIds);
+      const staff = userIds.map(uid => {
+        const prof = profiles?.find(p => p.user_id === uid);
+        const role = roles.find(r => r.user_id === uid)?.role || "admin";
+        return { id: uid, name: prof?.full_name || "", role };
+      });
+      setStaffUsers(staff);
+      if (staff.length > 0 && !chatRecipient) setChatRecipient(staff[0].id);
+    };
+    if (user) loadStaff();
+  }, [user]);
+
   const sendChatMessage = async () => {
     if (!chatInput.trim() || !user) return;
     setSendingChat(true);
     const { error } = await supabase.from("chat_messages").insert({
       sender_id: user.id, message: chatInput.trim(), is_admin: false,
+      recipient_id: chatRecipient || null,
     });
     if (error) toast({ title: "Error sending message", variant: "destructive" });
     else setChatInput("");
@@ -561,11 +580,34 @@ export default function ClientPortal() {
             <h2 className="font-display text-xl font-semibold">Live Chat</h2>
             <Card className="border-border/50">
               <CardContent className="p-4">
+                {staffUsers.length > 1 && (
+                  <div className="mb-3">
+                    <Label className="text-xs text-muted-foreground mb-1 block">Message to:</Label>
+                    <Select value={chatRecipient} onValueChange={setChatRecipient}>
+                      <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select staff member..." /></SelectTrigger>
+                      <SelectContent>
+                        {staffUsers.map(s => (
+                          <SelectItem key={s.id} value={s.id} className="text-xs">{s.name || s.id.slice(0, 8)} ({s.role})</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
                 <div className="h-80 overflow-y-auto space-y-3 mb-4">
-                  {chatMessages.length === 0 && (
+                  {chatMessages.filter(m => {
+                    if (!chatRecipient) return true;
+                    return m.sender_id === user?.id
+                      ? (!m.recipient_id || m.recipient_id === chatRecipient)
+                      : m.sender_id === chatRecipient;
+                  }).length === 0 && (
                     <p className="text-center text-sm text-muted-foreground py-8">No messages yet. Send a message to get started!</p>
                   )}
-                  {chatMessages.map((msg) => (
+                  {chatMessages.filter(m => {
+                    if (!chatRecipient) return true;
+                    return m.sender_id === user?.id
+                      ? (!m.recipient_id || m.recipient_id === chatRecipient)
+                      : m.sender_id === chatRecipient;
+                  }).map((msg) => (
                     <div key={msg.id} className={`flex ${msg.is_admin ? "justify-start" : "justify-end"}`}>
                       <div className={`max-w-[75%] rounded-lg px-3 py-2 text-sm ${msg.is_admin ? "bg-muted text-foreground" : "bg-accent text-accent-foreground"}`}>
                         <p>{msg.message}</p>
