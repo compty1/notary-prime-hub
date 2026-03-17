@@ -185,9 +185,11 @@ export default function Services() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="mb-4 font-display text-2xl font-bold text-foreground">Ready to Get Started?</h2>
           <p className="mb-6 text-muted-foreground">Book an appointment or contact us for a custom quote.</p>
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-4">
             <Link to="/book"><Button size="lg" className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Appointment</Button></Link>
             <Link to="/fee-calculator"><Button size="lg" variant="outline">View Pricing</Button></Link>
+            <Link to="/loan-signing"><Button size="lg" variant="outline">Loan Signing Partnership</Button></Link>
+            <Link to="/ron-check"><Button size="lg" variant="outline">RON Eligibility Checker</Button></Link>
           </div>
         </div>
       </section>
