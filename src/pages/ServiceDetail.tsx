@@ -133,8 +133,11 @@ interface WorkflowStep {
   requires_client_action: boolean; requires_admin_action: boolean;
 }
 
+const PRE_QUALIFY_CATEGORIES = ["authentication", "consulting", "verification"];
+
 export default function ServiceDetail() {
   const { serviceId } = useParams();
+  const navigate = useNavigate();
   const [service, setService] = useState<ServiceData | null>(null);
   const [requirements, setRequirements] = useState<Requirement[]>([]);
   const [workflow, setWorkflow] = useState<WorkflowStep[]>([]);
@@ -142,6 +145,7 @@ export default function ServiceDetail() {
   const [loading, setLoading] = useState(true);
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
   const [showChat, setShowChat] = useState(false);
+  const [showPreQualifier, setShowPreQualifier] = useState(false);
 
   useEffect(() => {
     if (!serviceId) return;
