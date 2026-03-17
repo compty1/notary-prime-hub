@@ -293,14 +293,23 @@ export default function AdminAppointments() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="font-display text-2xl font-bold text-foreground">Appointments</h1>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 flex-wrap">
           <Button onClick={() => setShowCreateDialog(true)} className="bg-accent text-accent-foreground hover:bg-gold-dark">
-            <Plus className="mr-1 h-4 w-4" /> New Appointment
+            <Plus className="mr-1 h-4 w-4" /> New
           </Button>
+          <Select value={dateRange} onValueChange={setDateRange}>
+            <SelectTrigger className="w-32"><Filter className="mr-1 h-3 w-3" /><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Dates</SelectItem>
+              <SelectItem value="today">Today</SelectItem>
+              <SelectItem value="week">This Week</SelectItem>
+              <SelectItem value="month">This Month</SelectItem>
+            </SelectContent>
+          </Select>
           <Select value={filter} onValueChange={setFilter}>
-            <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Statuses</SelectItem>
               {statuses.map((s) => (
