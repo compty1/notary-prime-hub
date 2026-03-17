@@ -606,14 +606,31 @@ export default function BookAppointment() {
     await submitBooking(user.id);
   };
 
+  const isNonNotarial = serviceType && !requiresNotarizationType(serviceType);
+  const totalSteps = isNonNotarial ? 3 : 4;
+  const lastStep = totalSteps as Step;
+
   const canProceed = () => {
+    if (isNonNotarial) {
+      // 3-step flow: 1=service, 2=date/time, 3=review
+      if (step === 1) return !!serviceType;
+      if (step === 2) {
+        if (!date || !time) return false;
+        if (notarizationType === "in_person" && !clientZip && !location) return false;
+        const leadHours = parseInt(pricingSettings.min_booking_lead_hours || "2");
+        const bookingDate = new Date(`${date}T${time}`);
+        const minDate = new Date(Date.now() + leadHours * 60 * 60 * 1000);
+        if (bookingDate < minDate) return false;
+        return true;
+      }
+      return true;
+    }
+    // 4-step flow: 1=type, 2=service, 3=date/time, 4=review
     if (step === 1) return !!notarizationType;
     if (step === 2) return !!serviceType;
     if (step === 3) {
       if (!date || !time) return false;
-      // Require location for in-person
       if (notarizationType === "in_person" && !clientZip && !location) return false;
-      // Check minimum booking lead time
       const leadHours = parseInt(pricingSettings.min_booking_lead_hours || "2");
       const bookingDate = new Date(`${date}T${time}`);
       const minDate = new Date(Date.now() + leadHours * 60 * 60 * 1000);
