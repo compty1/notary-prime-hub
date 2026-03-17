@@ -543,6 +543,54 @@ export type Database = {
         }
         Relationships: []
       }
+      services: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          display_order: number
+          icon: string | null
+          id: string
+          is_active: boolean
+          name: string
+          price_from: number | null
+          price_to: number | null
+          pricing_model: string
+          short_description: string | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          price_from?: number | null
+          price_to?: number | null
+          pricing_model?: string
+          short_description?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          price_from?: number | null
+          price_to?: number | null
+          pricing_model?: string
+          short_description?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       time_slots: {
         Row: {
           created_at: string
