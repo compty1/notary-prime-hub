@@ -165,14 +165,52 @@ export default function AdminLeadPortal() {
     highIntent: leads.filter((l) => l.intent_score === "high").length,
   };
 
+  const discoverLeads = async () => {
+    setDiscovering(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("discover-leads", {
+        body: { action: "discover" },
+      });
+      if (error) throw error;
+      toast({ title: "AI Discovery Complete", description: `Found ${data.found} leads, inserted ${data.inserted} new ones.` });
+      fetchLeads();
+    } catch (e: any) {
+      toast({ title: "Discovery error", description: e.message, variant: "destructive" });
+    }
+    setDiscovering(false);
+  };
+
+  const enrichLeads = async () => {
+    setEnriching(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("discover-leads", {
+        body: { action: "enrich" },
+      });
+      if (error) throw error;
+      toast({ title: "Enrichment Complete", description: `Enriched ${data.enriched} leads with outreach tips.` });
+      fetchLeads();
+    } catch (e: any) {
+      toast({ title: "Enrichment error", description: e.message, variant: "destructive" });
+    }
+    setEnriching(false);
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="font-display text-2xl font-bold text-foreground">Lead Portal</h1>
-          <p className="text-sm text-muted-foreground">Ohio notarization leads — manage, contact, convert</p>
+          <p className="text-sm text-muted-foreground">Ohio notarization leads — discover, manage, convert</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="outline" size="sm" onClick={discoverLeads} disabled={discovering}>
+            {discovering ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Sparkles className="mr-1 h-3 w-3" />}
+            AI Discover
+          </Button>
+          <Button variant="outline" size="sm" onClick={enrichLeads} disabled={enriching}>
+            {enriching ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <RefreshCw className="mr-1 h-3 w-3" />}
+            Enrich Leads
+          </Button>
           <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={importCSV} />
           <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}><Upload className="mr-1 h-3 w-3" /> Import CSV</Button>
           <Button variant="outline" size="sm" onClick={exportCSV}><Download className="mr-1 h-3 w-3" /> Export</Button>
