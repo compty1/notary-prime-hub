@@ -213,8 +213,8 @@ export default function BusinessPortal() {
                       <Card key={m.id} className="border-border/50">
                         <CardContent className="flex items-center justify-between p-3">
                           <div>
-                            <p className="text-sm font-medium">{m.user_id.slice(0, 8)}...</p>
-                            <p className="text-xs text-muted-foreground capitalize">{m.member_role}</p>
+                            <p className="text-sm font-medium">{memberProfiles[m.user_id]?.full_name || memberProfiles[m.user_id]?.email || m.user_id.slice(0, 8) + "..."}</p>
+                            <p className="text-xs text-muted-foreground capitalize">{m.member_role}{memberProfiles[m.user_id]?.email ? ` · ${memberProfiles[m.user_id].email}` : ""}</p>
                           </div>
                           <Button size="sm" variant="ghost" className="text-destructive" onClick={() => removeMember(m.id)}>
                             <Trash2 className="h-3 w-3" />
