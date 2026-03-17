@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -48,6 +49,21 @@ const testimonials = [
 export default function Index() {
   const [serviceType, setServiceType] = useState<"in_person" | "ron">("in_person");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [contactInfo, setContactInfo] = useState({ phone: "(614) 300-6890", email: "shane@shanegoble.com" });
+
+  useEffect(() => {
+    supabase.from("platform_settings").select("setting_key, setting_value")
+      .in("setting_key", ["notary_phone", "notary_email"])
+      .then(({ data }) => {
+        if (data) {
+          const phone = data.find(s => s.setting_key === "notary_phone")?.setting_value;
+          const email = data.find(s => s.setting_key === "notary_email")?.setting_value;
+          if (phone) setContactInfo(prev => ({ ...prev, phone }));
+          if (email) setContactInfo(prev => ({ ...prev, email }));
+        }
+      });
+  }, []);
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -385,8 +401,8 @@ export default function Index() {
             <div>
               <h4 className="mb-3 font-display text-sm font-semibold text-primary-foreground">Contact</h4>
               <div className="space-y-2 text-sm">
-                <a href="tel:+16145551234" className="flex items-center gap-2 hover:text-accent"><Phone className="h-3 w-3" /> (614) 555-1234</a>
-                <a href="mailto:shane@shanegoble.com" className="flex items-center gap-2 hover:text-accent"><Mail className="h-3 w-3" /> shane@shanegoble.com</a>
+                <a href={`tel:${contactInfo.phone.replace(/\D/g, '')}`} className="flex items-center gap-2 hover:text-accent"><Phone className="h-3 w-3" /> {contactInfo.phone}</a>
+                <a href={`mailto:${contactInfo.email}`} className="flex items-center gap-2 hover:text-accent"><Mail className="h-3 w-3" /> {contactInfo.email}</a>
               </div>
             </div>
             <div>
