@@ -78,7 +78,7 @@ export default function AdminDocuments() {
         }
       }
 
-      const { data, error } = await supabase
+      const response = await supabase
         .from("e_seal_verifications" as any)
         .insert({
           document_id: doc.id,
