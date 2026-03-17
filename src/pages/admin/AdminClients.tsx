@@ -244,6 +244,28 @@ export default function AdminClients() {
           })()}
         </DialogContent>
       </Dialog>
+
+      {/* Message Client Dialog */}
+      <Dialog open={!!messageClient} onOpenChange={() => setMessageClient(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader><DialogTitle className="font-display flex items-center gap-2"><Mail className="h-5 w-5 text-accent" /> Message Client</DialogTitle></DialogHeader>
+          {messageClient && (
+            <div className="space-y-4">
+              <div className="rounded-lg bg-muted/50 p-3 text-sm">
+                <p><strong>To:</strong> {messageClient.full_name || "Client"} ({messageClient.email})</p>
+              </div>
+              <div><Label>Subject</Label><Input value={messageSubject} onChange={(e) => setMessageSubject(e.target.value)} /></div>
+              <div><Label>Message</Label><Textarea value={messageBody} onChange={(e) => setMessageBody(e.target.value)} rows={5} placeholder="Type your message..." /></div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setMessageClient(null)}>Cancel</Button>
+            <Button onClick={sendClientMessage} disabled={sendingMessage || !messageBody.trim()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+              {sendingMessage ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Send className="mr-1 h-4 w-4" />} Send
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
