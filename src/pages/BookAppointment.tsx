@@ -410,11 +410,13 @@ export default function BookAppointment() {
       const reader = new FileReader();
       reader.onload = async () => {
         const base64 = (reader.result as string).split(",")[1];
+        const { data: { session } } = await supabase.auth.getSession();
         const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/detect-document`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            Authorization: `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
           },
           body: JSON.stringify({ imageBase64: base64, fileName: file.name }),
         });
