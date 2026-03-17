@@ -43,6 +43,7 @@ export default function BookAppointment() {
   const [time, setTime] = useState("");
   const [location, setLocation] = useState("");
   const [notes, setNotes] = useState("");
+  const [rebookingId, setRebookingId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   // Address fields for in-person
