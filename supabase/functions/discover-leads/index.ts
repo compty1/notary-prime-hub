@@ -146,7 +146,7 @@ Businesses: ${JSON.stringify(leadsToEnrich.map(l => ({ id: l.id, name: l.busines
 
 Return ONLY a JSON array. No markdown.`;
 
-      const aiResp = await fetch("https://ai.lovable.dev/chat/completions", {
+      const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${LOVABLE_API_KEY}`,
