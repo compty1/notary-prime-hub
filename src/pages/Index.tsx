@@ -57,6 +57,7 @@ export default function Index() {
   const { toast } = useToast();
   const [contactForm, setContactForm] = useState({ name: "", email: "", phone: "", service: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
+  const [lastSubmitTime, setLastSubmitTime] = useState(0);
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,6 +68,12 @@ export default function Index() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(contactForm.email.trim())) {
       toast({ title: "Invalid email", description: "Please enter a valid email address.", variant: "destructive" });
+      return;
+    }
+    // Rate limit: 1 submission per 60 seconds
+    const now = Date.now();
+    if (now - lastSubmitTime < 60000) {
+      toast({ title: "Please wait", description: "You can submit again in a minute.", variant: "destructive" });
       return;
     }
     setSubmitting(true);
@@ -85,6 +92,7 @@ export default function Index() {
     if (error) {
       toast({ title: "Something went wrong", description: "Please try again or call us directly.", variant: "destructive" });
     } else {
+      setLastSubmitTime(now);
       toast({ title: "Message sent!", description: "We'll get back to you within 24 hours." });
       setContactForm({ name: "", email: "", phone: "", service: "", message: "" });
     }
