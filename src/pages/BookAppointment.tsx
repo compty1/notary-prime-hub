@@ -713,11 +713,27 @@ export default function BookAppointment() {
   const renderIntakeFields = () => {
     if (!serviceType) return null;
     const cat = currentCategory;
+    const svcLower = serviceType.toLowerCase();
+
+    // No special intake for document_services or business_services
+    if (cat === "document_services" || cat === "business_services") return null;
+
+    // Check if any fields are relevant for this service
+    const showApostille = cat === "authentication" || svcLower.includes("apostille");
+    const showImmigration = (cat === "consulting" && (svcLower.includes("immigration") || svcLower.includes("uscis")));
+    const showRealEstate = svcLower.includes("real estate") || svcLower.includes("closing");
+    const showI9 = svcLower.includes("i-9") || svcLower.includes("employment verification") || svcLower.includes("employment onboarding");
+    const showEmployer = showI9; // Only I-9 and employment services need employer fields
+    const showBusiness = cat === "business" && !DIGITAL_ONLY_SERVICES.has(serviceType);
+
+    // If no category-specific fields apply, return null
+    if (!showApostille && !showImmigration && !showRealEstate && !showI9 && !showEmployer && !showBusiness) return null;
+
     return (
       <div className="space-y-3 rounded-lg border border-border/50 bg-muted/30 p-4">
         <p className="text-sm font-medium flex items-center gap-2"><Info className="h-4 w-4 text-accent" /> Service-Specific Details</p>
         
-        {(cat === "authentication" || serviceType.toLowerCase().includes("apostille")) && (
+        {showApostille && (
           <>
             <div>
               <Label>Destination Country</Label>
@@ -753,7 +769,7 @@ export default function BookAppointment() {
           </>
         )}
 
-        {(cat === "consulting" || serviceType.toLowerCase().includes("immigration")) && (
+        {showImmigration && (
           <>
             <div>
               <Label>USCIS Form Number</Label>
@@ -782,7 +798,7 @@ export default function BookAppointment() {
           </>
         )}
 
-        {(serviceType.toLowerCase().includes("real estate") || serviceType.toLowerCase().includes("closing")) && (
+        {showRealEstate && (
           <>
             <div>
               <Label>Property Address</Label>
@@ -795,7 +811,7 @@ export default function BookAppointment() {
           </>
         )}
 
-        {(cat === "verification" || serviceType.toLowerCase().includes("i-9")) && (
+        {showEmployer && (
           <>
             <div>
               <Label>Employer Name</Label>
@@ -808,7 +824,45 @@ export default function BookAppointment() {
           </>
         )}
 
-        {cat === "business" && (
+        {/* I-9 List A/B/C Document Reference */}
+        {showI9 && (
+          <div className="rounded-lg border border-blue-200 bg-blue-50/50 p-3 space-y-2">
+            <p className="text-xs font-semibold text-blue-900 flex items-center gap-1">
+              <Info className="h-3 w-3" /> Acceptable I-9 Documents — Bring ONE of the following:
+            </p>
+            <div className="text-xs text-blue-800 space-y-2">
+              <div>
+                <p className="font-semibold">List A — Proves Identity AND Work Authorization (need ONE):</p>
+                <ul className="ml-4 list-disc text-blue-700">
+                  <li>U.S. Passport or Passport Card</li>
+                  <li>Permanent Resident Card (Green Card)</li>
+                  <li>Employment Authorization Document (EAD / I-766)</li>
+                  <li>Foreign passport with I-94 and endorsement</li>
+                </ul>
+              </div>
+              <p className="font-semibold text-blue-900">— OR bring BOTH —</p>
+              <div>
+                <p className="font-semibold">List B — Proves Identity (need ONE):</p>
+                <ul className="ml-4 list-disc text-blue-700">
+                  <li>Driver's license or state-issued ID</li>
+                  <li>School ID with photo</li>
+                  <li>Voter registration card</li>
+                  <li>U.S. military card or draft record</li>
+                </ul>
+              </div>
+              <div>
+                <p className="font-semibold">PLUS List C — Proves Work Authorization (need ONE):</p>
+                <ul className="ml-4 list-disc text-blue-700">
+                  <li>Social Security card (unrestricted)</li>
+                  <li>U.S. birth certificate</li>
+                  <li>Certification of Birth Abroad (FS-545 or DS-1350)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showBusiness && (
           <div>
             <Label>Company Name</Label>
             <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Your business name" />

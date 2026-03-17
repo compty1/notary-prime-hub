@@ -61,9 +61,12 @@ const serviceChecklists: Record<string, string[]> = {
     "Supporting evidence/documentation as required by your form",
   ],
   i9: [
-    "List A document (passport or permanent resident card) OR",
-    "List B document (driver's license) PLUS List C document (Social Security card)",
     "Employer's I-9 form (Section 1 must be completed by employee first)",
+    "One List A document (proves both identity AND work authorization):",
+    "  • U.S. Passport or Passport Card, Permanent Resident Card (Green Card), Employment Authorization Document (EAD/I-766), or Foreign passport with I-94",
+    "OR one List B document (identity) PLUS one List C document (work authorization):",
+    "  • List B: Driver's license, state ID, school ID with photo, voter registration card, or U.S. military card",
+    "  • List C: Social Security card (unrestricted), U.S. birth certificate, or Certification of Birth Abroad (FS-545/DS-1350)",
   ],
   real_estate: [
     "Closing documents from title company",
