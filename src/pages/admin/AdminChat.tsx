@@ -12,46 +12,33 @@ import { MessageSquare, Send, User, Shield, Loader2 } from "lucide-react";
 export default function AdminChat() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [conversations, setConversations] = useState<Record<string, any[]>>({});
+  const [allMessages, setAllMessages] = useState<any[]>([]);
+  const [profiles, setProfiles] = useState<Record<string, string>>({});
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Load all chat messages grouped by sender
-    supabase.from("chat_messages").select("*").order("created_at", { ascending: true }).then(({ data }) => {
-      if (data) {
-        const grouped: Record<string, any[]> = {};
-        data.forEach((msg: any) => {
-          const key = msg.is_admin ? "admin" : msg.sender_id;
-          const convKey = msg.is_admin ? (data.find((m: any) => !m.is_admin && m.sender_id !== msg.sender_id)?.sender_id || msg.sender_id) : msg.sender_id;
-          // Group by non-admin sender
-          const userKey = msg.is_admin ? msg.sender_id : msg.sender_id;
-          if (!grouped[userKey]) grouped[userKey] = [];
-          grouped[userKey].push(msg);
-        });
-        // Regroup properly: all messages for each unique non-admin sender
-        const proper: Record<string, any[]> = {};
-        data.forEach((msg: any) => {
-          // Find the "conversation" user — if admin sent, attribute to the conversation
-          const userId = msg.is_admin ? msg.sender_id : msg.sender_id;
-          if (!proper[userId]) proper[userId] = [];
-          proper[userId].push(msg);
-        });
-        setConversations(proper);
-        // Auto-select first conversation
-        const keys = Object.keys(proper);
-        if (keys.length > 0 && !selectedUser) setSelectedUser(keys[0]);
+    const fetchData = async () => {
+      const [{ data: msgs }, { data: profs }] = await Promise.all([
+        supabase.from("chat_messages").select("*").order("created_at", { ascending: true }),
+        supabase.from("profiles").select("user_id, full_name"),
+      ]);
+      if (msgs) setAllMessages(msgs);
+      if (profs) {
+        const map: Record<string, string> = {};
+        profs.forEach((p: any) => { map[p.user_id] = p.full_name || p.user_id.slice(0, 8); });
+        setProfiles(map);
       }
-    });
+    };
+    fetchData();
 
-    // Subscribe to realtime
     const channel = supabase.channel("admin-chat").on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages" }, (payload) => {
       const msg = payload.new as any;
-      setConversations((prev) => {
-        const key = msg.sender_id;
-        return { ...prev, [key]: [...(prev[key] || []), msg] };
+      setAllMessages((prev) => {
+        if (prev.some((m) => m.id === msg.id)) return prev;
+        return [...prev, msg];
       });
     }).subscribe();
 
@@ -60,19 +47,47 @@ export default function AdminChat() {
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [conversations, selectedUser]);
+  }, [allMessages, selectedUser]);
+
+  // Group conversations by CLIENT id (non-admin sender_id)
+  const clientIds = [...new Set(
+    allMessages.filter((m) => !m.is_admin).map((m) => m.sender_id)
+  )];
+
+  // Get messages for selected client: their messages + all admin messages in context
+  const getConversation = (clientId: string) => {
+    return allMessages.filter((m) => {
+      if (!m.is_admin && m.sender_id === clientId) return true;
+      // Admin messages are shown in the selected conversation
+      // Since there's no recipient_id, show admin messages when this client is selected
+      if (m.is_admin) return true;
+      return false;
+    });
+  };
+
+  const getUnreadCount = (clientId: string) => {
+    return allMessages.filter((m) => m.sender_id === clientId && !m.is_admin && !m.read).length;
+  };
+
+  const getLastMessage = (clientId: string) => {
+    const msgs = allMessages.filter((m) => m.sender_id === clientId && !m.is_admin);
+    return msgs[msgs.length - 1];
+  };
 
   const sendMessage = async () => {
     if (!message.trim() || !user || !selectedUser) return;
     setSending(true);
     const { error } = await supabase.from("chat_messages").insert({ sender_id: user.id, message: message.trim(), is_admin: true } as any);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else setMessage("");
+    else {
+      setMessage("");
+      // Mark client messages as read
+      await supabase.from("chat_messages").update({ read: true } as any).eq("sender_id", selectedUser).eq("is_admin", false);
+    }
     setSending(false);
   };
 
-  const userIds = Object.keys(conversations).filter((id) => id !== user?.id);
-  const currentMessages = selectedUser ? conversations[selectedUser] || [] : [];
+  const currentMessages = selectedUser ? getConversation(selectedUser) : [];
 
   return (
     <div>
@@ -87,19 +102,19 @@ export default function AdminChat() {
           <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Conversations</CardTitle></CardHeader>
           <CardContent className="p-2">
             <ScrollArea className="h-[500px]">
-              {userIds.length === 0 ? (
+              {clientIds.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-8">No conversations yet</p>
               ) : (
-                userIds.map((uid) => {
-                  const msgs = conversations[uid] || [];
-                  const lastMsg = msgs[msgs.length - 1];
-                  const unread = msgs.filter((m) => !m.is_admin && !m.read).length;
+                clientIds.map((uid) => {
+                  const lastMsg = getLastMessage(uid);
+                  const unread = getUnreadCount(uid);
+                  const name = profiles[uid] || uid.slice(0, 8);
                   return (
                     <div key={uid} onClick={() => setSelectedUser(uid)}
                       className={`flex items-center gap-2 p-3 rounded-lg cursor-pointer transition-colors ${selectedUser === uid ? "bg-accent/10" : "hover:bg-muted"}`}>
                       <User className="h-5 w-5 text-muted-foreground" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{uid.slice(0, 8)}...</p>
+                        <p className="text-sm font-medium truncate">{name}</p>
                         {lastMsg && <p className="text-xs text-muted-foreground truncate">{lastMsg.message}</p>}
                       </div>
                       {unread > 0 && <Badge className="bg-accent text-accent-foreground text-xs">{unread}</Badge>}
@@ -116,7 +131,7 @@ export default function AdminChat() {
           <CardHeader className="pb-2 border-b">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <MessageSquare className="h-4 w-4 text-accent" />
-              {selectedUser ? `Chat with ${selectedUser.slice(0, 8)}...` : "Select a conversation"}
+              {selectedUser ? `Chat with ${profiles[selectedUser] || selectedUser.slice(0, 8)}` : "Select a conversation"}
             </CardTitle>
           </CardHeader>
           <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3" style={{ maxHeight: "450px" }}>
