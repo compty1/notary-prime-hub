@@ -816,10 +816,18 @@ export default function BookAppointment() {
                           Use My Location
                         </Button>
                       </div>
-                      <Input
-                        placeholder="Street address"
+                      <AddressAutocomplete
                         value={clientAddress}
-                        onChange={(e) => setClientAddress(e.target.value)}
+                        onChange={setClientAddress}
+                        userLat={userLat}
+                        userLon={userLon}
+                        onSelect={(s) => {
+                          setClientAddress(s.address);
+                          setClientCity(s.city);
+                          setClientState(s.state);
+                          setClientZip(s.zip);
+                          setLocation(s.fullAddress);
+                        }}
                       />
                       <div className="grid grid-cols-3 gap-2">
                         <Input
@@ -841,7 +849,7 @@ export default function BookAppointment() {
                         />
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Common meeting spots: coffee shops, libraries, bank lobbies, or your home/office
+                        Search for a business, address, or landmark — suggestions appear as you type
                       </p>
                     </div>
                   )}
