@@ -16,6 +16,11 @@ import { motion } from "framer-motion";
 export default function FeeCalculator() {
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [settingsLoading, setSettingsLoading] = useState(true);
+
+  useEffect(() => {
+    document.title = "Fee Calculator — Shane Goble Notary";
+    return () => { document.title = "Shane Goble Notary — Ohio Notary Public | In-Person & RON"; };
+  }, []);
   const [notarizationType, setNotarizationType] = useState<"in_person" | "ron">("in_person");
   const [documentCount, setDocumentCount] = useState(1);
   const [travelMiles, setTravelMiles] = useState(0);
