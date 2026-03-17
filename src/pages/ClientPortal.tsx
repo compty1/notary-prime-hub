@@ -12,11 +12,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Clock, MapPin, Monitor, Plus, LogOut, Shield, FileText, RefreshCw, Video, CheckCircle, Mic, Camera as CameraIcon, Wifi, XCircle, User, Pencil, Save, Loader2, Upload, Download, FolderOpen, QrCode, ArrowRight, MessageSquare, Send, Sparkles, Eye, DollarSign, Star, ShoppingBag, Mail, Package } from "lucide-react";
+import { Calendar, Clock, MapPin, Monitor, Plus, LogOut, Shield, FileText, RefreshCw, Video, CheckCircle, Mic, Camera as CameraIcon, Wifi, XCircle, User, Pencil, Save, Loader2, Upload, Download, FolderOpen, QrCode, ArrowRight, MessageSquare, Send, Sparkles, Eye, DollarSign, Star, ShoppingBag, Mail, Package, CreditCard } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { QRCodeSVG } from "qrcode.react";
 import DocumentWizard from "@/components/DocumentWizard";
+import PaymentForm from "@/components/PaymentForm";
 
 const statusColors: Record<string, string> = {
   scheduled: "bg-blue-100 text-blue-800",
@@ -72,6 +73,7 @@ export default function ClientPortal() {
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
   const [deletingDocId, setDeletingDocId] = useState<string | null>(null);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
 
   // Payments & Reviews
   const [payments, setPayments] = useState<any[]>([]);
@@ -730,14 +732,35 @@ export default function ClientPortal() {
 
           {/* PAYMENTS TAB */}
           <TabsContent value="payments" className="space-y-6">
-            <h2 className="font-display text-xl font-semibold">Payments & Invoices</h2>
-            {payments.length === 0 ? (
+            <div className="flex items-center justify-between">
+              <h2 className="font-display text-xl font-semibold">Payments & Invoices</h2>
+              {!showPaymentForm && (
+                <Button size="sm" onClick={() => setShowPaymentForm(true)}>
+                  <CreditCard className="mr-1 h-4 w-4" /> Make Payment
+                </Button>
+              )}
+            </div>
+
+            {showPaymentForm && (
+              <PaymentForm
+                onSuccess={() => {
+                  setShowPaymentForm(false);
+                  // Refresh payments
+                  supabase.from("payments").select("*").eq("client_id", user!.id).order("created_at", { ascending: false }).then(({ data }) => {
+                    if (data) setPayments(data);
+                  });
+                }}
+                onCancel={() => setShowPaymentForm(false)}
+              />
+            )}
+
+            {payments.length === 0 && !showPaymentForm ? (
               <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground">
                 <DollarSign className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
                 <p>No payment history yet</p>
                 <p className="text-sm mt-1">Payments will appear here after your appointments are completed.</p>
               </CardContent></Card>
-            ) : (
+            ) : payments.length > 0 ? (
               <div className="space-y-3">
                 {payments.map((p) => (
                   <Card key={p.id} className="border-border/50">
@@ -756,7 +779,7 @@ export default function ClientPortal() {
                   </Card>
                 ))}
               </div>
-            )}
+            ) : null}
           </TabsContent>
 
           {/* REVIEWS TAB */}
