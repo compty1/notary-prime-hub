@@ -34,6 +34,30 @@ export default function AdminClients() {
   const [adminNotes, setAdminNotes] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
   const [page, setPage] = useState(0);
+  // Message state
+  const [messageClient, setMessageClient] = useState<any>(null);
+  const [messageSubject, setMessageSubject] = useState("");
+  const [messageBody, setMessageBody] = useState("");
+  const [sendingMessage, setSendingMessage] = useState(false);
+
+  const sendClientMessage = async () => {
+    if (!messageClient?.email || !messageBody.trim()) return;
+    setSendingMessage(true);
+    try {
+      await supabase.functions.invoke("send-correspondence", {
+        body: { to_address: messageClient.email, subject: messageSubject, body: messageBody, client_id: messageClient.user_id },
+      });
+      toast({ title: "Message sent", description: `Email sent to ${messageClient.email}` });
+      await supabase.from("audit_log").insert({
+        user_id: user?.id, action: "client_messaged", entity_type: "profile",
+        entity_id: messageClient.user_id, details: { to: messageClient.email, subject: messageSubject },
+      });
+      setMessageClient(null);
+    } catch (err: any) {
+      toast({ title: "Send failed", description: err.message, variant: "destructive" });
+    }
+    setSendingMessage(false);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
