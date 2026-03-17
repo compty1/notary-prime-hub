@@ -156,6 +156,7 @@ export default function BookAppointment() {
   };
 
   const isDigitalOnly = (svcName: string) => {
+    if (LOCATION_REQUIRED_SERVICES.has(svcName)) return false;
     const cat = serviceCategories[svcName];
     return (cat && DIGITAL_ONLY_CATEGORIES.has(cat)) || DIGITAL_ONLY_SERVICES.has(svcName);
   };
