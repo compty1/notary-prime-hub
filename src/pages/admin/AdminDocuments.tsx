@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,7 +19,7 @@ const docStatusColors: Record<string, string> = {
   rejected: "bg-red-100 text-red-800",
 };
 
-export default function AdminDocuments() {
+const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(_, ref) {
   const { user } = useAuth();
   const { toast } = useToast();
   const [docs, setDocs] = useState<any[]>([]);
@@ -172,7 +172,7 @@ export default function AdminDocuments() {
   }
 
   return (
-    <div>
+    <div ref={ref}>
       <h1 className="mb-6 font-display text-2xl font-bold text-foreground">Document Management</h1>
 
       {docs.length === 0 ? (
@@ -283,4 +283,6 @@ export default function AdminDocuments() {
       </Dialog>
     </div>
   );
-}
+});
+
+export default AdminDocuments;
