@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { FileText, Download, Loader2, ShieldCheck, ShieldX, ExternalLink, Eye, Search, ChevronLeft, ChevronRight, ArrowUpDown } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { FileText, Download, Loader2, ShieldCheck, ShieldX, ExternalLink, Eye, Search, ChevronLeft, ChevronRight, ArrowUpDown, Trash2 } from "lucide-react";
 
 const docStatuses = ["uploaded", "pending_review", "approved", "notarized", "rejected"];
 
@@ -33,6 +34,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
   const [sealingId, setSealingId] = useState<string | null>(null);
   const [previewDoc, setPreviewDoc] = useState<any>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Search, filter, sort, pagination
   const [search, setSearch] = useState("");
@@ -215,6 +217,35 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
                   <div className="flex items-center gap-2 flex-wrap justify-end">
                     <Button size="sm" variant="ghost" className="text-xs" onClick={() => openPreview(doc)}><Eye className="mr-1 h-3 w-3" /> Preview</Button>
                     <Button size="sm" variant="ghost" className="text-xs" onClick={() => downloadDocument(doc)}><Download className="mr-1 h-3 w-3" /> Download</Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button size="sm" variant="ghost" className="text-xs text-destructive hover:text-destructive"><Trash2 className="mr-1 h-3 w-3" /> Delete</Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Document</AlertDialogTitle>
+                          <AlertDialogDescription>Are you sure you want to delete "{doc.file_name}"? This will remove the file from storage and cannot be undone.</AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
+                            setDeletingId(doc.id);
+                            await supabase.storage.from("documents").remove([doc.file_path]);
+                            const { error } = await supabase.from("documents").delete().eq("id", doc.id);
+                            if (error) toast({ title: "Delete failed", description: error.message, variant: "destructive" });
+                            else {
+                              await supabase.from("audit_log").insert({ user_id: user?.id, action: "document_deleted", entity_type: "document", entity_id: doc.id, details: { file_name: doc.file_name } });
+                              toast({ title: "Document deleted" });
+                              fetchDocs();
+                            }
+                            setDeletingId(null);
+                          }}>
+                            {deletingId === doc.id ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : null}
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                     {doc.status === "notarized" && !verification && (
                       <Button size="sm" variant="outline" className="text-xs" onClick={() => generateVerification(doc)} disabled={sealingId === doc.id}>
                         {sealingId === doc.id ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <ShieldCheck className="mr-1 h-3 w-3" />} Publish Verify

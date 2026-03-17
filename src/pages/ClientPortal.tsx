@@ -99,8 +99,9 @@ export default function ClientPortal() {
   // Correspondence & Apostille
   const [correspondence, setCorrespondence] = useState<any[]>([]);
   const [apostilleRequests, setApostilleRequests] = useState<any[]>([]);
-  const [apostilleForm, setApostilleForm] = useState({ document_description: "", notes: "" });
+  const [apostilleForm, setApostilleForm] = useState({ document_description: "", notes: "", destination_country: "", document_count: "1" });
   const [submittingApostille, setSubmittingApostille] = useState(false);
+  const [payingPaymentId, setPayingPaymentId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -692,17 +693,33 @@ export default function ClientPortal() {
           {/* APOSTILLE TAB */}
           <TabsContent value="apostille" className="space-y-6">
             <h2 className="font-display text-xl font-semibold">Apostille Requests</h2>
-            {/* Request form */}
             <Card className="border-border/50">
               <CardContent className="p-4 space-y-4">
                 <h3 className="text-sm font-semibold">Request New Apostille</h3>
                 <div>
-                  <Label>Document Description</Label>
+                  <Label>Document Description *</Label>
                   <Input value={apostilleForm.document_description} onChange={(e) => setApostilleForm({ ...apostilleForm, document_description: e.target.value })} placeholder="e.g. Birth Certificate, Articles of Incorporation" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label>Destination Country</Label>
+                    <Input value={apostilleForm.destination_country} onChange={(e) => setApostilleForm({ ...apostilleForm, destination_country: e.target.value })} placeholder="e.g. Germany, Japan" />
+                    {apostilleForm.destination_country && (
+                      <p className="text-xs mt-1 text-muted-foreground">
+                        {["Afghanistan","Bhutan","Eritrea","Ethiopia","Iraq","Libya","Nepal","Pakistan","Somalia","South Sudan","Syria","Yemen","Chad","Comoros","Guinea-Bissau","Kiribati","Nauru","Palau","Qatar","Tuvalu"].some(c => apostilleForm.destination_country.toLowerCase().includes(c.toLowerCase()))
+                          ? "⚠️ This country may not be a Hague Convention member. Embassy legalization may be required instead."
+                          : "✓ This country is likely a Hague Convention member — apostille should be accepted."}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <Label>Number of Documents</Label>
+                    <Input type="number" min="1" max="50" value={apostilleForm.document_count} onChange={(e) => setApostilleForm({ ...apostilleForm, document_count: e.target.value })} />
+                  </div>
                 </div>
                 <div>
                   <Label>Notes (optional)</Label>
-                  <Textarea value={apostilleForm.notes} onChange={(e) => setApostilleForm({ ...apostilleForm, notes: e.target.value })} rows={2} placeholder="Destination country, urgency, etc." maxLength={500} />
+                  <Textarea value={apostilleForm.notes} onChange={(e) => setApostilleForm({ ...apostilleForm, notes: e.target.value })} rows={2} placeholder="Urgency level, special instructions, etc." maxLength={500} />
                 </div>
                 <Button
                   disabled={!apostilleForm.document_description.trim() || submittingApostille}
@@ -713,12 +730,14 @@ export default function ClientPortal() {
                       client_id: user.id,
                       document_description: apostilleForm.document_description.trim(),
                       notes: apostilleForm.notes.trim() || null,
+                      destination_country: apostilleForm.destination_country.trim() || null,
+                      document_count: parseInt(apostilleForm.document_count) || 1,
                     }).select().single();
                     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
                     else if (newReq) {
                       toast({ title: "Apostille request submitted" });
                       setApostilleRequests(prev => [newReq, ...prev]);
-                      setApostilleForm({ document_description: "", notes: "" });
+                      setApostilleForm({ document_description: "", notes: "", destination_country: "", document_count: "1" });
                     }
                     setSubmittingApostille(false);
                   }}
@@ -731,21 +750,44 @@ export default function ClientPortal() {
             </Card>
             {apostilleRequests.length > 0 && (
               <div className="space-y-3">
-                {apostilleRequests.map((req) => (
-                  <Card key={req.id} className="border-border/50">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium">{req.document_description}</span>
-                        <Badge className={req.status === "delivered" ? "bg-emerald-100 text-emerald-800" : req.status === "shipped" ? "bg-cyan-100 text-cyan-800" : "bg-amber-100 text-amber-800"}>
-                          {req.status.replace(/_/g, " ")}
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground">Fee: ${parseFloat(req.fee || "0").toFixed(2)}</p>
-                      {req.tracking_number && <p className="text-xs text-muted-foreground mt-1">Tracking: {req.tracking_number}</p>}
-                      <p className="text-xs text-muted-foreground mt-1">Created: {new Date(req.created_at).toLocaleDateString()}</p>
-                    </CardContent>
-                  </Card>
-                ))}
+                {apostilleRequests.map((req) => {
+                  const apoSteps = ["intake", "payment_received", "submitted_to_sos", "processing", "shipped", "delivered"];
+                  const apoStepLabels = ["Intake", "Payment", "SOS Submission", "Processing", "Shipped", "Delivered"];
+                  const currentIdx = apoSteps.indexOf(req.status);
+                  return (
+                    <Card key={req.id} className="border-border/50">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium">{req.document_description}</span>
+                          <Badge className={req.status === "delivered" ? "bg-emerald-100 text-emerald-800" : req.status === "shipped" ? "bg-cyan-100 text-cyan-800" : "bg-amber-100 text-amber-800"}>
+                            {req.status.replace(/_/g, " ")}
+                          </Badge>
+                        </div>
+                        {/* Status Timeline */}
+                        <div className="flex items-center gap-1 my-3">
+                          {apoSteps.map((s, i) => (
+                            <div key={s} className="flex items-center flex-1">
+                              <div className={`flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold ${i <= currentIdx ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"} ${i === currentIdx ? "ring-2 ring-accent ring-offset-1" : ""}`}>
+                                {i < currentIdx ? "✓" : i + 1}
+                              </div>
+                              {i < apoSteps.length - 1 && <div className={`flex-1 h-0.5 mx-1 ${i < currentIdx ? "bg-accent" : "bg-muted"}`} />}
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex justify-between text-[9px] text-muted-foreground mb-2">
+                          {apoStepLabels.map(l => <span key={l}>{l}</span>)}
+                        </div>
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                          <span>Fee: ${parseFloat(req.fee || "0").toFixed(2)}</span>
+                          {req.destination_country && <span>→ {req.destination_country}</span>}
+                          {req.document_count > 1 && <span>{req.document_count} docs</span>}
+                          {req.tracking_number && <span>Tracking: {req.tracking_number}</span>}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">Created: {new Date(req.created_at).toLocaleDateString()}</p>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             )}
           </TabsContent>
@@ -782,22 +824,45 @@ export default function ClientPortal() {
               </CardContent></Card>
             ) : payments.length > 0 ? (
               <div className="space-y-3">
-                {payments.map((p) => (
-                  <Card key={p.id} className="border-border/50">
-                    <CardContent className="flex items-center justify-between p-4">
-                      <div>
-                        <p className="font-medium text-sm">${parseFloat(p.amount).toFixed(2)}</p>
-                        <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString()} · {p.method || "N/A"}</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge className={p.status === "paid" ? "bg-emerald-100 text-emerald-800" : p.status === "pending" ? "bg-amber-100 text-amber-800" : "bg-muted text-muted-foreground"}>
-                          {p.status}
-                        </Badge>
-                        {p.invoice_url && <a href={p.invoice_url} target="_blank" rel="noreferrer"><Button size="sm" variant="outline" className="text-xs">View Invoice</Button></a>}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                {payments.map((p) => {
+                  const linkedAppt = appointments.find(a => a.id === p.appointment_id);
+                  return (
+                    <Card key={p.id} className="border-border/50">
+                      <CardContent className="flex items-center justify-between p-4">
+                        <div>
+                          <p className="font-medium text-sm">${parseFloat(p.amount).toFixed(2)}</p>
+                          {linkedAppt && <p className="text-xs text-accent font-medium">{linkedAppt.service_type}</p>}
+                          <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString()} · {p.method || "N/A"}</p>
+                          {p.notes && <p className="text-xs text-muted-foreground mt-0.5">{p.notes}</p>}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {p.status === "pending" && (
+                            <Button size="sm" className="text-xs bg-accent text-accent-foreground hover:bg-gold-dark" onClick={() => setPayingPaymentId(p.id)}>
+                              <CreditCard className="mr-1 h-3 w-3" /> Pay Now
+                            </Button>
+                          )}
+                          <Badge className={p.status === "paid" ? "bg-emerald-100 text-emerald-800" : p.status === "pending" ? "bg-amber-100 text-amber-800" : "bg-muted text-muted-foreground"}>
+                            {p.status}
+                          </Badge>
+                          {p.invoice_url && <a href={p.invoice_url} target="_blank" rel="noreferrer"><Button size="sm" variant="outline" className="text-xs">View Invoice</Button></a>}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+                {payingPaymentId && (
+                  <PaymentForm
+                    defaultAmount={parseFloat(payments.find(p => p.id === payingPaymentId)?.amount || "0")}
+                    onSuccess={async () => {
+                      // Mark payment as paid
+                      await supabase.from("payments").update({ status: "paid", paid_at: new Date().toISOString(), method: "stripe" } as any).eq("id", payingPaymentId);
+                      setPayments(prev => prev.map(p => p.id === payingPaymentId ? { ...p, status: "paid", paid_at: new Date().toISOString() } : p));
+                      setPayingPaymentId(null);
+                      toast({ title: "Payment successful!" });
+                    }}
+                    onCancel={() => setPayingPaymentId(null)}
+                  />
+                )}
               </div>
             ) : null}
           </TabsContent>
@@ -911,6 +976,9 @@ export default function ClientPortal() {
                     <div className="flex gap-2 mt-3">
                       <Link to={`/book?type=${svc.name.toLowerCase().includes("remote") ? "ron" : "in_person"}&service=${encodeURIComponent(svc.name)}`}>
                         <Button size="sm" className="text-xs bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button>
+                      </Link>
+                      <Link to={`/services/${svc.id}`}>
+                        <Button size="sm" variant="outline" className="text-xs">View Details</Button>
                       </Link>
                     </div>
                   </CardContent>

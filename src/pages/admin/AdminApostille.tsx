@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Package, Plus, Loader2, Truck, FileText, Pencil } from "lucide-react";
+import { Package, Plus, Loader2, Truck, FileText, Pencil, ExternalLink, Globe } from "lucide-react";
 import { motion } from "framer-motion";
 
 const statusColors: Record<string, string> = {
@@ -37,6 +37,10 @@ export default function AdminApostille() {
   const [newClientId, setNewClientId] = useState("");
   const [editNotes, setEditNotes] = useState("");
   const [editFee, setEditFee] = useState("");
+  const [editDestCountry, setEditDestCountry] = useState("");
+  const [editDocCount, setEditDocCount] = useState("1");
+  const [newDestCountry, setNewDestCountry] = useState("");
+  const [newDocCount, setNewDocCount] = useState("1");
 
   useEffect(() => {
     Promise.all([
@@ -73,6 +77,8 @@ export default function AdminApostille() {
     setEditOpen(req);
     setEditNotes(req.notes || "");
     setEditFee(String(req.fee || "0"));
+    setEditDestCountry(req.destination_country || "");
+    setEditDocCount(String(req.document_count || 1));
   };
 
   const saveEdit = async () => {
@@ -80,11 +86,13 @@ export default function AdminApostille() {
     const { error } = await supabase.from("apostille_requests").update({
       notes: editNotes || null,
       fee: parseFloat(editFee) || 0,
+      destination_country: editDestCountry || null,
+      document_count: parseInt(editDocCount) || 1,
       updated_at: new Date().toISOString(),
     } as any).eq("id", editOpen.id);
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); }
     else {
-      setRequests(prev => prev.map(r => r.id === editOpen.id ? { ...r, notes: editNotes, fee: parseFloat(editFee) || 0 } : r));
+      setRequests(prev => prev.map(r => r.id === editOpen.id ? { ...r, notes: editNotes, fee: parseFloat(editFee) || 0, destination_country: editDestCountry || null, document_count: parseInt(editDocCount) || 1 } : r));
       toast({ title: "Request updated" });
       setEditOpen(null);
     }
@@ -97,9 +105,14 @@ export default function AdminApostille() {
           <h1 className="font-display text-2xl font-bold">Apostille Workflow</h1>
           <p className="text-sm text-muted-foreground">Track apostille requests: intake → processing → delivery</p>
         </div>
-        <Button size="sm" onClick={() => setCreateOpen(true)} className="bg-accent text-accent-foreground hover:bg-gold-dark">
-          <Plus className="mr-1 h-4 w-4" /> New Request
-        </Button>
+        <div className="flex items-center gap-2">
+          <a href="https://www.ohiosos.gov/businesses/apostilles-authentications/" target="_blank" rel="noopener noreferrer">
+            <Button size="sm" variant="outline"><ExternalLink className="mr-1 h-3 w-3" /> Ohio SOS Portal</Button>
+          </a>
+          <Button size="sm" onClick={() => setCreateOpen(true)} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+            <Plus className="mr-1 h-4 w-4" /> New Request
+          </Button>
+        </div>
       </div>
 
       {loading ? (
@@ -126,6 +139,8 @@ export default function AdminApostille() {
                         </Button>
                       </div>
                       <p className="text-xs text-muted-foreground mb-1">Client: {(() => { const p = profiles.find(p => p.user_id === req.client_id); return p?.full_name || p?.email || req.client_id.slice(0, 8); })()}</p>
+                      {req.destination_country && <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1"><Globe className="h-3 w-3" /> Destination: {req.destination_country}</p>}
+                      {req.document_count > 1 && <p className="text-xs text-muted-foreground mb-1">{req.document_count} document(s)</p>}
                       {req.notes && <p className="text-xs text-muted-foreground mb-2">{req.notes}</p>}
                       <p className="text-xs text-muted-foreground">Created: {new Date(req.created_at).toLocaleDateString()}</p>
                       {req.tracking_number && <p className="text-xs text-muted-foreground mt-1">Tracking: {req.tracking_number}</p>}
@@ -170,6 +185,10 @@ export default function AdminApostille() {
               </Select>
             </div>
             <div><Label>Document Description</Label><Input value={newDesc} onChange={(e) => setNewDesc(e.target.value)} placeholder="e.g., Birth Certificate for international use" /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Destination Country</Label><Input value={newDestCountry} onChange={(e) => setNewDestCountry(e.target.value)} placeholder="e.g. Germany" /></div>
+              <div><Label>Document Count</Label><Input type="number" min="1" value={newDocCount} onChange={(e) => setNewDocCount(e.target.value)} /></div>
+            </div>
             <div><Label>Fee ($)</Label><Input type="number" step="0.01" value={newFee} onChange={(e) => setNewFee(e.target.value)} placeholder="75.00" /></div>
             <div><Label>Notes</Label><Textarea value={newNotes} onChange={(e) => setNewNotes(e.target.value)} placeholder="Additional details..." /></div>
           </div>
@@ -178,11 +197,12 @@ export default function AdminApostille() {
             <Button className="bg-accent text-accent-foreground hover:bg-gold-dark" disabled={!newClientId || !newDesc} onClick={async () => {
               const { error } = await supabase.from("apostille_requests").insert({
                 document_description: newDesc, notes: newNotes || null, client_id: newClientId, fee: parseFloat(newFee) || 75,
+                destination_country: newDestCountry || null, document_count: parseInt(newDocCount) || 1,
               } as any);
               if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
               else {
                 toast({ title: "Request created" });
-                setCreateOpen(false); setNewDesc(""); setNewNotes(""); setNewClientId(""); setNewFee("75");
+                setCreateOpen(false); setNewDesc(""); setNewNotes(""); setNewClientId(""); setNewFee("75"); setNewDestCountry(""); setNewDocCount("1");
                 const { data } = await supabase.from("apostille_requests").select("*").order("created_at", { ascending: false });
                 if (data) setRequests(data);
               }
@@ -200,6 +220,10 @@ export default function AdminApostille() {
               <div className="rounded-lg bg-muted/50 p-3 text-sm">
                 <p className="font-medium">{editOpen.document_description}</p>
                 <p className="text-xs text-muted-foreground mt-1">Status: {editOpen.status.replace(/_/g, " ")}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Destination Country</Label><Input value={editDestCountry} onChange={(e) => setEditDestCountry(e.target.value)} placeholder="e.g. Germany" /></div>
+                <div><Label>Document Count</Label><Input type="number" min="1" value={editDocCount} onChange={(e) => setEditDocCount(e.target.value)} /></div>
               </div>
               <div><Label>Fee ($)</Label><Input type="number" step="0.01" value={editFee} onChange={(e) => setEditFee(e.target.value)} /></div>
               <div><Label>Notes</Label><Textarea value={editNotes} onChange={(e) => setEditNotes(e.target.value)} rows={3} /></div>

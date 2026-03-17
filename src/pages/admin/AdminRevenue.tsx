@@ -116,9 +116,10 @@ export default function AdminRevenue() {
       return;
     }
     setSendingRequest(true);
+    const amount = parseFloat(paymentReqForm.amount);
     const { error } = await supabase.from("payments").insert({
       client_id: paymentReqForm.client_id,
-      amount: parseFloat(paymentReqForm.amount),
+      amount,
       status: "pending",
       method: "stripe",
       notes: paymentReqForm.notes || "Payment requested by admin",
@@ -126,10 +127,32 @@ export default function AdminRevenue() {
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Payment request created", description: `$${parseFloat(paymentReqForm.amount).toFixed(2)} pending for client.` });
+      toast({ title: "Payment request created", description: `$${amount.toFixed(2)} pending for client.` });
+      // Send email notification to client
+      try {
+        const clientProfile = allProfiles.find((p: any) => p.user_id === paymentReqForm.client_id);
+        if (clientProfile?.email) {
+          await supabase.from("client_correspondence").insert({
+            client_id: paymentReqForm.client_id,
+            subject: `Payment Request — $${amount.toFixed(2)}`,
+            body: `A payment of $${amount.toFixed(2)} has been requested. ${paymentReqForm.notes ? `Notes: ${paymentReqForm.notes}` : ""}\n\nPlease log in to your Client Portal to make payment.`,
+            direction: "outbound",
+            to_address: clientProfile.email,
+            status: "sent",
+          });
+          await supabase.functions.invoke("send-correspondence", {
+            body: {
+              to: clientProfile.email,
+              subject: `Payment Request — $${amount.toFixed(2)}`,
+              body: `A payment of $${amount.toFixed(2)} has been requested. ${paymentReqForm.notes || ""}\n\nPlease log in to your Client Portal to make payment.`,
+            },
+          });
+        }
+      } catch (emailErr) {
+        console.error("Payment notification email error:", emailErr);
+      }
       setShowPaymentRequest(false);
       setPaymentReqForm({ client_id: "", amount: "", notes: "" });
-      // Refresh payments
       const { data } = await supabase.from("payments").select("*").order("created_at", { ascending: false });
       if (data) setPayments(data);
     }
