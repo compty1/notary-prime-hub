@@ -661,6 +661,7 @@ export default function Index() {
                 <Link to="/notary-guide" className="block hover:text-accent">Notary Guide</Link>
                 <Link to="/about" className="block hover:text-accent">About</Link>
                 <Link to="/digitize" className="block hover:text-accent">Document Digitization</Link>
+                <Link to="/join" className="block hover:text-accent">Join as Provider</Link>
                 <Link to="/login" className="block hover:text-accent">Client Portal</Link>
               </div>
             </div>

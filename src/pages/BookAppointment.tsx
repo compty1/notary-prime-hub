@@ -874,6 +874,53 @@ export default function BookAppointment() {
             <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Your business name" />
           </div>
         )}
+
+        {showRonOnboarding && (
+          <>
+            <div>
+              <Label>Current Notary Commission State</Label>
+              <Select value={clientState} onValueChange={setClientState}>
+                <SelectTrigger><SelectValue placeholder="Select state..." /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="OH">Ohio</SelectItem>
+                  <SelectItem value="IN">Indiana</SelectItem>
+                  <SelectItem value="KY">Kentucky</SelectItem>
+                  <SelectItem value="WV">West Virginia</SelectItem>
+                  <SelectItem value="PA">Pennsylvania</SelectItem>
+                  <SelectItem value="MI">Michigan</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>RON Platform Experience</Label>
+              <Select value={notes.includes("[RON Experience:") ? "" : ""} onValueChange={(v) => setNotes(prev => prev + `\n[RON Experience: ${v}]`)}>
+                <SelectTrigger><SelectValue placeholder="Select experience level..." /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No experience with RON platforms</SelectItem>
+                  <SelectItem value="some">Some experience (used 1-2 platforms)</SelectItem>
+                  <SelectItem value="experienced">Experienced (regular RON user)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        )}
+
+        {showWorkflow && (
+          <>
+            <div>
+              <Label>Current Workflow Description</Label>
+              <Textarea
+                placeholder="Describe your current notarization workflow — tools used, volume, pain points..."
+                rows={3}
+                onChange={(e) => setNotes(prev => prev.replace(/\[Workflow:.*\]/s, "") + `\n[Workflow: ${e.target.value}]`)}
+              />
+            </div>
+            <div>
+              <Label>Approximate Monthly Transactions</Label>
+              <Input type="number" placeholder="e.g., 50" min={0} onChange={(e) => setNotes(prev => prev + `\n[Monthly Volume: ${e.target.value}]`)} />
+            </div>
+          </>
+        )}
       </div>
     );
   };

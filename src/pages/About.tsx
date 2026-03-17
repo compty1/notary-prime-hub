@@ -238,6 +238,11 @@ export default function About() {
             <Link to="/services">
               <Button size="lg" variant="outline">View All Services</Button>
             </Link>
+            <Link to="/join">
+              <Button size="lg" variant="outline">
+                <Users className="mr-2 h-4 w-4" /> Join as Provider
+              </Button>
+            </Link>
             <Link to="/#contact">
               <Button size="lg" variant="outline">
                 <Mail className="mr-2 h-4 w-4" /> Contact Us

@@ -180,40 +180,7 @@ export default function Services() {
       </section>
 
       {/* "What Do I Need?" Quick Helper */}
-      <section className="bg-accent/5 border-b border-accent/10 py-6">
-        <div className="container mx-auto max-w-xl px-4">
-          <div className="flex items-center gap-2 mb-2 justify-center">
-            <Sparkles className="h-4 w-4 text-accent" />
-            <span className="text-sm font-semibold text-foreground">Not sure what you need?</span>
-          </div>
-          <div className="flex gap-2">
-            <Input
-              value={helpQuery}
-              onChange={(e) => setHelpQuery(e.target.value)}
-              placeholder='Describe your situation, e.g., "notarize a will for my parents"'
-              onKeyDown={(e) => { if (e.key === "Enter") submitHelp(); }}
-            />
-            <Button onClick={submitHelp} disabled={helpLoading || !helpQuery.trim()} size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">
-              {helpLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-            </Button>
-          </div>
-          {helpResult && (
-            <Card className="mt-3 border-accent/30">
-              <CardContent className="p-3">
-                <div className="prose prose-sm max-w-none dark:prose-invert text-sm">
-                  <ReactMarkdown>{helpResult}</ReactMarkdown>
-                </div>
-                {!helpLoading && (
-                  <div className="mt-3 flex gap-2">
-                    <Link to="/book"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark text-xs">Book Now <ArrowRight className="ml-1 h-3 w-3" /></Button></Link>
-                    <Button size="sm" variant="ghost" className="text-xs" onClick={() => { setHelpResult(""); setHelpQuery(""); }}>Clear</Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      </section>
+      <WhatDoINeed />
 
       {/* Search + Filter */}
       <div className="container mx-auto px-4 py-8">
