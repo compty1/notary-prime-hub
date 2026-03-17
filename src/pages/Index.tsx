@@ -90,7 +90,8 @@ export default function Index() {
     }
   };
 
-  const contactInfo = contactInfoState;
+  const [contactInfo, setContactInfo] = useState({ phone: "(614) 300-6890", email: "shane@shanegoble.com" });
+
   useEffect(() => {
     supabase.from("platform_settings").select("setting_key, setting_value")
       .in("setting_key", ["notary_phone", "notary_email"])
