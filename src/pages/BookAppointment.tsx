@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { MapPin, Monitor, Calendar, FileText, CheckCircle, ChevronLeft, ChevronRight, Shield, Clock, Camera, Loader2, Sparkles, AlertTriangle, LocateFixed, DollarSign } from "lucide-react";
+import { MapPin, Monitor, Calendar, FileText, CheckCircle, ChevronLeft, ChevronRight, Shield, Clock, Camera, Loader2, Sparkles, AlertTriangle, LocateFixed, DollarSign, Globe, Info } from "lucide-react";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 
 type Step = 1 | 2 | 3 | 4;
@@ -19,7 +19,6 @@ type NotarizationType = "in_person" | "ron";
 
 const BOOKING_STORAGE_KEY = "pending_booking_data";
 
-// Fallback service types if DB query fails
 const fallbackServiceTypes = [
   "Real Estate Documents",
   "Power of Attorney",
@@ -28,6 +27,33 @@ const fallbackServiceTypes = [
   "Business Documents",
   "I-9 Employment Verification",
   "Other",
+];
+
+const DIGITAL_ONLY_CATEGORIES = new Set(["recurring", "consulting"]);
+const DIGITAL_ONLY_SERVICES = new Set([
+  "Document Storage Vault",
+  "Cloud Document Storage", 
+  "Virtual Mailroom",
+  "Compliance Reminders",
+  "Document Retention",
+]);
+
+// Hague Convention member countries
+const HAGUE_COUNTRIES = [
+  "Albania", "Andorra", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Barbados", "Belarus", "Belgium", "Belize", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burundi", "Canada", "Cape Verde", "Chile", "China (Hong Kong)", "China (Macao)", "Colombia", "Cook Islands", "Costa Rica", "Croatia", "Cyprus", "Czech Republic", "Denmark", "Dominica", "Dominican Republic", "Ecuador", "El Salvador", "Estonia", "Eswatini", "Fiji", "Finland", "France", "Georgia", "Germany", "Greece", "Grenada", "Guatemala", "Guyana", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kosovo", "Kyrgyzstan", "Latvia", "Lesotho", "Liberia", "Liechtenstein", "Lithuania", "Luxembourg", "Malawi", "Malta", "Marshall Islands", "Mauritius", "Mexico", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Namibia", "Netherlands", "New Zealand", "Nicaragua", "Niue", "North Macedonia", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Republic of Korea", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "São Tomé and Príncipe", "Saudi Arabia", "Serbia", "Seychelles", "Singapore", "Slovakia", "Slovenia", "South Africa", "Spain", "Suriname", "Sweden", "Switzerland", "Tajikistan", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Ukraine", "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela",
+];
+
+const USCIS_FORMS = [
+  { value: "I-130", label: "I-130 — Petition for Alien Relative" },
+  { value: "I-485", label: "I-485 — Adjustment of Status (Green Card)" },
+  { value: "I-765", label: "I-765 — Employment Authorization (EAD)" },
+  { value: "N-400", label: "N-400 — Naturalization / Citizenship" },
+  { value: "I-90", label: "I-90 — Renew Green Card" },
+  { value: "I-131", label: "I-131 — Travel Document / Advance Parole" },
+  { value: "I-864", label: "I-864 — Affidavit of Support" },
+  { value: "I-20", label: "I-20 — Student Eligibility Certificate" },
+  { value: "DS-160", label: "DS-160 — Nonimmigrant Visa Application" },
+  { value: "Other", label: "Other USCIS Form" },
 ];
 
 export default function BookAppointment() {
@@ -55,7 +81,6 @@ export default function BookAppointment() {
   const [userLat, setUserLat] = useState<number | null>(null);
   const [userLon, setUserLon] = useState<number | null>(null);
 
-  // Get user's location on mount for autocomplete biasing
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -102,13 +127,28 @@ export default function BookAppointment() {
   const [serviceDescriptions, setServiceDescriptions] = useState<Record<string, string>>({});
   const [serviceCategories, setServiceCategories] = useState<Record<string, string>>({});
 
+  // Category-specific intake fields
+  const [destinationCountry, setDestinationCountry] = useState("");
+  const [urgencyLevel, setUrgencyLevel] = useState("standard");
+  const [uscisForm, setUscisForm] = useState("");
+  const [caseType, setCaseType] = useState("");
+  const [propertyAddress, setPropertyAddress] = useState("");
+  const [titleCompany, setTitleCompany] = useState("");
+  const [employerName, setEmployerName] = useState("");
+  const [hireStartDate, setHireStartDate] = useState("");
+  const [companyName, setCompanyName] = useState("");
+
   const NOTARIZATION_CATEGORIES = ["notarization", "authentication"];
   const requiresNotarizationType = (svcName: string) => {
     const cat = serviceCategories[svcName];
     return !cat || NOTARIZATION_CATEGORIES.includes(cat);
   };
 
-  // Dynamic page title
+  const isDigitalOnly = (svcName: string) => {
+    const cat = serviceCategories[svcName];
+    return (cat && DIGITAL_ONLY_CATEGORIES.has(cat)) || DIGITAL_ONLY_SERVICES.has(svcName);
+  };
+
   useEffect(() => {
     document.title = "Book Appointment — Shane Goble Notary";
     return () => { document.title = "Shane Goble Notary — Ohio Notary Public | In-Person & RON"; };
@@ -134,6 +174,12 @@ export default function BookAppointment() {
         });
         setServiceDescriptions(descs);
         setServiceCategories(cats);
+
+        // Handle pre-selected service from URL (fix race condition - Phase 1.2)
+        const preService = new URLSearchParams(window.location.search).get("service");
+        if (preService && data.some((s: any) => s.name === preService)) {
+          setServiceType(preService);
+        }
       }
     });
   }, []);
@@ -160,7 +206,6 @@ export default function BookAppointment() {
       supabase.from("profiles").select("*").eq("user_id", user.id).single().then(({ data }) => {
         if (data) {
           setProfile(data);
-          // Auto-fill address from profile
           if (data.address) setClientAddress(data.address);
           if (data.city) setClientCity(data.city);
           if (data.state) setClientState(data.state);
@@ -171,13 +216,11 @@ export default function BookAppointment() {
         if (data) setPastAppointments(data);
       });
 
-      // Check for pending booking from progressive signup
       const pendingBooking = localStorage.getItem(BOOKING_STORAGE_KEY);
       if (pendingBooking) {
         try {
           const booking = JSON.parse(pendingBooking);
           localStorage.removeItem(BOOKING_STORAGE_KEY);
-          // Restore booking data and auto-submit
           setNotarizationType(booking.notarizationType);
           setServiceType(booking.serviceType);
           setDate(booking.date);
@@ -189,7 +232,6 @@ export default function BookAppointment() {
           setClientCity(booking.clientCity || "");
           setClientState(booking.clientState || "OH");
           setClientZip(booking.clientZip || "");
-          // Auto-submit after restoring
           setTimeout(() => {
             submitBooking(user.id, booking);
           }, 500);
@@ -208,17 +250,11 @@ export default function BookAppointment() {
         if (data) handleRebook(data);
       });
     }
-    // Handle pre-selected type from landing page
     const preType = searchParams.get("type");
     if (preType === "ron" || preType === "in_person") {
       setNotarizationType(preType);
     }
-    // Handle pre-selected service from ServiceDetail or FeeCalculator
-    const preService = searchParams.get("service");
-    if (preService && serviceTypes.includes(preService)) {
-      setServiceType(preService);
-    }
-    // Handle estimate from FeeCalculator
+    // Pre-selected service handled in services .then() callback above (Phase 1.2 fix)
     const preEstimate = searchParams.get("estimate");
     if (preEstimate) {
       setEstimatedPrice(parseFloat(preEstimate));
@@ -227,9 +263,9 @@ export default function BookAppointment() {
     if (preDocs) {
       setDocumentCount(parseInt(preDocs) || 1);
     }
-  }, [searchParams, user, serviceTypes]);
+  }, [searchParams, user]);
 
-  // Fetch available time slots when date changes + check for double bookings + specific_date overrides
+  // Fetch available time slots when date changes
   useEffect(() => {
     if (!date) return;
     setLoadingSlots(true);
@@ -240,18 +276,15 @@ export default function BookAppointment() {
       supabase.from("time_slots").select("*").eq("day_of_week", dayOfWeek).eq("is_available", true),
       supabase.from("time_slots").select("*").eq("specific_date", date),
       supabase.from("appointments").select("scheduled_time").eq("scheduled_date", date).neq("status", "cancelled").neq("status", "no_show"),
-      // Check max appointments per day
       supabase.from("appointments").select("*", { count: "exact", head: true }).eq("scheduled_date", date).neq("status", "cancelled").neq("status", "no_show"),
     ]).then(([slotsRes, specificRes, bookingsRes, countRes]) => {
       const booked = (bookingsRes.data || []).map((b: any) => b.scheduled_time);
       setBookedTimes(booked);
 
-      // If specific_date overrides exist, use those instead of day_of_week slots
       const specificSlots = specificRes.data || [];
       const daySlots = slotsRes.data || [];
       const baseSlots = specificSlots.length > 0 ? specificSlots : daySlots;
 
-      // Check if day is fully booked (max_appointments_per_day)
       const maxPerDay = parseInt(pricingSettings.max_appointments_per_day || "0");
       const currentCount = countRes.count || 0;
       const dayFull = maxPerDay > 0 && currentCount >= maxPerDay;
@@ -260,7 +293,6 @@ export default function BookAppointment() {
         setAvailableSlots([]);
         findNearestSlots(date);
       } else if (baseSlots.length > 0) {
-        // Filter available slots and remove already-booked times
         const available = baseSlots.filter((slot: any) => slot.is_available && !booked.includes(slot.start_time));
         setAvailableSlots(available);
         setSuggestedSlots([]);
@@ -284,7 +316,6 @@ export default function BookAppointment() {
       for (const dir of [1, -1]) {
         const checkDate = new Date(selected);
         checkDate.setDate(checkDate.getDate() + offset * dir);
-        // Skip dates in the past (compare by full day)
         if (checkDate.toISOString().split("T")[0] < now.toISOString().split("T")[0]) continue;
         const daySlots = allSlots.filter((s: any) => s.day_of_week === checkDate.getDay());
         for (const slot of daySlots) {
@@ -349,13 +380,10 @@ export default function BookAppointment() {
   const handleIdScan = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    // File validation
     if (file.size > 10 * 1024 * 1024) {
       toast({ title: "File too large", description: "Please upload an image under 10MB.", variant: "destructive" });
       return;
     }
-
     setIdScanning(true);
     try {
       const reader = new FileReader();
@@ -395,8 +423,6 @@ export default function BookAppointment() {
   const handleDocScan = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    // File validation
     if (file.size > 20 * 1024 * 1024) {
       toast({ title: "File too large", description: "Please upload a file under 20MB.", variant: "destructive" });
       return;
@@ -404,7 +430,6 @@ export default function BookAppointment() {
     if (file.type === "application/pdf") {
       toast({ title: "PDF detected", description: "For best results, upload an image (photo/screenshot) of your document.", variant: "default" });
     }
-
     setDocScanning(true);
     try {
       const reader = new FileReader();
@@ -435,7 +460,6 @@ export default function BookAppointment() {
             };
             const matchedCategory = mapped[data.document_type];
             if (matchedCategory && !serviceType) {
-              // Find best match from available service types
               const bestMatch = matchedCategory.find((m) => serviceTypes.some((s) => s.toLowerCase().includes(m.toLowerCase())));
               if (bestMatch) {
                 const exact = serviceTypes.find((s) => s.toLowerCase().includes(bestMatch.toLowerCase()));
@@ -459,33 +483,59 @@ export default function BookAppointment() {
     }
   };
 
+  // Phase 1.5: Fix rebook - clear date/time before setting step
   const handleRebook = (appt: any) => {
     setNotarizationType(appt.notarization_type);
     setServiceType(appt.service_type);
     if (appt.location && appt.location !== "Remote") setLocation(appt.location);
     setRebookingId(appt.id);
+    // Clear date/time so slot availability reloads
+    setDate("");
+    setTime("");
+    setAvailableSlots([]);
+    setSuggestedSlots([]);
     setStep(3);
     toast({ title: "Details pre-filled", description: "Pick a new date and time to reschedule." });
   };
 
+  // Build structured intake notes from category-specific fields
+  const buildIntakeNotes = () => {
+    const parts: string[] = [];
+    const cat = serviceCategories[serviceType];
+    
+    if (cat === "authentication" || cat === "notarization") {
+      if (destinationCountry) parts.push(`[Destination: ${destinationCountry}${HAGUE_COUNTRIES.includes(destinationCountry) ? " (Hague)" : " (Non-Hague — consular legalization may be required)"}]`);
+      if (urgencyLevel !== "standard") parts.push(`[Urgency: ${urgencyLevel}]`);
+    }
+    if (cat === "consulting") {
+      if (uscisForm) parts.push(`[USCIS Form: ${uscisForm}]`);
+      if (caseType) parts.push(`[Case Type: ${caseType}]`);
+    }
+    if (serviceType.toLowerCase().includes("real estate") || serviceType.toLowerCase().includes("closing")) {
+      if (propertyAddress) parts.push(`[Property: ${propertyAddress}]`);
+      if (titleCompany) parts.push(`[Title Co: ${titleCompany}]`);
+    }
+    if (cat === "verification" || serviceType.toLowerCase().includes("i-9")) {
+      if (employerName) parts.push(`[Employer: ${employerName}]`);
+      if (hireStartDate) parts.push(`[Start Date: ${hireStartDate}]`);
+    }
+    if (cat === "business") {
+      if (companyName) parts.push(`[Company: ${companyName}]`);
+    }
+    return parts.join("\n");
+  };
+
   const submitBooking = async (userId: string, bookingData?: any) => {
     const data = bookingData || {
-      notarizationType,
-      serviceType,
-      date,
-      time,
-      location,
-      notes,
-      documentCount,
-      clientAddress,
-      clientCity,
-      clientState,
-      clientZip,
+      notarizationType, serviceType, date, time, location, notes, documentCount,
+      clientAddress, clientCity, clientState, clientZip,
     };
 
     setSubmitting(true);
+    const intakeNotes = buildIntakeNotes();
     const fullNotes = [
       data.notes || notes,
+      intakeNotes,
       (data.documentCount || documentCount) > 1 ? `[Batch: ${data.documentCount || documentCount} documents]` : "",
       docAnalysis ? `[AI Detected: ${docAnalysis.document_name} — ${docAnalysis.notarization_method}]` : "",
       idData ? `[ID Pre-scanned: ${idData.id_type} — ${idData.full_name}]` : "",
@@ -495,7 +545,6 @@ export default function BookAppointment() {
       ? `${data.clientAddress}, ${data.clientCity}, ${data.clientState} ${data.clientZip}`.trim()
       : (data.location || location);
 
-    // Check daily appointment cap
     const maxPerDay = parseInt(pricingSettings.max_appointments_per_day || "0");
     if (maxPerDay > 0) {
       const bookDate = data.date || date;
@@ -527,7 +576,6 @@ export default function BookAppointment() {
     let appointmentResultId: string;
 
     if (rebookingId) {
-      // Reschedule: update existing appointment
       const { error } = await supabase.from("appointments").update({
         ...appointmentPayload,
         status: "scheduled" as any,
@@ -539,7 +587,6 @@ export default function BookAppointment() {
       }
       appointmentResultId = rebookingId;
     } else {
-      // New booking
       const { data: insertedData, error } = await supabase.from("appointments").insert(appointmentPayload).select("id").single();
       if (error) {
         localStorage.removeItem(BOOKING_STORAGE_KEY);
@@ -551,7 +598,6 @@ export default function BookAppointment() {
     }
 
     localStorage.removeItem(BOOKING_STORAGE_KEY);
-    // Trigger confirmation email
     try {
       const { error: emailError } = await supabase.functions.invoke("send-appointment-emails", {
         body: { appointmentId: appointmentResultId, emailType: "confirmation" },
@@ -561,12 +607,11 @@ export default function BookAppointment() {
       console.error("Failed to trigger confirmation email:", emailErr);
     }
 
-    // Auto-convert matching lead to "converted" status
     const clientEmail = user?.email;
     if (clientEmail && !rebookingId) {
       try {
         await supabase.from("leads").update({ status: "converted" }).ilike("email", clientEmail).in("status", ["new", "contacted", "qualified"]);
-      } catch { /* silent — lead conversion is best-effort */ }
+      } catch { /* silent */ }
     }
 
     toast({ title: rebookingId ? "Appointment rescheduled!" : "Appointment booked!", description: "You'll receive a confirmation email shortly." });
@@ -575,7 +620,6 @@ export default function BookAppointment() {
   };
 
   const handleSubmit = async () => {
-    // Progressive signup: create account if not logged in
     if (!user) {
       if (!guestEmail || !guestPassword || !guestName) {
         setShowSignup(true);
@@ -583,7 +627,6 @@ export default function BookAppointment() {
         return;
       }
 
-      // Save booking data to localStorage before signup
       const bookingData = {
         notarizationType, serviceType, date, time, location, notes, documentCount,
         clientAddress, clientCity, clientState, clientZip,
@@ -592,14 +635,12 @@ export default function BookAppointment() {
 
       const { error } = await signUp(guestEmail, guestPassword, guestName);
       if (error) {
-        // Try signing in if they already have an account
         const { error: signInErr } = await signIn(guestEmail, guestPassword);
         if (signInErr) {
           localStorage.removeItem(BOOKING_STORAGE_KEY);
           toast({ title: "Account error", description: error.message, variant: "destructive" });
           return;
         }
-        // signIn success → user state will update and trigger auto-submit via useEffect
         return;
       }
       toast({ title: "Check your email", description: "We sent a verification link. Your appointment will be saved once you verify and sign in." });
@@ -614,35 +655,407 @@ export default function BookAppointment() {
   const totalSteps = isNonNotarial ? 3 : 4;
   const lastStep = totalSteps as Step;
 
+  // Phase 1.6: Lead-time check with warning
+  const getLeadTimeWarning = () => {
+    if (!date || !time) return null;
+    const leadHours = parseInt(pricingSettings.min_booking_lead_hours || "2");
+    const bookingDate = new Date(`${date}T${time}`);
+    const minDate = new Date(Date.now() + leadHours * 60 * 60 * 1000);
+    if (bookingDate < minDate) return `Please select a time at least ${leadHours} hours from now.`;
+    return null;
+  };
+
+  const leadTimeWarning = getLeadTimeWarning();
+
+  // Phase 1.3: Guest validation on review step
   const canProceed = () => {
     if (isNonNotarial) {
-      // 3-step flow: 1=service, 2=date/time, 3=review
       if (step === 1) return !!serviceType;
       if (step === 2) {
         if (!date || !time) return false;
-        if (notarizationType === "in_person" && !clientZip && !location) return false;
-        const leadHours = parseInt(pricingSettings.min_booking_lead_hours || "2");
-        const bookingDate = new Date(`${date}T${time}`);
-        const minDate = new Date(Date.now() + leadHours * 60 * 60 * 1000);
-        if (bookingDate < minDate) return false;
+        if (!isDigitalOnly(serviceType) && notarizationType === "in_person" && !clientZip && !location) return false;
+        if (leadTimeWarning) return false;
         return true;
+      }
+      // Review step - validate guest fields
+      if (!user) {
+        return !!(guestName.trim() && guestEmail.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail) && guestPassword.length >= 6);
       }
       return true;
     }
-    // 4-step flow: 1=type, 2=service, 3=date/time, 4=review
     if (step === 1) return !!notarizationType;
     if (step === 2) return !!serviceType;
     if (step === 3) {
       if (!date || !time) return false;
-      if (notarizationType === "in_person" && !clientZip && !location) return false;
-      const leadHours = parseInt(pricingSettings.min_booking_lead_hours || "2");
-      const bookingDate = new Date(`${date}T${time}`);
-      const minDate = new Date(Date.now() + leadHours * 60 * 60 * 1000);
-      if (bookingDate < minDate) return false;
+      if (!isDigitalOnly(serviceType) && notarizationType === "in_person" && !clientZip && !location) return false;
+      if (leadTimeWarning) return false;
       return true;
+    }
+    // Review step (step 4) - validate guest fields
+    if (!user) {
+      return !!(guestName.trim() && guestEmail.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail) && guestPassword.length >= 6);
     }
     return true;
   };
+
+  // Get current service category for conditional intake
+  const currentCategory = serviceCategories[serviceType] || "";
+
+  // Render category-specific intake fields
+  const renderIntakeFields = () => {
+    if (!serviceType) return null;
+    const cat = currentCategory;
+    return (
+      <div className="space-y-3 rounded-lg border border-border/50 bg-muted/30 p-4">
+        <p className="text-sm font-medium flex items-center gap-2"><Info className="h-4 w-4 text-accent" /> Service-Specific Details</p>
+        
+        {(cat === "authentication" || serviceType.toLowerCase().includes("apostille")) && (
+          <>
+            <div>
+              <Label>Destination Country</Label>
+              <Select value={destinationCountry} onValueChange={setDestinationCountry}>
+                <SelectTrigger><SelectValue placeholder="Select country..." /></SelectTrigger>
+                <SelectContent>
+                  {HAGUE_COUNTRIES.map(c => (
+                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  ))}
+                  <SelectItem value="Other">Other (Non-Hague)</SelectItem>
+                </SelectContent>
+              </Select>
+              {destinationCountry && (
+                <p className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
+                  <Globe className="h-3 w-3" />
+                  {HAGUE_COUNTRIES.includes(destinationCountry) 
+                    ? "✓ Hague Convention member — Apostille accepted" 
+                    : "⚠ Non-Hague country — consular legalization may be required"}
+                </p>
+              )}
+            </div>
+            <div>
+              <Label>Urgency</Label>
+              <Select value={urgencyLevel} onValueChange={setUrgencyLevel}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="standard">Standard (5-10 business days)</SelectItem>
+                  <SelectItem value="rush">Rush (2-3 business days, +$50)</SelectItem>
+                  <SelectItem value="same_day">Same Day (if available, +$100)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        )}
+
+        {(cat === "consulting" || serviceType.toLowerCase().includes("immigration")) && (
+          <>
+            <div>
+              <Label>USCIS Form Number</Label>
+              <Select value={uscisForm} onValueChange={setUscisForm}>
+                <SelectTrigger><SelectValue placeholder="Select form..." /></SelectTrigger>
+                <SelectContent>
+                  {USCIS_FORMS.map(f => (
+                    <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Case Type</Label>
+              <Select value={caseType} onValueChange={setCaseType}>
+                <SelectTrigger><SelectValue placeholder="Select case type..." /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Family">Family-Based</SelectItem>
+                  <SelectItem value="Employment">Employment-Based</SelectItem>
+                  <SelectItem value="Humanitarian">Humanitarian</SelectItem>
+                  <SelectItem value="Naturalization">Naturalization</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        )}
+
+        {(serviceType.toLowerCase().includes("real estate") || serviceType.toLowerCase().includes("closing")) && (
+          <>
+            <div>
+              <Label>Property Address</Label>
+              <Input value={propertyAddress} onChange={(e) => setPropertyAddress(e.target.value)} placeholder="Address of the property" />
+            </div>
+            <div>
+              <Label>Title Company (if applicable)</Label>
+              <Input value={titleCompany} onChange={(e) => setTitleCompany(e.target.value)} placeholder="Title company name" />
+            </div>
+          </>
+        )}
+
+        {(cat === "verification" || serviceType.toLowerCase().includes("i-9")) && (
+          <>
+            <div>
+              <Label>Employer Name</Label>
+              <Input value={employerName} onChange={(e) => setEmployerName(e.target.value)} placeholder="Hiring company name" />
+            </div>
+            <div>
+              <Label>New Hire Start Date</Label>
+              <Input type="date" value={hireStartDate} onChange={(e) => setHireStartDate(e.target.value)} />
+            </div>
+          </>
+        )}
+
+        {cat === "business" && (
+          <div>
+            <Label>Company Name</Label>
+            <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Your business name" />
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Render date/time picker section (shared between notarial step 3 and non-notarial step 2)
+  const renderDateTimePicker = () => (
+    <div className="space-y-4">
+      <div>
+        <Label htmlFor="date">Date</Label>
+        <Input id="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} min={new Date().toISOString().split("T")[0]} />
+      </div>
+
+      {date && loadingSlots && (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" /> Checking availability...
+        </div>
+      )}
+
+      {date && !loadingSlots && availableSlots.length === 0 && suggestedSlots.length > 0 && (
+        <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
+          <p className="mb-2 flex items-center gap-1.5 text-sm font-medium text-destructive">
+            <AlertTriangle className="h-4 w-4" /> No availability on this date
+          </p>
+          <p className="mb-3 text-xs text-muted-foreground">Here are the nearest available slots:</p>
+          <div className="space-y-2">
+            {suggestedSlots.map((s, i) => (
+              <Button key={i} variant="outline" size="sm" className="w-full justify-start text-xs" onClick={() => { setDate(s.date); setTime(s.slot.start_time); }}>
+                <Calendar className="mr-2 h-3 w-3" />
+                {new Date(s.date + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })} — {formatTime(s.slot.start_time)} to {formatTime(s.slot.end_time)}
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {date && availableSlots.length > 0 && (
+        <div>
+          <Label>Available Time Slots</Label>
+          <div className="mt-1 flex flex-wrap gap-2">
+            {availableSlots.map((slot) => (
+              <Button key={slot.id} variant={time === slot.start_time ? "default" : "outline"} size="sm" className={time === slot.start_time ? "bg-accent text-accent-foreground" : ""} onClick={() => setTime(slot.start_time)}>
+                <Clock className="mr-1 h-3 w-3" /> {formatTime(slot.start_time)}
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {availableSlots.length === 0 && !loadingSlots && date && suggestedSlots.length === 0 && (
+        <div>
+          <Label htmlFor="time">Time</Label>
+          <Input id="time" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+        </div>
+      )}
+
+      {/* Phase 1.6: Lead-time warning */}
+      {leadTimeWarning && (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800 flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4 flex-shrink-0" /> {leadTimeWarning}
+        </div>
+      )}
+
+      {/* Phase 1.4: Skip location fields for digital-only services */}
+      {!isDigitalOnly(serviceType) && notarizationType === "in_person" && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Label>Meeting Location</Label>
+            <Button type="button" variant="outline" size="sm" className="text-xs" onClick={handleUseLocation} disabled={locatingUser}>
+              {locatingUser ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <LocateFixed className="mr-1 h-3 w-3" />} Use My Location
+            </Button>
+          </div>
+          <AddressAutocomplete value={clientAddress} onChange={setClientAddress} userLat={userLat} userLon={userLon} onSelect={(s) => { setClientAddress(s.address); setClientCity(s.city); setClientState(s.state); setClientZip(s.zip); setLocation(s.fullAddress); }} />
+          <div className="grid grid-cols-3 gap-2">
+            <Input placeholder="City" value={clientCity} onChange={(e) => setClientCity(e.target.value)} />
+            <Input placeholder="State" value={clientState} onChange={(e) => setClientState(e.target.value)} maxLength={2} />
+            <Input placeholder="Zip Code" value={clientZip} onChange={(e) => setClientZip(e.target.value)} maxLength={5} />
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Search for a business, address, or landmark — suggestions appear as you type
+          </p>
+        </div>
+      )}
+
+      <div>
+        <Label htmlFor="notes">Additional Notes</Label>
+        <Textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Number of documents, special instructions, etc." rows={3} />
+      </div>
+    </div>
+  );
+
+  // Render review section (shared between notarial step 4 and non-notarial step 3)
+  const renderReview = () => (
+    <div className="space-y-4">
+      <div className="rounded-lg bg-muted/50 p-4 space-y-3">
+        {!isNonNotarial && (
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Type</span>
+            <span className="font-medium flex items-center gap-1">
+              {notarizationType === "in_person" ? <><MapPin className="h-3 w-3" /> In-Person</> : <><Monitor className="h-3 w-3" /> Remote (RON)</>}
+            </span>
+          </div>
+        )}
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">Service</span>
+          <span className="font-medium">{serviceType}</span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">Date</span>
+          <span className="font-medium flex items-center gap-1">
+            <Calendar className="h-3 w-3" />
+            {date && new Date(date + "T00:00:00").toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
+          </span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">Time</span>
+          <span className="font-medium">{time && formatTime(time)}</span>
+        </div>
+        {(clientAddress || location) && notarizationType === "in_person" && !isDigitalOnly(serviceType) && (
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Location</span>
+            <span className="font-medium text-right max-w-[60%]">
+              {clientAddress ? `${clientAddress}, ${clientCity}, ${clientState} ${clientZip}` : location}
+            </span>
+          </div>
+        )}
+        {/* Category-specific review items */}
+        {destinationCountry && (
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Destination</span>
+            <span className="font-medium">{destinationCountry} {HAGUE_COUNTRIES.includes(destinationCountry) ? "(Hague)" : "(Non-Hague)"}</span>
+          </div>
+        )}
+        {uscisForm && (
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">USCIS Form</span>
+            <span className="font-medium">{uscisForm}</span>
+          </div>
+        )}
+        {employerName && (
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Employer</span>
+            <span className="font-medium">{employerName}</span>
+          </div>
+        )}
+        {idData && !idData.error && (
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">ID Verified</span>
+            <span className="font-medium flex items-center gap-1"><Shield className="h-3 w-3 text-accent" /> {idData.id_type}</span>
+          </div>
+        )}
+        {documentCount > 1 && (
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Documents</span>
+            <span className="font-medium">{documentCount} documents (batch session)</span>
+          </div>
+        )}
+        {docAnalysis && !docAnalysis.error && (
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Detected</span>
+            <span className="font-medium">{docAnalysis.document_name} ({docAnalysis.notarization_method})</span>
+          </div>
+        )}
+        {notes && (
+          <div className="text-sm">
+            <span className="text-muted-foreground">Notes: </span>
+            <span>{notes}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Live Cost Estimator (Phase 4.2) */}
+      {estimatedPrice !== null && (
+        <div className="rounded-lg border border-accent/30 bg-accent/5 p-4 space-y-2">
+          <p className="text-sm font-medium flex items-center gap-2">
+            <DollarSign className="h-4 w-4 text-accent" />
+            Estimated Pricing
+          </p>
+          <div className="space-y-1 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Notary fee ({documentCount} signature{documentCount > 1 ? "s" : ""})</span>
+              <span>${(parseFloat(pricingSettings.base_fee_per_signature || "5") * documentCount).toFixed(2)}</span>
+            </div>
+            {notarizationType === "in_person" && !isDigitalOnly(serviceType) && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Travel fee (est.)</span>
+                <span>${parseFloat(pricingSettings.travel_fee_minimum || "25").toFixed(2)}</span>
+              </div>
+            )}
+            {notarizationType === "ron" && (
+              <>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">RON platform fee</span>
+                  <span>${parseFloat(pricingSettings.ron_platform_fee || "25").toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">KBA verification</span>
+                  <span>${parseFloat(pricingSettings.kba_fee || "15").toFixed(2)}</span>
+                </div>
+              </>
+            )}
+            {urgencyLevel === "rush" && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Rush processing</span>
+                <span>$50.00</span>
+              </div>
+            )}
+            {urgencyLevel === "same_day" && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Same-day processing</span>
+                <span>$100.00</span>
+              </div>
+            )}
+            <div className="flex justify-between border-t border-border pt-1 font-semibold">
+              <span>Estimated Total</span>
+              <span className="text-accent">${(estimatedPrice + (urgencyLevel === "rush" ? 50 : urgencyLevel === "same_day" ? 100 : 0)).toFixed(2)}</span>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">Final price may vary based on actual travel distance and document complexity.</p>
+        </div>
+      )}
+
+      {/* Progressive signup for guests */}
+      {!user && (
+        <div className="rounded-lg border border-accent/30 bg-accent/5 p-4 space-y-3">
+          <p className="text-sm font-medium flex items-center gap-2">
+            <Shield className="h-4 w-4 text-accent" />
+            Create your account to confirm
+          </p>
+          <div>
+            <Label>Full Name</Label>
+            <Input value={guestName} onChange={(e) => setGuestName(e.target.value)} placeholder="Your full name" />
+          </div>
+          <div>
+            <Label>Email</Label>
+            <Input type="email" value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)} placeholder="your@email.com" />
+          </div>
+          <div>
+            <Label>Password</Label>
+            <Input type="password" value={guestPassword} onChange={(e) => setGuestPassword(e.target.value)} placeholder="Create a password (min 6 characters)" minLength={6} />
+          </div>
+          {guestPassword && guestPassword.length < 6 && (
+            <p className="text-xs text-destructive">Password must be at least 6 characters.</p>
+          )}
+          <p className="text-xs text-muted-foreground">
+            Already have an account? <Link to="/login" className="text-accent hover:underline">Sign in</Link>
+          </p>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -689,7 +1102,7 @@ export default function BookAppointment() {
           </motion.div>
         )}
 
-        {/* Progress - show 3 steps for non-notarial, 4 for notarial */}
+        {/* Progress */}
         <div className="mb-8 flex items-center justify-center gap-2">
           {Array.from({ length: totalSteps }, (_, i) => i + 1).map((s, i, arr) => (
             <div key={s} className="flex items-center gap-2">
@@ -714,9 +1127,8 @@ export default function BookAppointment() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Step 1: For non-notarial services, skip to service selection; for notarial, show type picker */}
+              {/* Step 1 */}
               {step === 1 && (serviceType && !requiresNotarizationType(serviceType) ? (
-                /* Non-notarial: Step 1 IS service selection (same as original step 2) */
                 <div className="space-y-4">
                   <div>
                     <Label>Service Type</Label>
@@ -734,9 +1146,10 @@ export default function BookAppointment() {
                       </SelectContent>
                     </Select>
                   </div>
+                  {/* Category-specific intake fields (Phase 4.1) */}
+                  {renderIntakeFields()}
                 </div>
               ) : (
-                /* Notarial: original Step 1 - type selection */
                 <div className="grid gap-4 sm:grid-cols-2">
                   <button
                     onClick={() => setNotarizationType("in_person")}
@@ -763,122 +1176,14 @@ export default function BookAppointment() {
                 </div>
               ))}
 
-              {/* Non-notarial step 2 = date/time (same as notarial step 3) */}
-              {isNonNotarial && step === 2 && (
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="date">Date</Label>
-                    <Input id="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} min={new Date().toISOString().split("T")[0]} />
-                  </div>
-                  {date && loadingSlots && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Loader2 className="h-4 w-4 animate-spin" /> Checking availability...
-                    </div>
-                  )}
-                  {date && !loadingSlots && availableSlots.length === 0 && suggestedSlots.length > 0 && (
-                    <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
-                      <p className="mb-2 flex items-center gap-1.5 text-sm font-medium text-destructive">
-                        <AlertTriangle className="h-4 w-4" /> No availability on this date
-                      </p>
-                      <p className="mb-3 text-xs text-muted-foreground">Here are the nearest available slots:</p>
-                      <div className="space-y-2">
-                        {suggestedSlots.map((s, i) => (
-                          <Button key={i} variant="outline" size="sm" className="w-full justify-start text-xs" onClick={() => { setDate(s.date); setTime(s.slot.start_time); }}>
-                            <Calendar className="mr-2 h-3 w-3" />
-                            {new Date(s.date + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })} — {formatTime(s.slot.start_time)} to {formatTime(s.slot.end_time)}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {date && availableSlots.length > 0 && (
-                    <div>
-                      <Label>Available Time Slots</Label>
-                      <div className="mt-1 flex flex-wrap gap-2">
-                        {availableSlots.map((slot) => (
-                          <Button key={slot.id} variant={time === slot.start_time ? "default" : "outline"} size="sm" className={time === slot.start_time ? "bg-accent text-accent-foreground" : ""} onClick={() => setTime(slot.start_time)}>
-                            <Clock className="mr-1 h-3 w-3" /> {formatTime(slot.start_time)}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {availableSlots.length === 0 && !loadingSlots && date && suggestedSlots.length === 0 && (
-                    <div>
-                      <Label htmlFor="time">Time</Label>
-                      <Input id="time" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
-                    </div>
-                  )}
-                  {notarizationType === "in_person" && (
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <Label>Meeting Location</Label>
-                        <Button type="button" variant="outline" size="sm" className="text-xs" onClick={handleUseLocation} disabled={locatingUser}>
-                          {locatingUser ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <LocateFixed className="mr-1 h-3 w-3" />} Use My Location
-                        </Button>
-                      </div>
-                      <AddressAutocomplete value={clientAddress} onChange={setClientAddress} userLat={userLat} userLon={userLon} onSelect={(s) => { setClientAddress(s.address); setClientCity(s.city); setClientState(s.state); setClientZip(s.zip); setLocation(s.fullAddress); }} />
-                      <div className="grid grid-cols-3 gap-2">
-                        <Input placeholder="City" value={clientCity} onChange={(e) => setClientCity(e.target.value)} />
-                        <Input placeholder="State" value={clientState} onChange={(e) => setClientState(e.target.value)} maxLength={2} />
-                        <Input placeholder="Zip Code" value={clientZip} onChange={(e) => setClientZip(e.target.value)} maxLength={5} />
-                      </div>
-                    </div>
-                  )}
-                  <div>
-                    <Label htmlFor="notes">Additional Notes</Label>
-                    <Textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Special instructions, etc." rows={3} />
-                  </div>
-                </div>
-              )}
-              {/* Non-notarial step 3 = review (same as notarial step 4) */}
-              {isNonNotarial && step === 3 && (
-                <div className="space-y-4">
-                  <div className="rounded-lg bg-muted/50 p-4 space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Service</span>
-                      <span className="font-medium">{serviceType}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Date</span>
-                      <span className="font-medium flex items-center gap-1"><Calendar className="h-3 w-3" /> {new Date(date + "T00:00:00").toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Time</span>
-                      <span className="font-medium">{formatTime(time)}</span>
-                    </div>
-                    {(clientAddress || location) && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Location</span>
-                        <span className="font-medium text-right max-w-[60%]">{clientAddress ? `${clientAddress}, ${clientCity}, ${clientState} ${clientZip}` : location}</span>
-                      </div>
-                    )}
-                    {notes && <div className="text-sm"><span className="text-muted-foreground">Notes: </span><span>{notes}</span></div>}
-                  </div>
-                  {estimatedPrice !== null && (
-                    <div className="rounded-lg border border-accent/30 bg-accent/5 p-4 space-y-2">
-                      <p className="text-sm font-medium flex items-center gap-2"><DollarSign className="h-4 w-4 text-accent" /> Estimated Pricing</p>
-                      <div className="space-y-1 text-sm">
-                        <div className="flex justify-between border-t border-border pt-1 font-semibold">
-                          <span>Estimated Total</span>
-                          <span className="text-accent">${estimatedPrice.toFixed(2)}</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  {!user && (
-                    <div className="rounded-lg border border-accent/30 bg-accent/5 p-4 space-y-3">
-                      <p className="text-sm font-medium flex items-center gap-2"><Shield className="h-4 w-4 text-accent" /> Create your account to confirm</p>
-                      <div><Label>Full Name</Label><Input value={guestName} onChange={(e) => setGuestName(e.target.value)} placeholder="Your full name" /></div>
-                      <div><Label>Email</Label><Input type="email" value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)} placeholder="your@email.com" /></div>
-                      <div><Label>Password</Label><Input type="password" value={guestPassword} onChange={(e) => setGuestPassword(e.target.value)} placeholder="Create a password (min 6 characters)" minLength={6} /></div>
-                      <p className="text-xs text-muted-foreground">Already have an account? <Link to="/login" className="text-accent hover:underline">Sign in</Link></p>
-                    </div>
-                  )}
-                </div>
-              )}
+              {/* Non-notarial step 2 = date/time */}
+              {isNonNotarial && step === 2 && renderDateTimePicker()}
 
-              {step === 2 && (
+              {/* Non-notarial step 3 = review */}
+              {isNonNotarial && step === 3 && renderReview()}
+
+              {/* Phase 1.1 FIX: Only render notarial step 2 when NOT non-notarial */}
+              {!isNonNotarial && step === 2 && (
                 <div className="space-y-4">
                   <div>
                     <Label>Service Type</Label>
@@ -895,13 +1200,16 @@ export default function BookAppointment() {
                   {serviceType === "Other" && (
                     <div>
                       <Label>Describe your document</Label>
-                      <Input
-                        placeholder="What type of document do you need notarized?"
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                      />
+                      <Input placeholder="What type of document do you need notarized?" value={notes} onChange={(e) => setNotes(e.target.value)} />
                     </div>
                   )}
+
+                  {serviceType && serviceDescriptions[serviceType] && (
+                    <p className="text-xs text-muted-foreground bg-muted/50 rounded p-2">{serviceDescriptions[serviceType]}</p>
+                  )}
+
+                  {/* Category-specific intake fields (Phase 4.1) */}
+                  {renderIntakeFields()}
 
                   {/* Document Auto-Detect */}
                   <div className="rounded-lg border border-dashed border-accent/30 bg-accent/5 p-4">
@@ -912,33 +1220,27 @@ export default function BookAppointment() {
                     <p className="mb-3 text-xs text-muted-foreground">
                       We'll identify the notarization type, who needs to be present, and any special requirements.
                     </p>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleDocScan}
-                      disabled={docScanning}
-                      className="text-xs"
-                    />
+                    <Input type="file" accept="image/*" onChange={handleDocScan} disabled={docScanning} className="text-xs" />
                     {docScanning && (
                       <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
                         <Loader2 className="h-3 w-3 animate-spin" /> Analyzing document...
                       </div>
                     )}
                     {docAnalysis && !docAnalysis.error && (
-                       <div className="mt-2 space-y-2 rounded bg-accent/10 p-3 text-xs text-foreground">
-                         <div className="flex items-center gap-1 font-medium">
-                           <CheckCircle className="h-3 w-3 text-accent" />
-                           {docAnalysis.document_name} — {docAnalysis.notarization_method}
-                         </div>
-                         <div className="text-muted-foreground">
-                           <p>Signers: {docAnalysis.signers_required} • Witnesses: {docAnalysis.witnesses_required}</p>
-                           {docAnalysis.who_must_be_present?.length > 0 && (
-                             <p className="mt-1">Present: {docAnalysis.who_must_be_present.join(", ")}</p>
-                           )}
-                           {!docAnalysis.ron_eligible && (
-                             <p className="mt-1 font-medium text-destructive">⚠ Not eligible for RON</p>
-                           )}
-                         </div>
+                      <div className="mt-2 space-y-2 rounded bg-accent/10 p-3 text-xs text-foreground">
+                        <div className="flex items-center gap-1 font-medium">
+                          <CheckCircle className="h-3 w-3 text-accent" />
+                          {docAnalysis.document_name} — {docAnalysis.notarization_method}
+                        </div>
+                        <div className="text-muted-foreground">
+                          <p>Signers: {docAnalysis.signers_required} • Witnesses: {docAnalysis.witnesses_required}</p>
+                          {docAnalysis.who_must_be_present?.length > 0 && (
+                            <p className="mt-1">Present: {docAnalysis.who_must_be_present.join(", ")}</p>
+                          )}
+                          {!docAnalysis.ron_eligible && (
+                            <p className="mt-1 font-medium text-destructive">⚠ Not eligible for RON</p>
+                          )}
+                        </div>
                         {docAnalysis.special_requirements?.length > 0 && (
                           <div className="rounded bg-destructive/10 p-2 text-destructive">
                             {docAnalysis.special_requirements.map((r: string, i: number) => (
@@ -955,14 +1257,7 @@ export default function BookAppointment() {
                     <Label>Number of Documents</Label>
                     <div className="mt-1 flex items-center gap-2">
                       {[1, 2, 3, 4, 5].map((n) => (
-                        <Button
-                          key={n}
-                          type="button"
-                          size="sm"
-                          variant={documentCount === n ? "default" : "outline"}
-                          className={documentCount === n ? "bg-accent text-accent-foreground" : ""}
-                          onClick={() => setDocumentCount(n)}
-                        >
+                        <Button key={n} type="button" size="sm" variant={documentCount === n ? "default" : "outline"} className={documentCount === n ? "bg-accent text-accent-foreground" : ""} onClick={() => setDocumentCount(n)}>
                           {n}
                         </Button>
                       ))}
@@ -981,280 +1276,38 @@ export default function BookAppointment() {
                     <p className="mb-3 text-xs text-muted-foreground">
                       Upload a photo of your government-issued ID to auto-fill your information.
                     </p>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleIdScan}
-                      disabled={idScanning}
-                      className="text-xs"
-                    />
+                    <Input type="file" accept="image/*" onChange={handleIdScan} disabled={idScanning} className="text-xs" />
                     {idScanning && (
                       <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
                         <Loader2 className="h-3 w-3 animate-spin" /> Scanning your ID...
                       </div>
                     )}
                     {idData && !idData.error && (
-                       <div className="mt-2 rounded bg-accent/10 p-2 text-xs text-foreground">
-                         <CheckCircle className="mr-1 inline h-3 w-3 text-accent" />
-                         Verified: {idData.full_name} — {idData.id_type}
-                         {idData.is_expired && (
-                           <span className="ml-2 text-destructive font-medium">⚠ EXPIRED</span>
-                         )}
-                       </div>
+                      <div className="mt-2 rounded bg-accent/10 p-2 text-xs text-foreground">
+                        <CheckCircle className="mr-1 inline h-3 w-3 text-accent" />
+                        Verified: {idData.full_name} — {idData.id_type}
+                        {idData.is_expired && (
+                          <span className="ml-2 text-destructive font-medium">⚠ EXPIRED</span>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
               )}
 
-              {step === 3 && (
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="date">Date</Label>
-                    <Input id="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} min={new Date().toISOString().split("T")[0]} />
-                  </div>
+              {/* Phase 1.1 FIX: Only render notarial step 3 when NOT non-notarial */}
+              {!isNonNotarial && step === 3 && renderDateTimePicker()}
 
-                  {/* Smart scheduling */}
-                  {date && loadingSlots && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Loader2 className="h-4 w-4 animate-spin" /> Checking availability...
-                    </div>
-                  )}
+              {/* Phase 1.1 FIX: Only render notarial step 4 when NOT non-notarial */}
+              {!isNonNotarial && step === 4 && renderReview()}
 
-                  {date && !loadingSlots && availableSlots.length === 0 && suggestedSlots.length > 0 && (
-                     <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
-                       <p className="mb-2 flex items-center gap-1.5 text-sm font-medium text-destructive">
-                         <AlertTriangle className="h-4 w-4" /> No availability on this date
-                       </p>
-                       <p className="mb-3 text-xs text-muted-foreground">Here are the nearest available slots:</p>
-                      <div className="space-y-2">
-                        {suggestedSlots.map((s, i) => (
-                          <Button
-                            key={i}
-                            variant="outline"
-                            size="sm"
-                            className="w-full justify-start text-xs"
-                            onClick={() => {
-                              setDate(s.date);
-                              setTime(s.slot.start_time);
-                            }}
-                          >
-                            <Calendar className="mr-2 h-3 w-3" />
-                            {new Date(s.date + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })} — {formatTime(s.slot.start_time)} to {formatTime(s.slot.end_time)}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {date && availableSlots.length > 0 && (
-                    <div>
-                      <Label>Available Time Slots</Label>
-                      <div className="mt-1 flex flex-wrap gap-2">
-                        {availableSlots.map((slot) => (
-                          <Button
-                            key={slot.id}
-                            variant={time === slot.start_time ? "default" : "outline"}
-                            size="sm"
-                            className={time === slot.start_time ? "bg-accent text-accent-foreground" : ""}
-                            onClick={() => setTime(slot.start_time)}
-                          >
-                            <Clock className="mr-1 h-3 w-3" /> {formatTime(slot.start_time)}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {availableSlots.length === 0 && !loadingSlots && date && suggestedSlots.length === 0 && (
-                    <div>
-                      <Label htmlFor="time">Time</Label>
-                      <Input id="time" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
-                    </div>
-                  )}
-
-                  {/* In-person location with smart address */}
-                  {notarizationType === "in_person" && (
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <Label>Meeting Location</Label>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          className="text-xs"
-                          onClick={handleUseLocation}
-                          disabled={locatingUser}
-                        >
-                          {locatingUser ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <LocateFixed className="mr-1 h-3 w-3" />}
-                          Use My Location
-                        </Button>
-                      </div>
-                      <AddressAutocomplete
-                        value={clientAddress}
-                        onChange={setClientAddress}
-                        userLat={userLat}
-                        userLon={userLon}
-                        onSelect={(s) => {
-                          setClientAddress(s.address);
-                          setClientCity(s.city);
-                          setClientState(s.state);
-                          setClientZip(s.zip);
-                          setLocation(s.fullAddress);
-                        }}
-                      />
-                      <div className="grid grid-cols-3 gap-2">
-                        <Input
-                          placeholder="City"
-                          value={clientCity}
-                          onChange={(e) => setClientCity(e.target.value)}
-                        />
-                        <Input
-                          placeholder="State"
-                          value={clientState}
-                          onChange={(e) => setClientState(e.target.value)}
-                          maxLength={2}
-                        />
-                        <Input
-                          placeholder="Zip Code"
-                          value={clientZip}
-                          onChange={(e) => setClientZip(e.target.value)}
-                          maxLength={5}
-                        />
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        Search for a business, address, or landmark — suggestions appear as you type
-                      </p>
-                    </div>
-                  )}
-
-                  <div>
-                    <Label htmlFor="notes">Additional Notes</Label>
-                    <Textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Number of documents, special instructions, etc." rows={3} />
-                  </div>
-                </div>
-              )}
-
-              {step === 4 && (
-                <div className="space-y-4">
-                  <div className="rounded-lg bg-muted/50 p-4 space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Type</span>
-                      <span className="font-medium flex items-center gap-1">
-                        {notarizationType === "in_person" ? <><MapPin className="h-3 w-3" /> In-Person</> : <><Monitor className="h-3 w-3" /> Remote (RON)</>}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Service</span>
-                      <span className="font-medium">{serviceType}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Date</span>
-                      <span className="font-medium flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {new Date(date + "T00:00:00").toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Time</span>
-                      <span className="font-medium">{formatTime(time)}</span>
-                    </div>
-                    {(clientAddress || location) && notarizationType === "in_person" && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Location</span>
-                        <span className="font-medium text-right max-w-[60%]">
-                          {clientAddress ? `${clientAddress}, ${clientCity}, ${clientState} ${clientZip}` : location}
-                        </span>
-                      </div>
-                    )}
-                    {idData && !idData.error && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">ID Verified</span>
-                        <span className="font-medium flex items-center gap-1"><Shield className="h-3 w-3 text-accent" /> {idData.id_type}</span>
-                      </div>
-                    )}
-                    {documentCount > 1 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Documents</span>
-                        <span className="font-medium">{documentCount} documents (batch session)</span>
-                      </div>
-                    )}
-                    {docAnalysis && !docAnalysis.error && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Detected</span>
-                        <span className="font-medium">{docAnalysis.document_name} ({docAnalysis.notarization_method})</span>
-                      </div>
-                    )}
-                    {notes && (
-                      <div className="text-sm">
-                        <span className="text-muted-foreground">Notes: </span>
-                        <span>{notes}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Pricing Breakdown */}
-                  {estimatedPrice !== null && (
-                    <div className="rounded-lg border border-accent/30 bg-accent/5 p-4 space-y-2">
-                      <p className="text-sm font-medium flex items-center gap-2">
-                        <DollarSign className="h-4 w-4 text-accent" />
-                        Estimated Pricing
-                      </p>
-                      <div className="space-y-1 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Notary fee ({documentCount} signature{documentCount > 1 ? "s" : ""})</span>
-                          <span>${(parseFloat(pricingSettings.base_fee_per_signature || "5") * documentCount).toFixed(2)}</span>
-                        </div>
-                        {notarizationType === "in_person" && (
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Travel fee (est.)</span>
-                            <span>${parseFloat(pricingSettings.travel_fee_minimum || "25").toFixed(2)}</span>
-                          </div>
-                        )}
-                        {notarizationType === "ron" && (
-                          <>
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">RON platform fee</span>
-                              <span>${parseFloat(pricingSettings.ron_platform_fee || "25").toFixed(2)}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">KBA verification</span>
-                              <span>${parseFloat(pricingSettings.kba_fee || "15").toFixed(2)}</span>
-                            </div>
-                          </>
-                        )}
-                        <div className="flex justify-between border-t border-border pt-1 font-semibold">
-                          <span>Estimated Total</span>
-                          <span className="text-accent">${estimatedPrice.toFixed(2)}</span>
-                        </div>
-                      </div>
-                      <p className="text-xs text-muted-foreground">Final price may vary based on actual travel distance and document complexity.</p>
-                    </div>
-                  )}
-
-                  {/* Progressive signup for guests */}
-                  {!user && (
-                    <div className="rounded-lg border border-accent/30 bg-accent/5 p-4 space-y-3">
-                      <p className="text-sm font-medium flex items-center gap-2">
-                        <Shield className="h-4 w-4 text-accent" />
-                        Create your account to confirm
-                      </p>
-                      <div>
-                        <Label>Full Name</Label>
-                        <Input value={guestName} onChange={(e) => setGuestName(e.target.value)} placeholder="Your full name" />
-                      </div>
-                      <div>
-                        <Label>Email</Label>
-                        <Input type="email" value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)} placeholder="your@email.com" />
-                      </div>
-                      <div>
-                        <Label>Password</Label>
-                        <Input type="password" value={guestPassword} onChange={(e) => setGuestPassword(e.target.value)} placeholder="Create a password (min 6 characters)" minLength={6} />
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        Already have an account? <Link to="/login" className="text-accent hover:underline">Sign in</Link>
-                      </p>
-                    </div>
-                  )}
+              {/* Sticky cost estimator bar (Phase 4.2) */}
+              {estimatedPrice !== null && step !== lastStep && (
+                <div className="rounded-lg bg-accent/5 border border-accent/20 p-3 flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground flex items-center gap-1">
+                    <DollarSign className="h-4 w-4 text-accent" /> Estimated total
+                  </span>
+                  <span className="font-semibold text-accent">${(estimatedPrice + (urgencyLevel === "rush" ? 50 : urgencyLevel === "same_day" ? 100 : 0)).toFixed(2)}</span>
                 </div>
               )}
 
@@ -1267,7 +1320,7 @@ export default function BookAppointment() {
                     Next <ChevronRight className="ml-1 h-4 w-4" />
                   </Button>
                 ) : (
-                  <Button onClick={handleSubmit} disabled={submitting} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+                  <Button onClick={handleSubmit} disabled={submitting || !canProceed()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
                     {submitting ? "Booking..." : "Confirm Booking"}
                   </Button>
                 )}
