@@ -14,6 +14,35 @@ export type Database = {
   }
   public: {
     Tables: {
+      appointment_emails: {
+        Row: {
+          appointment_id: string
+          email_type: string
+          id: string
+          sent_at: string
+        }
+        Insert: {
+          appointment_id: string
+          email_type: string
+          id?: string
+          sent_at?: string
+        }
+        Update: {
+          appointment_id?: string
+          email_type?: string
+          id?: string
+          sent_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointment_emails_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       appointments: {
         Row: {
           admin_notes: string | null
