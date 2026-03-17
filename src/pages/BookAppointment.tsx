@@ -874,7 +874,7 @@ export default function BookAppointment() {
                     {idData && !idData.error && (
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">ID Verified</span>
-                        <span className="font-medium flex items-center gap-1"><Shield className="h-3 w-3 text-emerald-500" /> {idData.id_type}</span>
+                        <span className="font-medium flex items-center gap-1"><Shield className="h-3 w-3 text-accent" /> {idData.id_type}</span>
                       </div>
                     )}
                     {documentCount > 1 && (
