@@ -69,6 +69,14 @@ export default function ClientPortal() {
   const [profileForm, setProfileForm] = useState({ full_name: "", phone: "", address: "", city: "", state: "", zip: "" });
   const [savingProfile, setSavingProfile] = useState(false);
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
+  const [showWizard, setShowWizard] = useState(false);
+
+  // Payments & Reviews
+  const [payments, setPayments] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [services, setServices] = useState<any[]>([]);
+  const [reviewForm, setReviewForm] = useState({ appointment_id: "", rating: 5, comment: "" });
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   // Chat state
   const [chatMessages, setChatMessages] = useState<any[]>([]);
