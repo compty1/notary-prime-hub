@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,9 +7,17 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, FileText, Download, Eye, Printer, ChevronLeft, AlertTriangle } from "lucide-react";
+import { Search, FileText, Download, Eye, Printer, ChevronLeft, AlertTriangle, Save, MessageSquare, Sparkles, Send, Loader2, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, AlignLeft, AlignCenter, AlignRight, Heading1, Heading2 } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import UnderlineExt from "@tiptap/extension-underline";
+import TextAlign from "@tiptap/extension-text-align";
+import ReactMarkdown from "react-markdown";
 
 interface TemplateField {
   name: string;
@@ -25,7 +33,7 @@ interface Template {
   description: string;
   tags: string[];
   fields: TemplateField[];
-  body: string; // Template body with {{field_name}} placeholders
+  body: string;
 }
 
 const templates: Template[] = [
@@ -573,12 +581,43 @@ My Commission Expires: ___________
   },
 ];
 
+// TipTap toolbar component
+function EditorToolbar({ editor }: { editor: any }) {
+  if (!editor) return null;
+  return (
+    <div className="flex flex-wrap gap-1 border-b border-border p-2 bg-muted/30">
+      <Button type="button" size="sm" variant={editor.isActive("bold") ? "default" : "ghost"} className="h-7 w-7 p-0" onClick={() => editor.chain().focus().toggleBold().run()}><Bold className="h-3 w-3" /></Button>
+      <Button type="button" size="sm" variant={editor.isActive("italic") ? "default" : "ghost"} className="h-7 w-7 p-0" onClick={() => editor.chain().focus().toggleItalic().run()}><Italic className="h-3 w-3" /></Button>
+      <Button type="button" size="sm" variant={editor.isActive("underline") ? "default" : "ghost"} className="h-7 w-7 p-0" onClick={() => editor.chain().focus().toggleUnderline().run()}><UnderlineIcon className="h-3 w-3" /></Button>
+      <div className="w-px bg-border mx-1" />
+      <Button type="button" size="sm" variant={editor.isActive("heading", { level: 1 }) ? "default" : "ghost"} className="h-7 w-7 p-0" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}><Heading1 className="h-3 w-3" /></Button>
+      <Button type="button" size="sm" variant={editor.isActive("heading", { level: 2 }) ? "default" : "ghost"} className="h-7 w-7 p-0" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}><Heading2 className="h-3 w-3" /></Button>
+      <div className="w-px bg-border mx-1" />
+      <Button type="button" size="sm" variant={editor.isActive("bulletList") ? "default" : "ghost"} className="h-7 w-7 p-0" onClick={() => editor.chain().focus().toggleBulletList().run()}><List className="h-3 w-3" /></Button>
+      <Button type="button" size="sm" variant={editor.isActive("orderedList") ? "default" : "ghost"} className="h-7 w-7 p-0" onClick={() => editor.chain().focus().toggleOrderedList().run()}><ListOrdered className="h-3 w-3" /></Button>
+      <div className="w-px bg-border mx-1" />
+      <Button type="button" size="sm" variant={editor.isActive({ textAlign: "left" }) ? "default" : "ghost"} className="h-7 w-7 p-0" onClick={() => editor.chain().focus().setTextAlign("left").run()}><AlignLeft className="h-3 w-3" /></Button>
+      <Button type="button" size="sm" variant={editor.isActive({ textAlign: "center" }) ? "default" : "ghost"} className="h-7 w-7 p-0" onClick={() => editor.chain().focus().setTextAlign("center").run()}><AlignCenter className="h-3 w-3" /></Button>
+      <Button type="button" size="sm" variant={editor.isActive({ textAlign: "right" }) ? "default" : "ghost"} className="h-7 w-7 p-0" onClick={() => editor.chain().focus().setTextAlign("right").run()}><AlignRight className="h-3 w-3" /></Button>
+    </div>
+  );
+}
+
 export default function DocumentTemplates() {
   const [search, setSearch] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const { user } = useAuth();
+  const { toast } = useToast();
   const printRef = useRef<HTMLDivElement>(null);
+
+  // AI Chat state
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
+  const [chatInput, setChatInput] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
 
   const filtered = templates.filter(
     (t) => t.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -591,6 +630,8 @@ export default function DocumentTemplates() {
     const initialData: Record<string, string> = {};
     t.fields.forEach((f) => { initialData[f.name] = ""; });
     setFormData(initialData);
+    setChatMessages([]);
+    setChatOpen(false);
   };
 
   const renderBody = () => {
@@ -602,14 +643,154 @@ export default function DocumentTemplates() {
     return body;
   };
 
+  const plainTextToHtml = (text: string) => {
+    return text
+      .split("\n\n")
+      .map(p => `<p>${p.replace(/\n/g, "<br/>")}</p>`)
+      .join("");
+  };
+
+  // TipTap editor
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      UnderlineExt,
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
+    ],
+    content: "",
+    editorProps: {
+      attributes: { class: "prose prose-sm max-w-none focus:outline-none min-h-[300px] p-4 font-serif" },
+    },
+  });
+
+  // Update editor content when preview opens
+  useEffect(() => {
+    if (previewOpen && editor) {
+      const html = plainTextToHtml(renderBody());
+      editor.commands.setContent(html);
+    }
+  }, [previewOpen]);
+
   const handlePrint = () => {
-    const printContent = renderBody();
+    if (!editor) return;
+    const html = editor.getHTML();
     const printWindow = window.open("", "_blank");
     if (printWindow) {
-      printWindow.document.write(`<html><head><title>${selectedTemplate?.title}</title><style>body{font-family:serif;padding:2rem;line-height:1.8;white-space:pre-wrap;max-width:800px;margin:0 auto}h1{text-align:center}</style></head><body>${printContent.replace(/\n/g, "<br/>")}</body></html>`);
+      printWindow.document.write(`<html><head><title>${selectedTemplate?.title}</title><style>body{font-family:serif;padding:2rem;line-height:1.8;max-width:800px;margin:0 auto}h1,h2,h3{margin-top:1em}</style></head><body>${html}</body></html>`);
       printWindow.document.close();
       printWindow.print();
     }
+  };
+
+  const handleExportDocx = () => {
+    if (!editor) return;
+    const html = editor.getHTML();
+    const blob = new Blob([`<html><head><meta charset="utf-8"></head><body>${html}</body></html>`], { type: "application/vnd.ms-word;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${selectedTemplate?.title || "document"}.doc`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleSaveToVault = async () => {
+    if (!user || !editor) {
+      toast({ title: "Sign in required", description: "Please sign in to save documents to your vault.", variant: "destructive" });
+      return;
+    }
+    setSaving(true);
+    try {
+      const html = editor.getHTML();
+      const fileName = `${selectedTemplate?.title || "document"}_${Date.now()}.html`;
+      const filePath = `${user.id}/${fileName}`;
+      const blob = new Blob([html], { type: "text/html" });
+      const { error: uploadError } = await supabase.storage.from("documents").upload(filePath, blob);
+      if (uploadError) throw uploadError;
+      const { error: insertError } = await supabase.from("documents").insert({
+        uploaded_by: user.id,
+        file_name: fileName,
+        file_path: filePath,
+        status: "uploaded" as any,
+      });
+      if (insertError) throw insertError;
+      toast({ title: "Saved to Vault", description: "Document saved to your portal documents." });
+    } catch (e: any) {
+      toast({ title: "Save failed", description: e.message, variant: "destructive" });
+    }
+    setSaving(false);
+  };
+
+  // AI Chat for template
+  const sendChatMessage = async () => {
+    if (!chatInput.trim() || chatLoading) return;
+    const userMsg = { role: "user" as const, content: chatInput.trim() };
+    const newMessages = [...chatMessages, userMsg];
+    setChatMessages(newMessages);
+    setChatInput("");
+    setChatLoading(true);
+
+    let assistantSoFar = "";
+    try {
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/client-assistant`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
+          messages: newMessages,
+          template_context: selectedTemplate ? {
+            title: selectedTemplate.title,
+            category: selectedTemplate.category,
+            description: selectedTemplate.description,
+            fields: formData,
+          } : undefined,
+        }),
+      });
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({ error: "AI unavailable" }));
+        throw new Error(err.error || "AI unavailable");
+      }
+
+      const reader = resp.body?.getReader();
+      if (!reader) throw new Error("No stream");
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let newlineIdx;
+        while ((newlineIdx = buffer.indexOf("\n")) !== -1) {
+          let line = buffer.slice(0, newlineIdx);
+          buffer = buffer.slice(newlineIdx + 1);
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (!line.startsWith("data: ")) continue;
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") break;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) {
+              assistantSoFar += content;
+              setChatMessages(prev => {
+                const last = prev[prev.length - 1];
+                if (last?.role === "assistant") {
+                  return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantSoFar } : m);
+                }
+                return [...prev, { role: "assistant", content: assistantSoFar }];
+              });
+            }
+          } catch { /* partial JSON */ }
+        }
+      }
+    } catch (e: any) {
+      setChatMessages(prev => [...prev, { role: "assistant", content: `Error: ${e.message}` }]);
+    }
+    setChatLoading(false);
   };
 
   return (
@@ -643,8 +824,8 @@ export default function DocumentTemplates() {
             <div className="text-sm text-amber-800 dark:text-amber-300 space-y-2">
               <p><strong>You CAN use these templates for:</strong> General informational starting points, standard notarial certificates (acknowledgments, jurats), routine personal documents (travel consent, general affidavits), and common business documents (bill of sale, basic contracts).</p>
               <p><strong>You MAY need attorney review for:</strong> Estate planning documents (wills, trusts, healthcare directives), real property transfers (deeds, mortgages), court filings, power of attorney documents with specific legal powers, and any document with significant legal or financial consequences.</p>
-              <p><strong>Always check with your local officials:</strong> County recorders, courts, and government agencies may have specific form requirements. The receiving entity for your document may require their own forms rather than generic templates.</p>
-              <p className="text-xs italic">These templates are provided for informational purposes only and do not constitute legal advice. Consult a licensed attorney for advice specific to your situation.</p>
+              <p><strong>Always check with your local officials:</strong> County recorders, courts, and government agencies may have specific form requirements.</p>
+              <p className="text-xs italic">These templates are provided for informational purposes only and do not constitute legal advice.</p>
             </div>
           </div>
         </div>
@@ -657,8 +838,7 @@ export default function DocumentTemplates() {
           </div>
           <div className="flex gap-2">
             <Link to="/services"><Button variant="outline" size="sm">View All Services</Button></Link>
-            <Link to="/ron-check"><Button variant="outline" size="sm">Check RON Eligibility</Button></Link>
-            <Link to="/loan-signing"><Button variant="outline" size="sm">Loan Signing</Button></Link>
+            <Link to="/digitize"><Button variant="outline" size="sm">Digitize Documents</Button></Link>
           </div>
         </div>
 
@@ -703,24 +883,73 @@ export default function DocumentTemplates() {
               </div>
             ))}
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setSelectedTemplate(null)}>Cancel</Button>
-            <Button onClick={() => setPreviewOpen(true)} className="bg-accent text-accent-foreground hover:bg-gold-dark"><Eye className="mr-1 h-4 w-4" /> Preview</Button>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setChatOpen(true)} className="gap-1">
+              <Sparkles className="h-3 w-3" /> Ask AI About This
+            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setSelectedTemplate(null)}>Cancel</Button>
+              <Button onClick={() => setPreviewOpen(true)} className="bg-accent text-accent-foreground hover:bg-gold-dark"><Eye className="mr-1 h-4 w-4" /> Preview & Edit</Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Preview Dialog */}
+      {/* Rich Text Preview/Editor Dialog */}
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="font-display">Document Preview</DialogTitle></DialogHeader>
-          <div ref={printRef} className="whitespace-pre-wrap font-serif text-sm leading-relaxed border rounded-lg p-6 bg-white text-gray-900">
-            {renderBody()}
+        <DialogContent className="sm:max-w-3xl max-h-[90vh] flex flex-col">
+          <DialogHeader><DialogTitle className="font-display">Edit Document — {selectedTemplate?.title}</DialogTitle></DialogHeader>
+          <div className="flex-1 overflow-y-auto border rounded-lg">
+            <EditorToolbar editor={editor} />
+            <EditorContent editor={editor} />
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setPreviewOpen(false)}>Back to Edit</Button>
-            <Button onClick={handlePrint} className="bg-accent text-accent-foreground hover:bg-gold-dark"><Printer className="mr-1 h-4 w-4" /> Print / Save PDF</Button>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setPreviewOpen(false)}>Back to Fields</Button>
+            <Button variant="outline" onClick={handleExportDocx} className="gap-1"><Download className="h-3 w-3" /> Export .DOC</Button>
+            <Button variant="outline" onClick={handleSaveToVault} disabled={saving || !user} className="gap-1">
+              {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />} Save to Vault
+            </Button>
+            <Button onClick={handlePrint} className="bg-accent text-accent-foreground hover:bg-gold-dark gap-1"><Printer className="h-3 w-3" /> Print / PDF</Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* AI Chat Dialog for Template */}
+      <Dialog open={chatOpen} onOpenChange={setChatOpen}>
+        <DialogContent className="sm:max-w-md max-h-[80vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-accent" /> AI Assistant — {selectedTemplate?.title}
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-xs text-muted-foreground">Ask questions about this template, your specific situation, Ohio notary requirements, and more.</p>
+          <div className="flex-1 overflow-y-auto space-y-3 min-h-[200px] max-h-[400px] border rounded-lg p-3">
+            {chatMessages.length === 0 && (
+              <p className="text-center text-xs text-muted-foreground py-8">Ask a question about this template to get started.</p>
+            )}
+            {chatMessages.map((msg, i) => (
+              <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                <div className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${msg.role === "user" ? "bg-accent text-accent-foreground" : "bg-muted text-foreground"}`}>
+                  {msg.role === "assistant" ? (
+                    <div className="prose prose-sm max-w-none dark:prose-invert"><ReactMarkdown>{msg.content}</ReactMarkdown></div>
+                  ) : (
+                    <p>{msg.content}</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <Input
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              placeholder="e.g., Do I need witnesses for this?"
+              onKeyDown={(e) => { if (e.key === "Enter") sendChatMessage(); }}
+            />
+            <Button onClick={sendChatMessage} disabled={chatLoading || !chatInput.trim()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+              {chatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 

@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
-import { ChevronRight, Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home, Loader2, Menu, Search } from "lucide-react";
+import { ChevronRight, Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home, Loader2, Menu, Search, Sparkles, ArrowRight } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import ReactMarkdown from "react-markdown";
 
 const iconMap: Record<string, any> = {
   Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home,
@@ -49,6 +50,50 @@ export default function Services() {
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [helpQuery, setHelpQuery] = useState("");
+  const [helpResult, setHelpResult] = useState("");
+  const [helpLoading, setHelpLoading] = useState(false);
+
+  const submitHelp = async () => {
+    if (!helpQuery.trim() || helpLoading) return;
+    setHelpLoading(true);
+    setHelpResult("");
+    let soFar = "";
+    try {
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/client-assistant`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        body: JSON.stringify({ messages: [{ role: "user", content: helpQuery }] }),
+      });
+      if (!resp.ok) throw new Error("AI unavailable");
+      const reader = resp.body?.getReader();
+      if (!reader) throw new Error("No stream");
+      const decoder = new TextDecoder();
+      let buffer = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let idx;
+        while ((idx = buffer.indexOf("\n")) !== -1) {
+          let line = buffer.slice(0, idx);
+          buffer = buffer.slice(idx + 1);
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (!line.startsWith("data: ")) continue;
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") break;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) { soFar += content; setHelpResult(soFar); }
+          } catch { /* partial */ }
+        }
+      }
+    } catch {
+      setHelpResult("AI assistant is temporarily unavailable. Please contact us directly.");
+    }
+    setHelpLoading(false);
+  };
 
   useEffect(() => {
     document.title = "Services — Shane Goble Notary";
@@ -133,9 +178,44 @@ export default function Services() {
         </div>
       </section>
 
+      {/* "What Do I Need?" Quick Helper */}
+      <section className="bg-accent/5 border-b border-accent/10 py-6">
+        <div className="container mx-auto max-w-xl px-4">
+          <div className="flex items-center gap-2 mb-2 justify-center">
+            <Sparkles className="h-4 w-4 text-accent" />
+            <span className="text-sm font-semibold text-foreground">Not sure what you need?</span>
+          </div>
+          <div className="flex gap-2">
+            <Input
+              value={helpQuery}
+              onChange={(e) => setHelpQuery(e.target.value)}
+              placeholder='Describe your situation, e.g., "notarize a will for my parents"'
+              onKeyDown={(e) => { if (e.key === "Enter") submitHelp(); }}
+            />
+            <Button onClick={submitHelp} disabled={helpLoading || !helpQuery.trim()} size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">
+              {helpLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+            </Button>
+          </div>
+          {helpResult && (
+            <Card className="mt-3 border-accent/30">
+              <CardContent className="p-3">
+                <div className="prose prose-sm max-w-none dark:prose-invert text-sm">
+                  <ReactMarkdown>{helpResult}</ReactMarkdown>
+                </div>
+                {!helpLoading && (
+                  <div className="mt-3 flex gap-2">
+                    <Link to="/book"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark text-xs">Book Now <ArrowRight className="ml-1 h-3 w-3" /></Button></Link>
+                    <Button size="sm" variant="ghost" className="text-xs" onClick={() => { setHelpResult(""); setHelpQuery(""); }}>Clear</Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </section>
+
       {/* Search + Filter */}
       <div className="container mx-auto px-4 py-8">
-        {/* Phase 2.2: Search input */}
         <div className="relative mb-4 max-w-md mx-auto">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input

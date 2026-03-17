@@ -12,8 +12,109 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { MapPin, Monitor, FileText, Shield, Clock, CheckCircle, Star, ChevronRight, Phone, Mail, Scale, Menu, Send, Loader2 } from "lucide-react";
+import { MapPin, Monitor, FileText, Shield, Clock, CheckCircle, Star, ChevronRight, Phone, Mail, Scale, Menu, Send, Loader2, Sparkles, ArrowRight } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
+import ReactMarkdown from "react-markdown";
+
+// "What Do I Need?" AI helper component
+function WhatDoINeed() {
+  const [query, setQuery] = useState("");
+  const [result, setResult] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showResult, setShowResult] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!query.trim() || loading) return;
+    setLoading(true);
+    setResult("");
+    setShowResult(true);
+
+    let soFar = "";
+    try {
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/client-assistant`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: query }],
+        }),
+      });
+      if (!resp.ok) throw new Error("AI unavailable");
+      const reader = resp.body?.getReader();
+      if (!reader) throw new Error("No stream");
+      const decoder = new TextDecoder();
+      let buffer = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let idx;
+        while ((idx = buffer.indexOf("\n")) !== -1) {
+          let line = buffer.slice(0, idx);
+          buffer = buffer.slice(idx + 1);
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (!line.startsWith("data: ")) continue;
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") break;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) { soFar += content; setResult(soFar); }
+          } catch { /* partial */ }
+        }
+      }
+    } catch {
+      setResult("Sorry, the AI assistant is temporarily unavailable. Please try again or contact us directly.");
+    }
+    setLoading(false);
+  };
+
+  return (
+    <section className="py-10 bg-muted/30 border-b border-border/50">
+      <div className="container mx-auto max-w-2xl px-4 text-center">
+        <h2 className="mb-2 font-display text-xl font-bold text-foreground flex items-center justify-center gap-2">
+          <Sparkles className="h-5 w-5 text-accent" /> What Do I Need?
+        </h2>
+        <p className="mb-4 text-sm text-muted-foreground">
+          Describe your situation and get practical instructions, required documents, and tips.
+        </p>
+        <div className="flex gap-2">
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="e.g., I need to notarize a power of attorney for my mom"
+            onKeyDown={(e) => { if (e.key === "Enter") handleSubmit(); }}
+            className="flex-1"
+          />
+          <Button onClick={handleSubmit} disabled={loading || !query.trim()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Sparkles className="mr-1 h-4 w-4" /> Go</>}
+          </Button>
+        </div>
+        {showResult && (
+          <Card className="mt-4 text-left border-accent/30">
+            <CardContent className="p-4">
+              {result ? (
+                <div className="prose prose-sm max-w-none dark:prose-invert">
+                  <ReactMarkdown>{result}</ReactMarkdown>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Analyzing your situation...</div>
+              )}
+              {result && !loading && (
+                <div className="mt-4 flex gap-2">
+                  <Link to="/book"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Appointment <ArrowRight className="ml-1 h-3 w-3" /></Button></Link>
+                  <Link to="/services"><Button size="sm" variant="outline">View All Services</Button></Link>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </section>
+  );
+}
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -318,6 +419,9 @@ export default function Index() {
           </p>
         </div>
       </section>
+
+      {/* "What Do I Need?" AI Helper */}
+      <WhatDoINeed />
 
       {/* Services */}
       <section id="services" className="py-20">

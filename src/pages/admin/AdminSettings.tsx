@@ -318,6 +318,22 @@ export default function AdminSettings() {
           </CardContent>
         </Card>
 
+        {/* Zoom / Meeting Integration */}
+        <Card className="border-border/50">
+          <CardHeader>
+            <CardTitle className="font-display text-lg flex items-center gap-2">
+              <Monitor className="h-5 w-5 text-accent" /> Zoom Meetings
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label>Zoom Personal Meeting Link</Label>
+              <Input value={editValues.zoom_meeting_link || ""} onChange={(e) => updateValue("zoom_meeting_link", e.target.value)} placeholder="https://zoom.us/j/1234567890" />
+              <p className="mt-1 text-xs text-muted-foreground">Displayed to clients for consultation appointments</p>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Email Notification Templates */}
         <Card className="border-border/50 lg:col-span-2">
           <CardHeader>

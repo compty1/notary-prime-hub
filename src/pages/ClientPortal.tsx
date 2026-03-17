@@ -602,6 +602,7 @@ export default function ClientPortal() {
           {/* CHAT TAB */}
           <TabsContent value="chat" className="space-y-4">
             <h2 className="font-display text-xl font-semibold">Live Chat</h2>
+            <p className="text-xs text-muted-foreground">Message us for a response within 24 hours — we typically respond within 2 hours during business hours.</p>
             <Card className="border-border/50">
               <CardContent className="p-4">
                 {staffUsers.length > 1 && (
