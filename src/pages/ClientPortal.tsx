@@ -132,7 +132,11 @@ export default function ClientPortal() {
 
     // Load chat messages - own messages + admin replies addressed to this user
     supabase.from("chat_messages").select("*").or(`sender_id.eq.${user.id},and(is_admin.eq.true,recipient_id.eq.${user.id})`).order("created_at").then(({ data }) => {
-      if (data) setChatMessages(data);
+      if (data) {
+        setChatMessages(data);
+        const unread = data.filter((m: any) => m.is_admin && !m.read).length;
+        setUnreadCount(unread);
+      }
     });
 
     // Subscribe to new chat messages (admin replies)
