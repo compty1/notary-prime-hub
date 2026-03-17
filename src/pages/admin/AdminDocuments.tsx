@@ -172,7 +172,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
   }
 
   return (
-    <div>
+    <div ref={ref}>
       <h1 className="mb-6 font-display text-2xl font-bold text-foreground">Document Management</h1>
 
       {docs.length === 0 ? (
