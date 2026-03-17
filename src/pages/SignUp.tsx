@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { lovable } from "@/integrations/lovable/index";
@@ -6,8 +6,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Shield } from "lucide-react";
+
+function getPasswordStrength(pw: string) {
+  let score = 0;
+  if (pw.length >= 6) score++;
+  if (pw.length >= 10) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  return score; // 0-5
+}
+
+const strengthLabels = ["", "Very Weak", "Weak", "Fair", "Strong", "Very Strong"];
+const strengthColors = ["", "bg-destructive", "bg-orange-500", "bg-yellow-500", "bg-emerald-500", "bg-emerald-600"];
 
 export default function SignUp() {
   const { user, signUp, loading } = useAuth();
@@ -17,6 +31,8 @@ export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  const strength = useMemo(() => getPasswordStrength(password), [password]);
 
   if (!loading && user) return <Navigate to="/portal" replace />;
 
@@ -60,7 +76,18 @@ export default function SignUp() {
             <div>
               <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
-              <p className="mt-1 text-xs text-muted-foreground">Minimum 6 characters</p>
+              {password.length > 0 && (
+                <div className="mt-2 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Progress value={strength * 20} className="h-1.5 flex-1" />
+                    <span className={`text-xs font-medium ${strength <= 2 ? "text-destructive" : strength <= 3 ? "text-yellow-600" : "text-emerald-600"}`}>
+                      {strengthLabels[strength]}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Use 10+ chars with uppercase, numbers, and symbols</p>
+                </div>
+              )}
+              {!password && <p className="mt-1 text-xs text-muted-foreground">Minimum 6 characters</p>}
             </div>
             <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" disabled={submitting}>
               {submitting ? "Creating account..." : "Create Account"}

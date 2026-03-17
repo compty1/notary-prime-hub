@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, AlertTriangle } from "lucide-react";
 
 const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -22,7 +23,19 @@ export default function AdminAvailability() {
 
   useEffect(() => { fetchSlots(); }, []);
 
+  const checkOverlap = (dayOfWeek: number, startTime: string, endTime: string, excludeId?: string) => {
+    return slots.some((s) => {
+      if (s.day_of_week !== dayOfWeek) return false;
+      if (excludeId && s.id === excludeId) return false;
+      return startTime < s.end_time && endTime > s.start_time;
+    });
+  };
+
   const addSlot = async (dayOfWeek: number) => {
+    if (checkOverlap(dayOfWeek, "09:00", "17:00")) {
+      toast({ title: "Overlap detected", description: "This time range overlaps with an existing slot.", variant: "destructive" });
+      return;
+    }
     const { error } = await supabase.from("time_slots").insert({
       day_of_week: dayOfWeek,
       start_time: "09:00",
@@ -44,11 +57,22 @@ export default function AdminAvailability() {
   };
 
   const updateSlotTime = async (id: string, field: "start_time" | "end_time", value: string) => {
+    const slot = slots.find((s) => s.id === id);
+    if (!slot) return;
+    const newStart = field === "start_time" ? value : slot.start_time;
+    const newEnd = field === "end_time" ? value : slot.end_time;
+    if (newStart >= newEnd) {
+      toast({ title: "Invalid time", description: "Start time must be before end time.", variant: "destructive" });
+      return;
+    }
+    if (checkOverlap(slot.day_of_week, newStart, newEnd, id)) {
+      toast({ title: "Overlap detected", description: "This time range overlaps with another slot.", variant: "destructive" });
+      return;
+    }
     const { error } = await supabase.from("time_slots").update({ [field]: value }).eq("id", id);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      // Update local state
       setSlots((prev) => prev.map((s) => s.id === id ? { ...s, [field]: value } : s));
     }
   };
@@ -92,9 +116,25 @@ export default function AdminAvailability() {
                           onChange={(e) => updateSlotTime(slot.id, "end_time", e.target.value)}
                           className="w-28"
                         />
-                        <Button variant="ghost" size="sm" onClick={() => deleteSlot(slot.id)} className="ml-auto text-destructive">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="sm" className="ml-auto text-destructive">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete time slot?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will permanently remove this availability slot for {day}.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => deleteSlot(slot.id)} className="bg-destructive text-destructive-foreground">Delete</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     ))}
                   </div>

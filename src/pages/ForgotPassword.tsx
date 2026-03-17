@@ -6,33 +6,48 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, CheckCircle } from "lucide-react";
+import { Shield, CheckCircle, ArrowLeft } from "lucide-react";
 
 export default function ResetPassword() {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [mode, setMode] = useState<"request" | "reset">("request");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [isRecovery, setIsRecovery] = useState(false);
+  const [requestSent, setRequestSent] = useState(false);
 
   useEffect(() => {
-    // Check for recovery token in URL hash
     const hash = window.location.hash;
     if (hash.includes("type=recovery")) {
-      setIsRecovery(true);
+      setMode("reset");
     }
-    // Also listen for auth events
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") {
-        setIsRecovery(true);
+        setMode("reset");
       }
     });
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleRequestReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      setRequestSent(true);
+      toast({ title: "Check your email", description: "We sent a password reset link." });
+    }
+    setSubmitting(false);
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       toast({ title: "Passwords don't match", variant: "destructive" });
@@ -54,19 +69,6 @@ export default function ResetPassword() {
     setSubmitting(false);
   };
 
-  if (!isRecovery && !success) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
-        <Card className="w-full max-w-md border-border/50">
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground">Invalid or expired reset link.</p>
-            <Link to="/login" className="mt-4 inline-block text-accent hover:underline">Back to Sign In</Link>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
       <Card className="w-full max-w-md border-border/50">
@@ -75,10 +77,10 @@ export default function ResetPassword() {
             <Shield className="h-6 w-6 text-primary-foreground" />
           </Link>
           <CardTitle className="font-display text-2xl">
-            {success ? "Password Updated" : "Set New Password"}
+            {success ? "Password Updated" : mode === "reset" ? "Set New Password" : "Forgot Password"}
           </CardTitle>
           <CardDescription>
-            {success ? "Redirecting you to sign in..." : "Enter your new password below"}
+            {success ? "Redirecting you to sign in..." : mode === "reset" ? "Enter your new password below" : "Enter your email to receive a reset link"}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -87,8 +89,14 @@ export default function ResetPassword() {
               <CheckCircle className="h-12 w-12 text-emerald-500" />
               <Link to="/login"><Button className="bg-accent text-accent-foreground">Go to Sign In</Button></Link>
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
+          ) : requestSent ? (
+            <div className="flex flex-col items-center gap-4 py-4 text-center">
+              <CheckCircle className="h-12 w-12 text-accent" />
+              <p className="text-sm text-muted-foreground">Check your email for a password reset link. It may take a minute to arrive.</p>
+              <Link to="/login"><Button variant="outline"><ArrowLeft className="mr-1 h-4 w-4" /> Back to Sign In</Button></Link>
+            </div>
+          ) : mode === "reset" ? (
+            <form onSubmit={handleResetPassword} className="space-y-4">
               <div>
                 <Label htmlFor="password">New Password</Label>
                 <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
@@ -100,6 +108,19 @@ export default function ResetPassword() {
               <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" disabled={submitting}>
                 {submitting ? "Updating..." : "Update Password"}
               </Button>
+            </form>
+          ) : (
+            <form onSubmit={handleRequestReset} className="space-y-4">
+              <div>
+                <Label htmlFor="email">Email Address</Label>
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" />
+              </div>
+              <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" disabled={submitting}>
+                {submitting ? "Sending..." : "Send Reset Link"}
+              </Button>
+              <p className="text-center text-sm text-muted-foreground">
+                <Link to="/login" className="font-medium text-accent hover:underline">Back to Sign In</Link>
+              </p>
             </form>
           )}
         </CardContent>
