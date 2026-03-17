@@ -98,13 +98,15 @@ export default function ClientPortal() {
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
-      const [apptRes, profileRes, docsRes, payRes, revRes, svcRes] = await Promise.all([
+      const [apptRes, profileRes, docsRes, payRes, revRes, svcRes, corrRes, apoRes] = await Promise.all([
         supabase.from("appointments").select("*").eq("client_id", user.id).order("scheduled_date", { ascending: false }),
         supabase.from("profiles").select("*").eq("user_id", user.id).single(),
         supabase.from("documents").select("*").eq("uploaded_by", user.id).order("created_at", { ascending: false }),
         supabase.from("payments").select("*").eq("client_id", user.id).order("created_at", { ascending: false }),
         supabase.from("reviews").select("*").eq("client_id", user.id).order("created_at", { ascending: false }),
         supabase.from("services").select("*").eq("is_active", true).order("display_order"),
+        supabase.from("client_correspondence").select("*").eq("client_id", user.id).order("created_at", { ascending: false }),
+        supabase.from("apostille_requests").select("*").eq("client_id", user.id).order("created_at", { ascending: false }),
       ]);
       if (apptRes.data) setAppointments(apptRes.data);
       if (docsRes.data) setDocuments(docsRes.data);
