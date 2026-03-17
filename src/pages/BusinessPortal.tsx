@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Building2, Upload, FileText, Users, History, Loader2, Plus, LogOut, ChevronLeft } from "lucide-react";
+import { Building2, Upload, FileText, Users, History, Loader2, Plus, LogOut, ChevronLeft, Trash2, DollarSign, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function BusinessPortal() {
@@ -20,9 +20,13 @@ export default function BusinessPortal() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [business, setBusiness] = useState<any>(null);
   const [documents, setDocuments] = useState<any[]>([]);
+  const [members, setMembers] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [payments, setPayments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
   const [form, setForm] = useState({ business_name: "", ein: "", business_type: "", signers: "" });
 
   useEffect(() => {
@@ -30,9 +34,19 @@ export default function BusinessPortal() {
     Promise.all([
       supabase.from("business_profiles").select("*").eq("created_by", user.id).single(),
       supabase.from("documents").select("*").eq("uploaded_by", user.id).order("created_at", { ascending: false }),
-    ]).then(([bizRes, docRes]) => {
-      if (bizRes.data) setBusiness(bizRes.data);
+      supabase.from("appointments").select("*").eq("client_id", user.id).order("scheduled_date", { ascending: false }),
+      supabase.from("payments").select("*").eq("client_id", user.id).order("created_at", { ascending: false }),
+    ]).then(([bizRes, docRes, apptRes, payRes]) => {
+      if (bizRes.data) {
+        setBusiness(bizRes.data);
+        // Load team members
+        supabase.from("business_members").select("*").eq("business_id", bizRes.data.id).then(({ data }) => {
+          if (data) setMembers(data);
+        });
+      }
       if (docRes.data) setDocuments(docRes.data);
+      if (apptRes.data) setAppointments(apptRes.data);
+      if (payRes.data) setPayments(payRes.data);
       setLoading(false);
     });
   }, [user]);
@@ -64,6 +78,36 @@ export default function BusinessPortal() {
     setUploading(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
+
+  const addTeamMember = async () => {
+    if (!inviteEmail.trim() || !business) return;
+    // Look up user by email in profiles
+    const { data: profile } = await supabase.from("profiles").select("user_id").eq("email", inviteEmail.trim()).single();
+    if (!profile) {
+      toast({ title: "User not found", description: "No account found with that email. They must sign up first.", variant: "destructive" });
+      return;
+    }
+    const { error } = await supabase.from("business_members").insert({
+      business_id: business.id, user_id: profile.user_id, member_role: "member",
+    });
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Team member added" });
+      setInviteEmail("");
+      const { data } = await supabase.from("business_members").select("*").eq("business_id", business.id);
+      if (data) setMembers(data);
+    }
+  };
+
+  const removeMember = async (memberId: string) => {
+    await supabase.from("business_members").delete().eq("id", memberId);
+    setMembers(prev => prev.filter(m => m.id !== memberId));
+    toast({ title: "Member removed" });
+  };
+
+  const totalPaid = payments.filter(p => p.status === "paid").reduce((s, p) => s + parseFloat(p.amount || "0"), 0);
+  const totalPending = payments.filter(p => p.status === "pending").reduce((s, p) => s + parseFloat(p.amount || "0"), 0);
 
   if (loading) return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-accent" /></div>;
 
@@ -106,7 +150,7 @@ export default function BusinessPortal() {
             <Tabs defaultValue="documents" className="space-y-6">
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="documents"><FileText className="mr-1 h-4 w-4" /> Documents</TabsTrigger>
-                <TabsTrigger value="team"><Users className="mr-1 h-4 w-4" /> Team</TabsTrigger>
+                <TabsTrigger value="team"><Users className="mr-1 h-4 w-4" /> Team ({members.length})</TabsTrigger>
                 <TabsTrigger value="history"><History className="mr-1 h-4 w-4" /> History</TabsTrigger>
               </TabsList>
 
@@ -136,18 +180,79 @@ export default function BusinessPortal() {
                 ))}
               </TabsContent>
 
-              <TabsContent value="team">
-                <Card className="border-border/50"><CardContent className="py-8 text-center text-muted-foreground">
-                  <Users className="mx-auto mb-4 h-8 w-8 text-muted-foreground/50" />
-                  <p>Team management coming soon. Contact us to add team members.</p>
-                </CardContent></Card>
+              <TabsContent value="team" className="space-y-4">
+                <h2 className="font-display text-lg font-semibold">Team Members</h2>
+                <div className="flex gap-2">
+                  <Input value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="Enter team member's email..." className="max-w-sm" />
+                  <Button size="sm" onClick={addTeamMember} disabled={!inviteEmail.trim()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+                    <Plus className="mr-1 h-4 w-4" /> Add Member
+                  </Button>
+                </div>
+                {members.length === 0 ? (
+                  <Card className="border-border/50"><CardContent className="py-8 text-center text-muted-foreground">
+                    <Users className="mx-auto mb-4 h-8 w-8 text-muted-foreground/50" />
+                    <p>No team members yet. Add members by email above.</p>
+                  </CardContent></Card>
+                ) : (
+                  <div className="space-y-2">
+                    {members.map((m) => (
+                      <Card key={m.id} className="border-border/50">
+                        <CardContent className="flex items-center justify-between p-3">
+                          <div>
+                            <p className="text-sm font-medium">{m.user_id.slice(0, 8)}...</p>
+                            <p className="text-xs text-muted-foreground capitalize">{m.member_role}</p>
+                          </div>
+                          <Button size="sm" variant="ghost" className="text-destructive" onClick={() => removeMember(m.id)}>
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
               </TabsContent>
 
-              <TabsContent value="history">
-                <Card className="border-border/50"><CardContent className="py-8 text-center text-muted-foreground">
-                  <History className="mx-auto mb-4 h-8 w-8 text-muted-foreground/50" />
-                  <p>Monthly billing summaries and complete document history will appear here.</p>
-                </CardContent></Card>
+              <TabsContent value="history" className="space-y-4">
+                <h2 className="font-display text-lg font-semibold">Billing & Appointment History</h2>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <Card className="border-border/50">
+                    <CardContent className="p-4 text-center">
+                      <DollarSign className="mx-auto mb-1 h-5 w-5 text-accent" />
+                      <p className="text-xl font-bold text-foreground">${totalPaid.toFixed(2)}</p>
+                      <p className="text-xs text-muted-foreground">Total Paid</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-border/50">
+                    <CardContent className="p-4 text-center">
+                      <DollarSign className="mx-auto mb-1 h-5 w-5 text-amber-500" />
+                      <p className="text-xl font-bold text-foreground">${totalPending.toFixed(2)}</p>
+                      <p className="text-xs text-muted-foreground">Pending</p>
+                    </CardContent>
+                  </Card>
+                </div>
+                {appointments.length === 0 ? (
+                  <Card className="border-border/50"><CardContent className="py-8 text-center text-muted-foreground">
+                    <Calendar className="mx-auto mb-4 h-8 w-8 text-muted-foreground/50" />
+                    <p>No appointment history yet.</p>
+                  </CardContent></Card>
+                ) : (
+                  <div className="space-y-2">
+                    {appointments.slice(0, 20).map((a) => (
+                      <Card key={a.id} className="border-border/50">
+                        <CardContent className="flex items-center justify-between p-3">
+                          <div>
+                            <p className="text-sm font-medium">{a.service_type}</p>
+                            <p className="text-xs text-muted-foreground">{new Date(a.scheduled_date + "T00:00:00").toLocaleDateString()}</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {a.estimated_price && <span className="text-sm font-medium">${parseFloat(a.estimated_price).toFixed(2)}</span>}
+                            <Badge variant="outline" className="text-xs">{a.status.replace(/_/g, " ")}</Badge>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           </>
