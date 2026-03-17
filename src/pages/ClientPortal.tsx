@@ -493,6 +493,22 @@ export default function ClientPortal() {
                         )}
                         <Badge className={docStatusColors[doc.status] || "bg-muted text-muted-foreground"}>{doc.status.replace(/_/g, " ")}</Badge>
                         <Button size="sm" variant="outline" onClick={() => downloadDocument(doc)}><Download className="h-3 w-3" /></Button>
+                        {doc.status === "uploaded" && (
+                          <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={async () => {
+                            if (deletingDocId) return;
+                            setDeletingDocId(doc.id);
+                            await supabase.storage.from("documents").remove([doc.file_path]);
+                            const { error } = await supabase.from("documents").delete().eq("id", doc.id);
+                            if (error) toast({ title: "Delete failed", variant: "destructive" });
+                            else {
+                              setDocuments(prev => prev.filter(d => d.id !== doc.id));
+                              toast({ title: "Document deleted" });
+                            }
+                            setDeletingDocId(null);
+                          }} disabled={deletingDocId === doc.id} title="Delete">
+                            {deletingDocId === doc.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <XCircle className="h-3 w-3" />}
+                          </Button>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
