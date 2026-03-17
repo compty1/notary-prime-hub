@@ -63,6 +63,11 @@ export default function AdminAppointments() {
   const [savingNotes, setSavingNotes] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [creatingAppt, setCreatingAppt] = useState(false);
+  // Message client state
+  const [messageAppt, setMessageAppt] = useState<any>(null);
+  const [messageSubject, setMessageSubject] = useState("");
+  const [messageBody, setMessageBody] = useState("");
+  const [sendingMessage, setSendingMessage] = useState(false);
   const [newAppt, setNewAppt] = useState({
     client_id: "",
     service_type: "",
@@ -82,6 +87,45 @@ export default function AdminAppointments() {
   });
   const { toast } = useToast();
   const { user } = useAuth();
+
+  const openMessageDialog = (appt: any) => {
+    const clientProfile = profiles.find((p) => p.user_id === appt.client_id);
+    setMessageAppt(appt);
+    setMessageSubject(`Regarding your ${appt.service_type} appointment on ${formatDate(appt.scheduled_date)}`);
+    setMessageBody("");
+  };
+
+  const sendMessage = async () => {
+    if (!messageAppt || !messageBody.trim()) return;
+    const clientProfile = profiles.find((p) => p.user_id === messageAppt.client_id);
+    if (!clientProfile?.email) {
+      toast({ title: "No email", description: "This client has no email on file.", variant: "destructive" });
+      return;
+    }
+    setSendingMessage(true);
+    try {
+      await supabase.functions.invoke("send-correspondence", {
+        body: {
+          to_address: clientProfile.email,
+          subject: messageSubject,
+          body: messageBody,
+          client_id: messageAppt.client_id,
+        },
+      });
+      toast({ title: "Message sent", description: `Email sent to ${clientProfile.email}` });
+      await supabase.from("audit_log").insert({
+        user_id: user?.id,
+        action: "client_messaged",
+        entity_type: "appointment",
+        entity_id: messageAppt.id,
+        details: { to: clientProfile.email, subject: messageSubject },
+      });
+      setMessageAppt(null);
+    } catch (err: any) {
+      toast({ title: "Send failed", description: err.message, variant: "destructive" });
+    }
+    setSendingMessage(false);
+  };
 
   const getDateFilter = () => {
     const today = new Date();
