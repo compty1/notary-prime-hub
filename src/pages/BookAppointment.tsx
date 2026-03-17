@@ -727,11 +727,13 @@ export default function BookAppointment() {
     const showImmigration = (cat === "consulting" && (svcLower.includes("immigration") || svcLower.includes("uscis")));
     const showRealEstate = svcLower.includes("real estate") || svcLower.includes("closing");
     const showI9 = svcLower.includes("i-9") || svcLower.includes("employment verification") || svcLower.includes("employment onboarding");
-    const showEmployer = showI9; // Only I-9 and employment services need employer fields
+    const showEmployer = showI9;
     const showBusiness = cat === "business" && !DIGITAL_ONLY_SERVICES.has(serviceType);
+    const showRonOnboarding = svcLower.includes("ron onboarding");
+    const showWorkflow = svcLower.includes("workflow") && !svcLower.includes("ron");
 
     // If no category-specific fields apply, return null
-    if (!showApostille && !showImmigration && !showRealEstate && !showI9 && !showEmployer && !showBusiness) return null;
+    if (!showApostille && !showImmigration && !showRealEstate && !showI9 && !showEmployer && !showBusiness && !showRonOnboarding && !showWorkflow) return null;
 
     return (
       <div className="space-y-3 rounded-lg border border-border/50 bg-muted/30 p-4">
