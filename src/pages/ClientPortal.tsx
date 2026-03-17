@@ -17,6 +17,7 @@ import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { QRCodeSVG } from "qrcode.react";
 import DocumentWizard from "@/components/DocumentWizard";
+import PaymentForm from "@/components/PaymentForm";
 
 const statusColors: Record<string, string> = {
   scheduled: "bg-blue-100 text-blue-800",
