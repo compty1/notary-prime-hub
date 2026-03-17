@@ -170,7 +170,7 @@ My Commission Expires: ___________`
 
 KNOW ALL MEN BY THESE PRESENTS:
 
-I, {{seller_name}} ("Seller"), for and in consideration of the sum of $\{{sale_price}}, receipt of which is hereby acknowledged, do hereby sell, transfer, and convey to {{buyer_name}} ("Buyer") the following described personal property:
+I, {{seller_name}} ("Seller"), for and in consideration of the sum of {{sale_price}} dollars, receipt of which is hereby acknowledged, do hereby sell, transfer, and convey to {{buyer_name}} ("Buyer") the following described personal property:
 
 {{item_description}}
 
