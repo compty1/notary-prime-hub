@@ -33,7 +33,37 @@ const categoryLabels: Record<string, { label: string; description: string }> = {
   consulting: { label: "Consulting & Training", description: "RON onboarding, workflow audits, and custom automation" },
 };
 
-const categoryOrder = ["notarization", "verification", "document_services", "authentication", "business", "recurring", "consulting"];
+const categoryOrder = ["notarization", "verification", "document_services", "authentication", "business", "recurring", "consulting", "business_services"];
+
+// Smart CTA routing based on service name and category
+const INTAKE_ONLY_SERVICES = new Set([
+  "Apostille Facilitation", "Consular Legalization Prep", "Background Check Coordination",
+  "Clerical Document Preparation", "Document Cleanup & Formatting", "Form Filling Assistance",
+  "Certified Document Prep for Agencies", "Registered Agent Coordination",
+  "Email Management & Correspondence", "Notarized Translation Coordination",
+]);
+const SAAS_LINKS: Record<string, string> = {
+  "Document Storage Vault": "/portal",
+  "Cloud Document Storage": "/portal",
+  "PDF Services": "/digitize",
+  "Document Digitization": "/digitize",
+  "Document Scanning & Digitization": "/digitize",
+  "Document Translation": "/digitize",
+  "Template Library & Form Builder": "/templates",
+  "Virtual Mailroom": "/mailroom",
+  "ID Verification / KYC Checks": "/verify-id",
+};
+const SUBSCRIPTION_SERVICES = new Set([
+  "Business Subscription Plans", "API & Integration Services", "White-Label Partner Programs",
+]);
+
+function getServiceAction(s: Service): { url: string; label: string } {
+  if (SAAS_LINKS[s.name]) return { url: SAAS_LINKS[s.name], label: "Use Tool" };
+  if (INTAKE_ONLY_SERVICES.has(s.name)) return { url: `/request?service=${encodeURIComponent(s.name)}`, label: "Get Started" };
+  if (SUBSCRIPTION_SERVICES.has(s.name)) return { url: "/subscribe", label: "View Plans" };
+  if (s.name === "White-Label Partner Programs") return { url: "/join", label: "Apply" };
+  return { url: `/book?service=${encodeURIComponent(s.name)}${!["notarization", "authentication"].includes(s.category) ? "&type=in_person" : ""}`, label: "Book Now" };
+}
 
 type Service = {
   id: string; name: string; category: string; description: string | null;
