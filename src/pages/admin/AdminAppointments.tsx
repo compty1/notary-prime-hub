@@ -152,10 +152,15 @@ export default function AdminAppointments() {
     if (next) updateStatus(appt.id, next);
   };
 
-  const openDetail = (appt: any) => {
+  const openDetail = async (appt: any) => {
     setDetailAppt(appt);
     setEditNotes(appt.notes || "");
     setEditAdminNotes(appt.admin_notes || "");
+    // Load linked documents
+    const { data: docs } = await supabase.from("documents").select("*")
+      .or(`appointment_id.eq.${appt.id},uploaded_by.eq.${appt.client_id}`)
+      .order("created_at", { ascending: false });
+    setDetailDocs(docs || []);
   };
 
   const saveNotes = async () => {
