@@ -84,7 +84,7 @@ function WhatDoINeed() {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder='e.g., "I need to notarize a power of attorney for my mom\'s car title"'
+            placeholder="e.g., I need to notarize a power of attorney for my mom"
             onKeyDown={(e) => { if (e.key === "Enter") handleSubmit(); }}
             className="flex-1"
           />
