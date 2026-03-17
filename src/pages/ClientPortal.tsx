@@ -326,8 +326,19 @@ export default function ClientPortal() {
           </div>
         </motion.div>
 
-        <Tabs defaultValue="appointments" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-9">
+        <Tabs defaultValue="appointments" className="space-y-6" onValueChange={(val) => {
+          // Mark chat messages as read when Chat tab is clicked
+          if (val === "chat" && user && unreadCount > 0) {
+            const unreadIds = chatMessages.filter(m => m.is_admin && !m.read).map(m => m.id);
+            if (unreadIds.length > 0) {
+              supabase.from("chat_messages").update({ read: true }).in("id", unreadIds).then(() => {
+                setChatMessages(prev => prev.map(m => unreadIds.includes(m.id) ? { ...m, read: true } : m));
+                setUnreadCount(0);
+              });
+            }
+          }
+        }}>
+          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-9">
             <TabsTrigger value="appointments"><Calendar className="mr-1 h-4 w-4 hidden sm:inline" /> Appts</TabsTrigger>
             <TabsTrigger value="documents"><FileText className="mr-1 h-4 w-4 hidden sm:inline" /> Docs</TabsTrigger>
             <TabsTrigger value="status"><Shield className="mr-1 h-4 w-4 hidden sm:inline" /> Status</TabsTrigger>
