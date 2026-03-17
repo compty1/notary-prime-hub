@@ -1,0 +1,95 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import Stripe from "https://esm.sh/stripe@14.21.0";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  try {
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) throw new Error("Stripe not configured");
+
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
+    }
+
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: claims, error: claimsErr } = await supabase.auth.getClaims(authHeader.replace("Bearer ", ""));
+    if (claimsErr || !claims?.claims) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
+    }
+    const userId = claims.claims.sub as string;
+    const userEmail = claims.claims.email as string;
+
+    const { amount, appointmentId, description } = await req.json();
+    if (!amount || amount <= 0) throw new Error("Invalid amount");
+
+    const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
+
+    // Get or create Stripe customer
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("stripe_customer_id, full_name, email")
+      .eq("user_id", userId)
+      .single();
+
+    let customerId = profile?.stripe_customer_id;
+
+    if (!customerId) {
+      const customer = await stripe.customers.create({
+        email: userEmail,
+        name: profile?.full_name || undefined,
+        metadata: { supabase_user_id: userId },
+      });
+      customerId = customer.id;
+      await supabase
+        .from("profiles")
+        .update({ stripe_customer_id: customerId })
+        .eq("user_id", userId);
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100), // cents
+      currency: "usd",
+      customer: customerId,
+      metadata: {
+        supabase_user_id: userId,
+        appointment_id: appointmentId || "",
+      },
+      description: description || "Notary service payment",
+      automatic_payment_methods: { enabled: true },
+    });
+
+    // Create payment record
+    if (appointmentId) {
+      await supabase.from("payments").insert({
+        client_id: userId,
+        appointment_id: appointmentId,
+        amount,
+        status: "pending",
+        method: "stripe",
+        notes: `Stripe PI: ${paymentIntent.id}`,
+      });
+    }
+
+    return new Response(
+      JSON.stringify({ clientSecret: paymentIntent.client_secret, paymentIntentId: paymentIntent.id }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  } catch (err: any) {
+    return new Response(
+      JSON.stringify({ error: err.message }),
+      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+});
