@@ -419,7 +419,7 @@ Model: {{vehicle_model}}
 VIN: {{vin}}
 Odometer Reading: {{odometer}} miles
 
-SALE PRICE: $` + `{{sale_price}}` + `
+SALE PRICE: \${{sale_price}}
 DATE OF SALE: {{sale_date}}
 
 Seller warrants that the vehicle is free of liens and encumbrances and that Seller has the legal right to sell the vehicle.
