@@ -145,6 +145,7 @@ export default function BookAppointment() {
   const [employerName, setEmployerName] = useState("");
   const [hireStartDate, setHireStartDate] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [customDocCount, setCustomDocCount] = useState(false);
 
   const NOTARIZATION_CATEGORIES = ["notarization", "authentication"];
   const requiresNotarizationType = (svcName: string) => {
