@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, BookOpen, Calendar, FileText, Shield } from "lucide-react";
+import { Plus, Search, BookOpen, Calendar, FileText, Shield, DollarSign } from "lucide-react";
 
 const serviceTypes = ["acknowledgment", "jurat", "oath", "copy_certification", "other"];
 
@@ -38,6 +38,8 @@ export default function AdminJournal() {
     witnesses_present: "0",
     oath_administered: false,
     notes: "",
+    platform_fees: "",
+    travel_fee: "",
   });
 
   const fetchEntries = async () => {
@@ -65,7 +67,7 @@ export default function AdminJournal() {
 
   // Auto-fill from selected appointment
   useEffect(() => {
-    if (selectedAppointment) {
+    if (selectedAppointment && selectedAppointment !== "") {
       const appt = appointments.find((a) => a.id === selectedAppointment);
       if (appt) {
         setForm((prev) => ({
@@ -83,8 +85,15 @@ export default function AdminJournal() {
       return;
     }
 
+    const feesCharged = form.fees_charged ? parseFloat(form.fees_charged) : null;
+    const platformFees = form.platform_fees ? parseFloat(form.platform_fees) : null;
+    const travelFee = form.travel_fee ? parseFloat(form.travel_fee) : null;
+    const netProfit = feesCharged !== null
+      ? feesCharged - (platformFees || 0) - (travelFee || 0)
+      : null;
+
     const { error } = await supabase.from("notary_journal").insert({
-      appointment_id: selectedAppointment || null,
+      appointment_id: selectedAppointment && selectedAppointment !== "" ? selectedAppointment : null,
       signer_name: form.signer_name,
       signer_address: form.signer_address || null,
       id_type: form.id_type || null,
@@ -94,11 +103,14 @@ export default function AdminJournal() {
       document_description: form.document_description || null,
       service_performed: form.service_performed,
       notarization_type: form.notarization_type,
-      fees_charged: form.fees_charged ? parseFloat(form.fees_charged) : null,
+      fees_charged: feesCharged,
       witnesses_present: parseInt(form.witnesses_present) || 0,
       oath_administered: form.oath_administered,
       oath_timestamp: form.oath_administered ? new Date().toISOString() : null,
       notes: form.notes || null,
+      platform_fees: platformFees,
+      travel_fee: travelFee,
+      net_profit: netProfit,
       created_by: user!.id,
     });
 
@@ -111,7 +123,7 @@ export default function AdminJournal() {
         signer_name: "", signer_address: "", id_type: "", id_number: "", id_expiration: "",
         document_type: "", document_description: "", service_performed: "acknowledgment",
         notarization_type: "in_person", fees_charged: "", witnesses_present: "0",
-        oath_administered: false, notes: "",
+        oath_administered: false, notes: "", platform_fees: "", travel_fee: "",
       });
       setSelectedAppointment("");
       fetchEntries();
@@ -145,7 +157,7 @@ export default function AdminJournal() {
               {/* Link to appointment */}
               <div>
                 <Label>Link to Appointment (optional)</Label>
-                <Select value={selectedAppointment} onValueChange={setSelectedAppointment}>
+                <Select value={selectedAppointment} onValueChange={(v) => setSelectedAppointment(v === "none" ? "" : v)}>
                   <SelectTrigger><SelectValue placeholder="Select appointment to auto-fill..." /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">None</SelectItem>
@@ -236,6 +248,32 @@ export default function AdminJournal() {
                 </div>
               </div>
 
+              {/* Financial tracking */}
+              <div className="rounded-lg border border-border/50 p-3 space-y-3">
+                <p className="text-sm font-medium flex items-center gap-2">
+                  <DollarSign className="h-4 w-4 text-accent" /> Profit Tracking
+                </p>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <Label>Platform Fees ($)</Label>
+                    <Input type="number" step="0.01" value={form.platform_fees} onChange={(e) => setForm({ ...form, platform_fees: e.target.value })} placeholder="KBA + BlueNotary fees" />
+                  </div>
+                  <div>
+                    <Label>Travel Fee ($)</Label>
+                    <Input type="number" step="0.01" value={form.travel_fee} onChange={(e) => setForm({ ...form, travel_fee: e.target.value })} placeholder="Travel costs" />
+                  </div>
+                </div>
+                {form.fees_charged && (
+                  <p className="text-xs text-muted-foreground">
+                    Net profit: ${(
+                      (parseFloat(form.fees_charged) || 0) -
+                      (parseFloat(form.platform_fees) || 0) -
+                      (parseFloat(form.travel_fee) || 0)
+                    ).toFixed(2)}
+                  </p>
+                )}
+              </div>
+
               <div className="flex items-center gap-3">
                 <Switch checked={form.oath_administered} onCheckedChange={(v) => setForm({ ...form, oath_administered: v })} />
                 <Label>Oath/Affirmation Administered</Label>
@@ -303,6 +341,11 @@ export default function AdminJournal() {
                         )}
                         {entry.fees_charged && (
                           <span className="font-medium text-foreground">${parseFloat(entry.fees_charged).toFixed(2)}</span>
+                        )}
+                        {entry.net_profit !== null && entry.net_profit !== undefined && (
+                          <span className={`font-medium ${entry.net_profit >= 0 ? "text-emerald-600" : "text-destructive"}`}>
+                            Net: ${parseFloat(entry.net_profit).toFixed(2)}
+                          </span>
                         )}
                       </div>
                       {entry.id_type && (

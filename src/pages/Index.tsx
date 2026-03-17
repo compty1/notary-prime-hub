@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Monitor, FileText, Shield, Clock, CheckCircle, Star, ChevronRight, Phone, Mail, Scale } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { MapPin, Monitor, FileText, Shield, Clock, CheckCircle, Star, ChevronRight, Phone, Mail, Scale, Menu } from "lucide-react";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -45,6 +46,7 @@ const testimonials = [
 
 export default function Index() {
   const [serviceType, setServiceType] = useState<"in_person" | "ron">("in_person");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background">
@@ -73,9 +75,31 @@ export default function Index() {
               <Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button>
             </Link>
           </div>
-          <Link to="/book" className="md:hidden">
-            <Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button>
-          </Link>
+
+          {/* Mobile menu */}
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild className="md:hidden">
+              <Button variant="ghost" size="sm">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-64">
+              <div className="mt-8 flex flex-col gap-4">
+                <a href="#services" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Services</a>
+                <a href="#how-it-works" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>How It Works</a>
+                <Link to="/notary-guide" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Notary Guide</Link>
+                <Link to="/ron-info" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>RON Info</Link>
+                <a href="#faq" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>FAQ</a>
+                <hr className="border-border" />
+                <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="outline" className="w-full">Sign In</Button>
+                </Link>
+                <Link to="/book" onClick={() => setMobileMenuOpen(false)}>
+                  <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button>
+                </Link>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </nav>
 
@@ -148,7 +172,7 @@ export default function Index() {
             </motion.div>
 
             <motion.div variants={fadeUp} custom={5} className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link to="/book">
+              <Link to={`/book?type=${serviceType}`}>
                 <Button size="lg" className="bg-accent text-accent-foreground shadow-lg hover:bg-gold-dark">
                   Schedule Appointment <ChevronRight className="ml-1 h-4 w-4" />
                 </Button>
@@ -359,22 +383,22 @@ export default function Index() {
               <h4 className="mb-3 font-display text-sm font-semibold text-primary-foreground">Contact</h4>
               <div className="space-y-2 text-sm">
                 <a href="tel:+16145551234" className="flex items-center gap-2 hover:text-accent"><Phone className="h-3 w-3" /> (614) 555-1234</a>
-                <a href="mailto:shane@goblenotary.com" className="flex items-center gap-2 hover:text-accent"><Mail className="h-3 w-3" /> shane@goblenotary.com</a>
-                <p className="flex items-center gap-2"><MapPin className="h-3 w-3" /> Columbus, OH 43215</p>
+                <a href="mailto:shane@shanegoble.com" className="flex items-center gap-2 hover:text-accent"><Mail className="h-3 w-3" /> shane@shanegoble.com</a>
               </div>
             </div>
             <div>
-              <h4 className="mb-3 font-display text-sm font-semibold text-primary-foreground">Compliance</h4>
-              <div className="space-y-1 text-xs">
-                <p>Commissioned under Ohio Revised Code §147</p>
-                <p>RON authorized per ORC §147.65-.66</p>
-                <p>Franklin County, Ohio</p>
-                <p>Surety Bond: $25,000</p>
+              <h4 className="mb-3 font-display text-sm font-semibold text-primary-foreground">Quick Links</h4>
+              <div className="space-y-2 text-sm">
+                <Link to="/book" className="block hover:text-accent">Book Appointment</Link>
+                <Link to="/notary-guide" className="block hover:text-accent">Notary Guide</Link>
+                <Link to="/ron-info" className="block hover:text-accent">RON Information</Link>
+                <Link to="/login" className="block hover:text-accent">Client Portal</Link>
               </div>
             </div>
           </div>
-          <div className="mt-8 border-t border-primary-foreground/10 pt-6 text-center text-xs">
+          <div className="mt-8 border-t border-primary-foreground/10 pt-8 text-center text-xs">
             <p>© {new Date().getFullYear()} Shane Goble Notary Services. All rights reserved.</p>
+            <p className="mt-1">Ohio Commissioned Notary Public — Franklin County</p>
           </div>
         </div>
       </footer>

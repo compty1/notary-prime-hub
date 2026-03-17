@@ -46,8 +46,10 @@ export type Database = {
       appointments: {
         Row: {
           admin_notes: string | null
+          client_address: string | null
           client_id: string
           created_at: string
+          estimated_price: number | null
           id: string
           location: string | null
           notarization_type: Database["public"]["Enums"]["notarization_type"]
@@ -56,12 +58,15 @@ export type Database = {
           scheduled_time: string
           service_type: string
           status: Database["public"]["Enums"]["appointment_status"]
+          travel_distance_miles: number | null
           updated_at: string
         }
         Insert: {
           admin_notes?: string | null
+          client_address?: string | null
           client_id: string
           created_at?: string
+          estimated_price?: number | null
           id?: string
           location?: string | null
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
@@ -70,12 +75,15 @@ export type Database = {
           scheduled_time: string
           service_type: string
           status?: Database["public"]["Enums"]["appointment_status"]
+          travel_distance_miles?: number | null
           updated_at?: string
         }
         Update: {
           admin_notes?: string | null
+          client_address?: string | null
           client_id?: string
           created_at?: string
+          estimated_price?: number | null
           id?: string
           location?: string | null
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
@@ -84,6 +92,7 @@ export type Database = {
           scheduled_time?: string
           service_type?: string
           status?: Database["public"]["Enums"]["appointment_status"]
+          travel_distance_miles?: number | null
           updated_at?: string
         }
         Relationships: []
@@ -224,13 +233,16 @@ export type Database = {
           id_expiration: string | null
           id_number: string | null
           id_type: string | null
+          net_profit: number | null
           notarization_type: Database["public"]["Enums"]["notarization_type"]
           notes: string | null
           oath_administered: boolean | null
           oath_timestamp: string | null
+          platform_fees: number | null
           service_performed: string
           signer_address: string | null
           signer_name: string
+          travel_fee: number | null
           updated_at: string
           witnesses_present: number | null
         }
@@ -245,13 +257,16 @@ export type Database = {
           id_expiration?: string | null
           id_number?: string | null
           id_type?: string | null
+          net_profit?: number | null
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
           notes?: string | null
           oath_administered?: boolean | null
           oath_timestamp?: string | null
+          platform_fees?: number | null
           service_performed?: string
           signer_address?: string | null
           signer_name: string
+          travel_fee?: number | null
           updated_at?: string
           witnesses_present?: number | null
         }
@@ -266,13 +281,16 @@ export type Database = {
           id_expiration?: string | null
           id_number?: string | null
           id_type?: string | null
+          net_profit?: number | null
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
           notes?: string | null
           oath_administered?: boolean | null
           oath_timestamp?: string | null
+          platform_fees?: number | null
           service_performed?: string
           signer_address?: string | null
           signer_name?: string
+          travel_fee?: number | null
           updated_at?: string
           witnesses_present?: number | null
         }
@@ -285,6 +303,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      platform_settings: {
+        Row: {
+          description: string | null
+          id: string
+          setting_key: string
+          setting_value: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          description?: string | null
+          id?: string
+          setting_key: string
+          setting_value: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          description?: string | null
+          id?: string
+          setting_key?: string
+          setting_value?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
