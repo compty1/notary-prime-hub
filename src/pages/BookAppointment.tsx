@@ -740,8 +740,8 @@ export default function BookAppointment() {
     const cat = currentCategory;
     const svcLower = serviceType.toLowerCase();
 
-    // No special intake for document_services or business_services
-    if (cat === "document_services" || cat === "business_services") return null;
+    // No special intake for business_services (but document_services may include translation)
+    if (cat === "business_services") return null;
 
     // Check if any fields are relevant for this service
     const showApostille = cat === "authentication" || svcLower.includes("apostille");
@@ -752,9 +752,10 @@ export default function BookAppointment() {
     const showBusiness = cat === "business" && !DIGITAL_ONLY_SERVICES.has(serviceType);
     const showRonOnboarding = svcLower.includes("ron onboarding");
     const showWorkflow = svcLower.includes("workflow") && !svcLower.includes("ron");
+    const showTranslation = svcLower.includes("translation");
 
     // If no category-specific fields apply, return null
-    if (!showApostille && !showImmigration && !showRealEstate && !showI9 && !showEmployer && !showBusiness && !showRonOnboarding && !showWorkflow) return null;
+    if (!showApostille && !showImmigration && !showRealEstate && !showI9 && !showEmployer && !showBusiness && !showRonOnboarding && !showWorkflow && !showTranslation) return null;
 
     return (
       <div className="space-y-3 rounded-lg border border-border/50 bg-muted/30 p-4">
