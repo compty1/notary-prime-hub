@@ -156,11 +156,18 @@ export default function Services() {
                             </div>
                             <h3 className="mb-1 font-display text-base font-semibold text-foreground">{s.name}</h3>
                             <p className="mb-4 flex-1 text-sm text-muted-foreground">{s.description || s.short_description}</p>
-                            <Link to={`/book`}>
-                              <Button size="sm" variant="outline" className="w-full group-hover:bg-accent group-hover:text-accent-foreground transition-colors">
-                                Get Started <ChevronRight className="ml-1 h-3 w-3" />
-                              </Button>
-                            </Link>
+                            <div className="flex gap-2">
+                              <Link to={`/services/${s.id}`} className="flex-1">
+                                <Button size="sm" variant="outline" className="w-full">
+                                  More Info
+                                </Button>
+                              </Link>
+                              <Link to={`/book`} className="flex-1">
+                                <Button size="sm" variant="outline" className="w-full group-hover:bg-accent group-hover:text-accent-foreground transition-colors">
+                                  Get Started <ChevronRight className="ml-1 h-3 w-3" />
+                                </Button>
+                              </Link>
+                            </div>
                           </CardContent>
                         </Card>
                       </motion.div>

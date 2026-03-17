@@ -631,9 +631,34 @@ export default function DocumentTemplates() {
       <div className="container mx-auto max-w-5xl px-4 py-8">
         <div className="mb-8 text-center">
           <h1 className="font-display text-3xl font-bold text-foreground mb-2">Document Templates Library</h1>
-          <p className="text-muted-foreground">Ready-to-use templates for common notarized documents</p>
-          <div className="mt-2 mx-auto max-w-xl rounded-lg bg-amber-50 border border-amber-200 p-3">
-            <p className="flex items-center justify-center gap-2 text-sm text-amber-800"><AlertTriangle className="h-4 w-4" /> These are generic templates — not legal advice. Consult an attorney for specific needs.</p>
+          <p className="text-muted-foreground mb-4">Ready-to-use templates for common notarized documents</p>
+        </div>
+
+        {/* Legal Disclaimer */}
+        <div className="mb-8 space-y-3">
+          <div className="rounded-lg bg-amber-50 border border-amber-200 p-4 dark:bg-amber-950/30 dark:border-amber-800">
+            <h3 className="flex items-center gap-2 font-display text-sm font-semibold text-amber-900 dark:text-amber-200 mb-2">
+              <AlertTriangle className="h-4 w-4" /> Important: Read Before Using These Templates
+            </h3>
+            <div className="text-sm text-amber-800 dark:text-amber-300 space-y-2">
+              <p><strong>You CAN use these templates for:</strong> General informational starting points, standard notarial certificates (acknowledgments, jurats), routine personal documents (travel consent, general affidavits), and common business documents (bill of sale, basic contracts).</p>
+              <p><strong>You MAY need attorney review for:</strong> Estate planning documents (wills, trusts, healthcare directives), real property transfers (deeds, mortgages), court filings, power of attorney documents with specific legal powers, and any document with significant legal or financial consequences.</p>
+              <p><strong>Always check with your local officials:</strong> County recorders, courts, and government agencies may have specific form requirements. The receiving entity for your document may require their own forms rather than generic templates.</p>
+              <p className="text-xs italic">These templates are provided for informational purposes only and do not constitute legal advice. Consult a licensed attorney for advice specific to your situation.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Cross-sell banner */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/50 bg-muted/30 p-4">
+          <div>
+            <p className="font-display text-sm font-semibold">Need help with your documents?</p>
+            <p className="text-xs text-muted-foreground">We offer professional document preparation, notarization, and more.</p>
+          </div>
+          <div className="flex gap-2">
+            <Link to="/services"><Button variant="outline" size="sm">View All Services</Button></Link>
+            <Link to="/ron-check"><Button variant="outline" size="sm">Check RON Eligibility</Button></Link>
+            <Link to="/loan-signing"><Button variant="outline" size="sm">Loan Signing</Button></Link>
           </div>
         </div>
 
