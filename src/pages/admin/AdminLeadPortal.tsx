@@ -29,6 +29,7 @@ const statusColors: Record<string, string> = {
 };
 
 const pipelineStatuses = ["new", "contacted", "qualified", "converted", "closed"];
+const leadTypes = ["all", "individual", "business"];
 
 const emptyLead = {
   name: "", phone: "", email: "", business_name: "", address: "", city: "", state: "OH", zip: "",
