@@ -77,6 +77,8 @@ export default function AdminApostille() {
     setEditOpen(req);
     setEditNotes(req.notes || "");
     setEditFee(String(req.fee || "0"));
+    setEditDestCountry(req.destination_country || "");
+    setEditDocCount(String(req.document_count || 1));
   };
 
   const saveEdit = async () => {
