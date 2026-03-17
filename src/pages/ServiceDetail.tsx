@@ -114,7 +114,7 @@ export default function ServiceDetail() {
           <div className="flex items-center gap-3">
             <DarkModeToggle />
             <Link to="/services"><Button variant="outline" size="sm"><ChevronLeft className="mr-1 h-3 w-3" /> Services</Button></Link>
-            <Link to="/book"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button></Link>
+            <Link to={`/book?service=${encodeURIComponent(service?.name || "")}`}><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button></Link>
           </div>
         </div>
       </nav>
