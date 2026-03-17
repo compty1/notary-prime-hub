@@ -451,6 +451,24 @@ export default function AdminAppointments() {
                 <div className="flex justify-between"><span className="text-muted-foreground">Status</span><Badge className={statusColors[detailAppt.status]}>{detailAppt.status.replace(/_/g, " ")}</Badge></div>
               </div>
 
+              {/* Linked Documents */}
+              {detailDocs.length > 0 && (
+                <div>
+                  <Label className="mb-2 block">Documents ({detailDocs.length})</Label>
+                  <div className="space-y-1">
+                    {detailDocs.map((doc: any) => (
+                      <div key={doc.id} className="flex items-center justify-between rounded bg-muted/50 px-3 py-2 text-xs">
+                        <span className="flex items-center gap-2">
+                          <FileText className="h-3 w-3 text-accent" />
+                          {doc.file_name}
+                        </span>
+                        <Badge className={statusColors[doc.status] || "bg-muted"}>{doc.status.replace(/_/g, " ")}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+
               <div>
                 <Label>Client Notes</Label>
                 <Textarea value={editNotes} onChange={(e) => setEditNotes(e.target.value)} rows={3} placeholder="Client-visible notes..." />
