@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      apostille_requests: {
+        Row: {
+          client_id: string
+          created_at: string
+          document_description: string
+          fee: number | null
+          id: string
+          notes: string | null
+          shipping_label_url: string | null
+          status: string
+          tracking_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          document_description: string
+          fee?: number | null
+          id?: string
+          notes?: string | null
+          shipping_label_url?: string | null
+          status?: string
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          document_description?: string
+          fee?: number | null
+          id?: string
+          notes?: string | null
+          shipping_label_url?: string | null
+          status?: string
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       appointment_emails: {
         Row: {
           appointment_id: string
@@ -127,6 +166,140 @@ export type Database = {
           id?: string
           ip_address?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      business_members: {
+        Row: {
+          business_id: string
+          created_at: string
+          id: string
+          member_role: string
+          user_id: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          id?: string
+          member_role?: string
+          user_id: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          id?: string
+          member_role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_members_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "business_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_profiles: {
+        Row: {
+          articles_file_path: string | null
+          authorized_signers: Json | null
+          business_name: string
+          business_type: string | null
+          created_at: string
+          created_by: string
+          ein: string | null
+          id: string
+          updated_at: string
+          verification_status: string
+        }
+        Insert: {
+          articles_file_path?: string | null
+          authorized_signers?: Json | null
+          business_name: string
+          business_type?: string | null
+          created_at?: string
+          created_by: string
+          ein?: string | null
+          id?: string
+          updated_at?: string
+          verification_status?: string
+        }
+        Update: {
+          articles_file_path?: string | null
+          authorized_signers?: Json | null
+          business_name?: string
+          business_type?: string | null
+          created_at?: string
+          created_by?: string
+          ein?: string | null
+          id?: string
+          updated_at?: string
+          verification_status?: string
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          attachment_url: string | null
+          created_at: string
+          id: string
+          is_admin: boolean | null
+          message: string
+          read: boolean | null
+          sender_id: string
+        }
+        Insert: {
+          attachment_url?: string | null
+          created_at?: string
+          id?: string
+          is_admin?: boolean | null
+          message: string
+          read?: boolean | null
+          sender_id: string
+        }
+        Update: {
+          attachment_url?: string | null
+          created_at?: string
+          id?: string
+          is_admin?: boolean | null
+          message?: string
+          read?: boolean | null
+          sender_id?: string
+        }
+        Relationships: []
+      }
+      document_bundles: {
+        Row: {
+          bundle_type: string
+          created_at: string
+          description: string | null
+          document_list: Json
+          id: string
+          is_active: boolean | null
+          name: string
+          price: number | null
+        }
+        Insert: {
+          bundle_type: string
+          created_at?: string
+          description?: string | null
+          document_list?: Json
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price?: number | null
+        }
+        Update: {
+          bundle_type?: string
+          created_at?: string
+          description?: string | null
+          document_list?: Json
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price?: number | null
         }
         Relationships: []
       }

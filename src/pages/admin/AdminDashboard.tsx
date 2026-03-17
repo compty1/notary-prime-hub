@@ -1,29 +1,24 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-  SidebarTrigger,
-  useSidebar,
+  Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
+  SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger, useSidebar,
 } from "@/components/ui/sidebar";
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2 } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 const navItems = [
   { title: "Overview", url: "/admin", icon: LayoutDashboard },
   { title: "Appointments", url: "/admin/appointments", icon: Calendar },
   { title: "Clients", url: "/admin/clients", icon: Users },
+  { title: "Business Clients", url: "/admin/business-clients", icon: Building2 },
   { title: "Availability", url: "/admin/availability", icon: Clock },
   { title: "Documents", url: "/admin/documents", icon: FileText },
+  { title: "Templates & Forms", url: "/admin/templates", icon: FileSignature },
+  { title: "Apostille", url: "/admin/apostille", icon: Package },
+  { title: "Live Chat", url: "/admin/chat", icon: MessageSquare },
   { title: "Journal", url: "/admin/journal", icon: BookMarked },
   { title: "Revenue", url: "/admin/revenue", icon: DollarSign },
   { title: "Resources", url: "/admin/resources", icon: BookOpen },
@@ -53,12 +48,9 @@ function AdminSidebar() {
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.url}
-                      end={item.url === "/admin"}
+                    <NavLink to={item.url} end={item.url === "/admin"}
                       className="text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
-                      activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
-                    >
+                      activeClassName="bg-sidebar-accent text-sidebar-primary font-medium">
                       <item.icon className="mr-2 h-4 w-4" />
                       {!collapsed && <span>{item.title}</span>}
                     </NavLink>
@@ -71,18 +63,11 @@ function AdminSidebar() {
         <div className="mt-auto p-4">
           <Link to="/portal" className="mb-2 block">
             <Button variant="ghost" size="sm" className="w-full justify-start text-sidebar-foreground/70 hover:text-sidebar-foreground">
-              <Eye className="mr-2 h-4 w-4" />
-              {!collapsed && "Client View"}
+              <Eye className="mr-2 h-4 w-4" />{!collapsed && "Client View"}
             </Button>
           </Link>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={signOut}
-            className="w-full justify-start text-sidebar-foreground/70 hover:text-sidebar-foreground"
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            {!collapsed && "Sign Out"}
+          <Button variant="ghost" size="sm" onClick={signOut} className="w-full justify-start text-sidebar-foreground/70 hover:text-sidebar-foreground">
+            <LogOut className="mr-2 h-4 w-4" />{!collapsed && "Sign Out"}
           </Button>
         </div>
       </SidebarContent>
@@ -103,9 +88,7 @@ export default function AdminDashboard() {
             </div>
             <DarkModeToggle />
           </header>
-          <main className="flex-1 overflow-auto p-6">
-            <Outlet />
-          </main>
+          <main className="flex-1 overflow-auto p-6"><Outlet /></main>
         </div>
       </div>
     </SidebarProvider>
