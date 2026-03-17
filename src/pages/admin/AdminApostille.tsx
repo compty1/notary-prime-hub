@@ -197,11 +197,12 @@ export default function AdminApostille() {
             <Button className="bg-accent text-accent-foreground hover:bg-gold-dark" disabled={!newClientId || !newDesc} onClick={async () => {
               const { error } = await supabase.from("apostille_requests").insert({
                 document_description: newDesc, notes: newNotes || null, client_id: newClientId, fee: parseFloat(newFee) || 75,
+                destination_country: newDestCountry || null, document_count: parseInt(newDocCount) || 1,
               } as any);
               if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
               else {
                 toast({ title: "Request created" });
-                setCreateOpen(false); setNewDesc(""); setNewNotes(""); setNewClientId(""); setNewFee("75");
+                setCreateOpen(false); setNewDesc(""); setNewNotes(""); setNewClientId(""); setNewFee("75"); setNewDestCountry(""); setNewDocCount("1");
                 const { data } = await supabase.from("apostille_requests").select("*").order("created_at", { ascending: false });
                 if (data) setRequests(data);
               }
