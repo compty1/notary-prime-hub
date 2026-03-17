@@ -703,10 +703,10 @@ export default function BookAppointment() {
           <Card className="border-border/50">
             <CardHeader>
               <CardTitle className="font-display text-xl">
-                {step === 1 && (serviceType && !requiresNotarizationType(serviceType) ? "Choose Service" : "Select Notarization Type")}
-                {step === 2 && (serviceType && !requiresNotarizationType(serviceType) ? "Pick Date & Time" : "Choose Service")}
-                {step === 3 && (serviceType && !requiresNotarizationType(serviceType) ? "Review & Confirm" : "Pick Date & Time")}
-                {step === 4 && "Review & Confirm"}
+                {isNonNotarial
+                  ? (step === 1 ? "Choose Service" : step === 2 ? "Pick Date & Time" : "Review & Confirm")
+                  : (step === 1 ? "Select Notarization Type" : step === 2 ? "Choose Service" : step === 3 ? "Pick Date & Time" : "Review & Confirm")
+                }
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
