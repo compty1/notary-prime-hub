@@ -147,7 +147,7 @@ export default function FeeCalculator() {
                   <span className="text-accent">${total.toFixed(2)}</span>
                 </div>
                 <p className="mt-3 text-xs text-muted-foreground">* Estimates only. Final pricing may vary based on document complexity and specific requirements.</p>
-                <Link to="/book" className="mt-4 block">
+                <Link to={`/book?type=${notarizationType}&estimate=${total.toFixed(2)}&docs=${documentCount}`} className="mt-4 block">
                   <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark">Book Appointment <ChevronRight className="ml-1 h-4 w-4" /></Button>
                 </Link>
               </CardContent>

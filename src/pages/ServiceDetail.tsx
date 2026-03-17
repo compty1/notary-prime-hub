@@ -199,7 +199,7 @@ export default function ServiceDetail() {
             <Card className="border-accent/30 bg-accent/5">
               <CardContent className="p-5 space-y-4">
                 <h3 className="font-display text-lg font-semibold">Ready to Get Started?</h3>
-                <Link to="/book" className="block">
+                <Link to={`/book?service=${encodeURIComponent(service?.name || "")}`} className="block">
                   <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" size="lg">
                     Book This Service <ChevronRight className="ml-1 h-4 w-4" />
                   </Button>
