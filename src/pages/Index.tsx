@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { MapPin, Monitor, FileText, Shield, Clock, CheckCircle, Star, ChevronRight, Phone, Mail, Scale, Menu, Send, Loader2, Sparkles, ArrowRight } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import ReactMarkdown from "react-markdown";
+import WhatDoINeed from "@/components/WhatDoINeed";
 
 // "What Do I Need?" AI helper component
 function WhatDoINeed() {
