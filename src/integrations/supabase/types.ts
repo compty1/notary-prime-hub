@@ -458,6 +458,105 @@ export type Database = {
           },
         ]
       }
+      lead_sources: {
+        Row: {
+          config: Json | null
+          created_at: string
+          id: string
+          is_active: boolean
+          last_scraped_at: string | null
+          name: string
+          source_type: string
+          url: string | null
+        }
+        Insert: {
+          config?: Json | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_scraped_at?: string | null
+          name: string
+          source_type?: string
+          url?: string | null
+        }
+        Update: {
+          config?: Json | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_scraped_at?: string | null
+          name?: string
+          source_type?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
+      leads: {
+        Row: {
+          address: string | null
+          business_name: string | null
+          city: string | null
+          contacted_at: string | null
+          created_at: string
+          email: string | null
+          id: string
+          intent_score: string
+          lead_type: string
+          name: string | null
+          notes: string | null
+          phone: string | null
+          service_needed: string | null
+          source: string
+          source_url: string | null
+          state: string | null
+          status: string
+          updated_at: string
+          zip: string | null
+        }
+        Insert: {
+          address?: string | null
+          business_name?: string | null
+          city?: string | null
+          contacted_at?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          intent_score?: string
+          lead_type?: string
+          name?: string | null
+          notes?: string | null
+          phone?: string | null
+          service_needed?: string | null
+          source?: string
+          source_url?: string | null
+          state?: string | null
+          status?: string
+          updated_at?: string
+          zip?: string | null
+        }
+        Update: {
+          address?: string | null
+          business_name?: string | null
+          city?: string | null
+          contacted_at?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          intent_score?: string
+          lead_type?: string
+          name?: string | null
+          notes?: string | null
+          phone?: string | null
+          service_needed?: string | null
+          source?: string
+          source_url?: string | null
+          state?: string | null
+          status?: string
+          updated_at?: string
+          zip?: string | null
+        }
+        Relationships: []
+      }
       notarization_sessions: {
         Row: {
           appointment_id: string
@@ -618,6 +717,56 @@ export type Database = {
           },
         ]
       }
+      payments: {
+        Row: {
+          amount: number
+          appointment_id: string | null
+          client_id: string
+          created_at: string
+          id: string
+          invoice_url: string | null
+          method: string | null
+          notes: string | null
+          paid_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          appointment_id?: string | null
+          client_id: string
+          created_at?: string
+          id?: string
+          invoice_url?: string | null
+          method?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          appointment_id?: string | null
+          client_id?: string
+          created_at?: string
+          id?: string
+          invoice_url?: string | null
+          method?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       platform_settings: {
         Row: {
           description: string | null
@@ -689,6 +838,123 @@ export type Database = {
           zip?: string | null
         }
         Relationships: []
+      }
+      reviews: {
+        Row: {
+          appointment_id: string | null
+          client_id: string
+          comment: string | null
+          created_at: string
+          id: string
+          rating: number
+        }
+        Insert: {
+          appointment_id?: string | null
+          client_id: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating: number
+        }
+        Update: {
+          appointment_id?: string | null
+          client_id?: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_requirements: {
+        Row: {
+          created_at: string
+          description: string
+          display_order: number
+          id: string
+          is_required: boolean
+          ohio_statute_ref: string | null
+          requirement_type: string
+          service_id: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          display_order?: number
+          id?: string
+          is_required?: boolean
+          ohio_statute_ref?: string | null
+          requirement_type?: string
+          service_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          display_order?: number
+          id?: string
+          is_required?: boolean
+          ohio_statute_ref?: string | null
+          requirement_type?: string
+          service_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_requirements_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_workflows: {
+        Row: {
+          created_at: string
+          id: string
+          requires_admin_action: boolean
+          requires_client_action: boolean
+          service_id: string
+          step_description: string | null
+          step_name: string
+          step_number: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          requires_admin_action?: boolean
+          requires_client_action?: boolean
+          service_id: string
+          step_description?: string | null
+          step_name: string
+          step_number?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          requires_admin_action?: boolean
+          requires_client_action?: boolean
+          service_id?: string
+          step_description?: string | null
+          step_name?: string
+          step_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_workflows_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       services: {
         Row: {

@@ -75,6 +75,22 @@ function buildEmailHtml(clientName: string, appt: Appointment, type: string): st
         ${isRon ? "<p><strong>Please log in to your client portal now</strong> to begin the identity verification process.</p>" : `<p>Please head to: <strong>${appt.location || "the agreed location"}</strong></p>`}
       `;
       break;
+    case "status_confirmed":
+      heading = "Appointment Confirmed";
+      body = `<p>Hello ${clientName},</p><p>Great news! Your appointment for <strong>${appt.service_type}</strong> on <strong>${dateFormatted}</strong> at <strong>${timeFormatted}</strong> has been confirmed by our team.</p><p>We look forward to assisting you!</p>`;
+      break;
+    case "status_in_session":
+      heading = "Session In Progress";
+      body = `<p>Hello ${clientName},</p><p>Your notarization session for <strong>${appt.service_type}</strong> is now in progress. ${isRon ? "Please join via your client portal if you haven't already." : "Thank you for being here!"}</p>`;
+      break;
+    case "status_completed":
+      heading = "Notarization Complete";
+      body = `<p>Hello ${clientName},</p><p>Your notarization for <strong>${appt.service_type}</strong> has been completed successfully!</p><p>Your notarized documents are now available in your client portal. Please log in to download them.</p><p>If you were satisfied with the service, we'd appreciate you leaving a review in your portal.</p>`;
+      break;
+    case "status_cancelled":
+      heading = "Appointment Cancelled";
+      body = `<p>Hello ${clientName},</p><p>Your appointment for <strong>${appt.service_type}</strong> on <strong>${dateFormatted}</strong> has been cancelled.</p><p>If you'd like to reschedule, please visit our booking page or contact us.</p>`;
+      break;
   }
 
   return `
@@ -148,8 +164,39 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
+    const body = await req.json().catch(() => ({}));
     const now = new Date();
-    const results = { confirmation: 0, reminder_24hr: 0, reminder_30min: 0, skipped_no_key: false };
+    const results = { confirmation: 0, reminder_24hr: 0, reminder_30min: 0, status_change: 0, skipped_no_key: false };
+
+    if (!Deno.env.get("RESEND_API_KEY")) {
+      results.skipped_no_key = true;
+    }
+
+    // Handle status change notification
+    if (body.appointment_id && body.status_change) {
+      const { data: appt } = await supabase.from("appointments").select("*").eq("id", body.appointment_id).single();
+      if (appt) {
+        const { data: profile } = await supabase.from("profiles").select("user_id, full_name").eq("user_id", appt.client_id).single();
+        const { data: userData } = await supabase.auth.admin.getUserById(appt.client_id);
+        const clientEmail = userData?.user?.email;
+        const clientName = profile?.full_name || "Client";
+        if (clientEmail) {
+          const statusMap: Record<string, string> = { confirmed: "status_confirmed", in_session: "status_in_session", completed: "status_completed", cancelled: "status_cancelled" };
+          const emailType = statusMap[body.status_change];
+          if (emailType) {
+            const dateFormatted = formatDate(appt.scheduled_date);
+            const subject = `Appointment Update — ${dateFormatted}`;
+            const html = buildEmailHtml(clientName, appt as Appointment, emailType);
+            await sendEmail(clientEmail, subject, html);
+            await supabase.from("appointment_emails").insert({ appointment_id: appt.id, email_type: emailType });
+            results.status_change++;
+          }
+        }
+      }
+      return new Response(JSON.stringify({ message: "Status email sent", results }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     if (!Deno.env.get("RESEND_API_KEY")) {
       results.skipped_no_key = true;

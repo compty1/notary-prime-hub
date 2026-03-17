@@ -121,6 +121,21 @@ export default function AdminAppointments() {
         entity_id: id,
         details: { new_status: newStatus },
       });
+
+      // Send status change email notification
+      try {
+        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-appointment-emails`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ appointment_id: id, status_change: newStatus }),
+        });
+      } catch (emailErr) {
+        console.error("Email notification error:", emailErr);
+      }
+
       if (newStatus === "completed") {
         const appt = appointments.find((a) => a.id === id);
         if (appt) setQuickJournalAppt(appt);
