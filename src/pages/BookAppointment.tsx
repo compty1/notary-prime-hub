@@ -177,7 +177,7 @@ export default function BookAppointment() {
     });
     supabase.from("services").select("name, short_description, category").eq("is_active", true).order("display_order").then(({ data }) => {
       if (data && data.length > 0) {
-        setServiceTypes(data.map((s: any) => s.name));
+        setServiceTypes([...new Set(data.map((s: any) => s.name))]);
         const descs: Record<string, string> = {};
         const cats: Record<string, string> = {};
         data.forEach((s: any) => { 
