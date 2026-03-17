@@ -393,6 +393,16 @@ export default function AdminAppointments() {
               </CardContent>
             </Card>
           ))}
+          {/* Pagination */}
+          <div className="flex items-center justify-between pt-2">
+            <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(p => p - 1)}>
+              <ChevronLeft className="mr-1 h-3 w-3" /> Previous
+            </Button>
+            <span className="text-xs text-muted-foreground">Page {page + 1}</span>
+            <Button variant="outline" size="sm" disabled={!hasMore} onClick={() => setPage(p => p + 1)}>
+              Next <ChevronRight className="ml-1 h-3 w-3" />
+            </Button>
+          </div>
         </div>
       )}
 
