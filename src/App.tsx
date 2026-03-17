@@ -32,6 +32,7 @@ const AppointmentConfirmation = lazy(() => import("./pages/AppointmentConfirmati
 const RonEligibilityChecker = lazy(() => import("./pages/RonEligibilityChecker"));
 const LoanSigningServices = lazy(() => import("./pages/LoanSigningServices"));
 const ServiceDetail = lazy(() => import("./pages/ServiceDetail"));
+const BlueNotarySession = lazy(() => import("./pages/BlueNotarySession"));
 
 // Admin pages
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
