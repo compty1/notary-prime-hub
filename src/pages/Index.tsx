@@ -49,6 +49,21 @@ const testimonials = [
 export default function Index() {
   const [serviceType, setServiceType] = useState<"in_person" | "ron">("in_person");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [contactInfo, setContactInfo] = useState({ phone: "(614) 300-6890", email: "shane@shanegoble.com" });
+
+  useEffect(() => {
+    supabase.from("platform_settings").select("setting_key, setting_value")
+      .in("setting_key", ["notary_phone", "notary_email"])
+      .then(({ data }) => {
+        if (data) {
+          const phone = data.find(s => s.setting_key === "notary_phone")?.setting_value;
+          const email = data.find(s => s.setting_key === "notary_email")?.setting_value;
+          if (phone) setContactInfo(prev => ({ ...prev, phone }));
+          if (email) setContactInfo(prev => ({ ...prev, email }));
+        }
+      });
+  }, []);
+
 
   return (
     <div className="min-h-screen bg-background">
