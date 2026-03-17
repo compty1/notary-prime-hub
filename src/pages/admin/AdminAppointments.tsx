@@ -28,7 +28,7 @@ export default function AdminAppointments() {
 
   const fetchAppointments = async () => {
     let query = supabase.from("appointments").select("*").order("scheduled_date", { ascending: false });
-    if (filter !== "all") query = query.eq("status", filter);
+    if (filter !== "all") query = query.eq("status", filter as any);
     const { data } = await query;
     if (data) setAppointments(data);
     setLoading(false);
@@ -37,7 +37,7 @@ export default function AdminAppointments() {
   useEffect(() => { fetchAppointments(); }, [filter]);
 
   const updateStatus = async (id: string, newStatus: string) => {
-    const { error } = await supabase.from("appointments").update({ status: newStatus }).eq("id", id);
+    const { error } = await supabase.from("appointments").update({ status: newStatus as any }).eq("id", id);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
