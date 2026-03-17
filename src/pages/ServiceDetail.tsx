@@ -583,17 +583,39 @@ export default function ServiceDetail() {
               <Card className="border-accent/30 bg-accent/5">
                 <CardContent className="p-5 space-y-4">
                   <h3 className="font-display text-lg font-semibold">Ready to Get Started?</h3>
-                  {PRE_QUALIFY_CATEGORIES.includes(service?.category || "") ? (
-                    <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" size="lg" onClick={() => setShowPreQualifier(true)}>
-                      Book This Service <ChevronRight className="ml-1 h-4 w-4" />
-                    </Button>
-                  ) : (
-                    <Link to={bookUrl} className="block">
-                      <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" size="lg">
-                        Book This Service <ChevronRight className="ml-1 h-4 w-4" />
-                      </Button>
-                    </Link>
-                  )}
+                  {(() => {
+                    const SAAS_SERVICES = new Set(["Document Storage Vault", "Cloud Document Storage", "PDF Services", "Document Digitization", "Notary API Access", "White-Label Notarization", "Document Translation"]);
+                    const SAAS_LINKS: Record<string, string> = {
+                      "Document Storage Vault": "/portal",
+                      "Cloud Document Storage": "/portal",
+                      "PDF Services": "/digitize",
+                      "Document Digitization": "/digitize",
+                      "Document Translation": "/digitize",
+                    };
+                    if (SAAS_SERVICES.has(service.name)) {
+                      return (
+                        <Link to={SAAS_LINKS[service.name] || "/portal"} className="block">
+                          <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" size="lg">
+                            Use This Service <ChevronRight className="ml-1 h-4 w-4" />
+                          </Button>
+                        </Link>
+                      );
+                    }
+                    if (PRE_QUALIFY_CATEGORIES.includes(service?.category || "")) {
+                      return (
+                        <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" size="lg" onClick={() => setShowPreQualifier(true)}>
+                          Book This Service <ChevronRight className="ml-1 h-4 w-4" />
+                        </Button>
+                      );
+                    }
+                    return (
+                      <Link to={bookUrl} className="block">
+                        <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" size="lg">
+                          {["notarization", "authentication", "verification"].includes(service.category) ? "Book This Service" : "Get Started"} <ChevronRight className="ml-1 h-4 w-4" />
+                        </Button>
+                      </Link>
+                    );
+                  })()}
                   <Link to="/#contact" className="block">
                     <Button variant="outline" className="w-full">Contact Us</Button>
                   </Link>
