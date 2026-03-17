@@ -8,6 +8,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import ResetPassword from "./pages/ForgotPassword";
 import BookAppointment from "./pages/BookAppointment";
 import ClientPortal from "./pages/ClientPortal";
 import BlueNotarySession from "./pages/BlueNotarySession";
@@ -20,6 +21,8 @@ import AdminClients from "./pages/admin/AdminClients";
 import AdminAvailability from "./pages/admin/AdminAvailability";
 import AdminDocuments from "./pages/admin/AdminDocuments";
 import AdminJournal from "./pages/admin/AdminJournal";
+import AdminRevenue from "./pages/admin/AdminRevenue";
+import AdminSettings from "./pages/admin/AdminSettings";
 import AdminResources from "./pages/admin/AdminResources";
 import AdminAIAssistant from "./pages/admin/AdminAIAssistant";
 import AdminAuditLog from "./pages/admin/AdminAuditLog";
@@ -38,6 +41,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/book" element={<BookAppointment />} />
             <Route path="/notary-guide" element={<NotaryGuide />} />
             <Route path="/ron-info" element={<RonInfo />} />
@@ -50,6 +54,8 @@ const App = () => (
               <Route path="availability" element={<AdminAvailability />} />
               <Route path="documents" element={<AdminDocuments />} />
               <Route path="journal" element={<AdminJournal />} />
+              <Route path="revenue" element={<AdminRevenue />} />
+              <Route path="settings" element={<AdminSettings />} />
               <Route path="resources" element={<AdminResources />} />
               <Route path="ai-assistant" element={<AdminAIAssistant />} />
               <Route path="audit-log" element={<AdminAuditLog />} />

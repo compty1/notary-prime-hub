@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Users, CheckCircle, Clock } from "lucide-react";
+import { Calendar, Users, CheckCircle, Clock, DollarSign } from "lucide-react";
 import { motion } from "framer-motion";
 
 const statusColors: Record<string, string> = {
@@ -18,33 +18,61 @@ const statusColors: Record<string, string> = {
 
 export default function AdminOverview() {
   const [appointments, setAppointments] = useState<any[]>([]);
-  const [stats, setStats] = useState({ total: 0, upcoming: 0, completed: 0, clients: 0 });
+  const [stats, setStats] = useState({ total: 0, upcoming: 0, completed: 0, clients: 0, revenue: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetch = async () => {
-      const { data: appts } = await supabase.from("appointments").select("*").order("scheduled_date", { ascending: true }).limit(20);
-      const { count: clientCount } = await supabase.from("profiles").select("*", { count: "exact", head: true });
+    const fetchData = async () => {
+      // Use proper count queries for accurate stats
+      const [
+        { count: totalAppts },
+        { count: upcomingCount },
+        { count: completedCount },
+        { count: clientCount },
+        { data: recentAppts },
+        { data: journalData },
+      ] = await Promise.all([
+        supabase.from("appointments").select("*", { count: "exact", head: true }),
+        supabase.from("appointments").select("*", { count: "exact", head: true }).in("status", ["scheduled", "confirmed"]),
+        supabase.from("appointments").select("*", { count: "exact", head: true }).eq("status", "completed"),
+        supabase.from("profiles").select("*", { count: "exact", head: true }),
+        supabase.from("appointments").select("*").order("scheduled_date", { ascending: false }).limit(20),
+        supabase.from("notary_journal").select("fees_charged"),
+      ]);
 
-      if (appts) {
-        setAppointments(appts);
-        setStats({
-          total: appts.length,
-          upcoming: appts.filter((a) => ["scheduled", "confirmed"].includes(a.status)).length,
-          completed: appts.filter((a) => a.status === "completed").length,
-          clients: clientCount || 0,
-        });
-      }
+      const totalRevenue = (journalData || []).reduce((sum: number, j: any) => sum + (parseFloat(j.fees_charged) || 0), 0);
+
+      if (recentAppts) setAppointments(recentAppts);
+      setStats({
+        total: totalAppts || 0,
+        upcoming: upcomingCount || 0,
+        completed: completedCount || 0,
+        clients: clientCount || 0,
+        revenue: totalRevenue,
+      });
       setLoading(false);
     };
-    fetch();
+    fetchData();
   }, []);
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  };
+
+  const formatTime = (timeStr: string) => {
+    const [h, m] = timeStr.split(":");
+    const hour = parseInt(h);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+    return `${displayHour}:${m} ${ampm}`;
+  };
 
   const statCards = [
     { label: "Total Appointments", value: stats.total, icon: Calendar, color: "text-blue-600" },
     { label: "Upcoming", value: stats.upcoming, icon: Clock, color: "text-amber-600" },
     { label: "Completed", value: stats.completed, icon: CheckCircle, color: "text-emerald-600" },
     { label: "Clients", value: stats.clients, icon: Users, color: "text-purple-600" },
+    { label: "Revenue", value: `$${stats.revenue.toFixed(2)}`, icon: DollarSign, color: "text-accent" },
   ];
 
   if (loading) {
@@ -59,7 +87,7 @@ export default function AdminOverview() {
     <div>
       <h1 className="mb-6 font-display text-2xl font-bold text-foreground">Dashboard Overview</h1>
 
-      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {statCards.map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
             <Card className="border-border/50">
@@ -99,8 +127,8 @@ export default function AdminOverview() {
                 <tbody>
                   {appointments.map((a) => (
                     <tr key={a.id} className="border-b border-border/30 last:border-0 hover:bg-muted/30">
-                      <td className="px-4 py-3">{a.scheduled_date}</td>
-                      <td className="px-4 py-3">{a.scheduled_time}</td>
+                      <td className="px-4 py-3">{formatDate(a.scheduled_date)}</td>
+                      <td className="px-4 py-3">{formatTime(a.scheduled_time)}</td>
                       <td className="px-4 py-3 font-medium">{a.service_type}</td>
                       <td className="px-4 py-3 capitalize">{a.notarization_type.replace("_", " ")}</td>
                       <td className="px-4 py-3">
