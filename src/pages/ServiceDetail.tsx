@@ -43,8 +43,8 @@ const categoryResources: Record<string, { label: string; url: string; icon: any 
     { label: "Notary Guide", url: "/notary-guide", icon: FileText },
   ],
   consulting: [
-    { label: "USCIS Forms Portal", url: "https://www.uscis.gov/forms/all-forms", icon: ExternalLink },
-    { label: "Common USCIS Forms", url: "https://www.uscis.gov/forms", icon: FileText },
+    { label: "Schedule Consultation", url: "/book?service=Consultation", icon: Monitor },
+    { label: "Join as Provider", url: "/join", icon: Users },
   ],
   document_services: [
     { label: "Document Templates", url: "/templates", icon: FileText },
@@ -53,6 +53,42 @@ const categoryResources: Record<string, { label: string; url: string; icon: any 
   business: [
     { label: "Business Portal", url: "/business", icon: Briefcase },
     { label: "Loan Signing Partnership", url: "/loan-signing", icon: Briefcase },
+  ],
+};
+
+// Service-specific FAQs (checked before category FAQs)
+const serviceFaqs: Record<string, { q: string; a: string }[]> = {
+  "ron onboarding": [
+    { q: "What equipment do I need for RON?", a: "A computer with webcam, microphone, stable internet, and a RON-compliant platform like OneNotary or Notarize." },
+    { q: "How long is the RON onboarding process?", a: "Typically 1-2 weeks including platform setup, training, and practice sessions." },
+    { q: "What states authorize RON?", a: "Over 40 states now authorize RON. Ohio has authorized RON under ORC §147.65-.66 since 2019." },
+    { q: "Do I need a separate RON commission?", a: "Yes. Ohio requires a separate RON authorization in addition to your traditional notary commission." },
+  ],
+  "workflow": [
+    { q: "What does a workflow audit include?", a: "We review your current document handling, signing, and notarization processes to identify inefficiencies and recommend improvements." },
+    { q: "How long does a workflow audit take?", a: "Initial assessment takes 1-2 hours via Zoom. Full recommendations delivered within 3-5 business days." },
+    { q: "Can you automate our notarization process?", a: "Yes. We can design custom workflows integrating digital document prep, scheduling, and RON platforms." },
+  ],
+  "closing coordination": [
+    { q: "What does closing coordination include?", a: "We coordinate document preparation, scheduling, notarization, and delivery for real estate closings." },
+    { q: "Do you work with title companies?", a: "Yes. We partner with title companies across Ohio for seamless closing experiences." },
+    { q: "Can you handle out-of-state closings?", a: "We can notarize documents for out-of-state transactions if the signer is in Ohio, using RON for remote parties." },
+  ],
+  "pdf": [
+    { q: "What PDF operations do you offer?", a: "Merge, split, compress, convert (Word to PDF, image to PDF), OCR text extraction, and form field creation." },
+    { q: "Can you convert scanned documents to editable text?", a: "Yes. Our AI-powered OCR service transcribes scanned documents while preserving original formatting." },
+    { q: "What about large files?", a: "We handle files up to 100MB. For larger files, contact us for custom solutions." },
+  ],
+  "storage": [
+    { q: "How does document storage work?", a: "Documents are encrypted and stored in our secure cloud vault. Access them anytime from your client portal." },
+    { q: "How long are documents retained?", a: "Documents are retained indefinitely while your account is active. Notary journal entries are kept per Ohio law (minimum 5 years)." },
+    { q: "Can I access my vault anytime?", a: "Yes. Log into your client portal to view, download, or share your stored documents 24/7." },
+  ],
+  "immigration": [
+    { q: "What forms can a notary help with?", a: "A notary can administer oaths, witness signatures, and certify copies for USCIS forms including I-130, I-485, I-765, N-400, I-90, I-131, I-864, and DS-160." },
+    { q: "Can a notary provide legal advice?", a: "No. A notary cannot provide legal advice, fill out forms for you, or represent you before USCIS. Consult an immigration attorney." },
+    { q: "Which USCIS forms require notarization?", a: "Most forms with affidavits (like I-864 Affidavit of Support) require notarization. Translations also typically need a notarized certificate of accuracy." },
+    { q: "What's the notary's role vs. an attorney?", a: "The notary verifies identity and witnesses signatures. An attorney provides legal advice and represents you." },
   ],
 };
 
@@ -65,10 +101,10 @@ const categoryFaqs: Record<string, { q: string; a: string }[]> = {
     { q: "What documents can be apostilled?", a: "Birth certificates, marriage certificates, articles of incorporation, court documents, notarized documents, and other official documents. The document must first be notarized if it's not already an official government document." },
   ],
   consulting: [
-    { q: "What forms can a notary help with?", a: "A notary can administer oaths, witness signatures, and certify copies for USCIS forms. Common forms include I-130, I-485, I-765, N-400, I-90, I-131, I-864, and DS-160." },
-    { q: "Can a notary provide legal advice?", a: "No. A notary cannot provide legal advice, fill out forms for you, or represent you before USCIS. For legal questions, consult an immigration attorney." },
-    { q: "Which USCIS forms require notarization?", a: "Most USCIS forms with affidavits (like the I-864 Affidavit of Support) require notarization. Translations of foreign documents also typically need a notarized certificate of accuracy." },
-    { q: "What's the notary's role vs. an attorney?", a: "The notary verifies identity and witnesses signatures. An attorney provides legal advice and represents you. Both roles are important but distinct." },
+    { q: "What consulting services do you offer?", a: "RON onboarding and training, workflow audits, custom workflow design, closing coordination, and immigration document assistance." },
+    { q: "How do consultations work?", a: "Most consultations are conducted via Zoom. Book a session and we'll discuss your specific needs and provide personalized guidance." },
+    { q: "Can you help me set up a notary business?", a: "Yes. Our RON onboarding and workflow services help new and experienced notaries optimize their operations." },
+    { q: "Do you provide ongoing support?", a: "Yes. We offer follow-up sessions and can design custom recurring support packages for your business." },
   ],
   verification: [
     { q: "When must the I-9 be completed?", a: "Section 1 must be completed by the employee's first day of work. Section 2 must be completed within 3 business days of the start date." },
@@ -82,6 +118,24 @@ const categoryFaqs: Record<string, { q: string; a: string }[]> = {
     { q: "What do I need for RON?", a: "A government-issued photo ID, computer with webcam and mic, stable internet connection, and the documents to be notarized in digital format." },
     { q: "What is notarization?", a: "Notarization is a fraud-deterrent process where a state-commissioned notary verifies the identity of signers and witnesses their signatures on important documents." },
     { q: "What ID do I need?", a: "A valid, unexpired government-issued photo ID such as a driver's license, state ID card, or passport." },
+  ],
+  document_services: [
+    { q: "What file formats do you accept?", a: "PDF, Word (.doc/.docx), images (JPG, PNG, TIFF), and most common document formats." },
+    { q: "How long does digitization take?", a: "Most documents are processed within 1-3 business days. Rush service is available." },
+    { q: "Can you preserve original formatting?", a: "Yes. Our AI-powered OCR preserves headings, paragraphs, tables, lists, and formatting from the original." },
+    { q: "How do I access my digitized documents?", a: "Digitized documents are saved to your secure vault in the client portal." },
+  ],
+  business: [
+    { q: "Do you offer volume discounts?", a: "Yes. Contact us for custom pricing on bulk notarization and recurring services." },
+    { q: "Can I set up a recurring schedule?", a: "Yes. We offer subscription plans for businesses with regular notarization needs." },
+    { q: "Do you support multiple authorized signers?", a: "Yes. Business accounts can register multiple authorized signers with verified identities." },
+    { q: "What industries do you serve?", a: "Real estate, legal, healthcare, financial services, education, and more." },
+  ],
+  recurring: [
+    { q: "How does document storage work?", a: "Encrypted cloud storage accessible 24/7 from your client portal." },
+    { q: "How long are documents retained?", a: "Documents are retained indefinitely while your account is active." },
+    { q: "Can I access my vault anytime?", a: "Yes. Your portal is available 24/7 for viewing, downloading, and sharing documents." },
+    { q: "How are compliance reminders configured?", a: "Set custom reminders for document renewals, filing deadlines, and notary commission expiration." },
   ],
 };
 
@@ -209,8 +263,27 @@ export default function ServiceDetail() {
   }
 
   const IconComp = iconMap[service.icon || "FileText"] || FileText;
-  const resources = categoryResources[service.category] || categoryResources.notarization;
-  const faqs = categoryFaqs[service.category] || categoryFaqs.notarization;
+  // Get service-specific resources for consulting (immigration vs non-immigration)
+  const getResources = () => {
+    if (service.category === "consulting" && (service.name.toLowerCase().includes("immigration") || service.name.toLowerCase().includes("uscis"))) {
+      return [
+        { label: "USCIS Forms Portal", url: "https://www.uscis.gov/forms/all-forms", icon: ExternalLink },
+        { label: "Common USCIS Forms", url: "https://www.uscis.gov/forms", icon: FileText },
+      ];
+    }
+    return categoryResources[service.category] || categoryResources.notarization;
+  };
+  const resources = getResources();
+
+  // Try service-specific FAQs first, then fall back to category
+  const getServiceFaqs = () => {
+    const nameLower = service.name.toLowerCase();
+    for (const [key, faqs] of Object.entries(serviceFaqs)) {
+      if (nameLower.includes(key)) return faqs;
+    }
+    return categoryFaqs[service.category] || categoryFaqs.notarization;
+  };
+  const faqs = getServiceFaqs();
   const timeline = categoryTimelines[service.category] || "Contact Us";
   const complexity = categoryComplexity[service.category] || { level: "Moderate", duration: "Varies" };
   const bundles = bundleSuggestions[service.category] || [];
@@ -418,8 +491,8 @@ export default function ServiceDetail() {
               </motion.div>
             )}
 
-            {/* Immigration-specific content (Phase 10.2, 10.4) */}
-            {service.category === "consulting" && (
+            {/* Immigration-specific content — only for immigration consulting */}
+            {service.category === "consulting" && (service.name.toLowerCase().includes("immigration") || service.name.toLowerCase().includes("uscis")) && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
                 <Card className="border-amber-200 bg-amber-50/50">
                   <CardContent className="p-5 space-y-3">

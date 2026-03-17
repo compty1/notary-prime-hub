@@ -9,9 +9,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronLeft, Calculator, DollarSign, ChevronRight } from "lucide-react";
+import { ChevronLeft, Calculator, DollarSign, ChevronRight, MapPin, Info } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { motion } from "framer-motion";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
+
+const HOLLYWOOD_CASINO = { lat: 39.9555, lng: -83.1145 };
+
+const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+  const R = 3959; // Earth radius in miles
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+};
 
 export default function FeeCalculator() {
   const [settings, setSettings] = useState<Record<string, string>>({});
@@ -28,6 +39,11 @@ export default function FeeCalculator() {
   const [isAfterHours, setIsAfterHours] = useState(false);
   const [witnessCount, setWitnessCount] = useState(0);
   const [needsApostille, setNeedsApostille] = useState(false);
+
+  // Meeting location state
+  const [meetingAddress, setMeetingAddress] = useState("");
+  const [calculatedDistance, setCalculatedDistance] = useState<number | null>(null);
+  const [manualOverride, setManualOverride] = useState(false);
 
   useEffect(() => {
     supabase.from("platform_settings").select("setting_key, setting_value").then(({ data }) => {
@@ -50,8 +66,9 @@ export default function FeeCalculator() {
   const witnessFee = parseFloat(settings.witness_fee || "10");
   const apostilleFee = parseFloat(settings.apostille_fee || "75");
 
+  const effectiveMiles = manualOverride ? travelMiles : (calculatedDistance ?? travelMiles);
   const notarizationFees = baseFee * documentCount;
-  const travelCalc = notarizationType === "in_person" ? Math.max(travelFeeMin, travelMiles * travelFeePerMile) : 0;
+  const travelCalc = notarizationType === "in_person" ? Math.max(travelFeeMin, effectiveMiles * travelFeePerMile) : 0;
   const ronFees = notarizationType === "ron" ? ronPlatformFee + kbaFee : 0;
   const rushCalc = isRush ? rushFee : 0;
   const afterHoursCalc = isAfterHours ? afterHoursFee : 0;
@@ -61,7 +78,7 @@ export default function FeeCalculator() {
 
   const lineItems = [
     { label: `Notarization (${documentCount} doc${documentCount > 1 ? "s" : ""} × $${baseFee.toFixed(2)})`, amount: notarizationFees },
-    ...(notarizationType === "in_person" ? [{ label: `Travel Fee (${travelMiles} mi)`, amount: travelCalc }] : []),
+    ...(notarizationType === "in_person" ? [{ label: `Travel Fee (${Math.round(effectiveMiles)} mi)`, amount: travelCalc }] : []),
     ...(notarizationType === "ron" ? [{ label: "RON Platform Fee", amount: ronPlatformFee }, { label: "KBA Fee", amount: kbaFee }] : []),
     ...(isRush ? [{ label: "Rush Priority", amount: rushCalc }] : []),
     ...(isAfterHours ? [{ label: "After-Hours", amount: afterHoursCalc }] : []),
@@ -70,6 +87,24 @@ export default function FeeCalculator() {
   ];
 
   const bookingUrl = `/book?type=${notarizationType}&estimate=${total.toFixed(2)}&docs=${documentCount}${needsApostille ? "&apostille=true" : ""}`;
+
+  const handleAddressSelect = (suggestion: { address: string; city: string; state: string; zip: string; fullAddress: string }) => {
+    setMeetingAddress(suggestion.fullAddress);
+    // Geocode is already done by AddressAutocomplete; we need lat/lon from the Nominatim data
+    // The AddressAutocomplete doesn't directly expose lat/lon, so we'll do a quick lookup
+    fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(suggestion.fullAddress)}&format=json&limit=1&countrycodes=us`, {
+      headers: { "User-Agent": "ShaneGobleNotary/1.0" },
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data?.[0]) {
+          const dist = haversineDistance(HOLLYWOOD_CASINO.lat, HOLLYWOOD_CASINO.lng, parseFloat(data[0].lat), parseFloat(data[0].lon));
+          setCalculatedDistance(Math.round(dist * 10) / 10);
+          if (!manualOverride) setTravelMiles(Math.round(dist * 10) / 10);
+        }
+      })
+      .catch(() => {});
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -117,10 +152,44 @@ export default function FeeCalculator() {
                     <Input type="number" min={1} max={50} value={documentCount} onChange={(e) => setDocumentCount(Math.max(1, parseInt(e.target.value) || 1))} />
                   </div>
                   {notarizationType === "in_person" && (
-                    <div>
-                      <Label>Travel Distance (miles)</Label>
-                      <Input type="number" min={0} value={travelMiles} onChange={(e) => setTravelMiles(Math.max(0, parseInt(e.target.value) || 0))} />
-                      <p className="text-xs text-muted-foreground mt-1">Minimum travel fee: ${travelFeeMin.toFixed(2)}</p>
+                    <div className="space-y-3">
+                      <div className="rounded-lg border border-accent/20 bg-accent/5 p-3">
+                        <p className="text-xs text-muted-foreground flex items-start gap-2">
+                          <Info className="h-4 w-4 flex-shrink-0 text-accent mt-0.5" />
+                          <span>
+                            Travel distance is calculated from our central meeting point at <strong>Hollywood Casino on West Broad Street, Columbus</strong> — 
+                            a convenient, central location for fair and efficient travel fees for both notary and client.
+                          </span>
+                        </p>
+                      </div>
+                      <div>
+                        <Label className="flex items-center gap-1"><MapPin className="h-3 w-3" /> Meeting Location</Label>
+                        <AddressAutocomplete
+                          value={meetingAddress}
+                          onChange={setMeetingAddress}
+                          onSelect={handleAddressSelect}
+                          placeholder="Enter your meeting address..."
+                          userLat={HOLLYWOOD_CASINO.lat}
+                          userLon={HOLLYWOOD_CASINO.lng}
+                        />
+                      </div>
+                      {calculatedDistance !== null && !manualOverride && (
+                        <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2">
+                          <span className="text-sm text-muted-foreground">Calculated distance:</span>
+                          <span className="text-sm font-semibold text-accent">{calculatedDistance} miles</span>
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs text-muted-foreground">Override distance manually</Label>
+                        <Switch checked={manualOverride} onCheckedChange={(v) => { setManualOverride(v); if (v && calculatedDistance) setTravelMiles(calculatedDistance); }} />
+                      </div>
+                      {manualOverride && (
+                        <div>
+                          <Label>Travel Distance (miles)</Label>
+                          <Input type="number" min={0} value={travelMiles} onChange={(e) => setTravelMiles(Math.max(0, parseInt(e.target.value) || 0))} />
+                        </div>
+                      )}
+                      <p className="text-xs text-muted-foreground">Minimum travel fee: ${travelFeeMin.toFixed(2)}</p>
                     </div>
                   )}
                   <div>

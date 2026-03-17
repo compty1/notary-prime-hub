@@ -30,18 +30,20 @@ const fallbackServiceTypes = [
 ];
 
 const DIGITAL_ONLY_CATEGORIES = new Set(["recurring", "consulting", "document_services", "business_services"]);
+const LOCATION_REQUIRED_SERVICES = new Set([
+  "Closing Coordination",
+  "Bulk Notarization",
+]);
 const DIGITAL_ONLY_SERVICES = new Set([
   "Document Storage Vault",
   "Cloud Document Storage", 
   "Virtual Mailroom",
   "Compliance Reminders",
   "Document Retention",
-  // Business category services that don't need physical presence
   "Notary API Access",
   "White-Label Notarization",
   "Registered Agent Service",
   "Subscription Plans",
-  // Verification services that can be remote
   "ID / KYC Verification",
   "Background Check Coordination",
 ]);
@@ -154,6 +156,7 @@ export default function BookAppointment() {
   };
 
   const isDigitalOnly = (svcName: string) => {
+    if (LOCATION_REQUIRED_SERVICES.has(svcName)) return false;
     const cat = serviceCategories[svcName];
     return (cat && DIGITAL_ONLY_CATEGORIES.has(cat)) || DIGITAL_ONLY_SERVICES.has(svcName);
   };
@@ -724,11 +727,13 @@ export default function BookAppointment() {
     const showImmigration = (cat === "consulting" && (svcLower.includes("immigration") || svcLower.includes("uscis")));
     const showRealEstate = svcLower.includes("real estate") || svcLower.includes("closing");
     const showI9 = svcLower.includes("i-9") || svcLower.includes("employment verification") || svcLower.includes("employment onboarding");
-    const showEmployer = showI9; // Only I-9 and employment services need employer fields
+    const showEmployer = showI9;
     const showBusiness = cat === "business" && !DIGITAL_ONLY_SERVICES.has(serviceType);
+    const showRonOnboarding = svcLower.includes("ron onboarding");
+    const showWorkflow = svcLower.includes("workflow") && !svcLower.includes("ron");
 
     // If no category-specific fields apply, return null
-    if (!showApostille && !showImmigration && !showRealEstate && !showI9 && !showEmployer && !showBusiness) return null;
+    if (!showApostille && !showImmigration && !showRealEstate && !showI9 && !showEmployer && !showBusiness && !showRonOnboarding && !showWorkflow) return null;
 
     return (
       <div className="space-y-3 rounded-lg border border-border/50 bg-muted/30 p-4">
@@ -868,6 +873,53 @@ export default function BookAppointment() {
             <Label>Company Name</Label>
             <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Your business name" />
           </div>
+        )}
+
+        {showRonOnboarding && (
+          <>
+            <div>
+              <Label>Current Notary Commission State</Label>
+              <Select value={clientState} onValueChange={setClientState}>
+                <SelectTrigger><SelectValue placeholder="Select state..." /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="OH">Ohio</SelectItem>
+                  <SelectItem value="IN">Indiana</SelectItem>
+                  <SelectItem value="KY">Kentucky</SelectItem>
+                  <SelectItem value="WV">West Virginia</SelectItem>
+                  <SelectItem value="PA">Pennsylvania</SelectItem>
+                  <SelectItem value="MI">Michigan</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>RON Platform Experience</Label>
+              <Select value={notes.includes("[RON Experience:") ? "" : ""} onValueChange={(v) => setNotes(prev => prev + `\n[RON Experience: ${v}]`)}>
+                <SelectTrigger><SelectValue placeholder="Select experience level..." /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No experience with RON platforms</SelectItem>
+                  <SelectItem value="some">Some experience (used 1-2 platforms)</SelectItem>
+                  <SelectItem value="experienced">Experienced (regular RON user)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        )}
+
+        {showWorkflow && (
+          <>
+            <div>
+              <Label>Current Workflow Description</Label>
+              <Textarea
+                placeholder="Describe your current notarization workflow — tools used, volume, pain points..."
+                rows={3}
+                onChange={(e) => setNotes(prev => prev.replace(/\[Workflow:.*\]/s, "") + `\n[Workflow: ${e.target.value}]`)}
+              />
+            </div>
+            <div>
+              <Label>Approximate Monthly Transactions</Label>
+              <Input type="number" placeholder="e.g., 50" min={0} onChange={(e) => setNotes(prev => prev + `\n[Monthly Volume: ${e.target.value}]`)} />
+            </div>
+          </>
         )}
       </div>
     );

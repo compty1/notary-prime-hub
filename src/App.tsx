@@ -34,6 +34,7 @@ const LoanSigningServices = lazy(() => import("./pages/LoanSigningServices"));
 const ServiceDetail = lazy(() => import("./pages/ServiceDetail"));
 const About = lazy(() => import("./pages/About"));
 const DocumentDigitize = lazy(() => import("./pages/DocumentDigitize"));
+const JoinPlatform = lazy(() => import("./pages/JoinPlatform"));
 
 // Admin pages
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
@@ -89,6 +90,7 @@ const App = () => (
               <Route path="/terms" element={<TermsPrivacy />} />
               <Route path="/templates" element={<DocumentTemplates />} />
               <Route path="/about" element={<About />} />
+              <Route path="/join" element={<JoinPlatform />} />
               <Route path="/digitize" element={<ProtectedRoute><DocumentDigitize /></ProtectedRoute>} />
               <Route path="/builder" element={<DocumentBuilder />} />
               <Route path="/fee-calculator" element={<FeeCalculator />} />
