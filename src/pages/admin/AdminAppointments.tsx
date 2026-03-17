@@ -49,6 +49,9 @@ export default function AdminAppointments() {
   const [profiles, setProfiles] = useState<any[]>([]);
   const [services, setServices] = useState<any[]>([]);
   const [filter, setFilter] = useState("all");
+  const [dateRange, setDateRange] = useState("all");
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [receiptAppt, setReceiptAppt] = useState<any>(null);
@@ -80,21 +83,39 @@ export default function AdminAppointments() {
   const { toast } = useToast();
   const { user } = useAuth();
 
+  const getDateFilter = () => {
+    const today = new Date();
+    const fmt = (d: Date) => d.toISOString().split("T")[0];
+    if (dateRange === "today") return { from: fmt(today), to: fmt(today) };
+    if (dateRange === "week") {
+      const end = new Date(today); end.setDate(end.getDate() + 7);
+      return { from: fmt(today), to: fmt(end) };
+    }
+    if (dateRange === "month") {
+      const end = new Date(today); end.setMonth(end.getMonth() + 1);
+      return { from: fmt(today), to: fmt(end) };
+    }
+    return null;
+  };
+
   const fetchData = async () => {
-    let query = supabase.from("appointments").select("*").order("scheduled_date", { ascending: false });
+    let query = supabase.from("appointments").select("*").order("scheduled_date", { ascending: false }).range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
     if (filter !== "all") query = query.eq("status", filter as any);
+    const df = getDateFilter();
+    if (df) query = query.gte("scheduled_date", df.from).lte("scheduled_date", df.to);
     const [{ data: appts }, { data: profs }, { data: svcs }] = await Promise.all([
       query,
       supabase.from("profiles").select("*"),
       supabase.from("services").select("name").eq("is_active", true),
     ]);
-    if (appts) setAppointments(appts);
+    if (appts) { setAppointments(appts); setHasMore(appts.length === PAGE_SIZE); }
     if (profs) setProfiles(profs);
     if (svcs) setServices(svcs);
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, [filter]);
+  useEffect(() => { setPage(0); }, [filter, dateRange]);
+  useEffect(() => { fetchData(); }, [filter, dateRange, page]);
 
   useEffect(() => {
     const channel = supabase
