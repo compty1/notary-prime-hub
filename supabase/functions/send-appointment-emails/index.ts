@@ -164,8 +164,39 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
+    const body = await req.json().catch(() => ({}));
     const now = new Date();
-    const results = { confirmation: 0, reminder_24hr: 0, reminder_30min: 0, skipped_no_key: false };
+    const results = { confirmation: 0, reminder_24hr: 0, reminder_30min: 0, status_change: 0, skipped_no_key: false };
+
+    if (!Deno.env.get("RESEND_API_KEY")) {
+      results.skipped_no_key = true;
+    }
+
+    // Handle status change notification
+    if (body.appointment_id && body.status_change) {
+      const { data: appt } = await supabase.from("appointments").select("*").eq("id", body.appointment_id).single();
+      if (appt) {
+        const { data: profile } = await supabase.from("profiles").select("user_id, full_name").eq("user_id", appt.client_id).single();
+        const { data: userData } = await supabase.auth.admin.getUserById(appt.client_id);
+        const clientEmail = userData?.user?.email;
+        const clientName = profile?.full_name || "Client";
+        if (clientEmail) {
+          const statusMap: Record<string, string> = { confirmed: "status_confirmed", in_session: "status_in_session", completed: "status_completed", cancelled: "status_cancelled" };
+          const emailType = statusMap[body.status_change];
+          if (emailType) {
+            const dateFormatted = formatDate(appt.scheduled_date);
+            const subject = `Appointment Update — ${dateFormatted}`;
+            const html = buildEmailHtml(clientName, appt as Appointment, emailType);
+            await sendEmail(clientEmail, subject, html);
+            await supabase.from("appointment_emails").insert({ appointment_id: appt.id, email_type: emailType });
+            results.status_change++;
+          }
+        }
+      }
+      return new Response(JSON.stringify({ message: "Status email sent", results }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     if (!Deno.env.get("RESEND_API_KEY")) {
       results.skipped_no_key = true;
