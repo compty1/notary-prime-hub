@@ -183,6 +183,80 @@ export type Database = {
           },
         ]
       }
+      notary_journal: {
+        Row: {
+          appointment_id: string | null
+          created_at: string
+          created_by: string
+          document_description: string | null
+          document_type: string
+          fees_charged: number | null
+          id: string
+          id_expiration: string | null
+          id_number: string | null
+          id_type: string | null
+          notarization_type: Database["public"]["Enums"]["notarization_type"]
+          notes: string | null
+          oath_administered: boolean | null
+          oath_timestamp: string | null
+          service_performed: string
+          signer_address: string | null
+          signer_name: string
+          updated_at: string
+          witnesses_present: number | null
+        }
+        Insert: {
+          appointment_id?: string | null
+          created_at?: string
+          created_by: string
+          document_description?: string | null
+          document_type: string
+          fees_charged?: number | null
+          id?: string
+          id_expiration?: string | null
+          id_number?: string | null
+          id_type?: string | null
+          notarization_type?: Database["public"]["Enums"]["notarization_type"]
+          notes?: string | null
+          oath_administered?: boolean | null
+          oath_timestamp?: string | null
+          service_performed?: string
+          signer_address?: string | null
+          signer_name: string
+          updated_at?: string
+          witnesses_present?: number | null
+        }
+        Update: {
+          appointment_id?: string | null
+          created_at?: string
+          created_by?: string
+          document_description?: string | null
+          document_type?: string
+          fees_charged?: number | null
+          id?: string
+          id_expiration?: string | null
+          id_number?: string | null
+          id_type?: string | null
+          notarization_type?: Database["public"]["Enums"]["notarization_type"]
+          notes?: string | null
+          oath_administered?: boolean | null
+          oath_timestamp?: string | null
+          service_performed?: string
+          signer_address?: string | null
+          signer_name?: string
+          updated_at?: string
+          witnesses_present?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notary_journal_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           address: string | null

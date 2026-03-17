@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/sidebar";
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BarChart3, LogOut, Shield } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield } from "lucide-react";
 
 const navItems = [
   { title: "Overview", url: "/admin", icon: LayoutDashboard },
@@ -24,6 +24,9 @@ const navItems = [
   { title: "Clients", url: "/admin/clients", icon: Users },
   { title: "Availability", url: "/admin/availability", icon: Clock },
   { title: "Documents", url: "/admin/documents", icon: FileText },
+  { title: "Journal", url: "/admin/journal", icon: BookMarked },
+  { title: "Resources", url: "/admin/resources", icon: BookOpen },
+  { title: "AI Assistant", url: "/admin/ai-assistant", icon: Bot },
   { title: "Audit Log", url: "/admin/audit-log", icon: ScrollText },
 ];
 

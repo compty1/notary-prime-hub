@@ -11,12 +11,17 @@ import SignUp from "./pages/SignUp";
 import BookAppointment from "./pages/BookAppointment";
 import ClientPortal from "./pages/ClientPortal";
 import BlueNotarySession from "./pages/BlueNotarySession";
+import NotaryGuide from "./pages/NotaryGuide";
+import RonInfo from "./pages/RonInfo";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminOverview from "./pages/admin/AdminOverview";
 import AdminAppointments from "./pages/admin/AdminAppointments";
 import AdminClients from "./pages/admin/AdminClients";
 import AdminAvailability from "./pages/admin/AdminAvailability";
 import AdminDocuments from "./pages/admin/AdminDocuments";
+import AdminJournal from "./pages/admin/AdminJournal";
+import AdminResources from "./pages/admin/AdminResources";
+import AdminAIAssistant from "./pages/admin/AdminAIAssistant";
 import AdminAuditLog from "./pages/admin/AdminAuditLog";
 import NotFound from "./pages/NotFound";
 
@@ -34,6 +39,8 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/book" element={<BookAppointment />} />
+            <Route path="/notary-guide" element={<NotaryGuide />} />
+            <Route path="/ron-info" element={<RonInfo />} />
             <Route path="/portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
             <Route path="/ron-session" element={<ProtectedRoute><BlueNotarySession /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>}>
@@ -42,6 +49,9 @@ const App = () => (
               <Route path="clients" element={<AdminClients />} />
               <Route path="availability" element={<AdminAvailability />} />
               <Route path="documents" element={<AdminDocuments />} />
+              <Route path="journal" element={<AdminJournal />} />
+              <Route path="resources" element={<AdminResources />} />
+              <Route path="ai-assistant" element={<AdminAIAssistant />} />
               <Route path="audit-log" element={<AdminAuditLog />} />
             </Route>
             <Route path="*" element={<NotFound />} />

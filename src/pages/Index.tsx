@@ -63,6 +63,8 @@ export default function Index() {
           <div className="hidden items-center gap-6 md:flex">
             <a href="#services" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Services</a>
             <a href="#how-it-works" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">How It Works</a>
+            <Link to="/notary-guide" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Notary Guide</Link>
+            <Link to="/ron-info" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">RON Info</Link>
             <a href="#faq" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">FAQ</a>
             <Link to="/login">
               <Button variant="outline" size="sm">Sign In</Button>
