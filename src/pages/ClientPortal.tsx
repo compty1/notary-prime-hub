@@ -105,8 +105,8 @@ export default function ClientPortal() {
     };
     fetchData();
 
-    // Load chat messages
-    supabase.from("chat_messages").select("*").or(`sender_id.eq.${user.id},is_admin.eq.true`).order("created_at").then(({ data }) => {
+    // Load chat messages - own messages + admin replies addressed to this user
+    supabase.from("chat_messages").select("*").or(`sender_id.eq.${user.id},and(is_admin.eq.true,recipient_id.eq.${user.id})`).order("created_at").then(({ data }) => {
       if (data) setChatMessages(data);
     });
 
@@ -114,7 +114,7 @@ export default function ClientPortal() {
     const channel = supabase.channel("client-chat")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages" }, (payload) => {
         const msg = payload.new as any;
-        if (msg.sender_id === user.id || msg.is_admin) {
+        if (msg.sender_id === user.id || (msg.is_admin && msg.recipient_id === user.id)) {
           setChatMessages(prev => {
             if (prev.some(m => m.id === msg.id)) return prev;
             return [...prev, msg];
