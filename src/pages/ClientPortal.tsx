@@ -86,6 +86,8 @@ export default function ClientPortal() {
   const [sendingChat, setSendingChat] = useState(false);
   const chatEndRef = React.useRef<HTMLDivElement>(null);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [chatRecipient, setChatRecipient] = useState<string>("");
+  const [staffUsers, setStaffUsers] = useState<{ id: string; name: string; role: string }[]>([]);
 
   // AI explain
   const [explaining, setExplaining] = useState(false);
