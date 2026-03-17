@@ -12,7 +12,7 @@ import SignUp from "./pages/SignUp";
 import ResetPassword from "./pages/ForgotPassword";
 import BookAppointment from "./pages/BookAppointment";
 import ClientPortal from "./pages/ClientPortal";
-import BlueNotarySession from "./pages/BlueNotarySession";
+import OneNotarySession from "./pages/OneNotarySession";
 import NotaryGuide from "./pages/NotaryGuide";
 import RonInfo from "./pages/RonInfo";
 import DocumentTemplates from "./pages/DocumentTemplates";
@@ -76,7 +76,7 @@ const App = () => (
             <Route path="/fee-calculator" element={<FeeCalculator />} />
             <Route path="/portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
             <Route path="/confirmation" element={<ProtectedRoute><AppointmentConfirmation /></ProtectedRoute>} />
-            <Route path="/ron-session" element={<ProtectedRoute><BlueNotarySession /></ProtectedRoute>} />
+            <Route path="/ron-session" element={<ProtectedRoute><OneNotarySession /></ProtectedRoute>} />
             <Route path="/business-portal" element={<ProtectedRoute><BusinessPortal /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>}>
               <Route index element={<ErrorBoundary fallbackMessage="Overview failed to load"><AdminOverview /></ErrorBoundary>} />

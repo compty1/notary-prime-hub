@@ -100,6 +100,13 @@ export default function BookAppointment() {
   // Dynamic services from DB
   const [serviceTypes, setServiceTypes] = useState<string[]>(fallbackServiceTypes);
   const [serviceDescriptions, setServiceDescriptions] = useState<Record<string, string>>({});
+  const [serviceCategories, setServiceCategories] = useState<Record<string, string>>({});
+
+  const NOTARIZATION_CATEGORIES = ["notarization", "authentication"];
+  const requiresNotarizationType = (svcName: string) => {
+    const cat = serviceCategories[svcName];
+    return !cat || NOTARIZATION_CATEGORIES.includes(cat);
+  };
 
   // Dynamic page title
   useEffect(() => {
@@ -116,12 +123,17 @@ export default function BookAppointment() {
         setPricingSettings(settings);
       }
     });
-    supabase.from("services").select("name, short_description").eq("is_active", true).order("display_order").then(({ data }) => {
+    supabase.from("services").select("name, short_description, category").eq("is_active", true).order("display_order").then(({ data }) => {
       if (data && data.length > 0) {
         setServiceTypes(data.map((s: any) => s.name));
         const descs: Record<string, string> = {};
-        data.forEach((s: any) => { if (s.short_description) descs[s.name] = s.short_description; });
+        const cats: Record<string, string> = {};
+        data.forEach((s: any) => { 
+          if (s.short_description) descs[s.name] = s.short_description;
+          cats[s.name] = s.category;
+        });
         setServiceDescriptions(descs);
+        setServiceCategories(cats);
       }
     });
   }, []);
@@ -656,16 +668,16 @@ export default function BookAppointment() {
           </motion.div>
         )}
 
-        {/* Progress */}
+        {/* Progress - show 3 steps for non-notarial, 4 for notarial */}
         <div className="mb-8 flex items-center justify-center gap-2">
-          {[1, 2, 3, 4].map((s) => (
+          {(serviceType && !requiresNotarizationType(serviceType) ? [1, 2, 3] : [1, 2, 3, 4]).map((s, i, arr) => (
             <div key={s} className="flex items-center gap-2">
               <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors ${
                 step >= s ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"
               }`}>
-                {step > s ? <CheckCircle className="h-4 w-4" /> : s}
+                {step > s ? <CheckCircle className="h-4 w-4" /> : (serviceType && !requiresNotarizationType(serviceType) ? s - 1 || 1 : s)}
               </div>
-              {s < 4 && <div className={`h-0.5 w-8 transition-colors ${step > s ? "bg-accent" : "bg-muted"}`} />}
+              {i < arr.length - 1 && <div className={`h-0.5 w-8 transition-colors ${step > s ? "bg-accent" : "bg-muted"}`} />}
             </div>
           ))}
         </div>
@@ -674,14 +686,36 @@ export default function BookAppointment() {
           <Card className="border-border/50">
             <CardHeader>
               <CardTitle className="font-display text-xl">
-                {step === 1 && "Select Notarization Type"}
-                {step === 2 && "Choose Service"}
-                {step === 3 && "Pick Date & Time"}
+                {step === 1 && (serviceType && !requiresNotarizationType(serviceType) ? "Choose Service" : "Select Notarization Type")}
+                {step === 2 && (serviceType && !requiresNotarizationType(serviceType) ? "Pick Date & Time" : "Choose Service")}
+                {step === 3 && (serviceType && !requiresNotarizationType(serviceType) ? "Review & Confirm" : "Pick Date & Time")}
                 {step === 4 && "Review & Confirm"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {step === 1 && (
+              {/* Step 1: For non-notarial services, skip to service selection; for notarial, show type picker */}
+              {step === 1 && (serviceType && !requiresNotarizationType(serviceType) ? (
+                /* Non-notarial: Step 1 IS service selection (same as original step 2) */
+                <div className="space-y-4">
+                  <div>
+                    <Label>Service Type</Label>
+                    <Select value={serviceType} onValueChange={(val) => {
+                      setServiceType(val);
+                      if (!requiresNotarizationType(val)) {
+                        setNotarizationType("in_person");
+                      }
+                    }}>
+                      <SelectTrigger><SelectValue placeholder="Select service" /></SelectTrigger>
+                      <SelectContent>
+                        {serviceTypes.map((s) => (
+                          <SelectItem key={s} value={s}>{s}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              ) : (
+                /* Notarial: original Step 1 - type selection */
                 <div className="grid gap-4 sm:grid-cols-2">
                   <button
                     onClick={() => setNotarizationType("in_person")}
@@ -706,7 +740,9 @@ export default function BookAppointment() {
                     <p className="text-sm text-muted-foreground">Secure video call from anywhere</p>
                   </button>
                 </div>
-              )}
+              ))}
+
+              {step === 1 && (!serviceType || requiresNotarizationType(serviceType)) && null}
 
               {step === 2 && (
                 <div className="space-y-4">

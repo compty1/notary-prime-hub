@@ -268,7 +268,7 @@ export default function RonInfo() {
                   <ul className="space-y-2 text-sm text-muted-foreground">
                     <li className="flex items-start gap-2"><Shield className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> <strong>IDology</strong> — Widely used in the RON industry, MISMO-compliant</li>
                     <li className="flex items-start gap-2"><Shield className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> <strong>LexisNexis</strong> — Industry-standard identity verification platform</li>
-                    <li className="flex items-start gap-2"><Shield className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> <strong>Notarize / BlueNotary</strong> — Platform-integrated KBA</li>
+                    <li className="flex items-start gap-2"><Shield className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> <strong>OneNotary</strong> — Platform-integrated KBA with full RON workflow</li>
                   </ul>
                   <p className="mt-3 text-xs text-muted-foreground italic">
                     Our RON platform handles KBA automatically — signers complete the process as part of the session.
