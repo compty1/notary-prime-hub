@@ -477,26 +477,75 @@ export default function ServiceDetail() {
               </motion.div>
             )}
 
-            {/* Zoom consultation CTA for consulting services */}
-            {service.category === "consulting" && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.34 }}>
-                <Card className="border-accent/30 bg-accent/5">
+            {/* Zoom consultation CTA on ALL service pages */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.34 }}>
+              <Card className="border-accent/30 bg-accent/5">
+                <CardContent className="p-5 space-y-3">
+                  <h3 className="font-display text-sm font-semibold flex items-center gap-2">
+                    <Monitor className="h-4 w-4 text-accent" /> Have Questions?
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Schedule a free Zoom consultation to discuss this service and get personalized guidance.
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Or message us for a response within 24 hours — we typically respond within 2 hours during business hours.
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    You can also <Link to="/digitize" className="text-accent underline">upload your document</Link> for instant AI-powered answers about what's needed.
+                  </p>
+                  <div className="flex gap-2 flex-wrap">
+                    <Link to="/book?service=Consultation"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark"><Monitor className="mr-1 h-3 w-3" /> Schedule Zoom</Button></Link>
+                    <Link to="/notary-guide"><Button size="sm" variant="outline">Browse Guides</Button></Link>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* I-9 Acceptable Documents (List A/B/C) for verification services */}
+            {service.category === "verification" && (
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+                <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-800">
                   <CardContent className="p-5 space-y-3">
                     <h3 className="font-display text-sm font-semibold flex items-center gap-2">
-                      <Monitor className="h-4 w-4 text-accent" /> Schedule a Zoom Consultation
+                      <FileText className="h-4 w-4 text-blue-600" /> Acceptable I-9 Documents
                     </h3>
-                    <p className="text-xs text-muted-foreground">
-                      Have questions about this service? Book a video consultation to discuss your project and get personalized guidance.
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Message us for a response within 24 hours — we typically respond within 2 hours during business hours.
-                    </p>
-                    <Link to="/book?service=Consultation"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark"><Monitor className="mr-1 h-3 w-3" /> Book Consultation</Button></Link>
+                    <div className="text-xs text-muted-foreground space-y-3">
+                      <div>
+                        <p className="font-semibold text-foreground">List A — Proves Identity AND Work Authorization (need ONE):</p>
+                        <ul className="ml-4 list-disc mt-1">
+                          <li>U.S. Passport or Passport Card</li>
+                          <li>Permanent Resident Card (Green Card / I-551)</li>
+                          <li>Employment Authorization Document (EAD / I-766)</li>
+                          <li>Foreign passport with I-94 arrival/departure record</li>
+                        </ul>
+                      </div>
+                      <p className="font-semibold text-foreground text-center">— OR bring BOTH —</p>
+                      <div>
+                        <p className="font-semibold text-foreground">List B — Proves Identity (need ONE):</p>
+                        <ul className="ml-4 list-disc mt-1">
+                          <li>Driver's license or state-issued ID card</li>
+                          <li>School ID card with photograph</li>
+                          <li>Voter registration card</li>
+                          <li>U.S. military card or draft record</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">PLUS List C — Proves Work Authorization (need ONE):</p>
+                        <ul className="ml-4 list-disc mt-1">
+                          <li>Social Security card (unrestricted)</li>
+                          <li>U.S. birth certificate (original or certified copy)</li>
+                          <li>Certification of Birth Abroad (FS-545 or DS-1350)</li>
+                          <li>U.S. Citizen ID Card (I-197 or I-179)</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <a href="https://www.uscis.gov/i-9-central/form-i-9-acceptable-documents" target="_blank" rel="noopener noreferrer">
+                      <Button size="sm" variant="outline" className="text-xs"><ExternalLink className="mr-1 h-3 w-3" /> Full USCIS Document List</Button>
+                    </a>
                   </CardContent>
                 </Card>
               </motion.div>
             )}
-
             {/* Immigration-specific content — only for immigration consulting */}
             {service.category === "consulting" && (service.name.toLowerCase().includes("immigration") || service.name.toLowerCase().includes("uscis")) && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
