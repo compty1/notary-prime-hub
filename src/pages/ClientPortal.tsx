@@ -106,7 +106,7 @@ export default function ClientPortal() {
     fetchData();
 
     // Load chat messages
-    supabase.from("chat_messages").select("*").eq("sender_id", user.id).order("created_at").then(({ data }) => {
+    supabase.from("chat_messages").select("*").or(`sender_id.eq.${user.id},is_admin.eq.true`).order("created_at").then(({ data }) => {
       if (data) setChatMessages(data);
     });
 

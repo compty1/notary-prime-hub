@@ -373,15 +373,24 @@ export default function BookAppointment() {
         } else {
           setDocAnalysis(data);
           if (data.document_type) {
-            const mapped: Record<string, string> = {
-              "Real Estate": "Real Estate Documents",
-              "Legal": "Affidavits & Sworn Statements",
-              "Estate Planning": "Estate Planning Documents",
-              "Business": "Business Documents",
-              "Personal": "Other",
+            const mapped: Record<string, string[]> = {
+              "Real Estate": ["Real Estate Documents", "Deed", "Mortgage"],
+              "Legal": ["Affidavits & Sworn Statements", "Power of Attorney", "Legal"],
+              "Estate Planning": ["Estate Planning Documents", "Will", "Trust"],
+              "Business": ["Business Documents", "Corporate", "LLC"],
+              "Personal": ["I-9 Employment Verification", "Other"],
             };
-            const match = mapped[data.document_type];
-            if (match && !serviceType) setServiceType(match);
+            const matchedCategory = mapped[data.document_type];
+            if (matchedCategory && !serviceType) {
+              // Find best match from available service types
+              const bestMatch = matchedCategory.find((m) => serviceTypes.some((s) => s.toLowerCase().includes(m.toLowerCase())));
+              if (bestMatch) {
+                const exact = serviceTypes.find((s) => s.toLowerCase().includes(bestMatch.toLowerCase()));
+                if (exact) setServiceType(exact);
+              } else {
+                setServiceType(matchedCategory[0]);
+              }
+            }
           }
           if (data.ron_eligible === false && notarizationType === "ron") {
             toast({ title: "RON not recommended", description: "This document type may not be eligible for remote notarization.", variant: "destructive" });
