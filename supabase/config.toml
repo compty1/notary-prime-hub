@@ -1,1 +1,7 @@
 project_id = "fcwtfacvwwlmlhnwdjoo"
+
+[functions.onenotary]
+verify_jwt = false
+
+[functions.onenotary-webhook]
+verify_jwt = false

@@ -265,11 +265,30 @@ export default function ClientPortal() {
 
   const qrUrl = `${window.location.origin}/portal`;
 
+  // Load staff users for chat recipient selector
+  useEffect(() => {
+    const loadStaff = async () => {
+      const { data: roles } = await supabase.from("user_roles").select("user_id, role").in("role", ["admin", "notary"]);
+      if (!roles || roles.length === 0) return;
+      const userIds = [...new Set(roles.map(r => r.user_id))];
+      const { data: profiles } = await supabase.from("profiles").select("user_id, full_name").in("user_id", userIds);
+      const staff = userIds.map(uid => {
+        const prof = profiles?.find(p => p.user_id === uid);
+        const role = roles.find(r => r.user_id === uid)?.role || "admin";
+        return { id: uid, name: prof?.full_name || "", role };
+      });
+      setStaffUsers(staff);
+      if (staff.length > 0 && !chatRecipient) setChatRecipient(staff[0].id);
+    };
+    if (user) loadStaff();
+  }, [user]);
+
   const sendChatMessage = async () => {
     if (!chatInput.trim() || !user) return;
     setSendingChat(true);
     const { error } = await supabase.from("chat_messages").insert({
       sender_id: user.id, message: chatInput.trim(), is_admin: false,
+      recipient_id: chatRecipient || null,
     });
     if (error) toast({ title: "Error sending message", variant: "destructive" });
     else setChatInput("");

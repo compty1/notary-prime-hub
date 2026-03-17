@@ -1258,7 +1258,7 @@ export default function BookAppointment() {
                 <Button variant="outline" onClick={() => step > 1 && setStep((step - 1) as Step)} disabled={step === 1}>
                   <ChevronLeft className="mr-1 h-4 w-4" /> Back
                 </Button>
-                {step < 4 ? (
+                {step < lastStep ? (
                   <Button onClick={() => setStep((step + 1) as Step)} disabled={!canProceed()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
                     Next <ChevronRight className="ml-1 h-4 w-4" />
                   </Button>
