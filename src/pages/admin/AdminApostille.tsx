@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Package, Plus, Loader2, Truck, CheckCircle, Clock, FileText } from "lucide-react";
+import { Package, Plus, Loader2, Truck, FileText, Pencil } from "lucide-react";
 import { motion } from "framer-motion";
 
 const statusColors: Record<string, string> = {
@@ -30,9 +30,13 @@ export default function AdminApostille() {
   const [profiles, setProfiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState<any>(null);
   const [newDesc, setNewDesc] = useState("");
   const [newNotes, setNewNotes] = useState("");
+  const [newFee, setNewFee] = useState("75");
   const [newClientId, setNewClientId] = useState("");
+  const [editNotes, setEditNotes] = useState("");
+  const [editFee, setEditFee] = useState("");
 
   useEffect(() => {
     Promise.all([
@@ -51,12 +55,39 @@ export default function AdminApostille() {
     else {
       setRequests((prev) => prev.map((r) => r.id === id ? { ...r, status: newStatus } : r));
       toast({ title: "Status updated" });
+      await supabase.from("audit_log").insert({
+        action: "apostille_status_changed",
+        entity_type: "apostille_request",
+        entity_id: id,
+        details: { new_status: newStatus },
+      });
     }
   };
 
   const updateTracking = async (id: string, tracking: string) => {
     await supabase.from("apostille_requests").update({ tracking_number: tracking } as any).eq("id", id);
     setRequests((prev) => prev.map((r) => r.id === id ? { ...r, tracking_number: tracking } : r));
+  };
+
+  const openEdit = (req: any) => {
+    setEditOpen(req);
+    setEditNotes(req.notes || "");
+    setEditFee(String(req.fee || "0"));
+  };
+
+  const saveEdit = async () => {
+    if (!editOpen) return;
+    const { error } = await supabase.from("apostille_requests").update({
+      notes: editNotes || null,
+      fee: parseFloat(editFee) || 0,
+      updated_at: new Date().toISOString(),
+    } as any).eq("id", editOpen.id);
+    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); }
+    else {
+      setRequests(prev => prev.map(r => r.id === editOpen.id ? { ...r, notes: editNotes, fee: parseFloat(editFee) || 0 } : r));
+      toast({ title: "Request updated" });
+      setEditOpen(null);
+    }
   };
 
   return (
@@ -90,12 +121,14 @@ export default function AdminApostille() {
                         <FileText className="h-4 w-4 text-accent" />
                         <span className="font-medium text-sm">{req.document_description}</span>
                         <Badge className={statusColors[req.status] || "bg-muted text-muted-foreground"}>{req.status.replace(/_/g, " ")}</Badge>
+                        <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => openEdit(req)}>
+                          <Pencil className="h-3 w-3" />
+                        </Button>
                       </div>
                       <p className="text-xs text-muted-foreground mb-1">Client: {(() => { const p = profiles.find(p => p.user_id === req.client_id); return p?.full_name || p?.email || req.client_id.slice(0, 8); })()}</p>
                       {req.notes && <p className="text-xs text-muted-foreground mb-2">{req.notes}</p>}
                       <p className="text-xs text-muted-foreground">Created: {new Date(req.created_at).toLocaleDateString()}</p>
                       {req.tracking_number && <p className="text-xs text-muted-foreground mt-1">Tracking: {req.tracking_number}</p>}
-                      {/* Status flow buttons */}
                       <div className="mt-3 flex flex-wrap gap-2">
                         {statusFlow.map((s) => (
                           <Button key={s} size="sm" variant={req.status === s ? "default" : "outline"} className="text-xs h-7" onClick={() => updateStatus(req.id, s)}>
@@ -120,6 +153,7 @@ export default function AdminApostille() {
         </div>
       )}
 
+      {/* Create Dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent>
           <DialogHeader><DialogTitle className="font-display">New Apostille Request</DialogTitle></DialogHeader>
@@ -136,15 +170,44 @@ export default function AdminApostille() {
               </Select>
             </div>
             <div><Label>Document Description</Label><Input value={newDesc} onChange={(e) => setNewDesc(e.target.value)} placeholder="e.g., Birth Certificate for international use" /></div>
+            <div><Label>Fee ($)</Label><Input type="number" step="0.01" value={newFee} onChange={(e) => setNewFee(e.target.value)} placeholder="75.00" /></div>
             <div><Label>Notes</Label><Textarea value={newNotes} onChange={(e) => setNewNotes(e.target.value)} placeholder="Additional details..." /></div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
             <Button className="bg-accent text-accent-foreground hover:bg-gold-dark" disabled={!newClientId || !newDesc} onClick={async () => {
-              const { error } = await supabase.from("apostille_requests").insert({ document_description: newDesc, notes: newNotes, client_id: newClientId, fee: 75 } as any);
+              const { error } = await supabase.from("apostille_requests").insert({
+                document_description: newDesc, notes: newNotes || null, client_id: newClientId, fee: parseFloat(newFee) || 75,
+              } as any);
               if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-              else { toast({ title: "Request created" }); setCreateOpen(false); setNewDesc(""); setNewNotes(""); setNewClientId(""); }
+              else {
+                toast({ title: "Request created" });
+                setCreateOpen(false); setNewDesc(""); setNewNotes(""); setNewClientId(""); setNewFee("75");
+                const { data } = await supabase.from("apostille_requests").select("*").order("created_at", { ascending: false });
+                if (data) setRequests(data);
+              }
             }}>Create</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Dialog */}
+      <Dialog open={!!editOpen} onOpenChange={() => setEditOpen(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle className="font-display">Edit Apostille Request</DialogTitle></DialogHeader>
+          {editOpen && (
+            <div className="space-y-4">
+              <div className="rounded-lg bg-muted/50 p-3 text-sm">
+                <p className="font-medium">{editOpen.document_description}</p>
+                <p className="text-xs text-muted-foreground mt-1">Status: {editOpen.status.replace(/_/g, " ")}</p>
+              </div>
+              <div><Label>Fee ($)</Label><Input type="number" step="0.01" value={editFee} onChange={(e) => setEditFee(e.target.value)} /></div>
+              <div><Label>Notes</Label><Textarea value={editNotes} onChange={(e) => setEditNotes(e.target.value)} rows={3} /></div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditOpen(null)}>Cancel</Button>
+            <Button onClick={saveEdit} className="bg-accent text-accent-foreground hover:bg-gold-dark">Save</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
