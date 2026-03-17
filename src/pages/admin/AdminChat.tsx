@@ -123,7 +123,7 @@ export default function AdminChat() {
                   const unread = getUnreadCount(uid);
                   const name = profiles[uid] || uid.slice(0, 8);
                   return (
-                    <div key={uid} onClick={() => setSelectedUser(uid)}
+                    <div key={uid} onClick={() => selectConversation(uid)}
                       className={`flex items-center gap-2 p-3 rounded-lg cursor-pointer transition-colors ${selectedUser === uid ? "bg-accent/10" : "hover:bg-muted"}`}>
                       <User className="h-5 w-5 text-muted-foreground" />
                       <div className="flex-1 min-w-0">
