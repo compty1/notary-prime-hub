@@ -44,8 +44,8 @@ export default function AdminSettings() {
       // Load seal preview if path exists
       const sealPath = values.seal_image_path;
       if (sealPath) {
-        const { data: urlData } = supabase.storage.from("documents").getPublicUrl(sealPath);
-        if (urlData) setSealPreviewUrl(urlData.publicUrl);
+        const { data: urlData } = await supabase.storage.from("documents").createSignedUrl(sealPath, 3600);
+        if (urlData?.signedUrl) setSealPreviewUrl(urlData.signedUrl);
       }
     }
     setLoading(false);
