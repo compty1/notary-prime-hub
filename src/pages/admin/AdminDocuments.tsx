@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { FileText, Download, Loader2, ShieldCheck, ShieldX, ExternalLink, Eye, Search, ChevronLeft, ChevronRight, ArrowUpDown } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { FileText, Download, Loader2, ShieldCheck, ShieldX, ExternalLink, Eye, Search, ChevronLeft, ChevronRight, ArrowUpDown, Trash2 } from "lucide-react";
 
 const docStatuses = ["uploaded", "pending_review", "approved", "notarized", "rejected"];
 
