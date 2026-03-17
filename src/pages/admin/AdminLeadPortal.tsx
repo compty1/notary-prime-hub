@@ -292,6 +292,14 @@ export default function AdminLeadPortal() {
             {pipelineStatuses.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
           </SelectContent>
         </Select>
+        <Select value={filterType} onValueChange={setFilterType}>
+          <SelectTrigger className="w-32"><SelectValue placeholder="Type" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Types</SelectItem>
+            <SelectItem value="individual">Individual</SelectItem>
+            <SelectItem value="business">Business</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
