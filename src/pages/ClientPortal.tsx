@@ -824,22 +824,45 @@ export default function ClientPortal() {
               </CardContent></Card>
             ) : payments.length > 0 ? (
               <div className="space-y-3">
-                {payments.map((p) => (
-                  <Card key={p.id} className="border-border/50">
-                    <CardContent className="flex items-center justify-between p-4">
-                      <div>
-                        <p className="font-medium text-sm">${parseFloat(p.amount).toFixed(2)}</p>
-                        <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString()} · {p.method || "N/A"}</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge className={p.status === "paid" ? "bg-emerald-100 text-emerald-800" : p.status === "pending" ? "bg-amber-100 text-amber-800" : "bg-muted text-muted-foreground"}>
-                          {p.status}
-                        </Badge>
-                        {p.invoice_url && <a href={p.invoice_url} target="_blank" rel="noreferrer"><Button size="sm" variant="outline" className="text-xs">View Invoice</Button></a>}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                {payments.map((p) => {
+                  const linkedAppt = appointments.find(a => a.id === p.appointment_id);
+                  return (
+                    <Card key={p.id} className="border-border/50">
+                      <CardContent className="flex items-center justify-between p-4">
+                        <div>
+                          <p className="font-medium text-sm">${parseFloat(p.amount).toFixed(2)}</p>
+                          {linkedAppt && <p className="text-xs text-accent font-medium">{linkedAppt.service_type}</p>}
+                          <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString()} · {p.method || "N/A"}</p>
+                          {p.notes && <p className="text-xs text-muted-foreground mt-0.5">{p.notes}</p>}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {p.status === "pending" && (
+                            <Button size="sm" className="text-xs bg-accent text-accent-foreground hover:bg-gold-dark" onClick={() => setPayingPaymentId(p.id)}>
+                              <CreditCard className="mr-1 h-3 w-3" /> Pay Now
+                            </Button>
+                          )}
+                          <Badge className={p.status === "paid" ? "bg-emerald-100 text-emerald-800" : p.status === "pending" ? "bg-amber-100 text-amber-800" : "bg-muted text-muted-foreground"}>
+                            {p.status}
+                          </Badge>
+                          {p.invoice_url && <a href={p.invoice_url} target="_blank" rel="noreferrer"><Button size="sm" variant="outline" className="text-xs">View Invoice</Button></a>}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+                {payingPaymentId && (
+                  <PaymentForm
+                    amount={parseFloat(payments.find(p => p.id === payingPaymentId)?.amount || "0")}
+                    onSuccess={async () => {
+                      // Mark payment as paid
+                      await supabase.from("payments").update({ status: "paid", paid_at: new Date().toISOString(), method: "stripe" } as any).eq("id", payingPaymentId);
+                      setPayments(prev => prev.map(p => p.id === payingPaymentId ? { ...p, status: "paid", paid_at: new Date().toISOString() } : p));
+                      setPayingPaymentId(null);
+                      toast({ title: "Payment successful!" });
+                    }}
+                    onCancel={() => setPayingPaymentId(null)}
+                  />
+                )}
               </div>
             ) : null}
           </TabsContent>
