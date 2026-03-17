@@ -344,6 +344,69 @@ export type Database = {
           },
         ]
       }
+      e_seal_verifications: {
+        Row: {
+          appointment_id: string | null
+          commissioned_state: string
+          created_at: string
+          created_by: string
+          document_id: string
+          document_name: string
+          id: string
+          notarized_at: string
+          notary_name: string
+          revoked_at: string | null
+          signer_name: string | null
+          status: string
+          verification_note: string | null
+        }
+        Insert: {
+          appointment_id?: string | null
+          commissioned_state?: string
+          created_at?: string
+          created_by: string
+          document_id: string
+          document_name: string
+          id?: string
+          notarized_at?: string
+          notary_name?: string
+          revoked_at?: string | null
+          signer_name?: string | null
+          status?: string
+          verification_note?: string | null
+        }
+        Update: {
+          appointment_id?: string | null
+          commissioned_state?: string
+          created_at?: string
+          created_by?: string
+          document_id?: string
+          document_name?: string
+          id?: string
+          notarized_at?: string
+          notary_name?: string
+          revoked_at?: string | null
+          signer_name?: string | null
+          status?: string
+          verification_note?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "e_seal_verifications_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "e_seal_verifications_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: true
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notarization_sessions: {
         Row: {
           appointment_id: string
