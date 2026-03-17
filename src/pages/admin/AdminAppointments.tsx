@@ -52,6 +52,7 @@ export default function AdminAppointments() {
   const [receiptAppt, setReceiptAppt] = useState<any>(null);
   const [quickJournalAppt, setQuickJournalAppt] = useState<any>(null);
   const [detailAppt, setDetailAppt] = useState<any>(null);
+  const [detailDocs, setDetailDocs] = useState<any[]>([]);
   const [editNotes, setEditNotes] = useState("");
   const [editAdminNotes, setEditAdminNotes] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
