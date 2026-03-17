@@ -96,6 +96,10 @@ const App = () => (
               <Route path="/about" element={<About />} />
               <Route path="/join" element={<JoinPlatform />} />
               <Route path="/digitize" element={<ProtectedRoute><DocumentDigitize /></ProtectedRoute>} />
+              <Route path="/request" element={<ServiceRequest />} />
+              <Route path="/mailroom" element={<ProtectedRoute><VirtualMailroom /></ProtectedRoute>} />
+              <Route path="/subscribe" element={<SubscriptionPlans />} />
+              <Route path="/verify-id" element={<ProtectedRoute><VerifyIdentity /></ProtectedRoute>} />
               <Route path="/builder" element={<DocumentBuilder />} />
               <Route path="/fee-calculator" element={<FeeCalculator />} />
               <Route path="/portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
