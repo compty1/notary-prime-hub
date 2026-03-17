@@ -5,8 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { FileText, Download, CheckCircle, XCircle, Loader2, ShieldCheck, ShieldX, ExternalLink } from "lucide-react";
+import { FileText, Download, CheckCircle, XCircle, Loader2, ShieldCheck, ShieldX, ExternalLink, Eye } from "lucide-react";
 
 const docStatuses = ["uploaded", "pending_review", "approved", "notarized", "rejected"];
 
@@ -26,6 +27,8 @@ export default function AdminDocuments() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [verificationByDoc, setVerificationByDoc] = useState<Record<string, any>>({});
   const [sealingId, setSealingId] = useState<string | null>(null);
+  const [previewDoc, setPreviewDoc] = useState<any>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const fetchDocs = async () => {
     const [docsRes, verificationsRes] = await Promise.all([
@@ -158,6 +161,12 @@ export default function AdminDocuments() {
     URL.revokeObjectURL(url);
   };
 
+  const openPreview = async (doc: any) => {
+    setPreviewDoc(doc);
+    const { data } = await supabase.storage.from("documents").createSignedUrl(doc.file_path, 300);
+    setPreviewUrl(data?.signedUrl || null);
+  };
+
   if (loading) {
     return <div className="flex justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" /></div>;
   }
@@ -200,6 +209,9 @@ export default function AdminDocuments() {
                   </div>
 
                   <div className="flex items-center gap-2 flex-wrap justify-end">
+                    <Button size="sm" variant="ghost" className="text-xs" onClick={() => openPreview(doc)}>
+                      <Eye className="mr-1 h-3 w-3" /> Preview
+                    </Button>
                     <Button size="sm" variant="ghost" className="text-xs" onClick={() => downloadDocument(doc)}>
                       <Download className="mr-1 h-3 w-3" /> Download
                     </Button>
@@ -251,6 +263,24 @@ export default function AdminDocuments() {
           })}
         </div>
       )}
+
+      {/* Preview Dialog */}
+      <Dialog open={!!previewDoc} onOpenChange={() => { setPreviewDoc(null); setPreviewUrl(null); }}>
+        <DialogContent className="max-w-3xl max-h-[85vh]">
+          <DialogHeader>
+            <DialogTitle className="font-display">{previewDoc?.file_name}</DialogTitle>
+          </DialogHeader>
+          {previewUrl ? (
+            previewDoc?.file_name?.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+              <img src={previewUrl} alt={previewDoc.file_name} className="max-h-[65vh] w-full object-contain rounded" />
+            ) : (
+              <iframe src={previewUrl} className="w-full h-[65vh] rounded border border-border" title="Document Preview" />
+            )
+          ) : (
+            <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-accent" /></div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

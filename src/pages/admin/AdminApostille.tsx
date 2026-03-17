@@ -27,14 +27,20 @@ const statusFlow = ["intake", "payment_received", "submitted_to_sos", "processin
 export default function AdminApostille() {
   const { toast } = useToast();
   const [requests, setRequests] = useState<any[]>([]);
+  const [profiles, setProfiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
   const [newDesc, setNewDesc] = useState("");
   const [newNotes, setNewNotes] = useState("");
+  const [newClientId, setNewClientId] = useState("");
 
   useEffect(() => {
-    supabase.from("apostille_requests").select("*").order("created_at", { ascending: false }).then(({ data }) => {
-      if (data) setRequests(data);
+    Promise.all([
+      supabase.from("apostille_requests").select("*").order("created_at", { ascending: false }),
+      supabase.from("profiles").select("user_id, full_name, email"),
+    ]).then(([{ data: reqs }, { data: profs }]) => {
+      if (reqs) setRequests(reqs);
+      if (profs) setProfiles(profs);
       setLoading(false);
     });
   }, []);
@@ -85,6 +91,7 @@ export default function AdminApostille() {
                         <span className="font-medium text-sm">{req.document_description}</span>
                         <Badge className={statusColors[req.status] || "bg-muted text-muted-foreground"}>{req.status.replace(/_/g, " ")}</Badge>
                       </div>
+                      <p className="text-xs text-muted-foreground mb-1">Client: {(() => { const p = profiles.find(p => p.user_id === req.client_id); return p?.full_name || p?.email || req.client_id.slice(0, 8); })()}</p>
                       {req.notes && <p className="text-xs text-muted-foreground mb-2">{req.notes}</p>}
                       <p className="text-xs text-muted-foreground">Created: {new Date(req.created_at).toLocaleDateString()}</p>
                       {req.tracking_number && <p className="text-xs text-muted-foreground mt-1">Tracking: {req.tracking_number}</p>}
@@ -117,16 +124,26 @@ export default function AdminApostille() {
         <DialogContent>
           <DialogHeader><DialogTitle className="font-display">New Apostille Request</DialogTitle></DialogHeader>
           <div className="space-y-4">
+            <div>
+              <Label>Client *</Label>
+              <Select value={newClientId} onValueChange={setNewClientId}>
+                <SelectTrigger><SelectValue placeholder="Select client..." /></SelectTrigger>
+                <SelectContent>
+                  {profiles.map((p) => (
+                    <SelectItem key={p.user_id} value={p.user_id}>{p.full_name || p.email || p.user_id.slice(0, 8)}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div><Label>Document Description</Label><Input value={newDesc} onChange={(e) => setNewDesc(e.target.value)} placeholder="e.g., Birth Certificate for international use" /></div>
             <div><Label>Notes</Label><Textarea value={newNotes} onChange={(e) => setNewNotes(e.target.value)} placeholder="Additional details..." /></div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-            <Button className="bg-accent text-accent-foreground hover:bg-gold-dark" onClick={async () => {
-              // Admin creating on behalf — use a placeholder client_id
-              const { error } = await supabase.from("apostille_requests").insert({ document_description: newDesc, notes: newNotes, client_id: "00000000-0000-0000-0000-000000000000", fee: parseFloat(String(75)) } as any);
+            <Button className="bg-accent text-accent-foreground hover:bg-gold-dark" disabled={!newClientId || !newDesc} onClick={async () => {
+              const { error } = await supabase.from("apostille_requests").insert({ document_description: newDesc, notes: newNotes, client_id: newClientId, fee: 75 } as any);
               if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-              else { toast({ title: "Request created" }); setCreateOpen(false); setNewDesc(""); setNewNotes(""); }
+              else { toast({ title: "Request created" }); setCreateOpen(false); setNewDesc(""); setNewNotes(""); setNewClientId(""); }
             }}>Create</Button>
           </DialogFooter>
         </DialogContent>

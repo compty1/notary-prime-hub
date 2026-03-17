@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Shield } from "lucide-react";
 
 export default function Login() {
-  const { user, signIn, isAdmin, loading } = useAuth();
+  const { user, signIn, isAdmin, isNotary, loading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -22,13 +22,13 @@ export default function Login() {
   // Redirect based on role after login
   useEffect(() => {
     if (!loading && user) {
-      if (isAdmin) {
+      if (isAdmin || isNotary) {
         navigate("/admin", { replace: true });
       } else {
         navigate("/portal", { replace: true });
       }
     }
-  }, [user, isAdmin, loading, navigate]);
+  }, [user, isAdmin, isNotary, loading, navigate]);
 
   if (!loading && user) return null; // Will redirect via useEffect
 
