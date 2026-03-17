@@ -283,4 +283,6 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
       </Dialog>
     </div>
   );
-}
+});
+
+export default AdminDocuments;
