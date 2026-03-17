@@ -178,6 +178,14 @@ export default function ClientPortal() {
     } else {
       toast({ title: "Appointment cancelled" });
       setAppointments((prev) => prev.map((a) => (a.id === id ? { ...a, status: "cancelled" } : a)));
+      // Send cancellation email notification
+      try {
+        await supabase.functions.invoke("send-appointment-emails", {
+          body: { appointmentId: id, emailType: "cancellation" },
+        });
+      } catch (emailErr) {
+        console.error("Cancellation email error:", emailErr);
+      }
     }
     setCancelling(false);
     setCancelDialogId(null);
