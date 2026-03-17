@@ -12,7 +12,7 @@ import SignUp from "./pages/SignUp";
 import ResetPassword from "./pages/ForgotPassword";
 import BookAppointment from "./pages/BookAppointment";
 import ClientPortal from "./pages/ClientPortal";
-import BlueNotarySession from "./pages/BlueNotarySession";
+import OneNotarySession from "./pages/OneNotarySession";
 import NotaryGuide from "./pages/NotaryGuide";
 import RonInfo from "./pages/RonInfo";
 import DocumentTemplates from "./pages/DocumentTemplates";
