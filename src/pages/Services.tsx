@@ -49,10 +49,12 @@ export default function Services() {
   const [activeCategory, setActiveCategory] = useState("all");
 
   useEffect(() => {
+    document.title = "Services — Shane Goble Notary";
     supabase.from("services").select("*").eq("is_active", true).order("display_order").then(({ data }) => {
       if (data) setServices(data as Service[]);
       setLoading(false);
     });
+    return () => { document.title = "Shane Goble Notary — Ohio Notary Public | In-Person & RON"; };
   }, []);
 
   const formatPrice = (s: Service) => {
