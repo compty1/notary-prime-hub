@@ -46,6 +46,7 @@ const App = () => (
             <Route path="/book" element={<BookAppointment />} />
             <Route path="/notary-guide" element={<NotaryGuide />} />
             <Route path="/ron-info" element={<RonInfo />} />
+            <Route path="/terms" element={<TermsPrivacy />} />
             <Route path="/portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
             <Route path="/ron-session" element={<ProtectedRoute><BlueNotarySession /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>}>
