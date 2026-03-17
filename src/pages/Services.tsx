@@ -223,8 +223,7 @@ export default function Services() {
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {group.items.map((s, i) => {
                     const IconComp = iconMap[s.icon || "FileText"] || FileText;
-                    // Phase 2.1: Pass service context to booking
-                    const bookUrl = `/book?service=${encodeURIComponent(s.name)}${!["notarization", "authentication"].includes(s.category) ? "&type=in_person" : ""}`;
+                    const { url: actionUrl, label: actionLabel } = getServiceAction(s);
                     return (
                       <motion.div key={s.id} variants={fadeUp} custom={i + 1}>
                         <Card className="group h-full border-border/50 transition-all hover:border-accent/30 hover:shadow-lg">
@@ -243,9 +242,9 @@ export default function Services() {
                                   More Info
                                 </Button>
                               </Link>
-                              <Link to={bookUrl} className="flex-1">
+                              <Link to={actionUrl} className="flex-1">
                                 <Button size="sm" variant="outline" className="w-full group-hover:bg-accent group-hover:text-accent-foreground transition-colors">
-                                  Get Started <ChevronRight className="ml-1 h-3 w-3" />
+                                  {actionLabel} <ChevronRight className="ml-1 h-3 w-3" />
                                 </Button>
                               </Link>
                             </div>
