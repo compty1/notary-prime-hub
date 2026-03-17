@@ -309,6 +309,58 @@ export default function AdminSettings() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Email Notification Templates */}
+        <Card className="border-border/50 lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="font-display text-lg flex items-center gap-2">
+              <Mail className="h-5 w-5 text-accent" /> Email Notification Templates
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <p className="text-sm text-muted-foreground">
+              Customize the email messages sent to clients. Use placeholders: {"{{client_name}}"}, {"{{date}}"}, {"{{time}}"}, {"{{service_type}}"}, {"{{location}}"}.
+            </p>
+            <div>
+              <Label>Confirmation Email</Label>
+              <Textarea
+                value={editValues.email_template_confirmation || ""}
+                onChange={(e) => updateValue("email_template_confirmation", e.target.value)}
+                placeholder="Enter confirmation email template..."
+                rows={6}
+                className="mt-1 font-mono text-sm"
+              />
+            </div>
+            <div>
+              <Label>Reminder Email</Label>
+              <Textarea
+                value={editValues.email_template_reminder || ""}
+                onChange={(e) => updateValue("email_template_reminder", e.target.value)}
+                placeholder="Enter reminder email template..."
+                rows={6}
+                className="mt-1 font-mono text-sm"
+              />
+            </div>
+            <div>
+              <Label>Follow-Up Email</Label>
+              <Textarea
+                value={editValues.email_template_followup || ""}
+                onChange={(e) => updateValue("email_template_followup", e.target.value)}
+                placeholder="Enter follow-up email template..."
+                rows={6}
+                className="mt-1 font-mono text-sm"
+              />
+            </div>
+            <div>
+              <Label>Business Hours Display</Label>
+              <Input
+                value={editValues.business_hours || ""}
+                onChange={(e) => updateValue("business_hours", e.target.value)}
+                placeholder="Mon-Wed 10 AM - 7 PM"
+              />
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
