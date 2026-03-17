@@ -78,6 +78,7 @@ const App = () => (
               <Route path="apostille" element={<AdminApostille />} />
               <Route path="chat" element={<AdminChat />} />
               <Route path="business-clients" element={<AdminBusinessClients />} />
+              <Route path="services" element={<AdminServices />} />
               <Route path="resources" element={<AdminResources />} />
               <Route path="ai-assistant" element={<AdminAIAssistant />} />
               <Route path="audit-log" element={<AdminAuditLog />} />

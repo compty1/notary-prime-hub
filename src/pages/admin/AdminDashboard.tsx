@@ -14,6 +14,7 @@ const navItems = [
   { title: "Appointments", url: "/admin/appointments", icon: Calendar },
   { title: "Clients", url: "/admin/clients", icon: Users },
   { title: "Business Clients", url: "/admin/business-clients", icon: Building2 },
+  { title: "Services Catalog", url: "/admin/services", icon: ShoppingBag },
   { title: "Availability", url: "/admin/availability", icon: Clock },
   { title: "Documents", url: "/admin/documents", icon: FileText },
   { title: "Templates & Forms", url: "/admin/templates", icon: FileSignature },
