@@ -211,7 +211,7 @@ export default function BookAppointment() {
     }
   }, [searchParams, user, serviceTypes]);
 
-  // Fetch available time slots when date changes + check for double bookings
+  // Fetch available time slots when date changes + check for double bookings + specific_date overrides
   useEffect(() => {
     if (!date) return;
     setLoadingSlots(true);
@@ -220,14 +220,30 @@ export default function BookAppointment() {
 
     Promise.all([
       supabase.from("time_slots").select("*").eq("day_of_week", dayOfWeek).eq("is_available", true),
+      supabase.from("time_slots").select("*").eq("specific_date", date),
       supabase.from("appointments").select("scheduled_time").eq("scheduled_date", date).neq("status", "cancelled").neq("status", "no_show"),
-    ]).then(([slotsRes, bookingsRes]) => {
+      // Check max appointments per day
+      supabase.from("appointments").select("*", { count: "exact", head: true }).eq("scheduled_date", date).neq("status", "cancelled").neq("status", "no_show"),
+    ]).then(([slotsRes, specificRes, bookingsRes, countRes]) => {
       const booked = (bookingsRes.data || []).map((b: any) => b.scheduled_time);
       setBookedTimes(booked);
 
-      if (slotsRes.data && slotsRes.data.length > 0) {
-        // Filter out already-booked time slots
-        const available = slotsRes.data.filter((slot: any) => !booked.includes(slot.start_time));
+      // If specific_date overrides exist, use those instead of day_of_week slots
+      const specificSlots = specificRes.data || [];
+      const daySlots = slotsRes.data || [];
+      const baseSlots = specificSlots.length > 0 ? specificSlots : daySlots;
+
+      // Check if day is fully booked (max_appointments_per_day)
+      const maxPerDay = parseInt(pricingSettings.max_appointments_per_day || "0");
+      const currentCount = countRes.count || 0;
+      const dayFull = maxPerDay > 0 && currentCount >= maxPerDay;
+
+      if (dayFull) {
+        setAvailableSlots([]);
+        findNearestSlots(date);
+      } else if (baseSlots.length > 0) {
+        // Filter available slots and remove already-booked times
+        const available = baseSlots.filter((slot: any) => slot.is_available && !booked.includes(slot.start_time));
         setAvailableSlots(available);
         setSuggestedSlots([]);
       } else {
@@ -236,7 +252,7 @@ export default function BookAppointment() {
       }
       setLoadingSlots(false);
     });
-  }, [date]);
+  }, [date, pricingSettings]);
 
   const findNearestSlots = async (selectedDate: string) => {
     const { data: allSlots } = await supabase.from("time_slots").select("*").eq("is_available", true);
