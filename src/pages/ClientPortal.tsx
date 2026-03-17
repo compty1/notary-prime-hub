@@ -71,6 +71,7 @@ export default function ClientPortal() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
+  const [deletingDocId, setDeletingDocId] = useState<string | null>(null);
 
   // Payments & Reviews
   const [payments, setPayments] = useState<any[]>([]);
@@ -94,6 +95,8 @@ export default function ClientPortal() {
   // Correspondence & Apostille
   const [correspondence, setCorrespondence] = useState<any[]>([]);
   const [apostilleRequests, setApostilleRequests] = useState<any[]>([]);
+  const [apostilleForm, setApostilleForm] = useState({ document_description: "", notes: "" });
+  const [submittingApostille, setSubmittingApostille] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -490,6 +493,22 @@ export default function ClientPortal() {
                         )}
                         <Badge className={docStatusColors[doc.status] || "bg-muted text-muted-foreground"}>{doc.status.replace(/_/g, " ")}</Badge>
                         <Button size="sm" variant="outline" onClick={() => downloadDocument(doc)}><Download className="h-3 w-3" /></Button>
+                        {doc.status === "uploaded" && (
+                          <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={async () => {
+                            if (deletingDocId) return;
+                            setDeletingDocId(doc.id);
+                            await supabase.storage.from("documents").remove([doc.file_path]);
+                            const { error } = await supabase.from("documents").delete().eq("id", doc.id);
+                            if (error) toast({ title: "Delete failed", variant: "destructive" });
+                            else {
+                              setDocuments(prev => prev.filter(d => d.id !== doc.id));
+                              toast({ title: "Document deleted" });
+                            }
+                            setDeletingDocId(null);
+                          }} disabled={deletingDocId === doc.id} title="Delete">
+                            {deletingDocId === doc.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <XCircle className="h-3 w-3" />}
+                          </Button>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
@@ -607,13 +626,44 @@ export default function ClientPortal() {
           {/* APOSTILLE TAB */}
           <TabsContent value="apostille" className="space-y-6">
             <h2 className="font-display text-xl font-semibold">Apostille Requests</h2>
-            {apostilleRequests.length === 0 ? (
-              <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground">
-                <Package className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
-                <p>No apostille requests yet</p>
-                <p className="text-sm mt-1">Apostille processing requests will appear here.</p>
-              </CardContent></Card>
-            ) : (
+            {/* Request form */}
+            <Card className="border-border/50">
+              <CardContent className="p-4 space-y-4">
+                <h3 className="text-sm font-semibold">Request New Apostille</h3>
+                <div>
+                  <Label>Document Description</Label>
+                  <Input value={apostilleForm.document_description} onChange={(e) => setApostilleForm({ ...apostilleForm, document_description: e.target.value })} placeholder="e.g. Birth Certificate, Articles of Incorporation" />
+                </div>
+                <div>
+                  <Label>Notes (optional)</Label>
+                  <Textarea value={apostilleForm.notes} onChange={(e) => setApostilleForm({ ...apostilleForm, notes: e.target.value })} rows={2} placeholder="Destination country, urgency, etc." maxLength={500} />
+                </div>
+                <Button
+                  disabled={!apostilleForm.document_description.trim() || submittingApostille}
+                  onClick={async () => {
+                    if (!user) return;
+                    setSubmittingApostille(true);
+                    const { data: newReq, error } = await supabase.from("apostille_requests").insert({
+                      client_id: user.id,
+                      document_description: apostilleForm.document_description.trim(),
+                      notes: apostilleForm.notes.trim() || null,
+                    }).select().single();
+                    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+                    else if (newReq) {
+                      toast({ title: "Apostille request submitted" });
+                      setApostilleRequests(prev => [newReq, ...prev]);
+                      setApostilleForm({ document_description: "", notes: "" });
+                    }
+                    setSubmittingApostille(false);
+                  }}
+                  className="bg-accent text-accent-foreground hover:bg-gold-dark"
+                >
+                  {submittingApostille ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Package className="mr-1 h-4 w-4" />}
+                  Submit Request
+                </Button>
+              </CardContent>
+            </Card>
+            {apostilleRequests.length > 0 && (
               <div className="space-y-3">
                 {apostilleRequests.map((req) => (
                   <Card key={req.id} className="border-border/50">
