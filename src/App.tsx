@@ -18,6 +18,8 @@ import DocumentTemplates from "./pages/DocumentTemplates";
 import DocumentBuilder from "./pages/DocumentBuilder";
 import FeeCalculator from "./pages/FeeCalculator";
 import BusinessPortal from "./pages/BusinessPortal";
+import Services from "./pages/Services";
+import VerifySeal from "./pages/VerifySeal";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminOverview from "./pages/admin/AdminOverview";
 import AdminAppointments from "./pages/admin/AdminAppointments";
@@ -35,7 +37,6 @@ import AdminApostille from "./pages/admin/AdminApostille";
 import AdminChat from "./pages/admin/AdminChat";
 import AdminBusinessClients from "./pages/admin/AdminBusinessClients";
 import AdminServices from "./pages/admin/AdminServices";
-import Services from "./pages/Services";
 import NotFound from "./pages/NotFound";
 import TermsPrivacy from "./pages/TermsPrivacy";
 import AppointmentConfirmation from "./pages/AppointmentConfirmation";
@@ -58,6 +59,7 @@ const App = () => (
             <Route path="/notary-guide" element={<NotaryGuide />} />
             <Route path="/ron-info" element={<RonInfo />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/verify/:id" element={<VerifySeal />} />
             <Route path="/terms" element={<TermsPrivacy />} />
             <Route path="/templates" element={<DocumentTemplates />} />
             <Route path="/builder" element={<DocumentBuilder />} />
