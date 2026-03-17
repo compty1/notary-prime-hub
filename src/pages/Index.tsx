@@ -309,6 +309,16 @@ export default function Index() {
         </div>
       </section>
 
+      {/* Beyond Notarization Banner */}
+      <section className="bg-accent/5 border-b border-accent/10 py-4">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">Beyond notarization:</span> document digitization, secure cloud storage, form preparation, business services, and more.{" "}
+            <Link to="/services" className="text-accent hover:underline font-medium">View All Services →</Link>
+          </p>
+        </div>
+      </section>
+
       {/* Services */}
       <section id="services" className="py-20">
         <div className="container mx-auto px-4">
