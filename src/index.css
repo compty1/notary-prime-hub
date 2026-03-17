@@ -133,7 +133,7 @@
   }
   [data-print-receipt],
   [data-print-receipt] * {
-    visibility: visible;
+    visibility: visible !important;
   }
   [data-print-receipt] {
     position: absolute;
@@ -142,7 +142,9 @@
     width: 100%;
     padding: 2rem;
   }
-  nav, footer, .no-print {
+  nav, footer, .no-print,
+  button:not([data-print-receipt] button),
+  [data-radix-popper-content-wrapper] {
     display: none !important;
   }
 }

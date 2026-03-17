@@ -11,7 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, ChevronRight, Eye, Loader2, DollarSign, Plus } from "lucide-react";
+import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, ChevronRight, Eye, Loader2, DollarSign, Plus, Video } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const statuses = ["scheduled", "confirmed", "id_verification", "kba_pending", "in_session", "completed", "cancelled", "no_show"];
 
@@ -51,6 +52,7 @@ export default function AdminAppointments() {
   const [receiptAppt, setReceiptAppt] = useState<any>(null);
   const [quickJournalAppt, setQuickJournalAppt] = useState<any>(null);
   const [detailAppt, setDetailAppt] = useState<any>(null);
+  const [detailDocs, setDetailDocs] = useState<any[]>([]);
   const [editNotes, setEditNotes] = useState("");
   const [editAdminNotes, setEditAdminNotes] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
@@ -150,10 +152,15 @@ export default function AdminAppointments() {
     if (next) updateStatus(appt.id, next);
   };
 
-  const openDetail = (appt: any) => {
+  const openDetail = async (appt: any) => {
     setDetailAppt(appt);
     setEditNotes(appt.notes || "");
     setEditAdminNotes(appt.admin_notes || "");
+    // Load linked documents
+    const { data: docs } = await supabase.from("documents").select("*")
+      .or(`appointment_id.eq.${appt.id},uploaded_by.eq.${appt.client_id}`)
+      .order("created_at", { ascending: false });
+    setDetailDocs(docs || []);
   };
 
   const saveNotes = async () => {
@@ -199,6 +206,14 @@ export default function AdminAppointments() {
       toast({ title: "Journal error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Journal entry saved" });
+      // Auto-create payment record
+      await supabase.from("payments").insert({
+        client_id: quickJournalAppt.client_id,
+        appointment_id: quickJournalAppt.id,
+        amount: feesCharged,
+        status: "pending",
+        notes: `${quickJournalAppt.service_type} — ${quickJournalAppt.notarization_type === "ron" ? "RON" : "In-Person"}`,
+      });
       await supabase.from("audit_log").insert({
         user_id: user.id,
         action: "journal_entry_created",
@@ -311,6 +326,13 @@ export default function AdminAppointments() {
                       {updatingId === appt.id ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <ChevronRight className="mr-1 h-3 w-3" />}
                       {statusFlow[appt.status].replace(/_/g, " ")}
                     </Button>
+                  )}
+                  {appt.notarization_type === "ron" && ["kba_pending", "in_session"].includes(appt.status) && (
+                    <Link to={`/ron-session?id=${appt.id}`}>
+                      <Button size="sm" className="bg-purple-600 text-white hover:bg-purple-700 text-xs">
+                        <Video className="mr-1 h-3 w-3" /> Launch Session
+                      </Button>
+                    </Link>
                   )}
                   {appt.status === "completed" && (
                     <Button size="sm" variant="ghost" className="text-xs" onClick={() => setReceiptAppt(appt)}>
@@ -428,6 +450,24 @@ export default function AdminAppointments() {
                 {detailAppt.estimated_price && <div className="flex justify-between"><span className="text-muted-foreground">Est. Price</span><span className="font-medium">${parseFloat(detailAppt.estimated_price).toFixed(2)}</span></div>}
                 <div className="flex justify-between"><span className="text-muted-foreground">Status</span><Badge className={statusColors[detailAppt.status]}>{detailAppt.status.replace(/_/g, " ")}</Badge></div>
               </div>
+
+              {/* Linked Documents */}
+              {detailDocs.length > 0 && (
+                <div>
+                  <Label className="mb-2 block">Documents ({detailDocs.length})</Label>
+                  <div className="space-y-1">
+                    {detailDocs.map((doc: any) => (
+                      <div key={doc.id} className="flex items-center justify-between rounded bg-muted/50 px-3 py-2 text-xs">
+                        <span className="flex items-center gap-2">
+                          <FileText className="h-3 w-3 text-accent" />
+                          {doc.file_name}
+                        </span>
+                        <Badge className={statusColors[doc.status] || "bg-muted"}>{doc.status.replace(/_/g, " ")}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div>
                 <Label>Client Notes</Label>

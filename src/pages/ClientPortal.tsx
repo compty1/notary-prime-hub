@@ -128,7 +128,7 @@ export default function ClientPortal() {
     });
 
     // Subscribe to new chat messages (admin replies)
-    const channel = supabase.channel("client-chat")
+    const chatChannel = supabase.channel("client-chat")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages" }, (payload) => {
         const msg = payload.new as any;
         if (msg.sender_id === user.id || (msg.is_admin && msg.recipient_id === user.id)) {
@@ -140,7 +140,18 @@ export default function ClientPortal() {
       })
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    // Subscribe to appointment status changes in real-time
+    const apptChannel = supabase.channel("client-appointments")
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "appointments" }, (payload) => {
+        const updated = payload.new as any;
+        if (updated.client_id === user.id) {
+          setAppointments(prev => prev.map(a => a.id === updated.id ? updated : a));
+          toast({ title: "Appointment updated", description: `Status: ${updated.status.replace(/_/g, " ")}` });
+        }
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(chatChannel); supabase.removeChannel(apptChannel); };
   }, [user]);
 
   const upcoming = appointments.filter((a) => ["scheduled", "confirmed", "id_verification", "kba_pending"].includes(a.status));
@@ -406,11 +417,14 @@ export default function ClientPortal() {
                 {documents.map((doc) => (
                   <Card key={doc.id} className="border-border/50">
                     <CardContent className="flex items-center justify-between p-4">
-                      <div className="flex items-center gap-3">
-                        <FileText className="h-5 w-5 text-accent" />
-                        <div>
-                          <p className="font-medium text-sm">{doc.file_name}</p>
-                          <p className="text-xs text-muted-foreground">{new Date(doc.created_at).toLocaleDateString()}</p>
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <FileText className="h-5 w-5 text-accent flex-shrink-0" />
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm truncate">{doc.file_name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(doc.created_at).toLocaleDateString()}
+                            {doc.appointment_id && <span className="ml-1 text-accent">• Linked to appointment</span>}
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -419,6 +433,25 @@ export default function ClientPortal() {
                           if (data?.signedUrl) window.open(data.signedUrl, "_blank");
                         }} title="Preview"><Eye className="h-3 w-3" /></Button>
                         <Button size="sm" variant="ghost" onClick={() => explainDocument(doc)} title="AI Explain"><Sparkles className="h-3 w-3" /></Button>
+                        {!doc.appointment_id && upcoming.length > 0 && (
+                          <Select onValueChange={async (apptId) => {
+                            const { error } = await supabase.from("documents").update({ appointment_id: apptId }).eq("id", doc.id);
+                            if (error) toast({ title: "Error", variant: "destructive" });
+                            else {
+                              toast({ title: "Document linked to appointment" });
+                              setDocuments(prev => prev.map(d => d.id === doc.id ? { ...d, appointment_id: apptId } : d));
+                            }
+                          }}>
+                            <SelectTrigger className="h-7 w-28 text-[10px]"><SelectValue placeholder="Attach..." /></SelectTrigger>
+                            <SelectContent>
+                              {upcoming.map(a => (
+                                <SelectItem key={a.id} value={a.id} className="text-xs">
+                                  {a.service_type.substring(0, 20)} — {new Date(a.scheduled_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
                         <Badge className={docStatusColors[doc.status] || "bg-muted text-muted-foreground"}>{doc.status.replace(/_/g, " ")}</Badge>
                         <Button size="sm" variant="outline" onClick={() => downloadDocument(doc)}><Download className="h-3 w-3" /></Button>
                       </div>
