@@ -417,11 +417,14 @@ export default function ClientPortal() {
                 {documents.map((doc) => (
                   <Card key={doc.id} className="border-border/50">
                     <CardContent className="flex items-center justify-between p-4">
-                      <div className="flex items-center gap-3">
-                        <FileText className="h-5 w-5 text-accent" />
-                        <div>
-                          <p className="font-medium text-sm">{doc.file_name}</p>
-                          <p className="text-xs text-muted-foreground">{new Date(doc.created_at).toLocaleDateString()}</p>
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <FileText className="h-5 w-5 text-accent flex-shrink-0" />
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm truncate">{doc.file_name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(doc.created_at).toLocaleDateString()}
+                            {doc.appointment_id && <span className="ml-1 text-accent">• Linked to appointment</span>}
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
