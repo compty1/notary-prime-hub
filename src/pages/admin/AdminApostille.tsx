@@ -37,6 +37,10 @@ export default function AdminApostille() {
   const [newClientId, setNewClientId] = useState("");
   const [editNotes, setEditNotes] = useState("");
   const [editFee, setEditFee] = useState("");
+  const [editDestCountry, setEditDestCountry] = useState("");
+  const [editDocCount, setEditDocCount] = useState("1");
+  const [newDestCountry, setNewDestCountry] = useState("");
+  const [newDocCount, setNewDocCount] = useState("1");
 
   useEffect(() => {
     Promise.all([
