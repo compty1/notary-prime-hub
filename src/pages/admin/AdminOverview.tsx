@@ -49,6 +49,7 @@ export default function AdminOverview() {
       { data: journalData },
       { data: settingsData },
       { data: profileData },
+      { data: allApptData },
     ] = await Promise.all([
       supabase.from("appointments").select("*", { count: "exact", head: true }),
       supabase.from("appointments").select("*", { count: "exact", head: true }).in("status", ["scheduled", "confirmed"]),
