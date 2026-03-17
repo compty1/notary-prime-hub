@@ -49,6 +49,8 @@ export default function AdminLeadPortal() {
   const [editingLead, setEditingLead] = useState<any>(null);
   const [form, setForm] = useState(emptyLead);
   const [saving, setSaving] = useState(false);
+  const [discovering, setDiscovering] = useState(false);
+  const [enriching, setEnriching] = useState(false);
 
   const fetchLeads = async () => {
     const { data } = await supabase.from("leads").select("*").order("created_at", { ascending: false });
