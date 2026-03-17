@@ -162,10 +162,10 @@ export default function Index() {
           </Link>
           <div className="hidden items-center gap-6 md:flex">
             <Link to="/services" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Services</Link>
-            <a href="#how-it-works" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">How It Works</a>
+            <Link to="/about" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">About</Link>
             <Link to="/templates" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Templates</Link>
+            <Link to="/digitize" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Digitize</Link>
             <Link to="/fee-calculator" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Pricing</Link>
-            <Link to="/ron-info" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">RON Info</Link>
             <a href="#faq" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">FAQ</a>
             <DarkModeToggle />
             <Link to="/login">
