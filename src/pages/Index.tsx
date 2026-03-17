@@ -157,7 +157,7 @@ export default function Index() {
             </div>
             <div>
               <span className="block font-display text-lg font-bold text-foreground">Shane Goble</span>
-              <span className="block text-xs text-muted-foreground">Notary Public — Ohio</span>
+              <span className="block text-xs text-muted-foreground">Notary Public & Document Services — Ohio</span>
             </div>
           </Link>
           <div className="hidden items-center gap-6 md:flex">
