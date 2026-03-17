@@ -99,8 +99,9 @@ export default function ClientPortal() {
   // Correspondence & Apostille
   const [correspondence, setCorrespondence] = useState<any[]>([]);
   const [apostilleRequests, setApostilleRequests] = useState<any[]>([]);
-  const [apostilleForm, setApostilleForm] = useState({ document_description: "", notes: "" });
+  const [apostilleForm, setApostilleForm] = useState({ document_description: "", notes: "", destination_country: "", document_count: "1" });
   const [submittingApostille, setSubmittingApostille] = useState(false);
+  const [payingPaymentId, setPayingPaymentId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
