@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Shield } from "lucide-react";
 
 export default function Login() {
-  const { user, signIn, isAdmin, loading } = useAuth();
+  const { user, signIn, isAdmin, isNotary, loading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
