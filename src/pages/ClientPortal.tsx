@@ -71,6 +71,7 @@ export default function ClientPortal() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
+  const [deletingDocId, setDeletingDocId] = useState<string | null>(null);
 
   // Payments & Reviews
   const [payments, setPayments] = useState<any[]>([]);
