@@ -350,7 +350,7 @@ export default function AdminAppointments() {
             <DialogTitle className="font-display">Notarization Receipt</DialogTitle>
           </DialogHeader>
           {receiptAppt && (
-            <div className="space-y-4" id="receipt-content">
+            <div className="space-y-4" id="receipt-content" data-print-receipt>
               <div className="text-center border-b border-border pb-4">
                 <h2 className="font-display text-xl font-bold text-foreground">Shane Goble</h2>
                 <p className="text-sm text-muted-foreground">Ohio Commissioned Notary Public</p>
