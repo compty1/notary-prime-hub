@@ -170,7 +170,22 @@ export default function ClientPortal() {
       })
       .subscribe();
 
-    return () => { supabase.removeChannel(chatChannel); supabase.removeChannel(apptChannel); };
+    // Subscribe to payment changes in real-time
+    const paymentChannel = supabase.channel("client-payments")
+      .on("postgres_changes", { event: "*", schema: "public", table: "payments" }, (payload) => {
+        const record = (payload.new || payload.old) as any;
+        if (record?.client_id === user.id) {
+          if (payload.eventType === "INSERT") {
+            setPayments(prev => [payload.new as any, ...prev]);
+            toast({ title: "New payment request", description: `Amount: $${(payload.new as any).amount}` });
+          } else if (payload.eventType === "UPDATE") {
+            setPayments(prev => prev.map(p => p.id === record.id ? payload.new as any : p));
+          }
+        }
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(chatChannel); supabase.removeChannel(apptChannel); supabase.removeChannel(paymentChannel); };
   }, [user]);
 
   const upcoming = appointments.filter((a) => ["scheduled", "confirmed", "id_verification", "kba_pending"].includes(a.status));
@@ -309,9 +324,14 @@ export default function ClientPortal() {
       const { data: fileData, error } = await supabase.storage.from("documents").download(doc.file_path);
       if (error) throw error;
       const text = await fileData.text();
+      const { data: { session } } = await supabase.auth.getSession();
       const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/explain-document`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
         body: JSON.stringify({ documentText: text, fileName: doc.file_name }),
       });
       const result = await resp.json();

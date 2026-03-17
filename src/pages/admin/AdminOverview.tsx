@@ -26,7 +26,7 @@ const formatTime = (timeStr: string) => {
   return `${hour > 12 ? hour - 12 : hour === 0 ? 12 : hour}:${m} ${hour >= 12 ? "PM" : "AM"}`;
 };
 
-const CHART_COLORS = ["hsl(var(--primary))", "hsl(var(--accent))", "hsl(142 76% 36%)", "hsl(45 93% 47%)", "hsl(0 84% 60%)"];
+const CHART_COLORS = ["#2563eb", "#d4a853", "#22c55e", "#eab308", "#ef4444", "#8b5cf6", "#06b6d4", "#f97316"];
 
 export default function AdminOverview() {
   const [appointments, setAppointments] = useState<any[]>([]);
