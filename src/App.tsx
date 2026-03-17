@@ -90,6 +90,7 @@ const App = () => (
               <Route path="/terms" element={<TermsPrivacy />} />
               <Route path="/templates" element={<DocumentTemplates />} />
               <Route path="/about" element={<About />} />
+              <Route path="/join" element={<JoinPlatform />} />
               <Route path="/digitize" element={<ProtectedRoute><DocumentDigitize /></ProtectedRoute>} />
               <Route path="/builder" element={<DocumentBuilder />} />
               <Route path="/fee-calculator" element={<FeeCalculator />} />

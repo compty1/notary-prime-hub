@@ -106,8 +106,51 @@ export default function ServicePreQualifier({ category, serviceName, onComplete,
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
 
+  const ronOnboardingSteps = [
+    {
+      title: "Do you currently hold a notary commission?",
+      field: "has_commission",
+      type: "radio" as const,
+      options: [
+        { value: "yes", label: "Yes, I'm a commissioned notary" },
+        { value: "no", label: "No, I need to get commissioned first" },
+      ],
+    },
+    {
+      title: "Which state are you commissioned in?",
+      field: "commission_state",
+      type: "input" as const,
+      placeholder: "e.g., Ohio",
+      helpText: "Ohio requires a separate RON authorization in addition to your traditional notary commission.",
+    },
+  ];
+
+  const workflowSteps = [
+    {
+      title: "What best describes your current workflow?",
+      field: "workflow_type",
+      type: "radio" as const,
+      options: [
+        { value: "paper", label: "Mostly paper-based" },
+        { value: "mixed", label: "Mix of paper and digital" },
+        { value: "digital", label: "Already mostly digital" },
+      ],
+    },
+    {
+      title: "How many notarizations do you perform monthly?",
+      field: "monthly_volume",
+      type: "input" as const,
+      placeholder: "e.g., 50",
+      helpText: "This helps us recommend the right workflow solution for your volume.",
+    },
+  ];
+
+  const svcLower = serviceName.toLowerCase();
+
   const steps = category === "authentication" ? apostilleSteps
-    : category === "consulting" ? immigrationSteps
+    : (category === "consulting" && (svcLower.includes("immigration") || svcLower.includes("uscis"))) ? immigrationSteps
+    : (category === "consulting" && svcLower.includes("ron onboarding")) ? ronOnboardingSteps
+    : (category === "consulting" && (svcLower.includes("workflow") || svcLower.includes("custom workflow"))) ? workflowSteps
     : category === "verification" ? i9Steps
     : [];
 

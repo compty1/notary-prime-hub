@@ -8,9 +8,9 @@ const ohioForms = [
   {
     category: "Notary Commission",
     forms: [
-      { title: "Application for Notary Public Commission", url: "https://www.ohiosos.gov/globalassets/notary/notary-application.pdf", desc: "Initial application to become a notary public in Ohio" },
-      { title: "Notary Public Renewal Application", url: "https://www.ohiosos.gov/globalassets/notary/notary-renewal.pdf", desc: "Renewal of existing notary commission" },
-      { title: "Change of Name/Address Form", url: "https://www.ohiosos.gov/globalassets/notary/notary-change-form.pdf", desc: "Update personal information on your commission" },
+      { title: "Application for Notary Public Commission", url: "https://www.ohiosos.gov/notary/forms/", desc: "Initial application to become a notary public in Ohio" },
+      { title: "Notary Public Renewal Application", url: "https://www.ohiosos.gov/notary/forms/", desc: "Renewal of existing notary commission" },
+      { title: "Change of Name/Address Form", url: "https://www.ohiosos.gov/notary/forms/", desc: "Update personal information on your commission" },
     ],
   },
   {

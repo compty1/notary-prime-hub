@@ -491,8 +491,8 @@ export default function ServiceDetail() {
               </motion.div>
             )}
 
-            {/* Immigration-specific content (Phase 10.2, 10.4) */}
-            {service.category === "consulting" && (
+            {/* Immigration-specific content — only for immigration consulting */}
+            {service.category === "consulting" && (service.name.toLowerCase().includes("immigration") || service.name.toLowerCase().includes("uscis")) && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
                 <Card className="border-amber-200 bg-amber-50/50">
                   <CardContent className="p-5 space-y-3">
