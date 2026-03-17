@@ -207,6 +207,23 @@ export default function AdminLeadPortal() {
     setEnriching(false);
   };
 
+  const scrapeSocial = async () => {
+    setScrapingSocial(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("scrape-social-leads", {});
+      if (error) throw error;
+      if (data?.error) {
+        toast({ title: "Scrape issue", description: data.error, variant: "destructive" });
+      } else {
+        toast({ title: "Social Scrape Complete", description: `Found ${data.results_found} results, extracted ${data.leads_extracted} leads, inserted ${data.inserted} new ones.` });
+        fetchLeads();
+      }
+    } catch (e: any) {
+      toast({ title: "Scrape error", description: e.message, variant: "destructive" });
+    }
+    setScrapingSocial(false);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
@@ -215,6 +232,10 @@ export default function AdminLeadPortal() {
           <p className="text-sm text-muted-foreground">Ohio notarization leads — discover, manage, convert</p>
         </div>
         <div className="flex gap-2 flex-wrap">
+          <Button variant="outline" size="sm" onClick={scrapeSocial} disabled={scrapingSocial}>
+            {scrapingSocial ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Search className="mr-1 h-3 w-3" />}
+            Scrape Social
+          </Button>
           <Button variant="outline" size="sm" onClick={discoverLeads} disabled={discovering}>
             {discovering ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Sparkles className="mr-1 h-3 w-3" />}
             AI Discover
