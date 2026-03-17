@@ -707,13 +707,13 @@ export default function BookAppointment() {
                       </div>
                     )}
                     {idData && !idData.error && (
-                      <div className="mt-2 rounded bg-emerald-50 p-2 text-xs text-emerald-700">
-                        <CheckCircle className="mr-1 inline h-3 w-3" />
-                        Verified: {idData.full_name} — {idData.id_type}
-                        {idData.is_expired && (
-                          <span className="ml-2 text-red-600 font-medium">⚠ EXPIRED</span>
-                        )}
-                      </div>
+                       <div className="mt-2 rounded bg-accent/10 p-2 text-xs text-foreground">
+                         <CheckCircle className="mr-1 inline h-3 w-3 text-accent" />
+                         Verified: {idData.full_name} — {idData.id_type}
+                         {idData.is_expired && (
+                           <span className="ml-2 text-destructive font-medium">⚠ EXPIRED</span>
+                         )}
+                       </div>
                     )}
                   </div>
                 </div>
