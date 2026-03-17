@@ -545,6 +545,41 @@ export default function Index() {
         </div>
       </section>
 
+      {/* Industry Insights */}
+      <section className="bg-muted/30 py-16">
+        <div className="container mx-auto px-4">
+          <h2 className="mb-8 text-center font-display text-2xl font-bold text-foreground">Industry Insights</h2>
+          <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-2">
+            <Card className="border-border/50">
+              <CardContent className="p-6">
+                <h3 className="mb-2 font-display text-base font-semibold">Why Remote Notarization is Growing 300% Year-Over-Year</h3>
+                <p className="text-sm text-muted-foreground">The adoption of RON has accelerated dramatically since 2020. Over 40 states now have RON legislation, and major GSEs (Fannie Mae, Freddie Mac) accept RON for mortgage transactions. Ohio was among the early adopters under ORC §147.65-.66, making it a leader in secure digital notarization.</p>
+              </CardContent>
+            </Card>
+            <Card className="border-border/50">
+              <CardContent className="p-6">
+                <h3 className="mb-2 font-display text-base font-semibold">Understanding Ohio's Electronic Notarization Standards</h3>
+                <p className="text-sm text-muted-foreground">Ohio's RON framework requires multi-factor identity verification including credential analysis and Knowledge-Based Authentication (KBA), plus full session recording stored for 10+ years. These MISMO-compliant standards exceed the security of traditional in-person notarization.</p>
+              </CardContent>
+            </Card>
+            <Card className="border-border/50">
+              <CardContent className="p-6">
+                <h3 className="mb-2 font-display text-base font-semibold">What Title Companies Should Know About RON Closings</h3>
+                <p className="text-sm text-muted-foreground">Title companies benefit from RON with faster closing timelines, reduced scheduling friction, and a complete audit trail. ALTA best practices now include RON as a standard closing option, with most underwriters approving RON transactions nationwide.</p>
+              </CardContent>
+            </Card>
+            <Card className="border-border/50">
+              <CardContent className="p-6">
+                <h3 className="mb-2 font-display text-base font-semibold">Common Notarization Mistakes and How to Avoid Them</h3>
+                <p className="text-sm text-muted-foreground">From incomplete certificates to improper identification, common errors can invalidate a notarization and delay important transactions. Working with an experienced, Ohio-commissioned notary ensures compliance with ORC §147 and protects your documents from rejection.</p>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="mt-6 text-center">
+            <Link to="/services" className="text-sm text-accent hover:underline">View all our professional notary and document services →</Link>
+          </div>
+        </div>
+      </section>
 
       <footer className="bg-gradient-navy py-12 text-primary-foreground/70">
         <div className="container mx-auto px-4">
