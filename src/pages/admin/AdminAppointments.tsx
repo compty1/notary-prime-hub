@@ -77,6 +77,17 @@ export default function AdminAppointments() {
 
   useEffect(() => { fetchData(); }, [filter]);
 
+  // Realtime subscription for new/updated appointments
+  useEffect(() => {
+    const channel = supabase
+      .channel("admin-appointments")
+      .on("postgres_changes", { event: "*", schema: "public", table: "appointments" }, () => {
+        fetchData();
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [filter]);
+
   const getClientName = (clientId: string) => {
     const p = profiles.find((p) => p.user_id === clientId);
     return p?.full_name || "Unknown Client";

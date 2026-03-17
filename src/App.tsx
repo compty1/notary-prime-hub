@@ -28,6 +28,7 @@ import AdminAIAssistant from "./pages/admin/AdminAIAssistant";
 import AdminAuditLog from "./pages/admin/AdminAuditLog";
 import NotFound from "./pages/NotFound";
 import TermsPrivacy from "./pages/TermsPrivacy";
+import AppointmentConfirmation from "./pages/AppointmentConfirmation";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ const App = () => (
             <Route path="/ron-info" element={<RonInfo />} />
             <Route path="/terms" element={<TermsPrivacy />} />
             <Route path="/portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
+            <Route path="/confirmation" element={<ProtectedRoute><AppointmentConfirmation /></ProtectedRoute>} />
             <Route path="/ron-session" element={<ProtectedRoute><BlueNotarySession /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>}>
               <Route index element={<AdminOverview />} />

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -403,7 +403,24 @@ export default function BookAppointment() {
       ? `${data.clientAddress}, ${data.clientCity}, ${data.clientState} ${data.clientZip}`.trim()
       : (data.location || location);
 
-    const { error } = await supabase.from("appointments").insert({
+    // Check daily appointment cap
+    const maxPerDay = parseInt(pricingSettings.max_appointments_per_day || "0");
+    if (maxPerDay > 0) {
+      const bookDate = data.date || date;
+      const { count } = await supabase
+        .from("appointments")
+        .select("*", { count: "exact", head: true })
+        .eq("scheduled_date", bookDate)
+        .neq("status", "cancelled" as any)
+        .neq("status", "no_show" as any);
+      if (count && count >= maxPerDay) {
+        toast({ title: "Day is fully booked", description: `Maximum ${maxPerDay} appointments per day. Please choose another date.`, variant: "destructive" });
+        setSubmitting(false);
+        return;
+      }
+    }
+
+    const { data: insertedData, error } = await supabase.from("appointments").insert({
       client_id: userId,
       service_type: data.serviceType || serviceType,
       notarization_type: data.notarizationType || notarizationType,
@@ -413,13 +430,13 @@ export default function BookAppointment() {
       client_address: (data.notarizationType || notarizationType) === "in_person" ? fullAddress : null,
       estimated_price: estimatedPrice,
       notes: fullNotes || null,
-    });
+    }).select("id").single();
 
     if (error) {
       toast({ title: "Booking failed", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Appointment booked!", description: "You'll receive a confirmation email shortly." });
-      navigate("/portal");
+      navigate(`/confirmation?id=${insertedData.id}`);
     }
     setSubmitting(false);
   };
@@ -621,22 +638,22 @@ export default function BookAppointment() {
                       </div>
                     )}
                     {docAnalysis && !docAnalysis.error && (
-                      <div className="mt-2 space-y-2 rounded bg-emerald-50 p-3 text-xs text-emerald-800">
-                        <div className="flex items-center gap-1 font-medium">
-                          <CheckCircle className="h-3 w-3" />
-                          {docAnalysis.document_name} — {docAnalysis.notarization_method}
-                        </div>
-                        <div className="text-emerald-700">
-                          <p>Signers: {docAnalysis.signers_required} • Witnesses: {docAnalysis.witnesses_required}</p>
-                          {docAnalysis.who_must_be_present?.length > 0 && (
-                            <p className="mt-1">Present: {docAnalysis.who_must_be_present.join(", ")}</p>
-                          )}
-                          {!docAnalysis.ron_eligible && (
-                            <p className="mt-1 font-medium text-amber-700">⚠ Not eligible for RON</p>
-                          )}
-                        </div>
+                       <div className="mt-2 space-y-2 rounded bg-accent/10 p-3 text-xs text-foreground">
+                         <div className="flex items-center gap-1 font-medium">
+                           <CheckCircle className="h-3 w-3 text-accent" />
+                           {docAnalysis.document_name} — {docAnalysis.notarization_method}
+                         </div>
+                         <div className="text-muted-foreground">
+                           <p>Signers: {docAnalysis.signers_required} • Witnesses: {docAnalysis.witnesses_required}</p>
+                           {docAnalysis.who_must_be_present?.length > 0 && (
+                             <p className="mt-1">Present: {docAnalysis.who_must_be_present.join(", ")}</p>
+                           )}
+                           {!docAnalysis.ron_eligible && (
+                             <p className="mt-1 font-medium text-destructive">⚠ Not eligible for RON</p>
+                           )}
+                         </div>
                         {docAnalysis.special_requirements?.length > 0 && (
-                          <div className="rounded bg-amber-50 p-2 text-amber-700">
+                          <div className="rounded bg-destructive/10 p-2 text-destructive">
                             {docAnalysis.special_requirements.map((r: string, i: number) => (
                               <p key={i} className="flex items-start gap-1"><AlertTriangle className="mt-0.5 h-3 w-3 flex-shrink-0" /> {r}</p>
                             ))}
@@ -690,13 +707,13 @@ export default function BookAppointment() {
                       </div>
                     )}
                     {idData && !idData.error && (
-                      <div className="mt-2 rounded bg-emerald-50 p-2 text-xs text-emerald-700">
-                        <CheckCircle className="mr-1 inline h-3 w-3" />
-                        Verified: {idData.full_name} — {idData.id_type}
-                        {idData.is_expired && (
-                          <span className="ml-2 text-red-600 font-medium">⚠ EXPIRED</span>
-                        )}
-                      </div>
+                       <div className="mt-2 rounded bg-accent/10 p-2 text-xs text-foreground">
+                         <CheckCircle className="mr-1 inline h-3 w-3 text-accent" />
+                         Verified: {idData.full_name} — {idData.id_type}
+                         {idData.is_expired && (
+                           <span className="ml-2 text-destructive font-medium">⚠ EXPIRED</span>
+                         )}
+                       </div>
                     )}
                   </div>
                 </div>
@@ -717,11 +734,11 @@ export default function BookAppointment() {
                   )}
 
                   {date && !loadingSlots && availableSlots.length === 0 && suggestedSlots.length > 0 && (
-                    <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
-                      <p className="mb-2 flex items-center gap-1.5 text-sm font-medium text-amber-800">
-                        <AlertTriangle className="h-4 w-4" /> No availability on this date
-                      </p>
-                      <p className="mb-3 text-xs text-amber-700">Here are the nearest available slots:</p>
+                     <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
+                       <p className="mb-2 flex items-center gap-1.5 text-sm font-medium text-destructive">
+                         <AlertTriangle className="h-4 w-4" /> No availability on this date
+                       </p>
+                       <p className="mb-3 text-xs text-muted-foreground">Here are the nearest available slots:</p>
                       <div className="space-y-2">
                         {suggestedSlots.map((s, i) => (
                           <Button
@@ -857,7 +874,7 @@ export default function BookAppointment() {
                     {idData && !idData.error && (
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">ID Verified</span>
-                        <span className="font-medium flex items-center gap-1"><Shield className="h-3 w-3 text-emerald-500" /> {idData.id_type}</span>
+                        <span className="font-medium flex items-center gap-1"><Shield className="h-3 w-3 text-accent" /> {idData.id_type}</span>
                       </div>
                     )}
                     {documentCount > 1 && (
