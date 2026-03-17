@@ -90,6 +90,12 @@ const serviceFaqs: Record<string, { q: string; a: string }[]> = {
     { q: "Which USCIS forms require notarization?", a: "Most forms with affidavits (like I-864 Affidavit of Support) require notarization. Translations also typically need a notarized certificate of accuracy." },
     { q: "What's the notary's role vs. an attorney?", a: "The notary verifies identity and witnesses signatures. An attorney provides legal advice and represents you." },
   ],
+  "translation": [
+    { q: "What languages do you support?", a: "We support 18+ languages including Spanish, French, German, Chinese, Japanese, Korean, Arabic, Russian, Vietnamese, Tagalog, and more." },
+    { q: "Is AI translation accurate enough for official use?", a: "Our AI-assisted translations are reviewed for accuracy. For USCIS submissions, a notarized Certificate of Translation Accuracy is included." },
+    { q: "Do you provide certified translations?", a: "Yes. Every translation includes a Certificate of Translation Accuracy that can be notarized for official submissions." },
+    { q: "How long does translation take?", a: "Most documents are translated within 1-2 business days. Simple documents can be same-day." },
+  ],
 };
 
 // Phase 3.2: Category-specific FAQs
