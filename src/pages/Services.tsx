@@ -4,10 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
-import { ChevronRight, Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home, Loader2, Menu } from "lucide-react";
+import { ChevronRight, Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home, Loader2, Menu, Search } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const iconMap: Record<string, any> = {
@@ -47,6 +48,7 @@ export default function Services() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     document.title = "Services — Shane Goble Notary";
@@ -66,12 +68,21 @@ export default function Services() {
     return to > from ? `$${from}–$${to}${suffix}` : `$${from}${suffix}`;
   };
 
+  // Phase 2.2: Search filter
+  const filteredServices = searchQuery
+    ? services.filter(s => 
+        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (s.description || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (s.short_description || "").toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : services;
+
   const grouped = categoryOrder
     .filter(cat => activeCategory === "all" || activeCategory === cat)
     .map(cat => ({
       category: cat,
       ...categoryLabels[cat],
-      items: services.filter(s => s.category === cat),
+      items: filteredServices.filter(s => s.category === cat),
     }))
     .filter(g => g.items.length > 0);
 
@@ -122,19 +133,37 @@ export default function Services() {
         </div>
       </section>
 
-      {/* Filter */}
+      {/* Search + Filter */}
       <div className="container mx-auto px-4 py-8">
+        {/* Phase 2.2: Search input */}
+        <div className="relative mb-4 max-w-md mx-auto">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search services..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+
+        {/* Phase 2.3: Horizontal scroll on mobile */}
         <Tabs value={activeCategory} onValueChange={setActiveCategory}>
-          <TabsList className="mb-8 flex-wrap h-auto gap-1">
+          <TabsList className="mb-8 overflow-x-auto flex-nowrap h-auto gap-1 w-full justify-start sm:flex-wrap sm:justify-center">
             <TabsTrigger value="all">All Services</TabsTrigger>
             {categoryOrder.map(cat => (
-              <TabsTrigger key={cat} value={cat} className="text-xs">{categoryLabels[cat].label}</TabsTrigger>
+              <TabsTrigger key={cat} value={cat} className="text-xs whitespace-nowrap">{categoryLabels[cat].label}</TabsTrigger>
             ))}
           </TabsList>
         </Tabs>
 
         {loading ? (
           <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
+        ) : grouped.length === 0 && searchQuery ? (
+          <div className="py-20 text-center text-muted-foreground">
+            <Search className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
+            <p>No services match "{searchQuery}"</p>
+            <Button variant="outline" className="mt-4" onClick={() => setSearchQuery("")}>Clear Search</Button>
+          </div>
         ) : (
           <div className="space-y-16">
             {grouped.map((group) => (
@@ -146,6 +175,8 @@ export default function Services() {
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {group.items.map((s, i) => {
                     const IconComp = iconMap[s.icon || "FileText"] || FileText;
+                    // Phase 2.1: Pass service context to booking
+                    const bookUrl = `/book?service=${encodeURIComponent(s.name)}${!["notarization", "authentication"].includes(s.category) ? "&type=in_person" : ""}`;
                     return (
                       <motion.div key={s.id} variants={fadeUp} custom={i + 1}>
                         <Card className="group h-full border-border/50 transition-all hover:border-accent/30 hover:shadow-lg">
@@ -164,7 +195,7 @@ export default function Services() {
                                   More Info
                                 </Button>
                               </Link>
-                              <Link to={`/book`} className="flex-1">
+                              <Link to={bookUrl} className="flex-1">
                                 <Button size="sm" variant="outline" className="w-full group-hover:bg-accent group-hover:text-accent-foreground transition-colors">
                                   Get Started <ChevronRight className="ml-1 h-3 w-3" />
                                 </Button>

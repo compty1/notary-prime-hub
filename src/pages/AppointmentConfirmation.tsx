@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Calendar, Clock, MapPin, Monitor, Download, ArrowLeft, Shield } from "lucide-react";
+import { CheckCircle, Calendar, Clock, MapPin, Monitor, Download, ArrowLeft, Shield, Upload, ChevronRight, FileText } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,26 +19,85 @@ const formatTime = (timeStr: string) => {
 
 function generateICS(appt: any): string {
   const dtStart = `${appt.scheduled_date.replace(/-/g, "")}T${appt.scheduled_time.replace(/:/g, "").substring(0, 6)}00`;
-  // Assume 30 min duration
   const startDate = new Date(`${appt.scheduled_date}T${appt.scheduled_time}`);
   const endDate = new Date(startDate.getTime() + 30 * 60 * 1000);
   const dtEnd = endDate.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 
   return [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//Shane Goble Notary//EN",
-    "BEGIN:VEVENT",
-    `DTSTART:${dtStart}`,
-    `DTEND:${dtEnd}`,
+    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Shane Goble Notary//EN",
+    "BEGIN:VEVENT", `DTSTART:${dtStart}`, `DTEND:${dtEnd}`,
     `SUMMARY:Notarization — ${appt.service_type}`,
     `DESCRIPTION:${appt.notarization_type === "ron" ? "Remote Online Notarization (RON) session" : "In-person notarization appointment"} with Shane Goble Notary Services`,
     `LOCATION:${appt.location || (appt.notarization_type === "ron" ? "Online — Video Call" : "TBD")}`,
-    "STATUS:CONFIRMED",
-    "END:VEVENT",
-    "END:VCALENDAR",
+    "STATUS:CONFIRMED", "END:VEVENT", "END:VCALENDAR",
   ].join("\r\n");
 }
+
+// Phase 5.1: Category-specific checklists
+const serviceChecklists: Record<string, string[]> = {
+  ron: [
+    "Computer with working camera and microphone",
+    "Stable internet connection (recommended: 5+ Mbps)",
+    "Valid government-issued photo ID (driver's license, passport, or state ID)",
+    "Documents to be notarized in digital format (PDF preferred)",
+    "Quiet, well-lit room for the video session",
+  ],
+  in_person: [
+    "Valid, unexpired government-issued photo ID",
+    "Original document(s) to be notarized — do NOT sign beforehand",
+    "Payment method (card, cash, or digital payment)",
+  ],
+  apostille: [
+    "Original notarized document(s)",
+    "Ohio SOS apostille request form (we can help prepare this)",
+    "Prepaid return envelope (if mailing)",
+    "Destination country information",
+  ],
+  immigration: [
+    "All USCIS forms completed (do NOT sign until before the notary)",
+    "Certified translations of foreign-language documents",
+    "Valid passport or photo ID",
+    "Supporting evidence/documentation as required by your form",
+  ],
+  i9: [
+    "List A document (passport or permanent resident card) OR",
+    "List B document (driver's license) PLUS List C document (Social Security card)",
+    "Employer's I-9 form (Section 1 must be completed by employee first)",
+  ],
+  real_estate: [
+    "Closing documents from title company",
+    "Valid government-issued photo ID",
+    "Wire transfer confirmation (if applicable)",
+    "Contact information for title company / lender",
+  ],
+};
+
+const getChecklist = (appt: any): string[] => {
+  const type = appt.notarization_type;
+  const service = (appt.service_type || "").toLowerCase();
+  const notes = (appt.notes || "").toLowerCase();
+
+  if (service.includes("apostille") || service.includes("authentication")) return serviceChecklists.apostille;
+  if (service.includes("immigration") || notes.includes("uscis") || notes.includes("i-130") || notes.includes("i-485")) return serviceChecklists.immigration;
+  if (service.includes("i-9") || service.includes("employment verification")) return serviceChecklists.i9;
+  if (service.includes("real estate") || service.includes("closing") || service.includes("deed")) return serviceChecklists.real_estate;
+  if (type === "ron") return serviceChecklists.ron;
+  return serviceChecklists.in_person;
+};
+
+// Phase 5.4: Cross-sell bundles
+const crossSellMap: Record<string, { name: string; desc: string }[]> = {
+  apostille: [{ name: "Translation Coordination", desc: "Need your documents translated? We coordinate with certified translators." }],
+  real_estate: [{ name: "Witness Service", desc: "Need an additional witness? Add for $10." }],
+  notarization: [{ name: "Certified Copy", desc: "Need certified copies of your notarized documents?" }],
+};
+
+const getCrossSells = (appt: any) => {
+  const service = (appt.service_type || "").toLowerCase();
+  if (service.includes("apostille")) return crossSellMap.apostille;
+  if (service.includes("real estate")) return crossSellMap.real_estate;
+  return crossSellMap.notarization || [];
+};
 
 export default function AppointmentConfirmation() {
   const [searchParams] = useSearchParams();
@@ -49,15 +108,10 @@ export default function AppointmentConfirmation() {
 
   useEffect(() => {
     if (!appointmentId || !user) { setLoading(false); return; }
-    supabase
-      .from("appointments")
-      .select("*")
-      .eq("id", appointmentId)
-      .single()
-      .then(({ data }) => {
-        if (data) setAppointment(data);
-        setLoading(false);
-      });
+    supabase.from("appointments").select("*").eq("id", appointmentId).single().then(({ data }) => {
+      if (data) setAppointment(data);
+      setLoading(false);
+    });
   }, [appointmentId, user]);
 
   const downloadICS = () => {
@@ -66,9 +120,7 @@ export default function AppointmentConfirmation() {
     const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url;
-    a.download = `notarization-${appointment.scheduled_date}.ics`;
-    a.click();
+    a.href = url; a.download = `notarization-${appointment.scheduled_date}.ics`; a.click();
     URL.revokeObjectURL(url);
   };
 
@@ -88,6 +140,9 @@ export default function AppointmentConfirmation() {
       </div>
     );
   }
+
+  const checklist = getChecklist(appointment);
+  const crossSells = getCrossSells(appointment);
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -155,6 +210,12 @@ export default function AppointmentConfirmation() {
           <Button onClick={downloadICS} variant="outline" className="gap-2">
             <Download className="h-4 w-4" /> Add to Calendar (.ics)
           </Button>
+          {/* Phase 5.3: Upload documents button */}
+          <Link to="/portal?tab=documents">
+            <Button variant="outline" className="w-full gap-2 sm:w-auto">
+              <Upload className="h-4 w-4" /> Upload Documents
+            </Button>
+          </Link>
           <Link to="/portal">
             <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark sm:w-auto">
               Go to Portal
@@ -162,19 +223,50 @@ export default function AppointmentConfirmation() {
           </Link>
         </div>
 
+        {/* Phase 5.1: Service-specific checklist */}
         <div className="mt-8 rounded-lg border border-accent/30 bg-accent/5 p-4 text-left text-sm text-muted-foreground">
-          <p className="mb-2 font-medium text-foreground">What to bring:</p>
+          <p className="mb-2 font-medium text-foreground">What to bring / prepare:</p>
           <ul className="space-y-1">
-            <li>✓ Valid government-issued photo ID (driver's license, passport, or state ID)</li>
-            <li>✓ The document(s) to be notarized</li>
-            {appointment.notarization_type === "ron" && (
-              <>
-                <li>✓ Computer with camera and microphone</li>
-                <li>✓ Stable internet connection</li>
-              </>
-            )}
+            {checklist.map((item, i) => (
+              <li key={i}>✓ {item}</li>
+            ))}
           </ul>
         </div>
+
+        {/* Phase 5.2: What happens next */}
+        <div className="mt-4 rounded-lg border border-border/50 bg-muted/30 p-4 text-left text-sm">
+          <p className="mb-2 font-medium text-foreground">What happens next:</p>
+          <ol className="space-y-1 text-muted-foreground list-decimal list-inside">
+            <li>Your notary will confirm the appointment within 2 hours</li>
+            <li>Upload your documents via your portal for faster processing</li>
+            <li>You'll receive a confirmation email with session details</li>
+            {appointment.notarization_type === "ron" && (
+              <li>Run a tech check before your session — available in your portal</li>
+            )}
+          </ol>
+        </div>
+
+        {/* Phase 5.4: Cross-sell */}
+        {crossSells.length > 0 && (
+          <div className="mt-4 rounded-lg border border-border/50 bg-card p-4 text-left">
+            <p className="mb-3 text-sm font-medium text-foreground flex items-center gap-2">
+              <FileText className="h-4 w-4 text-accent" /> You may also need:
+            </p>
+            {crossSells.map((cs, i) => (
+              <div key={i} className="flex items-center justify-between mb-2 last:mb-0">
+                <div>
+                  <p className="text-sm font-medium">{cs.name}</p>
+                  <p className="text-xs text-muted-foreground">{cs.desc}</p>
+                </div>
+                <Link to={`/services`}>
+                  <Button size="sm" variant="outline" className="text-xs">
+                    View <ChevronRight className="ml-1 h-3 w-3" />
+                  </Button>
+                </Link>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

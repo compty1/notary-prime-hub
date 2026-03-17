@@ -18,6 +18,8 @@ export type Database = {
         Row: {
           client_id: string
           created_at: string
+          destination_country: string | null
+          document_count: number
           document_description: string
           fee: number | null
           id: string
@@ -30,6 +32,8 @@ export type Database = {
         Insert: {
           client_id: string
           created_at?: string
+          destination_country?: string | null
+          document_count?: number
           document_description: string
           fee?: number | null
           id?: string
@@ -42,6 +46,8 @@ export type Database = {
         Update: {
           client_id?: string
           created_at?: string
+          destination_country?: string | null
+          document_count?: number
           document_description?: string
           fee?: number | null
           id?: string
