@@ -1,11 +1,12 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, Users, CheckCircle, Clock, DollarSign, Plus, BookMarked, FileText, AlertTriangle, Video, RefreshCw } from "lucide-react";
 import { motion } from "framer-motion";
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
 const statusColors: Record<string, string> = {
   scheduled: "bg-blue-100 text-blue-800",
@@ -25,8 +26,12 @@ const formatTime = (timeStr: string) => {
   return `${hour > 12 ? hour - 12 : hour === 0 ? 12 : hour}:${m} ${hour >= 12 ? "PM" : "AM"}`;
 };
 
+const CHART_COLORS = ["hsl(var(--primary))", "hsl(var(--accent))", "hsl(142 76% 36%)", "hsl(45 93% 47%)", "hsl(0 84% 60%)"];
+
 export default function AdminOverview() {
   const [appointments, setAppointments] = useState<any[]>([]);
+  const [allAppointments, setAllAppointments] = useState<any[]>([]);
+  const [journalEntries, setJournalEntries] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<Record<string, string>>({});
   const [stats, setStats] = useState({ total: 0, upcoming: 0, completed: 0, clients: 0, revenue: 0 });
   const [loading, setLoading] = useState(true);
@@ -44,15 +49,17 @@ export default function AdminOverview() {
       { data: journalData },
       { data: settingsData },
       { data: profileData },
+      { data: allApptData },
     ] = await Promise.all([
       supabase.from("appointments").select("*", { count: "exact", head: true }),
       supabase.from("appointments").select("*", { count: "exact", head: true }).in("status", ["scheduled", "confirmed"]),
       supabase.from("appointments").select("*", { count: "exact", head: true }).eq("status", "completed"),
       supabase.from("profiles").select("*", { count: "exact", head: true }),
       supabase.from("appointments").select("*").order("scheduled_date", { ascending: false }).limit(10),
-      supabase.from("notary_journal").select("fees_charged"),
+      supabase.from("notary_journal").select("fees_charged, created_at, notarization_type"),
       supabase.from("platform_settings").select("setting_key, setting_value"),
       supabase.from("profiles").select("user_id, full_name, email"),
+      supabase.from("appointments").select("scheduled_date, status, notarization_type").order("scheduled_date", { ascending: true }),
     ]);
 
     // Build profiles map
@@ -64,6 +71,8 @@ export default function AdminOverview() {
 
     const totalRevenue = (journalData || []).reduce((sum: number, j: any) => sum + (parseFloat(j.fees_charged) || 0), 0);
     if (recentAppts) setAppointments(recentAppts);
+    if (journalData) setJournalEntries(journalData);
+    if (allApptData) setAllAppointments(allApptData);
     setStats({ total: totalAppts || 0, upcoming: upcomingCount || 0, completed: completedCount || 0, clients: clientCount || 0, revenue: totalRevenue });
 
     if (settingsData) {
@@ -100,6 +109,39 @@ export default function AdminOverview() {
 
   const today = new Date().toISOString().split("T")[0];
   const todayCount = appointments.filter(a => a.scheduled_date === today && !["cancelled", "no_show"].includes(a.status)).length;
+
+  // Chart data: appointments per month
+  const monthlyAppointments = useMemo(() => {
+    const months: Record<string, number> = {};
+    allAppointments.forEach(a => {
+      const month = a.scheduled_date?.slice(0, 7); // YYYY-MM
+      if (month) months[month] = (months[month] || 0) + 1;
+    });
+    return Object.entries(months).slice(-6).map(([month, count]) => ({
+      month: new Date(month + "-01").toLocaleDateString("en-US", { month: "short" }),
+      appointments: count,
+    }));
+  }, [allAppointments]);
+
+  // Chart data: revenue per month
+  const monthlyRevenue = useMemo(() => {
+    const months: Record<string, number> = {};
+    journalEntries.forEach(j => {
+      const month = j.created_at?.slice(0, 7);
+      if (month) months[month] = (months[month] || 0) + (parseFloat(j.fees_charged) || 0);
+    });
+    return Object.entries(months).slice(-6).map(([month, revenue]) => ({
+      month: new Date(month + "-01").toLocaleDateString("en-US", { month: "short" }),
+      revenue,
+    }));
+  }, [journalEntries]);
+
+  // Chart data: status breakdown pie
+  const statusBreakdown = useMemo(() => {
+    const counts: Record<string, number> = {};
+    allAppointments.forEach(a => { counts[a.status] = (counts[a.status] || 0) + 1; });
+    return Object.entries(counts).map(([status, value]) => ({ name: status.replace(/_/g, " "), value }));
+  }, [allAppointments]);
 
   const statCards = [
     { label: "Total Appointments", value: stats.total, icon: Calendar, color: "text-blue-600" },
@@ -162,6 +204,59 @@ export default function AdminOverview() {
             </Card>
           </motion.div>
         ))}
+      </div>
+
+      {/* Analytics Charts */}
+      <div className="mb-8 grid gap-6 lg:grid-cols-3">
+        <Card className="border-border/50 lg:col-span-1">
+          <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Appointments by Month</CardTitle></CardHeader>
+          <CardContent>
+            {monthlyAppointments.length > 0 ? (
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={monthlyAppointments}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                  <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} allowDecimals={false} />
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
+                  <Bar dataKey="appointments" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : <p className="py-10 text-center text-sm text-muted-foreground">No data yet</p>}
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/50 lg:col-span-1">
+          <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Revenue Trend</CardTitle></CardHeader>
+          <CardContent>
+            {monthlyRevenue.length > 0 ? (
+              <ResponsiveContainer width="100%" height={200}>
+                <LineChart data={monthlyRevenue}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                  <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickFormatter={(v) => `$${v}`} />
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} formatter={(value: number) => [`$${value.toFixed(2)}`, "Revenue"]} />
+                  <Line type="monotone" dataKey="revenue" stroke="hsl(var(--accent))" strokeWidth={2} dot={{ fill: "hsl(var(--accent))", r: 4 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : <p className="py-10 text-center text-sm text-muted-foreground">No data yet</p>}
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/50 lg:col-span-1">
+          <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Status Breakdown</CardTitle></CardHeader>
+          <CardContent>
+            {statusBreakdown.length > 0 ? (
+              <ResponsiveContainer width="100%" height={200}>
+                <PieChart>
+                  <Pie data={statusBreakdown} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={3} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                    {statusBreakdown.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
+                  </Pie>
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : <p className="py-10 text-center text-sm text-muted-foreground">No data yet</p>}
+          </CardContent>
+        </Card>
       </div>
 
       <h2 className="mb-4 font-display text-lg font-semibold text-foreground">Recent Appointments</h2>
