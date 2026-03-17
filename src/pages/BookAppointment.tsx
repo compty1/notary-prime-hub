@@ -242,6 +242,13 @@ export default function BookAppointment() {
     }
 
     setSubmitting(true);
+    const fullNotes = [
+      notes,
+      documentCount > 1 ? `[Batch: ${documentCount} documents]` : "",
+      docAnalysis ? `[AI Detected: ${docAnalysis.document_name} — ${docAnalysis.notarization_method}]` : "",
+      idData ? `[ID Pre-scanned: ${idData.id_type} — ${idData.full_name}]` : "",
+    ].filter(Boolean).join("\n");
+
     const { error } = await supabase.from("appointments").insert({
       client_id: user.id,
       service_type: serviceType,
@@ -249,7 +256,7 @@ export default function BookAppointment() {
       scheduled_date: date,
       scheduled_time: time,
       location: notarizationType === "in_person" ? location : "Remote",
-      notes,
+      notes: fullNotes || null,
     });
 
     if (error) {
