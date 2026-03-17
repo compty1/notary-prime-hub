@@ -34,6 +34,8 @@ import AdminTemplates from "./pages/admin/AdminTemplates";
 import AdminApostille from "./pages/admin/AdminApostille";
 import AdminChat from "./pages/admin/AdminChat";
 import AdminBusinessClients from "./pages/admin/AdminBusinessClients";
+import AdminServices from "./pages/admin/AdminServices";
+import Services from "./pages/Services";
 import NotFound from "./pages/NotFound";
 import TermsPrivacy from "./pages/TermsPrivacy";
 import AppointmentConfirmation from "./pages/AppointmentConfirmation";
