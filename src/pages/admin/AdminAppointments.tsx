@@ -750,6 +750,43 @@ export default function AdminAppointments() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Message Client Dialog */}
+      <Dialog open={!!messageAppt} onOpenChange={() => setMessageAppt(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center gap-2">
+              <Mail className="h-5 w-5 text-accent" /> Message Client
+            </DialogTitle>
+          </DialogHeader>
+          {messageAppt && (() => {
+            const cp = profiles.find((p) => p.user_id === messageAppt.client_id);
+            return (
+              <div className="space-y-4">
+                <div className="rounded-lg bg-muted/50 p-3 text-sm space-y-1">
+                  <p><strong>To:</strong> {cp?.full_name || "Unknown"} ({cp?.email || "No email"})</p>
+                  <p><strong>Re:</strong> {messageAppt.service_type} — {formatDate(messageAppt.scheduled_date)}</p>
+                </div>
+                <div>
+                  <Label>Subject</Label>
+                  <Input value={messageSubject} onChange={(e) => setMessageSubject(e.target.value)} />
+                </div>
+                <div>
+                  <Label>Message</Label>
+                  <Textarea value={messageBody} onChange={(e) => setMessageBody(e.target.value)} rows={5} placeholder="Type your message to the client..." />
+                </div>
+              </div>
+            );
+          })()}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setMessageAppt(null)}>Cancel</Button>
+            <Button onClick={sendMessage} disabled={sendingMessage || !messageBody.trim()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+              {sendingMessage ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Send className="mr-1 h-4 w-4" />}
+              Send
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
