@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import ServicePreQualifier from "@/components/ServicePreQualifier";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -132,8 +133,11 @@ interface WorkflowStep {
   requires_client_action: boolean; requires_admin_action: boolean;
 }
 
+const PRE_QUALIFY_CATEGORIES = ["authentication", "consulting", "verification"];
+
 export default function ServiceDetail() {
   const { serviceId } = useParams();
+  const navigate = useNavigate();
   const [service, setService] = useState<ServiceData | null>(null);
   const [requirements, setRequirements] = useState<Requirement[]>([]);
   const [workflow, setWorkflow] = useState<WorkflowStep[]>([]);
@@ -141,6 +145,7 @@ export default function ServiceDetail() {
   const [loading, setLoading] = useState(true);
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
   const [showChat, setShowChat] = useState(false);
+  const [showPreQualifier, setShowPreQualifier] = useState(false);
 
   useEffect(() => {
     if (!serviceId) return;
@@ -392,22 +397,41 @@ export default function ServiceDetail() {
 
           {/* Sidebar */}
           <div className="space-y-4">
-            <Card className="border-accent/30 bg-accent/5">
-              <CardContent className="p-5 space-y-4">
-                <h3 className="font-display text-lg font-semibold">Ready to Get Started?</h3>
-                <Link to={bookUrl} className="block">
-                  <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" size="lg">
-                    Book This Service <ChevronRight className="ml-1 h-4 w-4" />
-                  </Button>
-                </Link>
-                <Link to="/#contact" className="block">
-                  <Button variant="outline" className="w-full">Contact Us</Button>
-                </Link>
-                <p className="text-xs text-muted-foreground text-center">
-                  Mon–Wed 10 AM – 7 PM · Responses within 2 hours
-                </p>
-              </CardContent>
-            </Card>
+            {showPreQualifier && service ? (
+              <ServicePreQualifier
+                category={service.category}
+                serviceName={service.name}
+                onComplete={(params) => {
+                  setShowPreQualifier(false);
+                  const extra = Object.entries(params).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join("&");
+                  navigate(`${bookUrl}${extra ? "&" + extra : ""}`);
+                }}
+                onCancel={() => setShowPreQualifier(false)}
+              />
+            ) : (
+              <Card className="border-accent/30 bg-accent/5">
+                <CardContent className="p-5 space-y-4">
+                  <h3 className="font-display text-lg font-semibold">Ready to Get Started?</h3>
+                  {PRE_QUALIFY_CATEGORIES.includes(service?.category || "") ? (
+                    <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" size="lg" onClick={() => setShowPreQualifier(true)}>
+                      Book This Service <ChevronRight className="ml-1 h-4 w-4" />
+                    </Button>
+                  ) : (
+                    <Link to={bookUrl} className="block">
+                      <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" size="lg">
+                        Book This Service <ChevronRight className="ml-1 h-4 w-4" />
+                      </Button>
+                    </Link>
+                  )}
+                  <Link to="/#contact" className="block">
+                    <Button variant="outline" className="w-full">Contact Us</Button>
+                  </Link>
+                  <p className="text-xs text-muted-foreground text-center">
+                    Mon–Wed 10 AM – 7 PM · Responses within 2 hours
+                  </p>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Phase 3.1: Dynamic resource links */}
             <Card className="border-border/50">

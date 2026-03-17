@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { QRCodeSVG } from "qrcode.react";
 import DocumentWizard from "@/components/DocumentWizard";
 import PaymentForm from "@/components/PaymentForm";
+import TechCheck from "@/components/TechCheck";
 
 const statusColors: Record<string, string> = {
   scheduled: "bg-blue-100 text-blue-800",
@@ -447,7 +448,7 @@ export default function ClientPortal() {
                         </div>
                         <div className="flex items-center gap-2">
                           {appt.notarization_type === "ron" && isSessionNear(appt) && <Link to={`/ron-session?id=${appt.id}`}><Button size="sm" className="bg-emerald-600 text-white hover:bg-emerald-700"><Video className="mr-1 h-3 w-3" /> Join</Button></Link>}
-                          {appt.notarization_type === "ron" && !isSessionNear(appt) && <Button size="sm" variant="outline" className="text-xs" onClick={() => { setTechCheckOpen(true); runTechCheck(); }}><Wifi className="mr-1 h-3 w-3" /> Tech Check</Button>}
+                          {appt.notarization_type === "ron" && !isSessionNear(appt) && <Button size="sm" variant="outline" className="text-xs" onClick={() => setTechCheckOpen(true)}><Wifi className="mr-1 h-3 w-3" /> Tech Check</Button>}
                           <Link to={`/book?rebook=${appt.id}`}><Button size="sm" variant="outline" className="text-xs"><RefreshCw className="mr-1 h-3 w-3" /> Reschedule</Button></Link>
                           <Button size="sm" variant="ghost" className="text-xs text-destructive hover:text-destructive" onClick={() => setCancelDialogId(appt.id)}>Cancel</Button>
                           <Badge className={statusColors[appt.status] || "bg-muted text-muted-foreground"}>{appt.status.replace(/_/g, " ")}</Badge>
@@ -1049,24 +1050,10 @@ export default function ClientPortal() {
         </DialogContent>
       </Dialog>
 
-      {/* Tech Check Dialog */}
+      {/* Tech Check Dialog — uses shared TechCheck component */}
       <Dialog open={techCheckOpen} onOpenChange={setTechCheckOpen}>
-        <DialogContent>
-          <DialogHeader><DialogTitle className="font-display">RON Tech Check</DialogTitle></DialogHeader>
-          <div className="space-y-4 py-4">
-            {[
-              { label: "Camera", result: techResults.camera, icon: CameraIcon },
-              { label: "Microphone", result: techResults.mic, icon: Mic },
-              { label: "Internet", result: techResults.connection, icon: Wifi },
-            ].map((item) => (
-              <div key={item.label} className="flex items-center justify-between rounded-lg border p-3">
-                <div className="flex items-center gap-2"><item.icon className="h-5 w-5 text-muted-foreground" /><span>{item.label}</span></div>
-                {techChecking && item.result === null ? <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /> :
-                  item.result ? <CheckCircle className="h-5 w-5 text-emerald-500" /> : item.result === false ? <XCircle className="h-5 w-5 text-destructive" /> : null}
-              </div>
-            ))}
-          </div>
-          <DialogFooter><Button variant="outline" onClick={() => { setTechCheckOpen(false); }}>Close</Button></DialogFooter>
+        <DialogContent className="sm:max-w-md">
+          <TechCheck onComplete={() => setTechCheckOpen(false)} />
         </DialogContent>
       </Dialog>
     </div>

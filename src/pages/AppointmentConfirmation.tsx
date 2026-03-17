@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Calendar, Clock, MapPin, Monitor, Download, ArrowLeft, Shield, Upload, ChevronRight, FileText } from "lucide-react";
+import { CheckCircle, Calendar, Clock, MapPin, Monitor, Download, ArrowLeft, Shield, Upload, ChevronRight, FileText, Wifi } from "lucide-react";
+import TechCheck from "@/components/TechCheck";
 import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -241,12 +242,19 @@ export default function AppointmentConfirmation() {
             <li>Upload your documents via your portal for faster processing</li>
             <li>You'll receive a confirmation email with session details</li>
             {appointment.notarization_type === "ron" && (
-              <li>Run a tech check before your session — available in your portal</li>
+              <li>Run a tech check before your session (see below)</li>
             )}
           </ol>
         </div>
 
-        {/* Phase 5.4: Cross-sell */}
+        {/* TechCheck for RON appointments */}
+        {appointment.notarization_type === "ron" && (
+          <div className="mt-4">
+            <TechCheck />
+          </div>
+        )}
+
+        {/* Phase 5.4: Cross-sell (after tech check) */}
         {crossSells.length > 0 && (
           <div className="mt-4 rounded-lg border border-border/50 bg-card p-4 text-left">
             <p className="mb-3 text-sm font-medium text-foreground flex items-center gap-2">
