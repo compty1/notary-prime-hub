@@ -538,6 +538,15 @@ export default function BookAppointment() {
     } catch (emailErr) {
       console.error("Failed to trigger confirmation email:", emailErr);
     }
+
+    // Auto-convert matching lead to "converted" status
+    const clientEmail = user?.email;
+    if (clientEmail && !rebookingId) {
+      try {
+        await supabase.from("leads").update({ status: "converted" }).ilike("email", clientEmail).in("status", ["new", "contacted", "qualified"]);
+      } catch { /* silent — lead conversion is best-effort */ }
+    }
+
     toast({ title: rebookingId ? "Appointment rescheduled!" : "Appointment booked!", description: "You'll receive a confirmation email shortly." });
     navigate(`/confirmation?id=${appointmentResultId}`);
     setSubmitting(false);
