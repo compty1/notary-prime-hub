@@ -206,6 +206,59 @@ export default function AdminOverview() {
         ))}
       </div>
 
+      {/* Analytics Charts */}
+      <div className="mb-8 grid gap-6 lg:grid-cols-3">
+        <Card className="border-border/50 lg:col-span-1">
+          <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Appointments by Month</CardTitle></CardHeader>
+          <CardContent>
+            {monthlyAppointments.length > 0 ? (
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={monthlyAppointments}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                  <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} allowDecimals={false} />
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
+                  <Bar dataKey="appointments" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : <p className="py-10 text-center text-sm text-muted-foreground">No data yet</p>}
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/50 lg:col-span-1">
+          <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Revenue Trend</CardTitle></CardHeader>
+          <CardContent>
+            {monthlyRevenue.length > 0 ? (
+              <ResponsiveContainer width="100%" height={200}>
+                <LineChart data={monthlyRevenue}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                  <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickFormatter={(v) => `$${v}`} />
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} formatter={(value: number) => [`$${value.toFixed(2)}`, "Revenue"]} />
+                  <Line type="monotone" dataKey="revenue" stroke="hsl(var(--accent))" strokeWidth={2} dot={{ fill: "hsl(var(--accent))", r: 4 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : <p className="py-10 text-center text-sm text-muted-foreground">No data yet</p>}
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/50 lg:col-span-1">
+          <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Status Breakdown</CardTitle></CardHeader>
+          <CardContent>
+            {statusBreakdown.length > 0 ? (
+              <ResponsiveContainer width="100%" height={200}>
+                <PieChart>
+                  <Pie data={statusBreakdown} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={3} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                    {statusBreakdown.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
+                  </Pie>
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : <p className="py-10 text-center text-sm text-muted-foreground">No data yet</p>}
+          </CardContent>
+        </Card>
+      </div>
+
       <h2 className="mb-4 font-display text-lg font-semibold text-foreground">Recent Appointments</h2>
       {appointments.length === 0 ? (
         <Card className="border-border/50"><CardContent className="py-8 text-center text-muted-foreground">No appointments yet</CardContent></Card>
