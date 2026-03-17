@@ -125,3 +125,24 @@
     background: linear-gradient(135deg, hsl(var(--gold-dark)) 0%, hsl(var(--gold)) 50%, hsl(var(--gold-light)) 100%);
   }
 }
+
+/* Print styles for receipts */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  [data-print-receipt],
+  [data-print-receipt] * {
+    visibility: visible;
+  }
+  [data-print-receipt] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 2rem;
+  }
+  nav, footer, .no-print {
+    display: none !important;
+  }
+}

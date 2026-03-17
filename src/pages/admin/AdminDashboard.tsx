@@ -16,6 +16,7 @@ import {
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye } from "lucide-react";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 const navItems = [
   { title: "Overview", url: "/admin", icon: LayoutDashboard },
@@ -95,9 +96,12 @@ export default function AdminDashboard() {
       <div className="flex min-h-screen w-full">
         <AdminSidebar />
         <div className="flex-1 flex flex-col">
-          <header className="flex h-12 items-center border-b border-border/50 bg-background px-4">
-            <SidebarTrigger />
-            <span className="ml-4 font-display text-sm font-medium text-muted-foreground">Shane Goble Notary — Admin</span>
+          <header className="flex h-12 items-center justify-between border-b border-border/50 bg-background px-4">
+            <div className="flex items-center">
+              <SidebarTrigger />
+              <span className="ml-4 font-display text-sm font-medium text-muted-foreground">Shane Goble Notary — Admin</span>
+            </div>
+            <DarkModeToggle />
           </header>
           <main className="flex-1 overflow-auto p-6">
             <Outlet />

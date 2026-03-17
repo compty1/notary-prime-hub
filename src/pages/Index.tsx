@@ -7,6 +7,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { MapPin, Monitor, FileText, Shield, Clock, CheckCircle, Star, ChevronRight, Phone, Mail, Scale, Menu } from "lucide-react";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -68,6 +69,7 @@ export default function Index() {
             <Link to="/notary-guide" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Notary Guide</Link>
             <Link to="/ron-info" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">RON Info</Link>
             <a href="#faq" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">FAQ</a>
+            <DarkModeToggle />
             <Link to="/login">
               <Button variant="outline" size="sm">Sign In</Button>
             </Link>
@@ -399,6 +401,9 @@ export default function Index() {
           <div className="mt-8 border-t border-primary-foreground/10 pt-8 text-center text-xs">
             <p>© {new Date().getFullYear()} Shane Goble Notary Services. All rights reserved.</p>
             <p className="mt-1">Ohio Commissioned Notary Public — Franklin County</p>
+            <div className="mt-2 flex items-center justify-center gap-4">
+              <Link to="/terms" className="hover:text-accent">Terms of Service & Privacy Policy</Link>
+            </div>
           </div>
         </div>
       </footer>
