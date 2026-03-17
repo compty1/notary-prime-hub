@@ -500,6 +500,154 @@ export default function ClientPortal() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* PAYMENTS TAB */}
+          <TabsContent value="payments" className="space-y-6">
+            <h2 className="font-display text-xl font-semibold">Payments & Invoices</h2>
+            {payments.length === 0 ? (
+              <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground">
+                <DollarSign className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
+                <p>No payment history yet</p>
+                <p className="text-sm mt-1">Payments will appear here after your appointments are completed.</p>
+              </CardContent></Card>
+            ) : (
+              <div className="space-y-3">
+                {payments.map((p) => (
+                  <Card key={p.id} className="border-border/50">
+                    <CardContent className="flex items-center justify-between p-4">
+                      <div>
+                        <p className="font-medium text-sm">${parseFloat(p.amount).toFixed(2)}</p>
+                        <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString()} · {p.method || "N/A"}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge className={p.status === "paid" ? "bg-emerald-100 text-emerald-800" : p.status === "pending" ? "bg-amber-100 text-amber-800" : "bg-muted text-muted-foreground"}>
+                          {p.status}
+                        </Badge>
+                        {p.invoice_url && <a href={p.invoice_url} target="_blank" rel="noreferrer"><Button size="sm" variant="outline" className="text-xs">View Invoice</Button></a>}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* REVIEWS TAB */}
+          <TabsContent value="reviews" className="space-y-6">
+            <h2 className="font-display text-xl font-semibold">Leave a Review</h2>
+            {past.filter(a => a.status === "completed").length > 0 && (
+              <Card className="border-border/50">
+                <CardContent className="p-4 space-y-4">
+                  <div>
+                    <Label>Select Appointment</Label>
+                    <Select value={reviewForm.appointment_id} onValueChange={(v) => setReviewForm({ ...reviewForm, appointment_id: v })}>
+                      <SelectTrigger><SelectValue placeholder="Choose completed appointment..." /></SelectTrigger>
+                      <SelectContent>
+                        {past.filter(a => a.status === "completed" && !reviews.some(r => r.appointment_id === a.id)).map(a => (
+                          <SelectItem key={a.id} value={a.id}>{a.service_type} — {formatDate(a.scheduled_date)}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Rating</Label>
+                    <div className="flex gap-1 mt-1">
+                      {[1, 2, 3, 4, 5].map(n => (
+                        <button key={n} onClick={() => setReviewForm({ ...reviewForm, rating: n })} className="p-1">
+                          <Star className={`h-6 w-6 ${n <= reviewForm.rating ? "text-amber-500 fill-amber-500" : "text-muted-foreground"}`} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Comment</Label>
+                    <Textarea value={reviewForm.comment} onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })} rows={3} placeholder="Tell us about your experience..." />
+                  </div>
+                  <Button
+                    disabled={!reviewForm.appointment_id || submittingReview}
+                    onClick={async () => {
+                      if (!user || !reviewForm.appointment_id) return;
+                      setSubmittingReview(true);
+                      const { error } = await supabase.from("reviews").insert({
+                        client_id: user.id, appointment_id: reviewForm.appointment_id,
+                        rating: reviewForm.rating, comment: reviewForm.comment || null,
+                      });
+                      if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+                      else {
+                        toast({ title: "Review submitted! Thank you." });
+                        setReviewForm({ appointment_id: "", rating: 5, comment: "" });
+                        const { data: revs } = await supabase.from("reviews").select("*").eq("client_id", user.id);
+                        if (revs) setReviews(revs);
+                      }
+                      setSubmittingReview(false);
+                    }}
+                    className="bg-accent text-accent-foreground hover:bg-gold-dark"
+                  >
+                    {submittingReview ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Star className="mr-1 h-4 w-4" />}
+                    Submit Review
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+            {reviews.length > 0 && (
+              <>
+                <h3 className="font-display text-lg font-semibold mt-6">Your Reviews</h3>
+                <div className="space-y-3">
+                  {reviews.map(r => (
+                    <Card key={r.id} className="border-border/50">
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-1 mb-2">
+                          {[1,2,3,4,5].map(n => <Star key={n} className={`h-4 w-4 ${n <= r.rating ? "text-amber-500 fill-amber-500" : "text-muted-foreground"}`} />)}
+                        </div>
+                        {r.comment && <p className="text-sm text-foreground">{r.comment}</p>}
+                        <p className="text-xs text-muted-foreground mt-2">{new Date(r.created_at).toLocaleDateString()}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </>
+            )}
+          </TabsContent>
+
+          {/* SERVICES TAB */}
+          <TabsContent value="services" className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="font-display text-xl font-semibold">Available Services</h2>
+              <Button variant="outline" size="sm" onClick={() => setShowWizard(!showWizard)}>
+                <Sparkles className="mr-1 h-3 w-3" /> {showWizard ? "Hide Guide" : "Not Sure What You Need?"}
+              </Button>
+            </div>
+            {showWizard && (
+              <DocumentWizard
+                onSelectService={(svc) => { setShowWizard(false); }}
+                onClose={() => setShowWizard(false)}
+              />
+            )}
+            <div className="grid gap-4 sm:grid-cols-2">
+              {services.map((svc) => (
+                <Card key={svc.id} className="border-border/50 hover:shadow-sm transition-shadow">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="text-sm font-semibold text-foreground">{svc.name}</h3>
+                        {svc.short_description && <p className="text-xs text-muted-foreground mt-1">{svc.short_description}</p>}
+                      </div>
+                      <Badge variant="outline" className="text-xs shrink-0 ml-2">
+                        {svc.pricing_model === "custom" ? "Quote" :
+                          svc.price_from ? `$${svc.price_from}${svc.price_to && svc.price_to > svc.price_from ? `–$${svc.price_to}` : ""}` : "Contact"}
+                      </Badge>
+                    </div>
+                    {svc.description && <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{svc.description}</p>}
+                    <div className="flex gap-2 mt-3">
+                      <Link to={`/book?type=${svc.name.toLowerCase().includes("remote") ? "ron" : "in_person"}`}>
+                        <Button size="sm" className="text-xs bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
 
