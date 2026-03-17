@@ -236,6 +236,52 @@ export default function RonInfo() {
         </div>
       </section>
 
+      {/* KBA & Compliance Info */}
+      <section className="py-12">
+        <div className="container mx-auto max-w-4xl px-4">
+          <h2 className="mb-6 text-center font-display text-2xl font-bold text-foreground">Knowledge-Based Authentication (KBA)</h2>
+          <Card className="border-border/50">
+            <CardContent className="p-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                <div>
+                  <h3 className="mb-2 font-display text-lg font-semibold">Required Under Ohio Law</h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Ohio Revised Code §147.66 requires Knowledge-Based Authentication (KBA) as part of the identity verification process for all Remote Online Notarization sessions. This is a security measure that protects both signers and relying parties.
+                  </p>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> 5 multiple-choice questions generated from public records</li>
+                    <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> Must answer 4 of 5 correctly within 2 minutes</li>
+                    <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> One retry permitted if initial attempt fails</li>
+                    <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> Questions drawn from credit history, address history, etc.</li>
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="mb-2 font-display text-lg font-semibold">Accepted KBA Providers</h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Ohio law requires the use of compliant KBA providers that meet STESSO (Secure Technology Standards for Electronic Submission and Storage of Online) standards. Commonly accepted providers include:
+                  </p>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-start gap-2"><Shield className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> <strong>IDology</strong> — Widely used in the RON industry, MISMO-compliant</li>
+                    <li className="flex items-start gap-2"><Shield className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> <strong>LexisNexis</strong> — Industry-standard identity verification platform</li>
+                    <li className="flex items-start gap-2"><Shield className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> <strong>Notarize / BlueNotary</strong> — Platform-integrated KBA</li>
+                  </ul>
+                  <p className="mt-3 text-xs text-muted-foreground italic">
+                    Our RON platform handles KBA automatically — signers complete the process as part of the session.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <div className="mt-6 text-center">
+            <Link to="/ron-check">
+              <Button variant="outline" size="lg">
+                <Monitor className="mr-2 h-4 w-4" /> Check RON Eligibility for Your Situation
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-16 text-center">
         <div className="container mx-auto px-4">
@@ -244,7 +290,10 @@ export default function RonInfo() {
           <p className="mb-6 mx-auto max-w-lg text-muted-foreground">
             Experience the convenience of remote notarization. Book a RON session and have your documents notarized from anywhere.
           </p>
-          <Link to="/book"><Button size="lg" className="bg-accent text-accent-foreground hover:bg-gold-dark">Schedule RON Session <ChevronRight className="ml-1 h-4 w-4" /></Button></Link>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Link to="/book"><Button size="lg" className="bg-accent text-accent-foreground hover:bg-gold-dark">Schedule RON Session <ChevronRight className="ml-1 h-4 w-4" /></Button></Link>
+            <Link to="/services"><Button size="lg" variant="outline">View All Services</Button></Link>
+          </div>
         </div>
       </section>
 

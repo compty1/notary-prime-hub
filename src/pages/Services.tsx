@@ -112,7 +112,7 @@ export default function Services() {
       {/* Hero */}
       <section className="bg-gradient-navy py-16">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="mb-4 font-display text-4xl font-bold text-primary-foreground md:text-5xl">Our Services</h1>
+          <h1 className="mb-4 font-display text-4xl font-bold text-primary-foreground md:text-5xl">Services</h1>
           <p className="mx-auto max-w-2xl text-lg text-primary-foreground/70">
             Fast, secure notary and document services for individuals and businesses in Ohio.
             Transparent pricing, secure storage, and business plans available.
@@ -156,11 +156,18 @@ export default function Services() {
                             </div>
                             <h3 className="mb-1 font-display text-base font-semibold text-foreground">{s.name}</h3>
                             <p className="mb-4 flex-1 text-sm text-muted-foreground">{s.description || s.short_description}</p>
-                            <Link to={`/book`}>
-                              <Button size="sm" variant="outline" className="w-full group-hover:bg-accent group-hover:text-accent-foreground transition-colors">
-                                Get Started <ChevronRight className="ml-1 h-3 w-3" />
-                              </Button>
-                            </Link>
+                            <div className="flex gap-2">
+                              <Link to={`/services/${s.id}`} className="flex-1">
+                                <Button size="sm" variant="outline" className="w-full">
+                                  More Info
+                                </Button>
+                              </Link>
+                              <Link to={`/book`} className="flex-1">
+                                <Button size="sm" variant="outline" className="w-full group-hover:bg-accent group-hover:text-accent-foreground transition-colors">
+                                  Get Started <ChevronRight className="ml-1 h-3 w-3" />
+                                </Button>
+                              </Link>
+                            </div>
                           </CardContent>
                         </Card>
                       </motion.div>
@@ -178,9 +185,11 @@ export default function Services() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="mb-4 font-display text-2xl font-bold text-foreground">Ready to Get Started?</h2>
           <p className="mb-6 text-muted-foreground">Book an appointment or contact us for a custom quote.</p>
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-4">
             <Link to="/book"><Button size="lg" className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Appointment</Button></Link>
             <Link to="/fee-calculator"><Button size="lg" variant="outline">View Pricing</Button></Link>
+            <Link to="/loan-signing"><Button size="lg" variant="outline">Loan Signing Partnership</Button></Link>
+            <Link to="/ron-check"><Button size="lg" variant="outline">RON Eligibility Checker</Button></Link>
           </div>
         </div>
       </section>

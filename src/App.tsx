@@ -43,6 +43,9 @@ import AdminLeadPortal from "./pages/admin/AdminLeadPortal";
 import NotFound from "./pages/NotFound";
 import TermsPrivacy from "./pages/TermsPrivacy";
 import AppointmentConfirmation from "./pages/AppointmentConfirmation";
+import RonEligibilityChecker from "./pages/RonEligibilityChecker";
+import LoanSigningServices from "./pages/LoanSigningServices";
+import ServiceDetail from "./pages/ServiceDetail";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +65,9 @@ const App = () => (
             <Route path="/notary-guide" element={<NotaryGuide />} />
             <Route path="/ron-info" element={<RonInfo />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/services/:serviceId" element={<ServiceDetail />} />
+            <Route path="/ron-check" element={<RonEligibilityChecker />} />
+            <Route path="/loan-signing" element={<LoanSigningServices />} />
             <Route path="/verify/:id" element={<VerifySeal />} />
             <Route path="/terms" element={<TermsPrivacy />} />
             <Route path="/templates" element={<DocumentTemplates />} />

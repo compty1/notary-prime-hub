@@ -245,7 +245,11 @@ export default function BlueNotarySession() {
                     <AlertCircle className="mt-0.5 h-5 w-5 text-amber-500" />
                     <div>
                       <p className="font-medium">Knowledge-Based Authentication (KBA)</p>
-                      <p className="text-sm text-muted-foreground">You'll be asked identity verification questions before the session</p>
+                      <p className="text-sm text-muted-foreground">
+                        Required under Ohio law (ORC §147.66). You'll answer 5 identity verification questions 
+                        from public records (4 of 5 correct within 2 minutes). KBA is provided through 
+                        MISMO-compliant providers such as IDology or LexisNexis.
+                      </p>
                     </div>
                   </div>
                 </div>
