@@ -279,10 +279,11 @@ export default function ClientPortal() {
         </motion.div>
 
         <Tabs defaultValue="appointments" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="appointments"><Calendar className="mr-1 h-4 w-4" /> Appointments</TabsTrigger>
             <TabsTrigger value="documents"><FileText className="mr-1 h-4 w-4" /> My Documents</TabsTrigger>
             <TabsTrigger value="status"><Shield className="mr-1 h-4 w-4" /> Status Tracker</TabsTrigger>
+            <TabsTrigger value="chat"><MessageSquare className="mr-1 h-4 w-4" /> Chat</TabsTrigger>
           </TabsList>
 
           {/* APPOINTMENTS TAB */}
