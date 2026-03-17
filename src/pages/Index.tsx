@@ -54,8 +54,43 @@ const testimonials = [
 export default function Index() {
   const [serviceType, setServiceType] = useState<"in_person" | "ron">("in_person");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [contactInfo, setContactInfo] = useState({ phone: "(614) 300-6890", email: "shane@shanegoble.com" });
+  const { toast } = useToast();
+  const [contactForm, setContactForm] = useState({ name: "", email: "", phone: "", service: "", message: "" });
+  const [submitting, setSubmitting] = useState(false);
 
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!contactForm.name.trim() || !contactForm.email.trim() || !contactForm.message.trim()) {
+      toast({ title: "Required fields missing", description: "Please fill in your name, email, and message.", variant: "destructive" });
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(contactForm.email.trim())) {
+      toast({ title: "Invalid email", description: "Please enter a valid email address.", variant: "destructive" });
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase.from("leads").insert({
+      name: contactForm.name.trim().slice(0, 100),
+      email: contactForm.email.trim().slice(0, 255),
+      phone: contactForm.phone.trim().slice(0, 20) || null,
+      service_needed: contactForm.service || null,
+      notes: contactForm.message.trim().slice(0, 1000),
+      source: "website_contact_form",
+      lead_type: "individual",
+      intent_score: "medium",
+      status: "new",
+    });
+    setSubmitting(false);
+    if (error) {
+      toast({ title: "Something went wrong", description: "Please try again or call us directly.", variant: "destructive" });
+    } else {
+      toast({ title: "Message sent!", description: "We'll get back to you within 24 hours." });
+      setContactForm({ name: "", email: "", phone: "", service: "", message: "" });
+    }
+  };
+
+  const contactInfo = contactInfoState;
   useEffect(() => {
     supabase.from("platform_settings").select("setting_key, setting_value")
       .in("setting_key", ["notary_phone", "notary_email"])
