@@ -273,6 +273,54 @@ export type Database = {
         }
         Relationships: []
       }
+      client_correspondence: {
+        Row: {
+          body: string
+          client_id: string
+          created_at: string
+          direction: string
+          from_address: string | null
+          handled_at: string | null
+          handled_by: string | null
+          id: string
+          notes: string | null
+          status: string
+          subject: string
+          to_address: string | null
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          client_id: string
+          created_at?: string
+          direction?: string
+          from_address?: string | null
+          handled_at?: string | null
+          handled_by?: string | null
+          id?: string
+          notes?: string | null
+          status?: string
+          subject: string
+          to_address?: string | null
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          client_id?: string
+          created_at?: string
+          direction?: string
+          from_address?: string | null
+          handled_at?: string | null
+          handled_by?: string | null
+          id?: string
+          notes?: string | null
+          status?: string
+          subject?: string
+          to_address?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       document_bundles: {
         Row: {
           bundle_type: string
@@ -459,6 +507,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notary_invites: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          email: string
+          id: string
+          invited_by: string
+          status: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          invited_by: string
+          status?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          invited_by?: string
+          status?: string
+        }
+        Relationships: []
       }
       notary_journal: {
         Row: {
@@ -725,7 +800,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "client"
+      app_role: "admin" | "client" | "notary"
       appointment_status:
         | "scheduled"
         | "confirmed"
@@ -869,7 +944,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "client"],
+      app_role: ["admin", "client", "notary"],
       appointment_status: [
         "scheduled",
         "confirmed",

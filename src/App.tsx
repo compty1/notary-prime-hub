@@ -37,6 +37,8 @@ import AdminApostille from "./pages/admin/AdminApostille";
 import AdminChat from "./pages/admin/AdminChat";
 import AdminBusinessClients from "./pages/admin/AdminBusinessClients";
 import AdminServices from "./pages/admin/AdminServices";
+import AdminTeam from "./pages/admin/AdminTeam";
+import AdminEmailManagement from "./pages/admin/AdminEmailManagement";
 import NotFound from "./pages/NotFound";
 import TermsPrivacy from "./pages/TermsPrivacy";
 import AppointmentConfirmation from "./pages/AppointmentConfirmation";
@@ -84,6 +86,8 @@ const App = () => (
               <Route path="resources" element={<AdminResources />} />
               <Route path="ai-assistant" element={<AdminAIAssistant />} />
               <Route path="audit-log" element={<AdminAuditLog />} />
+              <Route path="team" element={<AdminTeam />} />
+              <Route path="email-management" element={<AdminEmailManagement />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
             <Route path="*" element={<NotFound />} />

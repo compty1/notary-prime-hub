@@ -3,13 +3,14 @@ import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 
-type UserRole = "admin" | "client";
+type UserRole = "admin" | "client" | "notary";
 
 interface AuthContextType {
   session: Session | null;
   user: User | null;
   roles: UserRole[];
   isAdmin: boolean;
+  isNotary: boolean;
   loading: boolean;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
@@ -80,7 +81,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = async () => {
     await supabase.auth.signOut();
     setRoles([]);
-    // Redirect to home page
     window.location.href = "/";
   };
 
@@ -91,6 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         roles,
         isAdmin: roles.includes("admin"),
+        isNotary: roles.includes("notary"),
         loading,
         signUp,
         signIn,

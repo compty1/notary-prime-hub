@@ -7,7 +7,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
-  const { user, isAdmin, loading } = useAuth();
+  const { user, isAdmin, isNotary, loading } = useAuth();
 
   if (loading) {
     return (
@@ -18,7 +18,8 @@ const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps)
   }
 
   if (!user) return <Navigate to="/login" replace />;
-  if (requireAdmin && !isAdmin) return <Navigate to="/portal" replace />;
+  // Allow both admin and notary roles to access admin dashboard
+  if (requireAdmin && !isAdmin && !isNotary) return <Navigate to="/portal" replace />;
 
   return <>{children}</>;
 };
