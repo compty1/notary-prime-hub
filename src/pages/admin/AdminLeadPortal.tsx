@@ -66,6 +66,7 @@ export default function AdminLeadPortal() {
   const filtered = leads.filter((l) => {
     if (filterIntent !== "all" && l.intent_score !== filterIntent) return false;
     if (filterStatus !== "all" && l.status !== filterStatus) return false;
+    if (filterType !== "all" && l.lead_type !== filterType) return false;
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       return (l.name || "").toLowerCase().includes(term) ||
