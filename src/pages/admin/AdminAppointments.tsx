@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, ChevronRight } from "lucide-react";
+import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, ChevronRight, Eye, Loader2, DollarSign } from "lucide-react";
 
 const statuses = ["scheduled", "confirmed", "id_verification", "kba_pending", "in_session", "completed", "cancelled", "no_show"];
 
@@ -34,17 +34,31 @@ const statusColors: Record<string, string> = {
   no_show: "bg-gray-100 text-gray-800",
 };
 
+const formatDate = (dateStr: string) => new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+const formatTime = (timeStr: string) => {
+  const [h, m] = timeStr.split(":");
+  const hour = parseInt(h);
+  return `${hour > 12 ? hour - 12 : hour === 0 ? 12 : hour}:${m} ${hour >= 12 ? "PM" : "AM"}`;
+};
+
 export default function AdminAppointments() {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [receiptAppt, setReceiptAppt] = useState<any>(null);
   const [quickJournalAppt, setQuickJournalAppt] = useState<any>(null);
+  const [detailAppt, setDetailAppt] = useState<any>(null);
+  const [editNotes, setEditNotes] = useState("");
+  const [editAdminNotes, setEditAdminNotes] = useState("");
+  const [savingNotes, setSavingNotes] = useState(false);
   const [journalForm, setJournalForm] = useState({
     fees_charged: "5.00",
     oath_administered: false,
     notes: "",
+    platform_fees: "",
+    travel_fee: "",
   });
   const { toast } = useToast();
   const { user } = useAuth();
@@ -69,18 +83,27 @@ export default function AdminAppointments() {
   };
 
   const updateStatus = async (id: string, newStatus: string) => {
+    setUpdatingId(id);
     const { error } = await supabase.from("appointments").update({ status: newStatus as any }).eq("id", id);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Status updated", description: `→ ${newStatus.replace(/_/g, " ")}` });
-      // If completed, offer quick journal entry
+      // Write audit log
+      await supabase.from("audit_log").insert({
+        user_id: user?.id,
+        action: "appointment_status_changed",
+        entity_type: "appointment",
+        entity_id: id,
+        details: { new_status: newStatus },
+      });
       if (newStatus === "completed") {
         const appt = appointments.find((a) => a.id === id);
         if (appt) setQuickJournalAppt(appt);
       }
       fetchData();
     }
+    setUpdatingId(null);
   };
 
   const advanceStatus = (appt: any) => {
@@ -88,31 +111,66 @@ export default function AdminAppointments() {
     if (next) updateStatus(appt.id, next);
   };
 
+  const openDetail = (appt: any) => {
+    setDetailAppt(appt);
+    setEditNotes(appt.notes || "");
+    setEditAdminNotes(appt.admin_notes || "");
+  };
+
+  const saveNotes = async () => {
+    if (!detailAppt) return;
+    setSavingNotes(true);
+    const { error } = await supabase.from("appointments").update({
+      notes: editNotes || null,
+      admin_notes: editAdminNotes || null,
+    }).eq("id", detailAppt.id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Notes saved" });
+      setDetailAppt({ ...detailAppt, notes: editNotes, admin_notes: editAdminNotes });
+      fetchData();
+    }
+    setSavingNotes(false);
+  };
+
   const saveQuickJournal = async () => {
     if (!quickJournalAppt || !user) return;
+    const feesCharged = parseFloat(journalForm.fees_charged) || 5;
+    const platformFees = journalForm.platform_fees ? parseFloat(journalForm.platform_fees) : null;
+    const travelFee = journalForm.travel_fee ? parseFloat(journalForm.travel_fee) : null;
+    const netProfit = feesCharged - (platformFees || 0) - (travelFee || 0);
+
     const { error } = await supabase.from("notary_journal").insert({
       appointment_id: quickJournalAppt.id,
       signer_name: getClientName(quickJournalAppt.client_id),
       document_type: quickJournalAppt.service_type,
-      service_performed: "acknowledgment",
+      service_performed: quickJournalAppt.service_type?.toLowerCase().includes("affidavit") ? "jurat" : "acknowledgment",
       notarization_type: quickJournalAppt.notarization_type,
-      fees_charged: parseFloat(journalForm.fees_charged) || 5,
+      fees_charged: feesCharged,
       oath_administered: journalForm.oath_administered,
       oath_timestamp: journalForm.oath_administered ? new Date().toISOString() : null,
       notes: journalForm.notes || null,
+      platform_fees: platformFees,
+      travel_fee: travelFee,
+      net_profit: netProfit,
       created_by: user.id,
     });
     if (error) {
       toast({ title: "Journal error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Journal entry saved" });
+      // Audit log
+      await supabase.from("audit_log").insert({
+        user_id: user.id,
+        action: "journal_entry_created",
+        entity_type: "notary_journal",
+        entity_id: quickJournalAppt.id,
+        details: { fees_charged: feesCharged, net_profit: netProfit },
+      });
       setQuickJournalAppt(null);
-      setJournalForm({ fees_charged: "5.00", oath_administered: false, notes: "" });
+      setJournalForm({ fees_charged: "5.00", oath_administered: false, notes: "", platform_fees: "", travel_fee: "" });
     }
-  };
-
-  const generateReceipt = (appt: any) => {
-    setReceiptAppt(appt);
   };
 
   return (
@@ -143,7 +201,7 @@ export default function AdminAppointments() {
           {appointments.map((appt) => (
             <Card key={appt.id} className="border-border/50">
               <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 cursor-pointer" onClick={() => openDetail(appt)}>
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10">
                     {appt.notarization_type === "ron" ? <Monitor className="h-5 w-5 text-accent" /> : <MapPin className="h-5 w-5 text-accent" />}
                   </div>
@@ -151,27 +209,34 @@ export default function AdminAppointments() {
                     <p className="font-medium text-foreground">{appt.service_type}</p>
                     <p className="text-xs text-muted-foreground">{getClientName(appt.client_id)}</p>
                     <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {appt.scheduled_date}</span>
-                      <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {appt.scheduled_time}</span>
+                      <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {formatDate(appt.scheduled_date)}</span>
+                      <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {formatTime(appt.scheduled_time)}</span>
                     </div>
+                    {appt.location && appt.location !== "Remote" && (
+                      <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+                        <MapPin className="h-3 w-3" /> {appt.location}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  {/* Quick advance button */}
+                  <Button size="sm" variant="ghost" className="text-xs" onClick={() => openDetail(appt)}>
+                    <Eye className="mr-1 h-3 w-3" /> Details
+                  </Button>
                   {statusFlow[appt.status] && (
                     <Button
                       size="sm"
                       variant="outline"
                       className="text-xs"
                       onClick={() => advanceStatus(appt)}
+                      disabled={updatingId === appt.id}
                     >
-                      <ChevronRight className="mr-1 h-3 w-3" />
+                      {updatingId === appt.id ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <ChevronRight className="mr-1 h-3 w-3" />}
                       {statusFlow[appt.status].replace(/_/g, " ")}
                     </Button>
                   )}
-                  {/* Receipt for completed */}
                   {appt.status === "completed" && (
-                    <Button size="sm" variant="ghost" className="text-xs" onClick={() => generateReceipt(appt)}>
+                    <Button size="sm" variant="ghost" className="text-xs" onClick={() => setReceiptAppt(appt)}>
                       <Printer className="mr-1 h-3 w-3" /> Receipt
                     </Button>
                   )}
@@ -192,6 +257,42 @@ export default function AdminAppointments() {
         </div>
       )}
 
+      {/* Appointment Detail Dialog */}
+      <Dialog open={!!detailAppt} onOpenChange={() => setDetailAppt(null)}>
+        <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display">Appointment Details</DialogTitle>
+          </DialogHeader>
+          {detailAppt && (
+            <div className="space-y-4">
+              <div className="rounded-lg bg-muted/50 p-3 text-sm space-y-2">
+                <div className="flex justify-between"><span className="text-muted-foreground">Client</span><span className="font-medium">{getClientName(detailAppt.client_id)}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Service</span><span className="font-medium">{detailAppt.service_type}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Type</span><span className="font-medium">{detailAppt.notarization_type === "ron" ? "RON" : "In-Person"}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Date</span><span className="font-medium">{formatDate(detailAppt.scheduled_date)}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Time</span><span className="font-medium">{formatTime(detailAppt.scheduled_time)}</span></div>
+                {detailAppt.location && <div className="flex justify-between"><span className="text-muted-foreground">Location</span><span className="font-medium text-right max-w-[60%]">{detailAppt.location}</span></div>}
+                {detailAppt.estimated_price && <div className="flex justify-between"><span className="text-muted-foreground">Est. Price</span><span className="font-medium">${parseFloat(detailAppt.estimated_price).toFixed(2)}</span></div>}
+                <div className="flex justify-between"><span className="text-muted-foreground">Status</span><Badge className={statusColors[detailAppt.status]}>{detailAppt.status.replace(/_/g, " ")}</Badge></div>
+              </div>
+
+              <div>
+                <Label>Client Notes</Label>
+                <Textarea value={editNotes} onChange={(e) => setEditNotes(e.target.value)} rows={3} placeholder="Client-visible notes..." />
+              </div>
+              <div>
+                <Label>Admin Notes (internal)</Label>
+                <Textarea value={editAdminNotes} onChange={(e) => setEditAdminNotes(e.target.value)} rows={3} placeholder="Internal notes, session observations..." />
+              </div>
+              <Button onClick={saveNotes} disabled={savingNotes} className="w-full bg-accent text-accent-foreground hover:bg-gold-dark">
+                {savingNotes ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}
+                Save Notes
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* Quick Journal Entry Dialog */}
       <Dialog open={!!quickJournalAppt} onOpenChange={() => setQuickJournalAppt(null)}>
         <DialogContent className="sm:max-w-md">
@@ -206,33 +307,30 @@ export default function AdminAppointments() {
               <div className="rounded-lg bg-muted/50 p-3 text-sm space-y-1">
                 <p><strong>Client:</strong> {getClientName(quickJournalAppt.client_id)}</p>
                 <p><strong>Service:</strong> {quickJournalAppt.service_type}</p>
-                <p><strong>Date:</strong> {quickJournalAppt.scheduled_date}</p>
+                <p><strong>Date:</strong> {formatDate(quickJournalAppt.scheduled_date)}</p>
                 <p><strong>Type:</strong> {quickJournalAppt.notarization_type === "ron" ? "RON" : "In-Person"}</p>
               </div>
               <div>
                 <Label>Fee Charged ($)</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={journalForm.fees_charged}
-                  onChange={(e) => setJournalForm({ ...journalForm, fees_charged: e.target.value })}
-                />
+                <Input type="number" step="0.01" value={journalForm.fees_charged} onChange={(e) => setJournalForm({ ...journalForm, fees_charged: e.target.value })} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Platform Fees ($)</Label>
+                  <Input type="number" step="0.01" value={journalForm.platform_fees} onChange={(e) => setJournalForm({ ...journalForm, platform_fees: e.target.value })} placeholder="0.00" />
+                </div>
+                <div>
+                  <Label>Travel Fee ($)</Label>
+                  <Input type="number" step="0.01" value={journalForm.travel_fee} onChange={(e) => setJournalForm({ ...journalForm, travel_fee: e.target.value })} placeholder="0.00" />
+                </div>
               </div>
               <div className="flex items-center gap-3">
-                <Switch
-                  checked={journalForm.oath_administered}
-                  onCheckedChange={(v) => setJournalForm({ ...journalForm, oath_administered: v })}
-                />
+                <Switch checked={journalForm.oath_administered} onCheckedChange={(v) => setJournalForm({ ...journalForm, oath_administered: v })} />
                 <Label>Oath/Affirmation Administered</Label>
               </div>
               <div>
                 <Label>Notes</Label>
-                <Textarea
-                  value={journalForm.notes}
-                  onChange={(e) => setJournalForm({ ...journalForm, notes: e.target.value })}
-                  rows={2}
-                  placeholder="Any session notes..."
-                />
+                <Textarea value={journalForm.notes} onChange={(e) => setJournalForm({ ...journalForm, notes: e.target.value })} rows={2} placeholder="Any session notes..." />
               </div>
             </div>
           )}
@@ -252,7 +350,7 @@ export default function AdminAppointments() {
             <DialogTitle className="font-display">Notarization Receipt</DialogTitle>
           </DialogHeader>
           {receiptAppt && (
-            <div className="space-y-4 print:p-8" id="receipt-content">
+            <div className="space-y-4" id="receipt-content">
               <div className="text-center border-b border-border pb-4">
                 <h2 className="font-display text-xl font-bold text-foreground">Shane Goble</h2>
                 <p className="text-sm text-muted-foreground">Ohio Commissioned Notary Public</p>
@@ -262,30 +360,16 @@ export default function AdminAppointments() {
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">Receipt of Notarial Act</p>
               </div>
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Date of Service</span>
-                  <span className="font-medium">{receiptAppt.scheduled_date}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Time</span>
-                  <span className="font-medium">{receiptAppt.scheduled_time}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Client</span>
-                  <span className="font-medium">{getClientName(receiptAppt.client_id)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Service</span>
-                  <span className="font-medium">{receiptAppt.service_type}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Notarization Type</span>
-                  <span className="font-medium">{receiptAppt.notarization_type === "ron" ? "Remote Online (RON)" : "In-Person"}</span>
-                </div>
-                {receiptAppt.location && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Location</span>
-                    <span className="font-medium">{receiptAppt.location}</span>
+                <div className="flex justify-between"><span className="text-muted-foreground">Date of Service</span><span className="font-medium">{formatDate(receiptAppt.scheduled_date)}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Time</span><span className="font-medium">{formatTime(receiptAppt.scheduled_time)}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Client</span><span className="font-medium">{getClientName(receiptAppt.client_id)}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Service</span><span className="font-medium">{receiptAppt.service_type}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Notarization Type</span><span className="font-medium">{receiptAppt.notarization_type === "ron" ? "Remote Online (RON)" : "In-Person"}</span></div>
+                {receiptAppt.location && <div className="flex justify-between"><span className="text-muted-foreground">Location</span><span className="font-medium">{receiptAppt.location}</span></div>}
+                {receiptAppt.estimated_price && (
+                  <div className="flex justify-between border-t border-border pt-2 mt-2">
+                    <span className="text-muted-foreground">Estimated Fee</span>
+                    <span className="font-bold">${parseFloat(receiptAppt.estimated_price).toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between border-t border-border pt-2 mt-2">
@@ -304,10 +388,7 @@ export default function AdminAppointments() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setReceiptAppt(null)}>Close</Button>
-            <Button
-              onClick={() => window.print()}
-              className="bg-accent text-accent-foreground hover:bg-gold-dark"
-            >
+            <Button onClick={() => window.print()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
               <Printer className="mr-1 h-4 w-4" /> Print Receipt
             </Button>
           </DialogFooter>
