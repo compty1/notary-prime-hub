@@ -7,6 +7,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { MapPin, Monitor, FileText, Shield, Clock, CheckCircle, Star, ChevronRight, Phone, Mail, Scale, Menu } from "lucide-react";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
