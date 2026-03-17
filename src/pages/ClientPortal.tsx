@@ -84,11 +84,16 @@ export default function ClientPortal() {
   const [chatInput, setChatInput] = useState("");
   const [sendingChat, setSendingChat] = useState(false);
   const chatEndRef = React.useRef<HTMLDivElement>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   // AI explain
   const [explaining, setExplaining] = useState(false);
   const [explanation, setExplanation] = useState<string | null>(null);
   const [explainDialogOpen, setExplainDialogOpen] = useState(false);
+
+  // Correspondence & Apostille
+  const [correspondence, setCorrespondence] = useState<any[]>([]);
+  const [apostilleRequests, setApostilleRequests] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) return;
