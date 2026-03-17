@@ -471,8 +471,10 @@ export default function BookAppointment() {
     }).select("id").single();
 
     if (error) {
+      localStorage.removeItem(BOOKING_STORAGE_KEY);
       toast({ title: "Booking failed", description: error.message, variant: "destructive" });
     } else {
+      localStorage.removeItem(BOOKING_STORAGE_KEY);
       // Trigger confirmation email via edge function (fire-and-forget)
       try {
         supabase.functions.invoke("send-appointment-emails", {
