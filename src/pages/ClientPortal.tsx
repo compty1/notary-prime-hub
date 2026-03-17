@@ -103,6 +103,7 @@ export default function ClientPortal() {
   const [apostilleForm, setApostilleForm] = useState({ document_description: "", notes: "", destination_country: "", document_count: "1" });
   const [submittingApostille, setSubmittingApostille] = useState(false);
   const [payingPaymentId, setPayingPaymentId] = useState<string | null>(null);
+  const [zoomLink, setZoomLink] = useState<string>("");
 
   useEffect(() => {
     if (!user) return;
