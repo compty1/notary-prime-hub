@@ -592,6 +592,18 @@ export default function BookAppointment() {
                         <span className="font-medium flex items-center gap-1"><Shield className="h-3 w-3 text-emerald-500" /> {idData.id_type}</span>
                       </div>
                     )}
+                    {documentCount > 1 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Documents</span>
+                        <span className="font-medium">{documentCount} documents (batch session)</span>
+                      </div>
+                    )}
+                    {docAnalysis && !docAnalysis.error && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Detected</span>
+                        <span className="font-medium">{docAnalysis.document_name} ({docAnalysis.notarization_method})</span>
+                      </div>
+                    )}
                     {notes && (
                       <div className="text-sm">
                         <span className="text-muted-foreground">Notes: </span>
