@@ -653,7 +653,7 @@ export default function BookAppointment() {
                            )}
                          </div>
                         {docAnalysis.special_requirements?.length > 0 && (
-                          <div className="rounded bg-amber-50 p-2 text-amber-700">
+                          <div className="rounded bg-destructive/10 p-2 text-destructive">
                             {docAnalysis.special_requirements.map((r: string, i: number) => (
                               <p key={i} className="flex items-start gap-1"><AlertTriangle className="mt-0.5 h-3 w-3 flex-shrink-0" /> {r}</p>
                             ))}
