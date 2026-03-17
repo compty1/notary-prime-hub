@@ -19,7 +19,8 @@ type NotarizationType = "in_person" | "ron";
 
 const BOOKING_STORAGE_KEY = "pending_booking_data";
 
-const serviceTypes = [
+// Fallback service types if DB query fails
+const fallbackServiceTypes = [
   "Real Estate Documents",
   "Power of Attorney",
   "Affidavits & Sworn Statements",
