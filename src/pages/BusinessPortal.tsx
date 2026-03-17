@@ -172,7 +172,7 @@ export default function BusinessPortal() {
                 <div className="flex items-center justify-between">
                   <h2 className="font-display text-lg font-semibold">Bulk Document Upload</h2>
                   <div>
-                    <input ref={fileInputRef} type="file" multiple className="hidden" onChange={handleBulkUpload} />
+                    <input ref={fileInputRef} type="file" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.tiff,.xlsx,.csv" className="hidden" onChange={handleBulkUpload} />
                     <Button size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="bg-accent text-accent-foreground hover:bg-gold-dark">
                       {uploading ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />} Upload Files
                     </Button>
