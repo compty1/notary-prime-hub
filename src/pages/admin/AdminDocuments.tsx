@@ -263,6 +263,24 @@ export default function AdminDocuments() {
           })}
         </div>
       )}
+
+      {/* Preview Dialog */}
+      <Dialog open={!!previewDoc} onOpenChange={() => { setPreviewDoc(null); setPreviewUrl(null); }}>
+        <DialogContent className="max-w-3xl max-h-[85vh]">
+          <DialogHeader>
+            <DialogTitle className="font-display">{previewDoc?.file_name}</DialogTitle>
+          </DialogHeader>
+          {previewUrl ? (
+            previewDoc?.file_name?.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+              <img src={previewUrl} alt={previewDoc.file_name} className="max-h-[65vh] w-full object-contain rounded" />
+            ) : (
+              <iframe src={previewUrl} className="w-full h-[65vh] rounded border border-border" title="Document Preview" />
+            )
+          ) : (
+            <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-accent" /></div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

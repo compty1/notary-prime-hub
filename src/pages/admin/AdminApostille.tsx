@@ -124,16 +124,26 @@ export default function AdminApostille() {
         <DialogContent>
           <DialogHeader><DialogTitle className="font-display">New Apostille Request</DialogTitle></DialogHeader>
           <div className="space-y-4">
+            <div>
+              <Label>Client *</Label>
+              <Select value={newClientId} onValueChange={setNewClientId}>
+                <SelectTrigger><SelectValue placeholder="Select client..." /></SelectTrigger>
+                <SelectContent>
+                  {profiles.map((p) => (
+                    <SelectItem key={p.user_id} value={p.user_id}>{p.full_name || p.email || p.user_id.slice(0, 8)}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div><Label>Document Description</Label><Input value={newDesc} onChange={(e) => setNewDesc(e.target.value)} placeholder="e.g., Birth Certificate for international use" /></div>
             <div><Label>Notes</Label><Textarea value={newNotes} onChange={(e) => setNewNotes(e.target.value)} placeholder="Additional details..." /></div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-            <Button className="bg-accent text-accent-foreground hover:bg-gold-dark" onClick={async () => {
-              // Admin creating on behalf — use a placeholder client_id
-              const { error } = await supabase.from("apostille_requests").insert({ document_description: newDesc, notes: newNotes, client_id: "00000000-0000-0000-0000-000000000000", fee: parseFloat(String(75)) } as any);
+            <Button className="bg-accent text-accent-foreground hover:bg-gold-dark" disabled={!newClientId || !newDesc} onClick={async () => {
+              const { error } = await supabase.from("apostille_requests").insert({ document_description: newDesc, notes: newNotes, client_id: newClientId, fee: 75 } as any);
               if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-              else { toast({ title: "Request created" }); setCreateOpen(false); setNewDesc(""); setNewNotes(""); }
+              else { toast({ title: "Request created" }); setCreateOpen(false); setNewDesc(""); setNewNotes(""); setNewClientId(""); }
             }}>Create</Button>
           </DialogFooter>
         </DialogContent>
