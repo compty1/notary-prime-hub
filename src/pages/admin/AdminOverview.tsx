@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Users, CheckCircle, Clock, DollarSign } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar, Users, CheckCircle, Clock, DollarSign, Plus, BookMarked, FileText } from "lucide-react";
 import { motion } from "framer-motion";
 
 const statusColors: Record<string, string> = {
@@ -16,6 +18,13 @@ const statusColors: Record<string, string> = {
   no_show: "bg-gray-100 text-gray-800",
 };
 
+const formatDate = (dateStr: string) => new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
+const formatTime = (timeStr: string) => {
+  const [h, m] = timeStr.split(":");
+  const hour = parseInt(h);
+  return `${hour > 12 ? hour - 12 : hour === 0 ? 12 : hour}:${m} ${hour >= 12 ? "PM" : "AM"}`;
+};
+
 export default function AdminOverview() {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [stats, setStats] = useState({ total: 0, upcoming: 0, completed: 0, clients: 0, revenue: 0 });
@@ -23,7 +32,6 @@ export default function AdminOverview() {
 
   useEffect(() => {
     const fetchData = async () => {
-      // Use proper count queries for accurate stats
       const [
         { count: totalAppts },
         { count: upcomingCount },
@@ -36,36 +44,17 @@ export default function AdminOverview() {
         supabase.from("appointments").select("*", { count: "exact", head: true }).in("status", ["scheduled", "confirmed"]),
         supabase.from("appointments").select("*", { count: "exact", head: true }).eq("status", "completed"),
         supabase.from("profiles").select("*", { count: "exact", head: true }),
-        supabase.from("appointments").select("*").order("scheduled_date", { ascending: false }).limit(20),
+        supabase.from("appointments").select("*").order("scheduled_date", { ascending: false }).limit(10),
         supabase.from("notary_journal").select("fees_charged"),
       ]);
 
       const totalRevenue = (journalData || []).reduce((sum: number, j: any) => sum + (parseFloat(j.fees_charged) || 0), 0);
-
       if (recentAppts) setAppointments(recentAppts);
-      setStats({
-        total: totalAppts || 0,
-        upcoming: upcomingCount || 0,
-        completed: completedCount || 0,
-        clients: clientCount || 0,
-        revenue: totalRevenue,
-      });
+      setStats({ total: totalAppts || 0, upcoming: upcomingCount || 0, completed: completedCount || 0, clients: clientCount || 0, revenue: totalRevenue });
       setLoading(false);
     };
     fetchData();
   }, []);
-
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-  };
-
-  const formatTime = (timeStr: string) => {
-    const [h, m] = timeStr.split(":");
-    const hour = parseInt(h);
-    const ampm = hour >= 12 ? "PM" : "AM";
-    const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
-    return `${displayHour}:${m} ${ampm}`;
-  };
 
   const statCards = [
     { label: "Total Appointments", value: stats.total, icon: Calendar, color: "text-blue-600" },
@@ -76,16 +65,30 @@ export default function AdminOverview() {
   ];
 
   if (loading) {
-    return (
-      <div className="flex justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" />
-      </div>
-    );
+    return <div className="flex justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" /></div>;
   }
 
   return (
     <div>
-      <h1 className="mb-6 font-display text-2xl font-bold text-foreground">Dashboard Overview</h1>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="font-display text-2xl font-bold text-foreground">Dashboard Overview</h1>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="mb-6 flex flex-wrap gap-2">
+        <Link to="/admin/appointments">
+          <Button size="sm" variant="outline"><Calendar className="mr-1 h-3 w-3" /> Today's Appointments</Button>
+        </Link>
+        <Link to="/admin/journal">
+          <Button size="sm" variant="outline"><BookMarked className="mr-1 h-3 w-3" /> New Journal Entry</Button>
+        </Link>
+        <Link to="/admin/documents">
+          <Button size="sm" variant="outline"><FileText className="mr-1 h-3 w-3" /> Review Documents</Button>
+        </Link>
+        <Link to="/admin/availability">
+          <Button size="sm" variant="outline"><Clock className="mr-1 h-3 w-3" /> Set Availability</Button>
+        </Link>
+      </div>
 
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {statCards.map((s, i) => (
@@ -131,9 +134,7 @@ export default function AdminOverview() {
                       <td className="px-4 py-3">{formatTime(a.scheduled_time)}</td>
                       <td className="px-4 py-3 font-medium">{a.service_type}</td>
                       <td className="px-4 py-3 capitalize">{a.notarization_type.replace("_", " ")}</td>
-                      <td className="px-4 py-3">
-                        <Badge className={statusColors[a.status] || "bg-muted"}>{a.status.replace(/_/g, " ")}</Badge>
-                      </td>
+                      <td className="px-4 py-3"><Badge className={statusColors[a.status] || "bg-muted"}>{a.status.replace(/_/g, " ")}</Badge></td>
                     </tr>
                   ))}
                 </tbody>
