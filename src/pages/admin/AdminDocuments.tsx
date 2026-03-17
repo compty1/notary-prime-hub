@@ -92,8 +92,11 @@ export default function AdminDocuments() {
         .select("*")
         .single();
 
+      const data = response.data as any;
+      const error = response.error as any;
+
       if (error) {
-        if (error.message.includes("duplicate") || error.message.includes("unique")) {
+        if (error.message?.includes("duplicate") || error.message?.includes("unique")) {
           toast({ title: "Verification already exists", description: "This document already has an active verification record." });
         } else {
           throw error;
@@ -104,7 +107,7 @@ export default function AdminDocuments() {
           user_id: user.id,
           action: "verification_created",
           entity_type: "e_seal_verification",
-          entity_id: data.id,
+          entity_id: data?.id,
           details: { document_id: doc.id },
         });
         toast({ title: "Verification published", description: "Public verification link created." });
