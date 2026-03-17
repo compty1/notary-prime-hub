@@ -145,6 +145,7 @@ export default function BookAppointment() {
   const [employerName, setEmployerName] = useState("");
   const [hireStartDate, setHireStartDate] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [customDocCount, setCustomDocCount] = useState(false);
 
   const NOTARIZATION_CATEGORIES = ["notarization", "authentication"];
   const requiresNotarizationType = (svcName: string) => {
@@ -1317,12 +1318,18 @@ export default function BookAppointment() {
                   {/* Batch Notarization */}
                   <div>
                     <Label>Number of Documents</Label>
-                    <div className="mt-1 flex items-center gap-2">
+                    <div className="mt-1 flex items-center gap-2 flex-wrap">
                       {[1, 2, 3, 4, 5].map((n) => (
-                        <Button key={n} type="button" size="sm" variant={documentCount === n ? "default" : "outline"} className={documentCount === n ? "bg-accent text-accent-foreground" : ""} onClick={() => setDocumentCount(n)}>
+                        <Button key={n} type="button" size="sm" variant={documentCount === n && !customDocCount ? "default" : "outline"} className={documentCount === n && !customDocCount ? "bg-accent text-accent-foreground" : ""} onClick={() => { setDocumentCount(n); setCustomDocCount(false); }}>
                           {n}
                         </Button>
                       ))}
+                      <Button type="button" size="sm" variant={customDocCount ? "default" : "outline"} className={customDocCount ? "bg-accent text-accent-foreground" : ""} onClick={() => { setCustomDocCount(true); setDocumentCount(6); }}>
+                        5+
+                      </Button>
+                      {customDocCount && (
+                        <Input type="number" min={6} max={50} value={documentCount} onChange={(e) => setDocumentCount(Math.max(6, Math.min(50, parseInt(e.target.value) || 6)))} className="w-20" />
+                      )}
                       <span className="text-xs text-muted-foreground">
                         {documentCount > 1 ? "Same session, separate journal entries" : ""}
                       </span>

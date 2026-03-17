@@ -157,15 +157,15 @@ export default function Index() {
             </div>
             <div>
               <span className="block font-display text-lg font-bold text-foreground">Shane Goble</span>
-              <span className="block text-xs text-muted-foreground">Notary Public — Ohio</span>
+              <span className="block text-xs text-muted-foreground">Notary Public & Document Services — Ohio</span>
             </div>
           </Link>
           <div className="hidden items-center gap-6 md:flex">
             <Link to="/services" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Services</Link>
-            <a href="#how-it-works" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">How It Works</a>
+            <Link to="/about" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">About</Link>
             <Link to="/templates" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Templates</Link>
+            <Link to="/digitize" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Digitize</Link>
             <Link to="/fee-calculator" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Pricing</Link>
-            <Link to="/ron-info" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">RON Info</Link>
             <a href="#faq" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">FAQ</a>
             <DarkModeToggle />
             <Link to="/login">
@@ -186,10 +186,10 @@ export default function Index() {
             <SheetContent side="right" className="w-64">
               <div className="mt-8 flex flex-col gap-4">
                 <Link to="/services" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Services</Link>
-                <a href="#how-it-works" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>How It Works</a>
+                <Link to="/about" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>About</Link>
                 <Link to="/templates" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Templates</Link>
+                <Link to="/digitize" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Digitize</Link>
                 <Link to="/fee-calculator" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Pricing</Link>
-                <Link to="/ron-info" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>RON Info</Link>
                 <hr className="border-border" />
                 <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="outline" className="w-full">Sign In</Button>
@@ -306,6 +306,16 @@ export default function Index() {
             <Clock className="h-4 w-4 text-accent" />
             <span>Same-Day Appointments Available</span>
           </div>
+        </div>
+      </section>
+
+      {/* Beyond Notarization Banner */}
+      <section className="bg-accent/5 border-b border-accent/10 py-4">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">Beyond notarization:</span> document digitization, secure cloud storage, form preparation, business services, and more.{" "}
+            <Link to="/services" className="text-accent hover:underline font-medium">View All Services →</Link>
+          </p>
         </div>
       </section>
 
@@ -487,7 +497,7 @@ export default function Index() {
             custom={1}
             className="mx-auto mb-12 max-w-xl text-center text-muted-foreground"
           >
-            Have a question or need notarization services? Fill out the form below and we'll respond within 24 hours.
+            Have a question or need notarization services? Fill out the form below and we'll respond within 24 hours — we typically respond within 2 hours during business hours.
           </motion.p>
           <motion.div
             initial="hidden"
@@ -643,6 +653,8 @@ export default function Index() {
                 <Link to="/fee-calculator" className="block hover:text-accent">Pricing</Link>
                 <Link to="/ron-info" className="block hover:text-accent">RON Information</Link>
                 <Link to="/notary-guide" className="block hover:text-accent">Notary Guide</Link>
+                <Link to="/about" className="block hover:text-accent">About</Link>
+                <Link to="/digitize" className="block hover:text-accent">Document Digitization</Link>
                 <Link to="/login" className="block hover:text-accent">Client Portal</Link>
               </div>
             </div>
