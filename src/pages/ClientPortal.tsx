@@ -125,6 +125,9 @@ export default function ClientPortal() {
       if (svcRes.data) setServices(svcRes.data);
       if (corrRes.data) setCorrespondence(corrRes.data);
       if (apoRes.data) setApostilleRequests(apoRes.data);
+      // Fetch Zoom link
+      const { data: zoomSetting } = await supabase.from("platform_settings").select("setting_value").eq("setting_key", "zoom_meeting_link").single();
+      if (zoomSetting?.setting_value) setZoomLink(zoomSetting.setting_value);
       if (profileRes.data) {
         setProfile(profileRes.data);
         setProfileForm({
