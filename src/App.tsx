@@ -27,6 +27,7 @@ import AdminResources from "./pages/admin/AdminResources";
 import AdminAIAssistant from "./pages/admin/AdminAIAssistant";
 import AdminAuditLog from "./pages/admin/AdminAuditLog";
 import NotFound from "./pages/NotFound";
+import TermsPrivacy from "./pages/TermsPrivacy";
 
 const queryClient = new QueryClient();
 
