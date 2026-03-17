@@ -186,10 +186,10 @@ export default function Index() {
             <SheetContent side="right" className="w-64">
               <div className="mt-8 flex flex-col gap-4">
                 <Link to="/services" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Services</Link>
-                <a href="#how-it-works" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>How It Works</a>
+                <Link to="/about" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>About</Link>
                 <Link to="/templates" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Templates</Link>
+                <Link to="/digitize" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Digitize</Link>
                 <Link to="/fee-calculator" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Pricing</Link>
-                <Link to="/ron-info" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>RON Info</Link>
                 <hr className="border-border" />
                 <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="outline" className="w-full">Sign In</Button>
