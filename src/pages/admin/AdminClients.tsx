@@ -7,9 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Users, Search, Phone, Calendar, Star, MapPin, Monitor, Mail, Download, Save, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Users, Search, Phone, Calendar, Star, MapPin, Monitor, Mail, Download, Save, Loader2, ChevronLeft, ChevronRight, Send } from "lucide-react";
 
 const statusColors: Record<string, string> = {
   scheduled: "bg-blue-100 text-blue-800",
@@ -34,6 +34,30 @@ export default function AdminClients() {
   const [adminNotes, setAdminNotes] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
   const [page, setPage] = useState(0);
+  // Message state
+  const [messageClient, setMessageClient] = useState<any>(null);
+  const [messageSubject, setMessageSubject] = useState("");
+  const [messageBody, setMessageBody] = useState("");
+  const [sendingMessage, setSendingMessage] = useState(false);
+
+  const sendClientMessage = async () => {
+    if (!messageClient?.email || !messageBody.trim()) return;
+    setSendingMessage(true);
+    try {
+      await supabase.functions.invoke("send-correspondence", {
+        body: { to_address: messageClient.email, subject: messageSubject, body: messageBody, client_id: messageClient.user_id },
+      });
+      toast({ title: "Message sent", description: `Email sent to ${messageClient.email}` });
+      await supabase.from("audit_log").insert({
+        user_id: user?.id, action: "client_messaged", entity_type: "profile",
+        entity_id: messageClient.user_id, details: { to: messageClient.email, subject: messageSubject },
+      });
+      setMessageClient(null);
+    } catch (err: any) {
+      toast({ title: "Send failed", description: err.message, variant: "destructive" });
+    }
+    setSendingMessage(false);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -187,6 +211,15 @@ export default function AdminClients() {
                   <Button size="sm" onClick={saveAdminNotes} disabled={savingNotes} className="mt-2 bg-accent text-accent-foreground hover:bg-gold-dark">
                     {savingNotes ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Save className="mr-1 h-3 w-3" />} Save Notes
                   </Button>
+                  {selectedClient.email && (
+                    <Button size="sm" variant="outline" className="mt-2 ml-2" onClick={() => {
+                      setMessageClient(selectedClient);
+                      setMessageSubject(`Message from Shane Goble Notary`);
+                      setMessageBody("");
+                    }}>
+                      <Mail className="mr-1 h-3 w-3" /> Message
+                    </Button>
+                  )}
                 </div>
                 <div>
                   <h4 className="mb-2 text-sm font-semibold text-foreground">Appointment History</h4>
@@ -209,6 +242,28 @@ export default function AdminClients() {
               </div>
             );
           })()}
+        </DialogContent>
+      </Dialog>
+
+      {/* Message Client Dialog */}
+      <Dialog open={!!messageClient} onOpenChange={() => setMessageClient(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader><DialogTitle className="font-display flex items-center gap-2"><Mail className="h-5 w-5 text-accent" /> Message Client</DialogTitle></DialogHeader>
+          {messageClient && (
+            <div className="space-y-4">
+              <div className="rounded-lg bg-muted/50 p-3 text-sm">
+                <p><strong>To:</strong> {messageClient.full_name || "Client"} ({messageClient.email})</p>
+              </div>
+              <div><Label>Subject</Label><Input value={messageSubject} onChange={(e) => setMessageSubject(e.target.value)} /></div>
+              <div><Label>Message</Label><Textarea value={messageBody} onChange={(e) => setMessageBody(e.target.value)} rows={5} placeholder="Type your message..." /></div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setMessageClient(null)}>Cancel</Button>
+            <Button onClick={sendClientMessage} disabled={sendingMessage || !messageBody.trim()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+              {sendingMessage ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Send className="mr-1 h-4 w-4" />} Send
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

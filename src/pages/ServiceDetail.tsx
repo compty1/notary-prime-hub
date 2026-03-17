@@ -72,8 +72,9 @@ const categoryFaqs: Record<string, { q: string; a: string }[]> = {
   ],
   verification: [
     { q: "When must the I-9 be completed?", a: "Section 1 must be completed by the employee's first day of work. Section 2 must be completed within 3 business days of the start date." },
-    { q: "What are acceptable documents?", a: "List A documents (passport, permanent resident card) establish both identity and work authorization. Alternatively, one List B document (driver's license) plus one List C document (Social Security card) together." },
+    { q: "What are acceptable I-9 documents?", a: "You need ONE List A document (U.S. Passport, Passport Card, Permanent Resident Card/Green Card, Employment Authorization Document/EAD I-766, or Foreign passport with I-94) — which proves both identity AND work authorization. OR you can bring ONE List B document (driver's license, state ID, school ID with photo, voter registration card, or U.S. military card) PLUS ONE List C document (unrestricted Social Security card, U.S. birth certificate, or Certification of Birth Abroad FS-545/DS-1350)." },
     { q: "Can I-9 verification be done remotely?", a: "DHS has authorized remote document examination as an alternative procedure. However, in-person physical examination is still the standard method." },
+    { q: "What is the notary's role in I-9?", a: "The notary acts as an authorized representative to examine the employee's identity and work authorization documents in Section 2. The notary does not provide legal advice — for immigration questions, consult an attorney." },
   ],
   notarization: [
     { q: "What is RON?", a: "Remote Online Notarization (RON) allows you to have documents notarized via a secure video call. Ohio authorizes RON under ORC §147.65-.66." },

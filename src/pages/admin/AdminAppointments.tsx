@@ -12,7 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, ChevronRight, Eye, Loader2, DollarSign, Plus, Video, ChevronLeft, Filter } from "lucide-react";
+import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, ChevronRight, Eye, Loader2, DollarSign, Plus, Video, ChevronLeft, Filter, Mail, Send } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const PAGE_SIZE = 20;
@@ -63,6 +63,11 @@ export default function AdminAppointments() {
   const [savingNotes, setSavingNotes] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [creatingAppt, setCreatingAppt] = useState(false);
+  // Message client state
+  const [messageAppt, setMessageAppt] = useState<any>(null);
+  const [messageSubject, setMessageSubject] = useState("");
+  const [messageBody, setMessageBody] = useState("");
+  const [sendingMessage, setSendingMessage] = useState(false);
   const [newAppt, setNewAppt] = useState({
     client_id: "",
     service_type: "",
@@ -82,6 +87,45 @@ export default function AdminAppointments() {
   });
   const { toast } = useToast();
   const { user } = useAuth();
+
+  const openMessageDialog = (appt: any) => {
+    const clientProfile = profiles.find((p) => p.user_id === appt.client_id);
+    setMessageAppt(appt);
+    setMessageSubject(`Regarding your ${appt.service_type} appointment on ${formatDate(appt.scheduled_date)}`);
+    setMessageBody("");
+  };
+
+  const sendMessage = async () => {
+    if (!messageAppt || !messageBody.trim()) return;
+    const clientProfile = profiles.find((p) => p.user_id === messageAppt.client_id);
+    if (!clientProfile?.email) {
+      toast({ title: "No email", description: "This client has no email on file.", variant: "destructive" });
+      return;
+    }
+    setSendingMessage(true);
+    try {
+      await supabase.functions.invoke("send-correspondence", {
+        body: {
+          to_address: clientProfile.email,
+          subject: messageSubject,
+          body: messageBody,
+          client_id: messageAppt.client_id,
+        },
+      });
+      toast({ title: "Message sent", description: `Email sent to ${clientProfile.email}` });
+      await supabase.from("audit_log").insert({
+        user_id: user?.id,
+        action: "client_messaged",
+        entity_type: "appointment",
+        entity_id: messageAppt.id,
+        details: { to: clientProfile.email, subject: messageSubject },
+      });
+      setMessageAppt(null);
+    } catch (err: any) {
+      toast({ title: "Send failed", description: err.message, variant: "destructive" });
+    }
+    setSendingMessage(false);
+  };
 
   const getDateFilter = () => {
     const today = new Date();
@@ -392,6 +436,9 @@ export default function AdminAppointments() {
                       {statusFlow[appt.status].replace(/_/g, " ")}
                     </Button>
                   )}
+                  <Button size="sm" variant="ghost" className="text-xs" onClick={(e) => { e.stopPropagation(); openMessageDialog(appt); }}>
+                    <Mail className="mr-1 h-3 w-3" /> Message
+                  </Button>
                   {appt.notarization_type === "ron" && ["kba_pending", "in_session"].includes(appt.status) && (
                     <Link to={`/ron-session?id=${appt.id}`}>
                       <Button size="sm" className="bg-purple-600 text-white hover:bg-purple-700 text-xs">
@@ -593,6 +640,9 @@ export default function AdminAppointments() {
                 {savingNotes ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}
                 Save Notes
               </Button>
+              <Button variant="outline" className="w-full" onClick={() => { setDetailAppt(null); openMessageDialog(detailAppt); }}>
+                <Mail className="mr-1 h-4 w-4" /> Message Client
+              </Button>
             </div>
             );
           })()}
@@ -696,6 +746,43 @@ export default function AdminAppointments() {
             <Button variant="outline" onClick={() => setReceiptAppt(null)}>Close</Button>
             <Button onClick={() => window.print()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
               <Printer className="mr-1 h-4 w-4" /> Print Receipt
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Message Client Dialog */}
+      <Dialog open={!!messageAppt} onOpenChange={() => setMessageAppt(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center gap-2">
+              <Mail className="h-5 w-5 text-accent" /> Message Client
+            </DialogTitle>
+          </DialogHeader>
+          {messageAppt && (() => {
+            const cp = profiles.find((p) => p.user_id === messageAppt.client_id);
+            return (
+              <div className="space-y-4">
+                <div className="rounded-lg bg-muted/50 p-3 text-sm space-y-1">
+                  <p><strong>To:</strong> {cp?.full_name || "Unknown"} ({cp?.email || "No email"})</p>
+                  <p><strong>Re:</strong> {messageAppt.service_type} — {formatDate(messageAppt.scheduled_date)}</p>
+                </div>
+                <div>
+                  <Label>Subject</Label>
+                  <Input value={messageSubject} onChange={(e) => setMessageSubject(e.target.value)} />
+                </div>
+                <div>
+                  <Label>Message</Label>
+                  <Textarea value={messageBody} onChange={(e) => setMessageBody(e.target.value)} rows={5} placeholder="Type your message to the client..." />
+                </div>
+              </div>
+            );
+          })()}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setMessageAppt(null)}>Cancel</Button>
+            <Button onClick={sendMessage} disabled={sendingMessage || !messageBody.trim()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+              {sendingMessage ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Send className="mr-1 h-4 w-4" />}
+              Send
             </Button>
           </DialogFooter>
         </DialogContent>
