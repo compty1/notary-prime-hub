@@ -759,7 +759,120 @@ export default function BookAppointment() {
                 </div>
               ))}
 
-              {step === 1 && (!serviceType || requiresNotarizationType(serviceType)) && null}
+              {/* Non-notarial step 2 = date/time (same as notarial step 3) */}
+              {isNonNotarial && step === 2 && (
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="date">Date</Label>
+                    <Input id="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} min={new Date().toISOString().split("T")[0]} />
+                  </div>
+                  {date && loadingSlots && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" /> Checking availability...
+                    </div>
+                  )}
+                  {date && !loadingSlots && availableSlots.length === 0 && suggestedSlots.length > 0 && (
+                    <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
+                      <p className="mb-2 flex items-center gap-1.5 text-sm font-medium text-destructive">
+                        <AlertTriangle className="h-4 w-4" /> No availability on this date
+                      </p>
+                      <p className="mb-3 text-xs text-muted-foreground">Here are the nearest available slots:</p>
+                      <div className="space-y-2">
+                        {suggestedSlots.map((s, i) => (
+                          <Button key={i} variant="outline" size="sm" className="w-full justify-start text-xs" onClick={() => { setDate(s.date); setTime(s.slot.start_time); }}>
+                            <Calendar className="mr-2 h-3 w-3" />
+                            {new Date(s.date + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })} — {formatTime(s.slot.start_time)} to {formatTime(s.slot.end_time)}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {date && availableSlots.length > 0 && (
+                    <div>
+                      <Label>Available Time Slots</Label>
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        {availableSlots.map((slot) => (
+                          <Button key={slot.id} variant={time === slot.start_time ? "default" : "outline"} size="sm" className={time === slot.start_time ? "bg-accent text-accent-foreground" : ""} onClick={() => setTime(slot.start_time)}>
+                            <Clock className="mr-1 h-3 w-3" /> {formatTime(slot.start_time)}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {availableSlots.length === 0 && !loadingSlots && date && suggestedSlots.length === 0 && (
+                    <div>
+                      <Label htmlFor="time">Time</Label>
+                      <Input id="time" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+                    </div>
+                  )}
+                  {notarizationType === "in_person" && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Label>Meeting Location</Label>
+                        <Button type="button" variant="outline" size="sm" className="text-xs" onClick={handleUseLocation} disabled={locatingUser}>
+                          {locatingUser ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <LocateFixed className="mr-1 h-3 w-3" />} Use My Location
+                        </Button>
+                      </div>
+                      <AddressAutocomplete value={clientAddress} onChange={setClientAddress} userLat={userLat} userLon={userLon} onSelect={(s) => { setClientAddress(s.address); setClientCity(s.city); setClientState(s.state); setClientZip(s.zip); setLocation(s.fullAddress); }} />
+                      <div className="grid grid-cols-3 gap-2">
+                        <Input placeholder="City" value={clientCity} onChange={(e) => setClientCity(e.target.value)} />
+                        <Input placeholder="State" value={clientState} onChange={(e) => setClientState(e.target.value)} maxLength={2} />
+                        <Input placeholder="Zip Code" value={clientZip} onChange={(e) => setClientZip(e.target.value)} maxLength={5} />
+                      </div>
+                    </div>
+                  )}
+                  <div>
+                    <Label htmlFor="notes">Additional Notes</Label>
+                    <Textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Special instructions, etc." rows={3} />
+                  </div>
+                </div>
+              )}
+              {/* Non-notarial step 3 = review (same as notarial step 4) */}
+              {isNonNotarial && step === 3 && (
+                <div className="space-y-4">
+                  <div className="rounded-lg bg-muted/50 p-4 space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Service</span>
+                      <span className="font-medium">{serviceType}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Date</span>
+                      <span className="font-medium flex items-center gap-1"><Calendar className="h-3 w-3" /> {new Date(date + "T00:00:00").toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Time</span>
+                      <span className="font-medium">{formatTime(time)}</span>
+                    </div>
+                    {(clientAddress || location) && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Location</span>
+                        <span className="font-medium text-right max-w-[60%]">{clientAddress ? `${clientAddress}, ${clientCity}, ${clientState} ${clientZip}` : location}</span>
+                      </div>
+                    )}
+                    {notes && <div className="text-sm"><span className="text-muted-foreground">Notes: </span><span>{notes}</span></div>}
+                  </div>
+                  {estimatedPrice !== null && (
+                    <div className="rounded-lg border border-accent/30 bg-accent/5 p-4 space-y-2">
+                      <p className="text-sm font-medium flex items-center gap-2"><DollarSign className="h-4 w-4 text-accent" /> Estimated Pricing</p>
+                      <div className="space-y-1 text-sm">
+                        <div className="flex justify-between border-t border-border pt-1 font-semibold">
+                          <span>Estimated Total</span>
+                          <span className="text-accent">${estimatedPrice.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {!user && (
+                    <div className="rounded-lg border border-accent/30 bg-accent/5 p-4 space-y-3">
+                      <p className="text-sm font-medium flex items-center gap-2"><Shield className="h-4 w-4 text-accent" /> Create your account to confirm</p>
+                      <div><Label>Full Name</Label><Input value={guestName} onChange={(e) => setGuestName(e.target.value)} placeholder="Your full name" /></div>
+                      <div><Label>Email</Label><Input type="email" value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)} placeholder="your@email.com" /></div>
+                      <div><Label>Password</Label><Input type="password" value={guestPassword} onChange={(e) => setGuestPassword(e.target.value)} placeholder="Create a password (min 6 characters)" minLength={6} /></div>
+                      <p className="text-xs text-muted-foreground">Already have an account? <Link to="/login" className="text-accent hover:underline">Sign in</Link></p>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {step === 2 && (
                 <div className="space-y-4">
