@@ -29,6 +29,8 @@ export default function BusinessPortal() {
   const [inviteEmail, setInviteEmail] = useState("");
   const [form, setForm] = useState({ business_name: "", ein: "", business_type: "", signers: "" });
 
+  const [memberProfiles, setMemberProfiles] = useState<Record<string, any>>({});
+
   useEffect(() => {
     if (!user) return;
     Promise.all([
@@ -39,9 +41,21 @@ export default function BusinessPortal() {
     ]).then(([bizRes, docRes, apptRes, payRes]) => {
       if (bizRes.data) {
         setBusiness(bizRes.data);
-        // Load team members
-        supabase.from("business_members").select("*").eq("business_id", bizRes.data.id).then(({ data }) => {
-          if (data) setMembers(data);
+        // Load team members with their profile info
+        supabase.from("business_members").select("*").eq("business_id", bizRes.data.id).then(async ({ data }) => {
+          if (data) {
+            setMembers(data);
+            // Fetch profiles for all member user_ids
+            const userIds = data.map((m: any) => m.user_id);
+            if (userIds.length > 0) {
+              const { data: profs } = await supabase.from("profiles").select("user_id, full_name, email").in("user_id", userIds);
+              if (profs) {
+                const map: Record<string, any> = {};
+                profs.forEach((p: any) => { map[p.user_id] = p; });
+                setMemberProfiles(map);
+              }
+            }
+          }
         });
       }
       if (docRes.data) setDocuments(docRes.data);
@@ -158,7 +172,7 @@ export default function BusinessPortal() {
                 <div className="flex items-center justify-between">
                   <h2 className="font-display text-lg font-semibold">Bulk Document Upload</h2>
                   <div>
-                    <input ref={fileInputRef} type="file" multiple className="hidden" onChange={handleBulkUpload} />
+                    <input ref={fileInputRef} type="file" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.tiff,.xlsx,.csv" className="hidden" onChange={handleBulkUpload} />
                     <Button size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="bg-accent text-accent-foreground hover:bg-gold-dark">
                       {uploading ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />} Upload Files
                     </Button>
@@ -199,8 +213,8 @@ export default function BusinessPortal() {
                       <Card key={m.id} className="border-border/50">
                         <CardContent className="flex items-center justify-between p-3">
                           <div>
-                            <p className="text-sm font-medium">{m.user_id.slice(0, 8)}...</p>
-                            <p className="text-xs text-muted-foreground capitalize">{m.member_role}</p>
+                            <p className="text-sm font-medium">{memberProfiles[m.user_id]?.full_name || memberProfiles[m.user_id]?.email || m.user_id.slice(0, 8) + "..."}</p>
+                            <p className="text-xs text-muted-foreground capitalize">{m.member_role}{memberProfiles[m.user_id]?.email ? ` · ${memberProfiles[m.user_id].email}` : ""}</p>
                           </div>
                           <Button size="sm" variant="ghost" className="text-destructive" onClick={() => removeMember(m.id)}>
                             <Trash2 className="h-3 w-3" />

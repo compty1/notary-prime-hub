@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { ChevronLeft, ChevronRight, FileText, Printer, AlertTriangle } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileText, Printer, AlertTriangle, Save, Loader2 } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { motion } from "framer-motion";
 
@@ -96,10 +99,14 @@ const getSteps = (docType: DocType): StepConfig[] => {
 };
 
 export default function DocumentBuilder() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [docType, setDocType] = useState<DocType | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [showPreview, setShowPreview] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const steps = docType ? getSteps(docType) : [];
   const progress = docType ? ((currentStep + 1) / (steps.length + 1)) * 100 : 0;
@@ -173,9 +180,33 @@ export default function DocumentBuilder() {
               <CardContent className="p-6">
                 <h2 className="font-display text-xl font-semibold mb-4">Preview: {docTypeLabels[docType]}</h2>
                 <div className="whitespace-pre-wrap font-serif text-sm leading-relaxed border rounded-lg p-6 bg-white text-gray-900 mb-4">{buildDocument()}</div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   <Button variant="outline" onClick={() => setShowPreview(false)}><ChevronLeft className="mr-1 h-4 w-4" /> Edit</Button>
                   <Button onClick={handlePrint} className="bg-accent text-accent-foreground hover:bg-gold-dark"><Printer className="mr-1 h-4 w-4" /> Print / Save PDF</Button>
+                  {user && (
+                    <Button variant="outline" disabled={saving} onClick={async () => {
+                      if (!user || !docType) return;
+                      setSaving(true);
+                      try {
+                        const content = buildDocument();
+                        const blob = new Blob([content], { type: "text/plain" });
+                        const fileName = `${docTypeLabels[docType].replace(/\s+/g, "_")}_${Date.now()}.txt`;
+                        const filePath = `${user.id}/${fileName}`;
+                        const { error: uploadError } = await supabase.storage.from("documents").upload(filePath, blob);
+                        if (uploadError) throw uploadError;
+                        const { error: insertError } = await supabase.from("documents").insert({
+                          uploaded_by: user.id, file_name: fileName, file_path: filePath, status: "uploaded" as any,
+                        });
+                        if (insertError) throw insertError;
+                        toast({ title: "Saved to My Documents", description: "You can find it in your Client Portal." });
+                      } catch (e: any) {
+                        toast({ title: "Save failed", description: e.message, variant: "destructive" });
+                      }
+                      setSaving(false);
+                    }}>
+                      {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />} Save to Portal
+                    </Button>
+                  )}
                   <Button variant="outline" onClick={() => { setDocType(null); setShowPreview(false); }}>Start Over</Button>
                 </div>
               </CardContent>

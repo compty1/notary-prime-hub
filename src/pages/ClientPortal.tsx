@@ -178,6 +178,14 @@ export default function ClientPortal() {
     } else {
       toast({ title: "Appointment cancelled" });
       setAppointments((prev) => prev.map((a) => (a.id === id ? { ...a, status: "cancelled" } : a)));
+      // Send cancellation email notification
+      try {
+        await supabase.functions.invoke("send-appointment-emails", {
+          body: { appointmentId: id, emailType: "cancellation" },
+        });
+      } catch (emailErr) {
+        console.error("Cancellation email error:", emailErr);
+      }
     }
     setCancelling(false);
     setCancelDialogId(null);
@@ -318,8 +326,19 @@ export default function ClientPortal() {
           </div>
         </motion.div>
 
-        <Tabs defaultValue="appointments" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-9">
+        <Tabs defaultValue="appointments" className="space-y-6" onValueChange={(val) => {
+          // Mark chat messages as read when Chat tab is clicked
+          if (val === "chat" && user && unreadCount > 0) {
+            const unreadIds = chatMessages.filter(m => m.is_admin && !m.read).map(m => m.id);
+            if (unreadIds.length > 0) {
+              supabase.from("chat_messages").update({ read: true }).in("id", unreadIds).then(() => {
+                setChatMessages(prev => prev.map(m => unreadIds.includes(m.id) ? { ...m, read: true } : m));
+                setUnreadCount(0);
+              });
+            }
+          }
+        }}>
+          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-9">
             <TabsTrigger value="appointments"><Calendar className="mr-1 h-4 w-4 hidden sm:inline" /> Appts</TabsTrigger>
             <TabsTrigger value="documents"><FileText className="mr-1 h-4 w-4 hidden sm:inline" /> Docs</TabsTrigger>
             <TabsTrigger value="status"><Shield className="mr-1 h-4 w-4 hidden sm:inline" /> Status</TabsTrigger>
@@ -517,18 +536,7 @@ export default function ClientPortal() {
           </TabsContent>
 
           {/* CHAT TAB */}
-          <TabsContent value="chat" className="space-y-4" onFocusCapture={() => {
-            // Mark admin messages as read when tab is opened
-            if (user && unreadCount > 0) {
-              const unreadIds = chatMessages.filter(m => m.is_admin && !m.read).map(m => m.id);
-              if (unreadIds.length > 0) {
-                supabase.from("chat_messages").update({ read: true }).in("id", unreadIds).then(() => {
-                  setChatMessages(prev => prev.map(m => unreadIds.includes(m.id) ? { ...m, read: true } : m));
-                  setUnreadCount(0);
-                });
-              }
-            }
-          }}>
+          <TabsContent value="chat" className="space-y-4">
             <h2 className="font-display text-xl font-semibold">Live Chat</h2>
             <Card className="border-border/50">
               <CardContent className="p-4">
@@ -744,7 +752,7 @@ export default function ClientPortal() {
             </div>
             {showWizard && (
               <DocumentWizard
-                onSelectService={(svc) => { setShowWizard(false); }}
+                onSelectService={(svc) => { setShowWizard(false); navigate(`/book?service=${encodeURIComponent(svc)}`); }}
                 onClose={() => setShowWizard(false)}
               />
             )}
@@ -764,7 +772,7 @@ export default function ClientPortal() {
                     </div>
                     {svc.description && <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{svc.description}</p>}
                     <div className="flex gap-2 mt-3">
-                      <Link to={`/book?type=${svc.name.toLowerCase().includes("remote") ? "ron" : "in_person"}`}>
+                      <Link to={`/book?type=${svc.name.toLowerCase().includes("remote") ? "ron" : "in_person"}&service=${encodeURIComponent(svc.name)}`}>
                         <Button size="sm" className="text-xs bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button>
                       </Link>
                     </div>
