@@ -596,6 +596,36 @@ export default function ClientPortal() {
             )}
           </TabsContent>
 
+          {/* APOSTILLE TAB */}
+          <TabsContent value="apostille" className="space-y-6">
+            <h2 className="font-display text-xl font-semibold">Apostille Requests</h2>
+            {apostilleRequests.length === 0 ? (
+              <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground">
+                <Package className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
+                <p>No apostille requests yet</p>
+                <p className="text-sm mt-1">Apostille processing requests will appear here.</p>
+              </CardContent></Card>
+            ) : (
+              <div className="space-y-3">
+                {apostilleRequests.map((req) => (
+                  <Card key={req.id} className="border-border/50">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium">{req.document_description}</span>
+                        <Badge className={req.status === "delivered" ? "bg-emerald-100 text-emerald-800" : req.status === "shipped" ? "bg-cyan-100 text-cyan-800" : "bg-amber-100 text-amber-800"}>
+                          {req.status.replace(/_/g, " ")}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Fee: ${parseFloat(req.fee || "0").toFixed(2)}</p>
+                      {req.tracking_number && <p className="text-xs text-muted-foreground mt-1">Tracking: {req.tracking_number}</p>}
+                      <p className="text-xs text-muted-foreground mt-1">Created: {new Date(req.created_at).toLocaleDateString()}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
           {/* PAYMENTS TAB */}
           <TabsContent value="payments" className="space-y-6">
             <h2 className="font-display text-xl font-semibold">Payments & Invoices</h2>
