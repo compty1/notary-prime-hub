@@ -113,7 +113,8 @@ export default function ClientPortal() {
       if (payRes.data) setPayments(payRes.data);
       if (revRes.data) setReviews(revRes.data);
       if (svcRes.data) setServices(svcRes.data);
-      if (docsRes.data) setDocuments(docsRes.data);
+      if (corrRes.data) setCorrespondence(corrRes.data);
+      if (apoRes.data) setApostilleRequests(apoRes.data);
       if (profileRes.data) {
         setProfile(profileRes.data);
         setProfileForm({
