@@ -128,7 +128,7 @@ export default function ClientPortal() {
     });
 
     // Subscribe to new chat messages (admin replies)
-    const channel = supabase.channel("client-chat")
+    const chatChannel = supabase.channel("client-chat")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages" }, (payload) => {
         const msg = payload.new as any;
         if (msg.sender_id === user.id || (msg.is_admin && msg.recipient_id === user.id)) {
@@ -140,7 +140,18 @@ export default function ClientPortal() {
       })
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    // Subscribe to appointment status changes in real-time
+    const apptChannel = supabase.channel("client-appointments")
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "appointments" }, (payload) => {
+        const updated = payload.new as any;
+        if (updated.client_id === user.id) {
+          setAppointments(prev => prev.map(a => a.id === updated.id ? updated : a));
+          toast({ title: "Appointment updated", description: `Status: ${updated.status.replace(/_/g, " ")}` });
+        }
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(chatChannel); supabase.removeChannel(apptChannel); };
   }, [user]);
 
   const upcoming = appointments.filter((a) => ["scheduled", "confirmed", "id_verification", "kba_pending"].includes(a.status));
