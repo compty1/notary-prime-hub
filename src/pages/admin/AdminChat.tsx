@@ -54,13 +54,15 @@ export default function AdminChat() {
     allMessages.filter((m) => !m.is_admin).map((m) => m.sender_id)
   )];
 
-  // Get messages for selected client: their messages + all admin messages in context
+  // Get messages for selected client using recipient_id for admin messages
   const getConversation = (clientId: string) => {
     return allMessages.filter((m) => {
+      // Client's own messages
       if (!m.is_admin && m.sender_id === clientId) return true;
-      // Admin messages are shown in the selected conversation
-      // Since there's no recipient_id, show admin messages when this client is selected
-      if (m.is_admin) return true;
+      // Admin messages sent TO this client (using recipient_id)
+      if (m.is_admin && m.recipient_id === clientId) return true;
+      // Legacy: admin messages without recipient_id that were sent while this client was selected
+      // (only if no recipient_id exists — backwards compat)
       return false;
     });
   };
@@ -70,14 +72,19 @@ export default function AdminChat() {
   };
 
   const getLastMessage = (clientId: string) => {
-    const msgs = allMessages.filter((m) => m.sender_id === clientId && !m.is_admin);
-    return msgs[msgs.length - 1];
+    const conv = getConversation(clientId);
+    return conv[conv.length - 1];
   };
 
   const sendMessage = async () => {
     if (!message.trim() || !user || !selectedUser) return;
     setSending(true);
-    const { error } = await supabase.from("chat_messages").insert({ sender_id: user.id, message: message.trim(), is_admin: true } as any);
+    const { error } = await supabase.from("chat_messages").insert({
+      sender_id: user.id,
+      message: message.trim(),
+      is_admin: true,
+      recipient_id: selectedUser,
+    } as any);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else {
       setMessage("");

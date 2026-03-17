@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, ChevronRight, Eye, Loader2, DollarSign } from "lucide-react";
+import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, ChevronRight, Eye, Loader2, DollarSign, Plus } from "lucide-react";
 
 const statuses = ["scheduled", "confirmed", "id_verification", "kba_pending", "in_session", "completed", "cancelled", "no_show"];
 
@@ -44,6 +44,7 @@ const formatTime = (timeStr: string) => {
 export default function AdminAppointments() {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
+  const [services, setServices] = useState<any[]>([]);
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -53,6 +54,18 @@ export default function AdminAppointments() {
   const [editNotes, setEditNotes] = useState("");
   const [editAdminNotes, setEditAdminNotes] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [creatingAppt, setCreatingAppt] = useState(false);
+  const [newAppt, setNewAppt] = useState({
+    client_id: "",
+    service_type: "",
+    notarization_type: "in_person" as "in_person" | "ron",
+    scheduled_date: "",
+    scheduled_time: "",
+    location: "",
+    notes: "",
+    estimated_price: "",
+  });
   const [journalForm, setJournalForm] = useState({
     fees_charged: "5.00",
     oath_administered: false,
@@ -66,18 +79,19 @@ export default function AdminAppointments() {
   const fetchData = async () => {
     let query = supabase.from("appointments").select("*").order("scheduled_date", { ascending: false });
     if (filter !== "all") query = query.eq("status", filter as any);
-    const [{ data: appts }, { data: profs }] = await Promise.all([
+    const [{ data: appts }, { data: profs }, { data: svcs }] = await Promise.all([
       query,
       supabase.from("profiles").select("*"),
+      supabase.from("services").select("name").eq("is_active", true),
     ]);
     if (appts) setAppointments(appts);
     if (profs) setProfiles(profs);
+    if (svcs) setServices(svcs);
     setLoading(false);
   };
 
   useEffect(() => { fetchData(); }, [filter]);
 
-  // Realtime subscription for new/updated appointments
   useEffect(() => {
     const channel = supabase
       .channel("admin-appointments")
@@ -100,7 +114,6 @@ export default function AdminAppointments() {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Status updated", description: `→ ${newStatus.replace(/_/g, " ")}` });
-      // Write audit log
       await supabase.from("audit_log").insert({
         user_id: user?.id,
         action: "appointment_status_changed",
@@ -171,7 +184,6 @@ export default function AdminAppointments() {
       toast({ title: "Journal error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Journal entry saved" });
-      // Audit log
       await supabase.from("audit_log").insert({
         user_id: user.id,
         action: "journal_entry_created",
@@ -184,19 +196,58 @@ export default function AdminAppointments() {
     }
   };
 
+  const createAppointment = async () => {
+    if (!newAppt.client_id || !newAppt.service_type || !newAppt.scheduled_date || !newAppt.scheduled_time) {
+      toast({ title: "Missing fields", description: "Please fill in all required fields.", variant: "destructive" });
+      return;
+    }
+    setCreatingAppt(true);
+    const { error } = await supabase.from("appointments").insert({
+      client_id: newAppt.client_id,
+      service_type: newAppt.service_type,
+      notarization_type: newAppt.notarization_type as any,
+      scheduled_date: newAppt.scheduled_date,
+      scheduled_time: newAppt.scheduled_time,
+      location: newAppt.notarization_type === "ron" ? "Remote" : (newAppt.location || null),
+      notes: newAppt.notes || null,
+      estimated_price: newAppt.estimated_price ? parseFloat(newAppt.estimated_price) : null,
+      status: "confirmed" as any,
+    });
+    if (error) {
+      toast({ title: "Error creating appointment", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Appointment created", description: "Walk-in/phone appointment added." });
+      await supabase.from("audit_log").insert({
+        user_id: user?.id,
+        action: "appointment_created_by_admin",
+        entity_type: "appointment",
+        details: { client_id: newAppt.client_id, service_type: newAppt.service_type },
+      });
+      setShowCreateDialog(false);
+      setNewAppt({ client_id: "", service_type: "", notarization_type: "in_person", scheduled_date: "", scheduled_time: "", location: "", notes: "", estimated_price: "" });
+      fetchData();
+    }
+    setCreatingAppt(false);
+  };
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="font-display text-2xl font-bold text-foreground">Appointments</h1>
-        <Select value={filter} onValueChange={setFilter}>
-          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            {statuses.map((s) => (
-              <SelectItem key={s} value={s}>{s.replace(/_/g, " ")}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-3">
+          <Button onClick={() => setShowCreateDialog(true)} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+            <Plus className="mr-1 h-4 w-4" /> New Appointment
+          </Button>
+          <Select value={filter} onValueChange={setFilter}>
+            <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Statuses</SelectItem>
+              {statuses.map((s) => (
+                <SelectItem key={s} value={s}>{s.replace(/_/g, " ")}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {loading ? (
@@ -267,6 +318,82 @@ export default function AdminAppointments() {
           ))}
         </div>
       )}
+
+      {/* Create Appointment Dialog */}
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center gap-2">
+              <Plus className="h-5 w-5 text-accent" /> Create Appointment
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Client *</Label>
+              <Select value={newAppt.client_id} onValueChange={(v) => setNewAppt({ ...newAppt, client_id: v })}>
+                <SelectTrigger><SelectValue placeholder="Select a client..." /></SelectTrigger>
+                <SelectContent>
+                  {profiles.map((p) => (
+                    <SelectItem key={p.user_id} value={p.user_id}>{p.full_name || p.email || p.user_id.slice(0, 8)}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Service Type *</Label>
+              <Select value={newAppt.service_type} onValueChange={(v) => setNewAppt({ ...newAppt, service_type: v })}>
+                <SelectTrigger><SelectValue placeholder="Select service..." /></SelectTrigger>
+                <SelectContent>
+                  {services.map((s) => (
+                    <SelectItem key={s.name} value={s.name}>{s.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Notarization Type</Label>
+              <Select value={newAppt.notarization_type} onValueChange={(v) => setNewAppt({ ...newAppt, notarization_type: v as "in_person" | "ron" })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="in_person">In-Person</SelectItem>
+                  <SelectItem value="ron">Remote Online (RON)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Date *</Label>
+                <Input type="date" value={newAppt.scheduled_date} onChange={(e) => setNewAppt({ ...newAppt, scheduled_date: e.target.value })} />
+              </div>
+              <div>
+                <Label>Time *</Label>
+                <Input type="time" value={newAppt.scheduled_time} onChange={(e) => setNewAppt({ ...newAppt, scheduled_time: e.target.value })} />
+              </div>
+            </div>
+            {newAppt.notarization_type === "in_person" && (
+              <div>
+                <Label>Location</Label>
+                <Input value={newAppt.location} onChange={(e) => setNewAppt({ ...newAppt, location: e.target.value })} placeholder="Address or meeting place..." />
+              </div>
+            )}
+            <div>
+              <Label>Estimated Price ($)</Label>
+              <Input type="number" step="0.01" value={newAppt.estimated_price} onChange={(e) => setNewAppt({ ...newAppt, estimated_price: e.target.value })} placeholder="0.00" />
+            </div>
+            <div>
+              <Label>Notes</Label>
+              <Textarea value={newAppt.notes} onChange={(e) => setNewAppt({ ...newAppt, notes: e.target.value })} rows={2} placeholder="Walk-in, phone call, referral..." />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
+            <Button onClick={createAppointment} disabled={creatingAppt} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+              {creatingAppt ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Plus className="mr-1 h-4 w-4" />}
+              Create
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Appointment Detail Dialog */}
       <Dialog open={!!detailAppt} onOpenChange={() => setDetailAppt(null)}>
