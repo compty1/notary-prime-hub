@@ -276,6 +276,14 @@ export default function AdminAppointments() {
         entity_type: "appointment",
         details: { client_id: newAppt.client_id, service_type: newAppt.service_type },
       });
+      // Send email notification for admin-created appointment
+      try {
+        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-appointment-emails`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+          body: JSON.stringify({ appointment_id: newAppt.client_id, emailType: "confirmation" }),
+        });
+      } catch {}
       setShowCreateDialog(false);
       setNewAppt({ client_id: "", service_type: "", notarization_type: "in_person", scheduled_date: "", scheduled_time: "", location: "", notes: "", estimated_price: "" });
       fetchData();
