@@ -517,7 +517,18 @@ export default function ClientPortal() {
           </TabsContent>
 
           {/* CHAT TAB */}
-          <TabsContent value="chat" className="space-y-4">
+          <TabsContent value="chat" className="space-y-4" onFocusCapture={() => {
+            // Mark admin messages as read when tab is opened
+            if (user && unreadCount > 0) {
+              const unreadIds = chatMessages.filter(m => m.is_admin && !m.read).map(m => m.id);
+              if (unreadIds.length > 0) {
+                supabase.from("chat_messages").update({ read: true }).in("id", unreadIds).then(() => {
+                  setChatMessages(prev => prev.map(m => unreadIds.includes(m.id) ? { ...m, read: true } : m));
+                  setUnreadCount(0);
+                });
+              }
+            }
+          }}>
             <h2 className="font-display text-xl font-semibold">Live Chat</h2>
             <Card className="border-border/50">
               <CardContent className="p-4">
@@ -550,6 +561,39 @@ export default function ClientPortal() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* CORRESPONDENCE TAB */}
+          <TabsContent value="correspondence" className="space-y-6">
+            <h2 className="font-display text-xl font-semibold">Email Correspondence</h2>
+            {correspondence.length === 0 ? (
+              <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground">
+                <Mail className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
+                <p>No correspondence yet</p>
+                <p className="text-sm mt-1">Emails handled on your behalf will appear here.</p>
+              </CardContent></Card>
+            ) : (
+              <div className="space-y-3">
+                {correspondence.map((c) => (
+                  <Card key={c.id} className="border-border/50">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          {c.direction === "inbound" ? <Mail className="h-4 w-4 text-accent" /> : <Send className="h-4 w-4 text-accent" />}
+                          <span className="text-sm font-medium">{c.subject}</span>
+                        </div>
+                        <Badge className={c.status === "replied" ? "bg-emerald-100 text-emerald-800" : c.status === "pending" ? "bg-amber-100 text-amber-800" : "bg-muted text-muted-foreground"}>
+                          {c.status.replace(/_/g, " ")}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground mb-1">{c.direction === "inbound" ? `From: ${c.from_address || "—"}` : `To: ${c.to_address || "—"}`}</p>
+                      <p className="text-sm text-foreground line-clamp-2">{c.body}</p>
+                      <p className="text-xs text-muted-foreground mt-2">{new Date(c.created_at).toLocaleDateString()}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
           {/* PAYMENTS TAB */}
