@@ -732,14 +732,35 @@ export default function ClientPortal() {
 
           {/* PAYMENTS TAB */}
           <TabsContent value="payments" className="space-y-6">
-            <h2 className="font-display text-xl font-semibold">Payments & Invoices</h2>
-            {payments.length === 0 ? (
+            <div className="flex items-center justify-between">
+              <h2 className="font-display text-xl font-semibold">Payments & Invoices</h2>
+              {!showPaymentForm && (
+                <Button size="sm" onClick={() => setShowPaymentForm(true)}>
+                  <CreditCard className="mr-1 h-4 w-4" /> Make Payment
+                </Button>
+              )}
+            </div>
+
+            {showPaymentForm && (
+              <PaymentForm
+                onSuccess={() => {
+                  setShowPaymentForm(false);
+                  // Refresh payments
+                  supabase.from("payments").select("*").eq("client_id", user!.id).order("created_at", { ascending: false }).then(({ data }) => {
+                    if (data) setPayments(data);
+                  });
+                }}
+                onCancel={() => setShowPaymentForm(false)}
+              />
+            )}
+
+            {payments.length === 0 && !showPaymentForm ? (
               <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground">
                 <DollarSign className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
                 <p>No payment history yet</p>
                 <p className="text-sm mt-1">Payments will appear here after your appointments are completed.</p>
               </CardContent></Card>
-            ) : (
+            ) : payments.length > 0 ? (
               <div className="space-y-3">
                 {payments.map((p) => (
                   <Card key={p.id} className="border-border/50">
@@ -758,7 +779,7 @@ export default function ClientPortal() {
                   </Card>
                 ))}
               </div>
-            )}
+            ) : null}
           </TabsContent>
 
           {/* REVIEWS TAB */}
