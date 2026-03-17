@@ -596,6 +596,45 @@ export type Database = {
         }
         Relationships: []
       }
+      mailroom_items: {
+        Row: {
+          client_id: string
+          created_at: string
+          forwarding_address: string | null
+          id: string
+          notes: string | null
+          received_date: string
+          scanned_file_path: string | null
+          sender: string | null
+          status: string
+          subject: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          forwarding_address?: string | null
+          id?: string
+          notes?: string | null
+          received_date?: string
+          scanned_file_path?: string | null
+          sender?: string | null
+          status?: string
+          subject: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          forwarding_address?: string | null
+          id?: string
+          notes?: string | null
+          received_date?: string
+          scanned_file_path?: string | null
+          sender?: string | null
+          status?: string
+          subject?: string
+        }
+        Relationships: []
+      }
       notarization_sessions: {
         Row: {
           appointment_id: string
@@ -921,6 +960,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      service_requests: {
+        Row: {
+          client_id: string
+          created_at: string
+          id: string
+          intake_data: Json
+          notes: string | null
+          service_name: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          id?: string
+          intake_data?: Json
+          notes?: string | null
+          service_name: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          id?: string
+          intake_data?: Json
+          notes?: string | null
+          service_name?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       service_requirements: {
         Row: {
