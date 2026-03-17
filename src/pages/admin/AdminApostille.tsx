@@ -35,8 +35,12 @@ export default function AdminApostille() {
   const [newClientId, setNewClientId] = useState("");
 
   useEffect(() => {
-    supabase.from("apostille_requests").select("*").order("created_at", { ascending: false }).then(({ data }) => {
-      if (data) setRequests(data);
+    Promise.all([
+      supabase.from("apostille_requests").select("*").order("created_at", { ascending: false }),
+      supabase.from("profiles").select("user_id, full_name, email"),
+    ]).then(([{ data: reqs }, { data: profs }]) => {
+      if (reqs) setRequests(reqs);
+      if (profs) setProfiles(profs);
       setLoading(false);
     });
   }, []);
