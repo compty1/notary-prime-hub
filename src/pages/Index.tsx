@@ -401,8 +401,8 @@ export default function Index() {
             <div>
               <h4 className="mb-3 font-display text-sm font-semibold text-primary-foreground">Contact</h4>
               <div className="space-y-2 text-sm">
-                <a href="tel:+16145551234" className="flex items-center gap-2 hover:text-accent"><Phone className="h-3 w-3" /> (614) 555-1234</a>
-                <a href="mailto:shane@shanegoble.com" className="flex items-center gap-2 hover:text-accent"><Mail className="h-3 w-3" /> shane@shanegoble.com</a>
+                <a href={`tel:${contactInfo.phone.replace(/\D/g, '')}`} className="flex items-center gap-2 hover:text-accent"><Phone className="h-3 w-3" /> {contactInfo.phone}</a>
+                <a href={`mailto:${contactInfo.email}`} className="flex items-center gap-2 hover:text-accent"><Mail className="h-3 w-3" /> {contactInfo.email}</a>
               </div>
             </div>
             <div>
