@@ -270,6 +270,307 @@ Notary Public, State of Ohio
 My Commission Expires: ___________
 [NOTARY SEAL]`
   },
+  {
+    id: "general-poa",
+    title: "General Power of Attorney",
+    category: "Legal",
+    description: "Authorizes an agent to act on your behalf for financial and legal matters. Consult an attorney for specific powers needed.",
+    tags: ["poa", "power of attorney", "agent"],
+    fields: [
+      { name: "principal_name", label: "Principal's Full Name", type: "text" },
+      { name: "principal_address", label: "Principal's Address", type: "text" },
+      { name: "agent_name", label: "Agent's Full Name", type: "text" },
+      { name: "agent_address", label: "Agent's Address", type: "text" },
+      { name: "powers", label: "Specific Powers Granted", type: "textarea", placeholder: "e.g., manage bank accounts, sign documents, sell property..." },
+      { name: "county", label: "County", type: "text", placeholder: "Franklin" },
+    ],
+    body: `GENERAL POWER OF ATTORNEY
+
+State of Ohio
+County of {{county}}
+
+KNOW ALL PERSONS BY THESE PRESENTS:
+
+I, {{principal_name}}, residing at {{principal_address}}, hereby appoint {{agent_name}}, residing at {{agent_address}}, as my true and lawful Attorney-in-Fact ("Agent") to act on my behalf.
+
+POWERS GRANTED:
+
+{{powers}}
+
+This Power of Attorney shall remain in effect until revoked in writing by the Principal.
+
+IN WITNESS WHEREOF, I have executed this Power of Attorney on this ___ day of _________, 20___.
+
+_________________________
+{{principal_name}} (Principal)
+
+NOTARY ACKNOWLEDGMENT
+State of Ohio, County of {{county}}
+
+On this ___ day of _________, 20___, before me personally appeared {{principal_name}}, known to me to be the person whose name is subscribed to the within instrument, and acknowledged that they executed the same for the purposes therein contained.
+
+_________________________
+Notary Public, State of Ohio
+My Commission Expires: ___________`
+  },
+  {
+    id: "healthcare-poa",
+    title: "Healthcare Power of Attorney",
+    category: "Personal",
+    description: "Designates someone to make healthcare decisions if you become incapacitated. Ohio-specific form — review with your physician or attorney.",
+    tags: ["healthcare", "poa", "medical", "directive"],
+    fields: [
+      { name: "principal_name", label: "Principal's Full Name", type: "text" },
+      { name: "agent_name", label: "Healthcare Agent's Full Name", type: "text" },
+      { name: "agent_phone", label: "Agent's Phone", type: "text" },
+      { name: "alternate_name", label: "Alternate Agent's Name (optional)", type: "text" },
+      { name: "instructions", label: "Specific Healthcare Instructions", type: "textarea", placeholder: "Any specific wishes regarding treatment, end-of-life care, etc." },
+    ],
+    body: `HEALTHCARE POWER OF ATTORNEY
+(Ohio Revised Code §1337.12)
+
+I, {{principal_name}}, being of sound mind, hereby designate:
+
+PRIMARY HEALTHCARE AGENT:
+Name: {{agent_name}}
+Phone: {{agent_phone}}
+
+ALTERNATE AGENT (if primary is unavailable):
+Name: {{alternate_name}}
+
+I grant my Healthcare Agent authority to make any and all healthcare decisions on my behalf if I am unable to do so, including but not limited to consenting to, refusing, or withdrawing medical treatment.
+
+SPECIFIC INSTRUCTIONS:
+{{instructions}}
+
+_________________________
+Signature of Principal: {{principal_name}}
+
+_________________________
+Date
+
+WITNESSES (Two required under Ohio law):
+
+Witness 1: _________________________  Date: ___________
+Witness 2: _________________________  Date: ___________
+
+NOTARY ACKNOWLEDGMENT
+State of Ohio, County of ___________
+
+Subscribed and sworn to before me this ___ day of _________, 20___, by {{principal_name}}.
+
+_________________________
+Notary Public, State of Ohio
+My Commission Expires: ___________`
+  },
+  {
+    id: "loan-signing-ack",
+    title: "Loan Signing Acknowledgment",
+    category: "Business",
+    description: "Standard acknowledgment certificate for loan document signings. Attach to loan packages requiring notarization.",
+    tags: ["loan", "signing", "acknowledgment", "mortgage"],
+    fields: [
+      { name: "signer_name", label: "Signer's Full Name", type: "text" },
+      { name: "county", label: "County", type: "text", placeholder: "Franklin" },
+      { name: "document_desc", label: "Document Description", type: "text", placeholder: "e.g., Deed of Trust, Mortgage Note" },
+    ],
+    body: `NOTARY ACKNOWLEDGMENT — LOAN SIGNING
+
+State of Ohio
+County of {{county}}
+
+On this ___ day of _________, 20___, before me, the undersigned Notary Public, personally appeared {{signer_name}}, proved to me through satisfactory evidence of identity to be the person(s) whose name(s) is/are subscribed to the within instrument:
+
+Document(s): {{document_desc}}
+
+and acknowledged that he/she/they executed the same for the purposes therein contained.
+
+IN WITNESS WHEREOF, I have hereunto set my hand and official seal.
+
+_________________________
+Notary Public, State of Ohio
+My Commission Expires: ___________
+[NOTARY SEAL]`
+  },
+  {
+    id: "vehicle-bill-of-sale",
+    title: "Vehicle Bill of Sale (Ohio)",
+    category: "Personal",
+    description: "Ohio-specific vehicle bill of sale. Note: The Ohio BMV may require their official form for title transfer — check with your local BMV office.",
+    tags: ["vehicle", "car", "ohio", "bmv", "sale"],
+    fields: [
+      { name: "seller_name", label: "Seller's Full Name", type: "text" },
+      { name: "buyer_name", label: "Buyer's Full Name", type: "text" },
+      { name: "vehicle_year", label: "Vehicle Year", type: "text" },
+      { name: "vehicle_make", label: "Vehicle Make", type: "text" },
+      { name: "vehicle_model", label: "Vehicle Model", type: "text" },
+      { name: "vin", label: "VIN Number", type: "text" },
+      { name: "odometer", label: "Odometer Reading", type: "text" },
+      { name: "sale_price", label: "Sale Price ($)", type: "text" },
+      { name: "sale_date", label: "Date of Sale", type: "date" },
+    ],
+    body: `VEHICLE BILL OF SALE — STATE OF OHIO
+
+I, {{seller_name}} ("Seller"), hereby sell, transfer, and convey to {{buyer_name}} ("Buyer") the following described motor vehicle:
+
+Year: {{vehicle_year}}
+Make: {{vehicle_make}}
+Model: {{vehicle_model}}
+VIN: {{vin}}
+Odometer Reading: {{odometer}} miles
+
+SALE PRICE: ${{sale_price}}
+DATE OF SALE: {{sale_date}}
+
+Seller warrants that the vehicle is free of liens and encumbrances and that Seller has the legal right to sell the vehicle.
+
+Buyer acknowledges responsibility for title transfer, registration, and any applicable taxes.
+
+NOTE: Ohio BMV may require Form BMV 3724 for title transfer. This bill of sale is supplemental documentation.
+
+_________________________          _________________________
+Seller: {{seller_name}}             Buyer: {{buyer_name}}
+
+_________________________          _________________________
+Date                                Date
+
+NOTARY ACKNOWLEDGMENT
+State of Ohio, County of ___________
+
+On this ___ day of _________, 20___, before me personally appeared {{seller_name}} and {{buyer_name}}.
+
+_________________________
+Notary Public, State of Ohio
+My Commission Expires: ___________`
+  },
+  {
+    id: "name-change-affidavit",
+    title: "Name Change Affidavit",
+    category: "Legal",
+    description: "Sworn statement declaring a legal name change. This template is informational — court orders may be required for official name changes.",
+    tags: ["name change", "affidavit", "identity"],
+    fields: [
+      { name: "current_name", label: "Current Legal Name", type: "text" },
+      { name: "previous_name", label: "Previous/Former Name", type: "text" },
+      { name: "reason", label: "Reason for Name Change", type: "textarea", placeholder: "e.g., marriage, divorce, personal preference, court order..." },
+      { name: "county", label: "County", type: "text", placeholder: "Franklin" },
+      { name: "address", label: "Current Address", type: "text" },
+    ],
+    body: `NAME CHANGE AFFIDAVIT
+
+State of Ohio
+County of {{county}}
+
+I, {{current_name}}, formerly known as {{previous_name}}, residing at {{address}}, do hereby swear and affirm under oath:
+
+1. My legal name was previously {{previous_name}}.
+2. My current legal name is {{current_name}}.
+3. The reason for the name change is: {{reason}}
+4. This affidavit is made for the purpose of documenting and affirming my legal name change.
+
+I declare under penalty of perjury that the foregoing is true and correct.
+
+_________________________
+Signature: {{current_name}}
+
+_________________________
+Date
+
+JURAT
+State of Ohio, County of {{county}}
+
+Subscribed and sworn to before me this ___ day of _________, 20___, by {{current_name}}.
+
+_________________________
+Notary Public, State of Ohio
+My Commission Expires: ___________`
+  },
+  {
+    id: "guardianship-consent",
+    title: "Temporary Guardianship Consent",
+    category: "Personal",
+    description: "Grants temporary guardianship of a minor to a designated adult. For long-term guardianship, court proceedings are typically required.",
+    tags: ["guardianship", "minor", "consent", "temporary"],
+    fields: [
+      { name: "parent_name", label: "Parent/Guardian Name", type: "text" },
+      { name: "child_name", label: "Child's Full Name", type: "text" },
+      { name: "child_dob", label: "Child's Date of Birth", type: "date" },
+      { name: "guardian_name", label: "Temporary Guardian's Name", type: "text" },
+      { name: "guardian_address", label: "Temporary Guardian's Address", type: "text" },
+      { name: "start_date", label: "Start Date", type: "date" },
+      { name: "end_date", label: "End Date", type: "date" },
+      { name: "reason", label: "Reason for Temporary Guardianship", type: "textarea" },
+    ],
+    body: `TEMPORARY GUARDIANSHIP CONSENT
+
+I, {{parent_name}}, the parent/legal guardian of {{child_name}} (DOB: {{child_dob}}), hereby grant temporary guardianship of my child to:
+
+Temporary Guardian: {{guardian_name}}
+Address: {{guardian_address}}
+
+EFFECTIVE PERIOD: {{start_date}} through {{end_date}}
+
+REASON: {{reason}}
+
+During this period, {{guardian_name}} is authorized to:
+• Make routine medical decisions and authorize emergency treatment
+• Enroll or continue the child in school activities
+• Provide daily care, supervision, and discipline
+• Sign routine permissions and authorizations
+
+This temporary guardianship does NOT transfer permanent custody rights.
+
+_________________________
+Parent/Guardian: {{parent_name}}
+
+_________________________
+Temporary Guardian: {{guardian_name}}
+
+_________________________
+Date
+
+NOTARY ACKNOWLEDGMENT
+State of Ohio, County of ___________
+
+On this ___ day of _________, 20___, before me personally appeared {{parent_name}}, known to me to be the person whose name is subscribed to the within instrument.
+
+_________________________
+Notary Public, State of Ohio
+My Commission Expires: ___________`
+  },
+  {
+    id: "deed-of-trust-ack",
+    title: "Deed of Trust Acknowledgment",
+    category: "Business",
+    description: "Standard acknowledgment for real property deed of trust documents. Used in real estate transactions requiring notarization.",
+    tags: ["deed", "trust", "real estate", "property"],
+    fields: [
+      { name: "grantor_name", label: "Grantor's Full Name", type: "text" },
+      { name: "property_desc", label: "Property Description", type: "textarea", placeholder: "Legal description or address of property" },
+      { name: "county", label: "County", type: "text", placeholder: "Franklin" },
+    ],
+    body: `ACKNOWLEDGMENT — DEED OF TRUST
+
+State of Ohio
+County of {{county}}
+
+On this ___ day of _________, 20___, before me, a Notary Public in and for the State of Ohio, personally appeared:
+
+{{grantor_name}} ("Grantor")
+
+proved to me on the basis of satisfactory evidence to be the person(s) whose name(s) is/are subscribed to the within Deed of Trust for the following property:
+
+{{property_desc}}
+
+and acknowledged to me that he/she/they executed the same in his/her/their authorized capacity(ies), and that by his/her/their signature(s) on the instrument, the person(s), or the entity upon behalf of which the person(s) acted, executed the instrument.
+
+WITNESS my hand and official seal.
+
+_________________________
+Notary Public, State of Ohio
+My Commission Expires: ___________
+[NOTARY SEAL]`
+  },
 ];
 
 export default function DocumentTemplates() {
