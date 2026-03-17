@@ -43,6 +43,9 @@ import AdminLeadPortal from "./pages/admin/AdminLeadPortal";
 import NotFound from "./pages/NotFound";
 import TermsPrivacy from "./pages/TermsPrivacy";
 import AppointmentConfirmation from "./pages/AppointmentConfirmation";
+import RonEligibilityChecker from "./pages/RonEligibilityChecker";
+import LoanSigningServices from "./pages/LoanSigningServices";
+import ServiceDetail from "./pages/ServiceDetail";
 
 const queryClient = new QueryClient();
 
