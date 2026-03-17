@@ -91,6 +91,7 @@ export default function AdminApostille() {
                         <span className="font-medium text-sm">{req.document_description}</span>
                         <Badge className={statusColors[req.status] || "bg-muted text-muted-foreground"}>{req.status.replace(/_/g, " ")}</Badge>
                       </div>
+                      <p className="text-xs text-muted-foreground mb-1">Client: {(() => { const p = profiles.find(p => p.user_id === req.client_id); return p?.full_name || p?.email || req.client_id.slice(0, 8); })()}</p>
                       {req.notes && <p className="text-xs text-muted-foreground mb-2">{req.notes}</p>}
                       <p className="text-xs text-muted-foreground">Created: {new Date(req.created_at).toLocaleDateString()}</p>
                       {req.tracking_number && <p className="text-xs text-muted-foreground mt-1">Tracking: {req.tracking_number}</p>}
