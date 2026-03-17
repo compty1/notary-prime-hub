@@ -46,7 +46,22 @@ const DIGITAL_ONLY_SERVICES = new Set([
   "Subscription Plans",
   "ID / KYC Verification",
   "Background Check Coordination",
+  "Document Translation",
 ]);
+
+const COMMON_LANGUAGES = [
+  "English", "Spanish", "French", "German", "Portuguese", "Italian", "Chinese (Simplified)",
+  "Chinese (Traditional)", "Japanese", "Korean", "Arabic", "Russian", "Hindi", "Vietnamese",
+  "Tagalog", "Polish", "Ukrainian", "Romanian", "Dutch", "Greek", "Turkish", "Hebrew",
+  "Thai", "Swahili", "Amharic", "Somali", "Nepali", "Bengali", "Urdu", "Persian (Farsi)",
+];
+
+const TRANSLATION_DOC_TYPES = [
+  "Birth Certificate", "Marriage Certificate", "Death Certificate", "Divorce Decree",
+  "Diploma / Degree", "Transcript", "Driver's License", "Passport", "Court Document",
+  "Medical Record", "Immigration Document", "Contract / Agreement", "Power of Attorney",
+  "Business Document", "Other",
+];
 
 // Hague Convention member countries
 const HAGUE_COUNTRIES = [
