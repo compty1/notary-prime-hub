@@ -640,6 +640,9 @@ export default function AdminAppointments() {
                 {savingNotes ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}
                 Save Notes
               </Button>
+              <Button variant="outline" className="w-full" onClick={() => { setDetailAppt(null); openMessageDialog(detailAppt); }}>
+                <Mail className="mr-1 h-4 w-4" /> Message Client
+              </Button>
             </div>
             );
           })()}
