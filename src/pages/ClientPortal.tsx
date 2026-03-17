@@ -448,7 +448,7 @@ export default function ClientPortal() {
                         </div>
                         <div className="flex items-center gap-2">
                           {appt.notarization_type === "ron" && isSessionNear(appt) && <Link to={`/ron-session?id=${appt.id}`}><Button size="sm" className="bg-emerald-600 text-white hover:bg-emerald-700"><Video className="mr-1 h-3 w-3" /> Join</Button></Link>}
-                          {appt.notarization_type === "ron" && !isSessionNear(appt) && <Button size="sm" variant="outline" className="text-xs" onClick={() => { setTechCheckOpen(true); runTechCheck(); }}><Wifi className="mr-1 h-3 w-3" /> Tech Check</Button>}
+                          {appt.notarization_type === "ron" && !isSessionNear(appt) && <Button size="sm" variant="outline" className="text-xs" onClick={() => setTechCheckOpen(true)}><Wifi className="mr-1 h-3 w-3" /> Tech Check</Button>}
                           <Link to={`/book?rebook=${appt.id}`}><Button size="sm" variant="outline" className="text-xs"><RefreshCw className="mr-1 h-3 w-3" /> Reschedule</Button></Link>
                           <Button size="sm" variant="ghost" className="text-xs text-destructive hover:text-destructive" onClick={() => setCancelDialogId(appt.id)}>Cancel</Button>
                           <Badge className={statusColors[appt.status] || "bg-muted text-muted-foreground"}>{appt.status.replace(/_/g, " ")}</Badge>

@@ -92,7 +92,7 @@ const App = () => (
               <Route path="/portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
               <Route path="/confirmation" element={<ProtectedRoute><AppointmentConfirmation /></ProtectedRoute>} />
               <Route path="/ron-session" element={<ProtectedRoute><OneNotarySession /></ProtectedRoute>} />
-              <Route path="/bluenotary-session" element={<ProtectedRoute><BlueNotarySession /></ProtectedRoute>} />
+              {/* BlueNotary route removed — Plan item 8.4 */}
               <Route path="/business-portal" element={<ProtectedRoute><BusinessPortal /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>}>
                 <Route index element={<ErrorBoundary fallbackMessage="Overview failed to load"><AdminOverview /></ErrorBoundary>} />

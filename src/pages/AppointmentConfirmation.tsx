@@ -255,7 +255,7 @@ export default function AppointmentConfirmation() {
         )}
         </div>
 
-        {/* Phase 5.4: Cross-sell */}
+        {/* Phase 5.4: Cross-sell (after tech check) */}
         {crossSells.length > 0 && (
           <div className="mt-4 rounded-lg border border-border/50 bg-card p-4 text-left">
             <p className="mb-3 text-sm font-medium text-foreground flex items-center gap-2">
