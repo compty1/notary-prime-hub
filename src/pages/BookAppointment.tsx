@@ -155,7 +155,56 @@ export default function BookAppointment() {
           }
         }
         setIdScanning(false);
+  };
+
+  const handleDocScan = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setDocScanning(true);
+    try {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64 = (reader.result as string).split(",")[1];
+        const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/detect-document`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ imageBase64: base64, fileName: file.name }),
+        });
+        const data = await resp.json();
+        if (data.error) {
+          toast({ title: "Document analysis issue", description: data.error, variant: "destructive" });
+        } else {
+          setDocAnalysis(data);
+          // Auto-select service type based on document analysis
+          if (data.document_type) {
+            const mapped: Record<string, string> = {
+              "Real Estate": "Real Estate Documents",
+              "Legal": "Affidavits & Sworn Statements",
+              "Estate Planning": "Estate Planning Documents",
+              "Business": "Business Documents",
+              "Personal": "Other",
+            };
+            const match = mapped[data.document_type];
+            if (match && !serviceType) setServiceType(match);
+          }
+          // Auto-set RON eligibility warning
+          if (data.ron_eligible === false && notarizationType === "ron") {
+            toast({ title: "RON not recommended", description: "This document type may not be eligible for remote notarization.", variant: "destructive" });
+          }
+          toast({ title: "Document analyzed", description: `${data.document_name} — ${data.notarization_method}` });
+        }
+        setDocScanning(false);
       };
+      reader.readAsDataURL(file);
+    } catch {
+      toast({ title: "Analysis failed", description: "Could not process the document.", variant: "destructive" });
+      setDocScanning(false);
+    }
+  
       reader.readAsDataURL(file);
     } catch {
       toast({ title: "Scan failed", description: "Could not process the ID image.", variant: "destructive" });
