@@ -273,6 +273,8 @@ export default function AdminSettings() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div><Label>Business Phone Number</Label><Input value={editValues.notary_phone || ""} onChange={(e) => updateValue("notary_phone", e.target.value)} placeholder="(614) 300-6890" /></div>
+            <div><Label>Business Email</Label><Input type="email" value={editValues.notary_email || ""} onChange={(e) => updateValue("notary_email", e.target.value)} placeholder="shane@shanegoble.com" /></div>
             <div><Label>Notary Base Address</Label><Input value={editValues.notary_base_address || ""} onChange={(e) => updateValue("notary_base_address", e.target.value)} placeholder="Columbus, OH" /></div>
             <div><Label>Notary Base Zip Code</Label><Input value={editValues.notary_base_zip || ""} onChange={(e) => updateValue("notary_base_zip", e.target.value)} placeholder="43215" maxLength={5} /></div>
             <div><Label>Max Appointments per Day</Label><Input type="number" value={editValues.max_appointments_per_day || ""} onChange={(e) => updateValue("max_appointments_per_day", e.target.value)} /></div>

@@ -95,7 +95,7 @@ export default function Services() {
             <Link to="/book"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button></Link>
           </div>
           <Sheet>
-            <SheetTrigger asChild className="md:hidden"><Button variant="ghost" size="sm"><Menu className="h-5 w-5" /></Button></SheetTrigger>
+            <SheetTrigger asChild className="md:hidden"><Button variant="ghost" size="sm" aria-label="Open menu"><Menu className="h-5 w-5" /></Button></SheetTrigger>
             <SheetContent side="right" className="w-64">
               <div className="mt-8 flex flex-col gap-4">
                 <Link to="/" className="text-sm font-medium">Home</Link>

@@ -55,7 +55,7 @@ export default function LoanSigningServices() {
       toast({ title: "Required fields missing", description: "Please fill in company name, contact name, and email.", variant: "destructive" });
       return;
     }
-    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(form.email.trim())) {
       toast({ title: "Invalid email", description: "Please enter a valid email address.", variant: "destructive" });
       return;
