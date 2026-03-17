@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
-import { ChevronRight, Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home, Loader2, Menu, Search } from "lucide-react";
+import { ChevronRight, Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home, Loader2, Menu, Search, Sparkles, ArrowRight } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import ReactMarkdown from "react-markdown";
 
 const iconMap: Record<string, any> = {
   Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home,
