@@ -467,7 +467,7 @@ export default function AdminAppointments() {
                     ))}
                   </div>
                 </div>
-              )
+              )}
 
               <div>
                 <Label>Client Notes</Label>
