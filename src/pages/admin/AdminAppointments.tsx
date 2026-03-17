@@ -12,8 +12,10 @@ import { Switch } from "@/components/ui/switch";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, ChevronRight, Eye, Loader2, DollarSign, Plus, Video, ChevronLeft, Filter, Mail, Send } from "lucide-react";
+import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, ChevronRight, Eye, Loader2, DollarSign, Plus, Video, ChevronLeft, Filter, Mail, Send, Languages, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
+import TranslationPanel from "@/components/TranslationPanel";
+import KBAVerification from "@/components/KBAVerification";
 
 const PAGE_SIZE = 20;
 const statuses = ["scheduled", "confirmed", "id_verification", "kba_pending", "in_session", "completed", "cancelled", "no_show"];
@@ -68,6 +70,8 @@ export default function AdminAppointments() {
   const [messageSubject, setMessageSubject] = useState("");
   const [messageBody, setMessageBody] = useState("");
   const [sendingMessage, setSendingMessage] = useState(false);
+  const [showKBA, setShowKBA] = useState(false);
+  const [showTranslation, setShowTranslation] = useState(false);
   const [newAppt, setNewAppt] = useState({
     client_id: "",
     service_type: "",
@@ -643,6 +647,86 @@ export default function AdminAppointments() {
               <Button variant="outline" className="w-full" onClick={() => { setDetailAppt(null); openMessageDialog(detailAppt); }}>
                 <Mail className="mr-1 h-4 w-4" /> Message Client
               </Button>
+
+              {/* Service-Specific Forms */}
+              {(() => {
+                const svc = (detailAppt.service_type || "").toLowerCase();
+                const forms: { title: string; url: string }[] = [];
+                if (svc.includes("power of attorney") || svc.includes("poa")) {
+                  forms.push({ title: "Power of Attorney Template", url: "/templates" });
+                  forms.push({ title: "Ohio POA Statutes", url: "https://codes.ohio.gov/ohio-revised-code/chapter-1337" });
+                }
+                if (svc.includes("real estate") || svc.includes("deed") || svc.includes("closing")) {
+                  forms.push({ title: "Ohio Deed Forms", url: "https://www.ohiosos.gov/notary/forms/" });
+                }
+                if (svc.includes("i-9") || svc.includes("employment")) {
+                  forms.push({ title: "USCIS Form I-9", url: "https://www.uscis.gov/i-9" });
+                  forms.push({ title: "I-9 Acceptable Documents", url: "https://www.uscis.gov/i-9-central/form-i-9-acceptable-documents" });
+                }
+                if (svc.includes("affidavit")) {
+                  forms.push({ title: "Affidavit Template", url: "/templates" });
+                }
+                if (svc.includes("immigration") || svc.includes("uscis")) {
+                  forms.push({ title: "USCIS Forms Portal", url: "https://www.uscis.gov/forms/all-forms" });
+                }
+                if (svc.includes("apostille")) {
+                  forms.push({ title: "Ohio SOS Apostille", url: "https://www.ohiosos.gov/businesses/apostille-and-certification/" });
+                }
+                if (svc.includes("translation")) {
+                  forms.push({ title: "Certificate of Translation Accuracy", url: "/templates" });
+                }
+                if (forms.length === 0) return null;
+                return (
+                  <div className="rounded-lg border border-border/50 p-3 space-y-2">
+                    <Label className="text-sm font-medium flex items-center gap-1"><FileText className="h-3 w-3" /> Required Forms</Label>
+                    <div className="space-y-1">
+                      {forms.map((f, i) => (
+                        <a key={i} href={f.url} target={f.url.startsWith("http") ? "_blank" : undefined} rel={f.url.startsWith("http") ? "noopener noreferrer" : undefined} className="flex items-center gap-2 text-xs text-accent hover:underline">
+                          <FileText className="h-3 w-3" /> {f.title}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* KBA for RON */}
+              {detailAppt.notarization_type === "ron" && !showKBA && (
+                <Button variant="outline" className="w-full" onClick={() => setShowKBA(true)}>
+                  <Shield className="mr-1 h-4 w-4" /> Start KBA Verification
+                </Button>
+              )}
+              {showKBA && (
+                <KBAVerification
+                  signerName={getClientName(detailAppt.client_id)}
+                  onComplete={async (passed) => {
+                    setShowKBA(false);
+                    await supabase.from("notarization_sessions").update({ kba_completed: passed } as any).eq("appointment_id", detailAppt.id);
+                    if (passed) {
+                      toast({ title: "KBA Passed", description: "Identity verified. Proceed with notarization." });
+                    } else {
+                      toast({ title: "KBA Failed", description: "Identity verification unsuccessful.", variant: "destructive" });
+                    }
+                  }}
+                  onCancel={() => setShowKBA(false)}
+                />
+              )}
+
+              {/* Translation for translation services */}
+              {detailAppt.service_type?.toLowerCase().includes("translation") && (
+                <>
+                  {!showTranslation ? (
+                    <Button variant="outline" className="w-full" onClick={() => setShowTranslation(true)}>
+                      <Languages className="mr-1 h-4 w-4" /> Translate Document
+                    </Button>
+                  ) : (
+                    <TranslationPanel
+                      clientName={getClientName(detailAppt.client_id)}
+                      documentType={detailAppt.service_type}
+                    />
+                  )}
+                </>
+              )}
             </div>
             );
           })()}

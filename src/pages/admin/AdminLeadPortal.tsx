@@ -29,6 +29,7 @@ const statusColors: Record<string, string> = {
 };
 
 const pipelineStatuses = ["new", "contacted", "qualified", "converted", "closed"];
+const leadTypes = ["all", "individual", "business"];
 
 const emptyLead = {
   name: "", phone: "", email: "", business_name: "", address: "", city: "", state: "OH", zip: "",
@@ -44,6 +45,7 @@ export default function AdminLeadPortal() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterIntent, setFilterIntent] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [filterType, setFilterType] = useState("all");
   const [activeTab, setActiveTab] = useState("list");
   const [showCreate, setShowCreate] = useState(false);
   const [editingLead, setEditingLead] = useState<any>(null);
@@ -51,6 +53,7 @@ export default function AdminLeadPortal() {
   const [saving, setSaving] = useState(false);
   const [discovering, setDiscovering] = useState(false);
   const [enriching, setEnriching] = useState(false);
+  const [scrapingSocial, setScrapingSocial] = useState(false);
 
   const fetchLeads = async () => {
     const { data } = await supabase.from("leads").select("*").order("created_at", { ascending: false });
@@ -63,6 +66,7 @@ export default function AdminLeadPortal() {
   const filtered = leads.filter((l) => {
     if (filterIntent !== "all" && l.intent_score !== filterIntent) return false;
     if (filterStatus !== "all" && l.status !== filterStatus) return false;
+    if (filterType !== "all" && l.lead_type !== filterType) return false;
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       return (l.name || "").toLowerCase().includes(term) ||
@@ -203,6 +207,23 @@ export default function AdminLeadPortal() {
     setEnriching(false);
   };
 
+  const scrapeSocial = async () => {
+    setScrapingSocial(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("scrape-social-leads", {});
+      if (error) throw error;
+      if (data?.error) {
+        toast({ title: "Scrape issue", description: data.error, variant: "destructive" });
+      } else {
+        toast({ title: "Social Scrape Complete", description: `Found ${data.results_found} results, extracted ${data.leads_extracted} leads, inserted ${data.inserted} new ones.` });
+        fetchLeads();
+      }
+    } catch (e: any) {
+      toast({ title: "Scrape error", description: e.message, variant: "destructive" });
+    }
+    setScrapingSocial(false);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
@@ -211,6 +232,10 @@ export default function AdminLeadPortal() {
           <p className="text-sm text-muted-foreground">Ohio notarization leads — discover, manage, convert</p>
         </div>
         <div className="flex gap-2 flex-wrap">
+          <Button variant="outline" size="sm" onClick={scrapeSocial} disabled={scrapingSocial}>
+            {scrapingSocial ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Search className="mr-1 h-3 w-3" />}
+            Scrape Social
+          </Button>
           <Button variant="outline" size="sm" onClick={discoverLeads} disabled={discovering}>
             {discovering ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Sparkles className="mr-1 h-3 w-3" />}
             AI Discover
@@ -265,6 +290,14 @@ export default function AdminLeadPortal() {
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
             {pipelineStatuses.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={filterType} onValueChange={setFilterType}>
+          <SelectTrigger className="w-32"><SelectValue placeholder="Type" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Types</SelectItem>
+            <SelectItem value="individual">Individual</SelectItem>
+            <SelectItem value="business">Business</SelectItem>
           </SelectContent>
         </Select>
       </div>

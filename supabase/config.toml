@@ -23,3 +23,9 @@ verify_jwt = false
 
 [functions.client-assistant]
 verify_jwt = false
+
+[functions.translate-document]
+verify_jwt = false
+
+[functions.scrape-social-leads]
+verify_jwt = false

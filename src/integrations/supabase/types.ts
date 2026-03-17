@@ -464,6 +464,39 @@ export type Database = {
           },
         ]
       }
+      form_library: {
+        Row: {
+          category: string
+          created_at: string
+          file_name: string
+          file_path: string
+          id: string
+          notes: string | null
+          title: string
+          uploaded_by: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          file_name: string
+          file_path: string
+          id?: string
+          notes?: string | null
+          title: string
+          uploaded_by: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          id?: string
+          notes?: string | null
+          title?: string
+          uploaded_by?: string
+        }
+        Relationships: []
+      }
       lead_sources: {
         Row: {
           config: Json | null
