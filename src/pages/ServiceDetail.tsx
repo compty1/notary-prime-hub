@@ -263,8 +263,27 @@ export default function ServiceDetail() {
   }
 
   const IconComp = iconMap[service.icon || "FileText"] || FileText;
-  const resources = categoryResources[service.category] || categoryResources.notarization;
-  const faqs = categoryFaqs[service.category] || categoryFaqs.notarization;
+  // Get service-specific resources for consulting (immigration vs non-immigration)
+  const getResources = () => {
+    if (service.category === "consulting" && (service.name.toLowerCase().includes("immigration") || service.name.toLowerCase().includes("uscis"))) {
+      return [
+        { label: "USCIS Forms Portal", url: "https://www.uscis.gov/forms/all-forms", icon: ExternalLink },
+        { label: "Common USCIS Forms", url: "https://www.uscis.gov/forms", icon: FileText },
+      ];
+    }
+    return categoryResources[service.category] || categoryResources.notarization;
+  };
+  const resources = getResources();
+
+  // Try service-specific FAQs first, then fall back to category
+  const getServiceFaqs = () => {
+    const nameLower = service.name.toLowerCase();
+    for (const [key, faqs] of Object.entries(serviceFaqs)) {
+      if (nameLower.includes(key)) return faqs;
+    }
+    return categoryFaqs[service.category] || categoryFaqs.notarization;
+  };
+  const faqs = getServiceFaqs();
   const timeline = categoryTimelines[service.category] || "Contact Us";
   const complexity = categoryComplexity[service.category] || { level: "Moderate", duration: "Varies" };
   const bundles = bundleSuggestions[service.category] || [];
