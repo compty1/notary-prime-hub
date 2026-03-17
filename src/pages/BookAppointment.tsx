@@ -555,7 +555,7 @@ export default function BookAppointment() {
     if (cat === "business") {
       if (companyName) parts.push(`[Company: ${companyName}]`);
     }
-    if (svcLower.includes("translation")) {
+    if (serviceType.toLowerCase().includes("translation")) {
       if (sourceLanguage) parts.push(`[Source Language: ${sourceLanguage}]`);
       if (targetLanguage) parts.push(`[Target Language: ${targetLanguage}]`);
       if (translationDocType) parts.push(`[Doc Type: ${translationDocType}]`);
