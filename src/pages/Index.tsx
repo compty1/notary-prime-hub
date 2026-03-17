@@ -24,28 +24,14 @@ const fadeUp = {
   }),
 };
 
-const services = [
+const fallbackServices = [
   { icon: FileText, title: "Real Estate Documents", desc: "Deeds, mortgages, refinancing, title transfers" },
   { icon: Shield, title: "Legal Documents", desc: "Power of attorney, affidavits, sworn statements" },
   { icon: Scale, title: "Estate Planning", desc: "Wills, trusts, healthcare directives" },
   { icon: FileText, title: "Business Documents", desc: "Contracts, agreements, corporate filings" },
 ];
 
-const steps = [
-  { num: "01", title: "Book", desc: "Choose in-person or remote and select your time slot" },
-  { num: "02", title: "Verify", desc: "Complete identity verification and KBA for RON sessions" },
-  { num: "03", title: "Sign", desc: "Documents notarized securely with digital seal" },
-];
-
-const faqs = [
-  { q: "What is Remote Online Notarization (RON)?", a: "RON allows you to have documents notarized via a secure video call from anywhere. Ohio authorizes RON under Ohio Revised Code §147.65-.66, making it fully legal and binding." },
-  { q: "What identification do I need?", a: "You'll need a valid government-issued photo ID (driver's license, passport, or state ID). For RON sessions, you'll also complete Knowledge-Based Authentication (KBA) questions." },
-  { q: "How long does a notarization take?", a: "Most notarizations take 10-15 minutes for in-person sessions. RON sessions may take 20-30 minutes including the identity verification process." },
-  { q: "What areas do you serve for in-person notarization?", a: "I serve Franklin County and the greater Columbus, Ohio metropolitan area for in-person notarizations. Mobile notary services are available within a 30-mile radius." },
-  { q: "Is RON notarization accepted everywhere?", a: "RON notarizations performed under Ohio law are recognized in all 50 states. However, some specific transactions may have unique requirements. Contact me to confirm for your situation." },
-];
-
-const testimonials = [
+const fallbackTestimonials = [
   { name: "Sarah M.", text: "Shane made our home closing so easy. Professional, punctual, and thorough.", rating: 5 },
   { name: "James R.", text: "Used the remote notarization while traveling. Incredibly convenient and secure.", rating: 5 },
   { name: "Lisa K.", text: "Best notary experience I've had. Will definitely use again for our business documents.", rating: 5 },
