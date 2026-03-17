@@ -50,6 +50,19 @@ export default function BookAppointment() {
   const [clientState, setClientState] = useState("OH");
   const [clientZip, setClientZip] = useState("");
   const [locatingUser, setLocatingUser] = useState(false);
+  const [userLat, setUserLat] = useState<number | null>(null);
+  const [userLon, setUserLon] = useState<number | null>(null);
+
+  // Get user's location on mount for autocomplete biasing
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => { setUserLat(pos.coords.latitude); setUserLon(pos.coords.longitude); },
+        () => {},
+        { timeout: 5000 }
+      );
+    }
+  }, []);
 
   // Progressive signup fields
   const [guestName, setGuestName] = useState("");
