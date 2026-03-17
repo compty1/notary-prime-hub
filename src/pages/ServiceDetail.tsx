@@ -43,8 +43,8 @@ const categoryResources: Record<string, { label: string; url: string; icon: any 
     { label: "Notary Guide", url: "/notary-guide", icon: FileText },
   ],
   consulting: [
-    { label: "USCIS Forms Portal", url: "https://www.uscis.gov/forms/all-forms", icon: ExternalLink },
-    { label: "Common USCIS Forms", url: "https://www.uscis.gov/forms", icon: FileText },
+    { label: "Schedule Consultation", url: "/book?service=Consultation", icon: Monitor },
+    { label: "Join as Provider", url: "/join", icon: Users },
   ],
   document_services: [
     { label: "Document Templates", url: "/templates", icon: FileText },
