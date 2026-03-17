@@ -441,8 +441,59 @@ export default function ClientPortal() {
               </div>
             )}
           </TabsContent>
+
+          {/* CHAT TAB */}
+          <TabsContent value="chat" className="space-y-4">
+            <h2 className="font-display text-xl font-semibold">Live Chat</h2>
+            <Card className="border-border/50">
+              <CardContent className="p-4">
+                <div className="h-80 overflow-y-auto space-y-3 mb-4">
+                  {chatMessages.length === 0 && (
+                    <p className="text-center text-sm text-muted-foreground py-8">No messages yet. Send a message to get started!</p>
+                  )}
+                  {chatMessages.map((msg) => (
+                    <div key={msg.id} className={`flex ${msg.is_admin ? "justify-start" : "justify-end"}`}>
+                      <div className={`max-w-[75%] rounded-lg px-3 py-2 text-sm ${msg.is_admin ? "bg-muted text-foreground" : "bg-accent text-accent-foreground"}`}>
+                        <p>{msg.message}</p>
+                        <p className="mt-1 text-[10px] opacity-60">{new Date(msg.created_at).toLocaleTimeString()}</p>
+                      </div>
+                    </div>
+                  ))}
+                  <div ref={chatEndRef} />
+                </div>
+                <div className="flex gap-2">
+                  <Textarea
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    placeholder="Type a message..."
+                    className="min-h-[40px] resize-none"
+                    rows={1}
+                    onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChatMessage(); } }}
+                  />
+                  <Button onClick={sendChatMessage} disabled={sendingChat || !chatInput.trim()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+                    {sendingChat ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
+
+      {/* AI Explain Dialog */}
+      <Dialog open={explainDialogOpen} onOpenChange={setExplainDialogOpen}>
+        <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogHeader><DialogTitle className="font-display flex items-center gap-2"><Sparkles className="h-5 w-5 text-accent" /> AI Document Explanation</DialogTitle></DialogHeader>
+          {explaining ? (
+            <div className="flex flex-col items-center py-8 gap-3">
+              <Loader2 className="h-8 w-8 animate-spin text-accent" />
+              <p className="text-sm text-muted-foreground">Analyzing document...</p>
+            </div>
+          ) : explanation ? (
+            <div className="prose prose-sm max-w-none text-foreground whitespace-pre-wrap text-sm">{explanation}</div>
+          ) : null}
+        </DialogContent>
+      </Dialog>
 
       {/* Cancel Dialog */}
       <Dialog open={!!cancelDialogId} onOpenChange={() => setCancelDialogId(null)}>
