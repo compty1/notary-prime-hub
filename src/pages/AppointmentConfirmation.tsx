@@ -242,9 +242,17 @@ export default function AppointmentConfirmation() {
             <li>Upload your documents via your portal for faster processing</li>
             <li>You'll receive a confirmation email with session details</li>
             {appointment.notarization_type === "ron" && (
-              <li>Run a tech check before your session — available in your portal</li>
+              <li>Run a tech check before your session (see below)</li>
             )}
           </ol>
+        </div>
+
+        {/* TechCheck for RON appointments */}
+        {appointment.notarization_type === "ron" && (
+          <div className="mt-4">
+            <TechCheck />
+          </div>
+        )}
         </div>
 
         {/* Phase 5.4: Cross-sell */}
