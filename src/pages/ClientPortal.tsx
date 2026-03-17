@@ -394,6 +394,10 @@ export default function ClientPortal() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
+                        <Button size="sm" variant="ghost" onClick={async () => {
+                          const { data } = await supabase.storage.from("documents").createSignedUrl(doc.file_path, 300);
+                          if (data?.signedUrl) window.open(data.signedUrl, "_blank");
+                        }} title="Preview"><Eye className="h-3 w-3" /></Button>
                         <Button size="sm" variant="ghost" onClick={() => explainDocument(doc)} title="AI Explain"><Sparkles className="h-3 w-3" /></Button>
                         <Badge className={docStatusColors[doc.status] || "bg-muted text-muted-foreground"}>{doc.status.replace(/_/g, " ")}</Badge>
                         <Button size="sm" variant="outline" onClick={() => downloadDocument(doc)}><Download className="h-3 w-3" /></Button>
