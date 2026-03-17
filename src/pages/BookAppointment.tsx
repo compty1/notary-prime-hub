@@ -943,6 +943,54 @@ export default function BookAppointment() {
             </div>
           </>
         )}
+
+        {showTranslation && (
+          <>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Source Language</Label>
+                <Select value={sourceLanguage} onValueChange={setSourceLanguage}>
+                  <SelectTrigger><SelectValue placeholder="Original language" /></SelectTrigger>
+                  <SelectContent>
+                    {COMMON_LANGUAGES.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Target Language *</Label>
+                <Select value={targetLanguage} onValueChange={setTargetLanguage}>
+                  <SelectTrigger><SelectValue placeholder="Translate to..." /></SelectTrigger>
+                  <SelectContent>
+                    {COMMON_LANGUAGES.filter(l => l !== sourceLanguage).map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Document Type</Label>
+                <Select value={translationDocType} onValueChange={setTranslationDocType}>
+                  <SelectTrigger><SelectValue placeholder="Select type..." /></SelectTrigger>
+                  <SelectContent>
+                    {TRANSLATION_DOC_TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Page Count</Label>
+                <Input type="number" min="1" value={translationPageCount} onChange={(e) => setTranslationPageCount(e.target.value)} />
+              </div>
+            </div>
+            <div className="rounded-lg border border-accent/20 bg-accent/5 p-3 text-xs text-muted-foreground space-y-1">
+              <p className="font-medium text-foreground">📄 How it works:</p>
+              <p>1. Upload your document during booking or in your portal after booking</p>
+              <p>2. Our AI translates your document with a Certificate of Translation Accuracy</p>
+              <p>3. Review the translated document in your portal</p>
+              <p>4. If notarization of the translation is needed, we can schedule that too</p>
+            </div>
+          </>
+        )}
+        )}
       </div>
     );
   };
