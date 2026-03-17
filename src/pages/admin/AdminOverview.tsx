@@ -110,6 +110,39 @@ export default function AdminOverview() {
   const today = new Date().toISOString().split("T")[0];
   const todayCount = appointments.filter(a => a.scheduled_date === today && !["cancelled", "no_show"].includes(a.status)).length;
 
+  // Chart data: appointments per month
+  const monthlyAppointments = useMemo(() => {
+    const months: Record<string, number> = {};
+    allAppointments.forEach(a => {
+      const month = a.scheduled_date?.slice(0, 7); // YYYY-MM
+      if (month) months[month] = (months[month] || 0) + 1;
+    });
+    return Object.entries(months).slice(-6).map(([month, count]) => ({
+      month: new Date(month + "-01").toLocaleDateString("en-US", { month: "short" }),
+      appointments: count,
+    }));
+  }, [allAppointments]);
+
+  // Chart data: revenue per month
+  const monthlyRevenue = useMemo(() => {
+    const months: Record<string, number> = {};
+    journalEntries.forEach(j => {
+      const month = j.created_at?.slice(0, 7);
+      if (month) months[month] = (months[month] || 0) + (parseFloat(j.fees_charged) || 0);
+    });
+    return Object.entries(months).slice(-6).map(([month, revenue]) => ({
+      month: new Date(month + "-01").toLocaleDateString("en-US", { month: "short" }),
+      revenue,
+    }));
+  }, [journalEntries]);
+
+  // Chart data: status breakdown pie
+  const statusBreakdown = useMemo(() => {
+    const counts: Record<string, number> = {};
+    allAppointments.forEach(a => { counts[a.status] = (counts[a.status] || 0) + 1; });
+    return Object.entries(counts).map(([status, value]) => ({ name: status.replace(/_/g, " "), value }));
+  }, [allAppointments]);
+
   const statCards = [
     { label: "Total Appointments", value: stats.total, icon: Calendar, color: "text-blue-600" },
     { label: "Upcoming", value: stats.upcoming, icon: Clock, color: "text-amber-600" },
