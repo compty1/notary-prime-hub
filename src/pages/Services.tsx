@@ -50,6 +50,50 @@ export default function Services() {
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [helpQuery, setHelpQuery] = useState("");
+  const [helpResult, setHelpResult] = useState("");
+  const [helpLoading, setHelpLoading] = useState(false);
+
+  const submitHelp = async () => {
+    if (!helpQuery.trim() || helpLoading) return;
+    setHelpLoading(true);
+    setHelpResult("");
+    let soFar = "";
+    try {
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/client-assistant`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        body: JSON.stringify({ messages: [{ role: "user", content: helpQuery }] }),
+      });
+      if (!resp.ok) throw new Error("AI unavailable");
+      const reader = resp.body?.getReader();
+      if (!reader) throw new Error("No stream");
+      const decoder = new TextDecoder();
+      let buffer = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let idx;
+        while ((idx = buffer.indexOf("\n")) !== -1) {
+          let line = buffer.slice(0, idx);
+          buffer = buffer.slice(idx + 1);
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (!line.startsWith("data: ")) continue;
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") break;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) { soFar += content; setHelpResult(soFar); }
+          } catch { /* partial */ }
+        }
+      }
+    } catch {
+      setHelpResult("AI assistant is temporarily unavailable. Please contact us directly.");
+    }
+    setHelpLoading(false);
+  };
 
   useEffect(() => {
     document.title = "Services — Shane Goble Notary";

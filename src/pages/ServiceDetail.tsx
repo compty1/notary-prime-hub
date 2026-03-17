@@ -376,6 +376,48 @@ export default function ServiceDetail() {
               </motion.div>
             )}
 
+            {/* Partner Services for Estate Planning */}
+            {(service.name.toLowerCase().includes("will") || service.name.toLowerCase().includes("estate") || service.name.toLowerCase().includes("trust")) && (
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.33 }}>
+                <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-800">
+                  <CardContent className="p-5 space-y-3">
+                    <h3 className="font-display text-sm font-semibold flex items-center gap-2">
+                      <Briefcase className="h-4 w-4 text-blue-600" /> Partner Services
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      Complex estate planning documents such as wills, trusts, and advanced directives are drafted in partnership with licensed attorneys. We provide notarization, witnessing, and coordination services.
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      <strong>How it works:</strong> We connect you with our legal partners who draft your documents, then we handle the notarization and witnessing. This ensures your documents are legally sound and properly executed.
+                    </p>
+                    <p className="text-xs italic text-muted-foreground">
+                      Will drafting and legal document creation are performed by our legal partners. Shane Goble Notary Services provides notarization, witnessing, and coordination only.
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+
+            {/* Zoom consultation CTA for consulting services */}
+            {service.category === "consulting" && (
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.34 }}>
+                <Card className="border-accent/30 bg-accent/5">
+                  <CardContent className="p-5 space-y-3">
+                    <h3 className="font-display text-sm font-semibold flex items-center gap-2">
+                      <Monitor className="h-4 w-4 text-accent" /> Schedule a Zoom Consultation
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      Have questions about this service? Book a video consultation to discuss your project and get personalized guidance.
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Message us for a response within 24 hours — we typically respond within 2 hours during business hours.
+                    </p>
+                    <Link to="/book?service=Consultation"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark"><Monitor className="mr-1 h-3 w-3" /> Book Consultation</Button></Link>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+
             {/* Immigration-specific content (Phase 10.2, 10.4) */}
             {service.category === "consulting" && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
