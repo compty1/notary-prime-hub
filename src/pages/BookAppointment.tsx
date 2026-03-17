@@ -990,7 +990,6 @@ export default function BookAppointment() {
             </div>
           </>
         )}
-        )}
       </div>
     );
   };
