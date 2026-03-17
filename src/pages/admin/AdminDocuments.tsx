@@ -19,7 +19,7 @@ const docStatusColors: Record<string, string> = {
   rejected: "bg-red-100 text-red-800",
 };
 
-export default function AdminDocuments() {
+const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(_, ref) {
   const { user } = useAuth();
   const { toast } = useToast();
   const [docs, setDocs] = useState<any[]>([]);
