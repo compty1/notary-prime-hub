@@ -237,9 +237,9 @@ export default function Index() {
                   Schedule Appointment <ChevronRight className="ml-1 h-4 w-4" />
                 </Button>
               </Link>
-              <a href="tel:+16145551234">
+              <a href={`tel:${contactInfo.phone.replace(/\D/g, '')}`}>
                 <Button size="lg" variant="outline" className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10">
-                  <Phone className="mr-2 h-4 w-4" /> (614) 555-1234
+                  <Phone className="mr-2 h-4 w-4" /> {contactInfo.phone}
                 </Button>
               </a>
             </motion.div>
