@@ -27,10 +27,12 @@ const statusFlow = ["intake", "payment_received", "submitted_to_sos", "processin
 export default function AdminApostille() {
   const { toast } = useToast();
   const [requests, setRequests] = useState<any[]>([]);
+  const [profiles, setProfiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
   const [newDesc, setNewDesc] = useState("");
   const [newNotes, setNewNotes] = useState("");
+  const [newClientId, setNewClientId] = useState("");
 
   useEffect(() => {
     supabase.from("apostille_requests").select("*").order("created_at", { ascending: false }).then(({ data }) => {
