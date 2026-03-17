@@ -32,7 +32,8 @@ const AppointmentConfirmation = lazy(() => import("./pages/AppointmentConfirmati
 const RonEligibilityChecker = lazy(() => import("./pages/RonEligibilityChecker"));
 const LoanSigningServices = lazy(() => import("./pages/LoanSigningServices"));
 const ServiceDetail = lazy(() => import("./pages/ServiceDetail"));
-// BlueNotary route removed — dead code cleanup (Plan item 8.4)
+const About = lazy(() => import("./pages/About"));
+const DocumentDigitize = lazy(() => import("./pages/DocumentDigitize"));
 
 // Admin pages
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
