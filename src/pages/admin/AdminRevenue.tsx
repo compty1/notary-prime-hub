@@ -233,6 +233,82 @@ export default function AdminRevenue() {
         ))}
       </div>
 
+      {/* Revenue Charts */}
+      {(() => {
+        const monthlyRevenue = (() => {
+          const months: Record<string, { revenue: number; expenses: number; net: number }> = {};
+          filtered.forEach(e => {
+            const month = e.created_at?.slice(0, 7);
+            if (!month) return;
+            if (!months[month]) months[month] = { revenue: 0, expenses: 0, net: 0 };
+            const fee = parseFloat(e.fees_charged) || 0;
+            const platform = parseFloat(e.platform_fees) || 0;
+            const travel = parseFloat(e.travel_fee) || 0;
+            months[month].revenue += fee;
+            months[month].expenses += platform + travel;
+            months[month].net += fee - platform - travel;
+          });
+          return Object.entries(months).slice(-6).map(([month, d]) => ({
+            month: new Date(month + "-01").toLocaleDateString("en-US", { month: "short" }),
+            ...d,
+          }));
+        })();
+
+        const monthlyPayments = (() => {
+          const months: Record<string, { paid: number; pending: number }> = {};
+          payments.forEach(p => {
+            const month = p.created_at?.slice(0, 7);
+            if (!month) return;
+            if (!months[month]) months[month] = { paid: 0, pending: 0 };
+            const amt = parseFloat(p.amount) || 0;
+            if (p.status === "paid") months[month].paid += amt;
+            else months[month].pending += amt;
+          });
+          return Object.entries(months).slice(-6).map(([month, d]) => ({
+            month: new Date(month + "-01").toLocaleDateString("en-US", { month: "short" }),
+            ...d,
+          }));
+        })();
+
+        return (
+          <div className="mb-6 grid gap-6 lg:grid-cols-2">
+            <Card className="border-border/50">
+              <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Revenue vs Expenses</CardTitle></CardHeader>
+              <CardContent>
+                {monthlyRevenue.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={220}>
+                    <BarChart data={monthlyRevenue}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis dataKey="month" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                      <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickFormatter={(v) => `$${v}`} />
+                      <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} formatter={(value: number) => `$${value.toFixed(2)}`} />
+                      <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Revenue" />
+                      <Bar dataKey="expenses" fill="hsl(0 84% 60%)" radius={[4, 4, 0, 0]} name="Expenses" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : <p className="py-10 text-center text-sm text-muted-foreground">No journal data yet</p>}
+              </CardContent>
+            </Card>
+            <Card className="border-border/50">
+              <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Net Profit Trend</CardTitle></CardHeader>
+              <CardContent>
+                {monthlyRevenue.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={220}>
+                    <LineChart data={monthlyRevenue}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis dataKey="month" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                      <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickFormatter={(v) => `$${v}`} />
+                      <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} formatter={(value: number) => [`$${value.toFixed(2)}`, "Net Profit"]} />
+                      <Line type="monotone" dataKey="net" stroke="hsl(var(--accent))" strokeWidth={2} dot={{ fill: "hsl(var(--accent))", r: 4 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : <p className="py-10 text-center text-sm text-muted-foreground">No data yet</p>}
+              </CardContent>
+            </Card>
+          </div>
+        );
+      })()}
+
       <Tabs defaultValue="payments" className="space-y-4">
         <TabsList>
           <TabsTrigger value="payments"><CreditCard className="mr-1 h-4 w-4" /> Payments ({payments.length})</TabsTrigger>
