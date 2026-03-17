@@ -401,6 +401,9 @@ export default function Index() {
           <div className="mt-8 border-t border-primary-foreground/10 pt-8 text-center text-xs">
             <p>© {new Date().getFullYear()} Shane Goble Notary Services. All rights reserved.</p>
             <p className="mt-1">Ohio Commissioned Notary Public — Franklin County</p>
+            <div className="mt-2 flex items-center justify-center gap-4">
+              <Link to="/terms" className="hover:text-accent">Terms of Service & Privacy Policy</Link>
+            </div>
           </div>
         </div>
       </footer>
