@@ -155,6 +155,12 @@ export default function BookAppointment() {
           }
         }
         setIdScanning(false);
+      };
+      reader.readAsDataURL(file);
+    } catch {
+      toast({ title: "Scan failed", description: "Could not process the ID image.", variant: "destructive" });
+      setIdScanning(false);
+    }
   };
 
   const handleDocScan = async (e: React.ChangeEvent<HTMLInputElement>) => {
