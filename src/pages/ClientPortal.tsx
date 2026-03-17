@@ -1050,24 +1050,10 @@ export default function ClientPortal() {
         </DialogContent>
       </Dialog>
 
-      {/* Tech Check Dialog */}
+      {/* Tech Check Dialog — uses shared TechCheck component */}
       <Dialog open={techCheckOpen} onOpenChange={setTechCheckOpen}>
-        <DialogContent>
-          <DialogHeader><DialogTitle className="font-display">RON Tech Check</DialogTitle></DialogHeader>
-          <div className="space-y-4 py-4">
-            {[
-              { label: "Camera", result: techResults.camera, icon: CameraIcon },
-              { label: "Microphone", result: techResults.mic, icon: Mic },
-              { label: "Internet", result: techResults.connection, icon: Wifi },
-            ].map((item) => (
-              <div key={item.label} className="flex items-center justify-between rounded-lg border p-3">
-                <div className="flex items-center gap-2"><item.icon className="h-5 w-5 text-muted-foreground" /><span>{item.label}</span></div>
-                {techChecking && item.result === null ? <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /> :
-                  item.result ? <CheckCircle className="h-5 w-5 text-emerald-500" /> : item.result === false ? <XCircle className="h-5 w-5 text-destructive" /> : null}
-              </div>
-            ))}
-          </div>
-          <DialogFooter><Button variant="outline" onClick={() => { setTechCheckOpen(false); }}>Close</Button></DialogFooter>
+        <DialogContent className="sm:max-w-md">
+          <TechCheck onComplete={() => setTechCheckOpen(false)} />
         </DialogContent>
       </Dialog>
     </div>
