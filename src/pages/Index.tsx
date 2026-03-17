@@ -426,7 +426,118 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* Contact Form */}
+      <section id="contact" className="py-20">
+        <div className="container mx-auto px-4">
+          <motion.h2
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            custom={0}
+            className="mb-4 text-center font-display text-3xl font-bold text-foreground md:text-4xl"
+          >
+            Get in Touch
+          </motion.h2>
+          <motion.p
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            custom={1}
+            className="mx-auto mb-12 max-w-xl text-center text-muted-foreground"
+          >
+            Have a question or need notarization services? Fill out the form below and we'll respond within 24 hours.
+          </motion.p>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            custom={2}
+            className="mx-auto max-w-lg"
+          >
+            <Card className="border-border/50">
+              <CardContent className="pt-6">
+                <form onSubmit={handleContactSubmit} className="space-y-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="contact-name">Name *</Label>
+                      <Input
+                        id="contact-name"
+                        placeholder="Your full name"
+                        value={contactForm.name}
+                        onChange={(e) => setContactForm(prev => ({ ...prev, name: e.target.value }))}
+                        maxLength={100}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="contact-email">Email *</Label>
+                      <Input
+                        id="contact-email"
+                        type="email"
+                        placeholder="you@example.com"
+                        value={contactForm.email}
+                        onChange={(e) => setContactForm(prev => ({ ...prev, email: e.target.value }))}
+                        maxLength={255}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="contact-phone">Phone</Label>
+                      <Input
+                        id="contact-phone"
+                        type="tel"
+                        placeholder="(614) 555-0000"
+                        value={contactForm.phone}
+                        onChange={(e) => setContactForm(prev => ({ ...prev, phone: e.target.value }))}
+                        maxLength={20}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="contact-service">Service Needed</Label>
+                      <Select value={contactForm.service} onValueChange={(v) => setContactForm(prev => ({ ...prev, service: v }))}>
+                        <SelectTrigger id="contact-service">
+                          <SelectValue placeholder="Select a service" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="In-Person Notarization">In-Person Notarization</SelectItem>
+                          <SelectItem value="Remote Online Notarization">Remote Online Notarization (RON)</SelectItem>
+                          <SelectItem value="Real Estate Closing">Real Estate Closing</SelectItem>
+                          <SelectItem value="Apostille">Apostille</SelectItem>
+                          <SelectItem value="I-9 Verification">I-9 Verification</SelectItem>
+                          <SelectItem value="Document Preparation">Document Preparation</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="contact-message">Message *</Label>
+                    <Textarea
+                      id="contact-message"
+                      placeholder="Tell us about your notarization needs..."
+                      value={contactForm.message}
+                      onChange={(e) => setContactForm(prev => ({ ...prev, message: e.target.value }))}
+                      maxLength={1000}
+                      rows={4}
+                      required
+                    />
+                  </div>
+                  <Button type="submit" className="w-full" disabled={submitting}>
+                    {submitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending...</> : <><Send className="mr-2 h-4 w-4" /> Send Message</>}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+
       <footer className="bg-gradient-navy py-12 text-primary-foreground/70">
         <div className="container mx-auto px-4">
           <div className="grid gap-8 md:grid-cols-3">
