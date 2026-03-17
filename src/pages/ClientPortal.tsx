@@ -104,6 +104,26 @@ export default function ClientPortal() {
       setLoading(false);
     };
     fetchData();
+
+    // Load chat messages
+    supabase.from("chat_messages").select("*").eq("sender_id", user.id).order("created_at").then(({ data }) => {
+      if (data) setChatMessages(data);
+    });
+
+    // Subscribe to new chat messages (admin replies)
+    const channel = supabase.channel("client-chat")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages" }, (payload) => {
+        const msg = payload.new as any;
+        if (msg.sender_id === user.id || msg.is_admin) {
+          setChatMessages(prev => {
+            if (prev.some(m => m.id === msg.id)) return prev;
+            return [...prev, msg];
+          });
+        }
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, [user]);
 
   const upcoming = appointments.filter((a) => ["scheduled", "confirmed", "id_verification", "kba_pending"].includes(a.status));
