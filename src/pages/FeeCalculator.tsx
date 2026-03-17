@@ -155,6 +155,10 @@ export default function FeeCalculator() {
           </motion.div>
         </div>
       </div>
+
+      <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
+        <p>© {new Date().getFullYear()} Shane Goble — Ohio Commissioned Notary Public</p>
+      </footer>
     </div>
   );
 }

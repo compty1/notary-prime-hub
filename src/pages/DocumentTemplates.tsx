@@ -723,6 +723,11 @@ export default function DocumentTemplates() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
+        <p>© {new Date().getFullYear()} Shane Goble — Ohio Commissioned Notary Public</p>
+        <p className="mt-1">Templates provided for informational purposes only. Consult legal counsel for specific legal advice.</p>
+      </footer>
     </div>
   );
 }

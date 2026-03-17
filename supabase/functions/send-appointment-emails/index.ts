@@ -3,7 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 interface Appointment {
@@ -33,7 +33,41 @@ const formatTime = (timeStr: string) => {
   return `${hour > 12 ? hour - 12 : hour === 0 ? 12 : hour}:${m} ${hour >= 12 ? "PM" : "AM"}`;
 };
 
-function buildEmailHtml(clientName: string, appt: Appointment, type: string): string {
+function applyPlaceholders(template: string, vars: Record<string, string>): string {
+  let result = template;
+  for (const [key, value] of Object.entries(vars)) {
+    result = result.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), value);
+  }
+  return result;
+}
+
+function wrapInEmailLayout(heading: string, bodyContent: string): string {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+    <body style="margin:0;padding:0;background-color:#f8f7f4;font-family:'Inter',Arial,sans-serif;">
+      <div style="max-width:600px;margin:0 auto;padding:32px 16px;">
+        <div style="background-color:#1a2744;padding:24px;text-align:center;border-radius:8px 8px 0 0;">
+          <h1 style="color:#e8d5a3;margin:0;font-size:24px;font-family:Georgia,serif;">Shane Goble</h1>
+          <p style="color:#b8c5d6;margin:4px 0 0;font-size:14px;">Ohio Commissioned Notary Public</p>
+        </div>
+        <div style="background-color:#ffffff;padding:32px 24px;border-radius:0 0 8px 8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+          <h2 style="color:#1a2744;margin:0 0 16px;font-size:20px;font-family:Georgia,serif;">${heading}</h2>
+          ${bodyContent}
+          <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;">
+          <p style="color:#9ca3af;font-size:12px;text-align:center;margin:0;">
+            Shane Goble Notary Services · Franklin County, Ohio<br>
+            Commissioned per Ohio Revised Code Chapter 147
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+function buildDefaultEmailHtml(clientName: string, appt: Appointment, type: string): string {
   const isRon = appt.notarization_type === "ron";
   const dateFormatted = formatDate(appt.scheduled_date);
   const timeFormatted = formatTime(appt.scheduled_time);
@@ -93,29 +127,56 @@ function buildEmailHtml(clientName: string, appt: Appointment, type: string): st
       break;
   }
 
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-    <body style="margin:0;padding:0;background-color:#f8f7f4;font-family:'Inter',Arial,sans-serif;">
-      <div style="max-width:600px;margin:0 auto;padding:32px 16px;">
-        <div style="background-color:#1a2744;padding:24px;text-align:center;border-radius:8px 8px 0 0;">
-          <h1 style="color:#e8d5a3;margin:0;font-size:24px;font-family:Georgia,serif;">Shane Goble</h1>
-          <p style="color:#b8c5d6;margin:4px 0 0;font-size:14px;">Ohio Commissioned Notary Public</p>
-        </div>
-        <div style="background-color:#ffffff;padding:32px 24px;border-radius:0 0 8px 8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-          <h2 style="color:#1a2744;margin:0 0 16px;font-size:20px;font-family:Georgia,serif;">${heading}</h2>
-          ${body}
-          <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;">
-          <p style="color:#9ca3af;font-size:12px;text-align:center;margin:0;">
-            Shane Goble Notary Services · Franklin County, Ohio<br>
-            Commissioned per Ohio Revised Code Chapter 147
-          </p>
-        </div>
-      </div>
-    </body>
-    </html>
-  `;
+  return wrapInEmailLayout(heading, body);
+}
+
+async function getCustomTemplate(
+  supabase: any,
+  type: string,
+  clientName: string,
+  appt: Appointment
+): Promise<string | null> {
+  // Map email types to platform_settings keys
+  const templateKeyMap: Record<string, string> = {
+    confirmation: "email_template_confirmation",
+    reminder_24hr: "email_template_reminder",
+    reminder_30min: "email_template_reminder",
+    status_completed: "email_template_followup",
+  };
+
+  const settingKey = templateKeyMap[type];
+  if (!settingKey) return null;
+
+  const { data } = await supabase
+    .from("platform_settings")
+    .select("setting_value")
+    .eq("setting_key", settingKey)
+    .single();
+
+  if (!data?.setting_value || data.setting_value.trim() === "") return null;
+
+  const dateFormatted = formatDate(appt.scheduled_date);
+  const timeFormatted = formatTime(appt.scheduled_time);
+
+  const rendered = applyPlaceholders(data.setting_value, {
+    client_name: clientName,
+    date: dateFormatted,
+    time: timeFormatted,
+    service_type: appt.service_type,
+    location: appt.location || "Remote",
+  });
+
+  // Wrap plain text in basic HTML paragraphs
+  const htmlBody = rendered.split("\n").filter(l => l.trim()).map(l => `<p>${l}</p>`).join("");
+  
+  const headingMap: Record<string, string> = {
+    confirmation: "Appointment Confirmed",
+    reminder_24hr: "Appointment Reminder",
+    reminder_30min: "Starting Soon",
+    status_completed: "Follow-Up",
+  };
+
+  return wrapInEmailLayout(headingMap[type] || "Notification", htmlBody);
 }
 
 async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
@@ -186,7 +247,8 @@ Deno.serve(async (req) => {
           if (emailType) {
             const dateFormatted = formatDate(appt.scheduled_date);
             const subject = `Appointment Update — ${dateFormatted}`;
-            const html = buildEmailHtml(clientName, appt as Appointment, emailType);
+            const customHtml = await getCustomTemplate(supabase, emailType, clientName, appt as Appointment);
+            const html = customHtml || buildDefaultEmailHtml(clientName, appt as Appointment, emailType);
             await sendEmail(clientEmail, subject, html);
             await supabase.from("appointment_emails").insert({ appointment_id: appt.id, email_type: emailType });
             results.status_change++;
@@ -196,10 +258,6 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ message: "Status email sent", results }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
-    }
-
-    if (!Deno.env.get("RESEND_API_KEY")) {
-      results.skipped_no_key = true;
     }
 
     const { data: appointments, error: apptErr } = await supabase
@@ -258,7 +316,8 @@ Deno.serve(async (req) => {
       // 1. Confirmation email (sent once)
       if (!sentSet.has(`${appt.id}:confirmation`)) {
         const subject = `Appointment Confirmed — ${dateFormatted}`;
-        const html = buildEmailHtml(clientName, appt, "confirmation");
+        const customHtml = await getCustomTemplate(supabase, "confirmation", clientName, appt);
+        const html = customHtml || buildDefaultEmailHtml(clientName, appt, "confirmation");
         await sendEmail(clientEmail, subject, html);
         await supabase.from("appointment_emails").insert({
           appointment_id: appt.id,
@@ -271,7 +330,8 @@ Deno.serve(async (req) => {
       // 2. 24-hour reminder
       if (hoursUntil <= 25 && hoursUntil >= 23 && !sentSet.has(`${appt.id}:reminder_24hr`)) {
         const subject = `Reminder: Appointment Tomorrow — ${dateFormatted}`;
-        const html = buildEmailHtml(clientName, appt, "reminder_24hr");
+        const customHtml = await getCustomTemplate(supabase, "reminder_24hr", clientName, appt);
+        const html = customHtml || buildDefaultEmailHtml(clientName, appt, "reminder_24hr");
         await sendEmail(clientEmail, subject, html);
         await supabase.from("appointment_emails").insert({
           appointment_id: appt.id,
@@ -284,7 +344,8 @@ Deno.serve(async (req) => {
       // 3. 30-minute reminder
       if (minutesUntil <= 35 && minutesUntil >= 25 && !sentSet.has(`${appt.id}:reminder_30min`)) {
         const subject = `Starting Soon: Your Notarization in 30 Minutes`;
-        const html = buildEmailHtml(clientName, appt, "reminder_30min");
+        const customHtml = await getCustomTemplate(supabase, "reminder_30min", clientName, appt);
+        const html = customHtml || buildDefaultEmailHtml(clientName, appt, "reminder_30min");
         await sendEmail(clientEmail, subject, html);
         await supabase.from("appointment_emails").insert({
           appointment_id: appt.id,

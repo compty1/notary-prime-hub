@@ -475,11 +475,14 @@ export default function BookAppointment() {
       toast({ title: "Booking failed", description: error.message, variant: "destructive" });
     } else {
       localStorage.removeItem(BOOKING_STORAGE_KEY);
-      // Trigger confirmation email via edge function (fire-and-forget)
+      // Trigger confirmation email via edge function
       try {
-        supabase.functions.invoke("send-appointment-emails", {
+        const { error: emailError } = await supabase.functions.invoke("send-appointment-emails", {
           body: { appointmentId: insertedData.id, emailType: "confirmation" },
         });
+        if (emailError) {
+          console.error("Confirmation email error:", emailError);
+        }
       } catch (emailErr) {
         console.error("Failed to trigger confirmation email:", emailErr);
       }
