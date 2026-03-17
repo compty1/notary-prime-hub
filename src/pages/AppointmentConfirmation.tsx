@@ -105,8 +105,8 @@ export default function AppointmentConfirmation() {
 
       <div className="container mx-auto max-w-lg px-4 py-16 text-center">
         <div className="mb-6 flex justify-center">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100">
-            <CheckCircle className="h-10 w-10 text-emerald-600" />
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-accent/20">
+            <CheckCircle className="h-10 w-10 text-accent" />
           </div>
         </div>
 
