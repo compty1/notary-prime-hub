@@ -605,9 +605,12 @@ export default function Index() {
               <div className="space-y-2 text-sm">
                 <Link to="/book" className="block hover:text-accent">Book Appointment</Link>
                 <Link to="/services" className="block hover:text-accent">All Services</Link>
+                <Link to="/loan-signing" className="block hover:text-accent">Loan Signing Services</Link>
                 <Link to="/templates" className="block hover:text-accent">Document Templates</Link>
+                <Link to="/ron-check" className="block hover:text-accent">RON Eligibility Checker</Link>
                 <Link to="/fee-calculator" className="block hover:text-accent">Pricing</Link>
                 <Link to="/ron-info" className="block hover:text-accent">RON Information</Link>
+                <Link to="/notary-guide" className="block hover:text-accent">Notary Guide</Link>
                 <Link to="/login" className="block hover:text-accent">Client Portal</Link>
               </div>
             </div>
