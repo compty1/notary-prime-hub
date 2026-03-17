@@ -204,12 +204,6 @@ export default function BookAppointment() {
       toast({ title: "Analysis failed", description: "Could not process the document.", variant: "destructive" });
       setDocScanning(false);
     }
-  
-      reader.readAsDataURL(file);
-    } catch {
-      toast({ title: "Scan failed", description: "Could not process the ID image.", variant: "destructive" });
-      setIdScanning(false);
-    }
   };
 
   const handleRebook = (appt: any) => {
