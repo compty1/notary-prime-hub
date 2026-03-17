@@ -1,117 +1,123 @@
 
 
-# Plan: OneNotary Integration, Smart Booking Flow, Messaging Improvements, and Payment Management
+# Implementation Plan: OneNotary Migration + Booking Fix + Chat Recipients + Payments
 
-This plan covers four distinct changes you requested:
+## Overview
+Four changes implemented in sequence. OneNotary API token will use a placeholder secret value so you can update it later.
 
 ---
 
-## 1. Replace BlueNotary with OneNotary API Integration
+## 1. OneNotary Integration (with placeholder API token)
 
-OneNotary uses a REST API at `https://app.onenotary.us/api/v2` authenticated via `X-ONENOTARY-API-TOKEN` header. The integration flow is: create session, add participants (with signer email), add documents, init session (sends invite), then track status via webhooks.
+### Database Migration
+- Add columns to `notarization_sessions`: `onenotary_session_id` (text, nullable), `participant_link` (text, nullable)
+- Remove/ignore the existing `bluenotary_session_url` column (leave it, just stop using it)
 
-### What changes
+### Edge Function: `supabase/functions/onenotary/index.ts`
+- Proxy to OneNotary API at `https://app.onenotary.us/api/v2`
+- Uses `ONENOTARY_API_TOKEN` secret (will be set to placeholder `"REPLACE_ME"`)
+- Actions: `create_session`, `add_participant`, `add_document`, `init_session`, `cancel_session`, `get_session`, `get_video`, `get_documents`
+- CORS headers included
+- JWT verification disabled in config.toml, auth checked in code
 
-**New secret required**: `ONENOTARY_API_TOKEN` -- your Business Account API token from OneNotary.
+### Edge Function: `supabase/functions/onenotary-webhook/index.ts`
+- Receives OneNotary webhook callbacks for session status changes
+- Updates `notarization_sessions` status and `appointments` status
+- Creates payment records on completion
+- No JWT required (webhook endpoint)
 
-**New edge function**: `supabase/functions/onenotary/index.ts`
-- Proxy between your app and OneNotary API (create session, add participant, add document, init session, cancel session, get session info, get video/documents)
-- Authenticated with your API token stored as a secret
-- Endpoints: `POST /create`, `POST /add-participant`, `POST /add-document`, `POST /init`, `POST /cancel`, `GET /status`, `GET /video`, `GET /documents`
+### New Page: `src/pages/OneNotarySession.tsx` (replaces BlueNotarySession)
+- **Admin/Notary view**: Create session, add participant (client email from profile), upload documents, initialize session. Shows session status and controls.
+- **Client view**: Shows session checklist and participant join link (instead of iframe). Link opens OneNotary's signer experience in new tab.
+- Keeps existing oath administration, voice notes, ID verification, KBA tracking, and finalization logic
 
-**New edge function**: `supabase/functions/onenotary-webhook/index.ts`
-- Receives webhook callbacks from OneNotary for session status changes
-- Verifies HMAC signature using your API token
-- Updates `notarization_sessions` status and `appointments` status accordingly
-- Handles key events: `completed_successfully` (mark appointment completed, create payment), `canceled`, `session_started`, `ready_to_start`
-
-**Database migration**:
-- Add `onenotary_session_id` column to `notarization_sessions` table (text, nullable)
-- Add `participant_link` column to `notarization_sessions` (text, nullable -- stores the signer's join link)
-
-**Rename/rewrite `BlueNotarySession.tsx`** to `OneNotarySession.tsx`:
-- Admin view: Button to create OneNotary session via edge function, add client as primary_signer, upload linked documents, init session
-- Client view: Shows their unique participant join link (from OneNotary API response) instead of an iframe
-- Session status tracking synced via webhook updates to `notarization_sessions`
-- Remove all references to `bluenotary_iframe_url` platform setting
-
-**Update all references**:
-- `App.tsx`: Change import and route from `BlueNotarySession` to `OneNotarySession`
+### Reference Updates
+- `App.tsx`: Import `OneNotarySession` instead of `BlueNotarySession`, keep route at `/ron-session`
+- `AdminSettings.tsx`: Remove `bluenotary_iframe_url` setting references, add OneNotary status indicator
 - `AdminResources.tsx`: Update guide text from BlueNotary to OneNotary
-- `AdminSettings.tsx`: Remove `bluenotary_iframe_url` setting, add OneNotary API token display/status
 - `ClientPortal.tsx`: Update RON session link text
 - `RonInfo.tsx`: Update any BlueNotary mentions
 
-### Files affected
-- New: `supabase/functions/onenotary/index.ts`, `supabase/functions/onenotary-webhook/index.ts`
-- Rewrite: `src/pages/BlueNotarySession.tsx` -> `src/pages/OneNotarySession.tsx`
-- Edit: `src/App.tsx`, `src/pages/admin/AdminResources.tsx`, `src/pages/admin/AdminSettings.tsx`, `src/pages/ClientPortal.tsx`, `src/pages/RonInfo.tsx`
-- Migration: Add columns to `notarization_sessions`
+---
+
+## 2. Smart Booking Flow for Non-Notarial Services
+
+### `BookAppointment.tsx` Changes
+- Fetch `category` alongside `name, short_description` from services table
+- Store service categories in a `serviceCategories` map
+- Define notarization-requiring categories: `notarization`, `authentication`
+- When a service is selected in Step 2, check its category:
+  - If NOT a notarization category → auto-set `notarizationType = "in_person"` and skip Step 1
+  - Adjust step flow: show 3 steps instead of 4 for non-notarial services
+- Step 1 title changes from "Select Notarization Type" to just "Service Delivery" when applicable
+
+### `ServiceDetail.tsx` Changes
+- Pass `&type=in_person` automatically for non-notarial service categories in booking link
 
 ---
 
-## 2. Fix Booking Flow for Non-Notarial Services
+## 3. Chat Recipient Selection
 
-Currently Step 1 of booking always asks "In-Person vs RON" even for services like "PDF Services" or "Email Management". Services in categories like `document_services`, `consulting`, `recurring`, `business`, `business_services`, and `verification` don't involve notarization and shouldn't show this choice.
+### `ClientPortal.tsx` Chat Tab
+- Add state for `chatRecipient` (selected admin/notary user ID)
+- Fetch admin/notary users: query `user_roles` for admin/notary roles, then fetch their profiles
+- Add a `Select` dropdown above the chat area to pick recipient
+- When sending messages, set `recipient_id` to selected recipient
+- Filter displayed messages to show only the conversation with selected recipient
+- Default to first available admin if none selected
 
-### What changes
-
-**`BookAppointment.tsx`**:
-- After selecting a service in Step 2, check if the service's category is a notarization-requiring category (`notarization`, `authentication`)
-- If the service doesn't require notarization, skip Step 1 entirely (default to `in_person` type) and change Step 1 title/options to be about "Service Delivery Method" rather than "Notarization Type"
-- Alternatively, restructure the flow: Step 1 = Choose Service, Step 2 = Choose Type (only shown if service category requires notarization), Step 3 = Date/Time, Step 4 = Confirm
-- Load service categories from DB alongside names so we can determine which flow to use
-
-**`ServiceDetail.tsx`**:
-- For non-notarial services, the "Book This Service" link should pass `&type=in_person` automatically, skipping the RON/in-person choice
+### No admin chat changes needed — it already handles recipient_id properly.
 
 ---
 
-## 3. Chat Messaging: Add User Selection for Recipients
+## 4. Stripe Payment Management
 
-Currently the client chat just sends messages to "the admin" with no ability to select who they're messaging. The admin chat groups by client but there's no way for clients to initiate conversations with specific team members.
+### Enable Stripe
+- Use `stripe--enable_stripe` tool to set up Stripe integration
+- This will create the necessary edge functions for payment processing
 
-### What changes
+### Edge Function: Payment methods management
+- `create-setup-intent`: Creates a Stripe SetupIntent for adding cards
+- `list-payment-methods`: Lists saved payment methods for a customer
+- `delete-payment-method`: Removes a saved card
+- `set-default-payment-method`: Sets default card
 
-**`ClientPortal.tsx` chat tab**:
-- Add a recipient selector at the top of the chat panel
-- Query `user_roles` + `profiles` for users with `admin` or `notary` roles to populate the dropdown
-- When sending a message, set `recipient_id` to the selected admin/notary user ID
-- Filter displayed messages to show only the conversation with the selected recipient
+### Database Migration
+- Add `stripe_customer_id` column to `profiles` table (text, nullable)
 
-**`AdminChat.tsx`**:
-- Already groups by client and sets `recipient_id` -- no major changes needed
-- Ensure admin replies properly set `recipient_id` to the client being viewed
-
-**RLS on chat_messages**: Already allows users to view messages where they're the sender or where `is_admin = true`. The `recipient_id` filtering is done client-side. No RLS changes needed since admins have ALL access.
-
----
-
-## 4. Client Payment Card Management (Stripe Integration)
-
-For clients to add and manage payment cards, we need Stripe integration. This is the proper way to handle payment methods securely -- card data never touches your server.
-
-### What changes
-
-- Enable Stripe integration using the Stripe tool (requires your Stripe secret key)
-- Create a Stripe Customer for each user (on signup or first payment interaction)
-- Add a "Payment Methods" section to the Payments tab in ClientPortal showing saved cards
-- Use Stripe's Setup Intent flow to securely add new cards
-- Allow clients to set a default payment method and remove cards
-- When appointments are completed, charge the saved payment method or mark for manual payment
-
-This is a significant sub-project. The Stripe tool needs to be enabled first, after which detailed implementation steps will be available.
+### `ClientPortal.tsx` Payments Tab
+- Add "Payment Methods" section showing saved cards
+- "Add Card" button opens Stripe Elements card form (using `@stripe/react-stripe-js`)
+- Each card shows last 4 digits, brand, expiry with delete and set-default actions
+- Cards section appears above existing payment history
 
 ---
 
 ## Implementation Order
+1. Set placeholder `ONENOTARY_API_TOKEN` secret
+2. Run DB migration (add columns to `notarization_sessions`, add `stripe_customer_id` to `profiles`)
+3. Create OneNotary edge functions
+4. Rewrite session page and update all references
+5. Fix booking flow category logic
+6. Add chat recipient selector
+7. Enable Stripe and implement payment card management
 
-1. Request `ONENOTARY_API_TOKEN` secret from you
-2. Create OneNotary edge functions + webhook handler
-3. Database migration (add `onenotary_session_id`, `participant_link` columns)
-4. Rewrite BlueNotary session page to OneNotary session page
-5. Update all BlueNotary references across the codebase
-6. Fix booking flow to be category-aware (skip RON choice for non-notarial services)
-7. Add recipient selection to client chat
-8. Enable Stripe and implement payment card management
+---
+
+## Files Created/Modified
+
+**New files:**
+- `supabase/functions/onenotary/index.ts`
+- `supabase/functions/onenotary-webhook/index.ts`
+- `src/pages/OneNotarySession.tsx`
+
+**Modified files:**
+- `src/App.tsx` — import/route change
+- `src/pages/BookAppointment.tsx` — category-aware flow
+- `src/pages/ClientPortal.tsx` — chat recipients + payment methods
+- `src/pages/ServiceDetail.tsx` — auto type param
+- `src/pages/admin/AdminSettings.tsx` — remove bluenotary setting
+- `src/pages/admin/AdminResources.tsx` — text updates
+- `src/pages/RonInfo.tsx` — text updates
+- `supabase/config.toml` — edge function JWT settings
 
