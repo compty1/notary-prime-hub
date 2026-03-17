@@ -525,18 +525,7 @@ export default function ClientPortal() {
           </TabsContent>
 
           {/* CHAT TAB */}
-          <TabsContent value="chat" className="space-y-4" onFocusCapture={() => {
-            // Mark admin messages as read when tab is opened
-            if (user && unreadCount > 0) {
-              const unreadIds = chatMessages.filter(m => m.is_admin && !m.read).map(m => m.id);
-              if (unreadIds.length > 0) {
-                supabase.from("chat_messages").update({ read: true }).in("id", unreadIds).then(() => {
-                  setChatMessages(prev => prev.map(m => unreadIds.includes(m.id) ? { ...m, read: true } : m));
-                  setUnreadCount(0);
-                });
-              }
-            }
-          }}>
+          <TabsContent value="chat" className="space-y-4">
             <h2 className="font-display text-xl font-semibold">Live Chat</h2>
             <Card className="border-border/50">
               <CardContent className="p-4">
