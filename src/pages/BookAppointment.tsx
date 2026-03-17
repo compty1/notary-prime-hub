@@ -96,13 +96,25 @@ export default function BookAppointment() {
   const [pricingSettings, setPricingSettings] = useState<Record<string, string>>({});
   const [estimatedPrice, setEstimatedPrice] = useState<number | null>(null);
 
-  // Load pricing settings
+  // Dynamic services from DB
+  const [serviceTypes, setServiceTypes] = useState<string[]>(fallbackServiceTypes);
+  const [serviceDescriptions, setServiceDescriptions] = useState<Record<string, string>>({});
+
+  // Load pricing settings + dynamic services
   useEffect(() => {
     supabase.from("platform_settings").select("setting_key, setting_value").then(({ data }) => {
       if (data) {
         const settings: Record<string, string> = {};
         data.forEach((s: any) => { settings[s.setting_key] = s.setting_value; });
         setPricingSettings(settings);
+      }
+    });
+    supabase.from("services").select("name, short_description").eq("is_active", true).order("display_order").then(({ data }) => {
+      if (data && data.length > 0) {
+        setServiceTypes(data.map((s: any) => s.name));
+        const descs: Record<string, string> = {};
+        data.forEach((s: any) => { if (s.short_description) descs[s.name] = s.short_description; });
+        setServiceDescriptions(descs);
       }
     });
   }, []);

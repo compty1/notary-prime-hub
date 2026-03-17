@@ -69,6 +69,17 @@ export default function ClientPortal() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
 
+  // Chat state
+  const [chatMessages, setChatMessages] = useState<any[]>([]);
+  const [chatInput, setChatInput] = useState("");
+  const [sendingChat, setSendingChat] = useState(false);
+  const chatEndRef = React.useRef<HTMLDivElement>(null);
+
+  // AI explain
+  const [explaining, setExplaining] = useState(false);
+  const [explanation, setExplanation] = useState<string | null>(null);
+  const [explainDialogOpen, setExplainDialogOpen] = useState(false);
+
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
