@@ -3,10 +3,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bot, Send, User, Sparkles, Loader2 } from "lucide-react";
+import { Bot, Send, User, Sparkles, Loader2, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import ReactMarkdown from "react-markdown";
 
 type Message = { role: "user" | "assistant"; content: string };
+
+const CHAT_STORAGE_KEY = "ai_assistant_history";
 
 const quickQuestions = [
   "How to notarize a Power of Attorney?",
@@ -20,11 +23,17 @@ const quickQuestions = [
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/notary-assistant`;
 
 export default function AdminAIAssistant() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    try {
+      const saved = localStorage.getItem(CHAT_STORAGE_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const lastSendRef = useRef(0);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -32,8 +41,29 @@ export default function AdminAIAssistant() {
     }
   }, [messages]);
 
+  // Persist conversation
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages.slice(-50)));
+    }
+  }, [messages]);
+
+  const clearHistory = () => {
+    setMessages([]);
+    localStorage.removeItem(CHAT_STORAGE_KEY);
+    toast({ title: "Conversation cleared" });
+  };
+
   const sendMessage = async (messageText: string) => {
     if (!messageText.trim() || isLoading) return;
+
+    // Rate limit: 2 seconds between messages
+    const now = Date.now();
+    if (now - lastSendRef.current < 2000) {
+      toast({ title: "Slow down", description: "Please wait a moment before sending another message.", variant: "destructive" });
+      return;
+    }
+    lastSendRef.current = now;
 
     const userMsg: Message = { role: "user", content: messageText.trim() };
     const updatedMessages = [...messages, userMsg];
@@ -120,9 +150,16 @@ export default function AdminAIAssistant() {
 
   return (
     <div className="flex h-[calc(100vh-7rem)] flex-col">
-      <div className="mb-4">
-        <h1 className="font-display text-2xl font-bold text-foreground">AI Notary Assistant</h1>
-        <p className="text-sm text-muted-foreground">Ask questions about Ohio notary law, procedures, and document requirements</p>
+      <div className="mb-4 flex items-center justify-between">
+        <div>
+          <h1 className="font-display text-2xl font-bold text-foreground">AI Notary Assistant</h1>
+          <p className="text-sm text-muted-foreground">Ask questions about Ohio notary law, procedures, and document requirements</p>
+        </div>
+        {messages.length > 0 && (
+          <Button variant="ghost" size="sm" onClick={clearHistory} className="text-muted-foreground">
+            <Trash2 className="mr-1 h-3 w-3" /> Clear
+          </Button>
+        )}
       </div>
 
       {messages.length === 0 ? (
@@ -164,7 +201,13 @@ export default function AdminAIAssistant() {
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted"
                 }`}>
-                  <div className="whitespace-pre-wrap">{msg.content}</div>
+                  {msg.role === "assistant" ? (
+                    <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:my-1 [&>ul]:my-1 [&>ol]:my-1 [&>h1]:text-base [&>h2]:text-sm [&>h3]:text-sm [&>h1]:font-bold [&>h2]:font-semibold [&>h3]:font-medium">
+                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    </div>
+                  ) : (
+                    <div className="whitespace-pre-wrap">{msg.content}</div>
+                  )}
                 </div>
                 {msg.role === "user" && (
                   <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-primary">
