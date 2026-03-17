@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, Plus, Send, CheckCircle, Clock, Archive, Loader2, Eye, Reply, Search } from "lucide-react";
+import { Mail, Plus, Send, CheckCircle, Archive, Loader2, Eye, Reply, Search } from "lucide-react";
 
 const statusColors: Record<string, string> = {
   pending: "bg-amber-100 text-amber-800",
@@ -32,6 +32,9 @@ export default function AdminEmailManagement() {
   const [showDetail, setShowDetail] = useState<any>(null);
   const [replyText, setReplyText] = useState("");
   const [saving, setSaving] = useState(false);
+  const [showReplyDialog, setShowReplyDialog] = useState(false);
+  const [replyForm, setReplyForm] = useState({ to_address: "", subject: "", body: "" });
+  const [sendingReply, setSendingReply] = useState(false);
   const [newItem, setNewItem] = useState({
     client_id: "",
     direction: "inbound",
@@ -56,6 +59,11 @@ export default function AdminEmailManagement() {
   const getClientName = (clientId: string) => {
     const p = profiles.find((p) => p.user_id === clientId);
     return p?.full_name || p?.email || clientId.slice(0, 8);
+  };
+
+  const getClientEmail = (clientId: string) => {
+    const p = profiles.find((p) => p.user_id === clientId);
+    return p?.email || "";
   };
 
   const filteredItems = items.filter((item) => {
@@ -110,6 +118,49 @@ export default function AdminEmailManagement() {
     fetchData();
   };
 
+  const openReplyDialog = (item: any) => {
+    const clientEmail = getClientEmail(item.client_id);
+    setReplyForm({
+      to_address: item.from_address || clientEmail,
+      subject: `Re: ${item.subject}`,
+      body: "",
+    });
+    setShowReplyDialog(true);
+  };
+
+  const sendReply = async () => {
+    if (!replyForm.to_address || !replyForm.subject || !replyForm.body || !showDetail) return;
+    setSendingReply(true);
+    try {
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-correspondence`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
+          to_address: replyForm.to_address,
+          subject: replyForm.subject,
+          body: replyForm.body,
+          client_id: showDetail.client_id,
+          reply_to_id: showDetail.id,
+        }),
+      });
+      const result = await resp.json();
+      if (result.error) throw new Error(result.error);
+      toast({
+        title: result.email_sent ? "Reply sent" : "Reply logged",
+        description: result.email_sent ? "Email delivered successfully." : "Logged but email not sent (Resend not configured).",
+      });
+      setShowReplyDialog(false);
+      setReplyForm({ to_address: "", subject: "", body: "" });
+      fetchData();
+    } catch (e: any) {
+      toast({ title: "Send failed", description: e.message, variant: "destructive" });
+    }
+    setSendingReply(false);
+  };
+
   if (loading) return <div className="flex justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" /></div>;
 
   return (
@@ -117,7 +168,7 @@ export default function AdminEmailManagement() {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="font-display text-2xl font-bold text-foreground">Email & Correspondence Management</h1>
-          <p className="text-sm text-muted-foreground">Manage client correspondence, replies, and forwarding as a service</p>
+          <p className="text-sm text-muted-foreground">Manage client correspondence, send replies, and track forwarding</p>
         </div>
         <Button onClick={() => setShowCreate(true)} className="bg-accent text-accent-foreground hover:bg-gold-dark">
           <Plus className="mr-1 h-4 w-4" /> Log Correspondence
@@ -145,30 +196,19 @@ export default function AdminEmailManagement() {
 
       {/* Stats */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Card className="border-border/50">
-          <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-foreground">{items.filter((i) => i.status === "pending").length}</p>
-            <p className="text-xs text-muted-foreground">Pending</p>
-          </CardContent>
-        </Card>
-        <Card className="border-border/50">
-          <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-foreground">{items.filter((i) => i.status === "in_progress").length}</p>
-            <p className="text-xs text-muted-foreground">In Progress</p>
-          </CardContent>
-        </Card>
-        <Card className="border-border/50">
-          <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-foreground">{items.filter((i) => i.status === "replied").length}</p>
-            <p className="text-xs text-muted-foreground">Replied</p>
-          </CardContent>
-        </Card>
-        <Card className="border-border/50">
-          <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-foreground">{items.length}</p>
-            <p className="text-xs text-muted-foreground">Total</p>
-          </CardContent>
-        </Card>
+        {[
+          { label: "Pending", count: items.filter(i => i.status === "pending").length },
+          { label: "In Progress", count: items.filter(i => i.status === "in_progress").length },
+          { label: "Replied", count: items.filter(i => i.status === "replied").length },
+          { label: "Total", count: items.length },
+        ].map(s => (
+          <Card key={s.label} className="border-border/50">
+            <CardContent className="p-4 text-center">
+              <p className="text-2xl font-bold text-foreground">{s.count}</p>
+              <p className="text-xs text-muted-foreground">{s.label}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {/* List */}
@@ -198,12 +238,7 @@ export default function AdminEmailManagement() {
                   <Button size="sm" variant="ghost" onClick={() => { setShowDetail(item); setReplyText(item.notes || ""); }}>
                     <Eye className="h-3 w-3" />
                   </Button>
-                  {item.status === "pending" && (
-                    <Button size="sm" variant="outline" className="text-xs" onClick={() => updateStatus(item.id, "in_progress")}>
-                      <Reply className="mr-1 h-3 w-3" /> Handle
-                    </Button>
-                  )}
-                  {(item.status === "in_progress" || item.status === "pending") && (
+                  {item.status !== "replied" && item.status !== "archived" && (
                     <Button size="sm" variant="outline" className="text-xs" onClick={() => updateStatus(item.id, "replied")}>
                       <CheckCircle className="mr-1 h-3 w-3" /> Mark Replied
                     </Button>
@@ -237,12 +272,14 @@ export default function AdminEmailManagement() {
                 <div className="mt-1 rounded-lg border border-border/50 bg-background p-3 text-sm whitespace-pre-wrap">{showDetail.body}</div>
               </div>
               <div>
-                <Label>Admin Notes / Reply Draft</Label>
+                <Label>Admin Notes</Label>
                 <Textarea value={replyText} onChange={(e) => setReplyText(e.target.value)} rows={3} placeholder="Notes about how this was handled..." />
               </div>
               <div className="flex gap-2 flex-wrap">
                 <Button size="sm" onClick={() => addNote(showDetail.id, replyText)} className="bg-accent text-accent-foreground hover:bg-gold-dark">Save Notes</Button>
-                <Button size="sm" variant="outline" onClick={() => updateStatus(showDetail.id, "replied")}>Mark Replied</Button>
+                <Button size="sm" variant="default" onClick={() => openReplyDialog(showDetail)}>
+                  <Send className="mr-1 h-3 w-3" /> Send Reply
+                </Button>
                 <Button size="sm" variant="outline" onClick={() => updateStatus(showDetail.id, "forwarded")}>Mark Forwarded</Button>
                 <Button size="sm" variant="outline" onClick={() => updateStatus(showDetail.id, "archived")}>
                   <Archive className="mr-1 h-3 w-3" /> Archive
@@ -250,6 +287,29 @@ export default function AdminEmailManagement() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Send Reply Dialog */}
+      <Dialog open={showReplyDialog} onOpenChange={setShowReplyDialog}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center gap-2">
+              <Send className="h-5 w-5 text-accent" /> Send Reply Email
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div><Label>To</Label><Input value={replyForm.to_address} onChange={(e) => setReplyForm({ ...replyForm, to_address: e.target.value })} /></div>
+            <div><Label>Subject</Label><Input value={replyForm.subject} onChange={(e) => setReplyForm({ ...replyForm, subject: e.target.value })} /></div>
+            <div><Label>Body</Label><Textarea value={replyForm.body} onChange={(e) => setReplyForm({ ...replyForm, body: e.target.value })} rows={6} placeholder="Type your reply..." /></div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowReplyDialog(false)}>Cancel</Button>
+            <Button onClick={sendReply} disabled={sendingReply || !replyForm.body.trim()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+              {sendingReply ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Send className="mr-1 h-4 w-4" />}
+              Send
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { FileText, Download, CheckCircle, XCircle, Loader2, ShieldCheck, ShieldX, ExternalLink, Eye } from "lucide-react";
+import { FileText, Download, Loader2, ShieldCheck, ShieldX, ExternalLink, Eye } from "lucide-react";
 
 const docStatuses = ["uploaded", "pending_review", "approved", "notarized", "rejected"];
 
@@ -23,6 +23,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
   const { user } = useAuth();
   const { toast } = useToast();
   const [docs, setDocs] = useState<any[]>([]);
+  const [profiles, setProfiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [verificationByDoc, setVerificationByDoc] = useState<Record<string, any>>({});
@@ -31,12 +32,14 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const fetchDocs = async () => {
-    const [docsRes, verificationsRes] = await Promise.all([
+    const [docsRes, verificationsRes, profilesRes] = await Promise.all([
       supabase.from("documents").select("*").order("created_at", { ascending: false }),
-      supabase.from("e_seal_verifications" as any).select("*")
+      supabase.from("e_seal_verifications" as any).select("*"),
+      supabase.from("profiles").select("user_id, full_name, email"),
     ]);
 
     if (docsRes.data) setDocs(docsRes.data);
+    if (profilesRes.data) setProfiles(profilesRes.data);
     if (verificationsRes.data) {
       const mapped: Record<string, any> = {};
       (verificationsRes.data as any[]).forEach((v: any) => {
@@ -48,6 +51,11 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
   };
 
   useEffect(() => { fetchDocs(); }, []);
+
+  const getUploaderName = (userId: string) => {
+    const p = profiles.find((p) => p.user_id === userId);
+    return p?.full_name || p?.email || userId.slice(0, 8);
+  };
 
   const updateStatus = async (id: string, newStatus: string) => {
     setUpdatingId(id);
@@ -197,6 +205,8 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
                     <div>
                       <p className="font-medium text-foreground">{doc.file_name}</p>
                       <p className="text-xs text-muted-foreground">
+                        <span className="font-medium text-foreground/80">{getUploaderName(doc.uploaded_by)}</span>
+                        {" · "}
                         {new Date(doc.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                         {doc.appointment_id && <span className="ml-2">• Linked to appointment</span>}
                       </p>

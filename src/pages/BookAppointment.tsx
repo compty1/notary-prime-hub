@@ -195,7 +195,21 @@ export default function BookAppointment() {
     if (preType === "ron" || preType === "in_person") {
       setNotarizationType(preType);
     }
-  }, [searchParams, user]);
+    // Handle pre-selected service from ServiceDetail or FeeCalculator
+    const preService = searchParams.get("service");
+    if (preService && serviceTypes.includes(preService)) {
+      setServiceType(preService);
+    }
+    // Handle estimate from FeeCalculator
+    const preEstimate = searchParams.get("estimate");
+    if (preEstimate) {
+      setEstimatedPrice(parseFloat(preEstimate));
+    }
+    const preDocs = searchParams.get("docs");
+    if (preDocs) {
+      setDocumentCount(parseInt(preDocs) || 1);
+    }
+  }, [searchParams, user, serviceTypes]);
 
   // Fetch available time slots when date changes + check for double bookings
   useEffect(() => {

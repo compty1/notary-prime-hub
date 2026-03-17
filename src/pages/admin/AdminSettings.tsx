@@ -44,8 +44,8 @@ export default function AdminSettings() {
       // Load seal preview if path exists
       const sealPath = values.seal_image_path;
       if (sealPath) {
-        const { data: urlData } = supabase.storage.from("documents").getPublicUrl(sealPath);
-        if (urlData) setSealPreviewUrl(urlData.publicUrl);
+        const { data: urlData } = await supabase.storage.from("documents").createSignedUrl(sealPath, 3600);
+        if (urlData?.signedUrl) setSealPreviewUrl(urlData.signedUrl);
       }
     }
     setLoading(false);
@@ -103,8 +103,8 @@ export default function AdminSettings() {
     const key = type === "cert" ? "commission_certificate_path" : "seal_image_path";
     updateValue(key, filePath);
     if (type === "seal") {
-      const { data: urlData } = supabase.storage.from("documents").getPublicUrl(filePath);
-      if (urlData) setSealPreviewUrl(urlData.publicUrl);
+      const { data: urlData } = await supabase.storage.from("documents").createSignedUrl(filePath, 3600);
+      if (urlData?.signedUrl) setSealPreviewUrl(urlData.signedUrl);
     }
     toast({ title: `${type === "cert" ? "Certificate" : "Seal image"} uploaded` });
     setter(false);

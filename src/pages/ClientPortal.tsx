@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Clock, MapPin, Monitor, Plus, LogOut, Shield, FileText, RefreshCw, Video, CheckCircle, Mic, Camera as CameraIcon, Wifi, XCircle, User, Pencil, Save, Loader2, Upload, Download, FolderOpen, QrCode, ArrowRight, MessageSquare, Send, Sparkles, Eye, DollarSign, Star, ShoppingBag } from "lucide-react";
+import { Calendar, Clock, MapPin, Monitor, Plus, LogOut, Shield, FileText, RefreshCw, Video, CheckCircle, Mic, Camera as CameraIcon, Wifi, XCircle, User, Pencil, Save, Loader2, Upload, Download, FolderOpen, QrCode, ArrowRight, MessageSquare, Send, Sparkles, Eye, DollarSign, Star, ShoppingBag, Mail, Package } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { QRCodeSVG } from "qrcode.react";
@@ -84,29 +84,37 @@ export default function ClientPortal() {
   const [chatInput, setChatInput] = useState("");
   const [sendingChat, setSendingChat] = useState(false);
   const chatEndRef = React.useRef<HTMLDivElement>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   // AI explain
   const [explaining, setExplaining] = useState(false);
   const [explanation, setExplanation] = useState<string | null>(null);
   const [explainDialogOpen, setExplainDialogOpen] = useState(false);
 
+  // Correspondence & Apostille
+  const [correspondence, setCorrespondence] = useState<any[]>([]);
+  const [apostilleRequests, setApostilleRequests] = useState<any[]>([]);
+
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
-      const [apptRes, profileRes, docsRes, payRes, revRes, svcRes] = await Promise.all([
+      const [apptRes, profileRes, docsRes, payRes, revRes, svcRes, corrRes, apoRes] = await Promise.all([
         supabase.from("appointments").select("*").eq("client_id", user.id).order("scheduled_date", { ascending: false }),
         supabase.from("profiles").select("*").eq("user_id", user.id).single(),
         supabase.from("documents").select("*").eq("uploaded_by", user.id).order("created_at", { ascending: false }),
         supabase.from("payments").select("*").eq("client_id", user.id).order("created_at", { ascending: false }),
         supabase.from("reviews").select("*").eq("client_id", user.id).order("created_at", { ascending: false }),
         supabase.from("services").select("*").eq("is_active", true).order("display_order"),
+        supabase.from("client_correspondence").select("*").eq("client_id", user.id).order("created_at", { ascending: false }),
+        supabase.from("apostille_requests").select("*").eq("client_id", user.id).order("created_at", { ascending: false }),
       ]);
       if (apptRes.data) setAppointments(apptRes.data);
       if (docsRes.data) setDocuments(docsRes.data);
       if (payRes.data) setPayments(payRes.data);
       if (revRes.data) setReviews(revRes.data);
       if (svcRes.data) setServices(svcRes.data);
-      if (docsRes.data) setDocuments(docsRes.data);
+      if (corrRes.data) setCorrespondence(corrRes.data);
+      if (apoRes.data) setApostilleRequests(apoRes.data);
       if (profileRes.data) {
         setProfile(profileRes.data);
         setProfileForm({
@@ -124,7 +132,11 @@ export default function ClientPortal() {
 
     // Load chat messages - own messages + admin replies addressed to this user
     supabase.from("chat_messages").select("*").or(`sender_id.eq.${user.id},and(is_admin.eq.true,recipient_id.eq.${user.id})`).order("created_at").then(({ data }) => {
-      if (data) setChatMessages(data);
+      if (data) {
+        setChatMessages(data);
+        const unread = data.filter((m: any) => m.is_admin && !m.read).length;
+        setUnreadCount(unread);
+      }
     });
 
     // Subscribe to new chat messages (admin replies)
@@ -307,12 +319,17 @@ export default function ClientPortal() {
         </motion.div>
 
         <Tabs defaultValue="appointments" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-9">
             <TabsTrigger value="appointments"><Calendar className="mr-1 h-4 w-4 hidden sm:inline" /> Appts</TabsTrigger>
             <TabsTrigger value="documents"><FileText className="mr-1 h-4 w-4 hidden sm:inline" /> Docs</TabsTrigger>
             <TabsTrigger value="status"><Shield className="mr-1 h-4 w-4 hidden sm:inline" /> Status</TabsTrigger>
-            <TabsTrigger value="chat"><MessageSquare className="mr-1 h-4 w-4 hidden sm:inline" /> Chat</TabsTrigger>
-            <TabsTrigger value="payments"><DollarSign className="mr-1 h-4 w-4 hidden sm:inline" /> Payments</TabsTrigger>
+            <TabsTrigger value="chat" className="relative">
+              <MessageSquare className="mr-1 h-4 w-4 hidden sm:inline" /> Chat
+              {unreadCount > 0 && <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] text-destructive-foreground">{unreadCount}</span>}
+            </TabsTrigger>
+            <TabsTrigger value="correspondence"><Mail className="mr-1 h-4 w-4 hidden sm:inline" /> Mail</TabsTrigger>
+            <TabsTrigger value="payments"><DollarSign className="mr-1 h-4 w-4 hidden sm:inline" /> Pay</TabsTrigger>
+            <TabsTrigger value="apostille"><Package className="mr-1 h-4 w-4 hidden sm:inline" /> Apost.</TabsTrigger>
             <TabsTrigger value="reviews"><Star className="mr-1 h-4 w-4 hidden sm:inline" /> Reviews</TabsTrigger>
             <TabsTrigger value="services"><ShoppingBag className="mr-1 h-4 w-4 hidden sm:inline" /> Services</TabsTrigger>
           </TabsList>
@@ -500,7 +517,18 @@ export default function ClientPortal() {
           </TabsContent>
 
           {/* CHAT TAB */}
-          <TabsContent value="chat" className="space-y-4">
+          <TabsContent value="chat" className="space-y-4" onFocusCapture={() => {
+            // Mark admin messages as read when tab is opened
+            if (user && unreadCount > 0) {
+              const unreadIds = chatMessages.filter(m => m.is_admin && !m.read).map(m => m.id);
+              if (unreadIds.length > 0) {
+                supabase.from("chat_messages").update({ read: true }).in("id", unreadIds).then(() => {
+                  setChatMessages(prev => prev.map(m => unreadIds.includes(m.id) ? { ...m, read: true } : m));
+                  setUnreadCount(0);
+                });
+              }
+            }
+          }}>
             <h2 className="font-display text-xl font-semibold">Live Chat</h2>
             <Card className="border-border/50">
               <CardContent className="p-4">
@@ -533,6 +561,69 @@ export default function ClientPortal() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* CORRESPONDENCE TAB */}
+          <TabsContent value="correspondence" className="space-y-6">
+            <h2 className="font-display text-xl font-semibold">Email Correspondence</h2>
+            {correspondence.length === 0 ? (
+              <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground">
+                <Mail className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
+                <p>No correspondence yet</p>
+                <p className="text-sm mt-1">Emails handled on your behalf will appear here.</p>
+              </CardContent></Card>
+            ) : (
+              <div className="space-y-3">
+                {correspondence.map((c) => (
+                  <Card key={c.id} className="border-border/50">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          {c.direction === "inbound" ? <Mail className="h-4 w-4 text-accent" /> : <Send className="h-4 w-4 text-accent" />}
+                          <span className="text-sm font-medium">{c.subject}</span>
+                        </div>
+                        <Badge className={c.status === "replied" ? "bg-emerald-100 text-emerald-800" : c.status === "pending" ? "bg-amber-100 text-amber-800" : "bg-muted text-muted-foreground"}>
+                          {c.status.replace(/_/g, " ")}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground mb-1">{c.direction === "inbound" ? `From: ${c.from_address || "—"}` : `To: ${c.to_address || "—"}`}</p>
+                      <p className="text-sm text-foreground line-clamp-2">{c.body}</p>
+                      <p className="text-xs text-muted-foreground mt-2">{new Date(c.created_at).toLocaleDateString()}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* APOSTILLE TAB */}
+          <TabsContent value="apostille" className="space-y-6">
+            <h2 className="font-display text-xl font-semibold">Apostille Requests</h2>
+            {apostilleRequests.length === 0 ? (
+              <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground">
+                <Package className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
+                <p>No apostille requests yet</p>
+                <p className="text-sm mt-1">Apostille processing requests will appear here.</p>
+              </CardContent></Card>
+            ) : (
+              <div className="space-y-3">
+                {apostilleRequests.map((req) => (
+                  <Card key={req.id} className="border-border/50">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium">{req.document_description}</span>
+                        <Badge className={req.status === "delivered" ? "bg-emerald-100 text-emerald-800" : req.status === "shipped" ? "bg-cyan-100 text-cyan-800" : "bg-amber-100 text-amber-800"}>
+                          {req.status.replace(/_/g, " ")}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Fee: ${parseFloat(req.fee || "0").toFixed(2)}</p>
+                      {req.tracking_number && <p className="text-xs text-muted-foreground mt-1">Tracking: {req.tracking_number}</p>}
+                      <p className="text-xs text-muted-foreground mt-1">Created: {new Date(req.created_at).toLocaleDateString()}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
           {/* PAYMENTS TAB */}

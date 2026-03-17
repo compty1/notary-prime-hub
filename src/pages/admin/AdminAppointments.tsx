@@ -438,10 +438,15 @@ export default function AdminAppointments() {
           <DialogHeader>
             <DialogTitle className="font-display">Appointment Details</DialogTitle>
           </DialogHeader>
-          {detailAppt && (
+          {detailAppt && (() => {
+            const clientProfile = profiles.find((p) => p.user_id === detailAppt.client_id);
+            return (
             <div className="space-y-4">
               <div className="rounded-lg bg-muted/50 p-3 text-sm space-y-2">
                 <div className="flex justify-between"><span className="text-muted-foreground">Client</span><span className="font-medium">{getClientName(detailAppt.client_id)}</span></div>
+                {clientProfile?.email && <div className="flex justify-between"><span className="text-muted-foreground">Email</span><span className="font-medium">{clientProfile.email}</span></div>}
+                {clientProfile?.phone && <div className="flex justify-between"><span className="text-muted-foreground">Phone</span><span className="font-medium">{clientProfile.phone}</span></div>}
+                {clientProfile?.address && <div className="flex justify-between"><span className="text-muted-foreground">Address</span><span className="font-medium text-right max-w-[60%]">{[clientProfile.address, clientProfile.city, clientProfile.state, clientProfile.zip].filter(Boolean).join(", ")}</span></div>}
                 <div className="flex justify-between"><span className="text-muted-foreground">Service</span><span className="font-medium">{detailAppt.service_type}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">Type</span><span className="font-medium">{detailAppt.notarization_type === "ron" ? "RON" : "In-Person"}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">Date</span><span className="font-medium">{formatDate(detailAppt.scheduled_date)}</span></div>
@@ -450,6 +455,38 @@ export default function AdminAppointments() {
                 {detailAppt.estimated_price && <div className="flex justify-between"><span className="text-muted-foreground">Est. Price</span><span className="font-medium">${parseFloat(detailAppt.estimated_price).toFixed(2)}</span></div>}
                 <div className="flex justify-between"><span className="text-muted-foreground">Status</span><Badge className={statusColors[detailAppt.status]}>{detailAppt.status.replace(/_/g, " ")}</Badge></div>
               </div>
+
+              {/* Mark as Paid */}
+              {detailAppt.status === "completed" && (
+                <div className="rounded-lg border border-border/50 p-3 space-y-2">
+                  <Label className="text-sm font-medium flex items-center gap-1"><DollarSign className="h-3 w-3" /> Payment</Label>
+                  <div className="flex gap-2">
+                    <Select onValueChange={async (method) => {
+                      const { error } = await supabase.from("payments").update({
+                        status: "paid", method, paid_at: new Date().toISOString(),
+                      }).eq("appointment_id", detailAppt.id).eq("status", "pending");
+                      if (error) {
+                        toast({ title: "Error", description: error.message, variant: "destructive" });
+                      } else {
+                        toast({ title: "Payment marked as paid", description: `Method: ${method}` });
+                        await supabase.from("audit_log").insert({
+                          user_id: user?.id, action: "payment_marked_paid",
+                          entity_type: "payment", details: { appointment_id: detailAppt.id, method },
+                        });
+                      }
+                    }}>
+                      <SelectTrigger className="w-full"><SelectValue placeholder="Mark as Paid..." /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cash">Cash</SelectItem>
+                        <SelectItem value="check">Check</SelectItem>
+                        <SelectItem value="card">Card</SelectItem>
+                        <SelectItem value="zelle">Zelle</SelectItem>
+                        <SelectItem value="venmo">Venmo</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
 
               {/* Linked Documents */}
               {detailDocs.length > 0 && (
@@ -482,7 +519,8 @@ export default function AdminAppointments() {
                 Save Notes
               </Button>
             </div>
-          )}
+            );
+          })()}
         </DialogContent>
       </Dialog>
 
