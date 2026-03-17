@@ -45,6 +45,7 @@ export default function AdminLeadPortal() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterIntent, setFilterIntent] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [filterType, setFilterType] = useState("all");
   const [activeTab, setActiveTab] = useState("list");
   const [showCreate, setShowCreate] = useState(false);
   const [editingLead, setEditingLead] = useState<any>(null);
@@ -52,6 +53,7 @@ export default function AdminLeadPortal() {
   const [saving, setSaving] = useState(false);
   const [discovering, setDiscovering] = useState(false);
   const [enriching, setEnriching] = useState(false);
+  const [scrapingSocial, setScrapingSocial] = useState(false);
 
   const fetchLeads = async () => {
     const { data } = await supabase.from("leads").select("*").order("created_at", { ascending: false });
