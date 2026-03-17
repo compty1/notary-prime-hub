@@ -584,19 +584,44 @@ export default function ServiceDetail() {
                 <CardContent className="p-5 space-y-4">
                   <h3 className="font-display text-lg font-semibold">Ready to Get Started?</h3>
                   {(() => {
-                    const SAAS_SERVICES = new Set(["Document Storage Vault", "Cloud Document Storage", "PDF Services", "Document Digitization", "Notary API Access", "White-Label Notarization", "Document Translation"]);
                     const SAAS_LINKS: Record<string, string> = {
-                      "Document Storage Vault": "/portal",
-                      "Cloud Document Storage": "/portal",
-                      "PDF Services": "/digitize",
-                      "Document Digitization": "/digitize",
-                      "Document Translation": "/digitize",
+                      "Document Storage Vault": "/portal", "Cloud Document Storage": "/portal",
+                      "PDF Services": "/digitize", "Document Digitization": "/digitize",
+                      "Document Translation": "/digitize", "Document Scanning & Digitization": "/digitize",
+                      "Template Library & Form Builder": "/templates", "Virtual Mailroom": "/mailroom",
+                      "ID Verification / KYC Checks": "/verify-id",
                     };
-                    if (SAAS_SERVICES.has(service.name)) {
+                    const INTAKE_ONLY = new Set([
+                      "Apostille Facilitation","Consular Legalization Prep","Background Check Coordination",
+                      "Clerical Document Preparation","Document Cleanup & Formatting","Form Filling Assistance",
+                      "Certified Document Prep for Agencies","Registered Agent Coordination",
+                      "Email Management & Correspondence","Notarized Translation Coordination",
+                    ]);
+                    const SUBSCRIPTION = new Set(["Business Subscription Plans","API & Integration Services","White-Label Partner Programs"]);
+
+                    if (SAAS_LINKS[service.name]) {
                       return (
-                        <Link to={SAAS_LINKS[service.name] || "/portal"} className="block">
+                        <Link to={SAAS_LINKS[service.name]} className="block">
                           <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" size="lg">
                             Use This Service <ChevronRight className="ml-1 h-4 w-4" />
+                          </Button>
+                        </Link>
+                      );
+                    }
+                    if (INTAKE_ONLY.has(service.name)) {
+                      return (
+                        <Link to={`/request?service=${encodeURIComponent(service.name)}`} className="block">
+                          <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" size="lg">
+                            Get Started <ChevronRight className="ml-1 h-4 w-4" />
+                          </Button>
+                        </Link>
+                      );
+                    }
+                    if (SUBSCRIPTION.has(service.name)) {
+                      return (
+                        <Link to="/subscribe" className="block">
+                          <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" size="lg">
+                            View Plans <ChevronRight className="ml-1 h-4 w-4" />
                           </Button>
                         </Link>
                       );
