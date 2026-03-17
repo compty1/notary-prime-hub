@@ -75,6 +75,22 @@ function buildEmailHtml(clientName: string, appt: Appointment, type: string): st
         ${isRon ? "<p><strong>Please log in to your client portal now</strong> to begin the identity verification process.</p>" : `<p>Please head to: <strong>${appt.location || "the agreed location"}</strong></p>`}
       `;
       break;
+    case "status_confirmed":
+      heading = "Appointment Confirmed";
+      body = `<p>Hello ${clientName},</p><p>Great news! Your appointment for <strong>${appt.service_type}</strong> on <strong>${dateFormatted}</strong> at <strong>${timeFormatted}</strong> has been confirmed by our team.</p><p>We look forward to assisting you!</p>`;
+      break;
+    case "status_in_session":
+      heading = "Session In Progress";
+      body = `<p>Hello ${clientName},</p><p>Your notarization session for <strong>${appt.service_type}</strong> is now in progress. ${isRon ? "Please join via your client portal if you haven't already." : "Thank you for being here!"}</p>`;
+      break;
+    case "status_completed":
+      heading = "Notarization Complete";
+      body = `<p>Hello ${clientName},</p><p>Your notarization for <strong>${appt.service_type}</strong> has been completed successfully!</p><p>Your notarized documents are now available in your client portal. Please log in to download them.</p><p>If you were satisfied with the service, we'd appreciate you leaving a review in your portal.</p>`;
+      break;
+    case "status_cancelled":
+      heading = "Appointment Cancelled";
+      body = `<p>Hello ${clientName},</p><p>Your appointment for <strong>${appt.service_type}</strong> on <strong>${dateFormatted}</strong> has been cancelled.</p><p>If you'd like to reschedule, please visit our booking page or contact us.</p>`;
+      break;
   }
 
   return `
