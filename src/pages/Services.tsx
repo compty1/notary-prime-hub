@@ -33,7 +33,37 @@ const categoryLabels: Record<string, { label: string; description: string }> = {
   consulting: { label: "Consulting & Training", description: "RON onboarding, workflow audits, and custom automation" },
 };
 
-const categoryOrder = ["notarization", "verification", "document_services", "authentication", "business", "recurring", "consulting"];
+const categoryOrder = ["notarization", "verification", "document_services", "authentication", "business", "recurring", "consulting", "business_services"];
+
+// Smart CTA routing based on service name and category
+const INTAKE_ONLY_SERVICES = new Set([
+  "Apostille Facilitation", "Consular Legalization Prep", "Background Check Coordination",
+  "Clerical Document Preparation", "Document Cleanup & Formatting", "Form Filling Assistance",
+  "Certified Document Prep for Agencies", "Registered Agent Coordination",
+  "Email Management & Correspondence", "Notarized Translation Coordination",
+]);
+const SAAS_LINKS: Record<string, string> = {
+  "Document Storage Vault": "/portal",
+  "Cloud Document Storage": "/portal",
+  "PDF Services": "/digitize",
+  "Document Digitization": "/digitize",
+  "Document Scanning & Digitization": "/digitize",
+  "Document Translation": "/digitize",
+  "Template Library & Form Builder": "/templates",
+  "Virtual Mailroom": "/mailroom",
+  "ID Verification / KYC Checks": "/verify-id",
+};
+const SUBSCRIPTION_SERVICES = new Set([
+  "Business Subscription Plans", "API & Integration Services", "White-Label Partner Programs",
+]);
+
+function getServiceAction(s: Service): { url: string; label: string } {
+  if (SAAS_LINKS[s.name]) return { url: SAAS_LINKS[s.name], label: "Use Tool" };
+  if (INTAKE_ONLY_SERVICES.has(s.name)) return { url: `/request?service=${encodeURIComponent(s.name)}`, label: "Get Started" };
+  if (SUBSCRIPTION_SERVICES.has(s.name)) return { url: "/subscribe", label: "View Plans" };
+  if (s.name === "White-Label Partner Programs") return { url: "/join", label: "Apply" };
+  return { url: `/book?service=${encodeURIComponent(s.name)}${!["notarization", "authentication"].includes(s.category) ? "&type=in_person" : ""}`, label: "Book Now" };
+}
 
 type Service = {
   id: string; name: string; category: string; description: string | null;
@@ -223,8 +253,7 @@ export default function Services() {
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {group.items.map((s, i) => {
                     const IconComp = iconMap[s.icon || "FileText"] || FileText;
-                    // Phase 2.1: Pass service context to booking
-                    const bookUrl = `/book?service=${encodeURIComponent(s.name)}${!["notarization", "authentication"].includes(s.category) ? "&type=in_person" : ""}`;
+                    const { url: actionUrl, label: actionLabel } = getServiceAction(s);
                     return (
                       <motion.div key={s.id} variants={fadeUp} custom={i + 1}>
                         <Card className="group h-full border-border/50 transition-all hover:border-accent/30 hover:shadow-lg">
@@ -243,9 +272,9 @@ export default function Services() {
                                   More Info
                                 </Button>
                               </Link>
-                              <Link to={bookUrl} className="flex-1">
+                              <Link to={actionUrl} className="flex-1">
                                 <Button size="sm" variant="outline" className="w-full group-hover:bg-accent group-hover:text-accent-foreground transition-colors">
-                                  Get Started <ChevronRight className="ml-1 h-3 w-3" />
+                                  {actionLabel} <ChevronRight className="ml-1 h-3 w-3" />
                                 </Button>
                               </Link>
                             </div>

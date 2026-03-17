@@ -35,6 +35,10 @@ const ServiceDetail = lazy(() => import("./pages/ServiceDetail"));
 const About = lazy(() => import("./pages/About"));
 const DocumentDigitize = lazy(() => import("./pages/DocumentDigitize"));
 const JoinPlatform = lazy(() => import("./pages/JoinPlatform"));
+const ServiceRequest = lazy(() => import("./pages/ServiceRequest"));
+const VirtualMailroom = lazy(() => import("./pages/VirtualMailroom"));
+const SubscriptionPlans = lazy(() => import("./pages/SubscriptionPlans"));
+const VerifyIdentity = lazy(() => import("./pages/VerifyIdentity"));
 
 // Admin pages
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
@@ -92,6 +96,10 @@ const App = () => (
               <Route path="/about" element={<About />} />
               <Route path="/join" element={<JoinPlatform />} />
               <Route path="/digitize" element={<ProtectedRoute><DocumentDigitize /></ProtectedRoute>} />
+              <Route path="/request" element={<ServiceRequest />} />
+              <Route path="/mailroom" element={<ProtectedRoute><VirtualMailroom /></ProtectedRoute>} />
+              <Route path="/subscribe" element={<SubscriptionPlans />} />
+              <Route path="/verify-id" element={<ProtectedRoute><VerifyIdentity /></ProtectedRoute>} />
               <Route path="/builder" element={<DocumentBuilder />} />
               <Route path="/fee-calculator" element={<FeeCalculator />} />
               <Route path="/portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
