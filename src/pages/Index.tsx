@@ -497,7 +497,7 @@ export default function Index() {
             custom={1}
             className="mx-auto mb-12 max-w-xl text-center text-muted-foreground"
           >
-            Have a question or need notarization services? Fill out the form below and we'll respond within 24 hours.
+            Have a question or need notarization services? Fill out the form below and we'll respond within 24 hours — we typically respond within 2 hours during business hours.
           </motion.p>
           <motion.div
             initial="hidden"
