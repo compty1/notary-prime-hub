@@ -954,6 +954,26 @@ export default function ClientPortal() {
                 <Sparkles className="mr-1 h-3 w-3" /> {showWizard ? "Hide Guide" : "Not Sure What You Need?"}
               </Button>
             </div>
+
+            {/* Digitize Documents Card */}
+            <Card className="border-accent/30 bg-accent/5">
+              <CardContent className="flex items-center justify-between p-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/20">
+                    <FileText className="h-5 w-5 text-accent" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">Digitize Documents</h3>
+                    <p className="text-xs text-muted-foreground">Upload scanned documents and convert them to editable digital formats with AI-powered OCR</p>
+                  </div>
+                </div>
+                <Link to="/digitize">
+                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">
+                    <ArrowRight className="mr-1 h-3 w-3" /> Start
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
             {showWizard && (
               <DocumentWizard
                 onSelectService={(svc) => { setShowWizard(false); navigate(`/book?service=${encodeURIComponent(svc)}`); }}
