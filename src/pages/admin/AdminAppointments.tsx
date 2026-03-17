@@ -206,6 +206,14 @@ export default function AdminAppointments() {
       toast({ title: "Journal error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Journal entry saved" });
+      // Auto-create payment record
+      await supabase.from("payments").insert({
+        client_id: quickJournalAppt.client_id,
+        appointment_id: quickJournalAppt.id,
+        amount: feesCharged,
+        status: "pending",
+        notes: `${quickJournalAppt.service_type} — ${quickJournalAppt.notarization_type === "ron" ? "RON" : "In-Person"}`,
+      });
       await supabase.from("audit_log").insert({
         user_id: user.id,
         action: "journal_entry_created",
