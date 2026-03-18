@@ -563,6 +563,7 @@ export default function BookAppointment() {
   const buildIntakeNotes = () => {
     const parts: string[] = [];
     const cat = serviceCategories[serviceType];
+    const svcLower = serviceType.toLowerCase();
     
     if (cat === "authentication" || cat === "notarization") {
       if (destinationCountry) parts.push(`[Destination: ${destinationCountry}${HAGUE_COUNTRIES.includes(destinationCountry) ? " (Hague)" : " (Non-Hague — consular legalization may be required)"}]`);
@@ -572,22 +573,57 @@ export default function BookAppointment() {
       if (uscisForm) parts.push(`[USCIS Form: ${uscisForm}]`);
       if (caseType) parts.push(`[Case Type: ${caseType}]`);
     }
-    if (serviceType.toLowerCase().includes("real estate") || serviceType.toLowerCase().includes("closing")) {
+    if (svcLower.includes("real estate") || svcLower.includes("closing")) {
       if (propertyAddress) parts.push(`[Property: ${propertyAddress}]`);
       if (titleCompany) parts.push(`[Title Co: ${titleCompany}]`);
     }
-    if (cat === "verification" || serviceType.toLowerCase().includes("i-9")) {
+    if (cat === "verification" || svcLower.includes("i-9")) {
       if (employerName) parts.push(`[Employer: ${employerName}]`);
       if (hireStartDate) parts.push(`[Start Date: ${hireStartDate}]`);
     }
     if (cat === "business") {
       if (companyName) parts.push(`[Company: ${companyName}]`);
     }
-    if (serviceType.toLowerCase().includes("translation")) {
+    if (svcLower.includes("translation")) {
       if (sourceLanguage) parts.push(`[Source Language: ${sourceLanguage}]`);
       if (targetLanguage) parts.push(`[Target Language: ${targetLanguage}]`);
       if (translationDocType) parts.push(`[Doc Type: ${translationDocType}]`);
       if (translationPageCount) parts.push(`[Pages: ${translationPageCount}]`);
+    }
+    // Witness fields
+    if (svcLower.includes("witness")) {
+      parts.push(`[Witnesses Needed: ${witnessCount}]`);
+      parts.push(`[Witness Mode: ${witnessMode}]`);
+      if (witnessDocType) parts.push(`[Witness Doc Type: ${witnessDocType}]`);
+    }
+    // Certified copy fields
+    if (svcLower.includes("certified copy")) {
+      if (certifiedDocName) parts.push(`[Certified Doc: ${certifiedDocName}]`);
+      if (issuingAuthority) parts.push(`[Issuing Authority: ${issuingAuthority}]`);
+      parts.push(`[Copies: ${copyCount}]`);
+    }
+    // Employment onboarding fields
+    if (svcLower.includes("employment onboarding") || svcLower.includes("onboarding support")) {
+      parts.push(`[Employees: ${employeeCount}]`);
+      parts.push(`[Docs/Employee: ${docsPerEmployee}]`);
+      if (hrContact) parts.push(`[HR Contact: ${hrContact}]`);
+      if (employerName) parts.push(`[Employer: ${employerName}]`);
+    }
+    // Custom workflow fields
+    if (svcLower.includes("custom workflow")) {
+      if (currentTools) parts.push(`[Current Tools: ${currentTools}]`);
+      if (teamSize) parts.push(`[Team Size: ${teamSize}]`);
+      if (budgetRange) parts.push(`[Budget: ${budgetRange}]`);
+    }
+    // Bulk notarization fields
+    if (svcLower.includes("bulk")) {
+      if (monthlyVolume) parts.push(`[Monthly Volume: ${monthlyVolume}]`);
+      if (bulkDocTypes) parts.push(`[Doc Types: ${bulkDocTypes}]`);
+      if (schedulePreference) parts.push(`[Schedule: ${schedulePreference}]`);
+    }
+    // Scanning fields
+    if (svcLower.includes("scanning") || svcLower.includes("digitization")) {
+      parts.push(`[Scanning Mode: ${scanningMode}]`);
     }
     return parts.join("\n");
   };
