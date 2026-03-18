@@ -140,7 +140,7 @@ export default function ClientPortal() {
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
-      const [apptRes, profileRes, docsRes, payRes, revRes, svcRes, corrRes, apoRes, reqRes] = await Promise.all([
+      const [apptRes, profileRes, docsRes, payRes, revRes, svcRes, corrRes, apoRes, reqRes, remRes] = await Promise.all([
         supabase.from("appointments").select("*").eq("client_id", user.id).order("scheduled_date", { ascending: false }),
         supabase.from("profiles").select("*").eq("user_id", user.id).single(),
         supabase.from("documents").select("*").eq("uploaded_by", user.id).order("created_at", { ascending: false }),
@@ -150,6 +150,7 @@ export default function ClientPortal() {
         supabase.from("client_correspondence").select("*").eq("client_id", user.id).order("created_at", { ascending: false }),
         supabase.from("apostille_requests").select("*").eq("client_id", user.id).order("created_at", { ascending: false }),
         supabase.from("service_requests").select("*").eq("client_id", user.id).order("created_at", { ascending: false }),
+        supabase.from("document_reminders").select("*").eq("user_id", user.id).order("expiry_date"),
       ]);
       if (apptRes.data) setAppointments(apptRes.data);
       if (docsRes.data) setDocuments(docsRes.data);
