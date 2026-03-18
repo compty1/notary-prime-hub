@@ -781,15 +781,21 @@ export default function BookAppointment() {
     const showApostille = cat === "authentication" || svcLower.includes("apostille");
     const showImmigration = (cat === "consulting" && (svcLower.includes("immigration") || svcLower.includes("uscis")));
     const showRealEstate = svcLower.includes("real estate") || svcLower.includes("closing");
-    const showI9 = svcLower.includes("i-9") || svcLower.includes("employment verification") || svcLower.includes("employment onboarding");
+    const showI9 = svcLower.includes("i-9") || svcLower.includes("employment verification");
     const showEmployer = showI9;
     const showBusiness = cat === "business" && !DIGITAL_ONLY_SERVICES.has(serviceType);
     const showRonOnboarding = svcLower.includes("ron onboarding");
     const showWorkflow = svcLower.includes("workflow") && !svcLower.includes("ron");
     const showTranslation = svcLower.includes("translation");
+    const showWitness = svcLower.includes("witness");
+    const showCertifiedCopy = svcLower.includes("certified copy");
+    const showOnboarding = svcLower.includes("employment onboarding") || svcLower.includes("onboarding support");
+    const showCustomWorkflow = svcLower.includes("custom workflow");
+    const showBulk = svcLower.includes("bulk");
+    const showScanning = svcLower.includes("scanning") || svcLower.includes("digitization");
 
     // If no category-specific fields apply, return null
-    if (!showApostille && !showImmigration && !showRealEstate && !showI9 && !showEmployer && !showBusiness && !showRonOnboarding && !showWorkflow && !showTranslation) return null;
+    if (!showApostille && !showImmigration && !showRealEstate && !showI9 && !showEmployer && !showBusiness && !showRonOnboarding && !showWorkflow && !showTranslation && !showWitness && !showCertifiedCopy && !showOnboarding && !showCustomWorkflow && !showBulk && !showScanning) return null;
 
     return (
       <div className="space-y-3 rounded-lg border border-border/50 bg-muted/30 p-4">
