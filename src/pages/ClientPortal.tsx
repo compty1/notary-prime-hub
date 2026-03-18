@@ -105,6 +105,33 @@ export default function ClientPortal() {
   const [payingPaymentId, setPayingPaymentId] = useState<string | null>(null);
   const [zoomLink, setZoomLink] = useState<string>("");
 
+  // Service requests
+  const [serviceRequests, setServiceRequests] = useState<any[]>([]);
+
+  // Smart service routing helpers
+  const INTAKE_ONLY = new Set(["Apostille Facilitation", "Consular Legalization Prep", "Background Check Coordination", "Clerical Document Preparation", "Document Cleanup & Formatting", "Form Filling Assistance", "Certified Document Prep for Agencies", "Registered Agent Coordination", "Email Management & Correspondence", "Notarized Translation Coordination"]);
+  const SAAS_TOOLS: Record<string, string> = { "PDF Services": "/digitize", "Document Scanning & Digitization": "/digitize", "Template Library & Form Builder": "/templates", "Virtual Mailroom": "/mailroom", "ID Verification / KYC Checks": "/verify-id" };
+  const SUBSCRIPTION_SERVICES = new Set(["Business Subscription Plans", "API & Integration Services", "White-Label Partner Programs"]);
+  const PORTAL_SERVICES = new Set(["Secure Document Vault & Storage", "Cloud Document Storage", "Document Retention & Compliance", "Automated Reminders & Renewals"]);
+
+  const getServiceUrl = (svc: any) => {
+    const name = svc.name;
+    if (SAAS_TOOLS[name]) return SAAS_TOOLS[name];
+    if (INTAKE_ONLY.has(name)) return `/request?service=${encodeURIComponent(name)}`;
+    if (SUBSCRIPTION_SERVICES.has(name)) return "/subscribe";
+    if (PORTAL_SERVICES.has(name)) return "/portal";
+    return `/book?type=${name.toLowerCase().includes("remote") ? "ron" : "in_person"}&service=${encodeURIComponent(name)}`;
+  };
+
+  const getServiceCTA = (svc: any) => {
+    const name = svc.name;
+    if (SAAS_TOOLS[name]) return "Use Tool";
+    if (INTAKE_ONLY.has(name)) return "Get Started";
+    if (SUBSCRIPTION_SERVICES.has(name)) return "View Plans";
+    if (PORTAL_SERVICES.has(name)) return "Open Portal";
+    return "Book Now";
+  };
+
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
