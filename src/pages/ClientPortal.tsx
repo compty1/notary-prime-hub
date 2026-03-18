@@ -1034,6 +1034,119 @@ export default function ClientPortal() {
               </div>
             )}
           </TabsContent>
+
+          {/* REMINDERS TAB */}
+          <TabsContent value="reminders" className="space-y-6">
+            <h2 className="font-display text-xl font-semibold">Document Reminders & Renewals</h2>
+            <Card className="border-border/50">
+              <CardContent className="p-4 space-y-4">
+                <h3 className="text-sm font-semibold">Set Expiry Reminder</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <Label>Document</Label>
+                    <Select value={reminderForm.document_id} onValueChange={(v) => setReminderForm({ ...reminderForm, document_id: v })}>
+                      <SelectTrigger className="text-xs"><SelectValue placeholder="Select document..." /></SelectTrigger>
+                      <SelectContent>
+                        {documents.map(d => (
+                          <SelectItem key={d.id} value={d.id} className="text-xs">{d.file_name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Expiry Date</Label>
+                    <Input type="date" value={reminderForm.expiry_date} onChange={(e) => setReminderForm({ ...reminderForm, expiry_date: e.target.value })} />
+                  </div>
+                  <div>
+                    <Label>Remind Before</Label>
+                    <Select value={reminderForm.remind_days_before} onValueChange={(v) => setReminderForm({ ...reminderForm, remind_days_before: v })}>
+                      <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="7">7 days</SelectItem>
+                        <SelectItem value="14">14 days</SelectItem>
+                        <SelectItem value="30">30 days</SelectItem>
+                        <SelectItem value="60">60 days</SelectItem>
+                        <SelectItem value="90">90 days</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <Button
+                  disabled={!reminderForm.document_id || !reminderForm.expiry_date || savingReminder}
+                  onClick={async () => {
+                    if (!user) return;
+                    setSavingReminder(true);
+                    const { data, error } = await supabase.from("document_reminders").insert({
+                      user_id: user.id,
+                      document_id: reminderForm.document_id,
+                      expiry_date: reminderForm.expiry_date,
+                      remind_days_before: parseInt(reminderForm.remind_days_before),
+                    } as any).select().single();
+                    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+                    else if (data) {
+                      toast({ title: "Reminder set" });
+                      setReminders(prev => [...prev, data].sort((a: any, b: any) => a.expiry_date.localeCompare(b.expiry_date)));
+                      setReminderForm({ document_id: "", expiry_date: "", remind_days_before: "30" });
+                    }
+                    setSavingReminder(false);
+                  }}
+                  size="sm"
+                  className="bg-accent text-accent-foreground hover:bg-gold-dark"
+                >
+                  {savingReminder ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Bell className="mr-1 h-4 w-4" />}
+                  Set Reminder
+                </Button>
+              </CardContent>
+            </Card>
+
+            {reminders.length === 0 ? (
+              <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground">
+                <Bell className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
+                <p>No reminders set</p>
+                <p className="text-sm mt-1">Set expiry dates on your documents and we'll remind you before they expire.</p>
+              </CardContent></Card>
+            ) : (
+              <div className="space-y-3">
+                {reminders.map((rem: any) => {
+                  const doc = documents.find(d => d.id === rem.document_id);
+                  const expiryDate = new Date(rem.expiry_date + "T00:00:00");
+                  const daysUntil = Math.ceil((expiryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+                  const isUrgent = daysUntil <= rem.remind_days_before;
+                  const isExpired = daysUntil <= 0;
+                  return (
+                    <Card key={rem.id} className={`border-border/50 ${isExpired ? "border-destructive/50" : isUrgent ? "border-amber-500/50" : ""}`}>
+                      <CardContent className="flex items-center justify-between p-4">
+                        <div className="flex items-center gap-3">
+                          <Bell className={`h-5 w-5 ${isExpired ? "text-destructive" : isUrgent ? "text-amber-500" : "text-muted-foreground"}`} />
+                          <div>
+                            <p className="text-sm font-medium">{doc?.file_name || "Unknown document"}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Expires: {expiryDate.toLocaleDateString()} · Remind {rem.remind_days_before}d before
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge className={isExpired ? "bg-destructive/10 text-destructive" : isUrgent ? "bg-amber-100 text-amber-800" : "bg-muted text-muted-foreground"}>
+                            {isExpired ? "Expired" : `${daysUntil}d remaining`}
+                          </Badge>
+                          <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={async () => {
+                            const { error } = await supabase.from("document_reminders").delete().eq("id", rem.id);
+                            if (!error) {
+                              setReminders(prev => prev.filter((r: any) => r.id !== rem.id));
+                              toast({ title: "Reminder removed" });
+                            }
+                          }}>
+                            <XCircle className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </TabsContent>
+
           <TabsContent value="services" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-xl font-semibold">Available Services</h2>
