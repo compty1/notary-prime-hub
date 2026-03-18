@@ -56,6 +56,11 @@ export default function AdminAppointments() {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  // Service requests
+  const [showRequests, setShowRequests] = useState(false);
+  const [serviceRequests, setServiceRequests] = useState<any[]>([]);
+  const [requestsLoading, setRequestsLoading] = useState(false);
   const [receiptAppt, setReceiptAppt] = useState<any>(null);
   const [quickJournalAppt, setQuickJournalAppt] = useState<any>(null);
   const [detailAppt, setDetailAppt] = useState<any>(null);
