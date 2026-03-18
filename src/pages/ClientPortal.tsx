@@ -108,6 +108,11 @@ export default function ClientPortal() {
   // Service requests
   const [serviceRequests, setServiceRequests] = useState<any[]>([]);
 
+  // Document reminders
+  const [reminders, setReminders] = useState<any[]>([]);
+  const [reminderForm, setReminderForm] = useState({ document_id: "", expiry_date: "", remind_days_before: "30" });
+  const [savingReminder, setSavingReminder] = useState(false);
+
   // Smart service routing helpers
   const INTAKE_ONLY = new Set(["Apostille Facilitation", "Consular Legalization Prep", "Background Check Coordination", "Clerical Document Preparation", "Document Cleanup & Formatting", "Form Filling Assistance", "Certified Document Prep for Agencies", "Registered Agent Coordination", "Email Management & Correspondence", "Notarized Translation Coordination"]);
   const SAAS_TOOLS: Record<string, string> = { "PDF Services": "/digitize", "Document Scanning & Digitization": "/digitize", "Template Library & Form Builder": "/templates", "Virtual Mailroom": "/mailroom", "ID Verification / KYC Checks": "/verify-id" };
