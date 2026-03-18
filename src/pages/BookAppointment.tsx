@@ -164,6 +164,34 @@ export default function BookAppointment() {
   const [companyName, setCompanyName] = useState("");
   const [customDocCount, setCustomDocCount] = useState(false);
 
+  // Witness-specific fields
+  const [witnessCount, setWitnessCount] = useState("1");
+  const [witnessMode, setWitnessMode] = useState<"in_person" | "virtual">("in_person");
+  const [witnessDocType, setWitnessDocType] = useState("");
+
+  // Certified copy fields
+  const [certifiedDocName, setCertifiedDocName] = useState("");
+  const [issuingAuthority, setIssuingAuthority] = useState("");
+  const [copyCount, setCopyCount] = useState("1");
+
+  // Employment onboarding fields
+  const [employeeCount, setEmployeeCount] = useState("1");
+  const [hrContact, setHrContact] = useState("");
+  const [docsPerEmployee, setDocsPerEmployee] = useState("1");
+
+  // Custom workflow fields
+  const [currentTools, setCurrentTools] = useState("");
+  const [teamSize, setTeamSize] = useState("");
+  const [budgetRange, setBudgetRange] = useState("");
+
+  // Bulk notarization fields
+  const [monthlyVolume, setMonthlyVolume] = useState("");
+  const [bulkDocTypes, setBulkDocTypes] = useState("");
+  const [schedulePreference, setSchedulePreference] = useState("");
+
+  // Scanning fields
+  const [scanningMode, setScanningMode] = useState<"digital" | "physical">("digital");
+
   // Translation-specific intake fields
   const [sourceLanguage, setSourceLanguage] = useState("English");
   const [targetLanguage, setTargetLanguage] = useState("");
@@ -535,6 +563,7 @@ export default function BookAppointment() {
   const buildIntakeNotes = () => {
     const parts: string[] = [];
     const cat = serviceCategories[serviceType];
+    const svcLower = serviceType.toLowerCase();
     
     if (cat === "authentication" || cat === "notarization") {
       if (destinationCountry) parts.push(`[Destination: ${destinationCountry}${HAGUE_COUNTRIES.includes(destinationCountry) ? " (Hague)" : " (Non-Hague — consular legalization may be required)"}]`);
@@ -544,22 +573,57 @@ export default function BookAppointment() {
       if (uscisForm) parts.push(`[USCIS Form: ${uscisForm}]`);
       if (caseType) parts.push(`[Case Type: ${caseType}]`);
     }
-    if (serviceType.toLowerCase().includes("real estate") || serviceType.toLowerCase().includes("closing")) {
+    if (svcLower.includes("real estate") || svcLower.includes("closing")) {
       if (propertyAddress) parts.push(`[Property: ${propertyAddress}]`);
       if (titleCompany) parts.push(`[Title Co: ${titleCompany}]`);
     }
-    if (cat === "verification" || serviceType.toLowerCase().includes("i-9")) {
+    if (cat === "verification" || svcLower.includes("i-9")) {
       if (employerName) parts.push(`[Employer: ${employerName}]`);
       if (hireStartDate) parts.push(`[Start Date: ${hireStartDate}]`);
     }
     if (cat === "business") {
       if (companyName) parts.push(`[Company: ${companyName}]`);
     }
-    if (serviceType.toLowerCase().includes("translation")) {
+    if (svcLower.includes("translation")) {
       if (sourceLanguage) parts.push(`[Source Language: ${sourceLanguage}]`);
       if (targetLanguage) parts.push(`[Target Language: ${targetLanguage}]`);
       if (translationDocType) parts.push(`[Doc Type: ${translationDocType}]`);
       if (translationPageCount) parts.push(`[Pages: ${translationPageCount}]`);
+    }
+    // Witness fields
+    if (svcLower.includes("witness")) {
+      parts.push(`[Witnesses Needed: ${witnessCount}]`);
+      parts.push(`[Witness Mode: ${witnessMode}]`);
+      if (witnessDocType) parts.push(`[Witness Doc Type: ${witnessDocType}]`);
+    }
+    // Certified copy fields
+    if (svcLower.includes("certified copy")) {
+      if (certifiedDocName) parts.push(`[Certified Doc: ${certifiedDocName}]`);
+      if (issuingAuthority) parts.push(`[Issuing Authority: ${issuingAuthority}]`);
+      parts.push(`[Copies: ${copyCount}]`);
+    }
+    // Employment onboarding fields
+    if (svcLower.includes("employment onboarding") || svcLower.includes("onboarding support")) {
+      parts.push(`[Employees: ${employeeCount}]`);
+      parts.push(`[Docs/Employee: ${docsPerEmployee}]`);
+      if (hrContact) parts.push(`[HR Contact: ${hrContact}]`);
+      if (employerName) parts.push(`[Employer: ${employerName}]`);
+    }
+    // Custom workflow fields
+    if (svcLower.includes("custom workflow")) {
+      if (currentTools) parts.push(`[Current Tools: ${currentTools}]`);
+      if (teamSize) parts.push(`[Team Size: ${teamSize}]`);
+      if (budgetRange) parts.push(`[Budget: ${budgetRange}]`);
+    }
+    // Bulk notarization fields
+    if (svcLower.includes("bulk")) {
+      if (monthlyVolume) parts.push(`[Monthly Volume: ${monthlyVolume}]`);
+      if (bulkDocTypes) parts.push(`[Doc Types: ${bulkDocTypes}]`);
+      if (schedulePreference) parts.push(`[Schedule: ${schedulePreference}]`);
+    }
+    // Scanning fields
+    if (svcLower.includes("scanning") || svcLower.includes("digitization")) {
+      parts.push(`[Scanning Mode: ${scanningMode}]`);
     }
     return parts.join("\n");
   };
@@ -753,15 +817,21 @@ export default function BookAppointment() {
     const showApostille = cat === "authentication" || svcLower.includes("apostille");
     const showImmigration = (cat === "consulting" && (svcLower.includes("immigration") || svcLower.includes("uscis")));
     const showRealEstate = svcLower.includes("real estate") || svcLower.includes("closing");
-    const showI9 = svcLower.includes("i-9") || svcLower.includes("employment verification") || svcLower.includes("employment onboarding");
+    const showI9 = svcLower.includes("i-9") || svcLower.includes("employment verification");
     const showEmployer = showI9;
     const showBusiness = cat === "business" && !DIGITAL_ONLY_SERVICES.has(serviceType);
     const showRonOnboarding = svcLower.includes("ron onboarding");
     const showWorkflow = svcLower.includes("workflow") && !svcLower.includes("ron");
     const showTranslation = svcLower.includes("translation");
+    const showWitness = svcLower.includes("witness");
+    const showCertifiedCopy = svcLower.includes("certified copy");
+    const showOnboarding = svcLower.includes("employment onboarding") || svcLower.includes("onboarding support");
+    const showCustomWorkflow = svcLower.includes("custom workflow");
+    const showBulk = svcLower.includes("bulk");
+    const showScanning = svcLower.includes("scanning") || svcLower.includes("digitization");
 
     // If no category-specific fields apply, return null
-    if (!showApostille && !showImmigration && !showRealEstate && !showI9 && !showEmployer && !showBusiness && !showRonOnboarding && !showWorkflow && !showTranslation) return null;
+    if (!showApostille && !showImmigration && !showRealEstate && !showI9 && !showEmployer && !showBusiness && !showRonOnboarding && !showWorkflow && !showTranslation && !showWitness && !showCertifiedCopy && !showOnboarding && !showCustomWorkflow && !showBulk && !showScanning) return null;
 
     return (
       <div className="space-y-3 rounded-lg border border-border/50 bg-muted/30 p-4">
@@ -995,6 +1065,160 @@ export default function BookAppointment() {
               <p>4. If notarization of the translation is needed, we can schedule that too</p>
             </div>
           </>
+        )}
+
+        {showWitness && (
+          <>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Number of Witnesses Needed</Label>
+                <Select value={witnessCount} onValueChange={setWitnessCount}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1 Witness</SelectItem>
+                    <SelectItem value="2">2 Witnesses</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Witness Mode</Label>
+                <Select value={witnessMode} onValueChange={(v) => setWitnessMode(v as "in_person" | "virtual")}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="in_person">In-Person</SelectItem>
+                    <SelectItem value="virtual">Virtual (via video)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label>Document Type Being Witnessed</Label>
+              <Input value={witnessDocType} onChange={(e) => setWitnessDocType(e.target.value)} placeholder="e.g. Will, Affidavit, Contract" />
+            </div>
+          </>
+        )}
+
+        {showCertifiedCopy && (
+          <>
+            <div>
+              <Label>Document Name</Label>
+              <Input value={certifiedDocName} onChange={(e) => setCertifiedDocName(e.target.value)} placeholder="e.g. Birth Certificate, Diploma" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Issuing Authority</Label>
+                <Input value={issuingAuthority} onChange={(e) => setIssuingAuthority(e.target.value)} placeholder="e.g. State of Ohio, County Clerk" />
+              </div>
+              <div>
+                <Label>Number of Copies</Label>
+                <Input type="number" min="1" max="20" value={copyCount} onChange={(e) => setCopyCount(e.target.value)} />
+              </div>
+            </div>
+          </>
+        )}
+
+        {showOnboarding && (
+          <>
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <Label>Number of Employees</Label>
+                <Input type="number" min="1" value={employeeCount} onChange={(e) => setEmployeeCount(e.target.value)} placeholder="e.g. 10" />
+              </div>
+              <div>
+                <Label>Docs per Employee</Label>
+                <Input type="number" min="1" value={docsPerEmployee} onChange={(e) => setDocsPerEmployee(e.target.value)} placeholder="e.g. 3" />
+              </div>
+              <div>
+                <Label>HR Contact</Label>
+                <Input value={hrContact} onChange={(e) => setHrContact(e.target.value)} placeholder="Name or email" />
+              </div>
+            </div>
+            <div>
+              <Label>Employer Name</Label>
+              <Input value={employerName} onChange={(e) => setEmployerName(e.target.value)} placeholder="Company name" />
+            </div>
+          </>
+        )}
+
+        {showCustomWorkflow && (
+          <>
+            <div>
+              <Label>Current Tools / Platforms Used</Label>
+              <Input value={currentTools} onChange={(e) => setCurrentTools(e.target.value)} placeholder="e.g. DocuSign, Notarize, pen & paper" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Team Size</Label>
+                <Select value={teamSize} onValueChange={setTeamSize}>
+                  <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">Solo</SelectItem>
+                    <SelectItem value="2-5">2–5 people</SelectItem>
+                    <SelectItem value="6-20">6–20 people</SelectItem>
+                    <SelectItem value="20+">20+ people</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Budget Range</Label>
+                <Select value={budgetRange} onValueChange={setBudgetRange}>
+                  <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="under_500">Under $500</SelectItem>
+                    <SelectItem value="500_2000">$500 – $2,000</SelectItem>
+                    <SelectItem value="2000_5000">$2,000 – $5,000</SelectItem>
+                    <SelectItem value="5000_plus">$5,000+</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </>
+        )}
+
+        {showBulk && (
+          <>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Estimated Monthly Volume</Label>
+                <Input value={monthlyVolume} onChange={(e) => setMonthlyVolume(e.target.value)} placeholder="e.g. 50 documents/month" />
+              </div>
+              <div>
+                <Label>Schedule Preference</Label>
+                <Select value={schedulePreference} onValueChange={setSchedulePreference}>
+                  <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="weekly">Weekly recurring</SelectItem>
+                    <SelectItem value="biweekly">Bi-weekly</SelectItem>
+                    <SelectItem value="monthly">Monthly batch</SelectItem>
+                    <SelectItem value="on_demand">On demand</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label>Document Types</Label>
+              <Input value={bulkDocTypes} onChange={(e) => setBulkDocTypes(e.target.value)} placeholder="e.g. Deeds, POAs, Affidavits" />
+            </div>
+          </>
+        )}
+
+        {showScanning && (
+          <div>
+            <Label>Document Format</Label>
+            <div className="grid grid-cols-2 gap-3 mt-2">
+              <button type="button" className={`rounded-lg border p-3 text-sm text-left transition-all ${scanningMode === "digital" ? "border-accent bg-accent/10 ring-2 ring-accent" : "border-border hover:border-accent/50"}`} onClick={() => setScanningMode("digital")}>
+                <p className="font-medium">Digital Files</p>
+                <p className="text-xs text-muted-foreground mt-1">I have digital files to convert (PDF, images)</p>
+              </button>
+              <button type="button" className={`rounded-lg border p-3 text-sm text-left transition-all ${scanningMode === "physical" ? "border-accent bg-accent/10 ring-2 ring-accent" : "border-border hover:border-accent/50"}`} onClick={() => setScanningMode("physical")}>
+                <p className="font-medium">Physical Documents</p>
+                <p className="text-xs text-muted-foreground mt-1">I need to bring in or have someone scan paper docs</p>
+              </button>
+            </div>
+            {scanningMode === "digital" && (
+              <p className="text-xs text-muted-foreground mt-2">💡 For digital files, you can use our <a href="/digitize" className="text-accent underline">Digitize tool</a> directly — no appointment needed!</p>
+            )}
+          </div>
         )}
       </div>
     );

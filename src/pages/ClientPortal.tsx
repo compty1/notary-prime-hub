@@ -105,10 +105,37 @@ export default function ClientPortal() {
   const [payingPaymentId, setPayingPaymentId] = useState<string | null>(null);
   const [zoomLink, setZoomLink] = useState<string>("");
 
+  // Service requests
+  const [serviceRequests, setServiceRequests] = useState<any[]>([]);
+
+  // Smart service routing helpers
+  const INTAKE_ONLY = new Set(["Apostille Facilitation", "Consular Legalization Prep", "Background Check Coordination", "Clerical Document Preparation", "Document Cleanup & Formatting", "Form Filling Assistance", "Certified Document Prep for Agencies", "Registered Agent Coordination", "Email Management & Correspondence", "Notarized Translation Coordination"]);
+  const SAAS_TOOLS: Record<string, string> = { "PDF Services": "/digitize", "Document Scanning & Digitization": "/digitize", "Template Library & Form Builder": "/templates", "Virtual Mailroom": "/mailroom", "ID Verification / KYC Checks": "/verify-id" };
+  const SUBSCRIPTION_SERVICES = new Set(["Business Subscription Plans", "API & Integration Services", "White-Label Partner Programs"]);
+  const PORTAL_SERVICES = new Set(["Secure Document Vault & Storage", "Cloud Document Storage", "Document Retention & Compliance", "Automated Reminders & Renewals"]);
+
+  const getServiceUrl = (svc: any) => {
+    const name = svc.name;
+    if (SAAS_TOOLS[name]) return SAAS_TOOLS[name];
+    if (INTAKE_ONLY.has(name)) return `/request?service=${encodeURIComponent(name)}`;
+    if (SUBSCRIPTION_SERVICES.has(name)) return "/subscribe";
+    if (PORTAL_SERVICES.has(name)) return "/portal";
+    return `/book?type=${name.toLowerCase().includes("remote") ? "ron" : "in_person"}&service=${encodeURIComponent(name)}`;
+  };
+
+  const getServiceCTA = (svc: any) => {
+    const name = svc.name;
+    if (SAAS_TOOLS[name]) return "Use Tool";
+    if (INTAKE_ONLY.has(name)) return "Get Started";
+    if (SUBSCRIPTION_SERVICES.has(name)) return "View Plans";
+    if (PORTAL_SERVICES.has(name)) return "Open Portal";
+    return "Book Now";
+  };
+
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
-      const [apptRes, profileRes, docsRes, payRes, revRes, svcRes, corrRes, apoRes] = await Promise.all([
+      const [apptRes, profileRes, docsRes, payRes, revRes, svcRes, corrRes, apoRes, reqRes] = await Promise.all([
         supabase.from("appointments").select("*").eq("client_id", user.id).order("scheduled_date", { ascending: false }),
         supabase.from("profiles").select("*").eq("user_id", user.id).single(),
         supabase.from("documents").select("*").eq("uploaded_by", user.id).order("created_at", { ascending: false }),
@@ -117,6 +144,7 @@ export default function ClientPortal() {
         supabase.from("services").select("*").eq("is_active", true).order("display_order"),
         supabase.from("client_correspondence").select("*").eq("client_id", user.id).order("created_at", { ascending: false }),
         supabase.from("apostille_requests").select("*").eq("client_id", user.id).order("created_at", { ascending: false }),
+        supabase.from("service_requests").select("*").eq("client_id", user.id).order("created_at", { ascending: false }),
       ]);
       if (apptRes.data) setAppointments(apptRes.data);
       if (docsRes.data) setDocuments(docsRes.data);
@@ -125,6 +153,7 @@ export default function ClientPortal() {
       if (svcRes.data) setServices(svcRes.data);
       if (corrRes.data) setCorrespondence(corrRes.data);
       if (apoRes.data) setApostilleRequests(apoRes.data);
+      if (reqRes.data) setServiceRequests(reqRes.data);
       // Fetch Zoom link
       const { data: zoomSetting } = await supabase.from("platform_settings").select("setting_value").eq("setting_key", "zoom_meeting_link").single();
       if (zoomSetting?.setting_value) setZoomLink(zoomSetting.setting_value);
@@ -390,7 +419,7 @@ export default function ClientPortal() {
             }
           }
         }}>
-          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-9">
+          <TabsList className="grid w-full grid-cols-5 sm:grid-cols-10">
             <TabsTrigger value="appointments"><Calendar className="mr-1 h-4 w-4 hidden sm:inline" /> Appts</TabsTrigger>
             <TabsTrigger value="documents"><FileText className="mr-1 h-4 w-4 hidden sm:inline" /> Docs</TabsTrigger>
             <TabsTrigger value="status"><Shield className="mr-1 h-4 w-4 hidden sm:inline" /> Status</TabsTrigger>
@@ -401,6 +430,7 @@ export default function ClientPortal() {
             <TabsTrigger value="correspondence"><Mail className="mr-1 h-4 w-4 hidden sm:inline" /> Mail</TabsTrigger>
             <TabsTrigger value="payments"><DollarSign className="mr-1 h-4 w-4 hidden sm:inline" /> Pay</TabsTrigger>
             <TabsTrigger value="apostille"><Package className="mr-1 h-4 w-4 hidden sm:inline" /> Apost.</TabsTrigger>
+            <TabsTrigger value="requests"><Clock className="mr-1 h-4 w-4 hidden sm:inline" /> Requests</TabsTrigger>
             <TabsTrigger value="reviews"><Star className="mr-1 h-4 w-4 hidden sm:inline" /> Reviews</TabsTrigger>
             <TabsTrigger value="services"><ShoppingBag className="mr-1 h-4 w-4 hidden sm:inline" /> Services</TabsTrigger>
           </TabsList>
@@ -953,7 +983,49 @@ export default function ClientPortal() {
             )}
           </TabsContent>
 
-          {/* SERVICES TAB */}
+          {/* SERVICE REQUESTS TAB */}
+          <TabsContent value="requests" className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="font-display text-xl font-semibold">Service Requests</h2>
+              <Link to="/request"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark"><Plus className="mr-1 h-4 w-4" /> New Request</Button></Link>
+            </div>
+            {serviceRequests.length === 0 ? (
+              <Card className="border-border/50"><CardContent className="flex flex-col items-center py-12 text-center">
+                <Clock className="mb-4 h-12 w-12 text-muted-foreground/50" />
+                <p className="text-muted-foreground">No service requests yet</p>
+                <p className="text-sm text-muted-foreground mt-1">Submit a request for non-appointment services like apostille, background checks, or document preparation.</p>
+              </CardContent></Card>
+            ) : (
+              <div className="space-y-3">
+                {serviceRequests.map((req) => {
+                  const intakeData = typeof req.intake_data === 'object' ? req.intake_data : {};
+                  return (
+                    <Card key={req.id} className="border-border/50">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <div>
+                            <p className="font-medium text-sm">{req.service_name}</p>
+                            <p className="text-xs text-muted-foreground">{new Date(req.created_at).toLocaleDateString()}</p>
+                          </div>
+                          <Badge className={req.status === "completed" ? "bg-emerald-100 text-emerald-800" : req.status === "in_progress" ? "bg-blue-100 text-blue-800" : "bg-amber-100 text-amber-800"}>
+                            {req.status.replace(/_/g, " ")}
+                          </Badge>
+                        </div>
+                        {Object.entries(intakeData).length > 0 && (
+                          <div className="mt-2 text-xs text-muted-foreground space-y-1">
+                            {Object.entries(intakeData).slice(0, 4).map(([key, value]) => (
+                              <p key={key}><span className="font-medium capitalize">{key.replace(/_/g, " ")}:</span> {String(value)}</p>
+                            ))}
+                          </div>
+                        )}
+                        {req.notes && <p className="text-xs text-muted-foreground mt-2 italic">{req.notes}</p>}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </TabsContent>
           <TabsContent value="services" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-xl font-semibold">Available Services</h2>
@@ -1003,8 +1075,8 @@ export default function ClientPortal() {
                     </div>
                     {svc.description && <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{svc.description}</p>}
                     <div className="flex gap-2 mt-3">
-                      <Link to={`/book?type=${svc.name.toLowerCase().includes("remote") ? "ron" : "in_person"}&service=${encodeURIComponent(svc.name)}`}>
-                        <Button size="sm" className="text-xs bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button>
+                      <Link to={getServiceUrl(svc)}>
+                        <Button size="sm" className="text-xs bg-accent text-accent-foreground hover:bg-gold-dark">{getServiceCTA(svc)}</Button>
                       </Link>
                       <Link to={`/services/${svc.id}`}>
                         <Button size="sm" variant="outline" className="text-xs">View Details</Button>
