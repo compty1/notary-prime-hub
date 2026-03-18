@@ -474,7 +474,7 @@ export default function AdminAppointments() {
             </div>
           )}
         </div>
-      )
+      )}
 
       {loading ? (
         <div className="flex justify-center py-12">
