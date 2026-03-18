@@ -983,7 +983,49 @@ export default function ClientPortal() {
             )}
           </TabsContent>
 
-          {/* SERVICES TAB */}
+          {/* SERVICE REQUESTS TAB */}
+          <TabsContent value="requests" className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="font-display text-xl font-semibold">Service Requests</h2>
+              <Link to="/request"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark"><Plus className="mr-1 h-4 w-4" /> New Request</Button></Link>
+            </div>
+            {serviceRequests.length === 0 ? (
+              <Card className="border-border/50"><CardContent className="flex flex-col items-center py-12 text-center">
+                <Clock className="mb-4 h-12 w-12 text-muted-foreground/50" />
+                <p className="text-muted-foreground">No service requests yet</p>
+                <p className="text-sm text-muted-foreground mt-1">Submit a request for non-appointment services like apostille, background checks, or document preparation.</p>
+              </CardContent></Card>
+            ) : (
+              <div className="space-y-3">
+                {serviceRequests.map((req) => {
+                  const intakeData = typeof req.intake_data === 'object' ? req.intake_data : {};
+                  return (
+                    <Card key={req.id} className="border-border/50">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <div>
+                            <p className="font-medium text-sm">{req.service_name}</p>
+                            <p className="text-xs text-muted-foreground">{new Date(req.created_at).toLocaleDateString()}</p>
+                          </div>
+                          <Badge className={req.status === "completed" ? "bg-emerald-100 text-emerald-800" : req.status === "in_progress" ? "bg-blue-100 text-blue-800" : "bg-amber-100 text-amber-800"}>
+                            {req.status.replace(/_/g, " ")}
+                          </Badge>
+                        </div>
+                        {Object.entries(intakeData).length > 0 && (
+                          <div className="mt-2 text-xs text-muted-foreground space-y-1">
+                            {Object.entries(intakeData).slice(0, 4).map(([key, value]) => (
+                              <p key={key}><span className="font-medium capitalize">{key.replace(/_/g, " ")}:</span> {String(value)}</p>
+                            ))}
+                          </div>
+                        )}
+                        {req.notes && <p className="text-xs text-muted-foreground mt-2 italic">{req.notes}</p>}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </TabsContent>
           <TabsContent value="services" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-xl font-semibold">Available Services</h2>
