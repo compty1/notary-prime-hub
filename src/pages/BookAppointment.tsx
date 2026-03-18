@@ -164,6 +164,34 @@ export default function BookAppointment() {
   const [companyName, setCompanyName] = useState("");
   const [customDocCount, setCustomDocCount] = useState(false);
 
+  // Witness-specific fields
+  const [witnessCount, setWitnessCount] = useState("1");
+  const [witnessMode, setWitnessMode] = useState<"in_person" | "virtual">("in_person");
+  const [witnessDocType, setWitnessDocType] = useState("");
+
+  // Certified copy fields
+  const [certifiedDocName, setCertifiedDocName] = useState("");
+  const [issuingAuthority, setIssuingAuthority] = useState("");
+  const [copyCount, setCopyCount] = useState("1");
+
+  // Employment onboarding fields
+  const [employeeCount, setEmployeeCount] = useState("1");
+  const [hrContact, setHrContact] = useState("");
+  const [docsPerEmployee, setDocsPerEmployee] = useState("1");
+
+  // Custom workflow fields
+  const [currentTools, setCurrentTools] = useState("");
+  const [teamSize, setTeamSize] = useState("");
+  const [budgetRange, setBudgetRange] = useState("");
+
+  // Bulk notarization fields
+  const [monthlyVolume, setMonthlyVolume] = useState("");
+  const [bulkDocTypes, setBulkDocTypes] = useState("");
+  const [schedulePreference, setSchedulePreference] = useState("");
+
+  // Scanning fields
+  const [scanningMode, setScanningMode] = useState<"digital" | "physical">("digital");
+
   // Translation-specific intake fields
   const [sourceLanguage, setSourceLanguage] = useState("English");
   const [targetLanguage, setTargetLanguage] = useState("");
