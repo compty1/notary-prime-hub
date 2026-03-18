@@ -170,6 +170,17 @@ export default function AdminAppointments() {
   useEffect(() => { setPage(0); }, [filter, dateRange]);
   useEffect(() => { fetchData(); }, [filter, dateRange, page]);
 
+  // Fetch service requests when toggled
+  useEffect(() => {
+    if (showRequests && serviceRequests.length === 0) {
+      setRequestsLoading(true);
+      supabase.from("service_requests").select("*").order("created_at", { ascending: false }).then(({ data }) => {
+        if (data) setServiceRequests(data);
+        setRequestsLoading(false);
+      });
+    }
+  }, [showRequests]);
+
   useEffect(() => {
     const channel = supabase
       .channel("admin-appointments")
