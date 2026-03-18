@@ -31,6 +31,7 @@ const categoryLabels: Record<string, { label: string; description: string }> = {
   business: { label: "Business & Volume", description: "Bulk packages, subscriptions, API access, and partner programs" },
   recurring: { label: "Recurring & Value-Add", description: "Storage, virtual mailroom, reminders, and compliance packages" },
   consulting: { label: "Consulting & Training", description: "RON onboarding, workflow audits, and custom automation" },
+  business_services: { label: "Business Services", description: "Email management, correspondence handling, and administrative support" },
 };
 
 const categoryOrder = ["notarization", "verification", "document_services", "authentication", "business", "recurring", "consulting", "business_services"];
