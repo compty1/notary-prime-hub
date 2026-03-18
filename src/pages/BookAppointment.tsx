@@ -1030,6 +1030,160 @@ export default function BookAppointment() {
             </div>
           </>
         )}
+
+        {showWitness && (
+          <>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Number of Witnesses Needed</Label>
+                <Select value={witnessCount} onValueChange={setWitnessCount}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1 Witness</SelectItem>
+                    <SelectItem value="2">2 Witnesses</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Witness Mode</Label>
+                <Select value={witnessMode} onValueChange={(v) => setWitnessMode(v as "in_person" | "virtual")}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="in_person">In-Person</SelectItem>
+                    <SelectItem value="virtual">Virtual (via video)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label>Document Type Being Witnessed</Label>
+              <Input value={witnessDocType} onChange={(e) => setWitnessDocType(e.target.value)} placeholder="e.g. Will, Affidavit, Contract" />
+            </div>
+          </>
+        )}
+
+        {showCertifiedCopy && (
+          <>
+            <div>
+              <Label>Document Name</Label>
+              <Input value={certifiedDocName} onChange={(e) => setCertifiedDocName(e.target.value)} placeholder="e.g. Birth Certificate, Diploma" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Issuing Authority</Label>
+                <Input value={issuingAuthority} onChange={(e) => setIssuingAuthority(e.target.value)} placeholder="e.g. State of Ohio, County Clerk" />
+              </div>
+              <div>
+                <Label>Number of Copies</Label>
+                <Input type="number" min="1" max="20" value={copyCount} onChange={(e) => setCopyCount(e.target.value)} />
+              </div>
+            </div>
+          </>
+        )}
+
+        {showOnboarding && (
+          <>
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <Label>Number of Employees</Label>
+                <Input type="number" min="1" value={employeeCount} onChange={(e) => setEmployeeCount(e.target.value)} placeholder="e.g. 10" />
+              </div>
+              <div>
+                <Label>Docs per Employee</Label>
+                <Input type="number" min="1" value={docsPerEmployee} onChange={(e) => setDocsPerEmployee(e.target.value)} placeholder="e.g. 3" />
+              </div>
+              <div>
+                <Label>HR Contact</Label>
+                <Input value={hrContact} onChange={(e) => setHrContact(e.target.value)} placeholder="Name or email" />
+              </div>
+            </div>
+            <div>
+              <Label>Employer Name</Label>
+              <Input value={employerName} onChange={(e) => setEmployerName(e.target.value)} placeholder="Company name" />
+            </div>
+          </>
+        )}
+
+        {showCustomWorkflow && (
+          <>
+            <div>
+              <Label>Current Tools / Platforms Used</Label>
+              <Input value={currentTools} onChange={(e) => setCurrentTools(e.target.value)} placeholder="e.g. DocuSign, Notarize, pen & paper" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Team Size</Label>
+                <Select value={teamSize} onValueChange={setTeamSize}>
+                  <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">Solo</SelectItem>
+                    <SelectItem value="2-5">2–5 people</SelectItem>
+                    <SelectItem value="6-20">6–20 people</SelectItem>
+                    <SelectItem value="20+">20+ people</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Budget Range</Label>
+                <Select value={budgetRange} onValueChange={setBudgetRange}>
+                  <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="under_500">Under $500</SelectItem>
+                    <SelectItem value="500_2000">$500 – $2,000</SelectItem>
+                    <SelectItem value="2000_5000">$2,000 – $5,000</SelectItem>
+                    <SelectItem value="5000_plus">$5,000+</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </>
+        )}
+
+        {showBulk && (
+          <>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Estimated Monthly Volume</Label>
+                <Input value={monthlyVolume} onChange={(e) => setMonthlyVolume(e.target.value)} placeholder="e.g. 50 documents/month" />
+              </div>
+              <div>
+                <Label>Schedule Preference</Label>
+                <Select value={schedulePreference} onValueChange={setSchedulePreference}>
+                  <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="weekly">Weekly recurring</SelectItem>
+                    <SelectItem value="biweekly">Bi-weekly</SelectItem>
+                    <SelectItem value="monthly">Monthly batch</SelectItem>
+                    <SelectItem value="on_demand">On demand</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label>Document Types</Label>
+              <Input value={bulkDocTypes} onChange={(e) => setBulkDocTypes(e.target.value)} placeholder="e.g. Deeds, POAs, Affidavits" />
+            </div>
+          </>
+        )}
+
+        {showScanning && (
+          <div>
+            <Label>Document Format</Label>
+            <div className="grid grid-cols-2 gap-3 mt-2">
+              <button type="button" className={`rounded-lg border p-3 text-sm text-left transition-all ${scanningMode === "digital" ? "border-accent bg-accent/10 ring-2 ring-accent" : "border-border hover:border-accent/50"}`} onClick={() => setScanningMode("digital")}>
+                <p className="font-medium">Digital Files</p>
+                <p className="text-xs text-muted-foreground mt-1">I have digital files to convert (PDF, images)</p>
+              </button>
+              <button type="button" className={`rounded-lg border p-3 text-sm text-left transition-all ${scanningMode === "physical" ? "border-accent bg-accent/10 ring-2 ring-accent" : "border-border hover:border-accent/50"}`} onClick={() => setScanningMode("physical")}>
+                <p className="font-medium">Physical Documents</p>
+                <p className="text-xs text-muted-foreground mt-1">I need to bring in or have someone scan paper docs</p>
+              </button>
+            </div>
+            {scanningMode === "digital" && (
+              <p className="text-xs text-muted-foreground mt-2">💡 For digital files, you can use our <a href="/digitize" className="text-accent underline">Digitize tool</a> directly — no appointment needed!</p>
+            )}
+          </div>
+        )}
       </div>
     );
   };
