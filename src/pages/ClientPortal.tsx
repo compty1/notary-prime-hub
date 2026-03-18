@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Clock, MapPin, Monitor, Plus, LogOut, Shield, FileText, RefreshCw, Video, CheckCircle, Mic, Camera as CameraIcon, Wifi, XCircle, User, Pencil, Save, Loader2, Upload, Download, FolderOpen, QrCode, ArrowRight, MessageSquare, Send, Sparkles, Eye, DollarSign, Star, ShoppingBag, Mail, Package, CreditCard } from "lucide-react";
+import { Calendar, Clock, MapPin, Monitor, Plus, LogOut, Shield, FileText, RefreshCw, Video, CheckCircle, Mic, Camera as CameraIcon, Wifi, XCircle, User, Pencil, Save, Loader2, Upload, Download, FolderOpen, QrCode, ArrowRight, MessageSquare, Send, Sparkles, Eye, DollarSign, Star, ShoppingBag, Mail, Package, CreditCard, Bell } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { QRCodeSVG } from "qrcode.react";
@@ -108,6 +108,11 @@ export default function ClientPortal() {
   // Service requests
   const [serviceRequests, setServiceRequests] = useState<any[]>([]);
 
+  // Document reminders
+  const [reminders, setReminders] = useState<any[]>([]);
+  const [reminderForm, setReminderForm] = useState({ document_id: "", expiry_date: "", remind_days_before: "30" });
+  const [savingReminder, setSavingReminder] = useState(false);
+
   // Smart service routing helpers
   const INTAKE_ONLY = new Set(["Apostille Facilitation", "Consular Legalization Prep", "Background Check Coordination", "Clerical Document Preparation", "Document Cleanup & Formatting", "Form Filling Assistance", "Certified Document Prep for Agencies", "Registered Agent Coordination", "Email Management & Correspondence", "Notarized Translation Coordination"]);
   const SAAS_TOOLS: Record<string, string> = { "PDF Services": "/digitize", "Document Scanning & Digitization": "/digitize", "Template Library & Form Builder": "/templates", "Virtual Mailroom": "/mailroom", "ID Verification / KYC Checks": "/verify-id" };
@@ -135,7 +140,7 @@ export default function ClientPortal() {
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
-      const [apptRes, profileRes, docsRes, payRes, revRes, svcRes, corrRes, apoRes, reqRes] = await Promise.all([
+      const [apptRes, profileRes, docsRes, payRes, revRes, svcRes, corrRes, apoRes, reqRes, remRes] = await Promise.all([
         supabase.from("appointments").select("*").eq("client_id", user.id).order("scheduled_date", { ascending: false }),
         supabase.from("profiles").select("*").eq("user_id", user.id).single(),
         supabase.from("documents").select("*").eq("uploaded_by", user.id).order("created_at", { ascending: false }),
@@ -145,6 +150,7 @@ export default function ClientPortal() {
         supabase.from("client_correspondence").select("*").eq("client_id", user.id).order("created_at", { ascending: false }),
         supabase.from("apostille_requests").select("*").eq("client_id", user.id).order("created_at", { ascending: false }),
         supabase.from("service_requests").select("*").eq("client_id", user.id).order("created_at", { ascending: false }),
+        supabase.from("document_reminders").select("*").eq("user_id", user.id).order("expiry_date"),
       ]);
       if (apptRes.data) setAppointments(apptRes.data);
       if (docsRes.data) setDocuments(docsRes.data);
@@ -154,6 +160,7 @@ export default function ClientPortal() {
       if (corrRes.data) setCorrespondence(corrRes.data);
       if (apoRes.data) setApostilleRequests(apoRes.data);
       if (reqRes.data) setServiceRequests(reqRes.data);
+      if (remRes.data) setReminders(remRes.data);
       // Fetch Zoom link
       const { data: zoomSetting } = await supabase.from("platform_settings").select("setting_value").eq("setting_key", "zoom_meeting_link").single();
       if (zoomSetting?.setting_value) setZoomLink(zoomSetting.setting_value);
@@ -419,7 +426,7 @@ export default function ClientPortal() {
             }
           }
         }}>
-          <TabsList className="grid w-full grid-cols-5 sm:grid-cols-10">
+          <TabsList className="grid w-full grid-cols-5 sm:grid-cols-11">
             <TabsTrigger value="appointments"><Calendar className="mr-1 h-4 w-4 hidden sm:inline" /> Appts</TabsTrigger>
             <TabsTrigger value="documents"><FileText className="mr-1 h-4 w-4 hidden sm:inline" /> Docs</TabsTrigger>
             <TabsTrigger value="status"><Shield className="mr-1 h-4 w-4 hidden sm:inline" /> Status</TabsTrigger>
@@ -431,6 +438,7 @@ export default function ClientPortal() {
             <TabsTrigger value="payments"><DollarSign className="mr-1 h-4 w-4 hidden sm:inline" /> Pay</TabsTrigger>
             <TabsTrigger value="apostille"><Package className="mr-1 h-4 w-4 hidden sm:inline" /> Apost.</TabsTrigger>
             <TabsTrigger value="requests"><Clock className="mr-1 h-4 w-4 hidden sm:inline" /> Requests</TabsTrigger>
+            <TabsTrigger value="reminders"><Bell className="mr-1 h-4 w-4 hidden sm:inline" /> Remind</TabsTrigger>
             <TabsTrigger value="reviews"><Star className="mr-1 h-4 w-4 hidden sm:inline" /> Reviews</TabsTrigger>
             <TabsTrigger value="services"><ShoppingBag className="mr-1 h-4 w-4 hidden sm:inline" /> Services</TabsTrigger>
           </TabsList>
@@ -1026,6 +1034,119 @@ export default function ClientPortal() {
               </div>
             )}
           </TabsContent>
+
+          {/* REMINDERS TAB */}
+          <TabsContent value="reminders" className="space-y-6">
+            <h2 className="font-display text-xl font-semibold">Document Reminders & Renewals</h2>
+            <Card className="border-border/50">
+              <CardContent className="p-4 space-y-4">
+                <h3 className="text-sm font-semibold">Set Expiry Reminder</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <Label>Document</Label>
+                    <Select value={reminderForm.document_id} onValueChange={(v) => setReminderForm({ ...reminderForm, document_id: v })}>
+                      <SelectTrigger className="text-xs"><SelectValue placeholder="Select document..." /></SelectTrigger>
+                      <SelectContent>
+                        {documents.map(d => (
+                          <SelectItem key={d.id} value={d.id} className="text-xs">{d.file_name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Expiry Date</Label>
+                    <Input type="date" value={reminderForm.expiry_date} onChange={(e) => setReminderForm({ ...reminderForm, expiry_date: e.target.value })} />
+                  </div>
+                  <div>
+                    <Label>Remind Before</Label>
+                    <Select value={reminderForm.remind_days_before} onValueChange={(v) => setReminderForm({ ...reminderForm, remind_days_before: v })}>
+                      <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="7">7 days</SelectItem>
+                        <SelectItem value="14">14 days</SelectItem>
+                        <SelectItem value="30">30 days</SelectItem>
+                        <SelectItem value="60">60 days</SelectItem>
+                        <SelectItem value="90">90 days</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <Button
+                  disabled={!reminderForm.document_id || !reminderForm.expiry_date || savingReminder}
+                  onClick={async () => {
+                    if (!user) return;
+                    setSavingReminder(true);
+                    const { data, error } = await supabase.from("document_reminders").insert({
+                      user_id: user.id,
+                      document_id: reminderForm.document_id,
+                      expiry_date: reminderForm.expiry_date,
+                      remind_days_before: parseInt(reminderForm.remind_days_before),
+                    } as any).select().single();
+                    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+                    else if (data) {
+                      toast({ title: "Reminder set" });
+                      setReminders(prev => [...prev, data].sort((a: any, b: any) => a.expiry_date.localeCompare(b.expiry_date)));
+                      setReminderForm({ document_id: "", expiry_date: "", remind_days_before: "30" });
+                    }
+                    setSavingReminder(false);
+                  }}
+                  size="sm"
+                  className="bg-accent text-accent-foreground hover:bg-gold-dark"
+                >
+                  {savingReminder ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Bell className="mr-1 h-4 w-4" />}
+                  Set Reminder
+                </Button>
+              </CardContent>
+            </Card>
+
+            {reminders.length === 0 ? (
+              <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground">
+                <Bell className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
+                <p>No reminders set</p>
+                <p className="text-sm mt-1">Set expiry dates on your documents and we'll remind you before they expire.</p>
+              </CardContent></Card>
+            ) : (
+              <div className="space-y-3">
+                {reminders.map((rem: any) => {
+                  const doc = documents.find(d => d.id === rem.document_id);
+                  const expiryDate = new Date(rem.expiry_date + "T00:00:00");
+                  const daysUntil = Math.ceil((expiryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+                  const isUrgent = daysUntil <= rem.remind_days_before;
+                  const isExpired = daysUntil <= 0;
+                  return (
+                    <Card key={rem.id} className={`border-border/50 ${isExpired ? "border-destructive/50" : isUrgent ? "border-amber-500/50" : ""}`}>
+                      <CardContent className="flex items-center justify-between p-4">
+                        <div className="flex items-center gap-3">
+                          <Bell className={`h-5 w-5 ${isExpired ? "text-destructive" : isUrgent ? "text-amber-500" : "text-muted-foreground"}`} />
+                          <div>
+                            <p className="text-sm font-medium">{doc?.file_name || "Unknown document"}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Expires: {expiryDate.toLocaleDateString()} · Remind {rem.remind_days_before}d before
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge className={isExpired ? "bg-destructive/10 text-destructive" : isUrgent ? "bg-amber-100 text-amber-800" : "bg-muted text-muted-foreground"}>
+                            {isExpired ? "Expired" : `${daysUntil}d remaining`}
+                          </Badge>
+                          <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={async () => {
+                            const { error } = await supabase.from("document_reminders").delete().eq("id", rem.id);
+                            if (!error) {
+                              setReminders(prev => prev.filter((r: any) => r.id !== rem.id));
+                              toast({ title: "Reminder removed" });
+                            }
+                          }}>
+                            <XCircle className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </TabsContent>
+
           <TabsContent value="services" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-xl font-semibold">Available Services</h2>

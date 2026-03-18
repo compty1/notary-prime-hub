@@ -360,6 +360,44 @@ export type Database = {
         }
         Relationships: []
       }
+      document_reminders: {
+        Row: {
+          created_at: string
+          document_id: string
+          expiry_date: string
+          id: string
+          notified: boolean
+          remind_days_before: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          expiry_date: string
+          id?: string
+          notified?: boolean
+          remind_days_before?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          expiry_date?: string
+          id?: string
+          notified?: boolean
+          remind_days_before?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_reminders_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           appointment_id: string | null
