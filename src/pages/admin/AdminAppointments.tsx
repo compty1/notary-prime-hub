@@ -388,6 +388,9 @@ export default function AdminAppointments() {
           <Button onClick={() => setShowCreateDialog(true)} className="bg-accent text-accent-foreground hover:bg-gold-dark">
             <Plus className="mr-1 h-4 w-4" /> New
           </Button>
+          <Button variant={showRequests ? "default" : "outline"} onClick={() => setShowRequests(!showRequests)}>
+            <FileText className="mr-1 h-4 w-4" /> Requests {serviceRequests.length > 0 && `(${serviceRequests.filter(r => r.status === 'submitted').length})`}
+          </Button>
           <Select value={dateRange} onValueChange={setDateRange}>
             <SelectTrigger className="w-32"><Filter className="mr-1 h-3 w-3" /><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -408,6 +411,70 @@ export default function AdminAppointments() {
           </Select>
         </div>
       </div>
+
+      {/* Service Requests Section */}
+      {showRequests && (
+        <div className="mb-6 space-y-3">
+          <h2 className="font-display text-lg font-semibold text-foreground">Service Requests (Non-Appointment)</h2>
+          {requestsLoading ? (
+            <div className="flex justify-center py-6">
+              <div className="h-6 w-6 animate-spin rounded-full border-4 border-accent border-t-transparent" />
+            </div>
+          ) : serviceRequests.length === 0 ? (
+            <Card className="border-border/50"><CardContent className="py-6 text-center text-muted-foreground text-sm">No service requests submitted yet</CardContent></Card>
+          ) : (
+            <div className="space-y-2">
+              {serviceRequests.map((req) => {
+                const clientName = profiles.find(p => p.user_id === req.client_id)?.full_name || "Unknown";
+                const intakeData = typeof req.intake_data === 'object' ? req.intake_data : {};
+                return (
+                  <Card key={req.id} className="border-border/50">
+                    <CardContent className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-sm">{req.service_name}</p>
+                          <Badge className={req.status === "completed" ? "bg-emerald-100 text-emerald-800" : req.status === "in_progress" ? "bg-blue-100 text-blue-800" : "bg-amber-100 text-amber-800"}>
+                            {req.status.replace(/_/g, " ")}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground">{clientName} · {new Date(req.created_at).toLocaleDateString()}</p>
+                        {Object.entries(intakeData).length > 0 && (
+                          <div className="mt-1 text-xs text-muted-foreground">
+                            {Object.entries(intakeData).slice(0, 3).map(([key, value]) => (
+                              <span key={key} className="mr-3"><span className="font-medium capitalize">{key.replace(/_/g, " ")}:</span> {String(value)}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Select
+                          value={req.status}
+                          onValueChange={async (newStatus) => {
+                            const { error } = await supabase.from("service_requests").update({ status: newStatus }).eq("id", req.id);
+                            if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+                            else {
+                              setServiceRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: newStatus } : r));
+                              toast({ title: "Request status updated" });
+                            }
+                          }}
+                        >
+                          <SelectTrigger className="w-32 h-8 text-xs"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="submitted">Submitted</SelectItem>
+                            <SelectItem value="in_progress">In Progress</SelectItem>
+                            <SelectItem value="completed">Completed</SelectItem>
+                            <SelectItem value="cancelled">Cancelled</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )
 
       {loading ? (
         <div className="flex justify-center py-12">
