@@ -967,27 +967,70 @@ export default function DocumentTemplates() {
         </div>
       </div>
 
+      {/* Quick Preview Dialog */}
+      <Dialog open={!!quickPreviewTemplate} onOpenChange={() => setQuickPreviewTemplate(null)}>
+        <DialogContent className="sm:max-w-2xl max-h-[85vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center gap-2">
+              <Eye className="h-4 w-4 text-accent" /> Preview — {quickPreviewTemplate?.title}
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-xs text-muted-foreground">This preview uses sample data to show how the completed document will look.</p>
+          <div className="flex-1 overflow-y-auto border rounded-lg p-6 bg-muted/20">
+            <pre className="whitespace-pre-wrap font-serif text-sm leading-relaxed text-foreground">{quickPreviewTemplate ? renderSamplePreview(quickPreviewTemplate) : ""}</pre>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setQuickPreviewTemplate(null)}>Close</Button>
+            <Button onClick={() => { if (quickPreviewTemplate) { openTemplate(quickPreviewTemplate); setQuickPreviewTemplate(null); } }} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+              Use This Template
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Template Fill Dialog */}
       <Dialog open={!!selectedTemplate && !previewOpen} onOpenChange={() => setSelectedTemplate(null)}>
         <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
           <DialogHeader><DialogTitle className="font-display">{selectedTemplate?.title}</DialogTitle></DialogHeader>
           <p className="text-sm text-muted-foreground mb-4">{selectedTemplate?.description}</p>
           <div className="space-y-4">
-            {selectedTemplate?.fields.map((field) => (
-              <div key={field.name}>
-                <Label>{field.label}</Label>
-                {field.type === "textarea" ? (
-                  <Textarea value={formData[field.name] || ""} onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })} placeholder={field.placeholder} />
-                ) : (
-                  <Input type={field.type} value={formData[field.name] || ""} onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })} placeholder={field.placeholder} />
-                )}
-              </div>
-            ))}
+            {selectedTemplate?.fields.map((field) => {
+              const updateField = (value: string) => {
+                const updated = { ...formData, [field.name]: value };
+                setFormData(updated);
+                if (selectedTemplate) saveDraft(selectedTemplate.id, updated);
+              };
+              return (
+                <div key={field.name}>
+                  <Label>{field.label}</Label>
+                  {field.type === "textarea" ? (
+                    <Textarea value={formData[field.name] || ""} onChange={(e) => updateField(e.target.value)} placeholder={field.placeholder} />
+                  ) : (
+                    <Input type={field.type} value={formData[field.name] || ""} onChange={(e) => updateField(e.target.value)} placeholder={field.placeholder} />
+                  )}
+                </div>
+              );
+            })}
           </div>
           <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button variant="outline" onClick={() => setChatOpen(true)} className="gap-1">
-              <Sparkles className="h-3 w-3" /> Ask AI About This
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setChatOpen(true)} className="gap-1">
+                <Sparkles className="h-3 w-3" /> Ask AI About This
+              </Button>
+              {selectedTemplate && hasDraft(selectedTemplate.id) && (
+                <Button variant="ghost" size="sm" onClick={() => {
+                  if (selectedTemplate) {
+                    clearDraft(selectedTemplate.id);
+                    const initialData: Record<string, string> = {};
+                    selectedTemplate.fields.forEach((f) => { initialData[f.name] = ""; });
+                    setFormData(initialData);
+                    toast({ title: "Draft cleared" });
+                  }
+                }} className="gap-1 text-muted-foreground">
+                  <RotateCcw className="h-3 w-3" /> Clear Draft
+                </Button>
+              )}
+            </div>
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => setSelectedTemplate(null)}>Cancel</Button>
               <Button onClick={() => setPreviewOpen(true)} className="bg-accent text-accent-foreground hover:bg-gold-dark"><Eye className="mr-1 h-4 w-4" /> Preview & Edit</Button>
