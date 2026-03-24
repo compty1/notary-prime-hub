@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/sidebar";
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 const adminNavItems = [
@@ -26,6 +26,7 @@ const adminNavItems = [
   { title: "Revenue", url: "/admin/revenue", icon: DollarSign, adminOnly: true },
   { title: "Team & Invites", url: "/admin/team", icon: UserPlus, adminOnly: true },
   { title: "Resources", url: "/admin/resources", icon: BookOpen, adminOnly: false },
+  { title: "Process Guide", url: "/notary-guide-process", icon: GraduationCap, adminOnly: false },
   { title: "AI Assistant", url: "/admin/ai-assistant", icon: Bot, adminOnly: false },
   { title: "Audit Log", url: "/admin/audit-log", icon: ScrollText, adminOnly: true },
   { title: "Settings", url: "/admin/settings", icon: Settings, adminOnly: true },

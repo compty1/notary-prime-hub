@@ -484,7 +484,7 @@ const newNotaryGuide = [
   { step: "5", title: "Purchase Your Notary Seal", content: "Your seal must include: your name as commissioned, 'Notary Public', 'State of Ohio', and your commission expiration date. Both embossing seals and ink stamps are acceptable in Ohio. Order from an authorized vendor." },
   { step: "6", title: "Take Your Oath of Office", content: "After your commission is approved, take the oath of office before the county clerk of courts. You must do this before performing any notarial acts. Keep a copy of your commission certificate." },
   { step: "7", title: "Purchase a Notary Journal", content: "While not mandatory for all acts in Ohio, a journal is REQUIRED for RON sessions and strongly recommended for all notarizations. Record every notarial act including date, signer info, document type, ID type, and fee charged." },
-  { step: "8", title: "For RON: Apply for RON Authorization", content: "Submit a separate RON application to the Ohio SOS. Complete 3 hours of additional RON-specific training. Choose an approved RON technology provider (like BlueNotary). RON commission is separate from traditional commission." },
+  { step: "8", title: "For RON: Apply for RON Authorization", content: "Submit a separate RON application to the Ohio SOS. Complete 3 hours of additional RON-specific training. { step: "8", title: "For RON: Apply for RON Authorization", content: "Submit a separate RON application to the Ohio SOS. Complete 3 hours of additional RON-specific training. Choose an approved RON technology provider (like OneNotary). RON commission is separate from traditional commission." },. RON commission is separate from traditional commission." },
 ];
 
 const externalResources = [
@@ -510,7 +510,7 @@ const externalResources = [
   { category: "Other Professional Resources", links: [
     { title: "American Society of Notaries", url: "https://www.asnnotary.org/", desc: "Professional association, education, resources" },
     { title: "Notary.net — Ohio Info", url: "https://www.notary.net/states/ohio", desc: "State-specific notary requirements and resources" },
-    { title: "BlueNotary RON Platform", url: "https://bluenotary.us/", desc: "RON platform for remote online notarization sessions" },
+    { title: "OneNotary RON Platform", url: "https://onenotary.us/", desc: "RON platform for remote online notarization sessions" },
     { title: "Notarize.com", url: "https://www.notarize.com/", desc: "Another popular RON platform option" },
   ]},
 ];

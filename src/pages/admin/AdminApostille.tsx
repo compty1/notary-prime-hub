@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { BRAND } from "@/lib/brand";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -144,7 +145,7 @@ export default function AdminApostille() {
       </div>
       <div class="section"><h3>Notes</h3><p>${(detailReq.notes || "None").replace(/\[CHECKLIST:.*?\]/, "").trim()}</p></div>
       <div class="section" style="margin-top:40px">
-        <p>Prepared by: Shane Goble, Ohio Notary Public</p>
+        <p>Prepared by: ${BRAND.teamLead.name}, Ohio Notary Public</p>
         <p>Date: ${new Date().toLocaleDateString()}</p>
       </div>
       <button onclick="window.print()" style="margin-top:20px;padding:8px 24px;cursor:pointer">Print</button>

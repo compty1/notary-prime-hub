@@ -14,7 +14,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Monitor, FileText, Shield, Clock, CheckCircle, Star, ChevronRight, Phone, Mail, Scale, Menu, Send, Loader2, Sparkles, ArrowRight } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
-import ReactMarkdown from "react-markdown";
 import WhatDoINeed from "@/components/WhatDoINeed";
 
 // WhatDoINeed is now in src/components/WhatDoINeed.tsx
@@ -50,8 +49,8 @@ const fallbackTestimonials = [
     { q: "What is Remote Online Notarization (RON)?", a: "RON allows you to have documents notarized via a secure video call from anywhere. Ohio authorizes RON under Ohio Revised Code §147.65-.66, making it fully legal and binding." },
     { q: "What identification do I need?", a: "You'll need a valid government-issued photo ID (driver's license, passport, or state ID). For RON sessions, you'll also complete Knowledge-Based Authentication (KBA) questions." },
     { q: "How long does a notarization take?", a: "Most notarizations take 10-15 minutes for in-person sessions. RON sessions may take 20-30 minutes including the identity verification process." },
-    { q: "What areas do you serve for in-person notarization?", a: "I serve Franklin County and the greater Columbus, Ohio metropolitan area for in-person notarizations. Mobile notary services are available within a 30-mile radius." },
-    { q: "Is RON notarization accepted everywhere?", a: "RON notarizations performed under Ohio law are recognized in all 50 states. However, some specific transactions may have unique requirements. Contact me to confirm for your situation." },
+    { q: "What areas do you serve for in-person notarization?", a: "We serve Franklin County and the greater Columbus, Ohio metropolitan area for in-person notarizations. Mobile notary services are available within a 30-mile radius." },
+    { q: "Is RON notarization accepted everywhere?", a: "RON notarizations performed under Ohio law are recognized in all 50 states. However, some specific transactions may have unique requirements. Contact us to confirm for your situation." },
   ];
 
 export default function Index() {
@@ -566,6 +565,8 @@ export default function Index() {
                           <SelectItem value="Apostille">Apostille</SelectItem>
                           <SelectItem value="I-9 Verification">I-9 Verification</SelectItem>
                           <SelectItem value="Document Preparation">Document Preparation</SelectItem>
+                          <SelectItem value="Witness Services">Witness Services</SelectItem>
+                          <SelectItem value="Virtual Mailroom">Virtual Mailroom</SelectItem>
                           <SelectItem value="Other">Other</SelectItem>
                         </SelectContent>
                       </Select>
