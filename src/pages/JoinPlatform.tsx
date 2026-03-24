@@ -21,10 +21,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.5 } }),
-};
+import { fadeUp } from "@/lib/animations";
 
 const benefits = [
   { icon: Calendar, title: "Flexible Schedule", desc: "Set your own hours and availability. Accept appointments that fit your schedule." },
