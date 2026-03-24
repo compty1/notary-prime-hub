@@ -34,18 +34,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Session timeout: periodically check if session is still valid
+  // Session timeout: periodically check if session is still valid with warning
   useEffect(() => {
+    if (!session) return;
+    const CHECK_INTERVAL = 5 * 60 * 1000; // 5 minutes
+    const WARNING_BEFORE = 30 * 1000; // 30 seconds before check
+
+    // Show warning 30s before the check
+    const warningTimeout = setTimeout(() => {
+      // We'll import toast dynamically to avoid circular deps
+      import("@/hooks/use-toast").then(({ toast }) => {
+        toast({ title: "Session check", description: "Your session will be verified shortly." });
+      });
+    }, CHECK_INTERVAL - WARNING_BEFORE);
+
     const interval = setInterval(async () => {
-      if (!session) return;
       const { data: { session: current }, error } = await supabase.auth.getSession();
       if (error || !current) {
+        import("@/hooks/use-toast").then(({ toast }) => {
+          toast({ title: "Session expired", description: "You have been signed out for security.", variant: "destructive" });
+        });
         setSession(null);
         setUser(null);
         setRoles([]);
       }
-    }, 5 * 60 * 1000); // Check every 5 minutes
-    return () => clearInterval(interval);
+    }, CHECK_INTERVAL);
+    return () => { clearInterval(interval); clearTimeout(warningTimeout); };
   }, [session]);
 
   useEffect(() => {
@@ -94,6 +108,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = async () => {
     await supabase.auth.signOut();
     setRoles([]);
+    try { localStorage.clear(); sessionStorage.clear(); } catch {}
     window.location.href = "/";
   };
 

@@ -12,8 +12,10 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { MapPin, Monitor, Calendar, FileText, CheckCircle, ChevronLeft, ChevronRight, Shield, Clock, Camera, Loader2, Sparkles, AlertTriangle, LocateFixed, DollarSign, Globe, Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { Logo } from "@/components/Logo";
+import { formatPhone } from "@/lib/formatPhone";
 
 type Step = 1 | 2 | 3 | 4;
 type NotarizationType = "in_person" | "ron";
@@ -215,6 +217,16 @@ export default function BookAppointment() {
     document.title = "Book Appointment — Notar";
     return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
   }, []);
+
+  // Batch 2.1: Warn before accidental navigation when form has data
+  useEffect(() => {
+    const hasData = serviceType || date || time || notes;
+    const handler = (e: BeforeUnloadEvent) => {
+      if (hasData && step > 1) { e.preventDefault(); }
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [serviceType, date, time, notes, step]);
 
   // Load pricing settings + dynamic services
   useEffect(() => {
@@ -1780,6 +1792,10 @@ export default function BookAppointment() {
                     <p className="mb-2 flex items-center gap-2 text-sm font-medium">
                       <Camera className="h-4 w-4 text-accent" />
                       Pre-scan your ID (optional — saves time)
+                      <Tooltip>
+                        <TooltipTrigger asChild><Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" /></TooltipTrigger>
+                        <TooltipContent className="max-w-xs text-xs">This pre-scan helps speed up your session by auto-filling your details. Full identity verification (KBA) occurs during the notary session via OneNotary.</TooltipContent>
+                      </Tooltip>
                     </p>
                     <p className="mb-3 text-xs text-muted-foreground">
                       Upload a photo of your government-issued ID to auto-fill your information.

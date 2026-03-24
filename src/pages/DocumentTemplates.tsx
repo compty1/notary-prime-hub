@@ -957,6 +957,11 @@ export default function DocumentTemplates() {
       <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
         <p>© {new Date().getFullYear()} Notar — Ohio Notary & Document Services</p>
         <p className="mt-1">Templates provided for informational purposes only. Consult legal counsel for specific legal advice.</p>
+        <div className="mt-2 flex items-center justify-center gap-4">
+          <Link to="/terms" className="hover:text-foreground">Terms of Service</Link>
+          <span>·</span>
+          <Link to="/terms" className="hover:text-foreground">Privacy Policy</Link>
+        </div>
       </footer>
     </div>
   );

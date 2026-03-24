@@ -759,6 +759,7 @@ export type Database = {
       notary_journal: {
         Row: {
           appointment_id: string | null
+          certificate_photos: Json | null
           created_at: string
           created_by: string
           document_description: string | null
@@ -786,6 +787,7 @@ export type Database = {
         }
         Insert: {
           appointment_id?: string | null
+          certificate_photos?: Json | null
           created_at?: string
           created_by: string
           document_description?: string | null
@@ -813,6 +815,7 @@ export type Database = {
         }
         Update: {
           appointment_id?: string | null
+          certificate_photos?: Json | null
           created_at?: string
           created_by?: string
           document_description?: string | null
@@ -1243,6 +1246,30 @@ export type Database = {
           is_available?: boolean
           specific_date?: string | null
           start_time?: string
+        }
+        Relationships: []
+      }
+      user_favorites: {
+        Row: {
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          user_id?: string
         }
         Relationships: []
       }
