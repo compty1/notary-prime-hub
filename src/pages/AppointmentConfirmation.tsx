@@ -8,6 +8,7 @@ import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { Logo } from "@/components/Logo";
 
 const formatDate = (dateStr: string) =>
   new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
@@ -158,9 +159,7 @@ export default function AppointmentConfirmation() {
       <nav className="border-b border-border/50 bg-background/80 backdrop-blur-lg">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-              <span className="font-display text-lg font-bold text-primary-foreground">N</span>
-            </div>
+            <Logo size="md" />
             <span className="font-display text-lg font-bold text-foreground">Notar</span>
           </Link>
           <Link to="/portal"><Button variant="outline" size="sm">My Portal</Button></Link>

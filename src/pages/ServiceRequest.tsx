@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { ChevronLeft, CheckCircle, FileText, Globe, Upload, Loader2, Shield, Briefcase, ClipboardList } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 const HAGUE_COUNTRIES = [
   "Albania","Andorra","Argentina","Armenia","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Barbados","Belarus","Belgium","Belize","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burundi","Canada","Cape Verde","Chile","China (Hong Kong)","China (Macao)","Colombia","Cook Islands","Costa Rica","Croatia","Cyprus","Czech Republic","Denmark","Dominica","Dominican Republic","Ecuador","El Salvador","Estonia","Eswatini","Fiji","Finland","France","Georgia","Germany","Greece","Grenada","Guatemala","Guyana","Honduras","Hungary","Iceland","India","Indonesia","Ireland","Israel","Italy","Jamaica","Japan","Jordan","Kazakhstan","Kosovo","Kyrgyzstan","Latvia","Lesotho","Liberia","Liechtenstein","Lithuania","Luxembourg","Malawi","Malta","Marshall Islands","Mauritius","Mexico","Moldova","Monaco","Mongolia","Montenegro","Morocco","Namibia","Netherlands","New Zealand","Nicaragua","Niue","North Macedonia","Norway","Oman","Pakistan","Palau","Panama","Paraguay","Peru","Philippines","Poland","Portugal","Republic of Korea","Romania","Russia","Rwanda","Saint Kitts and Nevis","Saint Lucia","Saint Vincent and the Grenadines","Samoa","San Marino","São Tomé and Príncipe","Saudi Arabia","Serbia","Seychelles","Singapore","Slovakia","Slovenia","South Africa","Spain","Suriname","Sweden","Switzerland","Tajikistan","Tonga","Trinidad and Tobago","Tunisia","Turkey","Ukraine","United Kingdom","United States","Uruguay","Uzbekistan","Vanuatu","Venezuela",
@@ -195,9 +196,7 @@ export default function ServiceRequest() {
       <nav className="border-b border-border/50 bg-background/80 backdrop-blur-lg">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-              <span className="font-display text-lg font-bold text-primary-foreground">N</span>
-            </div>
+            <Logo size="md" />
             <span className="font-display text-lg font-bold text-foreground">Notar</span>
           </Link>
           <div className="flex items-center gap-2">

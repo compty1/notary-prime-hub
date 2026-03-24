@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { Check, ChevronLeft, Briefcase, Code, Award, Zap } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 const plans = [
   {
@@ -76,9 +77,7 @@ export default function SubscriptionPlans() {
       <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-              <span className="font-display text-lg font-bold text-primary-foreground">N</span>
-            </div>
+            <Logo size="md" />
             <span className="font-display text-lg font-bold text-foreground">Notar</span>
           </Link>
           <div className="flex items-center gap-2">
