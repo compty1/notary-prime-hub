@@ -9,9 +9,9 @@ export default function TermsPrivacy() {
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-              <span className="font-display text-lg font-bold text-primary-foreground">SG</span>
+              <span className="font-display text-lg font-bold text-primary-foreground">N</span>
             </div>
-            <span className="font-display text-lg font-bold text-foreground">Shane Goble</span>
+            <span className="font-display text-lg font-bold text-foreground">Notar</span>
           </Link>
           <Link to="/"><Button variant="outline" size="sm"><ArrowLeft className="mr-1 h-4 w-4" /> Home</Button></Link>
         </div>
@@ -25,7 +25,7 @@ export default function TermsPrivacy() {
             <p><strong>Effective Date:</strong> January 1, 2026</p>
 
             <h2 className="font-display text-lg font-semibold text-foreground">1. Services Provided</h2>
-            <p>Shane Goble Notary Services ("we," "us") provides in-person and remote online notarization (RON) services in compliance with Ohio Revised Code §147 and all applicable Ohio laws. We are commissioned as a Notary Public in the State of Ohio, Franklin County.</p>
+            <p>Notar Services ("we," "us") provides in-person and remote online notarization (RON) services in compliance with Ohio Revised Code §147 and all applicable Ohio laws. We are commissioned as a Notary Public in the State of Ohio, Franklin County.</p>
 
             <h2 className="font-display text-lg font-semibold text-foreground">2. Eligibility</h2>
             <p>You must be at least 18 years old and possess a valid government-issued photo ID to use our notarization services. For RON sessions, you must also successfully complete Knowledge-Based Authentication (KBA) as required by ORC §147.65-.66.</p>
@@ -87,7 +87,7 @@ export default function TermsPrivacy() {
             <p>You may request access to or deletion of your personal information by contacting us. Note that we cannot delete notary journal entries or RON session recordings as they are legally required records.</p>
 
             <h3 className="font-display text-lg font-semibold text-foreground">Contact</h3>
-            <p>For questions about this privacy policy, contact Shane Goble Notary Services at the contact information provided on our website.</p>
+            <p>For questions about this privacy policy, contact Notar Services at the contact information provided on our website.</p>
           </div>
         </section>
 
@@ -98,7 +98,7 @@ export default function TermsPrivacy() {
       </div>
 
       <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Shane Goble — Ohio Commissioned Notary Public</p>
+        <p>© {new Date().getFullYear()} Notar — Ohio Notary & Document Services</p>
       </footer>
     </div>
   );

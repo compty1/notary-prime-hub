@@ -234,11 +234,11 @@ export default function ServiceDetail() {
 
   useEffect(() => {
     if (service) {
-      document.title = `${service.name} — Shane Goble Notary`;
+      document.title = `${service.name} — Notar`;
     } else if (!loading) {
-      document.title = "Service Not Found — Shane Goble Notary";
+      document.title = "Service Not Found — Notar";
     }
-    return () => { document.title = "Shane Goble Notary — Ohio Notary Public | In-Person & RON"; };
+    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
   }, [service, loading]);
 
   const formatPrice = (s: ServiceData) => {
@@ -306,11 +306,11 @@ export default function ServiceDetail() {
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-              <span className="font-display text-lg font-bold text-primary-foreground">SG</span>
+              <span className="font-display text-lg font-bold text-primary-foreground">N</span>
             </div>
             <div>
-              <span className="block font-display text-lg font-bold text-foreground">Shane Goble</span>
-              <span className="block text-xs text-muted-foreground">Notary Public — Ohio</span>
+              <span className="block font-display text-lg font-bold text-foreground">Notar</span>
+              <span className="block text-xs text-muted-foreground">Notary & Document Services</span>
             </div>
           </Link>
           <div className="flex items-center gap-3">
@@ -470,7 +470,7 @@ export default function ServiceDetail() {
                       <strong>How it works:</strong> We connect you with our legal partners who draft your documents, then we handle the notarization and witnessing. This ensures your documents are legally sound and properly executed.
                     </p>
                     <p className="text-xs italic text-muted-foreground">
-                      Will drafting and legal document creation are performed by our legal partners. Shane Goble Notary Services provides notarization, witnessing, and coordination only.
+                      Will drafting and legal document creation are performed by our legal partners. Notar Services provides notarization, witnessing, and coordination only.
                     </p>
                   </CardContent>
                 </Card>
@@ -743,7 +743,7 @@ export default function ServiceDetail() {
       )}
 
       <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Shane Goble — Ohio Commissioned Notary Public</p>
+        <p>© {new Date().getFullYear()} Notar — Ohio Notary & Document Services</p>
       </footer>
     </div>
   );

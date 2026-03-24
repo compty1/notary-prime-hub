@@ -214,7 +214,7 @@ export default function AdminClients() {
                   {selectedClient.email && (
                     <Button size="sm" variant="outline" className="mt-2 ml-2" onClick={() => {
                       setMessageClient(selectedClient);
-                      setMessageSubject(`Message from Shane Goble Notary`);
+                      setMessageSubject(`Message from Notar`);
                       setMessageBody("");
                     }}>
                       <Mail className="mr-1 h-3 w-3" /> Message

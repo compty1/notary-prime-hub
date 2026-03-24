@@ -29,8 +29,8 @@ export default function FeeCalculator() {
   const [settingsLoading, setSettingsLoading] = useState(true);
 
   useEffect(() => {
-    document.title = "Fee Calculator — Shane Goble Notary";
-    return () => { document.title = "Shane Goble Notary — Ohio Notary Public | In-Person & RON"; };
+    document.title = "Fee Calculator — Notar";
+    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
   }, []);
   const [notarizationType, setNotarizationType] = useState<"in_person" | "ron">("in_person");
   const [documentCount, setDocumentCount] = useState(1);
@@ -111,7 +111,7 @@ export default function FeeCalculator() {
       <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary"><span className="font-display text-lg font-bold text-primary-foreground">SG</span></div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary"><span className="font-display text-lg font-bold text-primary-foreground">N</span></div>
             <span className="font-display text-lg font-bold text-foreground">Fee Calculator</span>
           </Link>
           <div className="flex items-center gap-4">
@@ -251,7 +251,7 @@ export default function FeeCalculator() {
       </div>
 
       <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Shane Goble — Ohio Commissioned Notary Public</p>
+        <p>© {new Date().getFullYear()} Notar — Ohio Notary & Document Services</p>
       </footer>
     </div>
   );

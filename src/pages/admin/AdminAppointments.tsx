@@ -875,7 +875,7 @@ export default function AdminAppointments() {
           {receiptAppt && (
             <div className="space-y-4" id="receipt-content" data-print-receipt>
               <div className="text-center border-b border-border pb-4">
-                <h2 className="font-display text-xl font-bold text-foreground">Shane Goble</h2>
+                <h2 className="font-display text-xl font-bold text-foreground">Notar</h2>
                 <p className="text-sm text-muted-foreground">Ohio Commissioned Notary Public</p>
                 <p className="text-xs text-muted-foreground">Franklin County, Ohio</p>
               </div>
@@ -905,7 +905,7 @@ export default function AdminAppointments() {
                 {receiptAppt.notarization_type === "ron" && (
                   <p>RON session conducted per ORC §147.65-.66. Session recording stored per requirements.</p>
                 )}
-                <p className="mt-2">Thank you for choosing Shane Goble Notary Services.</p>
+                <p className="mt-2">Thank you for choosing Notar Services.</p>
               </div>
             </div>
           )}

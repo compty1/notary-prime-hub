@@ -128,12 +128,12 @@ export default function Services() {
   };
 
   useEffect(() => {
-    document.title = "Services — Shane Goble Notary";
+    document.title = "Services — Notar";
     supabase.from("services").select("*").eq("is_active", true).order("display_order").then(({ data }) => {
       if (data) setServices(data as Service[]);
       setLoading(false);
     });
-    return () => { document.title = "Shane Goble Notary — Ohio Notary Public | In-Person & RON"; };
+    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
   }, []);
 
   const formatPrice = (s: Service) => {
@@ -169,11 +169,11 @@ export default function Services() {
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-              <span className="font-display text-lg font-bold text-primary-foreground">SG</span>
+              <span className="font-display text-lg font-bold text-primary-foreground">N</span>
             </div>
             <div>
-              <span className="block font-display text-lg font-bold text-foreground">Shane Goble</span>
-              <span className="block text-xs text-muted-foreground">Notary Public — Ohio</span>
+              <span className="block font-display text-lg font-bold text-foreground">Notar</span>
+              <span className="block text-xs text-muted-foreground">Notary & Document Services</span>
             </div>
           </Link>
           <div className="hidden items-center gap-6 md:flex">
@@ -306,7 +306,7 @@ export default function Services() {
       </section>
 
       <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Shane Goble — Ohio Commissioned Notary Public</p>
+        <p>© {new Date().getFullYear()} Notar — Ohio Notary & Document Services</p>
       </footer>
     </div>
   );
