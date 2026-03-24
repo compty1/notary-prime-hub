@@ -1,31 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { MapPin, Monitor, FileText, Shield, Clock, CheckCircle, Star, ChevronRight, Phone, Mail, Scale, Menu, Send, Loader2, Sparkles, ArrowRight } from "lucide-react";
-import { DarkModeToggle } from "@/components/DarkModeToggle";
+import { MapPin, Monitor, FileText, Shield, Clock, CheckCircle, Star, ChevronRight, Phone, Mail, Scale, Send, Loader2, Sparkles, ArrowRight } from "lucide-react";
 import WhatDoINeed from "@/components/WhatDoINeed";
-import { Logo } from "@/components/Logo";
-
-// WhatDoINeed is now in src/components/WhatDoINeed.tsx
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.1, duration: 0.5, ease: "easeOut" as const },
-  }),
-};
+import { PageShell } from "@/components/PageShell";
+import { fadeUp, blurIn, scaleReveal } from "@/lib/animations";
 
 const fallbackServices = [
   { icon: FileText, title: "Real Estate Documents", desc: "Deeds, mortgages, refinancing, title transfers" },
@@ -40,39 +29,56 @@ const fallbackTestimonials = [
   { name: "Lisa K.", text: "Best notary experience I've had. Will definitely use Notar again for our business documents.", rating: 5 },
 ];
 
-  const steps = [
-    { num: "01", title: "Book", desc: "Choose in-person or remote and select your time slot" },
-    { num: "02", title: "Verify", desc: "Complete identity verification and KBA for RON sessions" },
-    { num: "03", title: "Sign", desc: "Documents notarized securely with digital seal" },
-  ];
+const steps = [
+  { num: "01", title: "Book", desc: "Choose in-person or remote and select your time slot" },
+  { num: "02", title: "Verify", desc: "Complete identity verification and KBA for RON sessions" },
+  { num: "03", title: "Sign", desc: "Documents notarized securely with digital seal" },
+];
 
-  const faqs = [
-    { q: "What is Remote Online Notarization (RON)?", a: "RON allows you to have documents notarized via a secure video call from anywhere. Ohio authorizes RON under Ohio Revised Code §147.65-.66, making it fully legal and binding." },
-    { q: "What identification do I need?", a: "You'll need a valid government-issued photo ID (driver's license, passport, or state ID). For RON sessions, you'll also complete Knowledge-Based Authentication (KBA) questions." },
-    { q: "How long does a notarization take?", a: "Most notarizations take 10-15 minutes for in-person sessions. RON sessions may take 20-30 minutes including the identity verification process." },
-    { q: "What areas do you serve for in-person notarization?", a: "We serve Franklin County and the greater Columbus, Ohio metropolitan area for in-person notarizations. Mobile notary services are available within a 30-mile radius." },
-    { q: "Is RON notarization accepted everywhere?", a: "RON notarizations performed under Ohio law are recognized in all 50 states. However, some specific transactions may have unique requirements. Contact us to confirm for your situation." },
-  ];
+const faqs = [
+  { q: "What is Remote Online Notarization (RON)?", a: "RON allows you to have documents notarized via a secure video call from anywhere. Ohio authorizes RON under Ohio Revised Code §147.65-.66, making it fully legal and binding." },
+  { q: "What identification do I need?", a: "You'll need a valid government-issued photo ID (driver's license, passport, or state ID). For RON sessions, you'll also complete Knowledge-Based Authentication (KBA) questions." },
+  { q: "How long does a notarization take?", a: "Most notarizations take 10-15 minutes for in-person sessions. RON sessions may take 20-30 minutes including the identity verification process." },
+  { q: "What areas do you serve for in-person notarization?", a: "We serve Franklin County and the greater Columbus, Ohio metropolitan area for in-person notarizations. Mobile notary services are available within a 30-mile radius." },
+  { q: "Is RON notarization accepted everywhere?", a: "RON notarizations performed under Ohio law are recognized in all 50 states. However, some specific transactions may have unique requirements. Contact us to confirm for your situation." },
+];
+
+function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: string }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true });
+  
+  useEffect(() => {
+    if (!isInView) return;
+    let start = 0;
+    const duration = 1500;
+    const step = value / (duration / 16);
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= value) { setCount(value); clearInterval(timer); }
+      else setCount(Math.floor(start));
+    }, 16);
+    return () => clearInterval(timer);
+  }, [isInView, value]);
+
+  return <span ref={ref} className="font-mono-accent font-bold">{count.toLocaleString()}{suffix}</span>;
+}
 
 export default function Index() {
   const [serviceType, setServiceType] = useState<"in_person" | "ron">("in_person");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { toast } = useToast();
   const [contactForm, setContactForm] = useState({ name: "", email: "", phone: "", service: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
   const [lastSubmitTime, setLastSubmitTime] = useState(0);
 
-  // Dynamic services from DB
   const [dbServices, setDbServices] = useState<any[]>([]);
   const [dbReviews, setDbReviews] = useState<any[]>([]);
 
   useEffect(() => {
-    // Fetch top services from DB
     supabase.from("services").select("name, short_description, icon, category")
       .eq("is_active", true).order("display_order").limit(6)
       .then(({ data }) => { if (data && data.length > 0) setDbServices(data); });
 
-    // Fetch 5-star reviews
     supabase.from("reviews").select("rating, comment, created_at, client_id")
       .eq("rating", 5).order("created_at", { ascending: false }).limit(3)
       .then(async ({ data: reviews }) => {
@@ -94,6 +100,21 @@ export default function Index() {
 
   const testimonials = dbReviews.length > 0 ? dbReviews : fallbackTestimonials;
 
+  const [contactInfo, setContactInfo] = useState({ phone: "(614) 300-6890", email: "contact@notardex.com" });
+
+  useEffect(() => {
+    supabase.from("platform_settings").select("setting_key, setting_value")
+      .in("setting_key", ["notary_phone", "notary_email"])
+      .then(({ data }) => {
+        if (data) {
+          const phone = data.find(s => s.setting_key === "notary_phone")?.setting_value;
+          const email = data.find(s => s.setting_key === "notary_email")?.setting_value;
+          if (phone) setContactInfo(prev => ({ ...prev, phone }));
+          if (email) setContactInfo(prev => ({ ...prev, email }));
+        }
+      });
+  }, []);
+
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!contactForm.name.trim() || !contactForm.email.trim() || !contactForm.message.trim()) {
@@ -105,7 +126,6 @@ export default function Index() {
       toast({ title: "Invalid email", description: "Please enter a valid email address.", variant: "destructive" });
       return;
     }
-    // Rate limit: 1 submission per 60 seconds
     const now = Date.now();
     if (now - lastSubmitTime < 60000) {
       toast({ title: "Please wait", description: "You can submit again in a minute.", variant: "destructive" });
@@ -133,132 +153,57 @@ export default function Index() {
     }
   };
 
-  const [contactInfo, setContactInfo] = useState({ phone: "(614) 300-6890", email: "contact@notardex.com" });
-
-  useEffect(() => {
-    supabase.from("platform_settings").select("setting_key, setting_value")
-      .in("setting_key", ["notary_phone", "notary_email"])
-      .then(({ data }) => {
-        if (data) {
-          const phone = data.find(s => s.setting_key === "notary_phone")?.setting_value;
-          const email = data.find(s => s.setting_key === "notary_email")?.setting_value;
-          if (phone) setContactInfo(prev => ({ ...prev, phone }));
-          if (email) setContactInfo(prev => ({ ...prev, email }));
-        }
-      });
-  }, []);
-
-
   return (
-    <div className="min-h-screen bg-background">
-      {/* Skip to main content */}
-      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-foreground focus:outline-none">
-        Skip to main content
-      </a>
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg" aria-label="Main navigation">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <Logo size="md" />
-            <div>
-              <span className="block font-display text-lg font-bold text-foreground">Notar</span>
-              <span className="block text-xs text-muted-foreground">Notary & Document Services — Ohio</span>
-            </div>
-          </Link>
-          <div className="hidden items-center gap-6 md:flex">
-            <Link to="/services" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Services</Link>
-            <Link to="/about" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">About</Link>
-            <Link to="/templates" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Templates</Link>
-            <Link to="/digitize" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Digitize</Link>
-            <Link to="/fee-calculator" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Pricing</Link>
-            <a href="#faq" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">FAQ</a>
-            <DarkModeToggle />
-            <Link to="/login">
-              <Button variant="outline" size="sm">Sign In</Button>
-            </Link>
-            <Link to="/book">
-              <Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button>
-            </Link>
-          </div>
-
-          {/* Mobile menu */}
-          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="sm">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-64">
-              <div className="mt-8 flex flex-col gap-4">
-                <Link to="/services" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Services</Link>
-                <Link to="/about" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>About</Link>
-                <Link to="/templates" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Templates</Link>
-                <Link to="/digitize" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Digitize</Link>
-                <Link to="/fee-calculator" className="text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Pricing</Link>
-                <hr className="border-border" />
-                <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" className="w-full">Sign In</Button>
-                </Link>
-                <Link to="/book" onClick={() => setMobileMenuOpen(false)}>
-                  <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button>
-                </Link>
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
-      </nav>
-
+    <PageShell>
       {/* Hero */}
-      <main id="main-content">
-      <section className="relative overflow-hidden bg-gradient-navy py-20 md:py-32">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(circle at 25% 50%, hsl(42 78% 55% / 0.15) 0%, transparent 50%)" }} />
-        </div>
+      <section className="relative overflow-hidden bg-gradient-hero py-24 md:py-36">
+        <div className="absolute inset-0 gradient-mesh" />
+        <div className="absolute inset-0 grid-pattern" />
         <div className="container relative mx-auto px-4">
           <motion.div
             initial="hidden"
             animate="visible"
             className="mx-auto max-w-3xl text-center"
           >
-            <motion.div variants={fadeUp} custom={0}>
-              <Badge className="mb-6 border-gold/30 bg-gold/10 text-gold-light">
-                <Shield className="mr-1 h-3 w-3" /> Ohio Commissioned Notary Public
+            <motion.div variants={blurIn} custom={0}>
+              <Badge className="mb-6 border-primary/20 bg-primary/10 text-primary dark:text-primary-foreground dark:bg-primary/20">
+                <Shield className="mr-1.5 h-3 w-3" /> Ohio Commissioned Notary Public
               </Badge>
             </motion.div>
             <motion.h1
-              variants={fadeUp}
+              variants={blurIn}
               custom={1}
-              className="mb-6 font-display text-4xl font-bold tracking-tight text-primary-foreground md:text-6xl"
+              className="mb-6 font-display text-4xl font-bold tracking-tight text-white md:text-6xl lg:text-7xl"
             >
               Professional Notary Services in{" "}
-              <span className="text-gradient-gold">Franklin County</span>
+              <span className="text-gradient-primary">Franklin County</span>
             </motion.h1>
             <motion.p
-              variants={fadeUp}
+              variants={blurIn}
               custom={2}
-              className="mb-8 text-lg text-primary-foreground/70 md:text-xl"
+              className="mb-10 text-lg text-white/60 md:text-xl"
             >
               In-person and remote online notarization — secure, convenient, and fully compliant with Ohio law.
             </motion.p>
 
-            {/* Service Type Toggle */}
-            <motion.div variants={fadeUp} custom={3} className="mb-8 flex items-center justify-center gap-2">
+            {/* Service Type Toggle — pill style */}
+            <motion.div variants={blurIn} custom={3} className="mb-8 inline-flex items-center rounded-full bg-white/10 p-1 backdrop-blur-sm">
               <button
                 onClick={() => setServiceType("in_person")}
-                className={`flex items-center gap-2 rounded-lg px-5 py-3 text-sm font-medium transition-all ${
+                className={`flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-medium transition-all duration-200 ${
                   serviceType === "in_person"
-                    ? "bg-accent text-accent-foreground shadow-lg"
-                    : "bg-primary-foreground/10 text-primary-foreground/70 hover:bg-primary-foreground/20"
+                    ? "bg-primary text-white shadow-lg glow-sm"
+                    : "text-white/60 hover:text-white"
                 }`}
               >
                 <MapPin className="h-4 w-4" /> In-Person
               </button>
               <button
                 onClick={() => setServiceType("ron")}
-                className={`flex items-center gap-2 rounded-lg px-5 py-3 text-sm font-medium transition-all ${
+                className={`flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-medium transition-all duration-200 ${
                   serviceType === "ron"
-                    ? "bg-accent text-accent-foreground shadow-lg"
-                    : "bg-primary-foreground/10 text-primary-foreground/70 hover:bg-primary-foreground/20"
+                    ? "bg-primary text-white shadow-lg glow-sm"
+                    : "text-white/60 hover:text-white"
                 }`}
               >
                 <Monitor className="h-4 w-4" /> Remote (RON)
@@ -267,65 +212,88 @@ export default function Index() {
 
             <motion.div variants={fadeUp} custom={4}>
               {serviceType === "in_person" ? (
-                <p className="mb-6 text-primary-foreground/60">
-                  Available throughout Franklin County & greater Columbus area. Mobile notary available within 30 miles.
+                <p className="mb-8 text-white/50 text-sm">
+                  Available throughout Franklin County & greater Columbus area. Mobile notary within 30 miles.
                 </p>
               ) : (
-                <p className="mb-6 text-primary-foreground/60">
-                  Secure video notarization from anywhere — fully authorized under Ohio Revised Code §147.65-.66.
+                <p className="mb-8 text-white/50 text-sm">
+                  Secure video notarization from anywhere — authorized under Ohio Revised Code §147.65-.66.
                 </p>
               )}
             </motion.div>
 
             <motion.div variants={fadeUp} custom={5} className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link to={`/book?type=${serviceType}`}>
-                <Button size="lg" className="bg-accent text-accent-foreground shadow-lg hover:bg-gold-dark">
-                  Schedule Appointment <ChevronRight className="ml-1 h-4 w-4" />
+                <Button size="lg" className="bg-gradient-primary text-white shadow-lg glow-primary animate-glow-pulse hover:opacity-90">
+                  Schedule Appointment <ArrowRight className="ml-1 h-4 w-4" />
                 </Button>
               </Link>
               <a href={`tel:${contactInfo.phone.replace(/\D/g, '')}`}>
-                <Button size="lg" variant="outline" className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10">
+                <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10 backdrop-blur-sm">
                   <Phone className="mr-2 h-4 w-4" /> {contactInfo.phone}
                 </Button>
               </a>
             </motion.div>
           </motion.div>
         </div>
+
+        {/* Floating trust badges */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 0.8 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden md:flex items-center gap-6"
+        >
+          {[
+            { icon: Shield, text: "ORC §147 Compliant" },
+            { icon: CheckCircle, text: "NNA Certified" },
+            { icon: Clock, text: "Same-Day Available" },
+          ].map((badge, i) => (
+            <div
+              key={badge.text}
+              className="flex items-center gap-2 rounded-full bg-white/5 px-4 py-2 text-xs text-white/50 backdrop-blur-sm border border-white/10 animate-float"
+              style={{ animationDelay: `${i * 0.5}s` }}
+            >
+              <badge.icon className="h-3.5 w-3.5 text-primary" />
+              {badge.text}
+            </div>
+          ))}
+        </motion.div>
       </section>
 
       {/* Trust Bar */}
-      <section className="border-b border-border bg-muted/50 py-6">
+      <section className="border-b border-border/40 bg-muted/50 py-5">
         <div className="container mx-auto flex flex-wrap items-center justify-center gap-8 px-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-accent" />
+            <Shield className="h-4 w-4 text-primary" />
             <span>Ohio Revised Code §147 Compliant</span>
           </div>
           <div className="flex items-center gap-2">
-            <CheckCircle className="h-4 w-4 text-accent" />
+            <CheckCircle className="h-4 w-4 text-primary" />
             <span>Franklin County Commissioned</span>
           </div>
           <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-accent" />
-            <span>$25,000 Surety Bond</span>
+            <Shield className="h-4 w-4 text-primary" />
+            <span>$<AnimatedCounter value={25000} /> Surety Bond</span>
           </div>
           <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-accent" />
-            <span>Same-Day Appointments Available</span>
+            <Clock className="h-4 w-4 text-primary" />
+            <span>Same-Day Appointments</span>
           </div>
         </div>
       </section>
 
       {/* Beyond Notarization Banner */}
-      <section className="bg-accent/5 border-b border-accent/10 py-4">
+      <section className="bg-primary/5 border-b border-primary/10 py-4">
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm text-muted-foreground">
             <span className="font-medium text-foreground">Beyond notarization:</span> document digitization, secure cloud storage, form preparation, business services, and more.{" "}
-            <Link to="/services" className="text-accent hover:underline font-medium">View All Services →</Link>
+            <Link to="/services" className="text-primary hover:underline font-medium">View All Services →</Link>
           </p>
         </div>
       </section>
 
-      {/* "What Do I Need?" AI Helper */}
+      {/* AI Helper */}
       <WhatDoINeed />
 
       {/* Services */}
@@ -351,11 +319,11 @@ export default function Index() {
             className="grid gap-6 md:grid-cols-2 lg:grid-cols-4"
           >
             {services.map((s, i) => (
-              <motion.div key={s.title} variants={fadeUp} custom={i}>
-                <Card className="group h-full border-border/50 transition-all hover:border-accent/30 hover:shadow-lg">
+              <motion.div key={s.title} variants={scaleReveal} custom={i}>
+                <Card className="group h-full hover:border-primary/20">
                   <CardContent className="p-6">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 transition-colors group-hover:bg-accent/20">
-                      <s.icon className="h-6 w-6 text-accent" />
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/15">
+                      <s.icon className="h-6 w-6 text-primary" />
                     </div>
                     <h3 className="mb-2 font-display text-lg font-semibold text-foreground">{s.title}</h3>
                     <p className="text-sm text-muted-foreground">{s.desc}</p>
@@ -390,15 +358,15 @@ export default function Index() {
             className="mx-auto grid max-w-4xl gap-8 md:grid-cols-3"
           >
             {steps.map((step, i) => (
-              <motion.div key={step.num} variants={fadeUp} custom={i} className="relative text-center">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-gold shadow-lg">
-                  <span className="font-display text-xl font-bold text-accent-foreground">{step.num}</span>
+              <motion.div key={step.num} variants={scaleReveal} custom={i} className="relative text-center">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-primary shadow-lg">
+                  <span className="font-mono-accent text-lg font-bold text-white">{step.num}</span>
                 </div>
                 <h3 className="mb-2 font-display text-xl font-semibold text-foreground">{step.title}</h3>
                 <p className="text-sm text-muted-foreground">{step.desc}</p>
                 {i < steps.length - 1 && (
                   <div className="absolute right-0 top-8 hidden w-full -translate-y-1/2 md:block">
-                    <ChevronRight className="absolute -right-4 h-5 w-5 text-accent/40" />
+                    <ChevronRight className="absolute -right-4 h-5 w-5 text-primary/30" />
                   </div>
                 )}
               </motion.div>
@@ -406,8 +374,8 @@ export default function Index() {
           </motion.div>
           <div className="mt-12 text-center">
             <Link to="/book">
-              <Button size="lg" className="bg-accent text-accent-foreground hover:bg-gold-dark">
-                Get Started <ChevronRight className="ml-1 h-4 w-4" />
+              <Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">
+                Get Started <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
             </Link>
           </div>
@@ -434,15 +402,16 @@ export default function Index() {
             className="mx-auto grid max-w-4xl gap-6 md:grid-cols-3"
           >
             {testimonials.map((t, i) => (
-              <motion.div key={t.name} variants={fadeUp} custom={i}>
-                <Card className="h-full border-border/50">
+              <motion.div key={t.name} variants={scaleReveal} custom={i}>
+                <Card className="h-full">
                   <CardContent className="p-6">
+                    <div className="mb-4 text-4xl text-primary/20 font-display">"</div>
                     <div className="mb-3 flex gap-0.5">
                       {Array.from({ length: t.rating }).map((_, j) => (
-                        <Star key={j} className="h-4 w-4 fill-accent text-accent" />
+                        <Star key={j} className="h-4 w-4 fill-primary text-primary" />
                       ))}
                     </div>
-                    <p className="mb-4 text-sm text-muted-foreground italic">"{t.text}"</p>
+                    <p className="mb-4 text-sm text-muted-foreground italic">{t.text}</p>
                     <p className="text-sm font-semibold text-foreground">{t.name}</p>
                   </CardContent>
                 </Card>
@@ -475,7 +444,7 @@ export default function Index() {
           >
             <Accordion type="single" collapsible className="space-y-2">
               {faqs.map((faq, i) => (
-                <AccordionItem key={i} value={`faq-${i}`} className="rounded-lg border border-border/50 bg-card px-4">
+                <AccordionItem key={i} value={`faq-${i}`} className="rounded-xl border border-border/50 bg-card px-4">
                   <AccordionTrigger className="text-left text-sm font-medium">{faq.q}</AccordionTrigger>
                   <AccordionContent className="text-sm text-muted-foreground">{faq.a}</AccordionContent>
                 </AccordionItem>
@@ -516,7 +485,7 @@ export default function Index() {
             custom={2}
             className="mx-auto max-w-lg"
           >
-            <Card className="border-border/50">
+            <Card>
               <CardContent className="pt-6">
                 <form onSubmit={handleContactSubmit} className="space-y-4">
                   <div className="grid gap-4 sm:grid-cols-2">
@@ -588,7 +557,7 @@ export default function Index() {
                       required
                     />
                   </div>
-                  <Button type="submit" className="w-full" disabled={submitting}>
+                  <Button type="submit" className="w-full bg-gradient-primary text-white hover:opacity-90" disabled={submitting}>
                     {submitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending...</> : <><Send className="mr-2 h-4 w-4" /> Send Message</>}
                   </Button>
                 </form>
@@ -603,25 +572,25 @@ export default function Index() {
         <div className="container mx-auto px-4">
           <h2 className="mb-8 text-center font-display text-2xl font-bold text-foreground">Industry Insights</h2>
           <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-2">
-            <Card className="border-border/50">
+            <Card>
               <CardContent className="p-6">
                 <h3 className="mb-2 font-display text-base font-semibold">Why Remote Notarization is Growing 300% Year-Over-Year</h3>
                 <p className="text-sm text-muted-foreground">The adoption of RON has accelerated dramatically since 2020. Over 40 states now have RON legislation, and major GSEs (Fannie Mae, Freddie Mac) accept RON for mortgage transactions. Ohio was among the early adopters under ORC §147.65-.66, making it a leader in secure digital notarization.</p>
               </CardContent>
             </Card>
-            <Card className="border-border/50">
+            <Card>
               <CardContent className="p-6">
                 <h3 className="mb-2 font-display text-base font-semibold">Understanding Ohio's Electronic Notarization Standards</h3>
                 <p className="text-sm text-muted-foreground">Ohio's RON framework requires multi-factor identity verification including credential analysis and Knowledge-Based Authentication (KBA), plus full session recording stored for 10+ years. These MISMO-compliant standards exceed the security of traditional in-person notarization.</p>
               </CardContent>
             </Card>
-            <Card className="border-border/50">
+            <Card>
               <CardContent className="p-6">
                 <h3 className="mb-2 font-display text-base font-semibold">What Title Companies Should Know About RON Closings</h3>
                 <p className="text-sm text-muted-foreground">Title companies benefit from RON with faster closing timelines, reduced scheduling friction, and a complete audit trail. ALTA best practices now include RON as a standard closing option, with most underwriters approving RON transactions nationwide.</p>
               </CardContent>
             </Card>
-            <Card className="border-border/50">
+            <Card>
               <CardContent className="p-6">
                 <h3 className="mb-2 font-display text-base font-semibold">Common Notarization Mistakes and How to Avoid Them</h3>
                 <p className="text-sm text-muted-foreground">From incomplete certificates to improper identification, common errors can invalidate a notarization and delay important transactions. Working with an experienced, Ohio-commissioned notary ensures compliance with ORC §147 and protects your documents from rejection.</p>
@@ -629,60 +598,10 @@ export default function Index() {
             </Card>
           </div>
           <div className="mt-6 text-center">
-            <Link to="/services" className="text-sm text-accent hover:underline">View all our professional notary and document services →</Link>
+            <Link to="/services" className="text-sm text-primary hover:underline">View all our professional notary and document services →</Link>
           </div>
         </div>
       </section>
-
-      </main>
-      <footer className="bg-gradient-navy py-12 text-primary-foreground/70">
-        <div className="container mx-auto px-4">
-          <div className="grid gap-8 md:grid-cols-3">
-            <div>
-              <div className="mb-4 flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded bg-accent">
-                  <span className="font-display text-sm font-bold text-accent-foreground">N</span>
-                </div>
-                <span className="font-display text-lg font-bold text-primary-foreground">Notar</span>
-              </div>
-              <p className="text-sm">Professional notary team serving Franklin County and the greater Columbus area.</p>
-            </div>
-            <div>
-              <h4 className="mb-3 font-display text-sm font-semibold text-primary-foreground">Contact</h4>
-              <div className="space-y-2 text-sm">
-                <a href={`tel:${contactInfo.phone.replace(/\D/g, '')}`} className="flex items-center gap-2 hover:text-accent"><Phone className="h-3 w-3" /> {contactInfo.phone}</a>
-                <a href={`mailto:${contactInfo.email}`} className="flex items-center gap-2 hover:text-accent"><Mail className="h-3 w-3" /> {contactInfo.email}</a>
-              </div>
-            </div>
-            <div>
-              <h4 className="mb-3 font-display text-sm font-semibold text-primary-foreground">Quick Links</h4>
-              <div className="space-y-2 text-sm">
-                <Link to="/book" className="block hover:text-accent">Book Appointment</Link>
-                <Link to="/services" className="block hover:text-accent">All Services</Link>
-                <Link to="/loan-signing" className="block hover:text-accent">Loan Signing Services</Link>
-                <Link to="/templates" className="block hover:text-accent">Document Templates</Link>
-                <Link to="/ron-check" className="block hover:text-accent">RON Eligibility Checker</Link>
-                <Link to="/fee-calculator" className="block hover:text-accent">Pricing</Link>
-                <Link to="/ron-info" className="block hover:text-accent">RON Information</Link>
-                <Link to="/notary-guide" className="block hover:text-accent">Notary Guide</Link>
-                <Link to="/about" className="block hover:text-accent">About</Link>
-                <Link to="/digitize" className="block hover:text-accent">Document Digitization</Link>
-                <Link to="/join" className="block hover:text-accent">Join as Provider</Link>
-                <Link to="/login" className="block hover:text-accent">Client Portal</Link>
-              </div>
-            </div>
-          </div>
-          <div className="mt-8 border-t border-primary-foreground/10 pt-8 text-center text-xs">
-            <p>© {new Date().getFullYear()} Notar. All rights reserved.</p>
-            <p className="mt-1">Ohio Notary & Document Services — Franklin County</p>
-            <div className="mt-2 flex items-center justify-center gap-4">
-              <Link to="/terms" className="hover:text-accent">Terms of Service</Link>
-              <span className="text-primary-foreground/30">·</span>
-              <Link to="/terms" className="hover:text-accent">Privacy Policy</Link>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </PageShell>
   );
 }
