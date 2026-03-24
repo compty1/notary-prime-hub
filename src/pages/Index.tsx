@@ -35,9 +35,9 @@ const fallbackServices = [
 ];
 
 const fallbackTestimonials = [
-  { name: "Sarah M.", text: "Shane made our home closing so easy. Professional, punctual, and thorough.", rating: 5 },
+  { name: "Sarah M.", text: "Notar made our home closing so easy. Professional, punctual, and thorough.", rating: 5 },
   { name: "James R.", text: "Used the remote notarization while traveling. Incredibly convenient and secure.", rating: 5 },
-  { name: "Lisa K.", text: "Best notary experience I've had. Will definitely use again for our business documents.", rating: 5 },
+  { name: "Lisa K.", text: "Best notary experience I've had. Will definitely use Notar again for our business documents.", rating: 5 },
 ];
 
   const steps = [
@@ -133,7 +133,7 @@ export default function Index() {
     }
   };
 
-  const [contactInfo, setContactInfo] = useState({ phone: "(614) 300-6890", email: "shane@shanegoble.com" });
+  const [contactInfo, setContactInfo] = useState({ phone: "(614) 300-6890", email: "contact@notardex.com" });
 
   useEffect(() => {
     supabase.from("platform_settings").select("setting_key, setting_value")
@@ -156,11 +156,11 @@ export default function Index() {
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-              <span className="font-display text-lg font-bold text-primary-foreground">SG</span>
+              <span className="font-display text-lg font-bold text-primary-foreground">N</span>
             </div>
             <div>
-              <span className="block font-display text-lg font-bold text-foreground">Shane Goble</span>
-              <span className="block text-xs text-muted-foreground">Notary Public & Document Services — Ohio</span>
+              <span className="block font-display text-lg font-bold text-foreground">Notar</span>
+              <span className="block text-xs text-muted-foreground">Notary & Document Services — Ohio</span>
             </div>
           </Link>
           <div className="hidden items-center gap-6 md:flex">
@@ -635,11 +635,11 @@ export default function Index() {
             <div>
               <div className="mb-4 flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded bg-accent">
-                  <span className="font-display text-sm font-bold text-accent-foreground">SG</span>
+                  <span className="font-display text-sm font-bold text-accent-foreground">N</span>
                 </div>
-                <span className="font-display text-lg font-bold text-primary-foreground">Shane Goble</span>
+                <span className="font-display text-lg font-bold text-primary-foreground">Notar</span>
               </div>
-              <p className="text-sm">Ohio Commissioned Notary Public serving Franklin County and the greater Columbus area.</p>
+              <p className="text-sm">Professional notary team serving Franklin County and the greater Columbus area.</p>
             </div>
             <div>
               <h4 className="mb-3 font-display text-sm font-semibold text-primary-foreground">Contact</h4>
@@ -667,8 +667,8 @@ export default function Index() {
             </div>
           </div>
           <div className="mt-8 border-t border-primary-foreground/10 pt-8 text-center text-xs">
-            <p>© {new Date().getFullYear()} Shane Goble Notary Services. All rights reserved.</p>
-            <p className="mt-1">Ohio Commissioned Notary Public — Franklin County</p>
+            <p>© {new Date().getFullYear()} Notar. All rights reserved.</p>
+            <p className="mt-1">Ohio Notary & Document Services — Franklin County</p>
             <div className="mt-2 flex items-center justify-center gap-4">
               <Link to="/terms" className="hover:text-accent">Terms of Service & Privacy Policy</Link>
             </div>

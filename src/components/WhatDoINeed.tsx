@@ -83,10 +83,10 @@ export default function WhatDoINeed() {
     const printWindow = window.open("", "_blank");
     if (printWindow) {
       printWindow.document.write(`
-        <html><head><title>What Do I Need? — Shane Goble Notary</title>
+        <html><head><title>What Do I Need? — Notar</title>
         <style>body{font-family:system-ui,sans-serif;padding:2rem;max-width:700px;margin:0 auto;line-height:1.6}
         h1,h2,h3{margin-top:1.5em}ul,ol{padding-left:1.5em}strong{font-weight:600}</style></head>
-        <body><h1>Notary Service Guidance</h1><p><em>Query: ${query}</em></p><hr/>${result.replace(/\n/g, "<br/>")}</body></html>
+        <body><h1>Notar — Service Guidance</h1><p><em>Query: ${query}</em></p><hr/>${result.replace(/\n/g, "<br/>")}</body></html>
       `);
       printWindow.document.close();
       printWindow.print();

@@ -680,7 +680,7 @@ export default function ClientPortal() {
                   }).map((msg) => (
                     <div key={msg.id} className={`flex ${msg.is_admin ? "justify-start" : "justify-end"}`}>
                       <div className={`max-w-[75%] rounded-lg px-3 py-2 text-sm ${msg.is_admin ? "bg-muted text-foreground" : "bg-accent text-accent-foreground"}`}>
-                        <p>{msg.message}</p>
+                        <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:m-0"><ReactMarkdown>{msg.message}</ReactMarkdown></div>
                         <p className="mt-1 text-[10px] opacity-60">{new Date(msg.created_at).toLocaleTimeString()}</p>
                       </div>
                     </div>
