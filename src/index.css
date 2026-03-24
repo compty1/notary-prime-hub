@@ -126,6 +126,35 @@
   }
 }
 
+/* Touch target sizes for mobile */
+@media (pointer: coarse) {
+  button, a, [role="button"], input[type="checkbox"], input[type="radio"],
+  [data-radix-collection-item] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Focus indicators */
+:focus-visible {
+  outline: 2px solid hsl(var(--accent));
+  outline-offset: 2px;
+}
+
+.dark :focus-visible {
+  outline-color: hsl(var(--accent));
+}
+
+/* Micro-interactions */
+button, a, [role="button"] {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px hsl(var(--foreground) / 0.1);
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
