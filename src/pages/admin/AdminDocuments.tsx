@@ -149,12 +149,26 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
     if (error) { toast({ title: "Download failed", description: error.message, variant: "destructive" }); return; }
     const url = URL.createObjectURL(data);
     const a = document.createElement("a"); a.href = url; a.download = doc.file_name; a.click(); URL.revokeObjectURL(url);
+    // Log admin document download
+    if (user) {
+      supabase.from("audit_log").insert({
+        user_id: user.id, action: "admin_document_download", entity_type: "document",
+        entity_id: doc.id, details: { file_name: doc.file_name, uploader: doc.uploaded_by },
+      }).then(() => {});
+    }
   };
 
   const openPreview = async (doc: any) => {
     setPreviewDoc(doc);
     const { data } = await supabase.storage.from("documents").createSignedUrl(doc.file_path, 300);
     setPreviewUrl(data?.signedUrl || null);
+    // Log admin document access
+    if (user) {
+      supabase.from("audit_log").insert({
+        user_id: user.id, action: "admin_document_view", entity_type: "document",
+        entity_id: doc.id, details: { file_name: doc.file_name, uploader: doc.uploaded_by },
+      }).then(() => {});
+    }
   };
 
   if (loading) return <div className="flex justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" /></div>;
