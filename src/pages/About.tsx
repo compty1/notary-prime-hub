@@ -32,10 +32,10 @@ const serviceAreas = [
 ];
 
 export default function About() {
-  const [contactInfo, setContactInfo] = useState({ phone: "(614) 300-6890", email: "shane@shanegoble.com" });
+  const [contactInfo, setContactInfo] = useState({ phone: "(614) 300-6890", email: "contact@notardex.com" });
 
   useEffect(() => {
-    document.title = "About Shane Goble — Ohio Notary Public & Document Specialist";
+    document.title = "About Notar — Ohio Notary & Document Services";
     supabase.from("platform_settings").select("setting_key, setting_value")
       .in("setting_key", ["notary_phone", "notary_email"])
       .then(({ data }) => {
@@ -46,7 +46,7 @@ export default function About() {
           if (email) setContactInfo(prev => ({ ...prev, email }));
         }
       });
-    return () => { document.title = "Shane Goble Notary — Ohio Notary Public | In-Person & RON"; };
+    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
   }, []);
 
   return (
@@ -56,11 +56,11 @@ export default function About() {
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-              <span className="font-display text-lg font-bold text-primary-foreground">SG</span>
+              <span className="font-display text-lg font-bold text-primary-foreground">N</span>
             </div>
             <div>
-              <span className="block font-display text-lg font-bold text-foreground">Shane Goble</span>
-              <span className="block text-xs text-muted-foreground">Notary Public & Document Services</span>
+              <span className="block font-display text-lg font-bold text-foreground">Notar</span>
+              <span className="block text-xs text-muted-foreground">Notary & Document Services</span>
             </div>
           </Link>
           <div className="hidden items-center gap-6 md:flex">
@@ -92,7 +92,7 @@ export default function About() {
           <motion.div initial="hidden" animate="visible" className="flex flex-col md:flex-row items-center gap-8">
             <motion.div variants={fadeUp} custom={0} className="flex-shrink-0">
               <div className="flex h-40 w-40 items-center justify-center rounded-full bg-accent/20 border-4 border-accent/30">
-                <span className="font-display text-5xl font-bold text-accent">SG</span>
+                <span className="font-display text-5xl font-bold text-accent">N</span>
               </div>
             </motion.div>
             <motion.div variants={fadeUp} custom={1}>
@@ -100,14 +100,14 @@ export default function About() {
                 <Award className="mr-1 h-3 w-3" /> NNA Certified Notary Signing Agent
               </Badge>
               <h1 className="mb-3 font-display text-4xl font-bold text-primary-foreground md:text-5xl">
-                Shane Goble
+                Notar
               </h1>
               <p className="mb-2 text-xl text-primary-foreground/80">
-                Notary Public & Document Specialist — Ohio
+                Professional Notary & Document Services — Ohio
               </p>
               <p className="text-primary-foreground/60 max-w-xl">
-                Providing professional notarization, document management, and business services 
-                throughout Franklin County and the greater Columbus, Ohio metropolitan area.
+                Notar is a team of Ohio-commissioned notaries led by Shane Goble, providing professional notarization, 
+                document management, and business services throughout Franklin County and the greater Columbus area.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <a href={`tel:${contactInfo.phone.replace(/\D/g, '')}`}>
@@ -131,24 +131,24 @@ export default function About() {
         <div className="container mx-auto max-w-4xl px-4">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }}>
             <motion.h2 variants={fadeUp} custom={0} className="mb-6 font-display text-3xl font-bold text-foreground">
-              About Shane
+              About Our Team
             </motion.h2>
             <motion.div variants={fadeUp} custom={1} className="prose prose-sm dark:prose-invert max-w-none">
               <p className="text-muted-foreground leading-relaxed">
-                Shane Goble is a dedicated Ohio-commissioned Notary Public and NNA Certified Notary Signing Agent 
-                based in Columbus, Ohio. With professional training from the National Notary Association and a 
-                commitment to accuracy, security, and client service, Shane provides comprehensive notarization 
-                and document services for individuals, families, and businesses throughout central Ohio.
+                Notar was founded by Shane Goble, a dedicated Ohio-commissioned Notary Public and NNA Certified 
+                Notary Signing Agent based in Columbus, Ohio. With professional training from the National Notary 
+                Association and a commitment to accuracy, security, and client service, Notar provides comprehensive 
+                notarization and document services for individuals, families, and businesses throughout central Ohio.
               </p>
               <p className="text-muted-foreground leading-relaxed mt-4">
-                Beyond traditional notarization, Shane specializes in document digitization, secure cloud storage, 
+                Beyond traditional notarization, the Notar team specializes in document digitization, secure cloud storage, 
                 form preparation, and business document management. Whether you need a simple notarization for a 
                 power of attorney, a complex real estate closing, I-9 employment verification, or full document 
-                digitization services — Shane delivers professional, reliable service with a focus on compliance 
+                digitization services — Notar delivers professional, reliable service with a focus on compliance 
                 and client convenience.
               </p>
               <p className="text-muted-foreground leading-relaxed mt-4">
-                As both an in-person and Remote Online Notarization (RON) provider, Shane leverages technology to 
+                As both in-person and Remote Online Notarization (RON) providers, our team leverages technology to 
                 make notarization accessible from anywhere while maintaining the highest standards of identity 
                 verification and document security required under Ohio law.
               </p>
@@ -253,7 +253,7 @@ export default function About() {
       </section>
 
       <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Shane Goble — Ohio Commissioned Notary Public & Document Specialist</p>
+        <p>© {new Date().getFullYear()} Notar — Ohio Notary & Document Services</p>
       </footer>
     </div>
   );
