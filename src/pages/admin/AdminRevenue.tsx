@@ -99,12 +99,14 @@ export default function AdminRevenue() {
   const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
   const exportCSV = () => {
-    const headers = ["Date", "Client", "Service", "Type", "Fee", "Platform Fees", "Travel Fee", "Net Profit"];
+    const headers = ["Date", "Client", "Service", "Type", "Fee", "Platform Fees", "OneNotary Fee", "Travel Fee", "Notary Payout", "Net Profit"];
     const rows = filtered.map((e) => {
       const fee = parseFloat(e.fees_charged) || 0;
       const platform = parseFloat(e.platform_fees) || 0;
+      const onenotary = parseFloat(e.onenotary_fee) || 0;
       const travel = parseFloat(e.travel_fee) || 0;
-      return [formatDate(e.created_at), e.signer_name, e.document_type, e.notarization_type, fee.toFixed(2), platform.toFixed(2), travel.toFixed(2), (fee - platform - travel).toFixed(2)];
+      const payout = parseFloat(e.notary_payout) || 0;
+      return [formatDate(e.created_at), e.signer_name, e.document_type, e.notarization_type, fee.toFixed(2), platform.toFixed(2), onenotary.toFixed(2), travel.toFixed(2), payout.toFixed(2), (fee - platform - onenotary - travel).toFixed(2)];
     });
     const csv = [headers, ...rows].map((r) => r.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
@@ -203,6 +205,7 @@ export default function AdminRevenue() {
 
   const statCards = [
     { label: "Total Revenue", value: `$${totalRevenue.toFixed(2)}`, icon: DollarSign, color: "text-blue-600" },
+    { label: "OneNotary Fees", value: `$${totalOneNotaryFees.toFixed(2)}`, icon: TrendingDown, color: "text-orange-500" },
     { label: "Total Expenses", value: `$${totalExpenses.toFixed(2)}`, icon: TrendingDown, color: "text-red-500" },
     { label: "Net Profit", value: `$${netProfit.toFixed(2)}`, icon: TrendingUp, color: netProfit >= 0 ? "text-emerald-600" : "text-red-600" },
     { label: "Avg Profit/Session", value: `$${avgPerSession.toFixed(2)}`, icon: Receipt, color: "text-accent" },
