@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, FileText, Download, Eye, Printer, ChevronLeft, AlertTriangle, Save, MessageSquare, Sparkles, Send, Loader2, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, AlignLeft, AlignCenter, AlignRight, Heading1, Heading2, Heart, RotateCcw } from "lucide-react";
+import { Search, FileText, Download, Eye, Printer, ChevronLeft, AlertTriangle, Save, MessageSquare, Sparkles, Send, Loader2, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, AlignLeft, AlignCenter, AlignRight, Heading1, Heading2, Heart, RotateCcw, HelpCircle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { motion } from "framer-motion";
@@ -26,7 +26,20 @@ interface TemplateField {
   label: string;
   type: "text" | "date" | "textarea";
   placeholder?: string;
+  helpText?: string;
 }
+
+/** Reusable help text for common legal terms */
+const TERM_HELP: Record<string, string> = {
+  affiant: "The person making a sworn statement (affidavit). This is YOU if you are the one swearing to the facts.",
+  principal: "The person granting authority to someone else to act on their behalf.",
+  agent: "The person being authorized to act on behalf of the principal.",
+  grantor: "The person transferring or conveying property or rights to another party.",
+  declarant: "The person making a formal declaration or statement.",
+  jurat: "A notarial certificate where the signer swears or affirms the truth of the document's contents under oath.",
+  acknowledgment: "A notarial act where the signer confirms they signed the document voluntarily.",
+  county: "The Ohio county where the notarization takes place (not where you live).",
+};
 
 interface Template {
   id: string;
@@ -89,10 +102,10 @@ My Commission Expires: ___________`
     description: "A sworn statement of facts. Requires oath administration (jurat). This is a generic template — specific affidavits may need additional content.",
     tags: ["affidavit", "jurat", "sworn"],
     fields: [
-      { name: "affiant_name", label: "Affiant's Full Name", type: "text" },
-      { name: "affiant_address", label: "Affiant's Address", type: "text" },
-      { name: "county", label: "County", type: "text", placeholder: "Franklin" },
-      { name: "statement", label: "Statement of Facts", type: "textarea", placeholder: "Enter the facts you are swearing to..." },
+      { name: "affiant_name", label: "Affiant's Full Name", type: "text", helpText: TERM_HELP.affiant },
+      { name: "affiant_address", label: "Affiant's Address", type: "text", helpText: "The current home address of the person making the sworn statement." },
+      { name: "county", label: "County", type: "text", placeholder: "Franklin", helpText: TERM_HELP.county },
+      { name: "statement", label: "Statement of Facts", type: "textarea", placeholder: "Enter the facts you are swearing to...", helpText: "Write the specific facts you are swearing to be true. Be clear and specific — this will be a legally binding sworn statement." },
     ],
     sampleData: { affiant_name: "John Smith", affiant_address: "123 Main St, Columbus, OH 43215", county: "Franklin", statement: "I am the owner of the vehicle described herein and have full authority to transfer ownership." },
     body: `GENERAL AFFIDAVIT
@@ -131,8 +144,8 @@ My Commission Expires: ___________`
     description: "A sworn statement confirming personal identity, often used for name discrepancies or missing documents.",
     tags: ["identity", "verification", "jurat"],
     fields: [
-      { name: "declarant_name", label: "Full Legal Name", type: "text" },
-      { name: "also_known_as", label: "Also Known As (if any)", type: "text", placeholder: "Any other names used" },
+      { name: "declarant_name", label: "Full Legal Name", type: "text", helpText: TERM_HELP.declarant },
+      { name: "also_known_as", label: "Also Known As (if any)", type: "text", placeholder: "Any other names used", helpText: "Any other names you have used — maiden name, nickname, or prior legal name." },
       { name: "dob", label: "Date of Birth", type: "date" },
       { name: "address", label: "Current Address", type: "text" },
       { name: "id_type", label: "ID Type Presented", type: "text", placeholder: "e.g., Ohio Driver's License" },
@@ -259,9 +272,9 @@ My Commission Expires: ___________`
     description: "Certificate for administering an oath or affirmation. Used when a person needs to swear to the truth of statements.",
     tags: ["oath", "affirmation", "certificate"],
     fields: [
-      { name: "person_name", label: "Person Taking Oath", type: "text" },
-      { name: "purpose", label: "Purpose of Oath", type: "textarea", placeholder: "Describe what the person is swearing/affirming..." },
-      { name: "county", label: "County", type: "text", placeholder: "Franklin" },
+      { name: "person_name", label: "Person Taking Oath", type: "text", helpText: "The person who will swear or affirm the truth of a statement before the notary." },
+      { name: "purpose", label: "Purpose of Oath", type: "textarea", placeholder: "Describe what the person is swearing/affirming...", helpText: "Briefly describe what the person is swearing to — e.g., testimony, statement of facts, or official duty." },
+      { name: "county", label: "County", type: "text", placeholder: "Franklin", helpText: TERM_HELP.county },
     ],
     sampleData: { person_name: "David Thompson", purpose: "Truthfully testifying regarding the witnessed automobile accident on March 1, 2026.", county: "Franklin" },
     body: `CERTIFICATE OF OATH / AFFIRMATION
@@ -294,12 +307,12 @@ My Commission Expires: ___________
     description: "Authorizes an agent to act on your behalf for financial and legal matters. Consult an attorney for specific powers needed.",
     tags: ["poa", "power of attorney", "agent"],
     fields: [
-      { name: "principal_name", label: "Principal's Full Name", type: "text" },
+      { name: "principal_name", label: "Principal's Full Name", type: "text", helpText: TERM_HELP.principal },
       { name: "principal_address", label: "Principal's Address", type: "text" },
-      { name: "agent_name", label: "Agent's Full Name", type: "text" },
+      { name: "agent_name", label: "Agent's Full Name", type: "text", helpText: TERM_HELP.agent },
       { name: "agent_address", label: "Agent's Address", type: "text" },
-      { name: "powers", label: "Specific Powers Granted", type: "textarea", placeholder: "e.g., manage bank accounts, sign documents, sell property..." },
-      { name: "county", label: "County", type: "text", placeholder: "Franklin" },
+      { name: "powers", label: "Specific Powers Granted", type: "textarea", placeholder: "e.g., manage bank accounts, sign documents, sell property...", helpText: "List the specific actions the agent is allowed to perform on your behalf." },
+      { name: "county", label: "County", type: "text", placeholder: "Franklin", helpText: TERM_HELP.county },
     ],
     sampleData: { principal_name: "Karen Williams", principal_address: "789 Elm St, Dublin, OH 43017", agent_name: "Thomas Williams", agent_address: "321 Pine Rd, Columbus, OH 43215", powers: "Manage bank accounts, sign financial documents, and conduct real estate transactions on my behalf.", county: "Franklin" },
     body: `GENERAL POWER OF ATTORNEY
@@ -338,8 +351,8 @@ My Commission Expires: ___________`
     description: "Designates someone to make healthcare decisions if you become incapacitated. Ohio-specific form — review with your physician or attorney.",
     tags: ["healthcare", "poa", "medical", "directive"],
     fields: [
-      { name: "principal_name", label: "Principal's Full Name", type: "text" },
-      { name: "agent_name", label: "Healthcare Agent's Full Name", type: "text" },
+      { name: "principal_name", label: "Principal's Full Name", type: "text", helpText: TERM_HELP.principal },
+      { name: "agent_name", label: "Healthcare Agent's Full Name", type: "text", helpText: "The person you trust to make medical decisions if you cannot. Often a spouse, adult child, or close friend." },
       { name: "agent_phone", label: "Agent's Phone", type: "text" },
       { name: "alternate_name", label: "Alternate Agent's Name (optional)", type: "text" },
       { name: "instructions", label: "Specific Healthcare Instructions", type: "textarea", placeholder: "Any specific wishes regarding treatment, end-of-life care, etc." },
@@ -389,9 +402,9 @@ My Commission Expires: ___________`
     description: "Standard acknowledgment certificate for loan document signings. Attach to loan packages requiring notarization.",
     tags: ["loan", "signing", "acknowledgment", "mortgage"],
     fields: [
-      { name: "signer_name", label: "Signer's Full Name", type: "text" },
-      { name: "county", label: "County", type: "text", placeholder: "Franklin" },
-      { name: "document_desc", label: "Document Description", type: "text", placeholder: "e.g., Deed of Trust, Mortgage Note" },
+      { name: "signer_name", label: "Signer's Full Name", type: "text", helpText: "The person signing the loan documents — typically the borrower." },
+      { name: "county", label: "County", type: "text", placeholder: "Franklin", helpText: TERM_HELP.county },
+      { name: "document_desc", label: "Document Description", type: "text", placeholder: "e.g., Deed of Trust, Mortgage Note", helpText: "List the loan documents being notarized — e.g., Deed of Trust, Promissory Note, Closing Disclosure." },
     ],
     sampleData: { signer_name: "Patricia Miller", county: "Franklin", document_desc: "Deed of Trust and Promissory Note" },
     body: `NOTARY ACKNOWLEDGMENT — LOAN SIGNING
@@ -471,10 +484,10 @@ My Commission Expires: ___________`
     description: "Sworn statement declaring a legal name change. This template is informational — court orders may be required for official name changes.",
     tags: ["name change", "affidavit", "identity"],
     fields: [
-      { name: "current_name", label: "Current Legal Name", type: "text" },
-      { name: "previous_name", label: "Previous/Former Name", type: "text" },
-      { name: "reason", label: "Reason for Name Change", type: "textarea", placeholder: "e.g., marriage, divorce, personal preference, court order..." },
-      { name: "county", label: "County", type: "text", placeholder: "Franklin" },
+      { name: "current_name", label: "Current Legal Name", type: "text", helpText: "Your name as it appears on your current government-issued ID." },
+      { name: "previous_name", label: "Previous/Former Name", type: "text", helpText: "The name you previously used — e.g., maiden name or name before court-ordered change." },
+      { name: "reason", label: "Reason for Name Change", type: "textarea", placeholder: "e.g., marriage, divorce, personal preference, court order...", helpText: "State why the name was changed — marriage, divorce, court order, etc." },
+      { name: "county", label: "County", type: "text", placeholder: "Franklin", helpText: TERM_HELP.county },
       { name: "address", label: "Current Address", type: "text" },
     ],
     sampleData: { current_name: "Jennifer Martinez", previous_name: "Jennifer Lopez", reason: "Marriage on January 15, 2026 to Carlos Martinez.", county: "Franklin", address: "567 Maple Dr, Columbus, OH 43220" },
@@ -568,9 +581,9 @@ My Commission Expires: ___________`
     description: "Standard acknowledgment for real property deed of trust documents. Used in real estate transactions requiring notarization.",
     tags: ["deed", "trust", "real estate", "property"],
     fields: [
-      { name: "grantor_name", label: "Grantor's Full Name", type: "text" },
-      { name: "property_desc", label: "Property Description", type: "textarea", placeholder: "Legal description or address of property" },
-      { name: "county", label: "County", type: "text", placeholder: "Franklin" },
+      { name: "grantor_name", label: "Grantor's Full Name", type: "text", helpText: TERM_HELP.grantor },
+      { name: "property_desc", label: "Property Description", type: "textarea", placeholder: "Legal description or address of property", helpText: "The legal description from the deed, or the full street address of the property being transferred." },
+      { name: "county", label: "County", type: "text", placeholder: "Franklin", helpText: TERM_HELP.county },
     ],
     sampleData: { grantor_name: "William Harris", property_desc: "Lot 42, Block 7, Riverside Subdivision, as recorded in Plat Book 15, Page 23, Franklin County, Ohio.", county: "Franklin" },
     body: `ACKNOWLEDGMENT — DEED OF TRUST
@@ -1003,7 +1016,21 @@ export default function DocumentTemplates() {
               };
               return (
                 <div key={field.name}>
-                  <Label>{field.label}</Label>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Label className="mb-0">{field.label}</Label>
+                    {field.helpText && (
+                      <TooltipProvider delayDuration={200}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help shrink-0" />
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-[260px] text-xs">
+                            {field.helpText}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                  </div>
                   {field.type === "textarea" ? (
                     <Textarea value={formData[field.name] || ""} onChange={(e) => updateField(e.target.value)} placeholder={field.placeholder} />
                   ) : (
