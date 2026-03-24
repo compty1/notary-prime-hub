@@ -1,12 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { Shield, Monitor, MapPin, CheckCircle, XCircle, ChevronRight, Globe, Lock, Clock, FileText, Scale, Zap } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Shield, Monitor, MapPin, CheckCircle, XCircle, ChevronRight, Globe, Lock, Clock, FileText, Scale, Zap, Search } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { Logo } from "@/components/Logo";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -43,6 +45,60 @@ const stateCategories = [
   },
 ];
 
+// Comprehensive 50-state RON legal reference data
+const stateRonData: { state: string; status: "permanent" | "temporary" | "none"; statute: string; kba: string; restrictions: string; retention: string }[] = [
+  { state: "Alabama", status: "permanent", statute: "Ala. Code §36-20-73", kba: "MISMO-compliant required", restrictions: "None specific", retention: "10 years" },
+  { state: "Alaska", status: "permanent", statute: "AS §44.50.075", kba: "MISMO-compliant required", restrictions: "None specific", retention: "10 years" },
+  { state: "Arizona", status: "permanent", statute: "ARS §41-371 et seq.", kba: "MISMO-compliant required", restrictions: "None specific", retention: "5 years" },
+  { state: "Arkansas", status: "permanent", statute: "Ark. Code §21-14-301", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "California", status: "permanent", statute: "Cal. Civ. Code §1183.05 (eff. 2030)", kba: "Required", restrictions: "Limited to specific document types until 2030; current executive orders allow broader use", retention: "10 years" },
+  { state: "Colorado", status: "permanent", statute: "CRS §24-21-501", kba: "MISMO-compliant required", restrictions: "None specific", retention: "10 years" },
+  { state: "Connecticut", status: "permanent", statute: "Conn. Gen. Stat. §3-94a", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "Delaware", status: "permanent", statute: "29 Del. C. §4321 et seq.", kba: "Required", restrictions: "None specific", retention: "5 years" },
+  { state: "Florida", status: "permanent", statute: "Fla. Stat. §117.265", kba: "MISMO-compliant required", restrictions: "Self-proving wills require witnesses on video", retention: "10 years" },
+  { state: "Georgia", status: "permanent", statute: "O.C.G.A. §45-17-8.3", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "Hawaii", status: "permanent", statute: "HRS §456-91", kba: "MISMO-compliant required", restrictions: "None specific", retention: "10 years" },
+  { state: "Idaho", status: "permanent", statute: "Idaho Code §51-121", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "Illinois", status: "permanent", statute: "5 ILCS 312/6-109", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "Indiana", status: "permanent", statute: "IC §33-42-17", kba: "MISMO-compliant required", restrictions: "None specific", retention: "10 years" },
+  { state: "Iowa", status: "permanent", statute: "Iowa Code §9B.21", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "Kansas", status: "permanent", statute: "KSA §53-601 et seq.", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "Kentucky", status: "permanent", statute: "KRS §423.445", kba: "MISMO-compliant required", restrictions: "None specific", retention: "10 years" },
+  { state: "Louisiana", status: "permanent", statute: "La. R.S. 35:626", kba: "Required", restrictions: "Civil law state — some acts require specific forms", retention: "10 years" },
+  { state: "Maine", status: "permanent", statute: "4 MRSA §1051", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "Maryland", status: "permanent", statute: "Md. State Gov't Code §18-214", kba: "MISMO-compliant required", restrictions: "None specific", retention: "10 years" },
+  { state: "Massachusetts", status: "permanent", statute: "Mass. Gen. Laws ch. 222 §8", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "Michigan", status: "permanent", statute: "MCL §55.286a", kba: "MISMO-compliant required", restrictions: "None specific", retention: "10 years" },
+  { state: "Minnesota", status: "permanent", statute: "Minn. Stat. §358.645", kba: "MISMO-compliant required", restrictions: "None specific", retention: "10 years" },
+  { state: "Mississippi", status: "permanent", statute: "Miss. Code §25-33-19", kba: "Required", restrictions: "None specific", retention: "5 years" },
+  { state: "Missouri", status: "permanent", statute: "Mo. Rev. Stat. §486.1100", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "Montana", status: "permanent", statute: "MCA §1-5-621", kba: "MISMO-compliant required", restrictions: "None specific", retention: "10 years" },
+  { state: "Nebraska", status: "permanent", statute: "Neb. Rev. Stat. §64-402", kba: "MISMO-compliant required", restrictions: "None specific", retention: "10 years" },
+  { state: "Nevada", status: "permanent", statute: "NRS §240.181 et seq.", kba: "MISMO-compliant required", restrictions: "Electronic notary must register with SOS", retention: "7 years" },
+  { state: "New Hampshire", status: "permanent", statute: "RSA 456-B:12", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "New Jersey", status: "permanent", statute: "N.J.S.A. 52:7-10.12", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "New Mexico", status: "permanent", statute: "NMSA §14-14A-3", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "New York", status: "permanent", statute: "NY Exec. Law §135-c", kba: "Required", restrictions: "Some county clerks may have additional requirements", retention: "10 years" },
+  { state: "North Carolina", status: "permanent", statute: "NCGS §10B-125 et seq.", kba: "MISMO-compliant required", restrictions: "None specific", retention: "10 years" },
+  { state: "North Dakota", status: "permanent", statute: "NDCC §44-06.1-13.2", kba: "MISMO-compliant required", restrictions: "None specific", retention: "10 years" },
+  { state: "Ohio", status: "permanent", statute: "ORC §147.65-.66", kba: "MISMO-compliant required", restrictions: "None — Ohio is a leader in RON adoption", retention: "10 years (audio/video recording required)" },
+  { state: "Oklahoma", status: "permanent", statute: "49 OS §208", kba: "MISMO-compliant required", restrictions: "None specific", retention: "10 years" },
+  { state: "Oregon", status: "permanent", statute: "ORS §194.500 et seq.", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "Pennsylvania", status: "permanent", statute: "57 Pa.C.S. §329", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "Rhode Island", status: "permanent", statute: "R.I. Gen. Laws §42-30.1-18", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "South Carolina", status: "permanent", statute: "S.C. Code §26-2-410", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "South Dakota", status: "permanent", statute: "SDCL §18-1-12.3", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "Tennessee", status: "permanent", statute: "Tenn. Code §66-22-128", kba: "MISMO-compliant required", restrictions: "None specific", retention: "10 years" },
+  { state: "Texas", status: "permanent", statute: "Tex. Gov't Code §406.101 et seq.", kba: "MISMO-compliant required", restrictions: "None specific", retention: "5 years" },
+  { state: "Utah", status: "permanent", statute: "Utah Code §46-1-2", kba: "MISMO-compliant required", restrictions: "None specific", retention: "10 years" },
+  { state: "Vermont", status: "permanent", statute: "26 V.S.A. §5379", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "Virginia", status: "permanent", statute: "Va. Code §47.1-2 (pioneer state, 2012)", kba: "MISMO-compliant required", restrictions: "None — first state to authorize RON", retention: "5 years" },
+  { state: "Washington", status: "permanent", statute: "RCW §42.45.280", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "West Virginia", status: "permanent", statute: "W. Va. Code §39-4-37", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "Wisconsin", status: "permanent", statute: "Wis. Stat. §140.145", kba: "Required", restrictions: "None specific", retention: "10 years" },
+  { state: "Wyoming", status: "permanent", statute: "Wyo. Stat. §34-26-301 et seq.", kba: "MISMO-compliant required", restrictions: "None specific", retention: "10 years" },
+];
+
 const useCases = [
   { icon: MapPin, title: "Real Estate Closings", desc: "Close on your home from anywhere — sellers, buyers, and refinancing. Major title companies accept RON closings." },
   { icon: FileText, title: "Estate Planning", desc: "Execute wills, trusts, and healthcare directives remotely. Especially valuable for elderly or hospitalized signers." },
@@ -63,6 +119,11 @@ const ronFaqs = [
 
 export default function RonInfo() {
   const { user } = useAuth();
+  const [stateSearch, setStateSearch] = useState("");
+
+  const filteredStates = stateRonData.filter(s =>
+    s.state.toLowerCase().includes(stateSearch.toLowerCase())
+  );
   useEffect(() => {
     document.title = "Remote Online Notarization (RON) — Notar";
     return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
@@ -74,9 +135,7 @@ export default function RonInfo() {
       <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-              <span className="font-display text-lg font-bold text-primary-foreground">N</span>
-            </div>
+            <Logo size="md" />
             <div>
               <span className="block font-display text-lg font-bold text-foreground">Notar</span>
               <span className="block text-xs text-muted-foreground">Notary & Document Services</span>
@@ -284,6 +343,58 @@ export default function RonInfo() {
               </Button>
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* 50-State RON Legal Reference */}
+      <section className="bg-muted/30 py-12">
+        <div className="container mx-auto max-w-5xl px-4">
+          <h2 className="mb-4 text-center font-display text-2xl font-bold text-foreground">50-State RON Legal Reference</h2>
+          <p className="mb-6 text-center text-sm text-muted-foreground">
+            Search any state to see its RON status, governing statute, KBA requirements, and retention rules. Ohio RON notarizations are accepted nationwide under the Full Faith & Credit Clause.
+          </p>
+          <div className="mx-auto mb-6 max-w-md relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search by state name..."
+              value={stateSearch}
+              onChange={(e) => setStateSearch(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <div className="overflow-x-auto rounded-lg border border-border/50">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border/50 bg-muted/50">
+                  <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">State</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">Status</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">Statute</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">KBA</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">Retention</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredStates.map((s) => (
+                  <tr key={s.state} className={`border-b border-border/30 last:border-0 ${s.state === "Ohio" ? "bg-accent/5" : ""}`}>
+                    <td className="px-3 py-2 font-medium">{s.state}</td>
+                    <td className="px-3 py-2">
+                      <Badge className={s.status === "permanent" ? "bg-emerald-100 text-emerald-800" : s.status === "temporary" ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"}>
+                        {s.status === "permanent" ? "Permanent Law" : s.status === "temporary" ? "Temporary" : "No Law"}
+                      </Badge>
+                    </td>
+                    <td className="px-3 py-2 text-xs text-muted-foreground font-mono">{s.statute}</td>
+                    <td className="px-3 py-2 text-xs">{s.kba}</td>
+                    <td className="px-3 py-2 text-xs">{s.retention}</td>
+                    <td className="px-3 py-2 text-xs text-muted-foreground">{s.restrictions}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-4 text-xs text-muted-foreground text-center italic">
+            Data current as of March 2026. Laws change frequently — verify with your state's Secretary of State office for the most current information. This is not legal advice.
+          </p>
         </div>
       </section>
 

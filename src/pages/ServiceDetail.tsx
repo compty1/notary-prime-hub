@@ -9,6 +9,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Checkbox } from "@/components/ui/checkbox";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { motion } from "framer-motion";
+import { Logo } from "@/components/Logo";
 import {
   ChevronLeft, ChevronRight, CheckCircle, FileText, Loader2, ArrowRight,
   Monitor, MapPin, Shield, Lock, Briefcase, Globe, Users, Home, Clock, AlertTriangle,
@@ -305,9 +306,7 @@ export default function ServiceDetail() {
       <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-              <span className="font-display text-lg font-bold text-primary-foreground">N</span>
-            </div>
+            <Logo size="md" />
             <div>
               <span className="block font-display text-lg font-bold text-foreground">Notar</span>
               <span className="block text-xs text-muted-foreground">Notary & Document Services</span>

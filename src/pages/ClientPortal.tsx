@@ -20,6 +20,7 @@ import { QRCodeSVG } from "qrcode.react";
 import DocumentWizard from "@/components/DocumentWizard";
 import PaymentForm from "@/components/PaymentForm";
 import TechCheck from "@/components/TechCheck";
+import { Logo } from "@/components/Logo";
 
 const statusColors: Record<string, string> = {
   scheduled: "bg-blue-100 text-blue-800",
@@ -323,7 +324,7 @@ export default function ClientPortal() {
     return idx >= 0 ? ((idx + 1) / pipelineSteps.length) * 100 : 0;
   };
 
-  const qrUrl = `${window.location.origin}/portal`;
+  const qrUrl = `${window.location.origin}/mobile-upload`;
 
   // Load staff users for chat recipient selector
   useEffect(() => {
@@ -391,9 +392,7 @@ export default function ClientPortal() {
       <nav className="border-b border-border/50 bg-background/80 backdrop-blur-lg">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-              <span className="font-display text-lg font-bold text-primary-foreground">N</span>
-            </div>
+            <Logo size="md" />
             <span className="font-display text-lg font-bold text-foreground">Client Portal</span>
           </Link>
           <div className="flex items-center gap-3">

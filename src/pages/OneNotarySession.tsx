@@ -147,16 +147,12 @@ export default function OneNotarySession() {
     if (!appointmentId || !clientProfile) return;
     setCreatingSession(true);
     try {
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      const webhookUrl = `https://${projectId}.supabase.co/functions/v1/onenotary-webhook`;
-
       // Step 1: Create session
       const createResp = await supabase.functions.invoke("onenotary", {
         body: {
           action: "create_session",
           appointment_id: appointmentId,
           session_type: "ron",
-          callback_url: webhookUrl,
         },
       });
 

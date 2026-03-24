@@ -513,6 +513,16 @@ const externalResources = [
     { title: "OneNotary RON Platform", url: "https://onenotary.us/", desc: "RON platform for remote online notarization sessions" },
     { title: "Notarize.com", url: "https://www.notarize.com/", desc: "Another popular RON platform option" },
   ]},
+  { category: "Multi-State RON Laws & Standards", links: [
+    { title: "NCSL — RON State Legislation Tracker", url: "https://www.ncsl.org/financial-services/remote-online-notarization", desc: "National Conference of State Legislatures tracker of RON legislation across all 50 states" },
+    { title: "MISMO RON Standards", url: "https://www.mismo.org/standards-and-resources/ron", desc: "Mortgage Industry Standards Maintenance Organization RON technical standards" },
+    { title: "ALTA — Best Practices for RON", url: "https://www.alta.org/ron/", desc: "American Land Title Association RON best practices and guidelines" },
+    { title: "Virginia SOS — RON (Pioneer State)", url: "https://www.commonwealth.virginia.gov/official-documents/notary-commissions/", desc: "Virginia was the first state to authorize RON in 2012" },
+    { title: "Florida DOS — Online Notarization", url: "https://dos.fl.gov/sunbiz/other-services/notary/online-notarization/", desc: "Florida Department of State online notarization info" },
+    { title: "Texas SOS — Online Notarization", url: "https://www.sos.texas.gov/statdoc/online-notarization.shtml", desc: "Texas Secretary of State online notarization rules" },
+    { title: "New York DOS — Electronic Notarization", url: "https://dos.ny.gov/notary-public", desc: "New York Department of State notary commission info" },
+    { title: "Uniform Law Commission — RULONA", url: "https://www.uniformlaws.org/committees/community-home?CommunityKey=a28e4ad0-2e77-4e77-879a-1581ef195127", desc: "Revised Uniform Law on Notarial Acts — model legislation adopted by many states" },
+  ]},
 ];
 
 export default function AdminResources() {

@@ -109,7 +109,7 @@ export default function AddressAutocomplete({
           `https://nominatim.openstreetmap.org/search?${params.toString()}`,
           {
             headers: {
-              "User-Agent": "ShaneGobleNotary/1.0",
+              "User-Agent": "Notar/1.0",
             },
           }
         );

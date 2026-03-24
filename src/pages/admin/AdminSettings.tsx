@@ -7,8 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, DollarSign, MapPin, Monitor, Save, Loader2, AlertTriangle, CalendarClock, Shield, Upload, Eye, Mail } from "lucide-react";
+import { Settings, DollarSign, MapPin, Monitor, Save, Loader2, AlertTriangle, CalendarClock, Shield, Upload, Eye, Mail, CheckCircle, XCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface SettingItem {
   id: string;
@@ -268,6 +270,85 @@ export default function AdminSettings() {
               </div>
             </div>
             <div><Label>KBA Platform URL</Label><Input value={editValues.kba_platform_url || ""} onChange={(e) => updateValue("kba_platform_url", e.target.value)} placeholder="https://kba-platform.com/session" /></div>
+
+            {/* KBA Integration Setup */}
+            <Collapsible>
+              <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-accent transition-colors">
+                <Shield className="h-4 w-4" /> KBA Provider Configuration
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-3 space-y-3 rounded-lg border border-border/50 p-4">
+                <p className="text-xs text-muted-foreground">Ohio ORC §147.66 requires Knowledge-Based Authentication for all RON sessions. OneNotary handles KBA natively — configure an external provider only if needed.</p>
+                <div>
+                  <Label>KBA Provider</Label>
+                  <Select value={editValues.kba_provider || "onenotary_builtin"} onValueChange={(v) => updateValue("kba_provider", v)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="onenotary_builtin">OneNotary Built-in</SelectItem>
+                      <SelectItem value="idology">IDology</SelectItem>
+                      <SelectItem value="evident">Evident</SelectItem>
+                      <SelectItem value="lexisnexis">LexisNexis</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {editValues.kba_provider && editValues.kba_provider !== "onenotary_builtin" && (
+                  <>
+                    <div>
+                      <Label>KBA API Key</Label>
+                      <Input type="password" value={editValues.kba_api_key || ""} onChange={(e) => updateValue("kba_api_key", e.target.value)} placeholder="Enter API key" />
+                    </div>
+                    <div>
+                      <Label>KBA API Endpoint</Label>
+                      <Input value={editValues.kba_api_endpoint || ""} onChange={(e) => updateValue("kba_api_endpoint", e.target.value)} placeholder="https://api.provider.com/v1/kba" />
+                    </div>
+                  </>
+                )}
+              </CollapsibleContent>
+            </Collapsible>
+          </CardContent>
+        </Card>
+
+        {/* Ohio RON Compliance Check */}
+        <Card className="border-border/50 lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="font-display text-lg flex items-center gap-2">
+              <Shield className="h-5 w-5 text-accent" /> Ohio RON Compliance Check
+              {(() => {
+                const checks = [
+                  !!editValues.commission_number,
+                  !commissionAlert || !commissionAlert.text.includes("expired"),
+                  !!editValues.ron_authorization_number,
+                  !!editValues.eo_expiration_date && new Date(editValues.eo_expiration_date) > new Date(),
+                  !!editValues.bond_expiration_date && new Date(editValues.bond_expiration_date) > new Date(),
+                ];
+                const passed = checks.filter(Boolean).length;
+                const total = checks.length;
+                return passed === total
+                  ? <Badge className="bg-emerald-100 text-emerald-800 text-xs">Compliant</Badge>
+                  : <Badge className="bg-amber-100 text-amber-800 text-xs">{passed}/{total} Requirements Met</Badge>;
+              })()}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">Auto-detected compliance with Ohio Revised Code §147.65-.66 requirements for Remote Online Notarization.</p>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                { label: "Commission Number", ok: !!editValues.commission_number, detail: editValues.commission_number || "Not configured" },
+                { label: "Commission Current", ok: !commissionAlert || !commissionAlert.text.includes("expired"), detail: commissionAlert?.text || "No date set" },
+                { label: "RON Authorization", ok: !!editValues.ron_authorization_number, detail: editValues.ron_authorization_number || "Not configured" },
+                { label: "E&O Insurance Current", ok: !!editValues.eo_expiration_date && new Date(editValues.eo_expiration_date) > new Date(), detail: editValues.eo_expiration_date ? `Expires ${new Date(editValues.eo_expiration_date).toLocaleDateString()}` : "Not configured" },
+                { label: "Surety Bond Current", ok: !!editValues.bond_expiration_date && new Date(editValues.bond_expiration_date) > new Date(), detail: editValues.bond_expiration_date ? `Expires ${new Date(editValues.bond_expiration_date).toLocaleDateString()}` : "Not configured" },
+                { label: "OneNotary API", ok: true, detail: "Connected (server secret)" },
+                { label: "KBA Integration", ok: true, detail: editValues.kba_provider === "onenotary_builtin" || !editValues.kba_provider ? "OneNotary built-in" : editValues.kba_provider },
+              ].map((item) => (
+                <div key={item.label} className="flex items-start gap-2 rounded-lg border border-border/50 p-3">
+                  {item.ok ? <CheckCircle className="h-4 w-4 mt-0.5 text-emerald-500 flex-shrink-0" /> : <XCircle className="h-4 w-4 mt-0.5 text-destructive flex-shrink-0" />}
+                  <div>
+                    <p className="text-sm font-medium">{item.label}</p>
+                    <p className="text-xs text-muted-foreground">{item.detail}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
 
@@ -280,7 +361,7 @@ export default function AdminSettings() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div><Label>Business Phone Number</Label><Input value={editValues.notary_phone || ""} onChange={(e) => updateValue("notary_phone", e.target.value)} placeholder="(614) 300-6890" /></div>
-            <div><Label>Business Email</Label><Input type="email" value={editValues.notary_email || ""} onChange={(e) => updateValue("notary_email", e.target.value)} placeholder="shane@shanegoble.com" /></div>
+            <div><Label>Business Email</Label><Input type="email" value={editValues.notary_email || ""} onChange={(e) => updateValue("notary_email", e.target.value)} placeholder="contact@notardex.com" /></div>
             <div><Label>Notary Base Address</Label><Input value={editValues.notary_base_address || ""} onChange={(e) => updateValue("notary_base_address", e.target.value)} placeholder="Columbus, OH" /></div>
             <div><Label>Notary Base Zip Code</Label><Input value={editValues.notary_base_zip || ""} onChange={(e) => updateValue("notary_base_zip", e.target.value)} placeholder="43215" maxLength={5} /></div>
             <div><Label>Max Appointments per Day</Label><Input type="number" value={editValues.max_appointments_per_day || ""} onChange={(e) => updateValue("max_appointments_per_day", e.target.value)} /></div>

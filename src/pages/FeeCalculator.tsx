@@ -13,6 +13,7 @@ import { ChevronLeft, Calculator, DollarSign, ChevronRight, MapPin, Info } from 
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { motion } from "framer-motion";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
+import { Logo } from "@/components/Logo";
 
 const HOLLYWOOD_CASINO = { lat: 39.9555, lng: -83.1145 };
 
@@ -93,7 +94,7 @@ export default function FeeCalculator() {
     // Geocode is already done by AddressAutocomplete; we need lat/lon from the Nominatim data
     // The AddressAutocomplete doesn't directly expose lat/lon, so we'll do a quick lookup
     fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(suggestion.fullAddress)}&format=json&limit=1&countrycodes=us`, {
-      headers: { "User-Agent": "ShaneGobleNotary/1.0" },
+      headers: { "User-Agent": "Notar/1.0" },
     })
       .then(r => r.json())
       .then(data => {
@@ -111,7 +112,7 @@ export default function FeeCalculator() {
       <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary"><span className="font-display text-lg font-bold text-primary-foreground">N</span></div>
+            <Logo size="md" />
             <span className="font-display text-lg font-bold text-foreground">Fee Calculator</span>
           </Link>
           <div className="flex items-center gap-4">
