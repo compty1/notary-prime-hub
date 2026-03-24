@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, FileText, Download, Eye, Printer, ChevronLeft, AlertTriangle, Save, MessageSquare, Sparkles, Send, Loader2, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, AlignLeft, AlignCenter, AlignRight, Heading1, Heading2 } from "lucide-react";
+import { Search, FileText, Download, Eye, Printer, ChevronLeft, AlertTriangle, Save, MessageSquare, Sparkles, Send, Loader2, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, AlignLeft, AlignCenter, AlignRight, Heading1, Heading2, Heart, RotateCcw } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
@@ -35,6 +36,7 @@ interface Template {
   tags: string[];
   fields: TemplateField[];
   body: string;
+  sampleData?: Record<string, string>;
 }
 
 const templates: Template[] = [
@@ -53,6 +55,7 @@ const templates: Template[] = [
       { name: "travel_dates", label: "Travel Dates", type: "text", placeholder: "e.g., March 15 - March 22, 2026" },
       { name: "parent_phone", label: "Parent Contact Phone", type: "text" },
     ],
+    sampleData: { child_name: "Emily Johnson", child_dob: "2018-05-12", parent_name: "Sarah Johnson", companion_name: "Michael Johnson", destination: "Orlando, FL", travel_dates: "March 15 - March 22, 2026", parent_phone: "(614) 555-1234" },
     body: `TRAVEL CONSENT FORM
 
 I, {{parent_name}}, the undersigned parent/legal guardian of {{child_name}} (Date of Birth: {{child_dob}}), hereby authorize {{companion_name}} to travel with my child to {{destination}} during the period of {{travel_dates}}.
@@ -91,6 +94,7 @@ My Commission Expires: ___________`
       { name: "county", label: "County", type: "text", placeholder: "Franklin" },
       { name: "statement", label: "Statement of Facts", type: "textarea", placeholder: "Enter the facts you are swearing to..." },
     ],
+    sampleData: { affiant_name: "John Smith", affiant_address: "123 Main St, Columbus, OH 43215", county: "Franklin", statement: "I am the owner of the vehicle described herein and have full authority to transfer ownership." },
     body: `GENERAL AFFIDAVIT
 
 State of Ohio
@@ -134,6 +138,7 @@ My Commission Expires: ___________`
       { name: "id_type", label: "ID Type Presented", type: "text", placeholder: "e.g., Ohio Driver's License" },
       { name: "id_number", label: "ID Number", type: "text" },
     ],
+    sampleData: { declarant_name: "Maria Rodriguez", also_known_as: "Maria Garcia", dob: "1985-03-22", address: "456 Oak Ave, Columbus, OH 43210", id_type: "Ohio Driver's License", id_number: "DL-1234567" },
     body: `IDENTITY VERIFICATION STATEMENT
 
 State of Ohio
@@ -175,6 +180,7 @@ My Commission Expires: ___________`
       { name: "sale_price", label: "Sale Price ($)", type: "text" },
       { name: "sale_date", label: "Date of Sale", type: "date" },
     ],
+    sampleData: { seller_name: "James Wilson", buyer_name: "Linda Chen", item_description: "One (1) Samsung 65\" 4K Television, Model QN65Q80B, Serial #XY123456", sale_price: "450.00", sale_date: "2026-03-24" },
     body: `BILL OF SALE
 
 KNOW ALL MEN BY THESE PRESENTS:
@@ -214,6 +220,7 @@ My Commission Expires: ___________`
       { name: "agreement_date", label: "Effective Date", type: "date" },
       { name: "terms", label: "Terms and Conditions", type: "textarea", placeholder: "Describe the agreement terms..." },
     ],
+    sampleData: { party_a: "Acme Services LLC", party_b: "Robert Davis", agreement_date: "2026-04-01", terms: "Party A agrees to provide consulting services to Party B for a period of 12 months at a rate of $150/hour." },
     body: `GENERAL AGREEMENT
 
 This Agreement is entered into as of {{agreement_date}}, by and between:
@@ -256,6 +263,7 @@ My Commission Expires: ___________`
       { name: "purpose", label: "Purpose of Oath", type: "textarea", placeholder: "Describe what the person is swearing/affirming..." },
       { name: "county", label: "County", type: "text", placeholder: "Franklin" },
     ],
+    sampleData: { person_name: "David Thompson", purpose: "Truthfully testifying regarding the witnessed automobile accident on March 1, 2026.", county: "Franklin" },
     body: `CERTIFICATE OF OATH / AFFIRMATION
 
 State of Ohio
@@ -293,6 +301,7 @@ My Commission Expires: ___________
       { name: "powers", label: "Specific Powers Granted", type: "textarea", placeholder: "e.g., manage bank accounts, sign documents, sell property..." },
       { name: "county", label: "County", type: "text", placeholder: "Franklin" },
     ],
+    sampleData: { principal_name: "Karen Williams", principal_address: "789 Elm St, Dublin, OH 43017", agent_name: "Thomas Williams", agent_address: "321 Pine Rd, Columbus, OH 43215", powers: "Manage bank accounts, sign financial documents, and conduct real estate transactions on my behalf.", county: "Franklin" },
     body: `GENERAL POWER OF ATTORNEY
 
 State of Ohio
@@ -335,6 +344,7 @@ My Commission Expires: ___________`
       { name: "alternate_name", label: "Alternate Agent's Name (optional)", type: "text" },
       { name: "instructions", label: "Specific Healthcare Instructions", type: "textarea", placeholder: "Any specific wishes regarding treatment, end-of-life care, etc." },
     ],
+    sampleData: { principal_name: "Barbara Anderson", agent_name: "Susan Anderson", agent_phone: "(614) 555-9876", alternate_name: "Mark Anderson", instructions: "I wish to receive all available treatment options. Do not withhold nutrition or hydration." },
     body: `HEALTHCARE POWER OF ATTORNEY
 (Ohio Revised Code §1337.12)
 
@@ -383,6 +393,7 @@ My Commission Expires: ___________`
       { name: "county", label: "County", type: "text", placeholder: "Franklin" },
       { name: "document_desc", label: "Document Description", type: "text", placeholder: "e.g., Deed of Trust, Mortgage Note" },
     ],
+    sampleData: { signer_name: "Patricia Miller", county: "Franklin", document_desc: "Deed of Trust and Promissory Note" },
     body: `NOTARY ACKNOWLEDGMENT — LOAN SIGNING
 
 State of Ohio
@@ -418,6 +429,7 @@ My Commission Expires: ___________
       { name: "sale_price", label: "Sale Price ($)", type: "text" },
       { name: "sale_date", label: "Date of Sale", type: "date" },
     ],
+    sampleData: { seller_name: "Richard Brown", buyer_name: "Jessica Lee", vehicle_year: "2020", vehicle_make: "Honda", vehicle_model: "Civic EX", vin: "2HGFC2F53LH123456", odometer: "42,350", sale_price: "18,500", sale_date: "2026-03-24" },
     body: `VEHICLE BILL OF SALE — STATE OF OHIO
 
 I, {{seller_name}} ("Seller"), hereby sell, transfer, and convey to {{buyer_name}} ("Buyer") the following described motor vehicle:
@@ -465,6 +477,7 @@ My Commission Expires: ___________`
       { name: "county", label: "County", type: "text", placeholder: "Franklin" },
       { name: "address", label: "Current Address", type: "text" },
     ],
+    sampleData: { current_name: "Jennifer Martinez", previous_name: "Jennifer Lopez", reason: "Marriage on January 15, 2026 to Carlos Martinez.", county: "Franklin", address: "567 Maple Dr, Columbus, OH 43220" },
     body: `NAME CHANGE AFFIDAVIT
 
 State of Ohio
@@ -510,6 +523,7 @@ My Commission Expires: ___________`
       { name: "end_date", label: "End Date", type: "date" },
       { name: "reason", label: "Reason for Temporary Guardianship", type: "textarea" },
     ],
+    sampleData: { parent_name: "Michelle Taylor", child_name: "Sophia Taylor", child_dob: "2019-08-15", guardian_name: "Amy Roberts", guardian_address: "890 Cedar Ln, Westerville, OH 43081", start_date: "2026-04-01", end_date: "2026-04-15", reason: "Parent traveling internationally for work." },
     body: `TEMPORARY GUARDIANSHIP CONSENT
 
 I, {{parent_name}}, the parent/legal guardian of {{child_name}} (DOB: {{child_dob}}), hereby grant temporary guardianship of my child to:
@@ -558,6 +572,7 @@ My Commission Expires: ___________`
       { name: "property_desc", label: "Property Description", type: "textarea", placeholder: "Legal description or address of property" },
       { name: "county", label: "County", type: "text", placeholder: "Franklin" },
     ],
+    sampleData: { grantor_name: "William Harris", property_desc: "Lot 42, Block 7, Riverside Subdivision, as recorded in Plat Book 15, Page 23, Franklin County, Ohio.", county: "Franklin" },
     body: `ACKNOWLEDGMENT — DEED OF TRUST
 
 State of Ohio
@@ -610,6 +625,8 @@ export default function DocumentTemplates() {
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [previewOpen, setPreviewOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [quickPreviewTemplate, setQuickPreviewTemplate] = useState<Template | null>(null);
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const { user } = useAuth();
   const { toast } = useToast();
   const printRef = useRef<HTMLDivElement>(null);
@@ -620,6 +637,54 @@ export default function DocumentTemplates() {
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
 
+  // Load favorites from DB
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("user_favorites").select("entity_id").eq("user_id", user.id).eq("entity_type", "template")
+      .then(({ data }) => {
+        if (data) setFavorites(new Set(data.map(f => f.entity_id)));
+      });
+  }, [user]);
+
+  const toggleFavorite = async (e: React.MouseEvent, templateId: string) => {
+    e.stopPropagation();
+    if (!user) {
+      toast({ title: "Sign in required", description: "Please sign in to save favorites.", variant: "destructive" });
+      return;
+    }
+    const isFav = favorites.has(templateId);
+    const next = new Set(favorites);
+    if (isFav) {
+      next.delete(templateId);
+      setFavorites(next);
+      await supabase.from("user_favorites").delete().eq("user_id", user.id).eq("entity_type", "template").eq("entity_id", templateId);
+    } else {
+      next.add(templateId);
+      setFavorites(next);
+      await supabase.from("user_favorites").insert({ user_id: user.id, entity_type: "template", entity_id: templateId });
+    }
+  };
+
+  // localStorage persistence for in-progress templates
+  const STORAGE_KEY = "template_drafts";
+  const getSavedDrafts = (): Record<string, Record<string, string>> => {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch { return {}; }
+  };
+  const saveDraft = (templateId: string, data: Record<string, string>) => {
+    const drafts = getSavedDrafts();
+    drafts[templateId] = data;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(drafts));
+  };
+  const clearDraft = (templateId: string) => {
+    const drafts = getSavedDrafts();
+    delete drafts[templateId];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(drafts));
+  };
+  const hasDraft = (templateId: string) => {
+    const drafts = getSavedDrafts();
+    return drafts[templateId] && Object.values(drafts[templateId]).some(v => v.trim() !== "");
+  };
+
   const filtered = templates.filter(
     (t) => t.title.toLowerCase().includes(search.toLowerCase()) ||
       t.tags.some((tag) => tag.includes(search.toLowerCase())) ||
@@ -628,11 +693,28 @@ export default function DocumentTemplates() {
 
   const openTemplate = (t: Template) => {
     setSelectedTemplate(t);
-    const initialData: Record<string, string> = {};
-    t.fields.forEach((f) => { initialData[f.name] = ""; });
-    setFormData(initialData);
+    // Check for saved draft
+    const drafts = getSavedDrafts();
+    const savedDraft = drafts[t.id];
+    if (savedDraft && Object.values(savedDraft).some(v => v.trim() !== "")) {
+      setFormData(savedDraft);
+      toast({ title: "Draft restored", description: "Your previous progress has been loaded." });
+    } else {
+      const initialData: Record<string, string> = {};
+      t.fields.forEach((f) => { initialData[f.name] = ""; });
+      setFormData(initialData);
+    }
     setChatMessages([]);
     setChatOpen(false);
+  };
+
+  const renderSamplePreview = (t: Template) => {
+    let body = t.body;
+    const data = t.sampleData || {};
+    t.fields.forEach((f) => {
+      body = body.replace(new RegExp(`\\{\\{${f.name}\\}\\}`, "g"), data[f.name] || `[${f.label}]`);
+    });
+    return body;
   };
 
   const renderBody = () => {
@@ -715,6 +797,7 @@ export default function DocumentTemplates() {
         status: "uploaded" as any,
       });
       if (insertError) throw insertError;
+      if (selectedTemplate) clearDraft(selectedTemplate.id);
       toast({ title: "Saved to Vault", description: "Document saved to your portal documents." });
     } catch (e: any) {
       toast({ title: "Save failed", description: e.message, variant: "destructive" });
@@ -851,15 +934,33 @@ export default function DocumentTemplates() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((t) => (
             <motion.div key={t.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-              <Card className="h-full border-border/50 transition-shadow hover:shadow-md cursor-pointer" onClick={() => openTemplate(t)}>
+              <Card className="h-full border-border/50 transition-shadow hover:shadow-md cursor-pointer relative group" onClick={() => openTemplate(t)}>
                 <CardContent className="p-5">
-                  <div className="mb-2 flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-accent" />
-                    <Badge variant="outline" className="text-xs">{t.category}</Badge>
+                  <div className="mb-2 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-5 w-5 text-accent" />
+                      <Badge variant="outline" className="text-xs">{t.category}</Badge>
+                      {hasDraft(t.id) && <Badge variant="secondary" className="text-xs">Draft</Badge>}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); setQuickPreviewTemplate(t); }}>
+                              <Eye className="h-4 w-4 text-muted-foreground" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Quick preview with sample data</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => toggleFavorite(e, t.id)}>
+                        <Heart className={`h-4 w-4 transition-colors ${favorites.has(t.id) ? "fill-destructive text-destructive" : "text-muted-foreground"}`} />
+                      </Button>
+                    </div>
                   </div>
                   <h3 className="font-display text-lg font-semibold mb-1">{t.title}</h3>
                   <p className="text-sm text-muted-foreground mb-3">{t.description}</p>
-                  <div className="flex gap-1">{t.tags.map((tag) => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}</div>
+                  <div className="flex gap-1 flex-wrap">{t.tags.map((tag) => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -867,27 +968,70 @@ export default function DocumentTemplates() {
         </div>
       </div>
 
+      {/* Quick Preview Dialog */}
+      <Dialog open={!!quickPreviewTemplate} onOpenChange={() => setQuickPreviewTemplate(null)}>
+        <DialogContent className="sm:max-w-2xl max-h-[85vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center gap-2">
+              <Eye className="h-4 w-4 text-accent" /> Preview — {quickPreviewTemplate?.title}
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-xs text-muted-foreground">This preview uses sample data to show how the completed document will look.</p>
+          <div className="flex-1 overflow-y-auto border rounded-lg p-6 bg-muted/20">
+            <pre className="whitespace-pre-wrap font-serif text-sm leading-relaxed text-foreground">{quickPreviewTemplate ? renderSamplePreview(quickPreviewTemplate) : ""}</pre>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setQuickPreviewTemplate(null)}>Close</Button>
+            <Button onClick={() => { if (quickPreviewTemplate) { openTemplate(quickPreviewTemplate); setQuickPreviewTemplate(null); } }} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+              Use This Template
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Template Fill Dialog */}
       <Dialog open={!!selectedTemplate && !previewOpen} onOpenChange={() => setSelectedTemplate(null)}>
         <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
           <DialogHeader><DialogTitle className="font-display">{selectedTemplate?.title}</DialogTitle></DialogHeader>
           <p className="text-sm text-muted-foreground mb-4">{selectedTemplate?.description}</p>
           <div className="space-y-4">
-            {selectedTemplate?.fields.map((field) => (
-              <div key={field.name}>
-                <Label>{field.label}</Label>
-                {field.type === "textarea" ? (
-                  <Textarea value={formData[field.name] || ""} onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })} placeholder={field.placeholder} />
-                ) : (
-                  <Input type={field.type} value={formData[field.name] || ""} onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })} placeholder={field.placeholder} />
-                )}
-              </div>
-            ))}
+            {selectedTemplate?.fields.map((field) => {
+              const updateField = (value: string) => {
+                const updated = { ...formData, [field.name]: value };
+                setFormData(updated);
+                if (selectedTemplate) saveDraft(selectedTemplate.id, updated);
+              };
+              return (
+                <div key={field.name}>
+                  <Label>{field.label}</Label>
+                  {field.type === "textarea" ? (
+                    <Textarea value={formData[field.name] || ""} onChange={(e) => updateField(e.target.value)} placeholder={field.placeholder} />
+                  ) : (
+                    <Input type={field.type} value={formData[field.name] || ""} onChange={(e) => updateField(e.target.value)} placeholder={field.placeholder} />
+                  )}
+                </div>
+              );
+            })}
           </div>
           <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button variant="outline" onClick={() => setChatOpen(true)} className="gap-1">
-              <Sparkles className="h-3 w-3" /> Ask AI About This
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setChatOpen(true)} className="gap-1">
+                <Sparkles className="h-3 w-3" /> Ask AI About This
+              </Button>
+              {selectedTemplate && hasDraft(selectedTemplate.id) && (
+                <Button variant="ghost" size="sm" onClick={() => {
+                  if (selectedTemplate) {
+                    clearDraft(selectedTemplate.id);
+                    const initialData: Record<string, string> = {};
+                    selectedTemplate.fields.forEach((f) => { initialData[f.name] = ""; });
+                    setFormData(initialData);
+                    toast({ title: "Draft cleared" });
+                  }
+                }} className="gap-1 text-muted-foreground">
+                  <RotateCcw className="h-3 w-3" /> Clear Draft
+                </Button>
+              )}
+            </div>
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => setSelectedTemplate(null)}>Cancel</Button>
               <Button onClick={() => setPreviewOpen(true)} className="bg-accent text-accent-foreground hover:bg-gold-dark"><Eye className="mr-1 h-4 w-4" /> Preview & Edit</Button>
