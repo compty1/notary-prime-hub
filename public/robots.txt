@@ -12,7 +12,7 @@ Allow: /
 
 User-agent: *
 Allow: /
-Disallow: /admin
-Disallow: /portal
+Disallow: /admin/
+Disallow: /portal/
 
-Sitemap: https://shanegoblenotary.com/sitemap.xml
+Sitemap: https://notardex.com/sitemap.xml
