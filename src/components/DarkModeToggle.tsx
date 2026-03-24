@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Moon, Sun } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function DarkModeToggle({ className = "" }: { className?: string }) {
   const [dark, setDark] = useState(() => {
@@ -18,11 +19,12 @@ export function DarkModeToggle({ className = "" }: { className?: string }) {
     <Button
       variant="ghost"
       size="icon"
-      className={className}
+      className={cn("relative overflow-hidden", className)}
       onClick={() => setDark(!dark)}
       aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
     >
-      {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      <Sun className={cn("h-4 w-4 transition-all duration-300", dark ? "rotate-0 scale-100" : "rotate-90 scale-0")} />
+      <Moon className={cn("absolute h-4 w-4 transition-all duration-300", dark ? "-rotate-90 scale-0" : "rotate-0 scale-100")} />
     </Button>
   );
 }
