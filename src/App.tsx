@@ -96,6 +96,7 @@ const App = () => (
               <Route path="/templates" element={<DocumentTemplates />} />
               <Route path="/about" element={<About />} />
               <Route path="/join" element={<JoinPlatform />} />
+              <Route path="/notary-guide-process" element={<NotaryProcessGuide />} />
               <Route path="/digitize" element={<ProtectedRoute><DocumentDigitize /></ProtectedRoute>} />
               <Route path="/request" element={<ServiceRequest />} />
               <Route path="/mailroom" element={<ProtectedRoute><VirtualMailroom /></ProtectedRoute>} />
