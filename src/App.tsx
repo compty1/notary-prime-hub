@@ -61,6 +61,7 @@ const AdminServices = lazy(() => import("./pages/admin/AdminServices"));
 const AdminTeam = lazy(() => import("./pages/admin/AdminTeam"));
 const AdminEmailManagement = lazy(() => import("./pages/admin/AdminEmailManagement"));
 const AdminLeadPortal = lazy(() => import("./pages/admin/AdminLeadPortal"));
+const NotaryProcessGuide = lazy(() => import("./pages/NotaryProcessGuide"));
 
 const queryClient = new QueryClient();
 
