@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 export default function Login() {
   const { user, signIn, isAdmin, isNotary, loading } = useAuth();
@@ -20,7 +21,6 @@ export default function Login() {
   const [forgotMode, setForgotMode] = useState(false);
   const [resetSent, setResetSent] = useState(false);
 
-  // Redirect based on role after login
   useEffect(() => {
     if (!loading && user) {
       if (isAdmin || isNotary) {
@@ -31,7 +31,7 @@ export default function Login() {
     }
   }, [user, isAdmin, isNotary, loading, navigate]);
 
-  if (!loading && user) return null; // Will redirect via useEffect
+  if (!loading && user) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,11 +63,13 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
-      <Card className="w-full max-w-md border-border/50">
+    <div className="relative flex min-h-screen items-center justify-center bg-background px-4">
+      {/* Subtle background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
+      <Card className="relative z-10 w-full max-w-md">
         <CardHeader className="text-center">
-          <Link to="/" className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary">
-            <Shield className="h-6 w-6 text-primary-foreground" />
+          <Link to="/" className="mx-auto mb-4">
+            <Logo size="lg" />
           </Link>
           <CardTitle className="font-display text-2xl">
             {forgotMode ? "Reset Password" : "Welcome Back"}
@@ -88,7 +90,7 @@ export default function Login() {
                 <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
               </div>
               {!resetSent && (
-                <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" disabled={submitting}>
+                <Button type="submit" className="w-full bg-gradient-primary text-white hover:opacity-90" disabled={submitting}>
                   {submitting ? "Sending..." : "Send Reset Link"}
                 </Button>
               )}
@@ -106,12 +108,12 @@ export default function Login() {
                 <Label htmlFor="password">Password</Label>
                 <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
               </div>
-              <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" disabled={submitting}>
+              <Button type="submit" className="w-full bg-gradient-primary text-white hover:opacity-90" disabled={submitting}>
                 {submitting ? "Signing in..." : "Sign In"}
               </Button>
               <button
                 type="button"
-                className="block w-full text-center text-sm text-muted-foreground hover:text-accent"
+                className="block w-full text-center text-sm text-muted-foreground hover:text-primary"
                 onClick={() => setForgotMode(true)}
               >
                 Forgot your password?
@@ -138,7 +140,7 @@ export default function Login() {
           )}
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Don't have an account?{" "}
-            <Link to="/signup" className="font-medium text-accent hover:underline">Sign up</Link>
+            <Link to="/signup" className="font-medium text-primary hover:underline">Sign up</Link>
           </p>
         </CardContent>
       </Card>

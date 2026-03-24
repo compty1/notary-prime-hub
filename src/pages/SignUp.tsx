@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { Shield } from "lucide-react";
+import { CheckCircle } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 function getPasswordStrength(pw: string) {
   let score = 0;
@@ -17,11 +18,10 @@ function getPasswordStrength(pw: string) {
   if (/[A-Z]/.test(pw)) score++;
   if (/[0-9]/.test(pw)) score++;
   if (/[^A-Za-z0-9]/.test(pw)) score++;
-  return score; // 0-5
+  return score;
 }
 
 const strengthLabels = ["", "Very Weak", "Weak", "Fair", "Strong", "Very Strong"];
-const strengthColors = ["", "bg-destructive", "bg-orange-500", "bg-yellow-500", "bg-emerald-500", "bg-emerald-600"];
 
 export default function SignUp() {
   const { user, signUp, loading } = useAuth();
@@ -55,18 +55,19 @@ export default function SignUp() {
 
   if (signupSuccess) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
-        <Card className="w-full max-w-md border-border/50">
+      <div className="relative flex min-h-screen items-center justify-center bg-background px-4">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
+        <Card className="relative z-10 w-full max-w-md">
           <CardContent className="flex flex-col items-center py-12 text-center">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
-              <Shield className="h-8 w-8 text-emerald-600" />
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10">
+              <CheckCircle className="h-8 w-8 text-emerald-500" />
             </div>
             <h2 className="font-display text-2xl font-bold text-foreground mb-2">Check Your Email</h2>
             <p className="text-muted-foreground mb-2">We sent a verification link to</p>
             <p className="font-medium text-foreground mb-4">{email}</p>
             <p className="text-sm text-muted-foreground mb-6">Click the link in the email to verify your account, then sign in.</p>
             <Link to="/login">
-              <Button className="bg-accent text-accent-foreground hover:bg-gold-dark">Go to Sign In</Button>
+              <Button className="bg-gradient-primary text-white hover:opacity-90">Go to Sign In</Button>
             </Link>
           </CardContent>
         </Card>
@@ -75,11 +76,12 @@ export default function SignUp() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
-      <Card className="w-full max-w-md border-border/50">
+    <div className="relative flex min-h-screen items-center justify-center bg-background px-4">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
+      <Card className="relative z-10 w-full max-w-md">
         <CardHeader className="text-center">
-          <Link to="/" className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary">
-            <Shield className="h-6 w-6 text-primary-foreground" />
+          <Link to="/" className="mx-auto mb-4">
+            <Logo size="lg" />
           </Link>
           <CardTitle className="font-display text-2xl">Create Account</CardTitle>
           <CardDescription>Sign up to book notary appointments</CardDescription>
@@ -110,7 +112,7 @@ export default function SignUp() {
               )}
               {!password && <p className="mt-1 text-xs text-muted-foreground">Minimum 6 characters</p>}
             </div>
-            <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" disabled={submitting}>
+            <Button type="submit" className="w-full bg-gradient-primary text-white hover:opacity-90" disabled={submitting}>
               {submitting ? "Creating account..." : "Create Account"}
             </Button>
             <div className="relative my-4">
@@ -134,7 +136,7 @@ export default function SignUp() {
           </form>
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link to="/login" className="font-medium text-accent hover:underline">Sign in</Link>
+            <Link to="/login" className="font-medium text-primary hover:underline">Sign in</Link>
           </p>
         </CardContent>
       </Card>

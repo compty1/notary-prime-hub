@@ -2,21 +2,15 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { motion } from "framer-motion";
 import {
   Shield, Award, MapPin, Phone, Mail, ChevronRight, CheckCircle,
-  FileText, Monitor, Users, Briefcase, Menu
+  FileText, Monitor, Users, Briefcase
 } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Logo } from "@/components/Logo";
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.5 } }),
-};
+import { PageShell } from "@/components/PageShell";
+import { fadeUp, scaleReveal } from "@/lib/animations";
 
 const credentials = [
   { icon: Award, title: "NNA Certified & Trained", desc: "National Notary Association certified notary signing agent with advanced training in loan document signing and compliance." },
@@ -51,71 +45,39 @@ export default function About() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Nav */}
-      <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <Logo size="md" />
-            <div>
-              <span className="block font-display text-lg font-bold text-foreground">Notar</span>
-              <span className="block text-xs text-muted-foreground">Notary & Document Services</span>
-            </div>
-          </Link>
-          <div className="hidden items-center gap-6 md:flex">
-            <Link to="/services" className="text-sm font-medium text-muted-foreground hover:text-foreground">Services</Link>
-            <Link to="/templates" className="text-sm font-medium text-muted-foreground hover:text-foreground">Templates</Link>
-            <Link to="/digitize" className="text-sm font-medium text-muted-foreground hover:text-foreground">Digitize</Link>
-            <DarkModeToggle />
-            <Link to="/login"><Button variant="outline" size="sm">Sign In</Button></Link>
-            <Link to="/book"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button></Link>
-          </div>
-          <Sheet>
-            <SheetTrigger asChild className="md:hidden"><Button variant="ghost" size="sm"><Menu className="h-5 w-5" /></Button></SheetTrigger>
-            <SheetContent side="right" className="w-64">
-              <div className="mt-8 flex flex-col gap-4">
-                <Link to="/services" className="text-sm font-medium">Services</Link>
-                <Link to="/templates" className="text-sm font-medium">Templates</Link>
-                <Link to="/digitize" className="text-sm font-medium">Digitize</Link>
-                <Link to="/login"><Button variant="outline" className="w-full">Sign In</Button></Link>
-                <Link to="/book"><Button className="w-full bg-accent text-accent-foreground">Book Now</Button></Link>
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
-      </nav>
-
+    <PageShell>
       {/* Hero */}
-      <section className="bg-gradient-navy py-16 md:py-24">
-        <div className="container mx-auto max-w-4xl px-4">
+      <section className="relative overflow-hidden bg-gradient-hero py-16 md:py-24">
+        <div className="absolute inset-0 gradient-mesh" />
+        <div className="container relative mx-auto max-w-4xl px-4">
           <motion.div initial="hidden" animate="visible" className="flex flex-col md:flex-row items-center gap-8">
             <motion.div variants={fadeUp} custom={0} className="flex-shrink-0">
-              <div className="flex h-40 w-40 items-center justify-center rounded-full bg-accent/20 border-4 border-accent/30">
-                <span className="font-display text-5xl font-bold text-accent">N</span>
+              <div className="flex h-40 w-40 items-center justify-center rounded-2xl bg-primary/20 border border-primary/30">
+                <span className="font-display text-5xl font-bold text-primary">N</span>
               </div>
             </motion.div>
             <motion.div variants={fadeUp} custom={1}>
-              <Badge className="mb-3 border-gold/30 bg-gold/10 text-gold-light">
+              <Badge className="mb-3 border-primary/20 bg-primary/10 text-primary dark:text-primary-foreground">
                 <Award className="mr-1 h-3 w-3" /> NNA Certified Notary Signing Agent
               </Badge>
-              <h1 className="mb-3 font-display text-4xl font-bold text-primary-foreground md:text-5xl">
+              <h1 className="mb-3 font-display text-4xl font-bold text-white md:text-5xl">
                 Notar
               </h1>
-              <p className="mb-2 text-xl text-primary-foreground/80">
+              <p className="mb-2 text-xl text-white/80">
                 Professional Notary & Document Services — Ohio
               </p>
-              <p className="text-primary-foreground/60 max-w-xl">
+              <p className="text-white/50 max-w-xl">
                 Notar is a team of Ohio-commissioned notaries led by Shane Goble, providing professional notarization, 
                 document management, and business services throughout Franklin County and the greater Columbus area.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <a href={`tel:${contactInfo.phone.replace(/\D/g, '')}`}>
-                  <Button variant="outline" className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10">
+                  <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
                     <Phone className="mr-2 h-4 w-4" /> {contactInfo.phone}
                   </Button>
                 </a>
                 <a href={`mailto:${contactInfo.email}`}>
-                  <Button variant="outline" className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10">
+                  <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
                     <Mail className="mr-2 h-4 w-4" /> {contactInfo.email}
                   </Button>
                 </a>
@@ -164,11 +126,11 @@ export default function About() {
           </motion.h2>
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {credentials.map((cred, i) => (
-              <motion.div key={cred.title} variants={fadeUp} custom={i}>
-                <Card className="h-full border-border/50">
+              <motion.div key={cred.title} variants={scaleReveal} custom={i}>
+                <Card className="h-full hover:border-primary/20">
                   <CardContent className="p-6">
-                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10">
-                      <cred.icon className="h-5 w-5 text-accent" />
+                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                      <cred.icon className="h-5 w-5 text-primary" />
                     </div>
                     <h3 className="mb-2 font-display text-base font-semibold">{cred.title}</h3>
                     <p className="text-sm text-muted-foreground">{cred.desc}</p>
@@ -186,7 +148,7 @@ export default function About() {
           <div className="grid gap-8 md:grid-cols-2">
             <div>
               <h2 className="mb-4 font-display text-2xl font-bold text-foreground flex items-center gap-2">
-                <MapPin className="h-6 w-6 text-accent" /> Service Area
+                <MapPin className="h-6 w-6 text-primary" /> Service Area
               </h2>
               <p className="mb-4 text-muted-foreground">
                 In-person notarization and mobile services available throughout central Ohio. 
@@ -203,17 +165,17 @@ export default function About() {
             </div>
             <div>
               <h2 className="mb-4 font-display text-2xl font-bold text-foreground flex items-center gap-2">
-                <Briefcase className="h-6 w-6 text-accent" /> Services Overview
+                <Briefcase className="h-6 w-6 text-primary" /> Services Overview
               </h2>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-accent" /> In-Person & Remote Online Notarization</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-accent" /> Document Digitization & OCR</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-accent" /> Apostille & Authentication</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-accent" /> I-9 Employment Verification</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-accent" /> Real Estate & Loan Signing</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-accent" /> Document Preparation & Templates</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-accent" /> Secure Cloud Document Storage</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-accent" /> Business & Volume Services</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> In-Person & Remote Online Notarization</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Document Digitization & OCR</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Apostille & Authentication</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> I-9 Employment Verification</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Real Estate & Loan Signing</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Document Preparation & Templates</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Secure Cloud Document Storage</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Business & Volume Services</li>
               </ul>
             </div>
           </div>
@@ -230,7 +192,7 @@ export default function About() {
           <p className="mb-6 text-xs text-muted-foreground">Mon–Wed 10 AM – 7 PM EST</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link to="/book">
-              <Button size="lg" className="bg-accent text-accent-foreground hover:bg-gold-dark">
+              <Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">
                 Book Appointment <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             </Link>
@@ -250,10 +212,6 @@ export default function About() {
           </div>
         </div>
       </section>
-
-      <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Notar — Ohio Notary & Document Services</p>
-      </footer>
-    </div>
+    </PageShell>
   );
 }
