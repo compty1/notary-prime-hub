@@ -1,0 +1,5 @@
+Contact: mailto:contact@notardex.com
+Preferred-Languages: en
+Canonical: https://notardex.com/.well-known/security.txt
+Policy: https://notardex.com/terms
+Expires: 2027-03-24T00:00:00.000Z
