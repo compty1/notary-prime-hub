@@ -78,9 +78,9 @@ export default function VirtualMailroom() {
       <div className="container mx-auto max-w-4xl px-4 py-8">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
           <div className="flex items-center gap-3 mb-2">
-            <Inbox className="h-6 w-6 text-accent" />
+            <Inbox className="h-6 w-6 text-primary" />
             <h1 className="font-display text-2xl font-bold">Your Mailroom</h1>
-            {newCount > 0 && <Badge className="bg-accent text-accent-foreground">{newCount} new</Badge>}
+            {newCount > 0 && <Badge className="bg-gradient-primary text-white">{newCount} new</Badge>}
           </div>
           <p className="text-sm text-muted-foreground">View scanned mail, forward items, and manage your correspondence.</p>
         </motion.div>
@@ -110,8 +110,8 @@ export default function VirtualMailroom() {
               <Card key={item.id} className={`border-border/50 transition-all ${item.status === "new" ? "border-l-4 border-l-accent" : ""}`}>
                 <CardContent className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-4 flex-1 min-w-0">
-                    <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg ${item.status === "new" ? "bg-accent/10" : "bg-muted"}`}>
-                      {item.status === "new" ? <Mail className="h-5 w-5 text-accent" /> : <MailOpen className="h-5 w-5 text-muted-foreground" />}
+                    <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg ${item.status === "new" ? "bg-primary/10" : "bg-muted"}`}>
+                      {item.status === "new" ? <Mail className="h-5 w-5 text-primary" /> : <MailOpen className="h-5 w-5 text-muted-foreground" />}
                     </div>
                     <div className="min-w-0">
                       <p className={`font-medium truncate ${item.status === "new" ? "text-foreground" : "text-muted-foreground"}`}>{item.subject}</p>

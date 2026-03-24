@@ -40,7 +40,7 @@ export default function ServiceDetailPanel({ serviceId, serviceName }: ServiceDe
       {requirements.length > 0 && (
         <Card className="border-border/50">
           <CardContent className="p-4 space-y-3">
-            <h4 className="text-sm font-semibold flex items-center gap-2"><FileText className="h-4 w-4 text-accent" /> Requirements</h4>
+            <h4 className="text-sm font-semibold flex items-center gap-2"><FileText className="h-4 w-4 text-primary" /> Requirements</h4>
             {requirements.map((req) => (
               <div key={req.id} className="flex items-start gap-2 text-sm">
                 <CheckCircle className={`h-3 w-3 mt-1 shrink-0 ${req.is_required ? "text-emerald-500" : "text-muted-foreground"}`} />
@@ -64,7 +64,7 @@ export default function ServiceDetailPanel({ serviceId, serviceName }: ServiceDe
             <div className="space-y-3">
               {workflows.map((step, i) => (
                 <div key={step.id} className="flex items-start gap-3">
-                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/10 text-xs font-bold text-accent">
+                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
                     {step.step_number}
                   </div>
                   <div>

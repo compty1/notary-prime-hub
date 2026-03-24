@@ -67,7 +67,7 @@ export default function TechCheck({ onComplete }: TechCheckProps) {
     <Card className="border-border/50">
       <CardHeader className="pb-3">
         <CardTitle className="font-display text-lg flex items-center gap-2">
-          <Wifi className="h-5 w-5 text-accent" /> RON Session Tech Check
+          <Wifi className="h-5 w-5 text-primary" /> RON Session Tech Check
         </CardTitle>
         <p className="text-xs text-muted-foreground">Verify your camera, microphone, and internet before your Remote Online Notarization session.</p>
       </CardHeader>
@@ -100,7 +100,7 @@ export default function TechCheck({ onComplete }: TechCheckProps) {
         )}
 
         <div className="flex gap-2">
-          <Button onClick={runCheck} disabled={checking} className="flex-1 bg-accent text-accent-foreground hover:bg-gold-dark">
+          <Button onClick={runCheck} disabled={checking} className="flex-1 bg-gradient-primary text-white hover:opacity-90">
             {checking ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : done ? <RefreshCw className="mr-1 h-4 w-4" /> : <Wifi className="mr-1 h-4 w-4" />}
             {checking ? "Checking..." : done ? "Re-run Check" : "Start Tech Check"}
           </Button>

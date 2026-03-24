@@ -848,7 +848,7 @@ export default function BookAppointment() {
 
     return (
       <div className="space-y-3 rounded-lg border border-border/50 bg-muted/30 p-4">
-        <p className="text-sm font-medium flex items-center gap-2"><Info className="h-4 w-4 text-accent" /> Service-Specific Details</p>
+        <p className="text-sm font-medium flex items-center gap-2"><Info className="h-4 w-4 text-primary" /> Service-Specific Details</p>
         
         {showApostille && (
           <>
@@ -1070,7 +1070,7 @@ export default function BookAppointment() {
                 <Input type="number" min="1" value={translationPageCount} onChange={(e) => setTranslationPageCount(e.target.value)} />
               </div>
             </div>
-            <div className="rounded-lg border border-accent/20 bg-accent/5 p-3 text-xs text-muted-foreground space-y-1">
+            <div className="rounded-lg border border-accent/20 bg-primary/5 p-3 text-xs text-muted-foreground space-y-1">
               <p className="font-medium text-foreground">📄 How it works:</p>
               <p>1. Upload your document during booking or in your portal after booking</p>
               <p>2. Our AI translates your document with a Certificate of Translation Accuracy</p>
@@ -1219,17 +1219,17 @@ export default function BookAppointment() {
           <div>
             <Label>Document Format</Label>
             <div className="grid grid-cols-2 gap-3 mt-2">
-              <button type="button" className={`rounded-lg border p-3 text-sm text-left transition-all ${scanningMode === "digital" ? "border-accent bg-accent/10 ring-2 ring-accent" : "border-border hover:border-accent/50"}`} onClick={() => setScanningMode("digital")}>
+              <button type="button" className={`rounded-lg border p-3 text-sm text-left transition-all ${scanningMode === "digital" ? "border-accent bg-primary/10 ring-2 ring-accent" : "border-border hover:border-primary/50"}`} onClick={() => setScanningMode("digital")}>
                 <p className="font-medium">Digital Files</p>
                 <p className="text-xs text-muted-foreground mt-1">I have digital files to convert (PDF, images)</p>
               </button>
-              <button type="button" className={`rounded-lg border p-3 text-sm text-left transition-all ${scanningMode === "physical" ? "border-accent bg-accent/10 ring-2 ring-accent" : "border-border hover:border-accent/50"}`} onClick={() => setScanningMode("physical")}>
+              <button type="button" className={`rounded-lg border p-3 text-sm text-left transition-all ${scanningMode === "physical" ? "border-accent bg-primary/10 ring-2 ring-accent" : "border-border hover:border-primary/50"}`} onClick={() => setScanningMode("physical")}>
                 <p className="font-medium">Physical Documents</p>
                 <p className="text-xs text-muted-foreground mt-1">I need to bring in or have someone scan paper docs</p>
               </button>
             </div>
             {scanningMode === "digital" && (
-              <p className="text-xs text-muted-foreground mt-2">💡 For digital files, you can use our <a href="/digitize" className="text-accent underline">Digitize tool</a> directly — no appointment needed!</p>
+              <p className="text-xs text-muted-foreground mt-2">💡 For digital files, you can use our <a href="/digitize" className="text-primary underline">Digitize tool</a> directly — no appointment needed!</p>
             )}
           </div>
         )}
@@ -1273,7 +1273,7 @@ export default function BookAppointment() {
           <Label>Available Time Slots</Label>
           <div className="mt-1 flex flex-wrap gap-2">
             {availableSlots.map((slot) => (
-              <Button key={slot.id} variant={time === slot.start_time ? "default" : "outline"} size="sm" className={time === slot.start_time ? "bg-accent text-accent-foreground" : ""} onClick={() => setTime(slot.start_time)}>
+              <Button key={slot.id} variant={time === slot.start_time ? "default" : "outline"} size="sm" className={time === slot.start_time ? "bg-gradient-primary text-white" : ""} onClick={() => setTime(slot.start_time)}>
                 <Clock className="mr-1 h-3 w-3" /> {formatTime(slot.start_time)}
               </Button>
             ))}
@@ -1456,7 +1456,7 @@ export default function BookAppointment() {
         {idData && !idData.error && (
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">ID Verified</span>
-            <span className="font-medium flex items-center gap-1"><Shield className="h-3 w-3 text-accent" /> {idData.id_type}</span>
+            <span className="font-medium flex items-center gap-1"><Shield className="h-3 w-3 text-primary" /> {idData.id_type}</span>
           </div>
         )}
         {documentCount > 1 && (
@@ -1481,9 +1481,9 @@ export default function BookAppointment() {
 
       {/* Live Cost Estimator (Phase 4.2) */}
       {estimatedPrice !== null && (
-        <div className="rounded-lg border border-accent/30 bg-accent/5 p-4 space-y-2">
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-2">
           <p className="text-sm font-medium flex items-center gap-2">
-            <DollarSign className="h-4 w-4 text-accent" />
+            <DollarSign className="h-4 w-4 text-primary" />
             Estimated Pricing
           </p>
           <div className="space-y-1 text-sm">
@@ -1523,7 +1523,7 @@ export default function BookAppointment() {
             )}
             <div className="flex justify-between border-t border-border pt-1 font-semibold">
               <span>Estimated Total</span>
-              <span className="text-accent">${(estimatedPrice + (urgencyLevel === "rush" ? 50 : urgencyLevel === "same_day" ? 100 : 0)).toFixed(2)}</span>
+              <span className="text-primary">${(estimatedPrice + (urgencyLevel === "rush" ? 50 : urgencyLevel === "same_day" ? 100 : 0)).toFixed(2)}</span>
             </div>
           </div>
           <p className="text-xs text-muted-foreground">Final price may vary based on actual travel distance and document complexity.</p>
@@ -1532,9 +1532,9 @@ export default function BookAppointment() {
 
       {/* Progressive signup for guests */}
       {!user && (
-        <div className="rounded-lg border border-accent/30 bg-accent/5 p-4 space-y-3">
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
           <p className="text-sm font-medium flex items-center gap-2">
-            <Shield className="h-4 w-4 text-accent" />
+            <Shield className="h-4 w-4 text-primary" />
             Create your account to confirm
           </p>
           <div>
@@ -1553,7 +1553,7 @@ export default function BookAppointment() {
             <p className="text-xs text-destructive">Password must be at least 6 characters.</p>
           )}
           <p className="text-xs text-muted-foreground">
-            Already have an account? <Link to="/login" className="text-accent hover:underline">Sign in</Link>
+            Already have an account? <Link to="/login" className="text-primary hover:underline">Sign in</Link>
           </p>
         </div>
       )}
@@ -1583,12 +1583,12 @@ export default function BookAppointment() {
         {/* Returning client recognition */}
         {user && pastAppointments.length > 0 && step === 1 && (
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-            <Card className="mb-6 border-accent/30 bg-accent/5">
+            <Card className="mb-6 border-primary/20 bg-primary/5">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <Sparkles className="h-4 w-4 text-accent" />
+                  <Sparkles className="h-4 w-4 text-primary" />
                   <p className="text-sm font-medium">Welcome back{profile?.full_name ? `, ${profile.full_name}` : ""}!</p>
-                  <Badge className="bg-accent/20 text-accent-foreground text-xs">{pastAppointments.length} past visit{pastAppointments.length > 1 ? "s" : ""}</Badge>
+                  <Badge className="bg-primary/20 text-primary-foreground text-xs">{pastAppointments.length} past visit{pastAppointments.length > 1 ? "s" : ""}</Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mb-2">Quick rebook from a previous appointment:</p>
                 <div className="flex flex-wrap gap-2">
@@ -1616,11 +1616,11 @@ export default function BookAppointment() {
                   <div key={s} className="flex items-center gap-2">
                     <div className="flex flex-col items-center gap-1">
                       <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors ${
-                        step >= s ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"
+                        step >= s ? "bg-gradient-primary text-white" : "bg-muted text-muted-foreground"
                       }`}>
                         {step > s ? <CheckCircle className="h-4 w-4" /> : s}
                       </div>
-                      <span className={`text-[10px] font-medium ${step >= s ? "text-accent" : "text-muted-foreground"}`}>{label}</span>
+                      <span className={`text-[10px] font-medium ${step >= s ? "text-primary" : "text-muted-foreground"}`}>{label}</span>
                     </div>
                     {i < stepLabels.length - 1 && <div className={`h-0.5 w-8 mt-[-16px] transition-colors ${step > s ? "bg-accent" : "bg-muted"}`} />}
                   </div>
@@ -1668,22 +1668,22 @@ export default function BookAppointment() {
                   <button
                     onClick={() => setNotarizationType("in_person")}
                     className={`rounded-lg border-2 p-6 text-left transition-all ${
-                      notarizationType === "in_person" ? "border-accent bg-accent/5" : "border-border hover:border-accent/30"
+                      notarizationType === "in_person" ? "border-accent bg-primary/5" : "border-border hover:border-primary/20"
                     }`}
                     aria-label="Select in-person notarization"
                   >
-                    <MapPin className="mb-2 h-8 w-8 text-accent" />
+                    <MapPin className="mb-2 h-8 w-8 text-primary" />
                     <h3 className="font-display text-lg font-semibold">In-Person</h3>
                     <p className="text-sm text-muted-foreground">Franklin County & Columbus area</p>
                   </button>
                   <button
                     onClick={() => setNotarizationType("ron")}
                     className={`rounded-lg border-2 p-6 text-left transition-all ${
-                      notarizationType === "ron" ? "border-accent bg-accent/5" : "border-border hover:border-accent/30"
+                      notarizationType === "ron" ? "border-accent bg-primary/5" : "border-border hover:border-primary/20"
                     }`}
                     aria-label="Select remote online notarization"
                   >
-                    <Monitor className="mb-2 h-8 w-8 text-accent" />
+                    <Monitor className="mb-2 h-8 w-8 text-primary" />
                     <h3 className="font-display text-lg font-semibold">Remote (RON)</h3>
                     <p className="text-sm text-muted-foreground">Secure video call from anywhere</p>
                   </button>
@@ -1726,9 +1726,9 @@ export default function BookAppointment() {
                   {renderIntakeFields()}
 
                   {/* Document Auto-Detect */}
-                  <div className="rounded-lg border border-dashed border-accent/30 bg-accent/5 p-4">
+                  <div className="rounded-lg border border-dashed border-primary/20 bg-primary/5 p-4">
                     <p className="mb-2 flex items-center gap-2 text-sm font-medium">
-                      <Sparkles className="h-4 w-4 text-accent" />
+                      <Sparkles className="h-4 w-4 text-primary" />
                       Upload your document for AI analysis (optional)
                     </p>
                     <p className="mb-3 text-xs text-muted-foreground">
@@ -1741,9 +1741,9 @@ export default function BookAppointment() {
                       </div>
                     )}
                     {docAnalysis && !docAnalysis.error && (
-                      <div className="mt-2 space-y-2 rounded bg-accent/10 p-3 text-xs text-foreground">
+                      <div className="mt-2 space-y-2 rounded bg-primary/10 p-3 text-xs text-foreground">
                         <div className="flex items-center gap-1 font-medium">
-                          <CheckCircle className="h-3 w-3 text-accent" />
+                          <CheckCircle className="h-3 w-3 text-primary" />
                           {docAnalysis.document_name} — {docAnalysis.notarization_method}
                         </div>
                         <div className="text-muted-foreground">
@@ -1771,11 +1771,11 @@ export default function BookAppointment() {
                     <Label>Number of Documents</Label>
                     <div className="mt-1 flex items-center gap-2 flex-wrap">
                       {[1, 2, 3, 4, 5].map((n) => (
-                        <Button key={n} type="button" size="sm" variant={documentCount === n && !customDocCount ? "default" : "outline"} className={documentCount === n && !customDocCount ? "bg-accent text-accent-foreground" : ""} onClick={() => { setDocumentCount(n); setCustomDocCount(false); }}>
+                        <Button key={n} type="button" size="sm" variant={documentCount === n && !customDocCount ? "default" : "outline"} className={documentCount === n && !customDocCount ? "bg-gradient-primary text-white" : ""} onClick={() => { setDocumentCount(n); setCustomDocCount(false); }}>
                           {n}
                         </Button>
                       ))}
-                      <Button type="button" size="sm" variant={customDocCount ? "default" : "outline"} className={customDocCount ? "bg-accent text-accent-foreground" : ""} onClick={() => { setCustomDocCount(true); setDocumentCount(6); }}>
+                      <Button type="button" size="sm" variant={customDocCount ? "default" : "outline"} className={customDocCount ? "bg-gradient-primary text-white" : ""} onClick={() => { setCustomDocCount(true); setDocumentCount(6); }}>
                         5+
                       </Button>
                       {customDocCount && (
@@ -1788,9 +1788,9 @@ export default function BookAppointment() {
                   </div>
 
                   {/* ID Pre-Scan */}
-                  <div className="rounded-lg border border-dashed border-accent/30 bg-accent/5 p-4">
+                  <div className="rounded-lg border border-dashed border-primary/20 bg-primary/5 p-4">
                     <p className="mb-2 flex items-center gap-2 text-sm font-medium">
-                      <Camera className="h-4 w-4 text-accent" />
+                      <Camera className="h-4 w-4 text-primary" />
                       Pre-scan your ID (optional — saves time)
                       <Tooltip>
                         <TooltipTrigger asChild><Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" /></TooltipTrigger>
@@ -1807,8 +1807,8 @@ export default function BookAppointment() {
                       </div>
                     )}
                     {idData && !idData.error && (
-                      <div className="mt-2 rounded bg-accent/10 p-2 text-xs text-foreground">
-                        <CheckCircle className="mr-1 inline h-3 w-3 text-accent" />
+                      <div className="mt-2 rounded bg-primary/10 p-2 text-xs text-foreground">
+                        <CheckCircle className="mr-1 inline h-3 w-3 text-primary" />
                         Verified: {idData.full_name} — {idData.id_type}
                         {idData.is_expired && (
                           <span className="ml-2 text-destructive font-medium">⚠ EXPIRED</span>
@@ -1827,11 +1827,11 @@ export default function BookAppointment() {
 
               {/* Sticky cost estimator bar (Phase 4.2) */}
               {estimatedPrice !== null && step !== lastStep && (
-                <div className="rounded-lg bg-accent/5 border border-accent/20 p-3 flex items-center justify-between">
+                <div className="rounded-lg bg-primary/5 border border-accent/20 p-3 flex items-center justify-between">
                   <span className="text-sm text-muted-foreground flex items-center gap-1">
-                    <DollarSign className="h-4 w-4 text-accent" /> Estimated total
+                    <DollarSign className="h-4 w-4 text-primary" /> Estimated total
                   </span>
-                  <span className="font-semibold text-accent">${(estimatedPrice + (urgencyLevel === "rush" ? 50 : urgencyLevel === "same_day" ? 100 : 0)).toFixed(2)}</span>
+                  <span className="font-semibold text-primary">${(estimatedPrice + (urgencyLevel === "rush" ? 50 : urgencyLevel === "same_day" ? 100 : 0)).toFixed(2)}</span>
                 </div>
               )}
 
@@ -1840,11 +1840,11 @@ export default function BookAppointment() {
                   <ChevronLeft className="mr-1 h-4 w-4" /> Back
                 </Button>
                 {step < lastStep ? (
-                  <Button onClick={() => setStep((step + 1) as Step)} disabled={!canProceed()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+                  <Button onClick={() => setStep((step + 1) as Step)} disabled={!canProceed()} className="bg-gradient-primary text-white hover:opacity-90">
                     Next <ChevronRight className="ml-1 h-4 w-4" />
                   </Button>
                 ) : (
-                  <Button onClick={handleSubmit} disabled={submitting || !canProceed()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+                  <Button onClick={handleSubmit} disabled={submitting || !canProceed()} className="bg-gradient-primary text-white hover:opacity-90">
                     {submitting ? "Booking..." : "Confirm Booking"}
                   </Button>
                 )}

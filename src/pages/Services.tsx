@@ -7,11 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
-import { DarkModeToggle } from "@/components/DarkModeToggle";
-import { ChevronRight, Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home, Loader2, Menu, Search, Sparkles, ArrowRight } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { ChevronRight, Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home, Loader2, Search, Sparkles, ArrowRight } from "lucide-react";
 import WhatDoINeed from "@/components/WhatDoINeed";
-import { Logo } from "@/components/Logo";
+import { PageShell } from "@/components/PageShell";
+import { fadeUp, scaleReveal } from "@/lib/animations";
 
 const iconMap: Record<string, any> = {
   Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home,
@@ -36,7 +35,6 @@ const categoryLabels: Record<string, { label: string; description: string }> = {
 
 const categoryOrder = ["notarization", "verification", "document_services", "authentication", "business", "recurring", "consulting", "business_services"];
 
-// Smart CTA routing based on service name and category
 const INTAKE_ONLY_SERVICES = new Set([
   "Apostille Facilitation", "Consular Legalization Prep", "Background Check Coordination",
   "Clerical Document Preparation", "Document Cleanup & Formatting", "Form Filling Assistance",
@@ -70,11 +68,6 @@ type Service = {
   id: string; name: string; category: string; description: string | null;
   short_description: string | null; price_from: number | null; price_to: number | null;
   pricing_model: string; icon: string | null;
-};
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.4 } }),
 };
 
 export default function Services() {
@@ -145,7 +138,6 @@ export default function Services() {
     return to > from ? `$${from}–$${to}${suffix}` : `$${from}${suffix}`;
   };
 
-  // Phase 2.2: Search filter
   const filteredServices = searchQuery
     ? services.filter(s => 
         s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -164,51 +156,19 @@ export default function Services() {
     .filter(g => g.items.length > 0);
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <Logo size="md" />
-            <div>
-              <span className="block font-display text-lg font-bold text-foreground">Notar</span>
-              <span className="block text-xs text-muted-foreground">Notary & Document Services</span>
-            </div>
-          </Link>
-          <div className="hidden items-center gap-6 md:flex">
-            <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-foreground">Home</Link>
-            <Link to="/templates" className="text-sm font-medium text-muted-foreground hover:text-foreground">Templates</Link>
-            <Link to="/fee-calculator" className="text-sm font-medium text-muted-foreground hover:text-foreground">Pricing</Link>
-            <DarkModeToggle />
-            <Link to="/login"><Button variant="outline" size="sm">Sign In</Button></Link>
-            <Link to="/book"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button></Link>
-          </div>
-          <Sheet>
-            <SheetTrigger asChild className="md:hidden"><Button variant="ghost" size="sm" aria-label="Open menu"><Menu className="h-5 w-5" /></Button></SheetTrigger>
-            <SheetContent side="right" className="w-64">
-              <div className="mt-8 flex flex-col gap-4">
-                <Link to="/" className="text-sm font-medium">Home</Link>
-                <Link to="/templates" className="text-sm font-medium">Templates</Link>
-                <Link to="/fee-calculator" className="text-sm font-medium">Pricing</Link>
-                <Link to="/login"><Button variant="outline" className="w-full">Sign In</Button></Link>
-                <Link to="/book"><Button className="w-full bg-accent text-accent-foreground">Book Now</Button></Link>
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
-      </nav>
-
+    <PageShell>
       {/* Hero */}
-      <section className="bg-gradient-navy py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="mb-4 font-display text-4xl font-bold text-primary-foreground md:text-5xl">Services</h1>
-          <p className="mx-auto max-w-2xl text-lg text-primary-foreground/70">
+      <section className="relative overflow-hidden bg-gradient-hero py-16">
+        <div className="absolute inset-0 gradient-mesh" />
+        <div className="container relative mx-auto px-4 text-center">
+          <h1 className="mb-4 font-display text-4xl font-bold text-white md:text-5xl">Services</h1>
+          <p className="mx-auto max-w-2xl text-lg text-white/60">
             Fast, secure notary and document services for individuals and businesses in Ohio.
             Transparent pricing, secure storage, and business plans available.
           </p>
         </div>
       </section>
 
-      {/* "What Do I Need?" Quick Helper */}
       <WhatDoINeed />
 
       {/* Search + Filter */}
@@ -223,7 +183,6 @@ export default function Services() {
           />
         </div>
 
-        {/* Phase 2.3: Horizontal scroll on mobile */}
         <Tabs value={activeCategory} onValueChange={setActiveCategory}>
           <TabsList className="mb-8 overflow-x-auto flex-nowrap h-auto gap-1 w-full justify-start sm:flex-wrap sm:justify-center">
             <TabsTrigger value="all">All Services</TabsTrigger>
@@ -254,14 +213,14 @@ export default function Services() {
                     const IconComp = iconMap[s.icon || "FileText"] || FileText;
                     const { url: actionUrl, label: actionLabel } = getServiceAction(s);
                     return (
-                      <motion.div key={s.id} variants={fadeUp} custom={i + 1}>
-                        <Card className="group h-full border-border/50 transition-all hover:border-accent/30 hover:shadow-lg">
+                      <motion.div key={s.id} variants={scaleReveal} custom={i + 1}>
+                        <Card className="group h-full hover:border-primary/20">
                           <CardContent className="flex h-full flex-col p-6">
                             <div className="mb-3 flex items-start justify-between">
-                              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10 group-hover:bg-accent/20 transition-colors">
-                                <IconComp className="h-5 w-5 text-accent" />
+                              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/15 transition-colors">
+                                <IconComp className="h-5 w-5 text-primary" />
                               </div>
-                              <Badge variant="outline" className="text-xs">{formatPrice(s)}</Badge>
+                              <Badge variant="outline" className="text-xs font-mono-accent">{formatPrice(s)}</Badge>
                             </div>
                             <h3 className="mb-1 font-display text-base font-semibold text-foreground">{s.name}</h3>
                             <p className="mb-4 flex-1 text-sm text-muted-foreground">{s.description || s.short_description}</p>
@@ -272,7 +231,7 @@ export default function Services() {
                                 </Button>
                               </Link>
                               <Link to={actionUrl} className="flex-1">
-                                <Button size="sm" variant="outline" className="w-full group-hover:bg-accent group-hover:text-accent-foreground transition-colors">
+                                <Button size="sm" variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                                   {actionLabel} <ChevronRight className="ml-1 h-3 w-3" />
                                 </Button>
                               </Link>
@@ -295,17 +254,13 @@ export default function Services() {
           <h2 className="mb-4 font-display text-2xl font-bold text-foreground">Ready to Get Started?</h2>
           <p className="mb-6 text-muted-foreground">Book an appointment or contact us for a custom quote.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link to="/book"><Button size="lg" className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Appointment</Button></Link>
+            <Link to="/book"><Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">Book Appointment</Button></Link>
             <Link to="/fee-calculator"><Button size="lg" variant="outline">View Pricing</Button></Link>
             <Link to="/loan-signing"><Button size="lg" variant="outline">Loan Signing Partnership</Button></Link>
             <Link to="/ron-check"><Button size="lg" variant="outline">RON Eligibility Checker</Button></Link>
           </div>
         </div>
       </section>
-
-      <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Notar — Ohio Notary & Document Services</p>
-      </footer>
-    </div>
+    </PageShell>
   );
 }

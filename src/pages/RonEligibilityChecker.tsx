@@ -275,14 +275,14 @@ export default function RonEligibilityChecker() {
           <div className="flex items-center gap-3">
             <DarkModeToggle />
             <Link to="/ron-info"><Button variant="outline" size="sm"><ChevronLeft className="mr-1 h-3 w-3" /> RON Info</Button></Link>
-            <Link to="/book"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button></Link>
+            <Link to="/book"><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90">Book Now</Button></Link>
           </div>
         </div>
       </nav>
 
-      <section className="bg-gradient-navy py-12 md:py-16">
+      <section className="bg-gradient-hero py-12 md:py-16">
         <div className="container mx-auto px-4 text-center">
-          <Badge className="mb-4 border-gold/30 bg-gold/10 text-gold-light">
+          <Badge className="mb-4 border-primary/20 bg-primary/10 text-primary">
             <Monitor className="mr-1 h-3 w-3" /> RON Eligibility Tool
           </Badge>
           <h1 className="mb-3 font-display text-3xl font-bold text-primary-foreground md:text-4xl">
@@ -345,7 +345,7 @@ export default function RonEligibilityChecker() {
                 <Button
                   onClick={handleCheck}
                   disabled={!canCheck}
-                  className="w-full bg-accent text-accent-foreground hover:bg-gold-dark"
+                  className="w-full bg-gradient-primary text-white hover:opacity-90"
                   size="lg"
                 >
                   <Shield className="mr-2 h-4 w-4" /> Check Eligibility
@@ -369,7 +369,7 @@ export default function RonEligibilityChecker() {
                     <ul className="space-y-2 mb-4">
                       {result.details.map((d, i) => (
                         <li key={i} className="flex items-start gap-2 text-sm">
-                          <CheckCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-accent" />
+                          <CheckCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
                           <span>{d}</span>
                         </li>
                       ))}
@@ -386,7 +386,7 @@ export default function RonEligibilityChecker() {
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-3">
               <Link to="/book" className="flex-1">
-                <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" size="lg">
+                <Button className="w-full bg-gradient-primary text-white hover:opacity-90" size="lg">
                   {result.level === "red" ? "Book In-Person Appointment" : "Book RON Session"} <ChevronRight className="ml-1 h-4 w-4" />
                 </Button>
               </Link>
@@ -406,7 +406,7 @@ export default function RonEligibilityChecker() {
         <div className="mt-12 grid gap-4 sm:grid-cols-3">
           <Card className="border-border/50 hover:shadow-md transition-shadow">
             <CardContent className="p-5 text-center">
-              <Globe className="mx-auto mb-2 h-6 w-6 text-accent" />
+              <Globe className="mx-auto mb-2 h-6 w-6 text-primary" />
               <h3 className="font-display text-sm font-semibold mb-1">Learn About RON</h3>
               <p className="text-xs text-muted-foreground mb-3">Full comparison, state acceptance, and FAQ</p>
               <Link to="/ron-info"><Button variant="outline" size="sm" className="w-full">RON Info <ArrowRight className="ml-1 h-3 w-3" /></Button></Link>
@@ -414,7 +414,7 @@ export default function RonEligibilityChecker() {
           </Card>
           <Card className="border-border/50 hover:shadow-md transition-shadow">
             <CardContent className="p-5 text-center">
-              <FileText className="mx-auto mb-2 h-6 w-6 text-accent" />
+              <FileText className="mx-auto mb-2 h-6 w-6 text-primary" />
               <h3 className="font-display text-sm font-semibold mb-1">Document Templates</h3>
               <p className="text-xs text-muted-foreground mb-3">Free templates for common documents</p>
               <Link to="/templates"><Button variant="outline" size="sm" className="w-full">View Templates <ArrowRight className="ml-1 h-3 w-3" /></Button></Link>
@@ -422,7 +422,7 @@ export default function RonEligibilityChecker() {
           </Card>
           <Card className="border-border/50 hover:shadow-md transition-shadow">
             <CardContent className="p-5 text-center">
-              <Briefcase className="mx-auto mb-2 h-6 w-6 text-accent" />
+              <Briefcase className="mx-auto mb-2 h-6 w-6 text-primary" />
               <h3 className="font-display text-sm font-semibold mb-1">All Services</h3>
               <p className="text-xs text-muted-foreground mb-3">View our full catalog of notary & document services</p>
               <Link to="/services"><Button variant="outline" size="sm" className="w-full">View Services <ArrowRight className="ml-1 h-3 w-3" /></Button></Link>

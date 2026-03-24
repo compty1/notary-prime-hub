@@ -88,7 +88,7 @@ export default function SubscriptionPlans() {
       </nav>
 
       {/* Hero */}
-      <section className="bg-gradient-navy py-16">
+      <section className="bg-gradient-hero py-16">
         <div className="container mx-auto px-4 text-center">
           <h1 className="mb-4 font-display text-4xl font-bold text-primary-foreground">Business Plans</h1>
           <p className="mx-auto max-w-2xl text-lg text-primary-foreground/70">
@@ -105,13 +105,13 @@ export default function SubscriptionPlans() {
               <Card className={`h-full ${plan.highlight ? "border-2 border-accent shadow-lg relative" : "border-border/50"}`}>
                 {plan.highlight && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-accent text-accent-foreground">Most Popular</Badge>
+                    <Badge className="bg-gradient-primary text-white">Most Popular</Badge>
                   </div>
                 )}
                 <CardContent className="flex h-full flex-col p-6">
                   <div className="mb-4 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10">
-                      <plan.icon className="h-5 w-5 text-accent" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                      <plan.icon className="h-5 w-5 text-primary" />
                     </div>
                     <div>
                       <h3 className="font-display text-lg font-bold">{plan.name}</h3>
@@ -125,13 +125,13 @@ export default function SubscriptionPlans() {
                   <ul className="mb-6 flex-1 space-y-2">
                     {plan.features.map(f => (
                       <li key={f} className="flex items-start gap-2 text-sm">
-                        <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-accent" />
+                        <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
                         <span>{f}</span>
                       </li>
                     ))}
                   </ul>
                   <Link to={plan.price === "Custom" ? "/#contact" : "/signup"}>
-                    <Button className={`w-full ${plan.highlight ? "bg-accent text-accent-foreground hover:bg-gold-dark" : ""}`} variant={plan.highlight ? "default" : "outline"} size="lg">
+                    <Button className={`w-full ${plan.highlight ? "bg-gradient-primary text-white hover:opacity-90" : ""}`} variant={plan.highlight ? "default" : "outline"} size="lg">
                       {plan.cta}
                     </Button>
                   </Link>
@@ -146,7 +146,7 @@ export default function SubscriptionPlans() {
       <section className="bg-muted/30 py-16">
         <div className="container mx-auto max-w-4xl px-4">
           <div className="text-center mb-10">
-            <Badge className="mb-3 bg-accent/10 text-accent"><Award className="mr-1 h-3 w-3" /> Partner Program</Badge>
+            <Badge className="mb-3 bg-primary/10 text-primary"><Award className="mr-1 h-3 w-3" /> Partner Program</Badge>
             <h2 className="font-display text-2xl font-bold mb-2">White-Label & API Partners</h2>
             <p className="text-muted-foreground">Integrate notarization into your platform with our partner programs.</p>
           </div>
@@ -161,7 +161,7 @@ export default function SubscriptionPlans() {
             ))}
           </div>
           <div className="mt-8 text-center">
-            <Link to="/join"><Button size="lg" className="bg-accent text-accent-foreground hover:bg-gold-dark">Apply for Partnership</Button></Link>
+            <Link to="/join"><Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">Apply for Partnership</Button></Link>
           </div>
         </div>
       </section>

@@ -130,7 +130,7 @@ export default function FeeCalculator() {
 
         <div className="grid gap-6 md:grid-cols-2">
           <Card className="border-border/50">
-            <CardHeader><CardTitle className="font-display flex items-center gap-2"><Calculator className="h-5 w-5 text-accent" /> Configure</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="font-display flex items-center gap-2"><Calculator className="h-5 w-5 text-primary" /> Configure</CardTitle></CardHeader>
             <CardContent className="space-y-5">
               {settingsLoading ? (
                 <div className="space-y-4">
@@ -154,9 +154,9 @@ export default function FeeCalculator() {
                   </div>
                   {notarizationType === "in_person" && (
                     <div className="space-y-3">
-                      <div className="rounded-lg border border-accent/20 bg-accent/5 p-3">
+                      <div className="rounded-lg border border-accent/20 bg-primary/5 p-3">
                         <p className="text-xs text-muted-foreground flex items-start gap-2">
-                          <Info className="h-4 w-4 flex-shrink-0 text-accent mt-0.5" />
+                          <Info className="h-4 w-4 flex-shrink-0 text-primary mt-0.5" />
                           <span>
                             Travel distance is calculated from our central meeting point at <strong>Hollywood Casino on West Broad Street, Columbus</strong> — 
                             a convenient, central location for fair and efficient travel fees for both notary and client.
@@ -177,7 +177,7 @@ export default function FeeCalculator() {
                       {calculatedDistance !== null && !manualOverride && (
                         <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2">
                           <span className="text-sm text-muted-foreground">Calculated distance:</span>
-                          <span className="text-sm font-semibold text-accent">{calculatedDistance} miles</span>
+                          <span className="text-sm font-semibold text-primary">{calculatedDistance} miles</span>
                         </div>
                       )}
                       <div className="flex items-center justify-between">
@@ -216,8 +216,8 @@ export default function FeeCalculator() {
           </Card>
 
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-            <Card className="border-accent/30 bg-accent/5">
-              <CardHeader><CardTitle className="font-display flex items-center gap-2"><DollarSign className="h-5 w-5 text-accent" /> Estimated Total</CardTitle></CardHeader>
+            <Card className="border-primary/20 bg-primary/5">
+              <CardHeader><CardTitle className="font-display flex items-center gap-2"><DollarSign className="h-5 w-5 text-primary" /> Estimated Total</CardTitle></CardHeader>
               <CardContent>
                 {settingsLoading ? (
                   <div className="space-y-3">
@@ -237,11 +237,11 @@ export default function FeeCalculator() {
                     <Separator className="my-3" />
                     <div className="flex justify-between text-lg font-bold">
                       <span>Total</span>
-                      <span className="text-accent">${total.toFixed(2)}</span>
+                      <span className="text-primary">${total.toFixed(2)}</span>
                     </div>
                     <p className="mt-3 text-xs text-muted-foreground">* Estimates only. Final pricing may vary based on document complexity and specific requirements.</p>
                     <Link to={bookingUrl} className="mt-4 block">
-                      <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark">Book Appointment <ChevronRight className="ml-1 h-4 w-4" /></Button>
+                      <Button className="w-full bg-gradient-primary text-white hover:opacity-90">Book Appointment <ChevronRight className="ml-1 h-4 w-4" /></Button>
                     </Link>
                   </>
                 )}

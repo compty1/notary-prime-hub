@@ -221,8 +221,8 @@ export default function DocumentDigitize() {
           ].map((s, i) => (
             <div key={s.key} className="flex items-center gap-2">
               <div className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                step === s.key ? "bg-accent text-accent-foreground" :
-                ["processing", "edit", "done"].indexOf(step) > ["upload", "processing", "edit"].indexOf(s.key) ? "bg-accent/20 text-accent" :
+                step === s.key ? "bg-gradient-primary text-white" :
+                ["processing", "edit", "done"].indexOf(step) > ["upload", "processing", "edit"].indexOf(s.key) ? "bg-primary/20 text-primary" :
                 "bg-muted text-muted-foreground"
               }`}>
                 <s.icon className={`h-4 w-4 ${step === "processing" && s.key === "processing" ? "animate-spin" : ""}`} />
@@ -242,12 +242,12 @@ export default function DocumentDigitize() {
               </CardHeader>
               <CardContent>
                 <div
-                  className="rounded-lg border-2 border-dashed border-accent/30 bg-accent/5 p-12 text-center cursor-pointer hover:border-accent/50 transition-colors"
+                  className="rounded-lg border-2 border-dashed border-primary/20 bg-primary/5 p-12 text-center cursor-pointer hover:border-primary/50 transition-colors"
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={handleDrop}
                   onClick={() => document.getElementById("digi-file-input")?.click()}
                 >
-                  <Upload className="mx-auto mb-4 h-12 w-12 text-accent/60" />
+                  <Upload className="mx-auto mb-4 h-12 w-12 text-primary/60" />
                   <p className="mb-2 font-medium text-foreground">Drag & drop or click to upload</p>
                   <p className="text-sm text-muted-foreground">Images (JPG, PNG) or PDF documents • Multiple files supported</p>
                   <input
@@ -265,11 +265,11 @@ export default function DocumentDigitize() {
                     <p className="text-sm font-medium">{files.length} file(s) selected:</p>
                     {files.map((f, i) => (
                       <div key={i} className="flex items-center justify-between rounded border border-border/50 p-2 text-sm">
-                        <span className="flex items-center gap-2"><FileText className="h-4 w-4 text-accent" /> {f.name}</span>
+                        <span className="flex items-center gap-2"><FileText className="h-4 w-4 text-primary" /> {f.name}</span>
                         <span className="text-muted-foreground">{(f.size / 1024).toFixed(0)} KB</span>
                       </div>
                     ))}
-                    <Button onClick={processFiles} className="mt-4 w-full bg-accent text-accent-foreground hover:bg-gold-dark">
+                    <Button onClick={processFiles} className="mt-4 w-full bg-gradient-primary text-white hover:opacity-90">
                       <Eye className="mr-2 h-4 w-4" /> Digitize {files.length} Document{files.length > 1 ? "s" : ""}
                     </Button>
                   </div>
@@ -294,7 +294,7 @@ export default function DocumentDigitize() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <Card className="border-border/50">
               <CardContent className="py-16 text-center">
-                <Loader2 className="mx-auto mb-4 h-12 w-12 animate-spin text-accent" />
+                <Loader2 className="mx-auto mb-4 h-12 w-12 animate-spin text-primary" />
                 <h2 className="mb-2 font-display text-xl font-bold">Processing Documents...</h2>
                 <p className="mb-4 text-muted-foreground">AI is transcribing your documents with OCR</p>
                 <div className="mx-auto max-w-xs">
@@ -317,7 +317,7 @@ export default function DocumentDigitize() {
                     key={i}
                     size="sm"
                     variant={i === activeDocIndex ? "default" : "outline"}
-                    className={i === activeDocIndex ? "bg-accent text-accent-foreground" : ""}
+                    className={i === activeDocIndex ? "bg-gradient-primary text-white" : ""}
                     onClick={() => switchDoc(i)}
                   >
                     <FileText className="mr-1 h-3 w-3" /> {doc.fileName}
@@ -342,19 +342,19 @@ export default function DocumentDigitize() {
               <CardContent>
                 {/* Toolbar */}
                 <div className="mb-2 flex flex-wrap items-center gap-1 rounded-lg border border-border/50 bg-muted/30 p-2">
-                  <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().toggleBold().run()} className={editor.isActive("bold") ? "bg-accent/20" : ""}><Bold className="h-4 w-4" /></Button>
-                  <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().toggleItalic().run()} className={editor.isActive("italic") ? "bg-accent/20" : ""}><Italic className="h-4 w-4" /></Button>
-                  <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().toggleUnderline().run()} className={editor.isActive("underline") ? "bg-accent/20" : ""}><UnderlineIcon className="h-4 w-4" /></Button>
+                  <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().toggleBold().run()} className={editor.isActive("bold") ? "bg-primary/20" : ""}><Bold className="h-4 w-4" /></Button>
+                  <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().toggleItalic().run()} className={editor.isActive("italic") ? "bg-primary/20" : ""}><Italic className="h-4 w-4" /></Button>
+                  <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().toggleUnderline().run()} className={editor.isActive("underline") ? "bg-primary/20" : ""}><UnderlineIcon className="h-4 w-4" /></Button>
                   <div className="h-5 w-px bg-border mx-1" />
-                  <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} className={editor.isActive("heading", { level: 1 }) ? "bg-accent/20" : ""}><Heading1 className="h-4 w-4" /></Button>
-                  <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={editor.isActive("heading", { level: 2 }) ? "bg-accent/20" : ""}><Heading2 className="h-4 w-4" /></Button>
+                  <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} className={editor.isActive("heading", { level: 1 }) ? "bg-primary/20" : ""}><Heading1 className="h-4 w-4" /></Button>
+                  <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={editor.isActive("heading", { level: 2 }) ? "bg-primary/20" : ""}><Heading2 className="h-4 w-4" /></Button>
                   <div className="h-5 w-px bg-border mx-1" />
-                  <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().setTextAlign("left").run()} className={editor.isActive({ textAlign: "left" }) ? "bg-accent/20" : ""}><AlignLeft className="h-4 w-4" /></Button>
-                  <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().setTextAlign("center").run()} className={editor.isActive({ textAlign: "center" }) ? "bg-accent/20" : ""}><AlignCenter className="h-4 w-4" /></Button>
-                  <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().setTextAlign("right").run()} className={editor.isActive({ textAlign: "right" }) ? "bg-accent/20" : ""}><AlignRight className="h-4 w-4" /></Button>
+                  <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().setTextAlign("left").run()} className={editor.isActive({ textAlign: "left" }) ? "bg-primary/20" : ""}><AlignLeft className="h-4 w-4" /></Button>
+                  <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().setTextAlign("center").run()} className={editor.isActive({ textAlign: "center" }) ? "bg-primary/20" : ""}><AlignCenter className="h-4 w-4" /></Button>
+                  <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().setTextAlign("right").run()} className={editor.isActive({ textAlign: "right" }) ? "bg-primary/20" : ""}><AlignRight className="h-4 w-4" /></Button>
                   <div className="h-5 w-px bg-border mx-1" />
-                  <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().toggleBulletList().run()} className={editor.isActive("bulletList") ? "bg-accent/20" : ""}><List className="h-4 w-4" /></Button>
-                  <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={editor.isActive("orderedList") ? "bg-accent/20" : ""}><ListOrdered className="h-4 w-4" /></Button>
+                  <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().toggleBulletList().run()} className={editor.isActive("bulletList") ? "bg-primary/20" : ""}><List className="h-4 w-4" /></Button>
+                  <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={editor.isActive("orderedList") ? "bg-primary/20" : ""}><ListOrdered className="h-4 w-4" /></Button>
                   <div className="h-5 w-px bg-border mx-1" />
                   <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().undo().run()}><Undo className="h-4 w-4" /></Button>
                   <Button size="sm" variant="ghost" onClick={() => editor.chain().focus().redo().run()}><Redo className="h-4 w-4" /></Button>
@@ -367,7 +367,7 @@ export default function DocumentDigitize() {
 
                 {/* Export actions */}
                 <div className="mt-4 flex flex-wrap gap-3">
-                  <Button onClick={handleSaveToVault} disabled={saving} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+                  <Button onClick={handleSaveToVault} disabled={saving} className="bg-gradient-primary text-white hover:opacity-90">
                     {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FolderOpen className="mr-2 h-4 w-4" />}
                     Save to Vault
                   </Button>

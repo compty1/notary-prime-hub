@@ -125,13 +125,13 @@ export default function AdminChat() {
                   const name = profiles[uid] || uid.slice(0, 8);
                   return (
                     <div key={uid} onClick={() => selectConversation(uid)}
-                      className={`flex items-center gap-2 p-3 rounded-lg cursor-pointer transition-colors ${selectedUser === uid ? "bg-accent/10" : "hover:bg-muted"}`}>
+                      className={`flex items-center gap-2 p-3 rounded-lg cursor-pointer transition-colors ${selectedUser === uid ? "bg-primary/10" : "hover:bg-muted"}`}>
                       <User className="h-5 w-5 text-muted-foreground" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{name}</p>
                         {lastMsg && <p className="text-xs text-muted-foreground truncate">{lastMsg.message}</p>}
                       </div>
-                      {unread > 0 && <Badge className="bg-accent text-accent-foreground text-xs">{unread}</Badge>}
+                      {unread > 0 && <Badge className="bg-gradient-primary text-white text-xs">{unread}</Badge>}
                     </div>
                   );
                 })
@@ -144,14 +144,14 @@ export default function AdminChat() {
         <Card className="border-border/50 md:col-span-2 flex flex-col">
           <CardHeader className="pb-2 border-b">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <MessageSquare className="h-4 w-4 text-accent" />
+              <MessageSquare className="h-4 w-4 text-primary" />
               {selectedUser ? `Chat with ${profiles[selectedUser] || selectedUser.slice(0, 8)}` : "Select a conversation"}
             </CardTitle>
           </CardHeader>
           <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3" style={{ maxHeight: "450px" }}>
             {currentMessages.map((msg) => (
               <div key={msg.id} className={`flex ${msg.is_admin ? "justify-end" : "justify-start"}`}>
-                <div className={`max-w-[70%] rounded-lg px-3 py-2 text-sm ${msg.is_admin ? "bg-accent text-accent-foreground" : "bg-muted text-foreground"}`}>
+                <div className={`max-w-[70%] rounded-lg px-3 py-2 text-sm ${msg.is_admin ? "bg-gradient-primary text-white" : "bg-muted text-foreground"}`}>
                   <div className="flex items-center gap-1 mb-1">
                     {msg.is_admin ? <Shield className="h-3 w-3" /> : <User className="h-3 w-3" />}
                     <span className="text-xs opacity-70">{new Date(msg.created_at).toLocaleTimeString()}</span>
@@ -164,7 +164,7 @@ export default function AdminChat() {
           {selectedUser && (
             <div className="border-t p-3 flex gap-2">
               <Input value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Type a reply..." onKeyDown={(e) => e.key === "Enter" && sendMessage()} />
-              <Button size="sm" onClick={sendMessage} disabled={sending} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+              <Button size="sm" onClick={sendMessage} disabled={sending} className="bg-gradient-primary text-white hover:opacity-90">
                 {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               </Button>
             </div>

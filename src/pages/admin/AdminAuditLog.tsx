@@ -288,7 +288,7 @@ export default function AdminAuditLog() {
                             {entityLink ? (
                               <Link
                                 to={entityLink}
-                                className="text-xs text-accent hover:underline inline-flex items-center gap-1"
+                                className="text-xs text-primary hover:underline inline-flex items-center gap-1"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 {log.entity_type || "—"}

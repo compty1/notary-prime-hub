@@ -111,15 +111,15 @@ export default function LoanSigningServices() {
           <div className="flex items-center gap-3">
             <DarkModeToggle />
             <Link to="/services"><Button variant="outline" size="sm"><ChevronLeft className="mr-1 h-3 w-3" /> All Services</Button></Link>
-            <Link to="/book"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button></Link>
+            <Link to="/book"><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90">Book Now</Button></Link>
           </div>
         </div>
       </nav>
 
       {/* Hero */}
-      <section className="bg-gradient-navy py-16 md:py-20">
+      <section className="bg-gradient-hero py-16 md:py-20">
         <div className="container mx-auto px-4 text-center">
-          <Badge className="mb-4 border-gold/30 bg-gold/10 text-gold-light">
+          <Badge className="mb-4 border-primary/20 bg-primary/10 text-primary">
             <Building2 className="mr-1 h-3 w-3" /> For Title Companies & Lenders
           </Badge>
           <h1 className="mb-4 font-display text-3xl font-bold text-primary-foreground md:text-5xl">
@@ -140,7 +140,7 @@ export default function LoanSigningServices() {
               <motion.div key={cap.title} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
                 <Card className="h-full border-border/50">
                   <CardContent className="p-5">
-                    <cap.icon className="mb-3 h-8 w-8 text-accent" />
+                    <cap.icon className="mb-3 h-8 w-8 text-primary" />
                     <h3 className="mb-1 font-display text-base font-semibold">{cap.title}</h3>
                     <p className="text-sm text-muted-foreground">{cap.desc}</p>
                   </CardContent>
@@ -160,7 +160,7 @@ export default function LoanSigningServices() {
               <div className="grid gap-2 sm:grid-cols-2">
                 {signingTypes.map(type => (
                   <div key={type} className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
+                    <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
                     <span>{type}</span>
                   </div>
                 ))}
@@ -171,7 +171,7 @@ export default function LoanSigningServices() {
               <Card className="border-border/50">
                 <CardContent className="p-5 space-y-4">
                   <div className="flex items-start gap-3">
-                    <Clock className="h-5 w-5 text-accent mt-0.5" />
+                    <Clock className="h-5 w-5 text-primary mt-0.5" />
                     <div>
                       <p className="font-medium">Office Hours</p>
                       <p className="text-sm text-muted-foreground">Monday, Tuesday, Wednesday: 10:00 AM – 7:00 PM</p>
@@ -179,7 +179,7 @@ export default function LoanSigningServices() {
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <Phone className="h-5 w-5 text-accent mt-0.5" />
+                    <Phone className="h-5 w-5 text-primary mt-0.5" />
                     <div>
                       <p className="font-medium">Response Commitment</p>
                       <p className="text-sm text-muted-foreground">Business calls returned within 24 hours</p>
@@ -187,14 +187,14 @@ export default function LoanSigningServices() {
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <Mail className="h-5 w-5 text-accent mt-0.5" />
+                    <Mail className="h-5 w-5 text-primary mt-0.5" />
                     <div>
                       <p className="font-medium">Direct Contact</p>
                       <p className="text-sm text-muted-foreground">
-                        <a href="tel:6143006890" className="hover:text-accent">(614) 300-6890</a>
+                        <a href="tel:6143006890" className="hover:text-primary">(614) 300-6890</a>
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        <a href="mailto:contact@notardex.com" className="hover:text-accent">contact@notardex.com</a>
+                        <a href="mailto:contact@notardex.com" className="hover:text-primary">contact@notardex.com</a>
                       </p>
                     </div>
                   </div>
@@ -225,7 +225,7 @@ export default function LoanSigningServices() {
                   </p>
                   <div className="flex justify-center gap-3">
                     <Link to="/services"><Button variant="outline">View All Services</Button></Link>
-                    <Link to="/"><Button className="bg-accent text-accent-foreground hover:bg-gold-dark">Back to Home</Button></Link>
+                    <Link to="/"><Button className="bg-gradient-primary text-white hover:opacity-90">Back to Home</Button></Link>
                   </div>
                 </CardContent>
               </Card>
@@ -287,7 +287,7 @@ export default function LoanSigningServices() {
                     <Label>Additional Details</Label>
                     <Textarea value={form.message} onChange={e => update("message", e.target.value)} placeholder="Any other information about your signing needs..." rows={3} maxLength={500} />
                   </div>
-                  <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" size="lg" disabled={submitting}>
+                  <Button type="submit" className="w-full bg-gradient-primary text-white hover:opacity-90" size="lg" disabled={submitting}>
                     {submitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : <><Send className="mr-2 h-4 w-4" /> Submit Partnership Inquiry</>}
                   </Button>
                 </form>

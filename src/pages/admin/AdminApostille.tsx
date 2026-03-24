@@ -217,14 +217,14 @@ export default function AdminApostille() {
           <a href="https://www.ohiosos.gov/businesses/apostilles-authentications/" target="_blank" rel="noopener noreferrer">
             <Button size="sm" variant="outline"><ExternalLink className="mr-1 h-3 w-3" /> Ohio SOS Portal</Button>
           </a>
-          <Button size="sm" onClick={() => setCreateOpen(true)} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+          <Button size="sm" onClick={() => setCreateOpen(true)} className="bg-gradient-primary text-white hover:opacity-90">
             <Plus className="mr-1 h-4 w-4" /> New Request
           </Button>
         </div>
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-accent" /></div>
+        <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
       ) : requests.length === 0 ? (
         <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground">
           <Package className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
@@ -236,12 +236,12 @@ export default function AdminApostille() {
             const currentIdx = statusFlow.indexOf(req.status);
             return (
               <motion.div key={req.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <Card className="border-border/50 cursor-pointer hover:border-accent/50 transition-colors" onClick={() => openDetail(req)}>
+                <Card className="border-border/50 cursor-pointer hover:border-primary/50 transition-colors" onClick={() => openDetail(req)}>
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between gap-4">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <FileText className="h-4 w-4 text-accent flex-shrink-0" />
+                          <FileText className="h-4 w-4 text-primary flex-shrink-0" />
                           <span className="font-medium text-sm truncate">{req.document_description}</span>
                           <Badge className={statusColors[req.status] || "bg-muted text-muted-foreground"}>
                             {statusLabels[req.status] || req.status}
@@ -287,7 +287,7 @@ export default function AdminApostille() {
               <>
                 <DialogHeader>
                   <DialogTitle className="font-display flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-accent" />
+                    <FileText className="h-5 w-5 text-primary" />
                     {detailReq.document_description}
                   </DialogTitle>
                 </DialogHeader>
@@ -296,7 +296,7 @@ export default function AdminApostille() {
                 <div className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
                   {statusFlow.map((s, i) => (
                     <button key={s} className="flex flex-col items-center gap-1 group" onClick={() => updateStatus(detailReq.id, s)}>
-                      <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${i <= currentIdx ? "bg-accent text-accent-foreground" : "bg-muted-foreground/20 text-muted-foreground group-hover:bg-accent/30"}`}>
+                      <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${i <= currentIdx ? "bg-gradient-primary text-white" : "bg-muted-foreground/20 text-muted-foreground group-hover:bg-accent/30"}`}>
                         {i < currentIdx ? <CheckCircle2 className="h-4 w-4" /> : i + 1}
                       </div>
                       <span className={`text-[10px] ${i <= currentIdx ? "text-foreground font-medium" : "text-muted-foreground"}`}>
@@ -343,10 +343,10 @@ export default function AdminApostille() {
                   <div className="grid grid-cols-2 gap-2">
                     {CHECKLIST_ITEMS.map(item => (
                       <button key={item.key}
-                        className={`flex items-center gap-2 rounded-lg border p-2 text-xs text-left transition-colors ${checklist[item.key] ? "border-accent/50 bg-accent/5" : "border-border/50 hover:border-accent/30"}`}
+                        className={`flex items-center gap-2 rounded-lg border p-2 text-xs text-left transition-colors ${checklist[item.key] ? "border-primary/50 bg-primary/5" : "border-border/50 hover:border-primary/20"}`}
                         onClick={() => toggleCheckItem(item.key)}>
                         <div className={`h-4 w-4 rounded border flex items-center justify-center ${checklist[item.key] ? "bg-accent border-accent" : "border-muted-foreground/30"}`}>
-                          {checklist[item.key] && <CheckCircle2 className="h-3 w-3 text-accent-foreground" />}
+                          {checklist[item.key] && <CheckCircle2 className="h-3 w-3 text-primary-foreground" />}
                         </div>
                         {item.label}
                       </button>
@@ -421,7 +421,7 @@ export default function AdminApostille() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-            <Button className="bg-accent text-accent-foreground hover:bg-gold-dark" disabled={!newClientId || !newDesc} onClick={async () => {
+            <Button className="bg-gradient-primary text-white hover:opacity-90" disabled={!newClientId || !newDesc} onClick={async () => {
               const { error } = await supabase.from("apostille_requests").insert({
                 document_description: newDesc, notes: newNotes || null, client_id: newClientId, fee: parseFloat(newFee) || 75,
                 destination_country: newDestCountry || null, document_count: parseInt(newDocCount) || 1,

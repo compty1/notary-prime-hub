@@ -134,7 +134,7 @@ export default function AdminSettings() {
           <h1 className="font-display text-2xl font-bold text-foreground">Platform Settings</h1>
           <p className="text-sm text-muted-foreground">Configure pricing, credentials, platform integrations, and compliance reminders</p>
         </div>
-        <Button onClick={handleSave} disabled={saving} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+        <Button onClick={handleSave} disabled={saving} className="bg-gradient-primary text-white hover:opacity-90">
           {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />} Save Changes
         </Button>
       </div>
@@ -144,7 +144,7 @@ export default function AdminSettings() {
         <Card className="border-border/50 lg:col-span-2">
           <CardHeader>
             <CardTitle className="font-display text-lg flex items-center gap-2">
-              <Shield className="h-5 w-5 text-accent" /> Notary Credentials & Commission
+              <Shield className="h-5 w-5 text-primary" /> Notary Credentials & Commission
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -241,7 +241,7 @@ export default function AdminSettings() {
         <Card className="border-border/50">
           <CardHeader>
             <CardTitle className="font-display text-lg flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-accent" /> Pricing Configuration
+              <DollarSign className="h-5 w-5 text-primary" /> Pricing Configuration
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -258,7 +258,7 @@ export default function AdminSettings() {
         <Card className="border-border/50">
           <CardHeader>
             <CardTitle className="font-display text-lg flex items-center gap-2">
-              <Monitor className="h-5 w-5 text-accent" /> Platform Integration
+              <Monitor className="h-5 w-5 text-primary" /> Platform Integration
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -273,7 +273,7 @@ export default function AdminSettings() {
 
             {/* KBA Integration Setup */}
             <Collapsible>
-              <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-accent transition-colors">
+              <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors">
                 <Shield className="h-4 w-4" /> KBA Provider Configuration
               </CollapsibleTrigger>
               <CollapsibleContent className="mt-3 space-y-3 rounded-lg border border-border/50 p-4">
@@ -311,7 +311,7 @@ export default function AdminSettings() {
         <Card className="border-border/50 lg:col-span-2">
           <CardHeader>
             <CardTitle className="font-display text-lg flex items-center gap-2">
-              <Shield className="h-5 w-5 text-accent" /> Ohio RON Compliance Check
+              <Shield className="h-5 w-5 text-primary" /> Ohio RON Compliance Check
               {(() => {
                 const checks = [
                   !!editValues.commission_number,
@@ -356,7 +356,7 @@ export default function AdminSettings() {
         <Card className="border-border/50">
           <CardHeader>
             <CardTitle className="font-display text-lg flex items-center gap-2">
-              <MapPin className="h-5 w-5 text-accent" /> Business Settings
+              <MapPin className="h-5 w-5 text-primary" /> Business Settings
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -373,7 +373,7 @@ export default function AdminSettings() {
         <Card className="border-border/50">
           <CardHeader>
             <CardTitle className="font-display text-lg flex items-center gap-2">
-              <CalendarClock className="h-5 w-5 text-accent" /> ID Expiration Monitoring
+              <CalendarClock className="h-5 w-5 text-primary" /> ID Expiration Monitoring
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -403,7 +403,7 @@ export default function AdminSettings() {
         <Card className="border-border/50">
           <CardHeader>
             <CardTitle className="font-display text-lg flex items-center gap-2">
-              <Monitor className="h-5 w-5 text-accent" /> Zoom Meetings
+              <Monitor className="h-5 w-5 text-primary" /> Zoom Meetings
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -419,7 +419,7 @@ export default function AdminSettings() {
         <Card className="border-border/50 lg:col-span-2">
           <CardHeader>
             <CardTitle className="font-display text-lg flex items-center gap-2">
-              <Mail className="h-5 w-5 text-accent" /> Email Notification Templates
+              <Mail className="h-5 w-5 text-primary" /> Email Notification Templates
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">

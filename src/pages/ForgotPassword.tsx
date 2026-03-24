@@ -87,11 +87,11 @@ export default function ResetPassword() {
           {success ? (
             <div className="flex flex-col items-center gap-4 py-4">
               <CheckCircle className="h-12 w-12 text-emerald-500" />
-              <Link to="/login"><Button className="bg-accent text-accent-foreground">Go to Sign In</Button></Link>
+              <Link to="/login"><Button className="bg-gradient-primary text-white">Go to Sign In</Button></Link>
             </div>
           ) : requestSent ? (
             <div className="flex flex-col items-center gap-4 py-4 text-center">
-              <CheckCircle className="h-12 w-12 text-accent" />
+              <CheckCircle className="h-12 w-12 text-primary" />
               <p className="text-sm text-muted-foreground">Check your email for a password reset link. It may take a minute to arrive.</p>
               <Link to="/login"><Button variant="outline"><ArrowLeft className="mr-1 h-4 w-4" /> Back to Sign In</Button></Link>
             </div>
@@ -105,7 +105,7 @@ export default function ResetPassword() {
                 <Label htmlFor="confirm">Confirm Password</Label>
                 <Input id="confirm" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} />
               </div>
-              <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" disabled={submitting}>
+              <Button type="submit" className="w-full bg-gradient-primary text-white hover:opacity-90" disabled={submitting}>
                 {submitting ? "Updating..." : "Update Password"}
               </Button>
             </form>
@@ -115,11 +115,11 @@ export default function ResetPassword() {
                 <Label htmlFor="email">Email Address</Label>
                 <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" />
               </div>
-              <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" disabled={submitting}>
+              <Button type="submit" className="w-full bg-gradient-primary text-white hover:opacity-90" disabled={submitting}>
                 {submitting ? "Sending..." : "Send Reset Link"}
               </Button>
               <p className="text-center text-sm text-muted-foreground">
-                <Link to="/login" className="font-medium text-accent hover:underline">Back to Sign In</Link>
+                <Link to="/login" className="font-medium text-primary hover:underline">Back to Sign In</Link>
               </p>
             </form>
           )}

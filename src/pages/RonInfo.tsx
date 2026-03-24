@@ -148,17 +148,17 @@ export default function RonInfo() {
             ) : (
               <Link to="/login"><Button variant="outline" size="sm">Sign In</Button></Link>
             )}
-            <Link to="/book"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button></Link>
+            <Link to="/book"><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90">Book Now</Button></Link>
           </div>
         </div>
       </nav>
 
       {/* Hero */}
-      <section className="bg-gradient-navy py-16 md:py-24">
+      <section className="bg-gradient-hero py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
           <motion.div initial="hidden" animate="visible">
             <motion.div variants={fadeUp} custom={0}>
-              <Badge className="mb-4 border-gold/30 bg-gold/10 text-gold-light">
+              <Badge className="mb-4 border-primary/20 bg-primary/10 text-primary">
                 <Monitor className="mr-1 h-3 w-3" /> Remote Online Notarization
               </Badge>
             </motion.div>
@@ -178,21 +178,21 @@ export default function RonInfo() {
           <div className="grid gap-6 md:grid-cols-3">
             <Card className="border-border/50 bg-primary/5">
               <CardContent className="p-6 text-center">
-                <Shield className="mx-auto mb-3 h-8 w-8 text-accent" />
+                <Shield className="mx-auto mb-3 h-8 w-8 text-primary" />
                 <h3 className="mb-1 font-display text-lg font-semibold">Ohio Law</h3>
                 <p className="text-sm text-muted-foreground">Authorized under ORC §147.65-.66</p>
               </CardContent>
             </Card>
             <Card className="border-border/50 bg-primary/5">
               <CardContent className="p-6 text-center">
-                <Lock className="mx-auto mb-3 h-8 w-8 text-accent" />
+                <Lock className="mx-auto mb-3 h-8 w-8 text-primary" />
                 <h3 className="mb-1 font-display text-lg font-semibold">Multi-Factor Security</h3>
                 <p className="text-sm text-muted-foreground">ID scan + KBA + live video + recording</p>
               </CardContent>
             </Card>
             <Card className="border-border/50 bg-primary/5">
               <CardContent className="p-6 text-center">
-                <Globe className="mx-auto mb-3 h-8 w-8 text-accent" />
+                <Globe className="mx-auto mb-3 h-8 w-8 text-primary" />
                 <h3 className="mb-1 font-display text-lg font-semibold">50-State Recognition</h3>
                 <p className="text-sm text-muted-foreground">Full Faith & Credit Clause</p>
               </CardContent>
@@ -271,8 +271,8 @@ export default function RonInfo() {
             {useCases.map((uc) => (
               <Card key={uc.title} className="border-border/50 transition-shadow hover:shadow-md">
                 <CardContent className="flex gap-4 p-6">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-accent/10">
-                    <uc.icon className="h-5 w-5 text-accent" />
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                    <uc.icon className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <h3 className="mb-1 font-display font-semibold text-foreground">{uc.title}</h3>
@@ -313,10 +313,10 @@ export default function RonInfo() {
                     Ohio Revised Code §147.66 requires Knowledge-Based Authentication (KBA) as part of the identity verification process for all Remote Online Notarization sessions. This is a security measure that protects both signers and relying parties.
                   </p>
                   <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> 5 multiple-choice questions generated from public records</li>
-                    <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> Must answer 4 of 5 correctly within 2 minutes</li>
-                    <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> One retry permitted if initial attempt fails</li>
-                    <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> Questions drawn from credit history, address history, etc.</li>
+                    <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> 5 multiple-choice questions generated from public records</li>
+                    <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> Must answer 4 of 5 correctly within 2 minutes</li>
+                    <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> One retry permitted if initial attempt fails</li>
+                    <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> Questions drawn from credit history, address history, etc.</li>
                   </ul>
                 </div>
                 <div>
@@ -325,9 +325,9 @@ export default function RonInfo() {
                     Ohio law requires the use of compliant KBA providers that meet STESSO (Secure Technology Standards for Electronic Submission and Storage of Online) standards. Commonly accepted providers include:
                   </p>
                   <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li className="flex items-start gap-2"><Shield className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> <strong>IDology</strong> — Widely used in the RON industry, MISMO-compliant</li>
-                    <li className="flex items-start gap-2"><Shield className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> <strong>LexisNexis</strong> — Industry-standard identity verification platform</li>
-                    <li className="flex items-start gap-2"><Shield className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> <strong>OneNotary</strong> — Platform-integrated KBA with full RON workflow</li>
+                    <li className="flex items-start gap-2"><Shield className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> <strong>IDology</strong> — Widely used in the RON industry, MISMO-compliant</li>
+                    <li className="flex items-start gap-2"><Shield className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> <strong>LexisNexis</strong> — Industry-standard identity verification platform</li>
+                    <li className="flex items-start gap-2"><Shield className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> <strong>OneNotary</strong> — Platform-integrated KBA with full RON workflow</li>
                   </ul>
                   <p className="mt-3 text-xs text-muted-foreground italic">
                     Our RON platform handles KBA automatically — signers complete the process as part of the session.
@@ -376,7 +376,7 @@ export default function RonInfo() {
               </thead>
               <tbody>
                 {filteredStates.map((s) => (
-                  <tr key={s.state} className={`border-b border-border/30 last:border-0 ${s.state === "Ohio" ? "bg-accent/5" : ""}`}>
+                  <tr key={s.state} className={`border-b border-border/30 last:border-0 ${s.state === "Ohio" ? "bg-primary/5" : ""}`}>
                     <td className="px-3 py-2 font-medium">{s.state}</td>
                     <td className="px-3 py-2">
                       <Badge className={s.status === "permanent" ? "bg-emerald-100 text-emerald-800" : s.status === "temporary" ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"}>
@@ -401,13 +401,13 @@ export default function RonInfo() {
       {/* CTA */}
       <section className="py-16 text-center">
         <div className="container mx-auto px-4">
-          <Zap className="mx-auto mb-4 h-10 w-10 text-accent" />
+          <Zap className="mx-auto mb-4 h-10 w-10 text-primary" />
           <h2 className="mb-4 font-display text-2xl font-bold text-foreground">Try RON Today</h2>
           <p className="mb-6 mx-auto max-w-lg text-muted-foreground">
             Experience the convenience of remote notarization. Book a RON session and have your documents notarized from anywhere.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <Link to="/book"><Button size="lg" className="bg-accent text-accent-foreground hover:bg-gold-dark">Schedule RON Session <ChevronRight className="ml-1 h-4 w-4" /></Button></Link>
+            <Link to="/book"><Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">Schedule RON Session <ChevronRight className="ml-1 h-4 w-4" /></Button></Link>
             <Link to="/services"><Button size="lg" variant="outline">View All Services</Button></Link>
           </div>
         </div>

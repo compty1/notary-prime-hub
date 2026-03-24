@@ -170,7 +170,7 @@ export default function AdminEmailManagement() {
           <h1 className="font-display text-2xl font-bold text-foreground">Email & Correspondence Management</h1>
           <p className="text-sm text-muted-foreground">Manage client correspondence, send replies, and track forwarding</p>
         </div>
-        <Button onClick={() => setShowCreate(true)} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+        <Button onClick={() => setShowCreate(true)} className="bg-gradient-primary text-white hover:opacity-90">
           <Plus className="mr-1 h-4 w-4" /> Log Correspondence
         </Button>
       </div>
@@ -222,8 +222,8 @@ export default function AdminEmailManagement() {
             <Card key={item.id} className="border-border/50">
               <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3 cursor-pointer" onClick={() => { setShowDetail(item); setReplyText(item.notes || ""); }}>
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10">
-                    {item.direction === "inbound" ? <Mail className="h-5 w-5 text-accent" /> : <Send className="h-5 w-5 text-accent" />}
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                    {item.direction === "inbound" ? <Mail className="h-5 w-5 text-primary" /> : <Send className="h-5 w-5 text-primary" />}
                   </div>
                   <div>
                     <p className="text-sm font-medium text-foreground">{item.subject}</p>
@@ -276,7 +276,7 @@ export default function AdminEmailManagement() {
                 <Textarea value={replyText} onChange={(e) => setReplyText(e.target.value)} rows={3} placeholder="Notes about how this was handled..." />
               </div>
               <div className="flex gap-2 flex-wrap">
-                <Button size="sm" onClick={() => addNote(showDetail.id, replyText)} className="bg-accent text-accent-foreground hover:bg-gold-dark">Save Notes</Button>
+                <Button size="sm" onClick={() => addNote(showDetail.id, replyText)} className="bg-gradient-primary text-white hover:opacity-90">Save Notes</Button>
                 <Button size="sm" variant="default" onClick={() => openReplyDialog(showDetail)}>
                   <Send className="mr-1 h-3 w-3" /> Send Reply
                 </Button>
@@ -295,7 +295,7 @@ export default function AdminEmailManagement() {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="font-display flex items-center gap-2">
-              <Send className="h-5 w-5 text-accent" /> Send Reply Email
+              <Send className="h-5 w-5 text-primary" /> Send Reply Email
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
@@ -305,7 +305,7 @@ export default function AdminEmailManagement() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowReplyDialog(false)}>Cancel</Button>
-            <Button onClick={sendReply} disabled={sendingReply || !replyForm.body.trim()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+            <Button onClick={sendReply} disabled={sendingReply || !replyForm.body.trim()} className="bg-gradient-primary text-white hover:opacity-90">
               {sendingReply ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Send className="mr-1 h-4 w-4" />}
               Send
             </Button>
@@ -318,7 +318,7 @@ export default function AdminEmailManagement() {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="font-display flex items-center gap-2">
-              <Mail className="h-5 w-5 text-accent" /> Log Correspondence
+              <Mail className="h-5 w-5 text-primary" /> Log Correspondence
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
@@ -352,7 +352,7 @@ export default function AdminEmailManagement() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
-            <Button onClick={createItem} disabled={saving} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+            <Button onClick={createItem} disabled={saving} className="bg-gradient-primary text-white hover:opacity-90">
               {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Plus className="mr-1 h-4 w-4" />}
               Log
             </Button>

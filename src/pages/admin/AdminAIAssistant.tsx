@@ -164,8 +164,8 @@ export default function AdminAIAssistant() {
 
       {messages.length === 0 ? (
         <div className="flex flex-1 flex-col items-center justify-center">
-          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent/10">
-            <Bot className="h-8 w-8 text-accent" />
+          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
+            <Bot className="h-8 w-8 text-primary" />
           </div>
           <h2 className="mb-2 font-display text-lg font-semibold text-foreground">How can I help?</h2>
           <p className="mb-6 max-w-md text-center text-sm text-muted-foreground">
@@ -180,7 +180,7 @@ export default function AdminAIAssistant() {
                 className="h-auto whitespace-normal py-2 text-left text-xs"
                 onClick={() => sendMessage(q)}
               >
-                <Sparkles className="mr-1.5 h-3 w-3 flex-shrink-0 text-accent" />
+                <Sparkles className="mr-1.5 h-3 w-3 flex-shrink-0 text-primary" />
                 {q}
               </Button>
             ))}
@@ -192,8 +192,8 @@ export default function AdminAIAssistant() {
             {messages.map((msg, i) => (
               <div key={i} className={`flex gap-3 ${msg.role === "user" ? "justify-end" : ""}`}>
                 {msg.role === "assistant" && (
-                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-accent/10">
-                    <Bot className="h-4 w-4 text-accent" />
+                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                    <Bot className="h-4 w-4 text-primary" />
                   </div>
                 )}
                 <div className={`max-w-[80%] rounded-lg px-4 py-3 text-sm ${
@@ -218,8 +218,8 @@ export default function AdminAIAssistant() {
             ))}
             {isLoading && messages[messages.length - 1]?.role === "user" && (
               <div className="flex gap-3">
-                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-accent/10">
-                  <Bot className="h-4 w-4 text-accent" />
+                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                  <Bot className="h-4 w-4 text-primary" />
                 </div>
                 <div className="rounded-lg bg-muted px-4 py-3">
                   <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
@@ -239,7 +239,7 @@ export default function AdminAIAssistant() {
           disabled={isLoading}
           className="flex-1"
         />
-        <Button type="submit" disabled={isLoading || !input.trim()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+        <Button type="submit" disabled={isLoading || !input.trim()} className="bg-gradient-primary text-white hover:opacity-90">
           <Send className="h-4 w-4" />
         </Button>
       </form>

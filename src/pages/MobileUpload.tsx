@@ -117,7 +117,7 @@ export default function MobileUpload() {
                 <Label>Password</Label>
                 <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required autoComplete="current-password" />
               </div>
-              <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={loginLoading}>
+              <Button type="submit" className="w-full bg-gradient-primary text-white hover:bg-accent/90" disabled={loginLoading}>
                 {loginLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Sign In
               </Button>
@@ -155,7 +155,7 @@ export default function MobileUpload() {
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
               >
-                <Upload className="h-6 w-6 text-accent" />
+                <Upload className="h-6 w-6 text-primary" />
                 <span className="text-xs">Choose File</span>
               </Button>
               <Button
@@ -164,7 +164,7 @@ export default function MobileUpload() {
                 onClick={() => cameraInputRef.current?.click()}
                 disabled={uploading}
               >
-                <Camera className="h-6 w-6 text-accent" />
+                <Camera className="h-6 w-6 text-primary" />
                 <span className="text-xs">Take Photo</span>
               </Button>
             </div>
@@ -188,7 +188,7 @@ export default function MobileUpload() {
 
             {uploading && (
               <div className="flex items-center justify-center gap-2 py-2">
-                <Loader2 className="h-4 w-4 animate-spin text-accent" />
+                <Loader2 className="h-4 w-4 animate-spin text-primary" />
                 <span className="text-sm text-muted-foreground">Uploading...</span>
               </div>
             )}

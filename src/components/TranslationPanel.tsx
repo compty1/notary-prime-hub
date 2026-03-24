@@ -76,7 +76,7 @@ export default function TranslationPanel({ initialText = "", clientName = "", do
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <Languages className="h-5 w-5 text-accent" />
+        <Languages className="h-5 w-5 text-primary" />
         <h3 className="font-display font-semibold">Document Translation</h3>
       </div>
 
@@ -114,7 +114,7 @@ export default function TranslationPanel({ initialText = "", clientName = "", do
       </div>
 
       <div className="flex items-center gap-2 flex-wrap">
-        <Button onClick={handleTranslate} disabled={translating || !sourceText.trim() || !targetLanguage} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+        <Button onClick={handleTranslate} disabled={translating || !sourceText.trim() || !targetLanguage} className="bg-gradient-primary text-white hover:opacity-90">
           {translating ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Languages className="mr-1 h-4 w-4" />}
           Translate
         </Button>
@@ -135,7 +135,7 @@ export default function TranslationPanel({ initialText = "", clientName = "", do
       </div>
 
       {certificate && (
-        <Card className="border-accent/30 bg-accent/5">
+        <Card className="border-primary/20 bg-primary/5">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
               <h4 className="font-display text-sm font-semibold">Certificate of Translation Accuracy</h4>
