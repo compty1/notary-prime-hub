@@ -5,7 +5,28 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const ONE_NOTARY_BASE = "https://app.onenotary.us/api/v2";
+const ONENOTARY_BASE = "https://app.onenotary.us/api/v2";
+
+async function onenotaryFetch(path: string, options: RequestInit = {}) {
+  const token = Deno.env.get("ONENOTARY_API_TOKEN");
+  if (!token) throw new Error("ONENOTARY_API_TOKEN not configured");
+  const resp = await fetch(`${ONENOTARY_BASE}${path}`, {
+    ...options,
+    headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+      "X-ONENOTARY-API-TOKEN": token,
+      ...(options.headers || {}),
+    },
+  });
+  if (!resp.ok) {
+    const text = await resp.text();
+    console.error(`OneNotary API error ${resp.status}: ${text}`);
+    throw new Error(`OneNotary API ${resp.status}: ${text}`);
+  }
+  if (resp.status === 204) return null;
+  return resp.json();
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -16,181 +37,230 @@ Deno.serve(async (req) => {
     // Auth check
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } } }
-    );
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
 
-    const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    const userId = claimsData.claims.sub;
+    // Check admin/notary role
+    const serviceClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    const { data: roleData } = await serviceClient
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .in("role", ["admin", "notary"]);
 
-    // Check admin or notary role
-    const { data: hasAdmin } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
-    const { data: hasNotary } = await supabase.rpc("has_role", { _user_id: userId, _role: "notary" });
-    if (!hasAdmin && !hasNotary) {
-      return new Response(JSON.stringify({ error: "Forbidden — admin or notary role required" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-    }
-
-    const apiToken = Deno.env.get("ONENOTARY_API_TOKEN");
-    if (!apiToken || apiToken === "REPLACE_ME") {
-      return new Response(JSON.stringify({ error: "OneNotary API token not configured. Please update the ONENOTARY_API_TOKEN secret." }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    if (!roleData || roleData.length === 0) {
+      return new Response(JSON.stringify({ error: "Admin or notary access required" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const body = await req.json();
-    const { action, ...params } = body;
-
-    const oneNotaryHeaders = {
-      "Content-Type": "application/json",
-      "X-ONENOTARY-API-TOKEN": apiToken,
-    };
-
-    let result: any;
+    const { action } = body;
 
     switch (action) {
       case "create_session": {
-        // Create a new RON session
-        const resp = await fetch(`${ONE_NOTARY_BASE}/sessions`, {
-          method: "POST",
-          headers: oneNotaryHeaders,
-          body: JSON.stringify({
-            session_type: params.session_type || "ron",
-            callback_url: params.callback_url || null,
-          }),
-        });
-        result = await resp.json();
+        const { appointment_id, session_type, schedule_at, business_scenario } = body;
+        const sessionPayload: Record<string, any> = { external_id: appointment_id };
+        if (session_type) sessionPayload.session_type = session_type === "in_person" ? "mobile_paper" : "ron";
+        if (schedule_at) sessionPayload.schedule_at = schedule_at;
+        if (business_scenario) sessionPayload.business_scenario = business_scenario;
 
-        // Store the session ID in our DB
-        if (result.id && params.appointment_id) {
-          await supabase.from("notarization_sessions").upsert({
-            appointment_id: params.appointment_id,
-            onenotary_session_id: result.id,
-            session_type: "ron",
+        const result = await onenotaryFetch("/sessions", {
+          method: "POST",
+          body: JSON.stringify(sessionPayload),
+        });
+
+        const sessionId = result?.id;
+        if (sessionId) {
+          await serviceClient.from("notarization_sessions").upsert({
+            appointment_id,
+            onenotary_session_id: sessionId,
+            session_type: session_type === "in_person" ? "in_person" : "ron",
             status: "scheduled",
           }, { onConflict: "appointment_id" });
         }
-        break;
+
+        return new Response(JSON.stringify(result), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       case "add_participant": {
-        // Add a signer/participant to the session
-        const resp = await fetch(`${ONE_NOTARY_BASE}/sessions/${params.session_id}/participants`, {
-          method: "POST",
-          headers: oneNotaryHeaders,
-          body: JSON.stringify({
-            role: params.role || "primary_signer",
-            first_name: params.first_name,
-            last_name: params.last_name,
-            email: params.email,
-          }),
-        });
-        result = await resp.json();
+        const { session_id, role, email, first_name, last_name, phone_number, date_of_birth, address, external_id, appointment_id: apptId } = body;
+        const participantPayload: Record<string, any> = {
+          email,
+          role: role || "primary_signer",
+        };
+        if (first_name) participantPayload.first_name = first_name;
+        if (last_name) participantPayload.last_name = last_name;
+        if (phone_number) participantPayload.phone_number = phone_number;
+        if (date_of_birth) participantPayload.date_of_birth = date_of_birth;
+        if (external_id) participantPayload.external_id = external_id;
+        if (address) participantPayload.address = address;
+        participantPayload.custom = [
+          { key: "signer_redirection_url", value: `${supabaseUrl?.replace('.supabase.co', '.lovable.app')}/portal` },
+        ];
 
-        // Store participant link if returned
-        if (result.join_url && params.appointment_id) {
-          await supabase.from("notarization_sessions").update({
-            participant_link: result.join_url,
-          }).eq("appointment_id", params.appointment_id);
+        const result = await onenotaryFetch(`/sessions/${session_id}/participants`, {
+          method: "POST",
+          body: JSON.stringify(participantPayload),
+        });
+
+        if (result?.link && apptId) {
+          await serviceClient.from("notarization_sessions").update({
+            participant_link: result.link,
+          }).eq("onenotary_session_id", session_id);
         }
-        break;
+
+        return new Response(JSON.stringify({ ...result, join_url: result?.link }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       case "add_document": {
-        // Add a document to the session (URL-based)
-        const resp = await fetch(`${ONE_NOTARY_BASE}/sessions/${params.session_id}/documents`, {
+        const { session_id, file_name, file_content, file_url } = body;
+        let docBody: any;
+        if (file_content) {
+          docBody = { file: { name: file_name, content: file_content } };
+        } else if (file_url) {
+          docBody = { file: { name: file_name, url: file_url } };
+        } else {
+          throw new Error("Either file_content (base64) or file_url is required");
+        }
+
+        const result = await onenotaryFetch(`/sessions/${session_id}/documents`, {
           method: "POST",
-          headers: oneNotaryHeaders,
-          body: JSON.stringify({
-            name: params.document_name,
-            url: params.document_url,
-          }),
+          body: JSON.stringify(docBody),
         });
-        result = await resp.json();
-        break;
+
+        return new Response(JSON.stringify(result), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       case "init_session": {
-        // Initialize/start the session (sends invites to participants)
-        const resp = await fetch(`${ONE_NOTARY_BASE}/sessions/${params.session_id}/init`, {
+        const { session_id, send_email } = body;
+        const result = await onenotaryFetch(`/sessions/${session_id}/init`, {
           method: "POST",
-          headers: oneNotaryHeaders,
+          body: JSON.stringify({ send_email: send_email !== false }),
         });
-        result = await resp.json();
 
-        // Update session status
-        if (params.appointment_id) {
-          await supabase.from("notarization_sessions").update({
-            status: "in_session",
-            started_at: new Date().toISOString(),
-          }).eq("appointment_id", params.appointment_id);
-
-          await supabase.from("appointments").update({
-            status: "in_session",
-          }).eq("id", params.appointment_id);
+        if (body.appointment_id) {
+          await serviceClient.from("notarization_sessions").update({
+            status: "confirmed",
+          }).eq("onenotary_session_id", session_id);
         }
-        break;
+
+        return new Response(JSON.stringify(result), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
-      case "cancel_session": {
-        const resp = await fetch(`${ONE_NOTARY_BASE}/sessions/${params.session_id}/cancel`, {
-          method: "POST",
-          headers: oneNotaryHeaders,
+      case "list_sessions": {
+        const result = await onenotaryFetch("/sessions", { method: "GET" });
+        return new Response(JSON.stringify(result), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
-        result = await resp.json();
-
-        if (params.appointment_id) {
-          await supabase.from("notarization_sessions").update({
-            status: "cancelled",
-          }).eq("appointment_id", params.appointment_id);
-        }
-        break;
       }
 
       case "get_session": {
-        const resp = await fetch(`${ONE_NOTARY_BASE}/sessions/${params.session_id}`, {
-          method: "GET",
-          headers: oneNotaryHeaders,
+        const { session_id } = body;
+        const result = await onenotaryFetch(`/sessions/${session_id}`, { method: "GET" });
+        return new Response(JSON.stringify(result), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
-        result = await resp.json();
-        break;
+      }
+
+      case "download_document": {
+        const { session_id, document_id } = body;
+        const result = await onenotaryFetch(`/sessions/${session_id}/documents/${document_id}/download`, { method: "GET" });
+        return new Response(JSON.stringify(result), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      case "get_stamps": {
+        const { session_id, document_id } = body;
+        const result = await onenotaryFetch(`/sessions/${session_id}/documents/${document_id}/stamps`, { method: "GET" });
+        return new Response(JSON.stringify(result), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       case "get_video": {
-        const resp = await fetch(`${ONE_NOTARY_BASE}/sessions/${params.session_id}/video`, {
-          method: "GET",
-          headers: oneNotaryHeaders,
+        const { session_id } = body;
+        const result = await onenotaryFetch(`/sessions/${session_id}/video`, { method: "GET" });
+        return new Response(JSON.stringify(result), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
-        result = await resp.json();
-        break;
       }
 
       case "get_documents": {
-        const resp = await fetch(`${ONE_NOTARY_BASE}/sessions/${params.session_id}/documents`, {
-          method: "GET",
-          headers: oneNotaryHeaders,
+        const { session_id } = body;
+        const result = await onenotaryFetch(`/sessions/${session_id}/documents`, { method: "GET" });
+        return new Response(JSON.stringify(result), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
-        result = await resp.json();
-        break;
+      }
+
+      case "request_witness": {
+        const { session_id } = body;
+        const result = await onenotaryFetch(`/sessions/${session_id}/participants/witnesses/request`, { method: "POST" });
+        return new Response(JSON.stringify(result), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      case "set_notary": {
+        const { session_id, notary_email, notary_external_id } = body;
+        const result = await onenotaryFetch(`/sessions/${session_id}/notary`, {
+          method: "POST",
+          body: JSON.stringify({ email: notary_email, external_id: notary_external_id }),
+        });
+        return new Response(JSON.stringify(result), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      case "cancel_session": {
+        const { session_id } = body;
+        await onenotaryFetch(`/sessions/${session_id}`, { method: "DELETE" });
+        if (body.appointment_id) {
+          await serviceClient.from("notarization_sessions").update({ status: "cancelled" }).eq("onenotary_session_id", session_id);
+          await serviceClient.from("appointments").update({ status: "cancelled" }).eq("id", body.appointment_id);
+        }
+        return new Response(JSON.stringify({ ok: true }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       default:
-        return new Response(JSON.stringify({ error: `Unknown action: ${action}` }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        return new Response(JSON.stringify({ error: `Unknown action: ${action}` }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
     }
-
-    return new Response(JSON.stringify(result), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
   } catch (err: any) {
-    console.error("OneNotary proxy error:", err);
-    return new Response(JSON.stringify({ error: err.message || "Internal error" }), {
+    console.error("OneNotary function error:", err);
+    return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
