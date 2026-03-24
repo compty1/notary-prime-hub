@@ -418,6 +418,63 @@ export default function NotaryGuide() {
         </div>
       </section>
 
+      {/* Out-of-State Signers */}
+      <section className="py-12">
+        <div className="container mx-auto max-w-4xl px-4">
+          <h2 className="mb-6 font-display text-2xl font-bold text-foreground">If You're Outside Ohio</h2>
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card className="border-border/50">
+              <CardContent className="p-6">
+                <h3 className="mb-2 font-display text-lg font-semibold flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-emerald-500" /> Full Faith & Credit
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Under Article IV, Section 1 of the U.S. Constitution, Ohio RON notarizations are recognized in all 50 states. 
+                  An Ohio notary can legally notarize documents for signers located anywhere — the signer does not need to be in Ohio.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="border-border/50">
+              <CardContent className="p-6">
+                <h3 className="mb-2 font-display text-lg font-semibold flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-amber-500" /> Receiving Entity Requirements
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  While RON is legally valid nationwide, some receiving entities (county recorders, banks, government agencies) 
+                  may have their own acceptance policies. Always confirm with the entity receiving your document before your session.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="border-border/50">
+              <CardContent className="p-6">
+                <h3 className="mb-2 font-display text-lg font-semibold flex items-center gap-2">
+                  <Info className="h-5 w-5 text-accent" /> Common Acceptance Issues
+                </h3>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  <li>• <strong>Real estate:</strong> Most title companies accept RON; some county recorders in rural areas may not yet</li>
+                  <li>• <strong>Wills:</strong> Accepted in most states but verify witness requirements in the testator's home state</li>
+                  <li>• <strong>International:</strong> Foreign governments may not accept RON — check embassy requirements</li>
+                  <li>• <strong>Court filings:</strong> Most courts accept, but some jurisdictions require in-person for specific filings</li>
+                </ul>
+              </CardContent>
+            </Card>
+            <Card className="border-border/50">
+              <CardContent className="p-6">
+                <h3 className="mb-2 font-display text-lg font-semibold flex items-center gap-2">
+                  <Scale className="h-5 w-5 text-accent" /> Tips for Out-of-State Signers
+                </h3>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  <li>• Confirm your document type is eligible for RON in your state</li>
+                  <li>• Have your valid government-issued photo ID ready (all 50 states' IDs are accepted)</li>
+                  <li>• Check with the receiving entity that they accept Ohio RON</li>
+                  <li>• <Link to="/ron-info" className="text-accent hover:underline">View our 50-state RON reference →</Link></li>
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-16 text-center">
         <div className="container mx-auto px-4">

@@ -346,6 +346,58 @@ export default function RonInfo() {
         </div>
       </section>
 
+      {/* 50-State RON Legal Reference */}
+      <section className="bg-muted/30 py-12">
+        <div className="container mx-auto max-w-5xl px-4">
+          <h2 className="mb-4 text-center font-display text-2xl font-bold text-foreground">50-State RON Legal Reference</h2>
+          <p className="mb-6 text-center text-sm text-muted-foreground">
+            Search any state to see its RON status, governing statute, KBA requirements, and retention rules. Ohio RON notarizations are accepted nationwide under the Full Faith & Credit Clause.
+          </p>
+          <div className="mx-auto mb-6 max-w-md relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search by state name..."
+              value={stateSearch}
+              onChange={(e) => setStateSearch(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <div className="overflow-x-auto rounded-lg border border-border/50">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border/50 bg-muted/50">
+                  <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">State</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">Status</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">Statute</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">KBA</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">Retention</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredStates.map((s) => (
+                  <tr key={s.state} className={`border-b border-border/30 last:border-0 ${s.state === "Ohio" ? "bg-accent/5" : ""}`}>
+                    <td className="px-3 py-2 font-medium">{s.state}</td>
+                    <td className="px-3 py-2">
+                      <Badge className={s.status === "permanent" ? "bg-emerald-100 text-emerald-800" : s.status === "temporary" ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"}>
+                        {s.status === "permanent" ? "Permanent Law" : s.status === "temporary" ? "Temporary" : "No Law"}
+                      </Badge>
+                    </td>
+                    <td className="px-3 py-2 text-xs text-muted-foreground font-mono">{s.statute}</td>
+                    <td className="px-3 py-2 text-xs">{s.kba}</td>
+                    <td className="px-3 py-2 text-xs">{s.retention}</td>
+                    <td className="px-3 py-2 text-xs text-muted-foreground">{s.restrictions}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-4 text-xs text-muted-foreground text-center italic">
+            Data current as of March 2026. Laws change frequently — verify with your state's Secretary of State office for the most current information. This is not legal advice.
+          </p>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-16 text-center">
         <div className="container mx-auto px-4">
