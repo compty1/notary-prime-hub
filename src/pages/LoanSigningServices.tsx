@@ -16,6 +16,7 @@ import {
   ChevronLeft, CheckCircle, Send, Loader2, Shield, FileText, Monitor,
   Clock, Phone, Mail, Briefcase, Building2, ChevronRight, ArrowRight
 } from "lucide-react";
+import { PageShell } from "@/components/PageShell";
 
 const capabilities = [
   { icon: Shield, title: "Certified NSA", desc: "NNA-certified Notary Signing Agent with background screening and E&O insurance coverage." },
@@ -98,23 +99,7 @@ export default function LoanSigningServices() {
   const update = (key: string, value: string) => setForm(prev => ({ ...prev, [key]: value }));
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <Logo size="md" />
-            <div>
-              <span className="block font-display text-lg font-bold text-foreground">Notar</span>
-              <span className="block text-xs text-muted-foreground">Notary & Document Services</span>
-            </div>
-          </Link>
-          <div className="flex items-center gap-3">
-            <DarkModeToggle />
-            <Link to="/services"><Button variant="outline" size="sm"><ChevronLeft className="mr-1 h-3 w-3" /> All Services</Button></Link>
-            <Link to="/book"><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90">Book Now</Button></Link>
-          </div>
-        </div>
-      </nav>
+    <PageShell>
 
       {/* Hero */}
       <section className="bg-gradient-hero py-16 md:py-20">
@@ -311,9 +296,6 @@ export default function LoanSigningServices() {
         </div>
       </section>
 
-      <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Notar — Ohio Notary & Document Services</p>
-      </footer>
-    </div>
+    </PageShell>
   );
 }

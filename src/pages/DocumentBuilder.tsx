@@ -14,6 +14,7 @@ import { ChevronLeft, ChevronRight, FileText, Printer, AlertTriangle, Save, Load
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { motion } from "framer-motion";
 import { Logo } from "@/components/Logo";
+import { PageShell } from "@/components/PageShell";
 
 type DocType = "affidavit" | "travel_consent" | "bill_of_sale" | "identity_statement" | "general_agreement";
 
@@ -139,20 +140,7 @@ export default function DocumentBuilder() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <Logo size="md" />
-            <span className="font-display text-lg font-bold text-foreground">Document Builder</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <DarkModeToggle />
-            <Link to="/templates"><Button variant="outline" size="sm">Templates</Button></Link>
-            <Link to="/"><Button variant="outline" size="sm"><ChevronLeft className="mr-1 h-3 w-3" /> Home</Button></Link>
-          </div>
-        </div>
-      </nav>
+    <PageShell>
 
       <div className="container mx-auto max-w-2xl px-4 py-8">
         <div className="mb-6 text-center">
@@ -251,6 +239,6 @@ export default function DocumentBuilder() {
           </motion.div>
         )}
       </div>
-    </div>
+    </PageShell>
   );
 }
