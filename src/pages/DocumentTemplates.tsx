@@ -797,6 +797,7 @@ export default function DocumentTemplates() {
         status: "uploaded" as any,
       });
       if (insertError) throw insertError;
+      if (selectedTemplate) clearDraft(selectedTemplate.id);
       toast({ title: "Saved to Vault", description: "Document saved to your portal documents." });
     } catch (e: any) {
       toast({ title: "Save failed", description: e.message, variant: "destructive" });
