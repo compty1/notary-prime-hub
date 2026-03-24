@@ -90,7 +90,7 @@ export default function AdminTeam() {
         <Card className="border-border/50">
           <CardHeader>
             <CardTitle className="font-display text-lg flex items-center gap-2">
-              <UserPlus className="h-5 w-5 text-accent" /> Invite a Notary
+              <UserPlus className="h-5 w-5 text-primary" /> Invite a Notary
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -109,7 +109,7 @@ export default function AdminTeam() {
                 />
               </div>
               <div className="flex items-end">
-                <Button onClick={sendInvite} disabled={sending || !inviteEmail.trim()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+                <Button onClick={sendInvite} disabled={sending || !inviteEmail.trim()} className="bg-gradient-primary text-white hover:opacity-90">
                   {sending ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <UserPlus className="mr-1 h-4 w-4" />}
                   Invite
                 </Button>
@@ -122,7 +122,7 @@ export default function AdminTeam() {
         <Card className="border-border/50">
           <CardHeader>
             <CardTitle className="font-display text-lg flex items-center gap-2">
-              <Users className="h-5 w-5 text-accent" /> Active Notaries
+              <Users className="h-5 w-5 text-primary" /> Active Notaries
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -137,7 +137,7 @@ export default function AdminTeam() {
                       <p className="text-xs text-muted-foreground">{n.email || n.user_id.slice(0, 8)}</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge className="bg-accent/10 text-accent text-xs">
+                      <Badge className="bg-primary/10 text-primary text-xs">
                         <Shield className="mr-1 h-3 w-3" /> Notary
                       </Badge>
                       <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => removeNotaryRole(n.user_id)}>
@@ -155,7 +155,7 @@ export default function AdminTeam() {
         <Card className="border-border/50 lg:col-span-2">
           <CardHeader>
             <CardTitle className="font-display text-lg flex items-center gap-2">
-              <Clock className="h-5 w-5 text-accent" /> Invite History
+              <Clock className="h-5 w-5 text-primary" /> Invite History
             </CardTitle>
           </CardHeader>
           <CardContent>

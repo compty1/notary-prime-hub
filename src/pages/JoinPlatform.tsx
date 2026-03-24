@@ -134,7 +134,7 @@ export default function JoinPlatform() {
             <Link to="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground">About</Link>
             <DarkModeToggle />
             <Link to="/login"><Button variant="outline" size="sm">Sign In</Button></Link>
-            <Link to="/book"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button></Link>
+            <Link to="/book"><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90">Book Now</Button></Link>
           </div>
           <Sheet>
             <SheetTrigger asChild className="md:hidden"><Button variant="ghost" size="sm"><Menu className="h-5 w-5" /></Button></SheetTrigger>
@@ -143,7 +143,7 @@ export default function JoinPlatform() {
                 <Link to="/services" className="text-sm font-medium">Services</Link>
                 <Link to="/about" className="text-sm font-medium">About</Link>
                 <Link to="/login"><Button variant="outline" className="w-full">Sign In</Button></Link>
-                <Link to="/book"><Button className="w-full bg-accent text-accent-foreground">Book Now</Button></Link>
+                <Link to="/book"><Button className="w-full bg-gradient-primary text-white">Book Now</Button></Link>
               </div>
             </SheetContent>
           </Sheet>
@@ -151,11 +151,11 @@ export default function JoinPlatform() {
       </nav>
 
       {/* Hero */}
-      <section className="bg-gradient-navy py-16 md:py-24">
+      <section className="bg-gradient-hero py-16 md:py-24">
         <div className="container mx-auto max-w-4xl px-4 text-center">
           <motion.div initial="hidden" animate="visible">
             <motion.div variants={fadeUp} custom={0}>
-              <Badge className="mb-6 border-gold/30 bg-gold/10 text-gold-light">
+              <Badge className="mb-6 border-primary/20 bg-primary/10 text-primary">
                 <Users className="mr-1 h-3 w-3" /> Now Accepting Applications
               </Badge>
             </motion.div>
@@ -168,7 +168,7 @@ export default function JoinPlatform() {
             </motion.p>
             <motion.div variants={fadeUp} custom={3} className="mt-8">
               <a href="#apply">
-                <Button size="lg" className="bg-accent text-accent-foreground hover:bg-gold-dark">
+                <Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">
                   Apply Now <ChevronRight className="ml-1 h-4 w-4" />
                 </Button>
               </a>
@@ -186,8 +186,8 @@ export default function JoinPlatform() {
               <motion.div key={b.title} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i}>
                 <Card className="h-full border-border/50">
                   <CardContent className="p-6">
-                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10">
-                      <b.icon className="h-5 w-5 text-accent" />
+                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                      <b.icon className="h-5 w-5 text-primary" />
                     </div>
                     <h3 className="mb-2 font-display text-base font-semibold">{b.title}</h3>
                     <p className="text-sm text-muted-foreground">{b.desc}</p>
@@ -208,7 +208,7 @@ export default function JoinPlatform() {
               <ul className="space-y-3">
                 {requirements.map((req, i) => (
                   <li key={i} className="flex items-start gap-3 text-sm">
-                    <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-accent" />
+                    <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
                     <span className="text-muted-foreground">{req}</span>
                   </li>
                 ))}
@@ -225,8 +225,8 @@ export default function JoinPlatform() {
           <div className="grid gap-8 md:grid-cols-4">
             {howItWorks.map((s, i) => (
               <motion.div key={s.step} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i} className="text-center">
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-gold shadow-lg">
-                  <span className="font-display text-lg font-bold text-accent-foreground">{s.step}</span>
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-primary shadow-lg">
+                  <span className="font-display text-lg font-bold text-primary-foreground">{s.step}</span>
                 </div>
                 <h3 className="mb-2 font-display text-lg font-semibold">{s.title}</h3>
                 <p className="text-sm text-muted-foreground">{s.desc}</p>
@@ -241,9 +241,9 @@ export default function JoinPlatform() {
         <div className="container mx-auto max-w-2xl px-4">
           <h2 className="mb-8 text-center font-display text-3xl font-bold text-foreground">Apply to Join</h2>
           {submitted ? (
-            <Card className="border-accent/30 bg-accent/5">
+            <Card className="border-primary/20 bg-primary/5">
               <CardContent className="p-8 text-center space-y-4">
-                <CheckCircle className="mx-auto h-12 w-12 text-accent" />
+                <CheckCircle className="mx-auto h-12 w-12 text-primary" />
                 <h3 className="font-display text-xl font-bold">Application Received!</h3>
                 <p className="text-muted-foreground">Thank you for your interest. We'll review your application and contact you within 3-5 business days.</p>
                 <Link to="/"><Button variant="outline">Return Home</Button></Link>
@@ -329,7 +329,7 @@ export default function JoinPlatform() {
                     <Textarea id="join-message" value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))} placeholder="Tell us about your experience, certifications, and why you'd like to join..." rows={4} maxLength={1000} />
                   </div>
 
-                  <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" disabled={submitting}>
+                  <Button type="submit" className="w-full bg-gradient-primary text-white hover:opacity-90" disabled={submitting}>
                     {submitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : <>Submit Application <ArrowRight className="ml-1 h-4 w-4" /></>}
                   </Button>
                 </form>

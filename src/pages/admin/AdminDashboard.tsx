@@ -88,7 +88,7 @@ export default function AdminDashboard() {
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         {/* Skip to main content */}
-        <a href="#admin-main" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-foreground focus:outline-none">
+        <a href="#admin-main" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded focus:bg-accent focus:px-4 focus:py-2 focus:text-primary-foreground focus:outline-none">
           Skip to main content
         </a>
         <AdminSidebar />

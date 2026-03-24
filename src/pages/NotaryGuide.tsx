@@ -237,17 +237,17 @@ export default function NotaryGuide() {
             ) : (
               <Link to="/login"><Button variant="outline" size="sm">Sign In</Button></Link>
             )}
-            <Link to="/book"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button></Link>
+            <Link to="/book"><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90">Book Now</Button></Link>
           </div>
         </div>
       </nav>
 
       {/* Hero */}
-      <section className="bg-gradient-navy py-16 md:py-24">
+      <section className="bg-gradient-hero py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
           <motion.div initial="hidden" animate="visible">
             <motion.div variants={fadeUp} custom={0}>
-              <Badge className="mb-4 border-gold/30 bg-gold/10 text-gold-light">
+              <Badge className="mb-4 border-primary/20 bg-primary/10 text-primary">
                 <FileText className="mr-1 h-3 w-3" /> Comprehensive Notary Guide
               </Badge>
             </motion.div>
@@ -357,7 +357,7 @@ export default function NotaryGuide() {
                             </div>
                             <div className="rounded-lg bg-muted/50 p-3">
                               <p className="flex items-start gap-1.5 text-xs">
-                                <Info className="mt-0.5 h-3 w-3 flex-shrink-0 text-accent" />
+                                <Info className="mt-0.5 h-3 w-3 flex-shrink-0 text-primary" />
                                 <span><strong>Ohio Note:</strong> {doc.ohioNotes}</span>
                               </p>
                             </div>
@@ -381,13 +381,13 @@ export default function NotaryGuide() {
             {/* In-Person */}
             <div>
               <div className="mb-6 flex items-center gap-2">
-                <MapPin className="h-5 w-5 text-accent" />
+                <MapPin className="h-5 w-5 text-primary" />
                 <h3 className="font-display text-lg font-semibold">In-Person Notarization</h3>
               </div>
               <div className="space-y-4">
                 {inPersonSteps.map((s) => (
                   <div key={s.step} className="flex gap-4">
-                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-accent/10 text-sm font-bold text-accent">{s.step}</div>
+                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">{s.step}</div>
                     <div>
                       <p className="font-medium text-foreground">{s.title}</p>
                       <p className="text-sm text-muted-foreground">{s.desc}</p>
@@ -399,13 +399,13 @@ export default function NotaryGuide() {
             {/* RON */}
             <div>
               <div className="mb-6 flex items-center gap-2">
-                <Monitor className="h-5 w-5 text-accent" />
+                <Monitor className="h-5 w-5 text-primary" />
                 <h3 className="font-display text-lg font-semibold">Remote Online Notarization (RON)</h3>
               </div>
               <div className="space-y-4">
                 {ronSteps.map((s) => (
                   <div key={s.step} className="flex gap-4">
-                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-accent/10 text-sm font-bold text-accent">{s.step}</div>
+                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">{s.step}</div>
                     <div>
                       <p className="font-medium text-foreground">{s.title}</p>
                       <p className="text-sm text-muted-foreground">{s.desc}</p>
@@ -448,7 +448,7 @@ export default function NotaryGuide() {
             <Card className="border-border/50">
               <CardContent className="p-6">
                 <h3 className="mb-2 font-display text-lg font-semibold flex items-center gap-2">
-                  <Info className="h-5 w-5 text-accent" /> Common Acceptance Issues
+                  <Info className="h-5 w-5 text-primary" /> Common Acceptance Issues
                 </h3>
                 <ul className="space-y-1 text-sm text-muted-foreground">
                   <li>• <strong>Real estate:</strong> Most title companies accept RON; some county recorders in rural areas may not yet</li>
@@ -461,13 +461,13 @@ export default function NotaryGuide() {
             <Card className="border-border/50">
               <CardContent className="p-6">
                 <h3 className="mb-2 font-display text-lg font-semibold flex items-center gap-2">
-                  <Scale className="h-5 w-5 text-accent" /> Tips for Out-of-State Signers
+                  <Scale className="h-5 w-5 text-primary" /> Tips for Out-of-State Signers
                 </h3>
                 <ul className="space-y-1 text-sm text-muted-foreground">
                   <li>• Confirm your document type is eligible for RON in your state</li>
                   <li>• Have your valid government-issued photo ID ready (all 50 states' IDs are accepted)</li>
                   <li>• Check with the receiving entity that they accept Ohio RON</li>
-                  <li>• <Link to="/ron-info" className="text-accent hover:underline">View our 50-state RON reference →</Link></li>
+                  <li>• <Link to="/ron-info" className="text-primary hover:underline">View our 50-state RON reference →</Link></li>
                 </ul>
               </CardContent>
             </Card>
@@ -481,7 +481,7 @@ export default function NotaryGuide() {
           <h2 className="mb-4 font-display text-2xl font-bold text-foreground">Ready to Get Started?</h2>
           <p className="mb-6 text-muted-foreground">Book your notarization appointment in minutes</p>
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link to="/book"><Button size="lg" className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Appointment <ChevronRight className="ml-1 h-4 w-4" /></Button></Link>
+            <Link to="/book"><Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">Book Appointment <ChevronRight className="ml-1 h-4 w-4" /></Button></Link>
             <Link to="/ron-info"><Button size="lg" variant="outline">Learn About RON <ChevronRight className="ml-1 h-4 w-4" /></Button></Link>
           </div>
         </div>

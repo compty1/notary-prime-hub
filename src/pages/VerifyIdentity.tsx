@@ -101,8 +101,8 @@ export default function VerifyIdentity() {
       <div className="container mx-auto max-w-xl px-4 py-12">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="mb-8 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent/10 mx-auto mb-4">
-              <Shield className="h-8 w-8 text-accent" />
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto mb-4">
+              <Shield className="h-8 w-8 text-primary" />
             </div>
             <h1 className="font-display text-2xl font-bold">ID Verification / KYC Check</h1>
             <p className="text-sm text-muted-foreground mt-2">Upload a photo of your government-issued ID for instant AI verification. No appointment needed.</p>
@@ -111,8 +111,8 @@ export default function VerifyIdentity() {
           <Card className="border-border/50">
             <CardContent className="p-6 space-y-6">
               {/* Upload Section */}
-              <div className="rounded-lg border-2 border-dashed border-accent/30 bg-accent/5 p-8 text-center">
-                <Camera className="mx-auto mb-3 h-10 w-10 text-accent/60" />
+              <div className="rounded-lg border-2 border-dashed border-primary/20 bg-primary/5 p-8 text-center">
+                <Camera className="mx-auto mb-3 h-10 w-10 text-primary/60" />
                 <p className="mb-3 text-sm font-medium">Upload ID Photo</p>
                 <p className="mb-4 text-xs text-muted-foreground">Driver's license, state ID, or passport — front side</p>
                 <Input type="file" accept="image/*" onChange={handleIdScan} disabled={scanning} className="max-w-xs mx-auto" />
@@ -120,7 +120,7 @@ export default function VerifyIdentity() {
 
               {scanning && (
                 <div className="flex items-center justify-center gap-3 py-6">
-                  <Loader2 className="h-6 w-6 animate-spin text-accent" />
+                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
                   <span className="text-sm">Scanning your ID...</span>
                 </div>
               )}
@@ -170,7 +170,7 @@ export default function VerifyIdentity() {
                   )}
 
                   <div className="text-center space-y-2">
-                    <Link to="/book"><Button className="bg-accent text-accent-foreground hover:bg-gold-dark">Book a Notarization</Button></Link>
+                    <Link to="/book"><Button className="bg-gradient-primary text-white hover:opacity-90">Book a Notarization</Button></Link>
                     <p className="text-xs text-muted-foreground">Your ID data will be pre-filled during booking.</p>
                   </div>
                 </motion.div>

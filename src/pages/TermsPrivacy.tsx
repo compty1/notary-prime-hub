@@ -90,8 +90,8 @@ export default function TermsPrivacy() {
           </div>
         </section>
 
-        <div className="flex items-center gap-2 rounded-lg border border-accent/30 bg-accent/5 p-4 text-sm text-muted-foreground">
-          <Shield className="h-5 w-5 flex-shrink-0 text-accent" />
+        <div className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm text-muted-foreground">
+          <Shield className="h-5 w-5 flex-shrink-0 text-primary" />
           <span>We take your privacy seriously. All data handling complies with Ohio Revised Code §147 and applicable privacy regulations.</span>
         </div>
       </div>

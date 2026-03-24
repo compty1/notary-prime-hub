@@ -218,7 +218,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
               <Card key={doc.id} className="border-border/50">
                 <CardContent className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-3 min-w-0">
-                    <FileText className="h-5 w-5 text-accent flex-shrink-0" />
+                    <FileText className="h-5 w-5 text-primary flex-shrink-0" />
                     <div className="min-w-0">
                       <p className="font-medium text-foreground truncate" title={doc.file_name}>{doc.file_name}</p>
                       <p className="text-xs text-muted-foreground">
@@ -303,7 +303,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
               <iframe src={previewUrl} className="w-full h-[65vh] rounded border border-border" title="Document Preview" />
             )
           ) : (
-            <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-accent" /></div>
+            <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
           )}
         </DialogContent>
       </Dialog>

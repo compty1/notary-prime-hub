@@ -143,7 +143,7 @@ export default function AdminServices() {
           <h1 className="font-display text-2xl font-bold text-foreground">Services Catalog</h1>
           <p className="text-sm text-muted-foreground">Manage all services, pricing, and availability</p>
         </div>
-        <Button onClick={openAdd} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+        <Button onClick={openAdd} className="bg-gradient-primary text-white hover:opacity-90">
           <Plus className="mr-1 h-4 w-4" /> Add Service
         </Button>
       </div>
@@ -245,7 +245,7 @@ export default function AdminServices() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-            <Button onClick={save} disabled={saving || !form.name} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+            <Button onClick={save} disabled={saving || !form.name} className="bg-gradient-primary text-white hover:opacity-90">
               {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null} {editingId ? "Update" : "Create"}
             </Button>
           </DialogFooter>

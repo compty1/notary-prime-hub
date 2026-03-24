@@ -274,7 +274,7 @@ export default function OneNotarySession() {
               <ArrowLeft className="h-4 w-4" /> Back to Portal
             </Link>
             <div className="flex items-center gap-3">
-              <Shield className="h-4 w-4 text-accent" />
+              <Shield className="h-4 w-4 text-primary" />
               <span className="text-sm font-medium">Secure RON Session</span>
             </div>
           </div>
@@ -282,9 +282,9 @@ export default function OneNotarySession() {
 
         <div className="container mx-auto max-w-3xl px-4 py-8">
           {appointment && (
-            <Card className="mb-4 border-accent/30 bg-accent/5">
+            <Card className="mb-4 border-primary/20 bg-primary/5">
               <CardContent className="flex items-center gap-4 p-3 text-sm">
-                <Badge className="bg-accent/20 text-accent-foreground">RON Session</Badge>
+                <Badge className="bg-primary/20 text-primary-foreground">RON Session</Badge>
                 <span>{appointment.service_type}</span>
                 <span className="text-muted-foreground">•</span>
                 <span className="text-muted-foreground">
@@ -327,17 +327,17 @@ export default function OneNotarySession() {
           </Card>
 
           {/* Session join link or waiting state */}
-          <Card className="border-2 border-dashed border-accent/30">
+          <Card className="border-2 border-dashed border-primary/20">
             <CardContent className="flex flex-col items-center justify-center py-20 text-center">
               {participantLink ? (
                 <div className="space-y-4">
-                  <Video className="mx-auto h-16 w-16 text-accent" />
+                  <Video className="mx-auto h-16 w-16 text-primary" />
                   <h3 className="font-display text-xl font-semibold text-foreground">Your Session is Ready</h3>
                   <p className="max-w-md text-sm text-muted-foreground">
                     Click the button below to join your RON session via OneNotary. You'll complete ID verification and KBA within the platform.
                   </p>
                   <a href={participantLink} target="_blank" rel="noopener noreferrer">
-                    <Button size="lg" className="bg-accent text-accent-foreground hover:bg-gold-dark">
+                    <Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">
                       <ExternalLink className="mr-2 h-5 w-5" /> Join RON Session
                     </Button>
                   </a>
@@ -345,7 +345,7 @@ export default function OneNotarySession() {
                 </div>
               ) : (
                 <>
-                  <Monitor className="mb-4 h-16 w-16 text-accent/50" />
+                  <Monitor className="mb-4 h-16 w-16 text-primary/50" />
                   <h3 className="mb-2 font-display text-xl font-semibold text-foreground">Waiting for Session</h3>
                   <p className="mb-6 max-w-md text-sm text-muted-foreground">
                     Your notary will start the session shortly. You'll receive a join link here and via email once the session is initialized.
@@ -374,7 +374,7 @@ export default function OneNotarySession() {
             {clientProfile && (
               <span className="text-sm text-muted-foreground">Client: <span className="font-medium text-foreground">{clientProfile.full_name}</span></span>
             )}
-            <Shield className="h-4 w-4 text-accent" />
+            <Shield className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium">OneNotary RON Session</span>
           </div>
         </div>
@@ -385,9 +385,9 @@ export default function OneNotarySession() {
           {/* Main session area */}
           <div className="lg:col-span-2">
             {appointment && (
-              <Card className="mb-4 border-accent/30 bg-accent/5">
+              <Card className="mb-4 border-primary/20 bg-primary/5">
                 <CardContent className="flex items-center gap-4 p-3 text-sm">
-                  <Badge className="bg-accent/20 text-accent-foreground">{appointment.notarization_type === "ron" ? "RON" : "In-Person"}</Badge>
+                  <Badge className="bg-primary/20 text-primary-foreground">{appointment.notarization_type === "ron" ? "RON" : "In-Person"}</Badge>
                   <span>{appointment.service_type}</span>
                   <span className="text-muted-foreground">•</span>
                   <span className="text-muted-foreground">
@@ -406,7 +406,7 @@ export default function OneNotarySession() {
                     <p className="text-sm text-muted-foreground">
                       Create a OneNotary session to begin the RON process. This will set up the session and add the client as the primary signer.
                     </p>
-                    <Button onClick={handleCreateSession} disabled={creatingSession || !clientProfile} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+                    <Button onClick={handleCreateSession} disabled={creatingSession || !clientProfile} className="bg-gradient-primary text-white hover:opacity-90">
                       {creatingSession ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
                       Create OneNotary Session
                     </Button>
@@ -420,7 +420,7 @@ export default function OneNotarySession() {
                     {participantLink && (
                       <div className="rounded-lg bg-muted/50 p-3">
                         <p className="text-xs text-muted-foreground mb-1">Client Join Link:</p>
-                        <a href={participantLink} target="_blank" rel="noopener noreferrer" className="text-sm text-accent hover:underline break-all">
+                        <a href={participantLink} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline break-all">
                           {participantLink}
                         </a>
                       </div>
@@ -472,7 +472,7 @@ export default function OneNotarySession() {
             <Card className="border-border/50">
               <CardContent className="p-4">
                 <h3 className="mb-3 flex items-center gap-2 font-display text-sm font-semibold">
-                  <CreditCard className="h-4 w-4 text-accent" /> ID Verification
+                  <CreditCard className="h-4 w-4 text-primary" /> ID Verification
                 </h3>
                 <div className="space-y-3">
                   <div>
@@ -508,7 +508,7 @@ export default function OneNotarySession() {
             <Card className="border-border/50">
               <CardContent className="p-4">
                 <h3 className="mb-3 flex items-center gap-2 font-display text-sm font-semibold">
-                  <Shield className="h-4 w-4 text-accent" /> Knowledge-Based Authentication
+                  <Shield className="h-4 w-4 text-primary" /> Knowledge-Based Authentication
                 </h3>
                 <div className="flex items-center gap-2 mb-2">
                   <Switch checked={kbaCompleted} onCheckedChange={setKbaCompleted} />
@@ -529,11 +529,11 @@ export default function OneNotarySession() {
             <Card className="border-border/50">
               <CardContent className="p-4">
                 <h3 className="mb-3 flex items-center gap-2 font-display text-sm font-semibold">
-                  <BookOpen className="h-4 w-4 text-accent" /> Oath / Affirmation
+                  <BookOpen className="h-4 w-4 text-primary" /> Oath / Affirmation
                 </h3>
                 <div className="mb-3 flex flex-wrap gap-1">
                   {(Object.keys(oathScripts) as (keyof typeof oathScripts)[]).filter((k) => oathScripts[k]).map((key) => (
-                    <Button key={key} size="sm" variant={oathType === key ? "default" : "outline"} className={`text-xs ${oathType === key ? "bg-accent text-accent-foreground" : ""}`} onClick={() => { setOathType(key); setOathAdministered(false); }}>
+                    <Button key={key} size="sm" variant={oathType === key ? "default" : "outline"} className={`text-xs ${oathType === key ? "bg-gradient-primary text-white" : ""}`} onClick={() => { setOathType(key); setOathAdministered(false); }}>
                       {key}
                     </Button>
                   ))}
@@ -545,7 +545,7 @@ export default function OneNotarySession() {
                   </div>
                 )}
                 {!oathAdministered ? (
-                  <Button size="sm" className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" onClick={administerOath}>Mark Oath Administered</Button>
+                  <Button size="sm" className="w-full bg-gradient-primary text-white hover:opacity-90" onClick={administerOath}>Mark Oath Administered</Button>
                 ) : (
                   <div className="rounded-lg bg-emerald-50 p-2 text-center">
                     <p className="flex items-center justify-center gap-1 text-xs text-emerald-700">
@@ -560,14 +560,14 @@ export default function OneNotarySession() {
             <Card className="border-border/50">
               <CardContent className="p-4">
                 <div className="mb-3 flex items-center justify-between">
-                  <h3 className="flex items-center gap-2 font-display text-sm font-semibold"><Mic className="h-4 w-4 text-accent" /> Session Notes</h3>
+                  <h3 className="flex items-center gap-2 font-display text-sm font-semibold"><Mic className="h-4 w-4 text-primary" /> Session Notes</h3>
                   <Button size="sm" variant={isListening ? "destructive" : "outline"} className="text-xs" onClick={toggleVoice}>
                     {isListening ? <><MicOff className="mr-1 h-3 w-3" /> Stop</> : <><Mic className="mr-1 h-3 w-3" /> Dictate</>}
                   </Button>
                 </div>
                 {isListening && <Badge className="mb-2 bg-red-100 text-red-700 text-xs animate-pulse">● Recording</Badge>}
                 <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Type or dictate session notes..." rows={6} className="text-sm" />
-                <Button size="sm" className="mt-3 w-full bg-accent text-accent-foreground hover:bg-gold-dark" onClick={saveSessionData} disabled={saving}>
+                <Button size="sm" className="mt-3 w-full bg-gradient-primary text-white hover:opacity-90" onClick={saveSessionData} disabled={saving}>
                   {saving ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Save className="mr-1 h-3 w-3" />} Save Session Data
                 </Button>
               </CardContent>

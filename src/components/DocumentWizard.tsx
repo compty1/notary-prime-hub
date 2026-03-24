@@ -103,7 +103,7 @@ export default function DocumentWizard({ onSelectService, onClose }: DocumentWiz
         <CardContent className="p-6 space-y-5">
           <div className="flex items-center justify-between">
             <div>
-              <Badge className="bg-accent/10 text-accent mb-2">{result.category}</Badge>
+              <Badge className="bg-primary/10 text-primary mb-2">{result.category}</Badge>
               <h3 className="font-display text-lg font-bold text-foreground">{result.serviceType}</h3>
             </div>
             <Button variant="ghost" size="sm" onClick={() => setSelectedPurpose(null)}>← Back</Button>
@@ -112,7 +112,7 @@ export default function DocumentWizard({ onSelectService, onClose }: DocumentWiz
           <p className="text-sm text-muted-foreground">{result.description}</p>
 
           <div className="rounded-lg bg-muted/50 p-4 space-y-3">
-            <h4 className="text-sm font-semibold flex items-center gap-2"><FileText className="h-4 w-4 text-accent" /> What to Bring</h4>
+            <h4 className="text-sm font-semibold flex items-center gap-2"><FileText className="h-4 w-4 text-primary" /> What to Bring</h4>
             <ul className="space-y-1">
               {result.requiredDocs.map((doc, i) => (
                 <li key={i} className="text-sm flex items-start gap-2"><CheckCircle className="h-3 w-3 text-emerald-500 mt-1 shrink-0" />{doc}</li>
@@ -121,7 +121,7 @@ export default function DocumentWizard({ onSelectService, onClose }: DocumentWiz
           </div>
 
           <div className="rounded-lg bg-muted/50 p-4 space-y-3">
-            <h4 className="text-sm font-semibold flex items-center gap-2"><Users className="h-4 w-4 text-accent" /> Required ID</h4>
+            <h4 className="text-sm font-semibold flex items-center gap-2"><Users className="h-4 w-4 text-primary" /> Required ID</h4>
             <ul className="space-y-1">
               {result.requiredIds.map((id, i) => (
                 <li key={i} className="text-sm flex items-start gap-2"><CheckCircle className="h-3 w-3 text-emerald-500 mt-1 shrink-0" />{id}</li>
@@ -145,7 +145,7 @@ export default function DocumentWizard({ onSelectService, onClose }: DocumentWiz
 
           <div className="flex gap-2 pt-2">
             {onSelectService && (
-              <Button onClick={() => onSelectService(result.serviceType)} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+              <Button onClick={() => onSelectService(result.serviceType)} className="bg-gradient-primary text-white hover:opacity-90">
                 <ChevronRight className="mr-1 h-4 w-4" /> Book This Service
               </Button>
             )}
@@ -171,10 +171,10 @@ export default function DocumentWizard({ onSelectService, onClose }: DocumentWiz
             <button
               key={opt.value}
               onClick={() => setSelectedPurpose(opt.value)}
-              className="flex items-start gap-3 rounded-lg border border-border/50 p-4 text-left transition-all hover:border-accent hover:bg-accent/5 hover:shadow-sm"
+              className="flex items-start gap-3 rounded-lg border border-border/50 p-4 text-left transition-all hover:border-accent hover:bg-primary/5 hover:shadow-sm"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent/10">
-                <opt.icon className="h-5 w-5 text-accent" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                <opt.icon className="h-5 w-5 text-primary" />
               </div>
               <div>
                 <p className="text-sm font-medium text-foreground">{opt.label}</p>

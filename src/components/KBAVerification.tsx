@@ -100,7 +100,7 @@ export default function KBAVerification({ signerName, onComplete, onCancel }: KB
     <Card className="border-border/50">
       <CardContent className="p-5 space-y-4">
         <div className="flex items-center gap-2">
-          <Shield className="h-5 w-5 text-accent" />
+          <Shield className="h-5 w-5 text-primary" />
           <h3 className="font-display font-semibold">Knowledge-Based Authentication (KBA)</h3>
           <Badge variant="outline" className="text-xs">ORC §147.66</Badge>
         </div>
@@ -129,7 +129,7 @@ export default function KBAVerification({ signerName, onComplete, onCancel }: KB
               <Input type="date" value={signerDOB} onChange={(e) => setSignerDOB(e.target.value)} />
             </div>
             <div className="flex gap-2">
-              <Button onClick={startKBA} disabled={!signerSSNLast4 || !signerDOB} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+              <Button onClick={startKBA} disabled={!signerSSNLast4 || !signerDOB} className="bg-gradient-primary text-white hover:opacity-90">
                 Generate KBA Questions
               </Button>
               <Button variant="outline" onClick={onCancel}>Cancel</Button>
@@ -139,7 +139,7 @@ export default function KBAVerification({ signerName, onComplete, onCancel }: KB
 
         {step === "generating" && (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-8 w-8 animate-spin text-accent" />
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
             <span className="ml-3 text-sm text-muted-foreground">Processing identity verification...</span>
           </div>
         )}
@@ -161,7 +161,7 @@ export default function KBAVerification({ signerName, onComplete, onCancel }: KB
               </div>
             ))}
             <div className="flex gap-2">
-              <Button onClick={submitAnswers} disabled={Object.keys(answers).length < PLACEHOLDER_QUESTIONS.length} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+              <Button onClick={submitAnswers} disabled={Object.keys(answers).length < PLACEHOLDER_QUESTIONS.length} className="bg-gradient-primary text-white hover:opacity-90">
                 Submit Answers
               </Button>
               <Button variant="outline" onClick={onCancel}>Cancel</Button>
@@ -184,7 +184,7 @@ export default function KBAVerification({ signerName, onComplete, onCancel }: KB
                 <p className="text-sm text-muted-foreground">Identity verification unsuccessful. The signer did not meet the authentication threshold.</p>
               </>
             )}
-            <Button onClick={() => onComplete(result!)} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+            <Button onClick={() => onComplete(result!)} className="bg-gradient-primary text-white hover:opacity-90">
               Continue
             </Button>
           </div>

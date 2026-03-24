@@ -177,13 +177,13 @@ export default function ServiceRequest() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center space-y-4 max-w-md px-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent/10 mx-auto">
-            <CheckCircle className="h-8 w-8 text-accent" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto">
+            <CheckCircle className="h-8 w-8 text-primary" />
           </div>
           <h1 className="font-display text-2xl font-bold">Request Submitted!</h1>
           <p className="text-muted-foreground">Your {config.label.toLowerCase()} has been received. We'll review it and contact you within 1-2 business days.</p>
           <div className="flex gap-3 justify-center">
-            <Link to="/portal"><Button className="bg-accent text-accent-foreground hover:bg-gold-dark">Go to Portal</Button></Link>
+            <Link to="/portal"><Button className="bg-gradient-primary text-white hover:opacity-90">Go to Portal</Button></Link>
             <Link to="/services"><Button variant="outline">Browse Services</Button></Link>
           </div>
         </motion.div>
@@ -213,8 +213,8 @@ export default function ServiceRequest() {
       <div className="container mx-auto max-w-2xl px-4 py-12">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="mb-6 flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10">
-              <ClipboardList className="h-6 w-6 text-accent" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+              <ClipboardList className="h-6 w-6 text-primary" />
             </div>
             <div>
               <h1 className="font-display text-2xl font-bold text-foreground">{config.label}</h1>
@@ -266,17 +266,17 @@ export default function ServiceRequest() {
               </div>
 
               {!user && (
-                <div className="rounded-lg border border-accent/30 bg-accent/5 p-4 space-y-3">
+                <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
                   <p className="text-sm font-medium flex items-center gap-2">
-                    <Shield className="h-4 w-4 text-accent" /> Sign in to submit
+                    <Shield className="h-4 w-4 text-primary" /> Sign in to submit
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    You need an account to track your request. <Link to={`/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`} className="text-accent underline">Sign in</Link> or <Link to="/signup" className="text-accent underline">create an account</Link>.
+                    You need an account to track your request. <Link to={`/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`} className="text-primary underline">Sign in</Link> or <Link to="/signup" className="text-primary underline">create an account</Link>.
                   </p>
                 </div>
               )}
 
-              <Button onClick={handleSubmit} disabled={submitting || !user} className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" size="lg">
+              <Button onClick={handleSubmit} disabled={submitting || !user} className="w-full bg-gradient-primary text-white hover:opacity-90" size="lg">
                 {submitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : "Submit Request"}
               </Button>
             </CardContent>

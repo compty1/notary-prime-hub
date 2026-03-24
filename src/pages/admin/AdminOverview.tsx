@@ -153,7 +153,7 @@ export default function AdminOverview() {
     { label: "Upcoming", value: stats.upcoming, icon: Clock, color: "text-amber-600" },
     { label: "Completed", value: stats.completed, icon: CheckCircle, color: "text-emerald-600" },
     { label: "Clients", value: stats.clients, icon: Users, color: "text-purple-600" },
-    { label: "Revenue", value: `$${stats.revenue.toFixed(2)}`, icon: DollarSign, color: "text-accent" },
+    { label: "Revenue", value: `$${stats.revenue.toFixed(2)}`, icon: DollarSign, color: "text-primary" },
   ];
 
   if (loading) return <div className="flex justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" /></div>;

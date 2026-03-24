@@ -315,21 +315,21 @@ export default function ServiceDetail() {
           <div className="flex items-center gap-3">
             <DarkModeToggle />
             <Link to="/services"><Button variant="outline" size="sm"><ChevronLeft className="mr-1 h-3 w-3" /> Services</Button></Link>
-            <Link to={bookUrl}><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Now</Button></Link>
+            <Link to={bookUrl}><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90">Book Now</Button></Link>
           </div>
         </div>
       </nav>
 
       {/* Hero with complexity & timeline badges (Phase 3.4, 3.6) */}
-      <section className="bg-gradient-navy py-12 md:py-16">
+      <section className="bg-gradient-hero py-12 md:py-16">
         <div className="container mx-auto max-w-4xl px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-start gap-4">
-            <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl bg-accent/20">
-              <IconComp className="h-7 w-7 text-accent" />
+            <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl bg-primary/20">
+              <IconComp className="h-7 w-7 text-primary" />
             </div>
             <div>
               <div className="mb-2 flex flex-wrap items-center gap-2">
-                <Badge className="border-gold/30 bg-gold/10 text-gold-light">{service.category.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}</Badge>
+                <Badge className="border-primary/20 bg-primary/10 text-primary">{service.category.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}</Badge>
                 <Badge variant="outline" className="text-primary-foreground/60 border-primary-foreground/20 text-xs">
                   <Clock className="mr-1 h-3 w-3" /> {timeline}
                 </Badge>
@@ -417,8 +417,8 @@ export default function ServiceDetail() {
                   <div className="space-y-4">
                     {workflow.map((wfStep, i) => (
                       <div key={wfStep.id} className="relative flex items-start gap-4 pl-0">
-                        <div className="relative z-10 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-accent/10 border-2 border-accent">
-                          <span className="font-display text-xs font-bold text-accent">{wfStep.step_number}</span>
+                        <div className="relative z-10 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 border-2 border-accent">
+                          <span className="font-display text-xs font-bold text-primary">{wfStep.step_number}</span>
                         </div>
                         <div className="flex-1 pb-2">
                           <h3 className="font-display font-semibold text-sm">{wfStep.step_name}</h3>
@@ -478,10 +478,10 @@ export default function ServiceDetail() {
 
             {/* Zoom consultation CTA on ALL service pages */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.34 }}>
-              <Card className="border-accent/30 bg-accent/5">
+              <Card className="border-primary/20 bg-primary/5">
                 <CardContent className="p-5 space-y-3">
                   <h3 className="font-display text-sm font-semibold flex items-center gap-2">
-                    <Monitor className="h-4 w-4 text-accent" /> Have Questions?
+                    <Monitor className="h-4 w-4 text-primary" /> Have Questions?
                   </h3>
                   <p className="text-xs text-muted-foreground">
                     Schedule a free Zoom consultation to discuss this service and get personalized guidance.
@@ -490,10 +490,10 @@ export default function ServiceDetail() {
                     Or message us for a response within 24 hours — we typically respond within 2 hours during business hours.
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    You can also <Link to="/digitize" className="text-accent underline">upload your document</Link> for instant AI-powered answers about what's needed.
+                    You can also <Link to="/digitize" className="text-primary underline">upload your document</Link> for instant AI-powered answers about what's needed.
                   </p>
                   <div className="flex gap-2 flex-wrap">
-                    <Link to="/book?service=Consultation"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark"><Monitor className="mr-1 h-3 w-3" /> Schedule Zoom</Button></Link>
+                    <Link to="/book?service=Consultation"><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90"><Monitor className="mr-1 h-3 w-3" /> Schedule Zoom</Button></Link>
                     <Link to="/notary-guide"><Button size="sm" variant="outline">Browse Guides</Button></Link>
                   </div>
                 </CardContent>
@@ -579,7 +579,7 @@ export default function ServiceDetail() {
                 onCancel={() => setShowPreQualifier(false)}
               />
             ) : (
-              <Card className="border-accent/30 bg-accent/5">
+              <Card className="border-primary/20 bg-primary/5">
                 <CardContent className="p-5 space-y-4">
                   <h3 className="font-display text-lg font-semibold">Ready to Get Started?</h3>
                   {(() => {
@@ -601,7 +601,7 @@ export default function ServiceDetail() {
                     if (SAAS_LINKS[service.name]) {
                       return (
                         <Link to={SAAS_LINKS[service.name]} className="block">
-                          <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" size="lg">
+                          <Button className="w-full bg-gradient-primary text-white hover:opacity-90" size="lg">
                             Use This Service <ChevronRight className="ml-1 h-4 w-4" />
                           </Button>
                         </Link>
@@ -610,7 +610,7 @@ export default function ServiceDetail() {
                     if (INTAKE_ONLY.has(service.name)) {
                       return (
                         <Link to={`/request?service=${encodeURIComponent(service.name)}`} className="block">
-                          <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" size="lg">
+                          <Button className="w-full bg-gradient-primary text-white hover:opacity-90" size="lg">
                             Get Started <ChevronRight className="ml-1 h-4 w-4" />
                           </Button>
                         </Link>
@@ -619,7 +619,7 @@ export default function ServiceDetail() {
                     if (SUBSCRIPTION.has(service.name)) {
                       return (
                         <Link to="/subscribe" className="block">
-                          <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" size="lg">
+                          <Button className="w-full bg-gradient-primary text-white hover:opacity-90" size="lg">
                             View Plans <ChevronRight className="ml-1 h-4 w-4" />
                           </Button>
                         </Link>
@@ -627,14 +627,14 @@ export default function ServiceDetail() {
                     }
                     if (PRE_QUALIFY_CATEGORIES.includes(service?.category || "")) {
                       return (
-                        <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" size="lg" onClick={() => setShowPreQualifier(true)}>
+                        <Button className="w-full bg-gradient-primary text-white hover:opacity-90" size="lg" onClick={() => setShowPreQualifier(true)}>
                           Book This Service <ChevronRight className="ml-1 h-4 w-4" />
                         </Button>
                       );
                     }
                     return (
                       <Link to={bookUrl} className="block">
-                        <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark" size="lg">
+                        <Button className="w-full bg-gradient-primary text-white hover:opacity-90" size="lg">
                           {["notarization", "authentication", "verification"].includes(service.category) ? "Book This Service" : "Get Started"} <ChevronRight className="ml-1 h-4 w-4" />
                         </Button>
                       </Link>
@@ -673,7 +673,7 @@ export default function ServiceDetail() {
               <Card className="border-border/50">
                 <CardContent className="p-5">
                   <h3 className="font-display text-sm font-semibold mb-2 flex items-center gap-1">
-                    <Sparkles className="h-4 w-4 text-accent" /> Often Paired With
+                    <Sparkles className="h-4 w-4 text-primary" /> Often Paired With
                   </h3>
                   <div className="space-y-2 text-sm">
                     {bundles.map((b, i) => (
@@ -699,10 +699,10 @@ export default function ServiceDetail() {
                   <Link key={s.id} to={`/services/${s.id}`}>
                     <Card className="h-full border-border/50 hover:shadow-md transition-shadow">
                       <CardContent className="p-5">
-                        <Icon className="mb-2 h-5 w-5 text-accent" />
+                        <Icon className="mb-2 h-5 w-5 text-primary" />
                         <h3 className="font-display text-sm font-semibold mb-1">{s.name}</h3>
                         <p className="text-xs text-muted-foreground line-clamp-2">{s.short_description || s.description}</p>
-                        <p className="mt-2 text-xs font-medium text-accent flex items-center gap-1">Learn More <ArrowRight className="h-3 w-3" /></p>
+                        <p className="mt-2 text-xs font-medium text-primary flex items-center gap-1">Learn More <ArrowRight className="h-3 w-3" /></p>
                       </CardContent>
                     </Card>
                   </Link>
@@ -716,7 +716,7 @@ export default function ServiceDetail() {
       {/* Phase 3.9: AI Chat Bubble */}
       <button
         onClick={() => setShowChat(!showChat)}
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-lg hover:bg-gold-dark transition-colors"
+        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-primary text-white shadow-lg hover:bg-gold-dark transition-colors"
         aria-label="Ask a question about this service"
       >
         <MessageSquare className="h-6 w-6" />
@@ -726,14 +726,14 @@ export default function ServiceDetail() {
         <div className="fixed bottom-24 right-6 z-50 w-80 rounded-lg border border-border bg-card shadow-2xl">
           <div className="flex items-center justify-between border-b border-border p-3">
             <span className="text-sm font-medium flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-accent" /> Ask About {service.name}
+              <Sparkles className="h-4 w-4 text-primary" /> Ask About {service.name}
             </span>
             <button onClick={() => setShowChat(false)} className="text-muted-foreground hover:text-foreground text-xs">✕</button>
           </div>
           <div className="p-4 text-center">
             <p className="text-xs text-muted-foreground mb-3">Have questions about this service? Contact us directly for personalized assistance.</p>
             <Link to="/#contact">
-              <Button size="sm" className="w-full bg-accent text-accent-foreground hover:bg-gold-dark">
+              <Button size="sm" className="w-full bg-gradient-primary text-white hover:opacity-90">
                 <MessageSquare className="mr-1 h-3 w-3" /> Contact Us
               </Button>
             </Link>

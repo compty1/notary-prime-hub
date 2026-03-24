@@ -385,7 +385,7 @@ export default function AdminAppointments() {
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="font-display text-2xl font-bold text-foreground">Appointments</h1>
         <div className="flex items-center gap-2 flex-wrap">
-          <Button onClick={() => setShowCreateDialog(true)} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+          <Button onClick={() => setShowCreateDialog(true)} className="bg-gradient-primary text-white hover:opacity-90">
             <Plus className="mr-1 h-4 w-4" /> New
           </Button>
           <Button variant={showRequests ? "default" : "outline"} onClick={() => setShowRequests(!showRequests)}>
@@ -490,8 +490,8 @@ export default function AdminAppointments() {
             <Card key={appt.id} className="border-border/50">
               <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-4 cursor-pointer" onClick={() => openDetail(appt)}>
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10">
-                    {appt.notarization_type === "ron" ? <Monitor className="h-5 w-5 text-accent" /> : <MapPin className="h-5 w-5 text-accent" />}
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                    {appt.notarization_type === "ron" ? <Monitor className="h-5 w-5 text-primary" /> : <MapPin className="h-5 w-5 text-primary" />}
                   </div>
                   <div>
                     <p className="font-medium text-foreground">{appt.service_type}</p>
@@ -570,7 +570,7 @@ export default function AdminAppointments() {
         <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="font-display flex items-center gap-2">
-              <Plus className="h-5 w-5 text-accent" /> Create Appointment
+              <Plus className="h-5 w-5 text-primary" /> Create Appointment
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
@@ -633,7 +633,7 @@ export default function AdminAppointments() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-            <Button onClick={createAppointment} disabled={creatingAppt} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+            <Button onClick={createAppointment} disabled={creatingAppt} className="bg-gradient-primary text-white hover:opacity-90">
               {creatingAppt ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Plus className="mr-1 h-4 w-4" />}
               Create
             </Button>
@@ -705,7 +705,7 @@ export default function AdminAppointments() {
                     {detailDocs.map((doc: any) => (
                       <div key={doc.id} className="flex items-center justify-between rounded bg-muted/50 px-3 py-2 text-xs">
                         <span className="flex items-center gap-2">
-                          <FileText className="h-3 w-3 text-accent" />
+                          <FileText className="h-3 w-3 text-primary" />
                           {doc.file_name}
                         </span>
                         <Badge className={statusColors[doc.status] || "bg-muted"}>{doc.status.replace(/_/g, " ")}</Badge>
@@ -723,7 +723,7 @@ export default function AdminAppointments() {
                 <Label>Admin Notes (internal)</Label>
                 <Textarea value={editAdminNotes} onChange={(e) => setEditAdminNotes(e.target.value)} rows={3} placeholder="Internal notes, session observations..." />
               </div>
-              <Button onClick={saveNotes} disabled={savingNotes} className="w-full bg-accent text-accent-foreground hover:bg-gold-dark">
+              <Button onClick={saveNotes} disabled={savingNotes} className="w-full bg-gradient-primary text-white hover:opacity-90">
                 {savingNotes ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}
                 Save Notes
               </Button>
@@ -764,7 +764,7 @@ export default function AdminAppointments() {
                     <Label className="text-sm font-medium flex items-center gap-1"><FileText className="h-3 w-3" /> Required Forms</Label>
                     <div className="space-y-1">
                       {forms.map((f, i) => (
-                        <a key={i} href={f.url} target={f.url.startsWith("http") ? "_blank" : undefined} rel={f.url.startsWith("http") ? "noopener noreferrer" : undefined} className="flex items-center gap-2 text-xs text-accent hover:underline">
+                        <a key={i} href={f.url} target={f.url.startsWith("http") ? "_blank" : undefined} rel={f.url.startsWith("http") ? "noopener noreferrer" : undefined} className="flex items-center gap-2 text-xs text-primary hover:underline">
                           <FileText className="h-3 w-3" /> {f.title}
                         </a>
                       ))}
@@ -821,7 +821,7 @@ export default function AdminAppointments() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="font-display flex items-center gap-2">
-              <BookMarked className="h-5 w-5 text-accent" />
+              <BookMarked className="h-5 w-5 text-primary" />
               Quick Journal Entry
             </DialogTitle>
           </DialogHeader>
@@ -859,7 +859,7 @@ export default function AdminAppointments() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setQuickJournalAppt(null)}>Skip</Button>
-            <Button onClick={saveQuickJournal} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+            <Button onClick={saveQuickJournal} className="bg-gradient-primary text-white hover:opacity-90">
               Save Journal Entry
             </Button>
           </DialogFooter>
@@ -911,7 +911,7 @@ export default function AdminAppointments() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setReceiptAppt(null)}>Close</Button>
-            <Button onClick={() => window.print()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+            <Button onClick={() => window.print()} className="bg-gradient-primary text-white hover:opacity-90">
               <Printer className="mr-1 h-4 w-4" /> Print Receipt
             </Button>
           </DialogFooter>
@@ -923,7 +923,7 @@ export default function AdminAppointments() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="font-display flex items-center gap-2">
-              <Mail className="h-5 w-5 text-accent" /> Message Client
+              <Mail className="h-5 w-5 text-primary" /> Message Client
             </DialogTitle>
           </DialogHeader>
           {messageAppt && (() => {
@@ -947,7 +947,7 @@ export default function AdminAppointments() {
           })()}
           <DialogFooter>
             <Button variant="outline" onClick={() => setMessageAppt(null)}>Cancel</Button>
-            <Button onClick={sendMessage} disabled={sendingMessage || !messageBody.trim()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+            <Button onClick={sendMessage} disabled={sendingMessage || !messageBody.trim()} className="bg-gradient-primary text-white hover:opacity-90">
               {sendingMessage ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Send className="mr-1 h-4 w-4" />}
               Send
             </Button>

@@ -76,7 +76,7 @@ export default function AdminBusinessClients() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-accent" /></div>
+        <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
       ) : filtered.length === 0 ? (
         <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground">
           <Building2 className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
@@ -93,7 +93,7 @@ export default function AdminBusinessClients() {
                     <div className="flex items-start justify-between">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <Building2 className="h-4 w-4 text-accent" />
+                          <Building2 className="h-4 w-4 text-primary" />
                           <span className="font-medium">{biz.business_name}</span>
                           <Badge className={verificationColors[biz.verification_status]}>{biz.verification_status}</Badge>
                         </div>

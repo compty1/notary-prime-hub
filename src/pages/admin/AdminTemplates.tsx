@@ -225,7 +225,7 @@ export default function AdminTemplates() {
 
         <TabsContent value="library" className="space-y-4">
           {/* Upload section */}
-          <Card className="border-accent/30 bg-accent/5">
+          <Card className="border-primary/20 bg-primary/5">
             <CardContent className="p-4 space-y-3">
               <h3 className="font-display text-sm font-semibold">Upload New Form</h3>
               <div className="grid grid-cols-3 gap-3">
@@ -244,7 +244,7 @@ export default function AdminTemplates() {
                 </div>
                 <div className="flex items-end">
                   <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.tiff" className="hidden" onChange={handleUpload} />
-                  <Button onClick={() => fileInputRef.current?.click()} disabled={uploading} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+                  <Button onClick={() => fileInputRef.current?.click()} disabled={uploading} className="bg-gradient-primary text-white hover:opacity-90">
                     {uploading ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />}
                     Upload
                   </Button>

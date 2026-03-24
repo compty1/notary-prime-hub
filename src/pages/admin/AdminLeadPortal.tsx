@@ -247,7 +247,7 @@ export default function AdminLeadPortal() {
           <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={importCSV} />
           <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}><Upload className="mr-1 h-3 w-3" /> Import CSV</Button>
           <Button variant="outline" size="sm" onClick={exportCSV}><Download className="mr-1 h-3 w-3" /> Export</Button>
-          <Button onClick={openCreate} className="bg-accent text-accent-foreground hover:bg-gold-dark"><Plus className="mr-1 h-4 w-4" /> Add Lead</Button>
+          <Button onClick={openCreate} className="bg-gradient-primary text-white hover:opacity-90"><Plus className="mr-1 h-4 w-4" /> Add Lead</Button>
         </div>
       </div>
 
@@ -319,8 +319,8 @@ export default function AdminLeadPortal() {
                 <Card key={lead.id} className="border-border/50">
                   <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-3 cursor-pointer" onClick={() => openEdit(lead)}>
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10">
-                        {lead.lead_type === "business" ? <Building2 className="h-5 w-5 text-accent" /> : <User className="h-5 w-5 text-accent" />}
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                        {lead.lead_type === "business" ? <Building2 className="h-5 w-5 text-primary" /> : <User className="h-5 w-5 text-primary" />}
                       </div>
                       <div>
                         <p className="text-sm font-medium text-foreground">{lead.name || lead.business_name || "Unknown"}</p>
@@ -445,7 +445,7 @@ export default function AdminLeadPortal() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
-            <Button onClick={saveLead} disabled={saving} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+            <Button onClick={saveLead} disabled={saving} className="bg-gradient-primary text-white hover:opacity-90">
               {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Plus className="mr-1 h-4 w-4" />}
               {editingLead ? "Update" : "Add Lead"}
             </Button>

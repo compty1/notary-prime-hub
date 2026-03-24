@@ -158,7 +158,7 @@ export default function AdminClients() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <p className="truncate font-medium text-foreground">{p.full_name || "Unnamed"}</p>
-                        {stats.isRepeat && <Badge className="bg-accent/20 text-accent-foreground text-xs flex items-center gap-0.5"><Star className="h-2.5 w-2.5" /> Repeat</Badge>}
+                        {stats.isRepeat && <Badge className="bg-primary/20 text-primary-foreground text-xs flex items-center gap-0.5"><Star className="h-2.5 w-2.5" /> Repeat</Badge>}
                       </div>
                       {p.email && <p className="flex items-center gap-1 text-xs text-muted-foreground"><Mail className="h-3 w-3" /> {p.email}</p>}
                       {p.phone && <p className="flex items-center gap-1 text-xs text-muted-foreground"><Phone className="h-3 w-3" /> {p.phone}</p>}
@@ -208,7 +208,7 @@ export default function AdminClients() {
                 <div>
                   <Label className="text-sm font-semibold">Admin Notes (internal)</Label>
                   <Textarea value={adminNotes} onChange={(e) => setAdminNotes(e.target.value)} rows={3} placeholder="Preferences, history, special instructions..." className="mt-1" />
-                  <Button size="sm" onClick={saveAdminNotes} disabled={savingNotes} className="mt-2 bg-accent text-accent-foreground hover:bg-gold-dark">
+                  <Button size="sm" onClick={saveAdminNotes} disabled={savingNotes} className="mt-2 bg-gradient-primary text-white hover:opacity-90">
                     {savingNotes ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Save className="mr-1 h-3 w-3" />} Save Notes
                   </Button>
                   {selectedClient.email && (
@@ -230,7 +230,7 @@ export default function AdminClients() {
                       {stats.appointments.map((appt: any) => (
                         <div key={appt.id} className="flex items-center justify-between rounded-lg border border-border/50 p-2 text-sm">
                           <div className="flex items-center gap-2">
-                            {appt.notarization_type === "ron" ? <Monitor className="h-3 w-3 text-accent" /> : <MapPin className="h-3 w-3 text-accent" />}
+                            {appt.notarization_type === "ron" ? <Monitor className="h-3 w-3 text-primary" /> : <MapPin className="h-3 w-3 text-primary" />}
                             <div><p className="text-xs font-medium">{appt.service_type}</p><p className="text-xs text-muted-foreground">{formatDate(appt.scheduled_date)}</p></div>
                           </div>
                           <Badge className={`text-xs ${statusColors[appt.status] || "bg-muted"}`}>{appt.status?.replace(/_/g, " ")}</Badge>
@@ -248,7 +248,7 @@ export default function AdminClients() {
       {/* Message Client Dialog */}
       <Dialog open={!!messageClient} onOpenChange={() => setMessageClient(null)}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader><DialogTitle className="font-display flex items-center gap-2"><Mail className="h-5 w-5 text-accent" /> Message Client</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="font-display flex items-center gap-2"><Mail className="h-5 w-5 text-primary" /> Message Client</DialogTitle></DialogHeader>
           {messageClient && (
             <div className="space-y-4">
               <div className="rounded-lg bg-muted/50 p-3 text-sm">
@@ -260,7 +260,7 @@ export default function AdminClients() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setMessageClient(null)}>Cancel</Button>
-            <Button onClick={sendClientMessage} disabled={sendingMessage || !messageBody.trim()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+            <Button onClick={sendClientMessage} disabled={sendingMessage || !messageBody.trim()} className="bg-gradient-primary text-white hover:opacity-90">
               {sendingMessage ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Send className="mr-1 h-4 w-4" />} Send
             </Button>
           </DialogFooter>

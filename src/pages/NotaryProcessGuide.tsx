@@ -41,15 +41,15 @@ export default function NotaryProcessGuide() {
             ) : (
               <Link to="/login"><Button variant="outline" size="sm">Sign In</Button></Link>
             )}
-            <Link to="/book"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">Book Now</Button></Link>
+            <Link to="/book"><Button size="sm" className="bg-gradient-primary text-white hover:bg-accent/90">Book Now</Button></Link>
           </div>
         </div>
       </nav>
 
       {/* Hero */}
-      <section className="bg-gradient-navy py-12 md:py-16">
+      <section className="bg-gradient-hero py-12 md:py-16">
         <div className="container mx-auto px-4 text-center">
-          <Badge className="mb-4 border-gold/30 bg-gold/10 text-gold-light">
+          <Badge className="mb-4 border-primary/20 bg-primary/10 text-primary">
             <BookOpen className="mr-1 h-3 w-3" /> Provider Reference
           </Badge>
           <h1 className="mb-3 font-display text-3xl font-bold text-primary-foreground md:text-4xl">
@@ -65,7 +65,7 @@ export default function NotaryProcessGuide() {
       <section className="py-12 border-b border-border/50">
         <div className="container mx-auto max-w-4xl px-4">
           <h2 className="mb-6 font-display text-2xl font-bold text-foreground flex items-center gap-2">
-            <Stamp className="h-6 w-6 text-accent" /> Seal Placement Guide
+            <Stamp className="h-6 w-6 text-primary" /> Seal Placement Guide
           </h2>
 
           <div className="grid gap-6 md:grid-cols-2">
@@ -74,10 +74,10 @@ export default function NotaryProcessGuide() {
                 <h3 className="mb-3 font-display text-lg font-semibold">Ohio Seal Requirements</h3>
                 <p className="text-sm text-muted-foreground mb-3">Per ORC §147.04, the Ohio notary seal must contain:</p>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> Notary's full legal name</li>
-                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> "Notary Public" designation</li>
-                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> "State of Ohio"</li>
-                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> Commission expiration date</li>
+                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> Notary's full legal name</li>
+                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> "Notary Public" designation</li>
+                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> "State of Ohio"</li>
+                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> Commission expiration date</li>
                 </ul>
               </CardContent>
             </Card>
@@ -86,9 +86,9 @@ export default function NotaryProcessGuide() {
               <CardContent className="p-6">
                 <h3 className="mb-3 font-display text-lg font-semibold">Placement Rules</h3>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> Place near (not on) the notary's signature</li>
-                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> Do NOT cover any text or signatures</li>
-                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" /> Apply on the same page as the notarial certificate</li>
+                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> Place near (not on) the notary's signature</li>
+                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> Do NOT cover any text or signatures</li>
+                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> Apply on the same page as the notarial certificate</li>
                   <li className="flex items-start gap-2"><AlertTriangle className="h-4 w-4 mt-0.5 text-amber-500 flex-shrink-0" /> For acknowledgments: seal on the acknowledgment certificate</li>
                   <li className="flex items-start gap-2"><AlertTriangle className="h-4 w-4 mt-0.5 text-amber-500 flex-shrink-0" /> For jurats: seal on the jurat certificate below the oath</li>
                 </ul>
@@ -127,7 +127,7 @@ export default function NotaryProcessGuide() {
       <section className="py-12 border-b border-border/50">
         <div className="container mx-auto max-w-4xl px-4">
           <h2 className="mb-6 font-display text-2xl font-bold text-foreground flex items-center gap-2">
-            <MapPin className="h-6 w-6 text-accent" /> In-Person Notarization Process
+            <MapPin className="h-6 w-6 text-primary" /> In-Person Notarization Process
           </h2>
 
           <div className="space-y-4">
@@ -141,12 +141,12 @@ export default function NotaryProcessGuide() {
             ].map((s) => (
               <Card key={s.step} className="border-border/50">
                 <CardContent className="flex gap-4 p-5">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent font-bold text-sm">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">
                     {s.step}
                   </div>
                   <div>
                     <h3 className="mb-1 font-display font-semibold text-foreground flex items-center gap-2">
-                      <s.icon className="h-4 w-4 text-accent" /> {s.title}
+                      <s.icon className="h-4 w-4 text-primary" /> {s.title}
                     </h3>
                     <p className="text-sm text-muted-foreground">{s.desc}</p>
                   </div>
@@ -161,7 +161,7 @@ export default function NotaryProcessGuide() {
       <section className="py-12 bg-muted/30 border-b border-border/50">
         <div className="container mx-auto max-w-4xl px-4">
           <h2 className="mb-6 font-display text-2xl font-bold text-foreground flex items-center gap-2">
-            <Monitor className="h-6 w-6 text-accent" /> RON Session Process
+            <Monitor className="h-6 w-6 text-primary" /> RON Session Process
           </h2>
 
           <div className="space-y-4">
@@ -175,12 +175,12 @@ export default function NotaryProcessGuide() {
             ].map((s) => (
               <Card key={s.step} className="border-border/50">
                 <CardContent className="flex gap-4 p-5">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent font-bold text-sm">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">
                     {s.step}
                   </div>
                   <div>
                     <h3 className="mb-1 font-display font-semibold text-foreground flex items-center gap-2">
-                      <s.icon className="h-4 w-4 text-accent" /> {s.title}
+                      <s.icon className="h-4 w-4 text-primary" /> {s.title}
                     </h3>
                     <p className="text-sm text-muted-foreground">{s.desc}</p>
                   </div>
@@ -195,14 +195,14 @@ export default function NotaryProcessGuide() {
       <section className="py-12 border-b border-border/50">
         <div className="container mx-auto max-w-4xl px-4">
           <h2 className="mb-6 font-display text-2xl font-bold text-foreground flex items-center gap-2">
-            <Users className="h-6 w-6 text-accent" /> What Signers Leave With
+            <Users className="h-6 w-6 text-primary" /> What Signers Leave With
           </h2>
 
           <div className="grid gap-6 md:grid-cols-2">
             <Card className="border-border/50">
               <CardContent className="p-6">
                 <h3 className="mb-3 font-display text-lg font-semibold flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-accent" /> In-Person Session
+                  <MapPin className="h-4 w-4 text-primary" /> In-Person Session
                 </h3>
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-emerald-500 flex-shrink-0" /> Original notarized document(s) with seal</li>
@@ -216,7 +216,7 @@ export default function NotaryProcessGuide() {
             <Card className="border-border/50">
               <CardContent className="p-6">
                 <h3 className="mb-3 font-display text-lg font-semibold flex items-center gap-2">
-                  <Monitor className="h-4 w-4 text-accent" /> RON Session
+                  <Monitor className="h-4 w-4 text-primary" /> RON Session
                 </h3>
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-emerald-500 flex-shrink-0" /> Digitally notarized document(s) with e-seal</li>

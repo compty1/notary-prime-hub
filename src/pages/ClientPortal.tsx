@@ -476,7 +476,7 @@ export default function ClientPortal() {
           <TabsContent value="appointments" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-xl font-semibold">Upcoming Appointments</h2>
-              <Link to="/book"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark"><Plus className="mr-1 h-4 w-4" /> New Appointment</Button></Link>
+              <Link to="/book"><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90"><Plus className="mr-1 h-4 w-4" /> New Appointment</Button></Link>
             </div>
             {loading ? (
               <div className="flex justify-center py-12"><div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" /></div>
@@ -484,7 +484,7 @@ export default function ClientPortal() {
               <Card className="border-border/50"><CardContent className="flex flex-col items-center py-12 text-center">
                 <Calendar className="mb-4 h-12 w-12 text-muted-foreground/50" />
                 <p className="text-muted-foreground">No upcoming appointments</p>
-                <Link to="/book" className="mt-4"><Button className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Your First Appointment</Button></Link>
+                <Link to="/book" className="mt-4"><Button className="bg-gradient-primary text-white hover:opacity-90">Book Your First Appointment</Button></Link>
               </CardContent></Card>
             ) : (
               <div className="space-y-4">
@@ -504,8 +504,8 @@ export default function ClientPortal() {
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10">
-                            {appt.notarization_type === "ron" ? <Monitor className="h-5 w-5 text-accent" /> : <MapPin className="h-5 w-5 text-accent" />}
+                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                            {appt.notarization_type === "ron" ? <Monitor className="h-5 w-5 text-primary" /> : <MapPin className="h-5 w-5 text-primary" />}
                           </div>
                           <div>
                             <p className="font-medium">{appt.service_type}</p>
@@ -559,7 +559,7 @@ export default function ClientPortal() {
               <h2 className="font-display text-xl font-semibold">My Documents</h2>
               <div>
                 <input ref={fileInputRef} type="file" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.tiff" className="hidden" onChange={handleFileUpload} />
-                <Button size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+                <Button size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="bg-gradient-primary text-white hover:opacity-90">
                   {uploading ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />} Upload Documents
                 </Button>
               </div>
@@ -576,12 +576,12 @@ export default function ClientPortal() {
                   <Card key={doc.id} className="border-border/50">
                     <CardContent className="flex items-center justify-between p-4">
                       <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <FileText className="h-5 w-5 text-accent flex-shrink-0" />
+                        <FileText className="h-5 w-5 text-primary flex-shrink-0" />
                         <div className="min-w-0">
                           <p className="font-medium text-sm truncate">{doc.file_name}</p>
                           <p className="text-xs text-muted-foreground">
                             {new Date(doc.created_at).toLocaleDateString()}
-                            {doc.appointment_id && <span className="ml-1 text-accent">• Linked to appointment</span>}
+                            {doc.appointment_id && <span className="ml-1 text-primary">• Linked to appointment</span>}
                           </p>
                         </div>
                       </div>
@@ -682,7 +682,7 @@ export default function ClientPortal() {
                           const isCurrent = i === currentIdx;
                           return (
                             <div key={step.key} className="flex flex-col items-center text-center">
-                              <div className={`flex h-8 w-8 items-center justify-center rounded-full ${isComplete ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"} ${isCurrent ? "ring-2 ring-accent ring-offset-2" : ""}`}>
+                              <div className={`flex h-8 w-8 items-center justify-center rounded-full ${isComplete ? "bg-gradient-primary text-white" : "bg-muted text-muted-foreground"} ${isCurrent ? "ring-2 ring-accent ring-offset-2" : ""}`}>
                                 <step.icon className="h-4 w-4" />
                               </div>
                               <span className={`mt-1 text-xs ${isComplete ? "text-foreground font-medium" : "text-muted-foreground"}`}>{step.label}</span>
@@ -732,7 +732,7 @@ export default function ClientPortal() {
                       : m.sender_id === chatRecipient;
                   }).map((msg) => (
                     <div key={msg.id} className={`flex ${msg.is_admin ? "justify-start" : "justify-end"}`}>
-                      <div className={`max-w-[75%] rounded-lg px-3 py-2 text-sm ${msg.is_admin ? "bg-muted text-foreground" : "bg-accent text-accent-foreground"}`}>
+                      <div className={`max-w-[75%] rounded-lg px-3 py-2 text-sm ${msg.is_admin ? "bg-muted text-foreground" : "bg-gradient-primary text-white"}`}>
                         <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:m-0"><ReactMarkdown>{msg.message}</ReactMarkdown></div>
                         <p className="mt-1 text-[10px] opacity-60">{new Date(msg.created_at).toLocaleTimeString()}</p>
                       </div>
@@ -749,7 +749,7 @@ export default function ClientPortal() {
                     rows={1}
                     onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChatMessage(); } }}
                   />
-                  <Button onClick={sendChatMessage} disabled={sendingChat || !chatInput.trim()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+                  <Button onClick={sendChatMessage} disabled={sendingChat || !chatInput.trim()} className="bg-gradient-primary text-white hover:opacity-90">
                     {sendingChat ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                   </Button>
                 </div>
@@ -773,7 +773,7 @@ export default function ClientPortal() {
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          {c.direction === "inbound" ? <Mail className="h-4 w-4 text-accent" /> : <Send className="h-4 w-4 text-accent" />}
+                          {c.direction === "inbound" ? <Mail className="h-4 w-4 text-primary" /> : <Send className="h-4 w-4 text-primary" />}
                           <span className="text-sm font-medium">{c.subject}</span>
                         </div>
                         <Badge className={c.status === "replied" ? "bg-emerald-100 text-emerald-800" : c.status === "pending" ? "bg-amber-100 text-amber-800" : "bg-muted text-muted-foreground"}>
@@ -841,7 +841,7 @@ export default function ClientPortal() {
                     }
                     setSubmittingApostille(false);
                   }}
-                  className="bg-accent text-accent-foreground hover:bg-gold-dark"
+                  className="bg-gradient-primary text-white hover:opacity-90"
                 >
                   {submittingApostille ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Package className="mr-1 h-4 w-4" />}
                   Submit Request
@@ -867,7 +867,7 @@ export default function ClientPortal() {
                         <div className="flex items-center gap-1 my-3">
                           {apoSteps.map((s, i) => (
                             <div key={s} className="flex items-center flex-1">
-                              <div className={`flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold ${i <= currentIdx ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"} ${i === currentIdx ? "ring-2 ring-accent ring-offset-1" : ""}`}>
+                              <div className={`flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold ${i <= currentIdx ? "bg-gradient-primary text-white" : "bg-muted text-muted-foreground"} ${i === currentIdx ? "ring-2 ring-accent ring-offset-1" : ""}`}>
                                 {i < currentIdx ? "✓" : i + 1}
                               </div>
                               {i < apoSteps.length - 1 && <div className={`flex-1 h-0.5 mx-1 ${i < currentIdx ? "bg-accent" : "bg-muted"}`} />}
@@ -931,13 +931,13 @@ export default function ClientPortal() {
                       <CardContent className="flex items-center justify-between p-4">
                         <div>
                           <p className="font-medium text-sm">${parseFloat(p.amount).toFixed(2)}</p>
-                          {linkedAppt && <p className="text-xs text-accent font-medium">{linkedAppt.service_type}</p>}
+                          {linkedAppt && <p className="text-xs text-primary font-medium">{linkedAppt.service_type}</p>}
                           <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString()} · {p.method || "N/A"}</p>
                           {p.notes && <p className="text-xs text-muted-foreground mt-0.5">{p.notes}</p>}
                         </div>
                         <div className="flex items-center gap-2">
                           {p.status === "pending" && (
-                            <Button size="sm" className="text-xs bg-accent text-accent-foreground hover:bg-gold-dark" onClick={() => setPayingPaymentId(p.id)}>
+                            <Button size="sm" className="text-xs bg-gradient-primary text-white hover:opacity-90" onClick={() => setPayingPaymentId(p.id)}>
                               <CreditCard className="mr-1 h-3 w-3" /> Pay Now
                             </Button>
                           )}
@@ -1016,7 +1016,7 @@ export default function ClientPortal() {
                       }
                       setSubmittingReview(false);
                     }}
-                    className="bg-accent text-accent-foreground hover:bg-gold-dark"
+                    className="bg-gradient-primary text-white hover:opacity-90"
                   >
                     {submittingReview ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Star className="mr-1 h-4 w-4" />}
                     Submit Review
@@ -1048,7 +1048,7 @@ export default function ClientPortal() {
           <TabsContent value="requests" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-xl font-semibold">Service Requests</h2>
-              <Link to="/request"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark"><Plus className="mr-1 h-4 w-4" /> New Request</Button></Link>
+              <Link to="/request"><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90"><Plus className="mr-1 h-4 w-4" /> New Request</Button></Link>
             </div>
             {serviceRequests.length === 0 ? (
               <Card className="border-border/50"><CardContent className="flex flex-col items-center py-12 text-center">
@@ -1144,7 +1144,7 @@ export default function ClientPortal() {
                     setSavingReminder(false);
                   }}
                   size="sm"
-                  className="bg-accent text-accent-foreground hover:bg-gold-dark"
+                  className="bg-gradient-primary text-white hover:opacity-90"
                 >
                   {savingReminder ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Bell className="mr-1 h-4 w-4" />}
                   Set Reminder
@@ -1209,11 +1209,11 @@ export default function ClientPortal() {
             </div>
 
             {/* Digitize Documents Card */}
-            <Card className="border-accent/30 bg-accent/5">
+            <Card className="border-primary/20 bg-primary/5">
               <CardContent className="flex items-center justify-between p-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/20">
-                    <FileText className="h-5 w-5 text-accent" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/20">
+                    <FileText className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <h3 className="text-sm font-semibold text-foreground">Digitize Documents</h3>
@@ -1221,7 +1221,7 @@ export default function ClientPortal() {
                   </div>
                 </div>
                 <Link to="/digitize">
-                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">
+                  <Button size="sm" className="bg-gradient-primary text-white hover:opacity-90">
                     <ArrowRight className="mr-1 h-3 w-3" /> Start
                   </Button>
                 </Link>
@@ -1250,7 +1250,7 @@ export default function ClientPortal() {
                     {svc.description && <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{svc.description}</p>}
                     <div className="flex gap-2 mt-3">
                       <Link to={getServiceUrl(svc)}>
-                        <Button size="sm" className="text-xs bg-accent text-accent-foreground hover:bg-gold-dark">{getServiceCTA(svc)}</Button>
+                        <Button size="sm" className="text-xs bg-gradient-primary text-white hover:opacity-90">{getServiceCTA(svc)}</Button>
                       </Link>
                       <Link to={`/services/${svc.id}`}>
                         <Button size="sm" variant="outline" className="text-xs">View Details</Button>
@@ -1267,10 +1267,10 @@ export default function ClientPortal() {
       {/* AI Explain Dialog */}
       <Dialog open={explainDialogOpen} onOpenChange={setExplainDialogOpen}>
         <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="font-display flex items-center gap-2"><Sparkles className="h-5 w-5 text-accent" /> AI Document Explanation</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="font-display flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary" /> AI Document Explanation</DialogTitle></DialogHeader>
           {explaining ? (
             <div className="flex flex-col items-center py-8 gap-3">
-              <Loader2 className="h-8 w-8 animate-spin text-accent" />
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <p className="text-sm text-muted-foreground">Analyzing document...</p>
             </div>
           ) : explanation ? (
@@ -1293,7 +1293,7 @@ export default function ClientPortal() {
       {/* Edit Profile Dialog */}
       <Dialog open={editProfileOpen} onOpenChange={setEditProfileOpen}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader><DialogTitle className="font-display flex items-center gap-2"><User className="h-5 w-5 text-accent" /> Edit Profile</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="font-display flex items-center gap-2"><User className="h-5 w-5 text-primary" /> Edit Profile</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <div><Label>Full Name</Label><Input value={profileForm.full_name} onChange={(e) => setProfileForm({ ...profileForm, full_name: e.target.value })} /></div>
             <div><Label>Phone</Label><Input value={profileForm.phone} onChange={(e) => setProfileForm({ ...profileForm, phone: formatPhone(e.target.value) })} placeholder="(614) 555-1234" /></div>
@@ -1306,7 +1306,7 @@ export default function ClientPortal() {
           </div>
           <DialogFooter className="flex-col gap-2 sm:flex-row">
             <Button variant="outline" onClick={() => setEditProfileOpen(false)}>Cancel</Button>
-            <Button onClick={saveProfile} disabled={savingProfile} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+            <Button onClick={saveProfile} disabled={savingProfile} className="bg-gradient-primary text-white hover:opacity-90">
               {savingProfile ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />} Save
             </Button>
           </DialogFooter>

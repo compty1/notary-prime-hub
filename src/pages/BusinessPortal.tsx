@@ -124,7 +124,7 @@ export default function BusinessPortal() {
   const totalPaid = payments.filter(p => p.status === "paid").reduce((s, p) => s + parseFloat(p.amount || "0"), 0);
   const totalPending = payments.filter(p => p.status === "pending").reduce((s, p) => s + parseFloat(p.amount || "0"), 0);
 
-  if (loading) return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-accent" /></div>;
+  if (loading) return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -147,13 +147,13 @@ export default function BusinessPortal() {
             <Building2 className="mx-auto mb-4 h-16 w-16 text-muted-foreground/50" />
             <h1 className="font-display text-2xl font-bold mb-2">Business Client Portal</h1>
             <p className="text-muted-foreground mb-6">Register your business for bulk uploads, team accounts, and dedicated service</p>
-            <Button onClick={() => setRegisterOpen(true)} className="bg-accent text-accent-foreground hover:bg-gold-dark"><Plus className="mr-1 h-4 w-4" /> Register Business</Button>
+            <Button onClick={() => setRegisterOpen(true)} className="bg-gradient-primary text-white hover:opacity-90"><Plus className="mr-1 h-4 w-4" /> Register Business</Button>
           </motion.div>
         ) : (
           <>
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-1">
-                <Building2 className="h-6 w-6 text-accent" />
+                <Building2 className="h-6 w-6 text-primary" />
                 <h1 className="font-display text-2xl font-bold">{business.business_name}</h1>
                 <Badge className={business.verification_status === "verified" ? "bg-emerald-100 text-emerald-800" : "bg-yellow-100 text-yellow-800"}>
                   {business.verification_status}
@@ -174,7 +174,7 @@ export default function BusinessPortal() {
                   <h2 className="font-display text-lg font-semibold">Bulk Document Upload</h2>
                   <div>
                     <input ref={fileInputRef} type="file" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.tiff,.xlsx,.csv" className="hidden" onChange={handleBulkUpload} />
-                    <Button size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+                    <Button size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="bg-gradient-primary text-white hover:opacity-90">
                       {uploading ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />} Upload Files
                     </Button>
                   </div>
@@ -183,7 +183,7 @@ export default function BusinessPortal() {
                   <Card key={doc.id} className="border-border/50">
                     <CardContent className="flex items-center justify-between p-4">
                       <div className="flex items-center gap-3">
-                        <FileText className="h-5 w-5 text-accent" />
+                        <FileText className="h-5 w-5 text-primary" />
                         <div>
                           <p className="text-sm font-medium">{doc.file_name}</p>
                           <p className="text-xs text-muted-foreground">{new Date(doc.created_at).toLocaleDateString()}</p>
@@ -199,7 +199,7 @@ export default function BusinessPortal() {
                 <h2 className="font-display text-lg font-semibold">Team Members</h2>
                 <div className="flex gap-2">
                   <Input value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="Enter team member's email..." className="max-w-sm" />
-                  <Button size="sm" onClick={addTeamMember} disabled={!inviteEmail.trim()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+                  <Button size="sm" onClick={addTeamMember} disabled={!inviteEmail.trim()} className="bg-gradient-primary text-white hover:opacity-90">
                     <Plus className="mr-1 h-4 w-4" /> Add Member
                   </Button>
                 </div>
@@ -232,7 +232,7 @@ export default function BusinessPortal() {
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <Card className="border-border/50">
                     <CardContent className="p-4 text-center">
-                      <DollarSign className="mx-auto mb-1 h-5 w-5 text-accent" />
+                      <DollarSign className="mx-auto mb-1 h-5 w-5 text-primary" />
                       <p className="text-xl font-bold text-foreground">${totalPaid.toFixed(2)}</p>
                       <p className="text-xs text-muted-foreground">Total Paid</p>
                     </CardContent>
@@ -286,7 +286,7 @@ export default function BusinessPortal() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setRegisterOpen(false)}>Cancel</Button>
-            <Button onClick={registerBusiness} disabled={!form.business_name} className="bg-accent text-accent-foreground hover:bg-gold-dark">Register</Button>
+            <Button onClick={registerBusiness} disabled={!form.business_name} className="bg-gradient-primary text-white hover:opacity-90">Register</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -584,7 +584,7 @@ export default function AdminResources() {
                             <div className="space-y-2">
                               {guide.steps.map((step, j) => (
                                 <div key={j} className="flex gap-3">
-                                  <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-accent/10 text-xs font-bold text-accent">{j + 1}</div>
+                                  <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">{j + 1}</div>
                                   <p className="text-sm">{step}</p>
                                 </div>
                               ))}
@@ -617,7 +617,7 @@ export default function AdminResources() {
           {complianceReminders.map((section) => (
             <Card key={section.title} className="border-border/50">
               <CardContent className="p-6">
-                <h3 className="mb-3 flex items-center gap-2 font-display text-lg font-semibold"><Shield className="h-5 w-5 text-accent" />{section.title}</h3>
+                <h3 className="mb-3 flex items-center gap-2 font-display text-lg font-semibold"><Shield className="h-5 w-5 text-primary" />{section.title}</h3>
                 <ul className="space-y-2">
                   {section.items.map((item, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm"><CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-500" /><span>{item}</span></li>
@@ -630,9 +630,9 @@ export default function AdminResources() {
 
         {/* NEW NOTARY GUIDE TAB */}
         <TabsContent value="new-notary" className="space-y-4">
-          <Card className="border-accent/30 bg-accent/5">
+          <Card className="border-primary/20 bg-primary/5">
             <CardContent className="p-6">
-              <h2 className="font-display text-xl font-bold mb-2 flex items-center gap-2"><GraduationCap className="h-6 w-6 text-accent" /> Getting Started as an Ohio Notary</h2>
+              <h2 className="font-display text-xl font-bold mb-2 flex items-center gap-2"><GraduationCap className="h-6 w-6 text-primary" /> Getting Started as an Ohio Notary</h2>
               <p className="text-sm text-muted-foreground">Follow these steps to get commissioned and start notarizing in Ohio. This guide covers everything from application to your first notarization.</p>
             </CardContent>
           </Card>
@@ -640,7 +640,7 @@ export default function AdminResources() {
             <Card key={item.step} className="border-border/50">
               <CardContent className="p-5">
                 <div className="flex gap-4">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground font-bold text-lg">{item.step}</div>
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-primary text-white font-bold text-lg">{item.step}</div>
                   <div>
                     <h3 className="font-display font-semibold mb-1">{item.title}</h3>
                     <p className="text-sm text-muted-foreground">{item.content}</p>
@@ -676,7 +676,7 @@ export default function AdminResources() {
         <TabsContent value="ohio-law" className="space-y-6">
           {externalResources.filter((r) => r.category.includes("Ohio")).map((section) => (
             <div key={section.category}>
-              <h2 className="font-display text-lg font-semibold mb-3 flex items-center gap-2"><Scale className="h-5 w-5 text-accent" /> {section.category}</h2>
+              <h2 className="font-display text-lg font-semibold mb-3 flex items-center gap-2"><Scale className="h-5 w-5 text-primary" /> {section.category}</h2>
               <div className="grid gap-3 md:grid-cols-2">
                 {section.links.map((link) => (
                   <Card key={link.title} className="border-border/50">

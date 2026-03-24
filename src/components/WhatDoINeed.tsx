@@ -97,7 +97,7 @@ export default function WhatDoINeed() {
     <section className="py-10 bg-muted/30 border-b border-border/50">
       <div className="container mx-auto max-w-2xl px-4 text-center">
         <h2 className="mb-2 font-display text-xl font-bold text-foreground flex items-center justify-center gap-2">
-          <Sparkles className="h-5 w-5 text-accent" /> What Do I Need?
+          <Sparkles className="h-5 w-5 text-primary" /> What Do I Need?
         </h2>
         <p className="mb-4 text-sm text-muted-foreground">
           Describe your situation and get practical instructions, required documents, forms, and tips.
@@ -110,12 +110,12 @@ export default function WhatDoINeed() {
             onKeyDown={(e) => { if (e.key === "Enter") handleSubmit(); }}
             className="flex-1"
           />
-          <Button onClick={handleSubmit} disabled={loading || !query.trim()} className="bg-accent text-accent-foreground hover:bg-gold-dark">
+          <Button onClick={handleSubmit} disabled={loading || !query.trim()} className="bg-gradient-primary text-white hover:opacity-90">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Sparkles className="mr-1 h-4 w-4" /> Go</>}
           </Button>
         </div>
         {showResult && (
-          <Card className="mt-4 text-left border-accent/30">
+          <Card className="mt-4 text-left border-primary/20">
             <CardContent className="p-4">
               {result ? (
                 <div className="prose prose-sm max-w-none dark:prose-invert">
@@ -140,7 +140,7 @@ export default function WhatDoINeed() {
                     </Button>
                   </div>
                   <div className="flex gap-2">
-                    <Link to="/book"><Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark">Book Appointment <ArrowRight className="ml-1 h-3 w-3" /></Button></Link>
+                    <Link to="/book"><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90">Book Appointment <ArrowRight className="ml-1 h-3 w-3" /></Button></Link>
                     <Link to="/templates"><Button size="sm" variant="outline">View Templates</Button></Link>
                     <Link to="/services"><Button size="sm" variant="outline">All Services</Button></Link>
                   </div>

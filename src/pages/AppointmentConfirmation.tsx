@@ -175,8 +175,8 @@ export default function AppointmentConfirmation() {
 
       <div className="container mx-auto max-w-lg px-4 py-16 text-center">
         <div className="mb-6 flex justify-center">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-accent/20">
-            <CheckCircle className="h-10 w-10 text-accent" />
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/20">
+            <CheckCircle className="h-10 w-10 text-primary" />
           </div>
         </div>
 
@@ -190,7 +190,7 @@ export default function AppointmentConfirmation() {
                 {appointment.notarization_type === "ron" ? <Monitor className="h-4 w-4" /> : <MapPin className="h-4 w-4" />}
                 Type
               </span>
-              <Badge className="bg-accent/20 text-accent-foreground">
+              <Badge className="bg-primary/20 text-primary-foreground">
                 {appointment.notarization_type === "ron" ? "Remote (RON)" : "In-Person"}
               </Badge>
             </div>
@@ -215,7 +215,7 @@ export default function AppointmentConfirmation() {
             {appointment.estimated_price && (
               <div className="flex items-center justify-between border-t border-border pt-2">
                 <span className="text-sm text-muted-foreground">Est. Total</span>
-                <span className="text-sm font-bold text-accent">${parseFloat(appointment.estimated_price).toFixed(2)}</span>
+                <span className="text-sm font-bold text-primary">${parseFloat(appointment.estimated_price).toFixed(2)}</span>
               </div>
             )}
           </CardContent>
@@ -225,7 +225,7 @@ export default function AppointmentConfirmation() {
         {notaryProfile && (
           <Card className="mb-6 border-border/50 text-left">
             <CardContent className="p-4">
-              <p className="text-sm font-medium mb-2 flex items-center gap-2"><User className="h-4 w-4 text-accent" /> Your Notary</p>
+              <p className="text-sm font-medium mb-2 flex items-center gap-2"><User className="h-4 w-4 text-primary" /> Your Notary</p>
               <p className="text-sm font-medium">{notaryProfile.full_name || "Notar"}</p>
               {notaryProfile.phone && <p className="text-xs text-muted-foreground mt-1">📞 {notaryProfile.phone}</p>}
               {notaryProfile.email && <p className="text-xs text-muted-foreground">✉️ {notaryProfile.email}</p>}
@@ -245,14 +245,14 @@ export default function AppointmentConfirmation() {
             </Button>
           </Link>
           <Link to="/portal">
-            <Button className="w-full bg-accent text-accent-foreground hover:bg-gold-dark sm:w-auto">
+            <Button className="w-full bg-gradient-primary text-white hover:opacity-90 sm:w-auto">
               Go to Portal
             </Button>
           </Link>
         </div>
 
         {/* Phase 5.1: Service-specific checklist */}
-        <div className="mt-8 rounded-lg border border-accent/30 bg-accent/5 p-4 text-left text-sm text-muted-foreground">
+        <div className="mt-8 rounded-lg border border-primary/20 bg-primary/5 p-4 text-left text-sm text-muted-foreground">
           <p className="mb-2 font-medium text-foreground">What to bring / prepare:</p>
           <ul className="space-y-1">
             {checklist.map((item, i) => (
@@ -276,13 +276,13 @@ export default function AppointmentConfirmation() {
 
         {/* Zoom link for consultation appointments */}
         {zoomLink && (appointment.service_type || "").toLowerCase().includes("consult") && (
-          <div className="mt-4 rounded-lg border border-accent/30 bg-accent/5 p-4 text-left">
+          <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-4 text-left">
             <p className="mb-2 text-sm font-medium text-foreground flex items-center gap-2">
-              <Video className="h-4 w-4 text-accent" /> Zoom Meeting
+              <Video className="h-4 w-4 text-primary" /> Zoom Meeting
             </p>
             <p className="text-xs text-muted-foreground mb-3">Your consultation will take place via Zoom. Click below to join when it's time.</p>
             <a href={zoomLink} target="_blank" rel="noopener noreferrer">
-              <Button size="sm" className="bg-accent text-accent-foreground hover:bg-gold-dark gap-2">
+              <Button size="sm" className="bg-gradient-primary text-white hover:opacity-90 gap-2">
                 <Video className="h-4 w-4" /> Join Zoom Meeting
               </Button>
             </a>
@@ -300,7 +300,7 @@ export default function AppointmentConfirmation() {
         {crossSells.length > 0 && (
           <div className="mt-4 rounded-lg border border-border/50 bg-card p-4 text-left">
             <p className="mb-3 text-sm font-medium text-foreground flex items-center gap-2">
-              <FileText className="h-4 w-4 text-accent" /> You may also need:
+              <FileText className="h-4 w-4 text-primary" /> You may also need:
             </p>
             {crossSells.map((cs, i) => (
               <div key={i} className="flex items-center justify-between mb-2 last:mb-0">

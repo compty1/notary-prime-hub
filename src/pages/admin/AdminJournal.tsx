@@ -167,7 +167,7 @@ export default function AdminJournal() {
           )}
           <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) resetForm(); }}>
             <DialogTrigger asChild>
-              <Button className="bg-accent text-accent-foreground hover:bg-gold-dark">
+              <Button className="bg-gradient-primary text-white hover:opacity-90">
                 <Plus className="mr-1 h-4 w-4" /> New Entry
               </Button>
             </DialogTrigger>
@@ -231,7 +231,7 @@ export default function AdminJournal() {
                   <div><Label>Witnesses Present</Label><Input type="number" min="0" value={form.witnesses_present} onChange={(e) => setForm({ ...form, witnesses_present: e.target.value })} /></div>
                 </div>
                 <div className="rounded-lg border border-border/50 p-3 space-y-3">
-                  <p className="text-sm font-medium flex items-center gap-2"><DollarSign className="h-4 w-4 text-accent" /> Profit Tracking</p>
+                  <p className="text-sm font-medium flex items-center gap-2"><DollarSign className="h-4 w-4 text-primary" /> Profit Tracking</p>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div><Label>Platform Fees ($)</Label><Input type="number" step="0.01" value={form.platform_fees} onChange={(e) => setForm({ ...form, platform_fees: e.target.value })} placeholder="KBA + OneNotary fees" /></div>
                     <div><Label>Travel Fee ($)</Label><Input type="number" step="0.01" value={form.travel_fee} onChange={(e) => setForm({ ...form, travel_fee: e.target.value })} placeholder="Travel costs" /></div>
@@ -248,8 +248,8 @@ export default function AdminJournal() {
                 </div>
                 <div><Label>Notes</Label><Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} placeholder="Any additional notes..." /></div>
                 {/* Certificate Photo Upload */}
-                <div className="rounded-lg border border-dashed border-accent/30 bg-accent/5 p-3">
-                  <p className="mb-2 flex items-center gap-2 text-sm font-medium"><Camera className="h-4 w-4 text-accent" /> Certificate Photos (optional)</p>
+                <div className="rounded-lg border border-dashed border-primary/20 bg-primary/5 p-3">
+                  <p className="mb-2 flex items-center gap-2 text-sm font-medium"><Camera className="h-4 w-4 text-primary" /> Certificate Photos (optional)</p>
                   <Input type="file" accept="image/*" multiple onChange={async (e) => {
                     const files = e.target.files;
                     if (!files || !user) return;
@@ -266,7 +266,7 @@ export default function AdminJournal() {
                   }} className="text-xs" />
                   <p className="mt-1 text-xs text-muted-foreground">Upload photos of certificates, stamps, or seals for this notarization</p>
                 </div>
-                <Button onClick={handleSubmit} className="w-full bg-accent text-accent-foreground hover:bg-gold-dark">
+                <Button onClick={handleSubmit} className="w-full bg-gradient-primary text-white hover:opacity-90">
                   {editingEntry ? "Update Entry" : "Save Journal Entry"}
                 </Button>
               </div>
@@ -297,8 +297,8 @@ export default function AdminJournal() {
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-accent/10">
-                      <FileText className="h-5 w-5 text-accent" />
+                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                      <FileText className="h-5 w-5 text-primary" />
                     </div>
                     <div>
                       <p className="font-medium text-foreground">{entry.signer_name}</p>
