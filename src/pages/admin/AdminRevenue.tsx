@@ -86,7 +86,10 @@ export default function AdminRevenue() {
   const totalRevenue = filtered.reduce((sum, e) => sum + (parseFloat(e.fees_charged) || 0), 0);
   const totalPlatformFees = filtered.reduce((sum, e) => sum + (parseFloat(e.platform_fees) || 0), 0);
   const totalTravelFees = filtered.reduce((sum, e) => sum + (parseFloat(e.travel_fee) || 0), 0);
-  const totalExpenses = totalPlatformFees + totalTravelFees;
+  const totalOneNotaryFees = filtered.reduce((sum, e) => sum + (parseFloat(e.onenotary_fee) || 0), 0);
+  const totalPlatformMarkup = filtered.reduce((sum, e) => sum + (parseFloat(e.platform_markup) || 0), 0);
+  const totalNotaryPayouts = filtered.reduce((sum, e) => sum + (parseFloat(e.notary_payout) || 0), 0);
+  const totalExpenses = totalPlatformFees + totalTravelFees + totalOneNotaryFees;
   const netProfit = totalRevenue - totalExpenses;
   const avgPerSession = filtered.length > 0 ? netProfit / filtered.length : 0;
 
