@@ -1,133 +1,132 @@
 
 
-# Notar Platform — Rebrand, OneNotary Integration, Revenue Management, AI Chat Fixes & Educational Content
+# Comprehensive Gap Analysis & Fix Plan
 
-This plan covers 6 major workstreams across ~30 files.
-
----
-
-## 1. Rebrand: "Shane Goble Notary" → "Notar" (NotarDex.com)
-
-Every public-facing page has hardcoded "Shane Goble" branding, "SG" logos, and personal references across 33+ files.
-
-**Approach:** Create a centralized brand config and update all references.
-
-**Changes:**
-- **Create `src/lib/brand.ts`** — Single source of truth for brand name ("Notar"), tagline ("Professional Notary & Document Services"), domain ("NotarDex.com"), logo initials ("N"), footer text, etc.
-- **Update `index.html`** — Meta tags, JSON-LD structured data, canonical URL, OG tags: replace "Shane Goble Notary Public" with "Notar", update domain references (keep canonical as placeholder until domain connected)
-- **Update nav/header in all pages** — Replace "SG" logo square with "N", "Shane Goble" → "Notar", tagline → "Notary & Document Services". Affected files:
-  - `Index.tsx`, `About.tsx`, `Services.tsx`, `ServiceDetail.tsx`, `NotaryGuide.tsx`, `BookAppointment.tsx`, `ClientPortal.tsx`, `BusinessPortal.tsx`, `DocumentBuilder.tsx`, `AppointmentConfirmation.tsx`, `FeeCalculator.tsx`, `RonInfo.tsx`, `LoanSigningServices.tsx`, `TermsPrivacy.tsx`, `DocumentTemplates.tsx`, `DocumentDigitize.tsx`, `VirtualMailroom.tsx`, `SubscriptionPlans.tsx`, `VerifyIdentity.tsx`, `ServiceRequest.tsx`, `JoinPlatform.tsx`, `BlueNotarySession.tsx`, `OneNotarySession.tsx`, `RonEligibilityChecker.tsx`, `VerifySeal.tsx`
-- **Update `About.tsx`** — Rewrite as a company page: "Notar is a team of Ohio-commissioned notaries led by Shane Goble." Add team structure section for future notaries.
-- **Update footers** — All footer "© Shane Goble" → "© Notar"
-- **Update document titles** — All `document.title` references
-- **Update `WhatDoINeed.tsx`** — Print title "Shane Goble Notary" → "Notar"
-- **Update edge function system prompts** — `client-assistant` and `notary-assistant`: update references from personal to company branding
-- **Update `AppointmentConfirmation.tsx`** — VCALENDAR PRODID and description
+After auditing every file, route, edge function, database schema, and UI component, here are all identified gaps organized by severity.
 
 ---
 
-## 2. OneNotary API Integration — Align with Official v2 Docs
+## Critical Gaps
 
-The current edge function uses a simplified API that doesn't match the official spec. Key issues:
+### 1. Dead BlueNotary Page (orphaned file, no route)
+`src/pages/BlueNotarySession.tsx` — 625-line file still exists and references "BlueNotary" throughout. The route was removed from `App.tsx` but the file remains. If a user had bookmarked `/bluenotary-session`, they'd hit NotFound, which is fine — but the file is dead weight and confusing.
+**Fix:** Delete `src/pages/BlueNotarySession.tsx`.
 
-**Edge function updates (`supabase/functions/onenotary/index.ts`):**
-- **Fix auth** — Replace `getClaims()` (doesn't exist in supabase-js) with `getUser()` for auth verification
-- **Fix `create_session`** — Use `SessionRequestExtended` schema: add `external_id` (our appointment_id), `schedule_at`, `session_type`, `business_scenario` fields. Remove invented `callback_url` from body (webhooks are configured at account level, not per-session)
-- **Fix `add_participant`** — Use `ParticipantRequestExtended`: include `first_name`, `last_name`, `phone_number`, `date_of_birth`, `address`, `external_id`, `custom` (for `signer_redirection_url`)
-- **Fix `add_document`** — Support both JSON (base64) and URL-based uploads per the API docs. Current code sends `{name, url}` but API expects `{file: {name, content}}` for base64 or multipart
-- **Add `list_sessions`** — GET /sessions for admin session listing
-- **Add `download_document`** — GET /sessions/{id}/documents/{doc_id}/download
-- **Add `get_stamps`** — GET /sessions/{id}/documents/{doc_id}/stamps for stamp placement data
-- **Add `request_witness`** — POST /sessions/{id}/participants/witnesses/request
-- **Add `set_notary`** — POST /sessions/{id}/notary to assign specific notary
+### 2. BlueNotary references in active admin pages
+- `AdminResources.tsx` line 487: "Choose an approved RON technology provider (like BlueNotary)"
+- `AdminResources.tsx` line 513: "BlueNotary RON Platform" link in external resources
+- `AdminJournal.tsx` line 236: placeholder text says "KBA + BlueNotary fees"
+**Fix:** Replace BlueNotary with OneNotary in all three locations.
 
-**Webhook updates (`supabase/functions/onenotary-webhook/index.ts`):**
-- **Add webhook signature verification** — Parse `X-Onenotary-Signature` header, verify HMAC SHA256 using API token
-- **Align event names** — Use actual event types from docs: `session.status.updated_completed_successfully`, `session.status.updated_canceled`, `session.status.updated_session_started`, etc. (current code uses simplified `completed_successfully` etc.)
-- **Handle additional events** — `session.updated_notary_assigned`, `session.updated_paused_*` events, `processing` status
-- **Store session price** — Extract `data.price` from completed webhooks
+### 3. "Shane Goble" hardcoded in apostille cover sheet
+`AdminApostille.tsx` line 147: `Prepared by: Shane Goble, Ohio Notary Public`. Should use `BRAND.teamLead.name` from brand config.
+**Fix:** Import BRAND and use `BRAND.teamLead.name`.
 
-**Frontend session page (`OneNotarySession.tsx`):**
-- **Use correct session statuses** from the API lifecycle (created → invite_sent → draft → identity_check → ready_to_start → session_started → processing → completed_successfully)
-- **Add `send_email` parameter** to init_session call
-- **Display notary assignment info** when notary is assigned
-- **Show document stamps** after completion
+### 4. DB default: `e_seal_verifications.notary_name` defaults to `'Shane Goble'`
+The database column has a hardcoded default. New e-seal records will always say "Shane Goble" even for future notaries.
+**Fix:** Migration to change default to `'Notar'` or remove the default and require explicit value.
+
+### 5. DB service description: RON service says "Secure video notarization via BlueNotary"
+The `services` table row for RON has `short_description = 'Secure video notarization via BlueNotary'` (visible in network response).
+**Fix:** Migration to update the `short_description` to "Secure video notarization via OneNotary".
 
 ---
 
-## 3. Revenue, Platform Fees & Income Tracking
+## Moderate Gaps
 
-**Update `AdminRevenue.tsx`:**
-- Add configurable platform fee fields — OneNotary charges per session; add fields to track:
-  - OneNotary platform fee per session (from session `price` field)
-  - Notar service markup
-  - Net notary income = client charge - OneNotary fee - platform cut
-- Add fee breakdown per session type (RON vs in-person vs mobile)
-- Add deposits/payouts tracking section — record when payments are collected vs disbursed to notaries
-- Add notary-specific revenue view (for future multi-notary team)
+### 6. Unused ReactMarkdown import in Index.tsx
+Imported on line 17 but never used (no `<ReactMarkdown>` JSX in file). Causes unnecessary bundle overhead.
+**Fix:** Remove the import.
 
-**Database migration:**
-- Add columns to `notary_journal`: `onenotary_fee` (decimal), `notary_payout` (decimal), `platform_markup` (decimal)
-- Add `notary_payouts` table: `id`, `notary_user_id`, `period_start`, `period_end`, `gross_revenue`, `platform_fees`, `onenotary_fees`, `net_payout`, `status`, `paid_at`
+### 7. Unused ReactMarkdown import in Services.tsx
+Same issue — imported but never rendered.
+**Fix:** Remove the import.
 
----
+### 8. Console warning: Select ref forwarding in Index.tsx
+The contact form's `<Select>` component triggers a React warning about function components not accepting refs. This is a known Radix UI issue but produces visible console noise.
+**Fix:** Low priority — can be suppressed by wrapping or upgrading Radix. Note for awareness.
 
-## 4. AI Chat Fixes & Formatting
+### 9. NotaryProcessGuide not linked from admin sidebar
+The `/notary-guide-process` route exists but there's no sidebar link in `AdminDashboard.tsx` nav items. Notaries can't discover it.
+**Fix:** Add a nav item in `adminNavItems` pointing to `/notary-guide-process`.
 
-**Issue 1: Client-side chat renders plain text, not markdown**
-- `ClientPortal.tsx` line 683: `<p>{msg.message}</p>` — doesn't render markdown
-- **Fix:** Import `ReactMarkdown` and render messages with `prose` classes, same as `WhatDoINeed.tsx`
+### 10. FAQ still says "I serve" (first person singular)
+`Index.tsx` line 53: "I serve Franklin County and the greater Columbus, Ohio metropolitan area." Should be "We serve" or "Notar serves."
+**Fix:** Update to company voice.
 
-**Issue 2: Admin chat also renders plain text**
-- `AdminChat.tsx` line 158: `{msg.message}` — same issue
-- **Fix:** Add `ReactMarkdown` rendering with proper prose styling
+### 11. FAQ line 54: "Contact me" → "Contact us"
+Same first-person issue.
+**Fix:** Replace "me" with "us".
 
-**Issue 3: `WhatDoINeed.tsx` AI assistant — streaming works but error handling could be better**
-- Add handling for 429 and 402 responses from the edge function with user-friendly toast messages
+### 12. `platform_settings` still has personal email/phone
+Network response shows `notary_phone = "(614) 6360136"` and `notary_email = "shanegoble@gmail.com"`. These are the DB values, not code — but they override the brand defaults.
+**Fix:** User action — update via Admin Settings to use business contact info.
 
-**Issue 4: Console warning about SelectContent ref**
-- This is a known Radix UI warning, not a functional error. Low priority.
+### 13. Login page has Google OAuth but no Google provider configured in auth
+`Login.tsx` imports `lovable` from integrations but the Google sign-in flow would need OAuth provider config.
+**Fix:** Verify Google OAuth is configured, or remove the Google sign-in button if not set up.
 
----
-
-## 5. Educational Content for Notaries — Process Guides with Images
-
-**Create `src/pages/NotaryProcessGuide.tsx`** — A comprehensive reference page for notaries covering:
-
-- **Seal Placement Guide** — Diagrams/illustrations showing:
-  - Where to place the notary seal on acknowledgments vs jurats
-  - Correct seal positioning (near signature, not covering text)
-  - Ohio seal requirements (name, "Notary Public", "State of Ohio", commission expiration)
-- **What Signers Receive** — Checklist of what signers leave with:
-  - Notarized original document(s)
-  - Copy of notary certificate (acknowledgment or jurat)
-  - Session recording access link (for RON)
-  - Notarized document download link (for RON)
-- **Notarization Process Walkthrough** — Step-by-step for each type:
-  - In-person: verify ID → administer oath → sign → seal → journal entry
-  - RON: tech check → credential analysis → KBA → oath → e-sign → e-seal → journal → recording
-- **Document-Specific Instructions** — Expanded from `NotaryGuide.tsx`:
-  - Real estate closings: seal every signature page, wire fraud awareness
-  - POA: principal must be competent, cannot notarize for family
-  - I-9: notary cannot complete Section 2, only verify identity
-- **Common Mistakes & Prohibited Acts** — Reference ORC §147 restrictions
-- **Copy the uploaded jurat image** to `src/assets/jurat-example.jpg` for use as a reference illustration
-
-**Add route** in `App.tsx`: `/notary-guide-process` → `NotaryProcessGuide`
-
-**Add link** from admin sidebar and `NotaryGuide.tsx`
+### 14. `e_seal_verifications.notary_name` default `'Shane Goble'`
+(Same as gap 4 — DB level fix needed.)
 
 ---
 
-## 6. Team Structure for Multi-Notary Company
+## Minor Gaps / Polish
 
-**Update `About.tsx`:**
-- Add "Our Team" section showing Shane as lead notary with credentials
-- Add placeholder cards for future team members with "Coming Soon" or "Join Our Team" CTA
-- Link to `/join` for notary recruitment
+### 15. `About.tsx` references "Shane Goble" directly (acceptable, but not from brand.ts)
+Lines 109, 138 mention Shane by name. This is intentional for the company page, but should import from `BRAND.teamLead.name` for maintainability.
+**Fix:** Import BRAND and use dynamic reference.
 
-**Update admin sidebar / dashboard:**
-- Ensure `AdminTeam.tsx` references team as "Notar Team" not individual
+### 16. Dead `DarkModeToggle` import duplication
+Both `Index.tsx` nav and `AdminDashboard.tsx` header import it — this is fine, but verify it actually toggles correctly.
+
+### 17. No link to NotaryProcessGuide from public NotaryGuide page
+`NotaryGuide.tsx` doesn't link to `/notary-guide-process` for the detailed process guide.
+**Fix:** Add a link/button from NotaryGuide to the process guide.
+
+### 18. `RonInfo.tsx` doesn't mention OneNotary as the platform
+The RON information page explains RON generally but doesn't reference which platform Notar uses.
+**Fix:** Add a brief mention of OneNotary as the platform used.
+
+### 19. Contact form Select doesn't include all current services
+The `Index.tsx` contact form hardcodes 7 service options but there are 20+ services in the DB. Consider making this dynamic or at least more complete.
+**Fix:** Low priority — add "Witness Services", "Background Check", "Virtual Mailroom" to the dropdown.
+
+### 20. `WhatDoINeed.tsx` print title may still reference old branding
+Need to verify the print stylesheet header uses BRAND config.
+**Fix:** Verify and update if needed.
+
+---
+
+## Implementation Plan
+
+### Step 1: Delete dead file
+- Delete `src/pages/BlueNotarySession.tsx`
+
+### Step 2: Fix BlueNotary → OneNotary references
+- `src/pages/admin/AdminResources.tsx` — 2 locations
+- `src/pages/admin/AdminJournal.tsx` — 1 location
+
+### Step 3: Fix brand references
+- `src/pages/admin/AdminApostille.tsx` — import BRAND, use `BRAND.teamLead.name`
+- `src/pages/About.tsx` — import BRAND, use `BRAND.teamLead.name`
+- `src/pages/Index.tsx` — fix FAQ "I serve" → "We serve", "Contact me" → "Contact us"
+
+### Step 4: Remove unused imports
+- `src/pages/Index.tsx` — remove `ReactMarkdown` import
+- `src/pages/Services.tsx` — remove `ReactMarkdown` import
+
+### Step 5: Add NotaryProcessGuide links
+- `src/pages/admin/AdminDashboard.tsx` — add sidebar nav item
+- `src/pages/NotaryGuide.tsx` — add link to process guide
+
+### Step 6: Database migrations
+- Update `e_seal_verifications` default `notary_name` from `'Shane Goble'` to `'Notar'`
+- Update `services` row: RON `short_description` from "via BlueNotary" to "via OneNotary"
+
+### Step 7: Add OneNotary mention to RonInfo.tsx
+
+### Step 8: Expand contact form service options in Index.tsx
 
 ---
 
@@ -135,23 +134,17 @@ The current edge function uses a simplified API that doesn't match the official 
 
 | File | Action |
 |------|--------|
-| `src/lib/brand.ts` | **CREATE** — Centralized brand config |
-| `src/pages/NotaryProcessGuide.tsx` | **CREATE** — Educational content page |
-| `supabase/migrations/[new].sql` | **CREATE** — Add revenue columns + payouts table |
-| `index.html` | **EDIT** — Meta tags, JSON-LD rebrand |
-| `src/pages/Index.tsx` | **EDIT** — Rebrand nav, hero, footer |
-| `src/pages/About.tsx` | **EDIT** — Company page + team section |
-| `src/pages/ClientPortal.tsx` | **EDIT** — Chat markdown rendering |
-| `src/pages/admin/AdminChat.tsx` | **EDIT** — Chat markdown rendering |
-| `src/pages/admin/AdminRevenue.tsx` | **EDIT** — Fee breakdown, payout tracking |
-| `src/components/WhatDoINeed.tsx` | **EDIT** — Error handling, rebrand |
-| `supabase/functions/onenotary/index.ts` | **EDIT** — Align with v2 API spec |
-| `supabase/functions/onenotary-webhook/index.ts` | **EDIT** — Signature verification, event names |
-| `supabase/functions/client-assistant/index.ts` | **EDIT** — Rebrand system prompt |
-| `supabase/functions/notary-assistant/index.ts` | **EDIT** — Rebrand system prompt |
-| `src/pages/OneNotarySession.tsx` | **EDIT** — Correct status lifecycle, new actions |
-| ~20 additional page files | **EDIT** — Nav/footer rebrand (SG→N, Shane Goble→Notar) |
-| `src/assets/jurat-example.jpg` | **COPY** — Upload reference image |
+| `src/pages/BlueNotarySession.tsx` | **DELETE** |
+| `src/pages/admin/AdminResources.tsx` | **EDIT** — BlueNotary → OneNotary (2 spots) |
+| `src/pages/admin/AdminJournal.tsx` | **EDIT** — BlueNotary → OneNotary placeholder |
+| `src/pages/admin/AdminApostille.tsx` | **EDIT** — Import BRAND, use dynamic name |
+| `src/pages/About.tsx` | **EDIT** — Import BRAND for team lead name |
+| `src/pages/Index.tsx` | **EDIT** — Remove unused import, fix FAQ voice |
+| `src/pages/Services.tsx` | **EDIT** — Remove unused import |
+| `src/pages/admin/AdminDashboard.tsx` | **EDIT** — Add process guide nav item |
+| `src/pages/NotaryGuide.tsx` | **EDIT** — Add link to process guide |
+| `src/pages/RonInfo.tsx` | **EDIT** — Mention OneNotary platform |
+| DB migration | **CREATE** — Fix e_seal default + RON service description |
 
-**Estimated scope:** ~30 files modified/created, 1 migration, 2 edge function rewrites.
+**Total: 20 gaps identified, 11 files + 1 migration to fix.**
 
