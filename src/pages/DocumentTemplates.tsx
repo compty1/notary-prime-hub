@@ -1016,7 +1016,21 @@ export default function DocumentTemplates() {
               };
               return (
                 <div key={field.name}>
-                  <Label>{field.label}</Label>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Label className="mb-0">{field.label}</Label>
+                    {field.helpText && (
+                      <TooltipProvider delayDuration={200}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help shrink-0" />
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-[260px] text-xs">
+                            {field.helpText}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                  </div>
                   {field.type === "textarea" ? (
                     <Textarea value={formData[field.name] || ""} onChange={(e) => updateField(e.target.value)} placeholder={field.placeholder} />
                   ) : (
