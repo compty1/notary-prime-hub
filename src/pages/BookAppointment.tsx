@@ -1304,6 +1304,70 @@ export default function BookAppointment() {
         </div>
       )}
 
+      {/* Document Jurisdiction Selector */}
+      {serviceType && requiresNotarizationType(serviceType) && (
+        <div>
+          <Label>State of Document Execution</Label>
+          <Select value={clientState} onValueChange={setClientState}>
+            <SelectTrigger><SelectValue placeholder="Select state..." /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="OH">Ohio</SelectItem>
+              <SelectItem value="AL">Alabama</SelectItem>
+              <SelectItem value="AK">Alaska</SelectItem>
+              <SelectItem value="AZ">Arizona</SelectItem>
+              <SelectItem value="AR">Arkansas</SelectItem>
+              <SelectItem value="CA">California</SelectItem>
+              <SelectItem value="CO">Colorado</SelectItem>
+              <SelectItem value="CT">Connecticut</SelectItem>
+              <SelectItem value="DE">Delaware</SelectItem>
+              <SelectItem value="FL">Florida</SelectItem>
+              <SelectItem value="GA">Georgia</SelectItem>
+              <SelectItem value="HI">Hawaii</SelectItem>
+              <SelectItem value="ID">Idaho</SelectItem>
+              <SelectItem value="IL">Illinois</SelectItem>
+              <SelectItem value="IN">Indiana</SelectItem>
+              <SelectItem value="IA">Iowa</SelectItem>
+              <SelectItem value="KS">Kansas</SelectItem>
+              <SelectItem value="KY">Kentucky</SelectItem>
+              <SelectItem value="LA">Louisiana</SelectItem>
+              <SelectItem value="ME">Maine</SelectItem>
+              <SelectItem value="MD">Maryland</SelectItem>
+              <SelectItem value="MA">Massachusetts</SelectItem>
+              <SelectItem value="MI">Michigan</SelectItem>
+              <SelectItem value="MN">Minnesota</SelectItem>
+              <SelectItem value="MS">Mississippi</SelectItem>
+              <SelectItem value="MO">Missouri</SelectItem>
+              <SelectItem value="MT">Montana</SelectItem>
+              <SelectItem value="NE">Nebraska</SelectItem>
+              <SelectItem value="NV">Nevada</SelectItem>
+              <SelectItem value="NH">New Hampshire</SelectItem>
+              <SelectItem value="NJ">New Jersey</SelectItem>
+              <SelectItem value="NM">New Mexico</SelectItem>
+              <SelectItem value="NY">New York</SelectItem>
+              <SelectItem value="NC">North Carolina</SelectItem>
+              <SelectItem value="ND">North Dakota</SelectItem>
+              <SelectItem value="OK">Oklahoma</SelectItem>
+              <SelectItem value="OR">Oregon</SelectItem>
+              <SelectItem value="PA">Pennsylvania</SelectItem>
+              <SelectItem value="RI">Rhode Island</SelectItem>
+              <SelectItem value="SC">South Carolina</SelectItem>
+              <SelectItem value="SD">South Dakota</SelectItem>
+              <SelectItem value="TN">Tennessee</SelectItem>
+              <SelectItem value="TX">Texas</SelectItem>
+              <SelectItem value="UT">Utah</SelectItem>
+              <SelectItem value="VT">Vermont</SelectItem>
+              <SelectItem value="VA">Virginia</SelectItem>
+              <SelectItem value="WA">Washington</SelectItem>
+              <SelectItem value="WV">West Virginia</SelectItem>
+              <SelectItem value="WI">Wisconsin</SelectItem>
+              <SelectItem value="WY">Wyoming</SelectItem>
+              <SelectItem value="DC">Washington D.C.</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground mt-1">Where will this document be used or recorded?</p>
+        </div>
+      )}
+
       <div>
         <Label htmlFor="notes">Additional Notes</Label>
         <Textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Number of documents, special instructions, etc." rows={3} />
@@ -1527,18 +1591,31 @@ export default function BookAppointment() {
           </motion.div>
         )}
 
-        {/* Progress */}
-        <div className="mb-8 flex items-center justify-center gap-2">
-          {Array.from({ length: totalSteps }, (_, i) => i + 1).map((s, i, arr) => (
-            <div key={s} className="flex items-center gap-2">
-              <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors ${
-                step >= s ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"
-              }`}>
-                {step > s ? <CheckCircle className="h-4 w-4" /> : s}
-              </div>
-              {i < arr.length - 1 && <div className={`h-0.5 w-8 transition-colors ${step > s ? "bg-accent" : "bg-muted"}`} />}
-            </div>
-          ))}
+        {/* Progress Stepper with Labels */}
+        <div className="mb-8">
+          <div className="flex items-center justify-center gap-2">
+            {(() => {
+              const stepLabels = isNonNotarial
+                ? ["Service", "Schedule", "Confirm"]
+                : ["Type", "Service", "Schedule", "Confirm"];
+              return stepLabels.map((label, i) => {
+                const s = i + 1;
+                return (
+                  <div key={s} className="flex items-center gap-2">
+                    <div className="flex flex-col items-center gap-1">
+                      <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors ${
+                        step >= s ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"
+                      }`}>
+                        {step > s ? <CheckCircle className="h-4 w-4" /> : s}
+                      </div>
+                      <span className={`text-[10px] font-medium ${step >= s ? "text-accent" : "text-muted-foreground"}`}>{label}</span>
+                    </div>
+                    {i < stepLabels.length - 1 && <div className={`h-0.5 w-8 mt-[-16px] transition-colors ${step > s ? "bg-accent" : "bg-muted"}`} />}
+                  </div>
+                );
+              });
+            })()}
+          </div>
         </div>
 
         <motion.div key={step} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }}>

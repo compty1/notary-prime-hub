@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -287,6 +288,12 @@ export default function ClientPortal() {
     setSavingProfile(false);
   };
 
+  const ACCEPTED_TYPES = [
+    "application/pdf", "image/jpeg", "image/png", "image/tiff",
+    "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ];
+  const ACCEPTED_EXTENSIONS = ".pdf, .jpg, .jpeg, .png, .tiff, .doc, .docx";
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || !user) return;
@@ -294,6 +301,10 @@ export default function ClientPortal() {
     for (const file of Array.from(files)) {
       if (file.size > 20 * 1024 * 1024) {
         toast({ title: "File too large", description: `${file.name} exceeds 20MB limit.`, variant: "destructive" });
+        continue;
+      }
+      if (!ACCEPTED_TYPES.includes(file.type) && !file.name.match(/\.(pdf|jpe?g|png|tiff?|docx?)$/i)) {
+        toast({ title: "Unsupported file type", description: `Accepted formats: ${ACCEPTED_EXTENSIONS}`, variant: "destructive" });
         continue;
       }
       const filePath = `${user.id}/${Date.now()}_${file.name}`;
@@ -600,6 +611,30 @@ export default function ClientPortal() {
                         )}
                         <Badge className={docStatusColors[doc.status] || "bg-muted text-muted-foreground"}>{doc.status.replace(/_/g, " ")}</Badge>
                         <Button size="sm" variant="outline" onClick={() => downloadDocument(doc)}><Download className="h-3 w-3" /></Button>
+                        {/* Replace/Swap Button */}
+                        {doc.status === "uploaded" && (
+                          <Button size="sm" variant="outline" className="text-xs" onClick={() => {
+                            const input = document.createElement("input");
+                            input.type = "file";
+                            input.accept = ACCEPTED_EXTENSIONS;
+                            input.onchange = async (ev) => {
+                              const target = ev.target as HTMLInputElement;
+                              const newFile = target.files?.[0];
+                              if (!newFile || !user) return;
+                              if (newFile.size > 20 * 1024 * 1024) { toast({ title: "File too large", variant: "destructive" }); return; }
+                              // Remove old file from storage, upload new one
+                              await supabase.storage.from("documents").remove([doc.file_path]);
+                              const newPath = `${user.id}/${Date.now()}_${newFile.name}`;
+                              const { error: upErr } = await supabase.storage.from("documents").upload(newPath, newFile);
+                              if (upErr) { toast({ title: "Replace failed", description: upErr.message, variant: "destructive" }); return; }
+                              const { error: dbErr } = await supabase.from("documents").update({ file_name: newFile.name, file_path: newPath }).eq("id", doc.id);
+                              if (dbErr) { toast({ title: "Update failed", description: dbErr.message, variant: "destructive" }); return; }
+                              setDocuments(prev => prev.map(d => d.id === doc.id ? { ...d, file_name: newFile.name, file_path: newPath } : d));
+                              toast({ title: "Document replaced", description: newFile.name });
+                            };
+                            input.click();
+                          }}><RefreshCw className="h-3 w-3" /></Button>
+                        )}
                         {doc.status === "uploaded" && (
                           <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={async () => {
                             if (deletingDocId) return;
@@ -1268,14 +1303,52 @@ export default function ClientPortal() {
               <div><Label>Zip</Label><Input value={profileForm.zip} onChange={(e) => setProfileForm({ ...profileForm, zip: e.target.value })} maxLength={5} /></div>
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex-col gap-2 sm:flex-row">
             <Button variant="outline" onClick={() => setEditProfileOpen(false)}>Cancel</Button>
             <Button onClick={saveProfile} disabled={savingProfile} className="bg-accent text-accent-foreground hover:bg-gold-dark">
               {savingProfile ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />} Save
             </Button>
           </DialogFooter>
+          {/* Close Account */}
+          <div className="mt-6 border-t border-destructive/20 pt-4">
+            <p className="text-sm font-medium text-destructive mb-1">Close Account</p>
+            <p className="text-xs text-muted-foreground mb-3">This will permanently delete your account and all associated data. This action cannot be undone.</p>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" size="sm" className="text-destructive border-destructive/30 hover:bg-destructive/10">Close My Account</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently delete your account, all appointments, documents, and data. You will be signed out immediately.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
+                    if (!user) return;
+                    // Delete user data in order
+                    await supabase.from("document_reminders").delete().eq("user_id", user.id);
+                    await supabase.from("reviews").delete().eq("client_id", user.id);
+                    await supabase.from("chat_messages").delete().eq("sender_id", user.id);
+                    await supabase.from("documents").delete().eq("uploaded_by", user.id);
+                    await supabase.from("appointments").delete().eq("client_id", user.id);
+                    await supabase.from("profiles").delete().eq("user_id", user.id);
+                    await supabase.from("user_roles").delete().eq("user_id", user.id);
+                    toast({ title: "Account closed", description: "Your data has been deleted." });
+                    signOut();
+                  }}>
+                    Yes, close my account
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </DialogContent>
       </Dialog>
+
+      {/* Close Account Section in Edit Profile */}
 
       {/* QR Code Dialog */}
       <Dialog open={qrDialogOpen} onOpenChange={setQrDialogOpen}>
