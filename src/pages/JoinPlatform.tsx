@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Logo } from "@/components/Logo";
+import { PageShell } from "@/components/PageShell";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -119,36 +120,7 @@ export default function JoinPlatform() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <Logo size="md" />
-            <div>
-              <span className="block font-display text-lg font-bold text-foreground">Notar</span>
-              <span className="block text-xs text-muted-foreground">Notary & Document Services</span>
-            </div>
-          </Link>
-          <div className="hidden items-center gap-6 md:flex">
-            <Link to="/services" className="text-sm font-medium text-muted-foreground hover:text-foreground">Services</Link>
-            <Link to="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground">About</Link>
-            <DarkModeToggle />
-            <Link to="/login"><Button variant="outline" size="sm">Sign In</Button></Link>
-            <Link to="/book"><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90">Book Now</Button></Link>
-          </div>
-          <Sheet>
-            <SheetTrigger asChild className="md:hidden"><Button variant="ghost" size="sm"><Menu className="h-5 w-5" /></Button></SheetTrigger>
-            <SheetContent side="right" className="w-64">
-              <div className="mt-8 flex flex-col gap-4">
-                <Link to="/services" className="text-sm font-medium">Services</Link>
-                <Link to="/about" className="text-sm font-medium">About</Link>
-                <Link to="/login"><Button variant="outline" className="w-full">Sign In</Button></Link>
-                <Link to="/book"><Button className="w-full bg-gradient-primary text-white">Book Now</Button></Link>
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
-      </nav>
+    <PageShell>
 
       {/* Hero */}
       <section className="bg-gradient-hero py-16 md:py-24">
@@ -354,9 +326,6 @@ export default function JoinPlatform() {
         </div>
       </section>
 
-      <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Notar — Ohio Notary & Document Services</p>
-      </footer>
-    </div>
+    </PageShell>
   );
 }

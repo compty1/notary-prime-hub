@@ -15,6 +15,7 @@ import {
   Monitor, MapPin, Shield, Lock, Briefcase, Globe, Users, Home, Clock, AlertTriangle,
   MessageSquare, ExternalLink, Sparkles, User
 } from "lucide-react";
+import { PageShell } from "@/components/PageShell";
 
 const iconMap: Record<string, any> = {
   Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home,
@@ -253,7 +254,7 @@ export default function ServiceDetail() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <PageShell>
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
@@ -303,22 +304,6 @@ export default function ServiceDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <Logo size="md" />
-            <div>
-              <span className="block font-display text-lg font-bold text-foreground">Notar</span>
-              <span className="block text-xs text-muted-foreground">Notary & Document Services</span>
-            </div>
-          </Link>
-          <div className="flex items-center gap-3">
-            <DarkModeToggle />
-            <Link to="/services"><Button variant="outline" size="sm"><ChevronLeft className="mr-1 h-3 w-3" /> Services</Button></Link>
-            <Link to={bookUrl}><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90">Book Now</Button></Link>
-          </div>
-        </div>
-      </nav>
 
       {/* Hero with complexity & timeline badges (Phase 3.4, 3.6) */}
       <section className="bg-gradient-hero py-12 md:py-16">
@@ -741,9 +726,6 @@ export default function ServiceDetail() {
         </div>
       )}
 
-      <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Notar — Ohio Notary & Document Services</p>
-      </footer>
-    </div>
+    </PageShell>
   );
 }

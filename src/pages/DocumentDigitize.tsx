@@ -20,6 +20,7 @@ import StarterKit from "@tiptap/starter-kit";
 import TiptapUnderline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import { Logo } from "@/components/Logo";
+import { PageShell } from "@/components/PageShell";
 
 type DigiStep = "upload" | "processing" | "edit" | "done";
 
@@ -184,32 +185,7 @@ export default function DocumentDigitize() {
   if (!editor) return null;
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <Logo size="md" />
-            <div>
-              <span className="block font-display text-lg font-bold text-foreground">Document Digitization</span>
-              <span className="block text-xs text-muted-foreground">AI-Powered OCR & Editing</span>
-            </div>
-          </Link>
-          <div className="hidden items-center gap-4 md:flex">
-            <DarkModeToggle />
-            <Link to="/"><Button variant="outline" size="sm"><ChevronLeft className="mr-1 h-3 w-3" /> Home</Button></Link>
-            <Link to="/portal"><Button variant="outline" size="sm">My Portal</Button></Link>
-          </div>
-          <Sheet>
-            <SheetTrigger asChild className="md:hidden"><Button variant="ghost" size="sm"><Menu className="h-5 w-5" /></Button></SheetTrigger>
-            <SheetContent side="right" className="w-64">
-              <div className="mt-8 flex flex-col gap-4">
-                <Link to="/" className="text-sm font-medium">Home</Link>
-                <Link to="/portal" className="text-sm font-medium">My Portal</Link>
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
-      </nav>
+    <PageShell>
 
       <div className="container mx-auto max-w-5xl px-4 py-8">
         {/* Steps indicator */}
@@ -384,9 +360,6 @@ export default function DocumentDigitize() {
         )}
       </div>
 
-      <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Notar — Ohio Notary & Document Services & Document Specialist</p>
-      </footer>
-    </div>
+    </PageShell>
   );
 }

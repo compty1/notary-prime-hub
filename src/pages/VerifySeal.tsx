@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, ShieldX, Calendar, FileText, User, Building2, Loader2, ArrowLeft } from "lucide-react";
+import { PageShell } from "@/components/PageShell";
 
 interface ESealRecord {
   id: string;
@@ -40,7 +41,7 @@ export default function VerifySeal() {
   }, [id]);
 
   return (
-    <div className="min-h-screen bg-muted/30 py-12">
+    <PageShell>
       <div className="container mx-auto max-w-2xl px-4">
         <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
           <ArrowLeft className="h-4 w-4" /> Back to Home
@@ -111,6 +112,6 @@ export default function VerifySeal() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </PageShell>
   );
 }
