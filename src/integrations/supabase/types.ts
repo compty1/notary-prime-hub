@@ -770,10 +770,13 @@ export type Database = {
           id_type: string | null
           net_profit: number | null
           notarization_type: Database["public"]["Enums"]["notarization_type"]
+          notary_payout: number | null
           notes: string | null
           oath_administered: boolean | null
           oath_timestamp: string | null
+          onenotary_fee: number | null
           platform_fees: number | null
+          platform_markup: number | null
           service_performed: string
           signer_address: string | null
           signer_name: string
@@ -794,10 +797,13 @@ export type Database = {
           id_type?: string | null
           net_profit?: number | null
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
+          notary_payout?: number | null
           notes?: string | null
           oath_administered?: boolean | null
           oath_timestamp?: string | null
+          onenotary_fee?: number | null
           platform_fees?: number | null
+          platform_markup?: number | null
           service_performed?: string
           signer_address?: string | null
           signer_name: string
@@ -818,10 +824,13 @@ export type Database = {
           id_type?: string | null
           net_profit?: number | null
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
+          notary_payout?: number | null
           notes?: string | null
           oath_administered?: boolean | null
           oath_timestamp?: string | null
+          onenotary_fee?: number | null
           platform_fees?: number | null
+          platform_markup?: number | null
           service_performed?: string
           signer_address?: string | null
           signer_name?: string
@@ -838,6 +847,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notary_payouts: {
+        Row: {
+          created_at: string
+          gross_revenue: number
+          id: string
+          net_payout: number
+          notary_user_id: string
+          notes: string | null
+          onenotary_fees: number
+          paid_at: string | null
+          period_end: string
+          period_start: string
+          platform_fees: number
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          gross_revenue?: number
+          id?: string
+          net_payout?: number
+          notary_user_id: string
+          notes?: string | null
+          onenotary_fees?: number
+          paid_at?: string | null
+          period_end: string
+          period_start: string
+          platform_fees?: number
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          gross_revenue?: number
+          id?: string
+          net_payout?: number
+          notary_user_id?: string
+          notes?: string | null
+          onenotary_fees?: number
+          paid_at?: string | null
+          period_end?: string
+          period_start?: string
+          platform_fees?: number
+          status?: string
+        }
+        Relationships: []
       }
       payments: {
         Row: {

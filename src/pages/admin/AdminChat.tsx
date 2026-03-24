@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { MessageSquare, Send, User, Shield, Loader2 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 export default function AdminChat() {
   const { user } = useAuth();
@@ -155,7 +156,7 @@ export default function AdminChat() {
                     {msg.is_admin ? <Shield className="h-3 w-3" /> : <User className="h-3 w-3" />}
                     <span className="text-xs opacity-70">{new Date(msg.created_at).toLocaleTimeString()}</span>
                   </div>
-                  {msg.message}
+                  <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:m-0"><ReactMarkdown>{msg.message}</ReactMarkdown></div>
                 </div>
               </div>
             ))}

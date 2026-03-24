@@ -92,7 +92,7 @@ export default function AdminDashboard() {
             <div className="flex items-center">
               <SidebarTrigger />
               <span className="ml-4 font-display text-sm font-medium text-muted-foreground">
-                Shane Goble Notary — {isAdmin ? "Admin" : "Notary"}
+                Notar — {isAdmin ? "Admin" : "Notary"}
               </span>
             </div>
             <DarkModeToggle />
