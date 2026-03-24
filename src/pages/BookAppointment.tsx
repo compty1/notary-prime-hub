@@ -218,6 +218,16 @@ export default function BookAppointment() {
     return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
   }, []);
 
+  // Batch 2.1: Warn before accidental navigation when form has data
+  useEffect(() => {
+    const hasData = serviceType || date || time || notes;
+    const handler = (e: BeforeUnloadEvent) => {
+      if (hasData && step > 1) { e.preventDefault(); }
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [serviceType, date, time, notes, step]);
+
   // Load pricing settings + dynamic services
   useEffect(() => {
     supabase.from("platform_settings").select("setting_key, setting_value").then(({ data }) => {
