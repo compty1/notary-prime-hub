@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Users, CheckCircle, Clock, DollarSign, Plus, BookMarked, FileText, AlertTriangle, Video, RefreshCw } from "lucide-react";
+import { Calendar, Users, CheckCircle, Clock, DollarSign, Plus, BookMarked, FileText, AlertTriangle, Video, RefreshCw, ScrollText } from "lucide-react";
 import { motion } from "framer-motion";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
@@ -32,6 +32,7 @@ export default function AdminOverview() {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [allAppointments, setAllAppointments] = useState<any[]>([]);
   const [journalEntries, setJournalEntries] = useState<any[]>([]);
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<Record<string, string>>({});
   const [stats, setStats] = useState({ total: 0, upcoming: 0, completed: 0, clients: 0, revenue: 0 });
   const [loading, setLoading] = useState(true);
@@ -61,6 +62,10 @@ export default function AdminOverview() {
       supabase.from("profiles").select("user_id, full_name, email"),
       supabase.from("appointments").select("scheduled_date, status, notarization_type").order("scheduled_date", { ascending: true }),
     ]);
+
+    // Fetch recent audit activity
+    const { data: activityData } = await supabase.from("audit_log").select("*").order("created_at", { ascending: false }).limit(10);
+    if (activityData) setRecentActivity(activityData);
 
     // Build profiles map
     if (profileData) {
@@ -258,6 +263,35 @@ export default function AdminOverview() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Recent Activity Feed */}
+      {recentActivity.length > 0 && (
+        <div className="mb-8">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="font-display text-lg font-semibold text-foreground flex items-center gap-2">
+              <ScrollText className="h-5 w-5 text-muted-foreground" /> Recent Activity
+            </h2>
+            <Link to="/admin/audit-log"><Button variant="ghost" size="sm" className="text-xs">View All →</Button></Link>
+          </div>
+          <Card className="border-border/50">
+            <CardContent className="p-0">
+              <div className="divide-y divide-border/30">
+                {recentActivity.map((log) => (
+                  <div key={log.id} className="flex items-center justify-between px-4 py-2.5 hover:bg-muted/30">
+                    <div className="flex items-center gap-3">
+                      <Badge className="text-xs bg-muted text-muted-foreground">{log.action.replace(/_/g, " ")}</Badge>
+                      <span className="text-xs text-muted-foreground">{log.entity_type || ""}</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(log.created_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       <h2 className="mb-4 font-display text-lg font-semibold text-foreground">Recent Appointments</h2>
       {appointments.length === 0 ? (
