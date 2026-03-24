@@ -221,6 +221,19 @@ export default function AppointmentConfirmation() {
           </CardContent>
         </Card>
 
+        {/* Your Notary Card */}
+        {notaryProfile && (
+          <Card className="mb-6 border-border/50 text-left">
+            <CardContent className="p-4">
+              <p className="text-sm font-medium mb-2 flex items-center gap-2"><User className="h-4 w-4 text-accent" /> Your Notary</p>
+              <p className="text-sm font-medium">{notaryProfile.full_name || "Notar"}</p>
+              {notaryProfile.phone && <p className="text-xs text-muted-foreground mt-1">📞 {notaryProfile.phone}</p>}
+              {notaryProfile.email && <p className="text-xs text-muted-foreground">✉️ {notaryProfile.email}</p>}
+              {notaryProfile.state && <p className="text-xs text-muted-foreground">Commissioned in {notaryProfile.state}</p>}
+            </CardContent>
+          </Card>
+        )}
+
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Button onClick={downloadICS} variant="outline" className="gap-2">
             <Download className="h-4 w-4" /> Add to Calendar (.ics)
