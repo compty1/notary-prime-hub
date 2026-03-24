@@ -39,6 +39,7 @@ const ServiceRequest = lazy(() => import("./pages/ServiceRequest"));
 const VirtualMailroom = lazy(() => import("./pages/VirtualMailroom"));
 const SubscriptionPlans = lazy(() => import("./pages/SubscriptionPlans"));
 const VerifyIdentity = lazy(() => import("./pages/VerifyIdentity"));
+const MobileUpload = lazy(() => import("./pages/MobileUpload"));
 
 // Admin pages
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
@@ -102,6 +103,7 @@ const App = () => (
               <Route path="/mailroom" element={<ProtectedRoute><VirtualMailroom /></ProtectedRoute>} />
               <Route path="/subscribe" element={<SubscriptionPlans />} />
               <Route path="/verify-id" element={<ProtectedRoute><VerifyIdentity /></ProtectedRoute>} />
+              <Route path="/mobile-upload" element={<MobileUpload />} />
               <Route path="/builder" element={<DocumentBuilder />} />
               <Route path="/fee-calculator" element={<FeeCalculator />} />
               <Route path="/portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
