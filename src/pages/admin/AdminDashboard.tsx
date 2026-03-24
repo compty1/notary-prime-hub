@@ -87,6 +87,10 @@ export default function AdminDashboard() {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
+        {/* Skip to main content */}
+        <a href="#admin-main" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-foreground focus:outline-none">
+          Skip to main content
+        </a>
         <AdminSidebar />
         <div className="flex-1 flex flex-col">
           <header className="flex h-12 items-center justify-between border-b border-border/50 bg-background px-4">
@@ -98,7 +102,7 @@ export default function AdminDashboard() {
             </div>
             <DarkModeToggle />
           </header>
-          <main className="flex-1 overflow-auto p-6"><Outlet /></main>
+          <main id="admin-main" className="flex-1 overflow-auto p-6"><Outlet /></main>
         </div>
       </div>
     </SidebarProvider>
