@@ -49,7 +49,7 @@ function wrapInEmailLayout(heading: string, bodyContent: string): string {
     <body style="margin:0;padding:0;background-color:#f8f7f4;font-family:'Inter',Arial,sans-serif;">
       <div style="max-width:600px;margin:0 auto;padding:32px 16px;">
         <div style="background-color:#1a2744;padding:24px;text-align:center;border-radius:8px 8px 0 0;">
-          <h1 style="color:#e8d5a3;margin:0;font-size:24px;font-family:Georgia,serif;">Shane Goble</h1>
+          <h1 style="color:#e8d5a3;margin:0;font-size:24px;font-family:Georgia,serif;">Notar</h1>
           <p style="color:#b8c5d6;margin:4px 0 0;font-size:14px;">Ohio Commissioned Notary Public</p>
         </div>
         <div style="background-color:#ffffff;padding:32px 24px;border-radius:0 0 8px 8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
@@ -57,7 +57,7 @@ function wrapInEmailLayout(heading: string, bodyContent: string): string {
           ${bodyContent}
           <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;">
           <p style="color:#9ca3af;font-size:12px;text-align:center;margin:0;">
-            Shane Goble Notary Services · Franklin County, Ohio<br>
+            Notar Notary Services · Franklin County, Ohio<br>
             Commissioned per Ohio Revised Code Chapter 147
           </p>
         </div>
@@ -197,7 +197,7 @@ async function sendEmail(to: string, subject: string, html: string): Promise<boo
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: `Shane Goble Notary <${fromEmail}>`,
+      from: `Notar <${fromEmail}>`,
       to: [to],
       subject,
       html,

@@ -66,7 +66,7 @@ Return ONLY the translated text, preserving formatting.`;
     const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
     const certificate = `CERTIFICATE OF TRANSLATION ACCURACY
 
-I, Shane Goble, hereby certify that the attached translation from ${source_language || "the source language"} to ${target_language} is a true, accurate, and complete translation of the original document to the best of my knowledge and ability.
+I, Notar, hereby certify that the attached translation from ${source_language || "the source language"} to ${target_language} is a true, accurate, and complete translation of the original document to the best of my knowledge and ability.
 
 Document Type: ${document_type || "General Document"}
 ${client_name ? `Prepared for: ${client_name}` : ""}
@@ -78,7 +78,7 @@ Translation Method: AI-assisted with human review
 This translation was prepared using AI-assisted technology and reviewed for accuracy.
 
 _________________________
-Shane Goble
+Notar
 Ohio Commissioned Notary Public
 Franklin County, Ohio
 

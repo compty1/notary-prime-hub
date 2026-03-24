@@ -61,6 +61,7 @@ const AdminServices = lazy(() => import("./pages/admin/AdminServices"));
 const AdminTeam = lazy(() => import("./pages/admin/AdminTeam"));
 const AdminEmailManagement = lazy(() => import("./pages/admin/AdminEmailManagement"));
 const AdminLeadPortal = lazy(() => import("./pages/admin/AdminLeadPortal"));
+const NotaryProcessGuide = lazy(() => import("./pages/NotaryProcessGuide"));
 
 const queryClient = new QueryClient();
 
@@ -95,6 +96,7 @@ const App = () => (
               <Route path="/templates" element={<DocumentTemplates />} />
               <Route path="/about" element={<About />} />
               <Route path="/join" element={<JoinPlatform />} />
+              <Route path="/notary-guide-process" element={<NotaryProcessGuide />} />
               <Route path="/digitize" element={<ProtectedRoute><DocumentDigitize /></ProtectedRoute>} />
               <Route path="/request" element={<ServiceRequest />} />
               <Route path="/mailroom" element={<ProtectedRoute><VirtualMailroom /></ProtectedRoute>} />

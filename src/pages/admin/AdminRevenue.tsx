@@ -86,7 +86,10 @@ export default function AdminRevenue() {
   const totalRevenue = filtered.reduce((sum, e) => sum + (parseFloat(e.fees_charged) || 0), 0);
   const totalPlatformFees = filtered.reduce((sum, e) => sum + (parseFloat(e.platform_fees) || 0), 0);
   const totalTravelFees = filtered.reduce((sum, e) => sum + (parseFloat(e.travel_fee) || 0), 0);
-  const totalExpenses = totalPlatformFees + totalTravelFees;
+  const totalOneNotaryFees = filtered.reduce((sum, e) => sum + (parseFloat(e.onenotary_fee) || 0), 0);
+  const totalPlatformMarkup = filtered.reduce((sum, e) => sum + (parseFloat(e.platform_markup) || 0), 0);
+  const totalNotaryPayouts = filtered.reduce((sum, e) => sum + (parseFloat(e.notary_payout) || 0), 0);
+  const totalExpenses = totalPlatformFees + totalTravelFees + totalOneNotaryFees;
   const netProfit = totalRevenue - totalExpenses;
   const avgPerSession = filtered.length > 0 ? netProfit / filtered.length : 0;
 
@@ -96,12 +99,14 @@ export default function AdminRevenue() {
   const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
   const exportCSV = () => {
-    const headers = ["Date", "Client", "Service", "Type", "Fee", "Platform Fees", "Travel Fee", "Net Profit"];
+    const headers = ["Date", "Client", "Service", "Type", "Fee", "Platform Fees", "OneNotary Fee", "Travel Fee", "Notary Payout", "Net Profit"];
     const rows = filtered.map((e) => {
       const fee = parseFloat(e.fees_charged) || 0;
       const platform = parseFloat(e.platform_fees) || 0;
+      const onenotary = parseFloat(e.onenotary_fee) || 0;
       const travel = parseFloat(e.travel_fee) || 0;
-      return [formatDate(e.created_at), e.signer_name, e.document_type, e.notarization_type, fee.toFixed(2), platform.toFixed(2), travel.toFixed(2), (fee - platform - travel).toFixed(2)];
+      const payout = parseFloat(e.notary_payout) || 0;
+      return [formatDate(e.created_at), e.signer_name, e.document_type, e.notarization_type, fee.toFixed(2), platform.toFixed(2), onenotary.toFixed(2), travel.toFixed(2), payout.toFixed(2), (fee - platform - onenotary - travel).toFixed(2)];
     });
     const csv = [headers, ...rows].map((r) => r.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
@@ -200,6 +205,7 @@ export default function AdminRevenue() {
 
   const statCards = [
     { label: "Total Revenue", value: `$${totalRevenue.toFixed(2)}`, icon: DollarSign, color: "text-blue-600" },
+    { label: "OneNotary Fees", value: `$${totalOneNotaryFees.toFixed(2)}`, icon: TrendingDown, color: "text-orange-500" },
     { label: "Total Expenses", value: `$${totalExpenses.toFixed(2)}`, icon: TrendingDown, color: "text-red-500" },
     { label: "Net Profit", value: `$${netProfit.toFixed(2)}`, icon: TrendingUp, color: netProfit >= 0 ? "text-emerald-600" : "text-red-600" },
     { label: "Avg Profit/Session", value: `$${avgPerSession.toFixed(2)}`, icon: Receipt, color: "text-accent" },
@@ -404,22 +410,26 @@ export default function AdminRevenue() {
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
-                    <thead><tr className="border-b border-border/50">
+                     <thead><tr className="border-b border-border/50">
                       <th className="px-4 py-3 text-left font-medium text-muted-foreground">Date</th>
                       <th className="px-4 py-3 text-left font-medium text-muted-foreground">Client</th>
                       <th className="px-4 py-3 text-left font-medium text-muted-foreground">Service</th>
                       <th className="px-4 py-3 text-left font-medium text-muted-foreground">Type</th>
                       <th className="px-4 py-3 text-right font-medium text-muted-foreground">Fee</th>
                       <th className="px-4 py-3 text-right font-medium text-muted-foreground">Platform</th>
+                      <th className="px-4 py-3 text-right font-medium text-muted-foreground">OneNotary</th>
                       <th className="px-4 py-3 text-right font-medium text-muted-foreground">Travel</th>
-                      <th className="px-4 py-3 text-right font-medium text-muted-foreground">Net Profit</th>
+                      <th className="px-4 py-3 text-right font-medium text-muted-foreground">Payout</th>
+                      <th className="px-4 py-3 text-right font-medium text-muted-foreground">Net</th>
                     </tr></thead>
                     <tbody>
                       {filtered.map((entry) => {
                         const fee = parseFloat(entry.fees_charged) || 0;
                         const platform = parseFloat(entry.platform_fees) || 0;
+                        const onenotary = parseFloat(entry.onenotary_fee) || 0;
                         const travel = parseFloat(entry.travel_fee) || 0;
-                        const net = fee - platform - travel;
+                        const payout = parseFloat(entry.notary_payout) || 0;
+                        const net = fee - platform - onenotary - travel;
                         return (
                           <tr key={entry.id} className="border-b border-border/30 last:border-0 hover:bg-muted/30">
                             <td className="px-4 py-3">{formatDate(entry.created_at)}</td>
@@ -428,7 +438,9 @@ export default function AdminRevenue() {
                             <td className="px-4 py-3"><Badge variant="outline" className="text-xs">{entry.notarization_type === "ron" ? "RON" : "In-Person"}</Badge></td>
                             <td className="px-4 py-3 text-right">${fee.toFixed(2)}</td>
                             <td className="px-4 py-3 text-right text-muted-foreground">${platform.toFixed(2)}</td>
+                            <td className="px-4 py-3 text-right text-muted-foreground">${onenotary.toFixed(2)}</td>
                             <td className="px-4 py-3 text-right text-muted-foreground">${travel.toFixed(2)}</td>
+                            <td className="px-4 py-3 text-right text-muted-foreground">${payout.toFixed(2)}</td>
                             <td className={`px-4 py-3 text-right font-medium ${net >= 0 ? "text-emerald-600" : "text-destructive"}`}>${net.toFixed(2)}</td>
                           </tr>
                         );

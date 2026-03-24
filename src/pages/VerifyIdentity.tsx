@@ -20,8 +20,8 @@ export default function VerifyIdentity() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    document.title = "ID Verification — Shane Goble Notary";
-    return () => { document.title = "Shane Goble Notary — Ohio Notary Public | In-Person & RON"; };
+    document.title = "ID Verification — Notar";
+    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
   }, []);
 
   const handleIdScan = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,9 +89,9 @@ export default function VerifyIdentity() {
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-              <span className="font-display text-lg font-bold text-primary-foreground">SG</span>
+              <span className="font-display text-lg font-bold text-primary-foreground">N</span>
             </div>
-            <span className="font-display text-lg font-bold text-foreground">Shane Goble</span>
+            <span className="font-display text-lg font-bold text-foreground">Notar</span>
           </Link>
           <div className="flex items-center gap-2">
             <Link to="/services"><Button variant="outline" size="sm"><ChevronLeft className="mr-1 h-3 w-3" /> Services</Button></Link>
@@ -186,7 +186,7 @@ export default function VerifyIdentity() {
       </div>
 
       <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Shane Goble — Ohio Commissioned Notary Public</p>
+        <p>© {new Date().getFullYear()} Notar — Ohio Notary & Document Services</p>
       </footer>
     </div>
   );
