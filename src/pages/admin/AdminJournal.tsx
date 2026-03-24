@@ -233,7 +233,7 @@ export default function AdminJournal() {
                 <div className="rounded-lg border border-border/50 p-3 space-y-3">
                   <p className="text-sm font-medium flex items-center gap-2"><DollarSign className="h-4 w-4 text-accent" /> Profit Tracking</p>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <div><Label>Platform Fees ($)</Label><Input type="number" step="0.01" value={form.platform_fees} onChange={(e) => setForm({ ...form, platform_fees: e.target.value })} placeholder="KBA + BlueNotary fees" /></div>
+                    <div><Label>Platform Fees ($)</Label><Input type="number" step="0.01" value={form.platform_fees} onChange={(e) => setForm({ ...form, platform_fees: e.target.value })} placeholder="KBA + OneNotary fees" /></div>
                     <div><Label>Travel Fee ($)</Label><Input type="number" step="0.01" value={form.travel_fee} onChange={(e) => setForm({ ...form, travel_fee: e.target.value })} placeholder="Travel costs" /></div>
                   </div>
                   {form.fees_charged && (

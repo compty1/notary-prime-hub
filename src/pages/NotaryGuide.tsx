@@ -232,6 +232,7 @@ export default function NotaryGuide() {
           </Link>
           <div className="flex items-center gap-3">
             <Link to="/ron-info" className="hidden text-sm font-medium text-muted-foreground hover:text-foreground md:block">RON Info</Link>
+            <Link to="/notary-guide-process" className="hidden text-sm font-medium text-muted-foreground hover:text-foreground md:block">Process Guide</Link>
             {user ? (
               <Link to="/portal"><Button variant="outline" size="sm">My Portal</Button></Link>
             ) : (
