@@ -93,7 +93,7 @@ export default function FeeCalculator() {
     // Geocode is already done by AddressAutocomplete; we need lat/lon from the Nominatim data
     // The AddressAutocomplete doesn't directly expose lat/lon, so we'll do a quick lookup
     fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(suggestion.fullAddress)}&format=json&limit=1&countrycodes=us`, {
-      headers: { "User-Agent": "ShaneGobleNotary/1.0" },
+      headers: { "User-Agent": "Notar/1.0" },
     })
       .then(r => r.json())
       .then(data => {

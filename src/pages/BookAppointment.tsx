@@ -408,7 +408,7 @@ export default function BookAppointment() {
         try {
           const { latitude, longitude } = position.coords;
           const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`, {
-            headers: { "User-Agent": "ShaneGobleNotary/1.0" },
+            headers: { "User-Agent": "Notar/1.0" },
           });
           const data = await resp.json();
           if (data.address) {

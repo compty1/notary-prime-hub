@@ -195,7 +195,7 @@ export default function LoanSigningServices() {
                         <a href="tel:6143006890" className="hover:text-accent">(614) 300-6890</a>
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        <a href="mailto:shane@shanegoble.com" className="hover:text-accent">shane@shanegoble.com</a>
+                        <a href="mailto:contact@notardex.com" className="hover:text-accent">contact@notardex.com</a>
                       </p>
                     </div>
                   </div>

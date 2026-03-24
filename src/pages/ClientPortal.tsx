@@ -323,7 +323,7 @@ export default function ClientPortal() {
     return idx >= 0 ? ((idx + 1) / pipelineSteps.length) * 100 : 0;
   };
 
-  const qrUrl = `${window.location.origin}/portal`;
+  const qrUrl = `${window.location.origin}/mobile-upload`;
 
   // Load staff users for chat recipient selector
   useEffect(() => {
