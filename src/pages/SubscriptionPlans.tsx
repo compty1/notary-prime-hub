@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { Check, ChevronLeft, Briefcase, Code, Award, Zap } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { PageShell } from "@/components/PageShell";
 
 const plans = [
   {
@@ -73,19 +74,7 @@ const partnerBenefits = [
 
 export default function SubscriptionPlans() {
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <Logo size="md" />
-            <span className="font-display text-lg font-bold text-foreground">Notar</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <Link to="/services"><Button variant="outline" size="sm"><ChevronLeft className="mr-1 h-3 w-3" /> Services</Button></Link>
-            <Link to="/login"><Button variant="outline" size="sm">Sign In</Button></Link>
-          </div>
-        </div>
-      </nav>
+    <PageShell>
 
       {/* Hero */}
       <section className="bg-gradient-hero py-16">
@@ -166,9 +155,6 @@ export default function SubscriptionPlans() {
         </div>
       </section>
 
-      <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Notar — Ohio Notary & Document Services</p>
-      </footer>
-    </div>
+    </PageShell>
   );
 }

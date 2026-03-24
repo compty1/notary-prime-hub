@@ -11,6 +11,7 @@ import {
   ChevronRight, Stamp, Eye, Mic, Camera, BookOpen, Scale, Users, Clock
 } from "lucide-react";
 import juratExample from "@/assets/jurat-example.jpg";
+import { PageShell } from "@/components/PageShell";
 
 export default function NotaryProcessGuide() {
   const { user } = useAuth();
@@ -21,30 +22,8 @@ export default function NotaryProcessGuide() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <PageShell>
       {/* Nav */}
-      <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-              <span className="font-display text-lg font-bold text-primary-foreground">{BRAND.initials}</span>
-            </div>
-            <div>
-              <span className="block font-display text-lg font-bold text-foreground">{BRAND.name}</span>
-              <span className="block text-xs text-muted-foreground">{BRAND.taglineShort}</span>
-            </div>
-          </Link>
-          <div className="flex items-center gap-3">
-            <Link to="/notary-guide" className="hidden text-sm font-medium text-muted-foreground hover:text-foreground md:block">Document Guide</Link>
-            {user ? (
-              <Link to="/portal"><Button variant="outline" size="sm">My Portal</Button></Link>
-            ) : (
-              <Link to="/login"><Button variant="outline" size="sm">Sign In</Button></Link>
-            )}
-            <Link to="/book"><Button size="sm" className="bg-gradient-primary text-white hover:bg-accent/90">Book Now</Button></Link>
-          </div>
-        </div>
-      </nav>
 
       {/* Hero */}
       <section className="bg-gradient-hero py-12 md:py-16">
@@ -291,9 +270,6 @@ export default function NotaryProcessGuide() {
         </div>
       </section>
 
-      <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
-        <p>{BRAND.footerText(new Date().getFullYear())}</p>
-      </footer>
-    </div>
+    </PageShell>
   );
 }

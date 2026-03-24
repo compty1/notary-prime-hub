@@ -20,6 +20,7 @@ import UnderlineExt from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import ReactMarkdown from "react-markdown";
 import { Logo } from "@/components/Logo";
+import { PageShell } from "@/components/PageShell";
 
 interface TemplateField {
   name: string;
@@ -891,20 +892,7 @@ export default function DocumentTemplates() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <Logo size="md" />
-            <span className="font-display text-lg font-bold text-foreground">Document Templates</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <DarkModeToggle />
-            <Link to="/"><Button variant="outline" size="sm"><ChevronLeft className="mr-1 h-3 w-3" /> Home</Button></Link>
-            <Link to="/builder"><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90">Document Builder</Button></Link>
-          </div>
-        </div>
-      </nav>
+    <PageShell>
 
       <div className="container mx-auto max-w-5xl px-4 py-8">
         <div className="mb-8 text-center">
@@ -1125,15 +1113,6 @@ export default function DocumentTemplates() {
         </DialogContent>
       </Dialog>
 
-      <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Notar — Ohio Notary & Document Services</p>
-        <p className="mt-1">Templates provided for informational purposes only. Consult legal counsel for specific legal advice.</p>
-        <div className="mt-2 flex items-center justify-center gap-4">
-          <Link to="/terms" className="hover:text-foreground">Terms of Service</Link>
-          <span>·</span>
-          <Link to="/terms" className="hover:text-foreground">Privacy Policy</Link>
-        </div>
-      </footer>
-    </div>
+    </PageShell>
   );
 }

@@ -14,6 +14,7 @@ import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { motion } from "framer-motion";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { Logo } from "@/components/Logo";
+import { PageShell } from "@/components/PageShell";
 
 const HOLLYWOOD_CASINO = { lat: 39.9555, lng: -83.1145 };
 
@@ -108,19 +109,7 @@ export default function FeeCalculator() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <Logo size="md" />
-            <span className="font-display text-lg font-bold text-foreground">Fee Calculator</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <DarkModeToggle />
-            <Link to="/"><Button variant="outline" size="sm"><ChevronLeft className="mr-1 h-3 w-3" /> Home</Button></Link>
-          </div>
-        </div>
-      </nav>
+    <PageShell>
 
       <div className="container mx-auto max-w-4xl px-4 py-8">
         <div className="mb-8 text-center">
@@ -251,9 +240,6 @@ export default function FeeCalculator() {
         </div>
       </div>
 
-      <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Notar — Ohio Notary & Document Services</p>
-      </footer>
-    </div>
+    </PageShell>
   );
 }

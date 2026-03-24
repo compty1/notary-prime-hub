@@ -16,6 +16,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { Logo } from "@/components/Logo";
 import { formatPhone } from "@/lib/formatPhone";
+import { PageShell } from "@/components/PageShell";
 
 type Step = 1 | 2 | 3 | 4;
 type NotarizationType = "in_person" | "ron";
@@ -1561,23 +1562,7 @@ export default function BookAppointment() {
   );
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <nav className="border-b border-border/50 bg-background/80 backdrop-blur-lg">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <Logo size="md" />
-            <span className="font-display text-lg font-bold text-foreground">Notar</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <Link to="/notary-guide" className="hidden text-sm text-muted-foreground hover:text-foreground md:block">Guide</Link>
-            {user ? (
-              <Link to="/portal"><Button variant="outline" size="sm">My Portal</Button></Link>
-            ) : (
-              <Link to="/login"><Button variant="outline" size="sm">Sign In</Button></Link>
-            )}
-          </div>
-        </div>
-      </nav>
+    <PageShell>
 
       <div className="container mx-auto max-w-2xl px-4 py-12">
         {/* Returning client recognition */}
@@ -1853,6 +1838,6 @@ export default function BookAppointment() {
           </Card>
         </motion.div>
       </div>
-    </div>
+    </PageShell>
   );
 }
