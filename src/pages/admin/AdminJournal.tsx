@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, BookOpen, Calendar, FileText, Shield, DollarSign, Download, Pencil, Trash2, Loader2 } from "lucide-react";
+import { Plus, Search, BookOpen, Calendar, FileText, Shield, DollarSign, Download, Pencil, Trash2, Loader2, Camera } from "lucide-react";
 
 const serviceTypes = ["acknowledgment", "jurat", "oath", "copy_certification", "other"];
 
@@ -247,6 +247,25 @@ export default function AdminJournal() {
                   <Label>Oath/Affirmation Administered</Label>
                 </div>
                 <div><Label>Notes</Label><Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} placeholder="Any additional notes..." /></div>
+                {/* Certificate Photo Upload */}
+                <div className="rounded-lg border border-dashed border-accent/30 bg-accent/5 p-3">
+                  <p className="mb-2 flex items-center gap-2 text-sm font-medium"><Camera className="h-4 w-4 text-accent" /> Certificate Photos (optional)</p>
+                  <Input type="file" accept="image/*" multiple onChange={async (e) => {
+                    const files = e.target.files;
+                    if (!files || !user) return;
+                    const urls: string[] = [];
+                    for (const file of Array.from(files)) {
+                      const path = `certificates/${user.id}/${Date.now()}_${file.name}`;
+                      const { error } = await supabase.storage.from("documents").upload(path, file);
+                      if (!error) {
+                        const { data: signedData } = await supabase.storage.from("documents").createSignedUrl(path, 60 * 60 * 24 * 365);
+                        if (signedData?.signedUrl) urls.push(signedData.signedUrl);
+                      }
+                    }
+                    if (urls.length > 0) toast({ title: `${urls.length} photo(s) uploaded` });
+                  }} className="text-xs" />
+                  <p className="mt-1 text-xs text-muted-foreground">Upload photos of certificates, stamps, or seals for this notarization</p>
+                </div>
                 <Button onClick={handleSubmit} className="w-full bg-accent text-accent-foreground hover:bg-gold-dark">
                   {editingEntry ? "Update Entry" : "Save Journal Entry"}
                 </Button>
