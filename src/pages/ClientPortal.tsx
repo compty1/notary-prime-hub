@@ -22,6 +22,7 @@ import DocumentWizard from "@/components/DocumentWizard";
 import PaymentForm from "@/components/PaymentForm";
 import TechCheck from "@/components/TechCheck";
 import { Logo } from "@/components/Logo";
+import { formatPhone } from "@/lib/formatPhone";
 
 const statusColors: Record<string, string> = {
   scheduled: "bg-blue-100 text-blue-800",
@@ -1295,7 +1296,7 @@ export default function ClientPortal() {
           <DialogHeader><DialogTitle className="font-display flex items-center gap-2"><User className="h-5 w-5 text-accent" /> Edit Profile</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <div><Label>Full Name</Label><Input value={profileForm.full_name} onChange={(e) => setProfileForm({ ...profileForm, full_name: e.target.value })} /></div>
-            <div><Label>Phone</Label><Input value={profileForm.phone} onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })} placeholder="(614) 555-1234" /></div>
+            <div><Label>Phone</Label><Input value={profileForm.phone} onChange={(e) => setProfileForm({ ...profileForm, phone: formatPhone(e.target.value) })} placeholder="(614) 555-1234" /></div>
             <div><Label>Address</Label><Input value={profileForm.address} onChange={(e) => setProfileForm({ ...profileForm, address: e.target.value })} /></div>
             <div className="grid grid-cols-3 gap-2">
               <div><Label>City</Label><Input value={profileForm.city} onChange={(e) => setProfileForm({ ...profileForm, city: e.target.value })} /></div>
