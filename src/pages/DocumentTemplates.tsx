@@ -55,6 +55,7 @@ const templates: Template[] = [
       { name: "travel_dates", label: "Travel Dates", type: "text", placeholder: "e.g., March 15 - March 22, 2026" },
       { name: "parent_phone", label: "Parent Contact Phone", type: "text" },
     ],
+    sampleData: { child_name: "Emily Johnson", child_dob: "2018-05-12", parent_name: "Sarah Johnson", companion_name: "Michael Johnson", destination: "Orlando, FL", travel_dates: "March 15 - March 22, 2026", parent_phone: "(614) 555-1234" },
     body: `TRAVEL CONSENT FORM
 
 I, {{parent_name}}, the undersigned parent/legal guardian of {{child_name}} (Date of Birth: {{child_dob}}), hereby authorize {{companion_name}} to travel with my child to {{destination}} during the period of {{travel_dates}}.
@@ -93,6 +94,7 @@ My Commission Expires: ___________`
       { name: "county", label: "County", type: "text", placeholder: "Franklin" },
       { name: "statement", label: "Statement of Facts", type: "textarea", placeholder: "Enter the facts you are swearing to..." },
     ],
+    sampleData: { affiant_name: "John Smith", affiant_address: "123 Main St, Columbus, OH 43215", county: "Franklin", statement: "I am the owner of the vehicle described herein and have full authority to transfer ownership." },
     body: `GENERAL AFFIDAVIT
 
 State of Ohio
@@ -136,6 +138,7 @@ My Commission Expires: ___________`
       { name: "id_type", label: "ID Type Presented", type: "text", placeholder: "e.g., Ohio Driver's License" },
       { name: "id_number", label: "ID Number", type: "text" },
     ],
+    sampleData: { declarant_name: "Maria Rodriguez", also_known_as: "Maria Garcia", dob: "1985-03-22", address: "456 Oak Ave, Columbus, OH 43210", id_type: "Ohio Driver's License", id_number: "DL-1234567" },
     body: `IDENTITY VERIFICATION STATEMENT
 
 State of Ohio
@@ -177,6 +180,7 @@ My Commission Expires: ___________`
       { name: "sale_price", label: "Sale Price ($)", type: "text" },
       { name: "sale_date", label: "Date of Sale", type: "date" },
     ],
+    sampleData: { seller_name: "James Wilson", buyer_name: "Linda Chen", item_description: "One (1) Samsung 65\" 4K Television, Model QN65Q80B, Serial #XY123456", sale_price: "450.00", sale_date: "2026-03-24" },
     body: `BILL OF SALE
 
 KNOW ALL MEN BY THESE PRESENTS:
@@ -216,6 +220,7 @@ My Commission Expires: ___________`
       { name: "agreement_date", label: "Effective Date", type: "date" },
       { name: "terms", label: "Terms and Conditions", type: "textarea", placeholder: "Describe the agreement terms..." },
     ],
+    sampleData: { party_a: "Acme Services LLC", party_b: "Robert Davis", agreement_date: "2026-04-01", terms: "Party A agrees to provide consulting services to Party B for a period of 12 months at a rate of $150/hour." },
     body: `GENERAL AGREEMENT
 
 This Agreement is entered into as of {{agreement_date}}, by and between:
@@ -258,6 +263,7 @@ My Commission Expires: ___________`
       { name: "purpose", label: "Purpose of Oath", type: "textarea", placeholder: "Describe what the person is swearing/affirming..." },
       { name: "county", label: "County", type: "text", placeholder: "Franklin" },
     ],
+    sampleData: { person_name: "David Thompson", purpose: "Truthfully testifying regarding the witnessed automobile accident on March 1, 2026.", county: "Franklin" },
     body: `CERTIFICATE OF OATH / AFFIRMATION
 
 State of Ohio
@@ -295,6 +301,7 @@ My Commission Expires: ___________
       { name: "powers", label: "Specific Powers Granted", type: "textarea", placeholder: "e.g., manage bank accounts, sign documents, sell property..." },
       { name: "county", label: "County", type: "text", placeholder: "Franklin" },
     ],
+    sampleData: { principal_name: "Karen Williams", principal_address: "789 Elm St, Dublin, OH 43017", agent_name: "Thomas Williams", agent_address: "321 Pine Rd, Columbus, OH 43215", powers: "Manage bank accounts, sign financial documents, and conduct real estate transactions on my behalf.", county: "Franklin" },
     body: `GENERAL POWER OF ATTORNEY
 
 State of Ohio
@@ -337,6 +344,7 @@ My Commission Expires: ___________`
       { name: "alternate_name", label: "Alternate Agent's Name (optional)", type: "text" },
       { name: "instructions", label: "Specific Healthcare Instructions", type: "textarea", placeholder: "Any specific wishes regarding treatment, end-of-life care, etc." },
     ],
+    sampleData: { principal_name: "Barbara Anderson", agent_name: "Susan Anderson", agent_phone: "(614) 555-9876", alternate_name: "Mark Anderson", instructions: "I wish to receive all available treatment options. Do not withhold nutrition or hydration." },
     body: `HEALTHCARE POWER OF ATTORNEY
 (Ohio Revised Code §1337.12)
 
@@ -385,6 +393,7 @@ My Commission Expires: ___________`
       { name: "county", label: "County", type: "text", placeholder: "Franklin" },
       { name: "document_desc", label: "Document Description", type: "text", placeholder: "e.g., Deed of Trust, Mortgage Note" },
     ],
+    sampleData: { signer_name: "Patricia Miller", county: "Franklin", document_desc: "Deed of Trust and Promissory Note" },
     body: `NOTARY ACKNOWLEDGMENT — LOAN SIGNING
 
 State of Ohio
@@ -420,6 +429,7 @@ My Commission Expires: ___________
       { name: "sale_price", label: "Sale Price ($)", type: "text" },
       { name: "sale_date", label: "Date of Sale", type: "date" },
     ],
+    sampleData: { seller_name: "Richard Brown", buyer_name: "Jessica Lee", vehicle_year: "2020", vehicle_make: "Honda", vehicle_model: "Civic EX", vin: "2HGFC2F53LH123456", odometer: "42,350", sale_price: "18,500", sale_date: "2026-03-24" },
     body: `VEHICLE BILL OF SALE — STATE OF OHIO
 
 I, {{seller_name}} ("Seller"), hereby sell, transfer, and convey to {{buyer_name}} ("Buyer") the following described motor vehicle:
@@ -467,6 +477,7 @@ My Commission Expires: ___________`
       { name: "county", label: "County", type: "text", placeholder: "Franklin" },
       { name: "address", label: "Current Address", type: "text" },
     ],
+    sampleData: { current_name: "Jennifer Martinez", previous_name: "Jennifer Lopez", reason: "Marriage on January 15, 2026 to Carlos Martinez.", county: "Franklin", address: "567 Maple Dr, Columbus, OH 43220" },
     body: `NAME CHANGE AFFIDAVIT
 
 State of Ohio
@@ -512,6 +523,7 @@ My Commission Expires: ___________`
       { name: "end_date", label: "End Date", type: "date" },
       { name: "reason", label: "Reason for Temporary Guardianship", type: "textarea" },
     ],
+    sampleData: { parent_name: "Michelle Taylor", child_name: "Sophia Taylor", child_dob: "2019-08-15", guardian_name: "Amy Roberts", guardian_address: "890 Cedar Ln, Westerville, OH 43081", start_date: "2026-04-01", end_date: "2026-04-15", reason: "Parent traveling internationally for work." },
     body: `TEMPORARY GUARDIANSHIP CONSENT
 
 I, {{parent_name}}, the parent/legal guardian of {{child_name}} (DOB: {{child_dob}}), hereby grant temporary guardianship of my child to:
@@ -560,6 +572,7 @@ My Commission Expires: ___________`
       { name: "property_desc", label: "Property Description", type: "textarea", placeholder: "Legal description or address of property" },
       { name: "county", label: "County", type: "text", placeholder: "Franklin" },
     ],
+    sampleData: { grantor_name: "William Harris", property_desc: "Lot 42, Block 7, Riverside Subdivision, as recorded in Plat Book 15, Page 23, Franklin County, Ohio.", county: "Franklin" },
     body: `ACKNOWLEDGMENT — DEED OF TRUST
 
 State of Ohio
