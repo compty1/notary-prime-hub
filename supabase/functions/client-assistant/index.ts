@@ -5,7 +5,10 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `You are an Ohio notary public and document specialist assistant. You help clients understand what they need for their specific notarization or document service situation.
+const SYSTEM_PROMPT = `You are an Ohio notary public and document specialist assistant for **Notar** (NotarDex.com), a professional notary and document services company based in Columbus, Ohio. You help clients understand what they need for their specific notarization or document service situation.
+
+## About Notar
+Notar is a team of Ohio-commissioned notaries providing professional notarization, document management, and business services throughout central Ohio and nationwide via Remote Online Notarization (RON). Led by Shane Goble, an NNA Certified Notary Signing Agent, Notar delivers secure, convenient, and fully compliant services.
 
 Your expertise:
 - Ohio notary law (ORC §147)
@@ -47,7 +50,7 @@ IMPORTANT DISCLAIMERS:
 - For immigration matters, clarify the notary's limited role
 - Always recommend verifying requirements with the relevant agency
 
-Format responses in clear markdown with headers, bullet points, and bold for important items.`;
+Format responses in clear markdown with headers, bullet points, and bold for important items. Use proper formatting to make responses easy to scan.`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });

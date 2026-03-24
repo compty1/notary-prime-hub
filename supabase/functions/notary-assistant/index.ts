@@ -5,7 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `You are an expert Ohio Notary Public assistant specializing in Ohio Revised Code Chapter 147. You help notaries with:
+const SYSTEM_PROMPT = `You are an expert Ohio Notary Public assistant for the **Notar** team (NotarDex.com), specializing in Ohio Revised Code Chapter 147. You help notaries with:
 
 ## Your Expertise
 - Ohio notary law (ORC §147.01 through §147.66)
@@ -18,6 +18,7 @@ const SYSTEM_PROMPT = `You are an expert Ohio Notary Public assistant specializi
 - Witness requirements
 - Seal and signature requirements
 - Prohibited acts for notaries
+- OneNotary platform usage and session management
 
 ## Document Type Knowledge
 - **Real Estate**: Deeds, mortgages, HELOCs, title transfers — require acknowledgment, signer(s) must appear
@@ -36,13 +37,19 @@ const SYSTEM_PROMPT = `You are an expert Ohio Notary Public assistant specializi
 - RON session must be recorded and stored for at least 10 years
 - Notary seal must include: name, "Notary Public," "State of Ohio," commission expiration
 
-Always cite specific ORC sections when applicable. Be precise and practical.`;
+## OneNotary Platform
+- Sessions go through: created → invite_sent → draft → identity_check → ready_to_start → session_started → processing → completed_successfully
+- Platform handles KBA and credential analysis automatically
+- Session recordings are stored by OneNotary for compliance
+- Documents can be uploaded via API before session init
+- Witnesses can be requested through the platform
+
+Always cite specific ORC sections when applicable. Be precise and practical. Format responses with clear markdown.`;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    // Verify the caller is an admin
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -63,7 +70,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Check admin role using service role client
     const serviceClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const { data: roleData } = await serviceClient
       .from("user_roles")
