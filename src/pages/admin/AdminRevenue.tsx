@@ -410,22 +410,26 @@ export default function AdminRevenue() {
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
-                    <thead><tr className="border-b border-border/50">
+                     <thead><tr className="border-b border-border/50">
                       <th className="px-4 py-3 text-left font-medium text-muted-foreground">Date</th>
                       <th className="px-4 py-3 text-left font-medium text-muted-foreground">Client</th>
                       <th className="px-4 py-3 text-left font-medium text-muted-foreground">Service</th>
                       <th className="px-4 py-3 text-left font-medium text-muted-foreground">Type</th>
                       <th className="px-4 py-3 text-right font-medium text-muted-foreground">Fee</th>
                       <th className="px-4 py-3 text-right font-medium text-muted-foreground">Platform</th>
+                      <th className="px-4 py-3 text-right font-medium text-muted-foreground">OneNotary</th>
                       <th className="px-4 py-3 text-right font-medium text-muted-foreground">Travel</th>
-                      <th className="px-4 py-3 text-right font-medium text-muted-foreground">Net Profit</th>
+                      <th className="px-4 py-3 text-right font-medium text-muted-foreground">Payout</th>
+                      <th className="px-4 py-3 text-right font-medium text-muted-foreground">Net</th>
                     </tr></thead>
                     <tbody>
                       {filtered.map((entry) => {
                         const fee = parseFloat(entry.fees_charged) || 0;
                         const platform = parseFloat(entry.platform_fees) || 0;
+                        const onenotary = parseFloat(entry.onenotary_fee) || 0;
                         const travel = parseFloat(entry.travel_fee) || 0;
-                        const net = fee - platform - travel;
+                        const payout = parseFloat(entry.notary_payout) || 0;
+                        const net = fee - platform - onenotary - travel;
                         return (
                           <tr key={entry.id} className="border-b border-border/30 last:border-0 hover:bg-muted/30">
                             <td className="px-4 py-3">{formatDate(entry.created_at)}</td>
@@ -434,7 +438,9 @@ export default function AdminRevenue() {
                             <td className="px-4 py-3"><Badge variant="outline" className="text-xs">{entry.notarization_type === "ron" ? "RON" : "In-Person"}</Badge></td>
                             <td className="px-4 py-3 text-right">${fee.toFixed(2)}</td>
                             <td className="px-4 py-3 text-right text-muted-foreground">${platform.toFixed(2)}</td>
+                            <td className="px-4 py-3 text-right text-muted-foreground">${onenotary.toFixed(2)}</td>
                             <td className="px-4 py-3 text-right text-muted-foreground">${travel.toFixed(2)}</td>
+                            <td className="px-4 py-3 text-right text-muted-foreground">${payout.toFixed(2)}</td>
                             <td className={`px-4 py-3 text-right font-medium ${net >= 0 ? "text-emerald-600" : "text-destructive"}`}>${net.toFixed(2)}</td>
                           </tr>
                         );
