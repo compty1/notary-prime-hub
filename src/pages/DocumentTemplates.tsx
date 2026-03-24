@@ -708,6 +708,15 @@ export default function DocumentTemplates() {
     setChatOpen(false);
   };
 
+  const renderSamplePreview = (t: Template) => {
+    let body = t.body;
+    const data = t.sampleData || {};
+    t.fields.forEach((f) => {
+      body = body.replace(new RegExp(`\\{\\{${f.name}\\}\\}`, "g"), data[f.name] || `[${f.label}]`);
+    });
+    return body;
+  };
+
   const renderBody = () => {
     if (!selectedTemplate) return "";
     let body = selectedTemplate.body;
@@ -924,15 +933,33 @@ export default function DocumentTemplates() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((t) => (
             <motion.div key={t.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-              <Card className="h-full border-border/50 transition-shadow hover:shadow-md cursor-pointer" onClick={() => openTemplate(t)}>
+              <Card className="h-full border-border/50 transition-shadow hover:shadow-md cursor-pointer relative group" onClick={() => openTemplate(t)}>
                 <CardContent className="p-5">
-                  <div className="mb-2 flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-accent" />
-                    <Badge variant="outline" className="text-xs">{t.category}</Badge>
+                  <div className="mb-2 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-5 w-5 text-accent" />
+                      <Badge variant="outline" className="text-xs">{t.category}</Badge>
+                      {hasDraft(t.id) && <Badge variant="secondary" className="text-xs">Draft</Badge>}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); setQuickPreviewTemplate(t); }}>
+                              <Eye className="h-4 w-4 text-muted-foreground" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Quick preview with sample data</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => toggleFavorite(e, t.id)}>
+                        <Heart className={`h-4 w-4 transition-colors ${favorites.has(t.id) ? "fill-destructive text-destructive" : "text-muted-foreground"}`} />
+                      </Button>
+                    </div>
                   </div>
                   <h3 className="font-display text-lg font-semibold mb-1">{t.title}</h3>
                   <p className="text-sm text-muted-foreground mb-3">{t.description}</p>
-                  <div className="flex gap-1">{t.tags.map((tag) => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}</div>
+                  <div className="flex gap-1 flex-wrap">{t.tags.map((tag) => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}</div>
                 </CardContent>
               </Card>
             </motion.div>
