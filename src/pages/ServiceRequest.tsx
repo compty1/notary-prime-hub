@@ -176,7 +176,7 @@ export default function ServiceRequest() {
 
   if (submitted) {
     return (
-      <PageShell>
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center space-y-4 max-w-md px-4">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto">
             <CheckCircle className="h-8 w-8 text-primary" />
@@ -193,7 +193,7 @@ export default function ServiceRequest() {
   }
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <PageShell>
 
       <div className="container mx-auto max-w-2xl px-4 py-12">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>

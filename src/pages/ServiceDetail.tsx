@@ -254,7 +254,7 @@ export default function ServiceDetail() {
 
   if (loading) {
     return (
-      <PageShell>
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
@@ -303,7 +303,7 @@ export default function ServiceDetail() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-background">
+    <PageShell>
 
       {/* Hero with complexity & timeline badges (Phase 3.4, 3.6) */}
       <section className="bg-gradient-hero py-12 md:py-16">
