@@ -229,7 +229,24 @@ export default function ClientPortal() {
       })
       .subscribe();
 
-    return () => { supabase.removeChannel(chatChannel); supabase.removeChannel(apptChannel); supabase.removeChannel(paymentChannel); };
+    // Subscribe to document changes in real-time (sync with mobile uploads)
+    const docChannel = supabase.channel("client-documents")
+      .on("postgres_changes", { event: "*", schema: "public", table: "documents", filter: `uploaded_by=eq.${user.id}` }, (payload) => {
+        if (payload.eventType === "INSERT") {
+          setDocuments(prev => {
+            if (prev.some(d => d.id === (payload.new as any).id)) return prev;
+            return [payload.new as any, ...prev];
+          });
+          toast({ title: "Document uploaded", description: (payload.new as any).file_name });
+        } else if (payload.eventType === "UPDATE") {
+          setDocuments(prev => prev.map(d => d.id === (payload.new as any).id ? payload.new as any : d));
+        } else if (payload.eventType === "DELETE") {
+          setDocuments(prev => prev.filter(d => d.id !== (payload.old as any).id));
+        }
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(chatChannel); supabase.removeChannel(apptChannel); supabase.removeChannel(paymentChannel); supabase.removeChannel(docChannel); };
   }, [user]);
 
   const upcoming = appointments.filter((a) => ["scheduled", "confirmed", "id_verification", "kba_pending"].includes(a.status));

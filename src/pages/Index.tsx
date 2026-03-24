@@ -151,8 +151,12 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Skip to main content */}
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-foreground focus:outline-none">
+        Skip to main content
+      </a>
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
+      <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg" aria-label="Main navigation">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
             <Logo size="md" />
@@ -205,6 +209,7 @@ export default function Index() {
       </nav>
 
       {/* Hero */}
+      <main id="main-content">
       <section className="relative overflow-hidden bg-gradient-navy py-20 md:py-32">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(circle at 25% 50%, hsl(42 78% 55% / 0.15) 0%, transparent 50%)" }} />
@@ -629,6 +634,7 @@ export default function Index() {
         </div>
       </section>
 
+      </main>
       <footer className="bg-gradient-navy py-12 text-primary-foreground/70">
         <div className="container mx-auto px-4">
           <div className="grid gap-8 md:grid-cols-3">
@@ -670,7 +676,9 @@ export default function Index() {
             <p>© {new Date().getFullYear()} Notar. All rights reserved.</p>
             <p className="mt-1">Ohio Notary & Document Services — Franklin County</p>
             <div className="mt-2 flex items-center justify-center gap-4">
-              <Link to="/terms" className="hover:text-accent">Terms of Service & Privacy Policy</Link>
+              <Link to="/terms" className="hover:text-accent">Terms of Service</Link>
+              <span className="text-primary-foreground/30">·</span>
+              <Link to="/terms" className="hover:text-accent">Privacy Policy</Link>
             </div>
           </div>
         </div>

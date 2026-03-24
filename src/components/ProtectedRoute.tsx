@@ -11,8 +11,9 @@ const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps)
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background gap-3">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" />
+        <p className="text-sm text-muted-foreground">Verifying credentials…</p>
       </div>
     );
   }
