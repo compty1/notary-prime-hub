@@ -625,6 +625,8 @@ export default function DocumentTemplates() {
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [previewOpen, setPreviewOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [quickPreviewTemplate, setQuickPreviewTemplate] = useState<Template | null>(null);
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const { user } = useAuth();
   const { toast } = useToast();
   const printRef = useRef<HTMLDivElement>(null);
@@ -635,6 +637,54 @@ export default function DocumentTemplates() {
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
 
+  // Load favorites from DB
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("user_favorites").select("entity_id").eq("user_id", user.id).eq("entity_type", "template")
+      .then(({ data }) => {
+        if (data) setFavorites(new Set(data.map(f => f.entity_id)));
+      });
+  }, [user]);
+
+  const toggleFavorite = async (e: React.MouseEvent, templateId: string) => {
+    e.stopPropagation();
+    if (!user) {
+      toast({ title: "Sign in required", description: "Please sign in to save favorites.", variant: "destructive" });
+      return;
+    }
+    const isFav = favorites.has(templateId);
+    const next = new Set(favorites);
+    if (isFav) {
+      next.delete(templateId);
+      setFavorites(next);
+      await supabase.from("user_favorites").delete().eq("user_id", user.id).eq("entity_type", "template").eq("entity_id", templateId);
+    } else {
+      next.add(templateId);
+      setFavorites(next);
+      await supabase.from("user_favorites").insert({ user_id: user.id, entity_type: "template", entity_id: templateId });
+    }
+  };
+
+  // localStorage persistence for in-progress templates
+  const STORAGE_KEY = "template_drafts";
+  const getSavedDrafts = (): Record<string, Record<string, string>> => {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch { return {}; }
+  };
+  const saveDraft = (templateId: string, data: Record<string, string>) => {
+    const drafts = getSavedDrafts();
+    drafts[templateId] = data;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(drafts));
+  };
+  const clearDraft = (templateId: string) => {
+    const drafts = getSavedDrafts();
+    delete drafts[templateId];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(drafts));
+  };
+  const hasDraft = (templateId: string) => {
+    const drafts = getSavedDrafts();
+    return drafts[templateId] && Object.values(drafts[templateId]).some(v => v.trim() !== "");
+  };
+
   const filtered = templates.filter(
     (t) => t.title.toLowerCase().includes(search.toLowerCase()) ||
       t.tags.some((tag) => tag.includes(search.toLowerCase())) ||
@@ -643,9 +693,17 @@ export default function DocumentTemplates() {
 
   const openTemplate = (t: Template) => {
     setSelectedTemplate(t);
-    const initialData: Record<string, string> = {};
-    t.fields.forEach((f) => { initialData[f.name] = ""; });
-    setFormData(initialData);
+    // Check for saved draft
+    const drafts = getSavedDrafts();
+    const savedDraft = drafts[t.id];
+    if (savedDraft && Object.values(savedDraft).some(v => v.trim() !== "")) {
+      setFormData(savedDraft);
+      toast({ title: "Draft restored", description: "Your previous progress has been loaded." });
+    } else {
+      const initialData: Record<string, string> = {};
+      t.fields.forEach((f) => { initialData[f.name] = ""; });
+      setFormData(initialData);
+    }
     setChatMessages([]);
     setChatOpen(false);
   };
