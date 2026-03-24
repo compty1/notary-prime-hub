@@ -139,7 +139,7 @@ ${checklistText}
 If you need to reschedule or cancel, please do so through your Client Portal or contact us directly.
 
 Thank you,
-Shane Goble Notary Services`;
+Notar Notary Services`;
 
       // Record the email send
       await supabase.from("appointment_emails").insert({
