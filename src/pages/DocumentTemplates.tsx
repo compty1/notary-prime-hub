@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, FileText, Download, Eye, Printer, ChevronLeft, AlertTriangle, Save, MessageSquare, Sparkles, Send, Loader2, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, AlignLeft, AlignCenter, AlignRight, Heading1, Heading2, Heart, RotateCcw } from "lucide-react";
+import { Search, FileText, Download, Eye, Printer, ChevronLeft, AlertTriangle, Save, MessageSquare, Sparkles, Send, Loader2, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, AlignLeft, AlignCenter, AlignRight, Heading1, Heading2, Heart, RotateCcw, HelpCircle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { motion } from "framer-motion";
