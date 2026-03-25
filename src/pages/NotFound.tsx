@@ -16,7 +16,7 @@ const NotFound = () => {
         <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10">
           <FileQuestion className="h-10 w-10 text-primary" />
         </div>
-        <h1 className="mb-2 font-display text-6xl font-bold text-foreground">404</h1>
+        <h1 className="mb-2 font-sans text-6xl font-bold text-foreground">404</h1>
         <p className="mb-2 text-xl font-medium text-foreground">Page Not Found</p>
         <p className="mb-8 text-muted-foreground">
           The page you're looking for doesn't exist or has been moved.

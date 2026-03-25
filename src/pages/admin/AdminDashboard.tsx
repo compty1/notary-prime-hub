@@ -48,7 +48,7 @@ function AdminSidebar() {
           <div className="flex h-8 w-8 items-center justify-center rounded bg-sidebar-primary">
             <Shield className="h-4 w-4 text-sidebar-primary-foreground" />
           </div>
-          {!collapsed && <span className="font-display text-sm font-bold text-sidebar-foreground">{isAdmin ? "Admin Panel" : "Notary Panel"}</span>}
+          {!collapsed && <span className="font-sans text-sm font-bold text-sidebar-foreground">{isAdmin ? "Admin Panel" : "Notary Panel"}</span>}
         </div>
         <SidebarGroup>
           <SidebarGroupLabel className="text-sidebar-foreground/50">Navigation</SidebarGroupLabel>
@@ -98,7 +98,7 @@ export default function AdminDashboard() {
           <header className="flex h-12 items-center justify-between border-b border-border/50 bg-background px-4">
             <div className="flex items-center">
               <SidebarTrigger />
-              <span className="ml-4 font-display text-sm font-medium text-muted-foreground">
+              <span className="ml-4 font-sans text-sm font-medium text-muted-foreground">
                 Notar — {isAdmin ? "Admin" : "Notary"}
               </span>
             </div>

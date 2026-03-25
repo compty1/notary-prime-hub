@@ -896,14 +896,14 @@ export default function DocumentTemplates() {
 
       <div className="container mx-auto max-w-5xl px-4 py-8">
         <div className="mb-8 text-center">
-          <h1 className="font-display text-3xl font-bold text-foreground mb-2">Document Templates Library</h1>
+          <h1 className="font-sans text-3xl font-bold text-foreground mb-2">Document Templates Library</h1>
           <p className="text-muted-foreground mb-4">Ready-to-use templates for common notarized documents</p>
         </div>
 
         {/* Legal Disclaimer */}
         <div className="mb-8 space-y-3">
           <div className="rounded-lg bg-amber-50 border border-amber-200 p-4 dark:bg-amber-950/30 dark:border-amber-800">
-            <h3 className="flex items-center gap-2 font-display text-sm font-semibold text-amber-900 dark:text-amber-200 mb-2">
+            <h3 className="flex items-center gap-2 font-sans text-sm font-semibold text-amber-900 dark:text-amber-200 mb-2">
               <AlertTriangle className="h-4 w-4" /> Important: Read Before Using These Templates
             </h3>
             <div className="text-sm text-amber-800 dark:text-amber-300 space-y-2">
@@ -918,7 +918,7 @@ export default function DocumentTemplates() {
         {/* Cross-sell banner */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/50 bg-muted/30 p-4">
           <div>
-            <p className="font-display text-sm font-semibold">Need help with your documents?</p>
+            <p className="font-sans text-sm font-semibold">Need help with your documents?</p>
             <p className="text-xs text-muted-foreground">We offer professional document preparation, notarization, and more.</p>
           </div>
           <div className="flex gap-2">
@@ -959,7 +959,7 @@ export default function DocumentTemplates() {
                       </Button>
                     </div>
                   </div>
-                  <h3 className="font-display text-lg font-semibold mb-1">{t.title}</h3>
+                  <h3 className="font-sans text-lg font-semibold mb-1">{t.title}</h3>
                   <p className="text-sm text-muted-foreground mb-3">{t.description}</p>
                   <div className="flex gap-1 flex-wrap">{t.tags.map((tag) => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}</div>
                 </CardContent>
@@ -973,7 +973,7 @@ export default function DocumentTemplates() {
       <Dialog open={!!quickPreviewTemplate} onOpenChange={() => setQuickPreviewTemplate(null)}>
         <DialogContent className="sm:max-w-2xl max-h-[85vh] flex flex-col">
           <DialogHeader>
-            <DialogTitle className="font-display flex items-center gap-2">
+            <DialogTitle className="font-sans flex items-center gap-2">
               <Eye className="h-4 w-4 text-primary" /> Preview — {quickPreviewTemplate?.title}
             </DialogTitle>
           </DialogHeader>
@@ -993,7 +993,7 @@ export default function DocumentTemplates() {
       {/* Template Fill Dialog */}
       <Dialog open={!!selectedTemplate && !previewOpen} onOpenChange={() => setSelectedTemplate(null)}>
         <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="font-display">{selectedTemplate?.title}</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="font-sans">{selectedTemplate?.title}</DialogTitle></DialogHeader>
           <p className="text-sm text-muted-foreground mb-4">{selectedTemplate?.description}</p>
           <div className="space-y-4">
             {selectedTemplate?.fields.map((field) => {
@@ -1058,7 +1058,7 @@ export default function DocumentTemplates() {
       {/* Rich Text Preview/Editor Dialog */}
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
         <DialogContent className="sm:max-w-3xl max-h-[90vh] flex flex-col">
-          <DialogHeader><DialogTitle className="font-display">Edit Document — {selectedTemplate?.title}</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="font-sans">Edit Document — {selectedTemplate?.title}</DialogTitle></DialogHeader>
           <div className="flex-1 overflow-y-auto border rounded-lg">
             <EditorToolbar editor={editor} />
             <EditorContent editor={editor} />
@@ -1078,7 +1078,7 @@ export default function DocumentTemplates() {
       <Dialog open={chatOpen} onOpenChange={setChatOpen}>
         <DialogContent className="sm:max-w-md max-h-[80vh] flex flex-col">
           <DialogHeader>
-            <DialogTitle className="font-display flex items-center gap-2">
+            <DialogTitle className="font-sans flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-primary" /> AI Assistant — {selectedTemplate?.title}
             </DialogTitle>
           </DialogHeader>

@@ -181,7 +181,7 @@ export default function ServiceRequest() {
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto">
             <CheckCircle className="h-8 w-8 text-primary" />
           </div>
-          <h1 className="font-display text-2xl font-bold">Request Submitted!</h1>
+          <h1 className="font-sans text-2xl font-bold">Request Submitted!</h1>
           <p className="text-muted-foreground">Your {config.label.toLowerCase()} has been received. We'll review it and contact you within 1-2 business days.</p>
           <div className="flex gap-3 justify-center">
             <Link to="/portal"><Button className="bg-gradient-primary text-white hover:opacity-90">Go to Portal</Button></Link>
@@ -202,7 +202,7 @@ export default function ServiceRequest() {
               <ClipboardList className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <h1 className="font-display text-2xl font-bold text-foreground">{config.label}</h1>
+              <h1 className="font-sans text-2xl font-bold text-foreground">{config.label}</h1>
               <p className="text-sm text-muted-foreground">{serviceName}</p>
             </div>
           </div>

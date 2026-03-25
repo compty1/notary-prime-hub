@@ -81,7 +81,7 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="font-display text-xl font-semibold">My Documents</h2>
+        <h2 className="font-sans text-xl font-semibold">My Documents</h2>
         <div>
           <input ref={fileInputRef} type="file" multiple accept={ACCEPTED_EXTENSIONS} className="hidden" onChange={handleFileUpload} />
           <Button size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="bg-gradient-primary text-white hover:opacity-90">

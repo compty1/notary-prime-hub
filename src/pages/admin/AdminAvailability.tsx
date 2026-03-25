@@ -83,14 +83,14 @@ export default function AdminAvailability() {
 
   return (
     <div>
-      <h1 className="mb-6 font-display text-2xl font-bold text-foreground">Availability Settings</h1>
+      <h1 className="mb-6 font-sans text-2xl font-bold text-foreground">Availability Settings</h1>
       <div className="space-y-4">
         {dayNames.map((day, i) => {
           const daySlots = slots.filter((s) => s.day_of_week === i);
           return (
             <Card key={i} className="border-border/50">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="font-display text-base">{day}</CardTitle>
+                <CardTitle className="font-sans text-base">{day}</CardTitle>
                 <Button variant="ghost" size="sm" onClick={() => addSlot(i)}>
                   <Plus className="mr-1 h-4 w-4" /> Add Slot
                 </Button>

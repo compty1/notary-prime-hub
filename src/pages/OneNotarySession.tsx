@@ -407,7 +407,7 @@ export default function OneNotarySession() {
         <Card className="w-full max-w-md">
           <CardContent className="flex flex-col items-center py-12 text-center">
             <AlertCircle className="h-12 w-12 text-destructive mb-4" />
-            <h2 className="font-display text-xl font-bold text-foreground mb-2">Session Error</h2>
+            <h2 className="font-sans text-xl font-bold text-foreground mb-2">Session Error</h2>
             <p className="text-sm text-muted-foreground mb-6">{loadError}</p>
             <Link to={isAdminOrNotary ? "/admin/appointments" : "/portal"}>
               <Button variant="outline"><ArrowLeft className="mr-2 h-4 w-4" /> Go Back</Button>
@@ -451,7 +451,7 @@ export default function OneNotarySession() {
           {/* Pre-session checklist */}
           <Card className="mb-6 border-border/50">
             <CardContent className="p-6">
-              <h2 className="mb-4 font-display text-xl font-semibold">Session Checklist</h2>
+              <h2 className="mb-4 font-sans text-xl font-semibold">Session Checklist</h2>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
                   <CheckCircle className="mt-0.5 h-5 w-5 text-emerald-500" />
@@ -486,7 +486,7 @@ export default function OneNotarySession() {
               {participantLink ? (
                 <div className="space-y-4">
                   <Video className="mx-auto h-16 w-16 text-primary" />
-                  <h3 className="font-display text-xl font-semibold text-foreground">Your Session is Ready</h3>
+                  <h3 className="font-sans text-xl font-semibold text-foreground">Your Session is Ready</h3>
                   <p className="max-w-md text-sm text-muted-foreground">
                     Click the button below to join your RON session. You'll complete ID verification and KBA within the platform.
                   </p>
@@ -500,7 +500,7 @@ export default function OneNotarySession() {
               ) : (
                 <>
                   <Monitor className="mb-4 h-16 w-16 text-primary/50" />
-                  <h3 className="mb-2 font-display text-xl font-semibold text-foreground">Waiting for Session</h3>
+                  <h3 className="mb-2 font-sans text-xl font-semibold text-foreground">Waiting for Session</h3>
                   <p className="mb-6 max-w-md text-sm text-muted-foreground">
                     Your notary will start the session shortly. You'll receive a join link here and via email once the session is initialized.
                   </p>
@@ -557,7 +557,7 @@ export default function OneNotarySession() {
             {/* OneNotary Session Controls */}
             <Card className="mb-6 border-border/50">
               <CardContent className="p-6">
-                <h2 className="mb-4 font-display text-xl font-semibold">
+                <h2 className="mb-4 font-sans text-xl font-semibold">
                   {ronMethod === "email_invite" ? "Manual RON Session" : "OneNotary Session"}
                 </h2>
 
@@ -664,7 +664,7 @@ export default function OneNotarySession() {
             {/* Pre-notarization checklist */}
             <Card className="mb-6 border-border/50">
               <CardContent className="p-6">
-                <h2 className="mb-4 font-display text-xl font-semibold">Before Your Session</h2>
+                <h2 className="mb-4 font-sans text-xl font-semibold">Before Your Session</h2>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
                     {idVerified ? <CheckCircle className="mt-0.5 h-5 w-5 text-emerald-500" /> : <AlertCircle className="mt-0.5 h-5 w-5 text-amber-500" />}
@@ -690,7 +690,7 @@ export default function OneNotarySession() {
             {/* ID Verification Card */}
             <Card className="border-border/50">
               <CardContent className="p-4">
-                <h3 className="mb-3 flex items-center gap-2 font-display text-sm font-semibold">
+                <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
                   <CreditCard className="h-4 w-4 text-primary" /> ID Verification
                 </h3>
                 <div className="space-y-3">
@@ -726,7 +726,7 @@ export default function OneNotarySession() {
             {/* KBA Status Card */}
             <Card className="border-border/50">
               <CardContent className="p-4">
-                <h3 className="mb-3 flex items-center gap-2 font-display text-sm font-semibold">
+                <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
                   <Shield className="h-4 w-4 text-primary" /> Knowledge-Based Authentication
                 </h3>
                 <div className="flex items-center gap-2 mb-2">
@@ -747,7 +747,7 @@ export default function OneNotarySession() {
             {/* Digital Oath/Affirmation */}
             <Card className="border-border/50">
               <CardContent className="p-4">
-                <h3 className="mb-3 flex items-center gap-2 font-display text-sm font-semibold">
+                <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
                   <BookOpen className="h-4 w-4 text-primary" /> Oath / Affirmation
                 </h3>
                 <div className="mb-3 flex flex-wrap gap-1">
@@ -779,7 +779,7 @@ export default function OneNotarySession() {
             <Card className="border-border/50">
               <CardContent className="p-4">
                 <div className="mb-3 flex items-center justify-between">
-                  <h3 className="flex items-center gap-2 font-display text-sm font-semibold"><Mic className="h-4 w-4 text-primary" /> Session Notes</h3>
+                  <h3 className="flex items-center gap-2 font-sans text-sm font-semibold"><Mic className="h-4 w-4 text-primary" /> Session Notes</h3>
                   <Button size="sm" variant={isListening ? "destructive" : "outline"} className="text-xs" onClick={toggleVoice}>
                     {isListening ? <><MicOff className="mr-1 h-3 w-3" /> Stop</> : <><Mic className="mr-1 h-3 w-3" /> Dictate</>}
                   </Button>
@@ -795,7 +795,7 @@ export default function OneNotarySession() {
             {/* Complete & Finalize */}
             <Card className="border-border/50 border-emerald-200 dark:border-emerald-800 bg-emerald-50/30 dark:bg-emerald-900/10">
               <CardContent className="p-4">
-                <h3 className="mb-3 flex items-center gap-2 font-display text-sm font-semibold">
+                <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
                   <FileCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" /> Complete & Finalize
                 </h3>
                 <p className="mb-3 text-xs text-muted-foreground">Marks appointment as completed, creates journal entry, e-seal verification, and payment record.</p>

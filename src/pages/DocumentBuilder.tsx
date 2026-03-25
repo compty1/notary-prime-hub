@@ -144,7 +144,7 @@ export default function DocumentBuilder() {
 
       <div className="container mx-auto max-w-2xl px-4 py-8">
         <div className="mb-6 text-center">
-          <h1 className="font-display text-3xl font-bold mb-2">Guided Document Builder</h1>
+          <h1 className="font-sans text-3xl font-bold mb-2">Guided Document Builder</h1>
           <p className="text-muted-foreground">Fill in the blanks step-by-step — we'll build the document for you</p>
           <div className="mt-2 mx-auto max-w-md rounded-lg bg-amber-50 border border-amber-200 p-2">
             <p className="flex items-center justify-center gap-1 text-xs text-amber-800"><AlertTriangle className="h-3 w-3" /> Generic templates only — not legal advice</p>
@@ -153,7 +153,7 @@ export default function DocumentBuilder() {
 
         {!docType ? (
           <div className="space-y-3">
-            <h2 className="font-display text-lg font-semibold text-center mb-4">What document do you need?</h2>
+            <h2 className="font-sans text-lg font-semibold text-center mb-4">What document do you need?</h2>
             {(Object.keys(docTypeLabels) as DocType[]).map((dt) => (
               <Card key={dt} className="cursor-pointer border-border/50 transition-shadow hover:shadow-md" onClick={() => { setDocType(dt); setCurrentStep(0); setFormData({}); setShowPreview(false); }}>
                 <CardContent className="flex items-center gap-3 p-4">
@@ -167,7 +167,7 @@ export default function DocumentBuilder() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <Card className="border-border/50">
               <CardContent className="p-6">
-                <h2 className="font-display text-xl font-semibold mb-4">Preview: {docTypeLabels[docType]}</h2>
+                <h2 className="font-sans text-xl font-semibold mb-4">Preview: {docTypeLabels[docType]}</h2>
                 <div className="whitespace-pre-wrap font-serif text-sm leading-relaxed border rounded-lg p-6 bg-white text-gray-900 mb-4">{buildDocument()}</div>
                 <div className="flex gap-2 flex-wrap">
                   <Button variant="outline" onClick={() => setShowPreview(false)}><ChevronLeft className="mr-1 h-4 w-4" /> Edit</Button>
@@ -207,7 +207,7 @@ export default function DocumentBuilder() {
             <Card className="border-border/50">
               <CardContent className="p-6">
                 <p className="text-xs text-muted-foreground mb-1">Step {currentStep + 1} of {steps.length}</p>
-                <h2 className="font-display text-xl font-semibold mb-4">{steps[currentStep].title}</h2>
+                <h2 className="font-sans text-xl font-semibold mb-4">{steps[currentStep].title}</h2>
                 <div className="space-y-4">
                   {steps[currentStep].fields.map((field) => (
                     <div key={field.name}>

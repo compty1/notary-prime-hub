@@ -47,7 +47,7 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="font-display text-xl font-semibold">Upcoming Appointments</h2>
+        <h2 className="font-sans text-xl font-semibold">Upcoming Appointments</h2>
         <Link to="/book"><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90"><Plus className="mr-1 h-4 w-4" /> New Appointment</Button></Link>
       </div>
       {loading ? (
@@ -107,7 +107,7 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
       )}
       {past.length > 0 && (
         <>
-          <h2 className="mt-8 font-display text-xl font-semibold">Past Appointments</h2>
+          <h2 className="mt-8 font-sans text-xl font-semibold">Past Appointments</h2>
           <div className="space-y-3">
             {past.map(appt => (
               <Card key={appt.id} className="border-border/50 opacity-75">

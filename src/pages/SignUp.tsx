@@ -62,7 +62,7 @@ export default function SignUp() {
             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10">
               <CheckCircle className="h-8 w-8 text-emerald-500" />
             </div>
-            <h2 className="font-display text-2xl font-bold text-foreground mb-2">Check Your Email</h2>
+            <h2 className="font-sans text-2xl font-bold text-foreground mb-2">Check Your Email</h2>
             <p className="text-muted-foreground mb-2">We sent a verification link to</p>
             <p className="font-medium text-foreground mb-4">{email}</p>
             <p className="text-sm text-muted-foreground mb-2">Click the link in the email to verify your account, then sign in.</p>
@@ -84,7 +84,7 @@ export default function SignUp() {
           <Link to="/" className="mx-auto mb-4">
             <Logo size="lg" />
           </Link>
-          <CardTitle className="font-display text-2xl">Create Account</CardTitle>
+          <CardTitle className="font-sans text-2xl">Create Account</CardTitle>
           <CardDescription>Sign up to book notary appointments</CardDescription>
         </CardHeader>
         <CardContent>

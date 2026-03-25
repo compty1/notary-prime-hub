@@ -22,7 +22,7 @@ export function Navbar() {
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
         <Link to="/" className="flex items-center gap-2.5">
           <Logo size="sm" />
-          <span className="font-display text-lg font-bold tracking-tight text-foreground">Notar</span>
+          <span className="font-sans text-lg font-bold tracking-tight text-foreground">Notar</span>
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">

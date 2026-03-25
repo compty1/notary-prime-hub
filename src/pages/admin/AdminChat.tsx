@@ -106,7 +106,7 @@ export default function AdminChat() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="font-display text-2xl font-bold">Live Chat & Document Review</h1>
+        <h1 className="font-sans text-2xl font-bold">Live Chat & Document Review</h1>
         <p className="text-sm text-muted-foreground">Real-time client chat and document pre-review queue</p>
       </div>
 

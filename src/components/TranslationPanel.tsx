@@ -77,7 +77,7 @@ export default function TranslationPanel({ initialText = "", clientName = "", do
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <Languages className="h-5 w-5 text-primary" />
-        <h3 className="font-display font-semibold">Document Translation</h3>
+        <h3 className="font-sans font-semibold">Document Translation</h3>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -138,7 +138,7 @@ export default function TranslationPanel({ initialText = "", clientName = "", do
         <Card className="border-primary/20 bg-primary/5">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
-              <h4 className="font-display text-sm font-semibold">Certificate of Translation Accuracy</h4>
+              <h4 className="font-sans text-sm font-semibold">Certificate of Translation Accuracy</h4>
               <div className="flex gap-1">
                 <Button variant="ghost" size="sm" onClick={() => downloadText(certificate, "translation_certificate.txt")}>
                   <Download className="h-3 w-3" />

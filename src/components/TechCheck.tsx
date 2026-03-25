@@ -66,7 +66,7 @@ export default function TechCheck({ onComplete }: TechCheckProps) {
   return (
     <Card className="border-border/50">
       <CardHeader className="pb-3">
-        <CardTitle className="font-display text-lg flex items-center gap-2">
+        <CardTitle className="font-sans text-lg flex items-center gap-2">
           <Wifi className="h-5 w-5 text-primary" /> RON Session Tech Check
         </CardTitle>
         <p className="text-xs text-muted-foreground">Verify your camera, microphone, and internet before your Remote Online Notarization session.</p>

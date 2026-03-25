@@ -128,7 +128,7 @@ export default function JoinPlatform() {
                 <Users className="mr-1 h-3 w-3" /> Now Accepting Applications
               </Badge>
             </motion.div>
-            <motion.h1 variants={fadeUp} custom={1} className="mb-4 font-display text-4xl font-bold text-primary-foreground md:text-5xl">
+            <motion.h1 variants={fadeUp} custom={1} className="mb-4 font-sans text-4xl font-bold text-primary-foreground md:text-5xl">
               Join Our Notary Network
             </motion.h1>
             <motion.p variants={fadeUp} custom={2} className="mx-auto max-w-2xl text-lg text-primary-foreground/70">
@@ -149,7 +149,7 @@ export default function JoinPlatform() {
       {/* Benefits */}
       <section className="py-16">
         <div className="container mx-auto max-w-5xl px-4">
-          <h2 className="mb-8 text-center font-display text-3xl font-bold text-foreground">Why Join Our Platform?</h2>
+          <h2 className="mb-8 text-center font-sans text-3xl font-bold text-foreground">Why Join Our Platform?</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {benefits.map((b, i) => (
               <motion.div key={b.title} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i}>
@@ -158,7 +158,7 @@ export default function JoinPlatform() {
                     <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                       <b.icon className="h-5 w-5 text-primary" />
                     </div>
-                    <h3 className="mb-2 font-display text-base font-semibold">{b.title}</h3>
+                    <h3 className="mb-2 font-sans text-base font-semibold">{b.title}</h3>
                     <p className="text-sm text-muted-foreground">{b.desc}</p>
                   </CardContent>
                 </Card>
@@ -171,7 +171,7 @@ export default function JoinPlatform() {
       {/* Requirements */}
       <section className="bg-muted/30 py-16">
         <div className="container mx-auto max-w-3xl px-4">
-          <h2 className="mb-8 text-center font-display text-3xl font-bold text-foreground">Requirements</h2>
+          <h2 className="mb-8 text-center font-sans text-3xl font-bold text-foreground">Requirements</h2>
           <Card className="border-border/50">
             <CardContent className="p-6">
               <ul className="space-y-3">
@@ -190,14 +190,14 @@ export default function JoinPlatform() {
       {/* How It Works */}
       <section className="py-16">
         <div className="container mx-auto max-w-4xl px-4">
-          <h2 className="mb-12 text-center font-display text-3xl font-bold text-foreground">How It Works</h2>
+          <h2 className="mb-12 text-center font-sans text-3xl font-bold text-foreground">How It Works</h2>
           <div className="grid gap-8 md:grid-cols-4">
             {howItWorks.map((s, i) => (
               <motion.div key={s.step} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i} className="text-center">
                 <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-primary shadow-lg">
-                  <span className="font-display text-lg font-bold text-primary-foreground">{s.step}</span>
+                  <span className="font-sans text-lg font-bold text-primary-foreground">{s.step}</span>
                 </div>
-                <h3 className="mb-2 font-display text-lg font-semibold">{s.title}</h3>
+                <h3 className="mb-2 font-sans text-lg font-semibold">{s.title}</h3>
                 <p className="text-sm text-muted-foreground">{s.desc}</p>
               </motion.div>
             ))}
@@ -208,12 +208,12 @@ export default function JoinPlatform() {
       {/* Application Form */}
       <section id="apply" className="bg-muted/30 py-16">
         <div className="container mx-auto max-w-2xl px-4">
-          <h2 className="mb-8 text-center font-display text-3xl font-bold text-foreground">Apply to Join</h2>
+          <h2 className="mb-8 text-center font-sans text-3xl font-bold text-foreground">Apply to Join</h2>
           {submitted ? (
             <Card className="border-primary/20 bg-primary/5">
               <CardContent className="p-8 text-center space-y-4">
                 <CheckCircle className="mx-auto h-12 w-12 text-primary" />
-                <h3 className="font-display text-xl font-bold">Application Received!</h3>
+                <h3 className="font-sans text-xl font-bold">Application Received!</h3>
                 <p className="text-muted-foreground">Thank you for your interest. We'll review your application and contact you within 3-5 business days.</p>
                 <Link to="/"><Button variant="outline">Return Home</Button></Link>
               </CardContent>
@@ -311,7 +311,7 @@ export default function JoinPlatform() {
       {/* Provider FAQ */}
       <section className="py-16">
         <div className="container mx-auto max-w-2xl px-4">
-          <h2 className="mb-8 text-center font-display text-3xl font-bold text-foreground">Provider FAQ</h2>
+          <h2 className="mb-8 text-center font-sans text-3xl font-bold text-foreground">Provider FAQ</h2>
           <Accordion type="single" collapsible className="space-y-2">
             {providerFaqs.map((faq, i) => (
               <AccordionItem key={i} value={`faq-${i}`} className="rounded-lg border border-border/50 bg-card px-4">

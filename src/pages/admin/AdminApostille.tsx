@@ -202,7 +202,7 @@ export default function AdminApostille() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="font-display text-2xl font-bold">Apostille Workflow</h1>
+          <h1 className="font-sans text-2xl font-bold">Apostille Workflow</h1>
           <p className="text-sm text-muted-foreground">Track apostille requests: intake → processing → delivery</p>
         </div>
         <div className="flex items-center gap-2">
@@ -278,7 +278,7 @@ export default function AdminApostille() {
             return (
               <>
                 <DialogHeader>
-                  <DialogTitle className="font-display flex items-center gap-2">
+                  <DialogTitle className="font-sans flex items-center gap-2">
                     <FileText className="h-5 w-5 text-primary" />
                     {detailReq.document_description}
                   </DialogTitle>
@@ -390,7 +390,7 @@ export default function AdminApostille() {
       {/* Create Dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle className="font-display">New Apostille Request</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="font-sans">New Apostille Request</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <div>
               <Label>Client *</Label>

@@ -161,7 +161,7 @@ export default function Services() {
       <section className="relative overflow-hidden bg-gradient-hero py-16">
         <div className="absolute inset-0 gradient-mesh" />
         <div className="container relative mx-auto px-4 text-center">
-          <h1 className="mb-4 font-display text-4xl font-bold text-white md:text-5xl">Services</h1>
+          <h1 className="mb-4 font-sans text-4xl font-bold text-white md:text-5xl">Services</h1>
           <p className="mx-auto max-w-2xl text-lg text-white/60">
             Fast, secure notary and document services for individuals and businesses in Ohio.
             Transparent pricing, secure storage, and business plans available.
@@ -205,7 +205,7 @@ export default function Services() {
             {grouped.map((group) => (
               <motion.section key={group.category} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }}>
                 <motion.div variants={fadeUp} custom={0} className="mb-6">
-                  <h2 className="font-display text-2xl font-bold text-foreground">{group.label}</h2>
+                  <h2 className="font-sans text-2xl font-bold text-foreground">{group.label}</h2>
                   <p className="text-sm text-muted-foreground">{group.description}</p>
                 </motion.div>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -220,9 +220,9 @@ export default function Services() {
                               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/15 transition-colors">
                                 <IconComp className="h-5 w-5 text-primary" />
                               </div>
-                              <Badge variant="outline" className="text-xs font-mono-accent">{formatPrice(s)}</Badge>
+                              <Badge variant="outline" className="text-xs font-mono">{formatPrice(s)}</Badge>
                             </div>
-                            <h3 className="mb-1 font-display text-base font-semibold text-foreground">{s.name}</h3>
+                            <h3 className="mb-1 font-sans text-base font-semibold text-foreground">{s.name}</h3>
                             <p className="mb-4 flex-1 text-sm text-muted-foreground">{s.description || s.short_description}</p>
                             <div className="flex gap-2">
                               <Link to={`/services/${s.id}`} className="flex-1">
@@ -251,7 +251,7 @@ export default function Services() {
       {/* CTA */}
       <section className="bg-muted/30 py-16">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="mb-4 font-display text-2xl font-bold text-foreground">Ready to Get Started?</h2>
+          <h2 className="mb-4 font-sans text-2xl font-bold text-foreground">Ready to Get Started?</h2>
           <p className="mb-6 text-muted-foreground">Book an appointment or contact us for a custom quote.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link to="/book"><Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">Book Appointment</Button></Link>

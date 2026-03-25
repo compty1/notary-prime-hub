@@ -11,32 +11,32 @@ export default function TermsPrivacy() {
       <div className="container mx-auto max-w-3xl px-4 py-12 space-y-12">
         {/* Terms of Service */}
         <section>
-          <h1 className="mb-6 font-display text-3xl font-bold text-foreground">Terms of Service</h1>
+          <h1 className="mb-6 font-sans text-3xl font-bold text-foreground">Terms of Service</h1>
           <div className="prose prose-sm text-muted-foreground space-y-4">
             <p><strong>Effective Date:</strong> January 1, 2026</p>
 
-            <h2 className="font-display text-lg font-semibold text-foreground">1. Services Provided</h2>
+            <h2 className="font-sans text-lg font-semibold text-foreground">1. Services Provided</h2>
             <p>Notar Services ("we," "us") provides in-person and remote online notarization (RON) services in compliance with Ohio Revised Code §147 and all applicable Ohio laws. We are commissioned as a Notary Public in the State of Ohio, Franklin County.</p>
 
-            <h2 className="font-display text-lg font-semibold text-foreground">2. Eligibility</h2>
+            <h2 className="font-sans text-lg font-semibold text-foreground">2. Eligibility</h2>
             <p>You must be at least 18 years old and possess a valid government-issued photo ID to use our notarization services. For RON sessions, you must also successfully complete Knowledge-Based Authentication (KBA) as required by ORC §147.65-.66.</p>
 
-            <h2 className="font-display text-lg font-semibold text-foreground">3. Fees</h2>
+            <h2 className="font-sans text-lg font-semibold text-foreground">3. Fees</h2>
             <p>Notary fees are governed by Ohio law. The statutory maximum per notarial act is $5.00 per signature (ORC §147.08). Additional fees for travel, technology platforms (RON), and KBA verification may apply and will be disclosed before your appointment.</p>
 
-            <h2 className="font-display text-lg font-semibold text-foreground">4. Cancellation Policy</h2>
+            <h2 className="font-sans text-lg font-semibold text-foreground">4. Cancellation Policy</h2>
             <p>Appointments may be cancelled or rescheduled through the client portal. We request at least 2 hours' notice for cancellations. Repeated no-shows may result in a required deposit for future bookings.</p>
 
-            <h2 className="font-display text-lg font-semibold text-foreground">5. Notary Limitations</h2>
+            <h2 className="font-sans text-lg font-semibold text-foreground">5. Notary Limitations</h2>
             <p>A notary public is not an attorney and cannot provide legal advice, draft legal documents, or counsel you on the content of documents. We notarize signatures — we do not validate the legal sufficiency of your documents.</p>
 
-            <h2 className="font-display text-lg font-semibold text-foreground">6. RON Session Recording</h2>
+            <h2 className="font-sans text-lg font-semibold text-foreground">6. RON Session Recording</h2>
             <p>Per ORC §147.66, all RON sessions are audio/video recorded and stored securely for a minimum of 10 years. By participating in a RON session, you consent to this recording.</p>
 
-            <h2 className="font-display text-lg font-semibold text-foreground">7. Limitation of Liability</h2>
+            <h2 className="font-sans text-lg font-semibold text-foreground">7. Limitation of Liability</h2>
             <p>Our liability is limited to the fees paid for the specific notarial act in question. We maintain a $25,000 surety bond as required by Ohio law. We are not liable for the legal consequences of documents you choose to notarize.</p>
 
-            <h2 className="font-display text-lg font-semibold text-foreground">8. Governing Law</h2>
+            <h2 className="font-sans text-lg font-semibold text-foreground">8. Governing Law</h2>
             <p>These terms are governed by the laws of the State of Ohio, Franklin County.</p>
           </div>
         </section>
@@ -45,11 +45,11 @@ export default function TermsPrivacy() {
 
         {/* Privacy Policy */}
         <section>
-          <h2 className="mb-6 font-display text-3xl font-bold text-foreground">Privacy Policy</h2>
+          <h2 className="mb-6 font-sans text-3xl font-bold text-foreground">Privacy Policy</h2>
           <div className="prose prose-sm text-muted-foreground space-y-4">
             <p><strong>Effective Date:</strong> January 1, 2026</p>
 
-            <h3 className="font-display text-lg font-semibold text-foreground">Information We Collect</h3>
+            <h3 className="font-sans text-lg font-semibold text-foreground">Information We Collect</h3>
             <p>We collect the following information to perform notarial services:</p>
             <ul className="list-disc pl-6 space-y-1">
               <li>Full legal name, address, phone number, and email</li>
@@ -59,7 +59,7 @@ export default function TermsPrivacy() {
               <li>Notary journal entries documenting each notarial act</li>
             </ul>
 
-            <h3 className="font-display text-lg font-semibold text-foreground">How We Use Your Information</h3>
+            <h3 className="font-sans text-lg font-semibold text-foreground">How We Use Your Information</h3>
             <p>Your information is used solely for:</p>
             <ul className="list-disc pl-6 space-y-1">
               <li>Performing and documenting notarial acts as required by law</li>
@@ -68,16 +68,16 @@ export default function TermsPrivacy() {
               <li>Maintaining our notary journal for the legally required retention period</li>
             </ul>
 
-            <h3 className="font-display text-lg font-semibold text-foreground">Data Retention</h3>
+            <h3 className="font-sans text-lg font-semibold text-foreground">Data Retention</h3>
             <p>Notary journal entries are retained for at least 5 years as required by ORC §147.551. RON session recordings are retained for at least 10 years per ORC §147.66. Account data is retained while your account is active.</p>
 
-            <h3 className="font-display text-lg font-semibold text-foreground">Data Security</h3>
+            <h3 className="font-sans text-lg font-semibold text-foreground">Data Security</h3>
             <p>We use industry-standard security measures including encrypted data storage, secure authentication, and access controls. RON sessions use end-to-end encrypted video connections.</p>
 
-            <h3 className="font-display text-lg font-semibold text-foreground">Your Rights</h3>
+            <h3 className="font-sans text-lg font-semibold text-foreground">Your Rights</h3>
             <p>You may request access to or deletion of your personal information by contacting us. Note that we cannot delete notary journal entries or RON session recordings as they are legally required records.</p>
 
-            <h3 className="font-display text-lg font-semibold text-foreground">Contact</h3>
+            <h3 className="font-sans text-lg font-semibold text-foreground">Contact</h3>
             <p>For questions about this privacy policy, contact Notar Services at the contact information provided on our website.</p>
           </div>
         </section>

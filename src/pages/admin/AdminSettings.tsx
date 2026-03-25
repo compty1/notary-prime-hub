@@ -131,7 +131,7 @@ export default function AdminSettings() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="font-display text-2xl font-bold text-foreground">Platform Settings</h1>
+          <h1 className="font-sans text-2xl font-bold text-foreground">Platform Settings</h1>
           <p className="text-sm text-muted-foreground">Configure pricing, credentials, platform integrations, and compliance reminders</p>
         </div>
         <Button onClick={handleSave} disabled={saving} className="bg-gradient-primary text-white hover:opacity-90">
@@ -143,7 +143,7 @@ export default function AdminSettings() {
         {/* Notary Credentials Card */}
         <Card className="border-border/50 lg:col-span-2">
           <CardHeader>
-            <CardTitle className="font-display text-lg flex items-center gap-2">
+            <CardTitle className="font-sans text-lg flex items-center gap-2">
               <Shield className="h-5 w-5 text-primary" /> Notary Credentials & Commission
             </CardTitle>
           </CardHeader>
@@ -240,7 +240,7 @@ export default function AdminSettings() {
         {/* Pricing Configuration */}
         <Card className="border-border/50">
           <CardHeader>
-            <CardTitle className="font-display text-lg flex items-center gap-2">
+            <CardTitle className="font-sans text-lg flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-primary" /> Pricing Configuration
             </CardTitle>
           </CardHeader>
@@ -257,7 +257,7 @@ export default function AdminSettings() {
         {/* Platform Integration */}
         <Card className="border-border/50">
           <CardHeader>
-            <CardTitle className="font-display text-lg flex items-center gap-2">
+            <CardTitle className="font-sans text-lg flex items-center gap-2">
               <Monitor className="h-5 w-5 text-primary" /> Platform Integration
             </CardTitle>
           </CardHeader>
@@ -325,7 +325,7 @@ export default function AdminSettings() {
         {/* Ohio RON Compliance Check */}
         <Card className="border-border/50 lg:col-span-2">
           <CardHeader>
-            <CardTitle className="font-display text-lg flex items-center gap-2">
+            <CardTitle className="font-sans text-lg flex items-center gap-2">
               <Shield className="h-5 w-5 text-primary" /> Ohio RON Compliance Check
               {(() => {
                 const checks = [
@@ -370,7 +370,7 @@ export default function AdminSettings() {
         {/* Business Settings */}
         <Card className="border-border/50">
           <CardHeader>
-            <CardTitle className="font-display text-lg flex items-center gap-2">
+            <CardTitle className="font-sans text-lg flex items-center gap-2">
               <MapPin className="h-5 w-5 text-primary" /> Business Settings
             </CardTitle>
           </CardHeader>
@@ -387,7 +387,7 @@ export default function AdminSettings() {
         {/* ID Expiration Monitoring */}
         <Card className="border-border/50">
           <CardHeader>
-            <CardTitle className="font-display text-lg flex items-center gap-2">
+            <CardTitle className="font-sans text-lg flex items-center gap-2">
               <CalendarClock className="h-5 w-5 text-primary" /> ID Expiration Monitoring
             </CardTitle>
           </CardHeader>
@@ -417,7 +417,7 @@ export default function AdminSettings() {
         {/* Zoom / Meeting Integration */}
         <Card className="border-border/50">
           <CardHeader>
-            <CardTitle className="font-display text-lg flex items-center gap-2">
+            <CardTitle className="font-sans text-lg flex items-center gap-2">
               <Monitor className="h-5 w-5 text-primary" /> Zoom Meetings
             </CardTitle>
           </CardHeader>
@@ -433,7 +433,7 @@ export default function AdminSettings() {
         {/* Email Notification Templates */}
         <Card className="border-border/50 lg:col-span-2">
           <CardHeader>
-            <CardTitle className="font-display text-lg flex items-center gap-2">
+            <CardTitle className="font-sans text-lg flex items-center gap-2">
               <Mail className="h-5 w-5 text-primary" /> Email Notification Templates
             </CardTitle>
           </CardHeader>

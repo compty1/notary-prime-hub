@@ -210,7 +210,7 @@ export default function AdminTeam() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="font-display text-2xl font-bold text-foreground">Team & Notary Invites</h1>
+        <h1 className="font-sans text-2xl font-bold text-foreground">Team & Notary Invites</h1>
         <p className="text-sm text-muted-foreground">Invite other notaries to join your platform with limited access</p>
       </div>
 
@@ -218,7 +218,7 @@ export default function AdminTeam() {
         {/* Invite Card */}
         <Card className="border-border/50">
           <CardHeader>
-            <CardTitle className="font-display text-lg flex items-center gap-2">
+            <CardTitle className="font-sans text-lg flex items-center gap-2">
               <UserPlus className="h-5 w-5 text-primary" /> Invite a Notary
             </CardTitle>
           </CardHeader>
@@ -243,7 +243,7 @@ export default function AdminTeam() {
         {/* Active Notaries */}
         <Card className="border-border/50">
           <CardHeader>
-            <CardTitle className="font-display text-lg flex items-center gap-2">
+            <CardTitle className="font-sans text-lg flex items-center gap-2">
               <Users className="h-5 w-5 text-primary" /> Active Notaries
             </CardTitle>
           </CardHeader>
@@ -284,7 +284,7 @@ export default function AdminTeam() {
         {/* Pending Invites */}
         <Card className="border-border/50 lg:col-span-2">
           <CardHeader>
-            <CardTitle className="font-display text-lg flex items-center gap-2">
+            <CardTitle className="font-sans text-lg flex items-center gap-2">
               <Clock className="h-5 w-5 text-primary" /> Invite History
             </CardTitle>
           </CardHeader>
@@ -325,7 +325,7 @@ export default function AdminTeam() {
       <Dialog open={!!selectedNotary} onOpenChange={() => setSelectedNotary(null)}>
         <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="font-display flex items-center gap-2">
+            <DialogTitle className="font-sans flex items-center gap-2">
               <Pencil className="h-4 w-4 text-primary" /> Edit Notary Profile
             </DialogTitle>
           </DialogHeader>

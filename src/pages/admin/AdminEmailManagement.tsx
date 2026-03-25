@@ -170,7 +170,7 @@ export default function AdminEmailManagement() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="font-display text-2xl font-bold text-foreground">Email & Correspondence Management</h1>
+          <h1 className="font-sans text-2xl font-bold text-foreground">Email & Correspondence Management</h1>
           <p className="text-sm text-muted-foreground">Manage client correspondence, send replies, and track forwarding</p>
         </div>
         <Button onClick={() => setShowCreate(true)} className="bg-gradient-primary text-white hover:opacity-90">
@@ -257,7 +257,7 @@ export default function AdminEmailManagement() {
       <Dialog open={!!showDetail} onOpenChange={() => setShowDetail(null)}>
         <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="font-display">Correspondence Detail</DialogTitle>
+            <DialogTitle className="font-sans">Correspondence Detail</DialogTitle>
           </DialogHeader>
           {showDetail && (
             <div className="space-y-4">
@@ -297,7 +297,7 @@ export default function AdminEmailManagement() {
       <Dialog open={showReplyDialog} onOpenChange={setShowReplyDialog}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="font-display flex items-center gap-2">
+            <DialogTitle className="font-sans flex items-center gap-2">
               <Send className="h-5 w-5 text-primary" /> Send Reply Email
             </DialogTitle>
           </DialogHeader>
@@ -320,7 +320,7 @@ export default function AdminEmailManagement() {
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="font-display flex items-center gap-2">
+            <DialogTitle className="font-sans flex items-center gap-2">
               <Mail className="h-5 w-5 text-primary" /> Log Correspondence
             </DialogTitle>
           </DialogHeader>

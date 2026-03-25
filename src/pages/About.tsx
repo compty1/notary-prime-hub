@@ -53,14 +53,14 @@ export default function About() {
           <motion.div initial="hidden" animate="visible" className="flex flex-col md:flex-row items-center gap-8">
             <motion.div variants={fadeUp} custom={0} className="flex-shrink-0">
               <div className="flex h-40 w-40 items-center justify-center rounded-2xl bg-primary/20 border border-primary/30">
-                <span className="font-display text-5xl font-bold text-primary">N</span>
+                <span className="font-sans text-5xl font-bold text-primary">N</span>
               </div>
             </motion.div>
             <motion.div variants={fadeUp} custom={1}>
               <Badge className="mb-3 border-primary/20 bg-primary/10 text-primary dark:text-primary-foreground">
                 <Award className="mr-1 h-3 w-3" /> NNA Certified Notary Signing Agent
               </Badge>
-              <h1 className="mb-3 font-display text-4xl font-bold text-white md:text-5xl">
+              <h1 className="mb-3 font-sans text-4xl font-bold text-white md:text-5xl">
                 Notar
               </h1>
               <p className="mb-2 text-xl text-white/80">
@@ -91,7 +91,7 @@ export default function About() {
       <section className="py-16">
         <div className="container mx-auto max-w-4xl px-4">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }}>
-            <motion.h2 variants={fadeUp} custom={0} className="mb-6 font-display text-3xl font-bold text-foreground">
+            <motion.h2 variants={fadeUp} custom={0} className="mb-6 font-sans text-3xl font-bold text-foreground">
               About Our Team
             </motion.h2>
             <motion.div variants={fadeUp} custom={1} className="prose prose-sm dark:prose-invert max-w-none">
@@ -121,7 +121,7 @@ export default function About() {
       {/* Credentials */}
       <section className="bg-muted/30 py-16">
         <div className="container mx-auto max-w-4xl px-4">
-          <motion.h2 initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={0} className="mb-8 font-display text-3xl font-bold text-foreground text-center">
+          <motion.h2 initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={0} className="mb-8 font-sans text-3xl font-bold text-foreground text-center">
             Credentials & Certifications
           </motion.h2>
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -132,7 +132,7 @@ export default function About() {
                     <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
                       <cred.icon className="h-5 w-5 text-primary" />
                     </div>
-                    <h3 className="mb-2 font-display text-base font-semibold">{cred.title}</h3>
+                    <h3 className="mb-2 font-sans text-base font-semibold">{cred.title}</h3>
                     <p className="text-sm text-muted-foreground">{cred.desc}</p>
                   </CardContent>
                 </Card>
@@ -147,7 +147,7 @@ export default function About() {
         <div className="container mx-auto max-w-4xl px-4">
           <div className="grid gap-8 md:grid-cols-2">
             <div>
-              <h2 className="mb-4 font-display text-2xl font-bold text-foreground flex items-center gap-2">
+              <h2 className="mb-4 font-sans text-2xl font-bold text-foreground flex items-center gap-2">
                 <MapPin className="h-6 w-6 text-primary" /> Service Area
               </h2>
               <p className="mb-4 text-muted-foreground">
@@ -164,7 +164,7 @@ export default function About() {
               </p>
             </div>
             <div>
-              <h2 className="mb-4 font-display text-2xl font-bold text-foreground flex items-center gap-2">
+              <h2 className="mb-4 font-sans text-2xl font-bold text-foreground flex items-center gap-2">
                 <Briefcase className="h-6 w-6 text-primary" /> Services Overview
               </h2>
               <ul className="space-y-2 text-sm text-muted-foreground">
@@ -185,7 +185,7 @@ export default function About() {
       {/* Response time + CTA */}
       <section className="bg-muted/30 py-16">
         <div className="container mx-auto max-w-2xl px-4 text-center">
-          <h2 className="mb-4 font-display text-2xl font-bold text-foreground">Get in Touch</h2>
+          <h2 className="mb-4 font-sans text-2xl font-bold text-foreground">Get in Touch</h2>
           <p className="mb-2 text-muted-foreground">
             Message us for a response within 24 hours — we typically respond within 2 hours during business hours.
           </p>

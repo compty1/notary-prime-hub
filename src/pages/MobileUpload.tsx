@@ -105,7 +105,7 @@ export default function MobileUpload() {
         <Logo size="lg" showText subtitle="Mobile Upload" className="mb-8" />
         <Card className="w-full max-w-sm border-border/50">
           <CardHeader>
-            <CardTitle className="font-display text-lg text-center">Sign In to Upload</CardTitle>
+            <CardTitle className="font-sans text-lg text-center">Sign In to Upload</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
@@ -135,7 +135,7 @@ export default function MobileUpload() {
         <div className="flex items-center justify-between px-4 py-3">
           <Link to="/portal" className="flex items-center gap-2">
             <Logo size="sm" />
-            <span className="font-display text-sm font-bold text-foreground">Mobile Upload</span>
+            <span className="font-sans text-sm font-bold text-foreground">Mobile Upload</span>
           </Link>
           <Button variant="ghost" size="sm" onClick={signOut}>
             <LogOut className="h-4 w-4" />
@@ -198,7 +198,7 @@ export default function MobileUpload() {
         {/* Recent Uploads */}
         <Card className="border-border/50">
           <CardHeader className="pb-2">
-            <CardTitle className="font-display text-base flex items-center justify-between">
+            <CardTitle className="font-sans text-base flex items-center justify-between">
               Recent Uploads
               <Button variant="ghost" size="sm" onClick={fetchDocuments}>
                 <RefreshCw className="h-3 w-3" />
