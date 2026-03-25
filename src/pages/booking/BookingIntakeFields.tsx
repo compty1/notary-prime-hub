@@ -28,7 +28,7 @@ interface IntakeFieldsProps {
   companyName: string; setCompanyName: (v: string) => void;
   // RON onboarding
   clientState: string; setClientState: (v: string) => void;
-  notes: string; setNotes: (v: string) => void;
+  notes: string; setNotes: (v: string | ((prev: string) => string)) => void;
   // Translation
   sourceLanguage: string; setSourceLanguage: (v: string) => void;
   targetLanguage: string; setTargetLanguage: (v: string) => void;
