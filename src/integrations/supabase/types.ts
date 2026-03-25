@@ -729,6 +729,42 @@ export type Database = {
           },
         ]
       }
+      notary_certifications: {
+        Row: {
+          certification_name: string
+          certification_number: string | null
+          created_at: string | null
+          expiry_date: string | null
+          file_path: string | null
+          id: string
+          issued_date: string | null
+          issuing_body: string | null
+          user_id: string
+        }
+        Insert: {
+          certification_name: string
+          certification_number?: string | null
+          created_at?: string | null
+          expiry_date?: string | null
+          file_path?: string | null
+          id?: string
+          issued_date?: string | null
+          issuing_body?: string | null
+          user_id: string
+        }
+        Update: {
+          certification_name?: string
+          certification_number?: string | null
+          created_at?: string | null
+          expiry_date?: string | null
+          file_path?: string | null
+          id?: string
+          issued_date?: string | null
+          issuing_body?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       notary_invites: {
         Row: {
           accepted_at: string | null
@@ -977,6 +1013,7 @@ export type Database = {
         Row: {
           address: string | null
           admin_notes: string | null
+          avatar_path: string | null
           city: string | null
           created_at: string
           email: string | null
@@ -992,6 +1029,7 @@ export type Database = {
         Insert: {
           address?: string | null
           admin_notes?: string | null
+          avatar_path?: string | null
           city?: string | null
           created_at?: string
           email?: string | null
@@ -1007,6 +1045,7 @@ export type Database = {
         Update: {
           address?: string | null
           admin_notes?: string | null
+          avatar_path?: string | null
           city?: string | null
           created_at?: string
           email?: string | null
