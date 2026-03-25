@@ -1,238 +1,101 @@
 
 
-# Comprehensive Gap Analysis & Fix Plan
+# Visual Theme Overhaul — Clinical High-Tech Aesthetic
 
-This plan identifies and addresses gaps across the entire application — authentication, admin workflows, edge function calls, OneNotary session flows, UI polish, and missing functionality.
-
----
-
-## Category 1: Authentication & Security Bugs (8 gaps)
-
-1. **Login page ref warning** — `Logo` is a function component used inside `<Link>` which passes a ref. Wrap `Logo` in `React.forwardRef`.
-2. **Login/SignUp pages not wrapped in PageShell** — inconsistent with other public pages.
-3. **AnimatePresence ref error** — `Login`, `SignUp`, and other eager-loaded page components receive refs from AnimatePresence but don't support them. Wrap each Route element in a `motion.div` instead of expecting page components to accept refs.
-4. **Session timeout toast import** — `AuthContext.tsx` dynamically imports `use-toast` which may fail silently. Use a ref-based callback pattern instead.
-5. **Google OAuth redirect** — `redirect_uri` is set to `window.location.origin` but after OAuth the user may not be redirected back to `/portal` or `/admin` properly if the hash callback isn't handled.
-6. **SignUp doesn't redirect admin/notary** — After signup, if the user is an admin (matched by email trigger), they're sent to `/portal` instead of `/admin`.
-7. **No email confirmation guidance** — After signup, the success message doesn't tell users to check spam folder.
-8. **Password reset page import** — `ResetPassword` lazy-imports `ForgotPassword.tsx` — verify the component handles both forgot-password and reset-password flows correctly.
+Retheme the entire application to match the provided brand guidelines: a clean, light, clinical interface with navy/blue/cyan accents, Inter + Fira Code typography, and the new gradient logo mark. No functionality changes.
 
 ---
 
-## Category 2: Edge Function Auth Bugs (12 gaps)
+## Summary of Changes
 
-9. **AdminAppointments sends anon key as Bearer** — Line 220: `Authorization: Bearer ${VITE_SUPABASE_PUBLISHABLE_KEY}` for `send-appointment-emails`. This will fail if the function checks JWT for user identity. Should use session access_token.
-10. **Same issue line 372** — admin-created appointment email notification uses anon key.
-11. **AdminEmailManagement line 140** — `send-correspondence` call uses anon key as Bearer.
-12. **AdminAIAssistant line 81** — `notary-assistant` call uses anon key.
-13. **Services.tsx line 90** — `client-assistant` uses anon key (acceptable since `verify_jwt=false` but inconsistent).
-14. **DocumentTemplates line 837** — edge function call uses anon key.
-15. **WhatDoINeed line 29** — edge function call uses anon key.
-16. **BookAppointment line 373** — `appointment_id: newAppt.client_id` — BUG: sends client_id instead of the newly created appointment ID for the email notification.
-17. **Inconsistent function invocation** — Some calls use `supabase.functions.invoke()` (correct), others use raw `fetch()` with manual URL construction. Should standardize.
-18. **Missing apikey header** — Several raw fetch calls omit the `apikey` header that Supabase gateway requires.
-19. **Edge function `send-appointment-emails`** — Called with different payload shapes (`appointment_id` vs `appointmentId`, `status_change` vs `emailType`). Need to verify the edge function accepts both.
-20. **`send-correspondence` called with different payload shapes** — AdminAppointments sends `{ to_address, subject, body, client_id }`, AdminEmailManagement sends `{ to, subject, body }`. Inconsistent.
+**From**: Dark electric blue-violet glassmorphism with Space Grotesk / DM Sans / JetBrains Mono
+**To**: Light clinical surfaces with navy (#0F172A), trust blue (#2563EB), tech cyan (#06B6D4), slate (#64748B), Inter sans-serif, Fira Code monospace
 
 ---
 
-## Category 3: OneNotary Session Flow Gaps (15 gaps)
+## Files to Modify
 
-21. **`ron_session_method` setting not read by OneNotarySession** — AdminSettings has the toggle but OneNotarySession.tsx doesn't check it. The "email_invite" flow is completely unimplemented.
-22. **No manual session link input** — When `email_invite` mode is active, admin should be able to paste a manual OneNotary session link for the signer.
-23. **OneNotarySession has no PageShell** — uses inline nav, inconsistent with other pages.
-24. **No document upload UI in OneNotarySession** — The `add_document` action exists in the edge function but there's no UI to upload documents to a session.
-25. **No witness request UI** — `request_witness` action exists but no button in the session UI.
-26. **No set_notary UI** — `set_notary` action exists but no UI to assign a specific notary.
-27. **Session status not synced via webhook** — OneNotary webhook exists but session page doesn't poll or subscribe for real-time status updates.
-28. **No cancel session UI** — `cancel_session` action exists in the edge function but no cancel button in the session page.
-29. **No video/recording retrieval UI** — `get_video` action exists but no UI to access session recordings post-completion.
-30. **No document download UI** — `download_document` and `get_stamps` actions exist but no UI to retrieve completed notarized documents.
-31. **Participant link not visible to client in real-time** — Client view shows `participantLink` but doesn't subscribe to realtime changes, so they need to refresh.
-32. **OneNotarySession doesn't handle missing appointment gracefully** — If `appointmentId` is null or invalid, shows blank page instead of an error.
-33. **Session finalization doesn't create e-seal verification** — `completeAndFinalize` doesn't insert into `e_seal_verifications` table.
-34. **Session finalization doesn't create journal entry** — The `completeAndFinalize` function creates a payment but not a journal entry (which is done separately via the quick journal dialog in AdminAppointments).
-35. **No way to re-send participant invite link** — Once session is initialized, can't resend the invite.
+### 1. Font & CSS Variables — `index.html` + `src/index.css`
+- Replace Google Fonts import: `Inter:wght@300;400;600;800` + `Fira Code:wght@400;500`
+- Update all CSS custom properties:
+  - Light: background `210 40% 98%` (#F8FAFC), foreground navy `222 47% 11%` (#0F172A), primary blue `217 91% 60%` (#2563EB), accent cyan `192 91% 42%` (#06B6D4), muted slate `215 16% 47%` (#64748B)
+  - Dark: keep dark mode but shift to navy-based palette instead of violet
+- Replace gradient utilities: `bg-gradient-hero` becomes a light gradient with subtle blue wash, `bg-gradient-primary` becomes blue→cyan
+- Update glass utilities to match lighter style: `rgba(255,255,255,0.9)` + subtle border
+- Add scanline animation keyframe from brand guidelines
 
----
+### 2. Tailwind Config — `tailwind.config.ts`
+- Font families: `sans: ['"Inter"', 'system-ui', 'sans-serif']`, `mono: ['"Fira Code"', 'monospace']`
+- Remove `display` font family (Inter serves both heading and body)
+- Keep all existing keyframes/animations, adjust `glow-pulse` to use blue instead of violet
 
-## Category 4: Admin Dashboard & Management Gaps (18 gaps)
+### 3. Logo — `src/components/Logo.tsx`
+- Replace SVG: rounded-lg square with blue→cyan gradient background, centered white "N" letter (clean sans-serif, not stroked paths)
+- Text shows "Notar" (keep existing brand name)
 
-36. **AdminOverview doesn't show RON session counts** — No metrics for active/completed RON sessions.
-37. **AdminClients avatar upload may fail** — No storage RLS policy for `documents` bucket allows admin uploads to `profiles/` path.
-38. **AdminClients "Create Profile" inserts with random UUID** — The `user_id` is generated client-side with `crypto.randomUUID()`. This won't link to any auth user and may cause issues with RLS policies that check `auth.uid()`.
-39. **AdminTeam certifications have no file upload** — The `notary_certifications` table has `file_path` column but the certifications CRUD UI likely doesn't include file upload.
-40. **AdminAppointments receipt print** — Uses `window.print()` which prints the entire page, not just the receipt dialog content.
-41. **AdminAppointments create appointment** — No email validation or duplicate check for appointments on the same date/time.
-42. **AdminRevenue** — Not verified if it properly aggregates journal + payment data.
-43. **AdminDocuments** — No bulk actions (approve/reject multiple documents).
-44. **AdminJournal** — No export to CSV/PDF for compliance archiving.
-45. **AdminAuditLog** — No date range filter or search.
-46. **AdminChat** — No real-time subscription for new messages.
-47. **AdminApostille** — No file attachment for apostille tracking.
-48. **AdminLeadPortal** — No integration with the `discover-leads` or `scrape-social-leads` functions.
-49. **AdminBusinessClients** — Not verified if business member management works.
-50. **AdminTemplates** — Not verified if template upload/download works with storage.
-51. **AdminResources** — Content not verified.
-52. **AdminAvailability** — No validation for overlapping time slots.
-53. **No admin notification center** — No bell icon or notification system for new appointments, messages, etc.
+### 4. Navbar — `src/components/Navbar.tsx`
+- No structural changes, just inherits new theme via CSS variables
+- Brand text already uses `font-display` → will become Inter via removal of display font
 
----
+### 5. Hero Section — `src/pages/Index.tsx`
+- Change hero from `bg-gradient-hero` (dark) to light background with subtle blue wash
+- Text colors: headings become navy, subtext becomes slate
+- Pill toggle: light glass style instead of dark `bg-white/10`
+- Trust badges: navy/blue borders instead of white/10
+- Keep all animations (blurIn, fadeUp, scaleReveal, AnimatedCounter)
 
-## Category 5: Client Portal Gaps (12 gaps)
+### 6. Footer — `src/components/Footer.tsx`
+- Inherits new palette via CSS variables; `font-display` references become Inter automatically
 
-54. **ClientPortal is 1373 lines** — Monolithic component, hard to maintain.
-55. **Document upload doesn't validate file type/size** — No client-side validation before upload.
-56. **No document preview** — Users can't preview uploaded documents inline.
-57. **No payment history view** — Clients can see appointments but payment details are minimal.
-58. **QR code for mobile upload** — Not verified if the QR flow works end-to-end.
-59. **Client chat** — Not verified if messages are delivered in real-time.
-60. **No client notification preferences** — Can't opt in/out of email notifications.
-61. **Client profile edit** — Missing avatar upload for clients.
-62. **Appointment rescheduling** — Clients can cancel but not reschedule.
-63. **No appointment status timeline** — Clients see a badge but not a progress timeline.
-64. **Virtual mailroom link** — Not verified if the mailroom page works correctly.
-65. **Business portal** — Not verified if business registration and member management works.
+### 7. Global class reference updates
+- Replace all `font-display` with `font-sans` (since Inter handles both) across ~67 files
+- Replace `font-mono-accent` with `font-mono`
+- `text-gradient-primary` utility: update gradient from violet to blue→cyan
+- Cards get `interactive-card` hover behavior (translateY(-6px) + blue border glow)
 
----
+### 8. Admin & Portal pages
+- All admin pages inherit new colors via CSS variables — no individual file changes needed for basic theming
+- Badge color utilities in `src/lib/statusColors.ts` keep their semantic colors (green/amber/red) — only primary accent shifts
 
-## Category 6: Public Pages & UX Gaps (15 gaps)
-
-66. **BookAppointment is 1843 lines** — Extremely large, needs decomposition.
-67. **BookAppointment address autocomplete** — Not verified if Google Places API is configured.
-68. **Fee calculator** — Not verified if it correctly calculates from platform_settings.
-69. **Service detail pages** — Dynamic route `/services/:serviceId` may not handle invalid IDs gracefully.
-70. **RON eligibility checker** — Not verified against actual Ohio statute requirements.
-71. **Document digitize OCR** — Updated system prompt but not verified end-to-end.
-72. **Document builder** — Not verified if template generation works.
-73. **Verify seal page** — Not verified if e-seal lookup works.
-74. **Loan signing services** — Not verified if the lead capture form submits correctly.
-75. **Join platform** — Not verified if the notary application form works.
-76. **About page** — Content not verified.
-77. **Terms/Privacy page** — Content not verified.
-78. **404 page** — Not verified if it renders correctly.
-79. **Mobile upload page** — QR-code based upload flow not verified.
-80. **Subscription plans** — Not verified if Stripe checkout integration works.
-
----
-
-## Category 7: Database & Data Integrity Gaps (10 gaps)
-
-81. **No foreign keys on most tables** — `appointments.client_id`, `payments.client_id`, `documents.uploaded_by` etc. have no FK constraints. Data can become orphaned.
-82. **No `handle_new_user` trigger attached** — The trigger function exists but the triggers list shows "no triggers". The profile auto-creation may not be working.
-83. **`profiles` table has no DELETE policy** — Admins can't delete user profiles.
-84. **`notary_certifications` FK to `auth.users`** — Direct FK reference to `auth.users` which the plan warned against. Should reference `profiles.user_id` instead.
-85. **No `updated_at` trigger on many tables** — `update_updated_at_column` function exists but no triggers are attached.
-86. **Realtime not enabled** — Appointments, chat_messages, and notarization_sessions should have realtime enabled for live updates.
-87. **No database indexes** — No custom indexes for frequently queried columns (scheduled_date, client_id, status).
-88. **`notarization_sessions` no FK constraints** — `appointment_id` has no FK to appointments.
-89. **`appointment_emails` no FK constraint** — Similar issue.
-90. **Storage bucket `documents` has no RLS policies** — Anyone with a signed URL can access. Need bucket-level RLS.
-
----
-
-## Category 8: Theme, Typography & Responsive Gaps (8 gaps)
-
-91. **Hero pill toggle** — Not verified if sizing is correct on mobile.
-92. **Trust bar spacing** — Not verified on mobile.
-93. **Scrollbar-hide utility** — Added to CSS but not verified if applied where needed.
-94. **Admin sidebar collapses awkwardly on mobile** — SidebarProvider may not have mobile-friendly behavior.
-95. **Dark mode inconsistencies** — Some badges use hardcoded light-mode colors (`bg-emerald-100 text-emerald-800`) that look wrong in dark mode.
-96. **No loading skeleton** — Most pages show a spinner instead of content skeletons.
-97. **Animation performance** — Heavy use of framer-motion on every route transition may cause jank.
-98. **Print styles** — Receipt printing styles not scoped.
-
----
-
-## Category 9: Integration Testing Page Additions (5 gaps)
-
-99. **No database connectivity test** — The integration testing page tests OneNotary and Stripe but not the database connection.
-100. **No storage connectivity test** — Can't verify the documents bucket is accessible.
-101. **No email sending test** — Can't test if the email edge functions work.
-102. **No webhook test** — Can't verify OneNotary webhook endpoint works.
-103. **Test session cleanup** — No way to clean up test sessions created during integration testing.
-
----
-
-## Implementation Plan (Prioritized)
-
-### Phase 1: Critical Fixes (breaks user flows)
-
-**1a. Fix AnimatePresence ref warnings**
-- Wrap Route elements in `motion.div` with key-based animation instead of expecting page components to accept refs.
-
-**1b. Fix edge function auth — use session tokens**
-- In `AdminAppointments.tsx`, `AdminEmailManagement.tsx`, `AdminAIAssistant.tsx`: get session access_token before calling edge functions.
-- Fix the `appointment_id: newAppt.client_id` bug in AdminAppointments line 373.
-
-**1c. Fix `handle_new_user` trigger**
-- Verify trigger is attached. If not, create migration to attach it.
-
-**1d. Logo forwardRef**
-- Wrap `Logo` component in `React.forwardRef`.
-
-### Phase 2: OneNotary Session Flow Completion
-
-**2a. Read `ron_session_method` in OneNotarySession**
-- Fetch `platform_settings` for `ron_session_method`.
-- If `email_invite`: show a manual link input field + "Send Invite Email" button instead of the API flow.
-- If `onenotary_platform`: current behavior.
-
-**2b. Add missing session management UI**
-- Document upload button (calls `add_document`)
-- Cancel session button (calls `cancel_session`)
-- Witness request button (calls `request_witness`)
-- Post-completion: download documents, view recording buttons
-
-**2c. Session finalization improvements**
-- Create e-seal verification record on completion
-- Create journal entry automatically on completion
-- Enable realtime on `notarization_sessions` for live status sync
-
-### Phase 3: Database Connectivity Test + Integration Page
-
-**3a. Add database test to AdminIntegrationTest**
-- Simple `supabase.from("platform_settings").select("setting_key").limit(1)` query
-- Display success/failure with response time
-
-**3b. Add storage test**
-- Test `supabase.storage.from("documents").list("", { limit: 1 })`
-
-**3c. Add email test**
-- Test button that sends a test email to the admin's address
-
-### Phase 4: Realtime & Data Integrity
-
-**4a. Enable realtime** on appointments, chat_messages, notarization_sessions
-**4b. Add updated_at triggers** to tables missing them
-**4c. Add storage RLS policies** for the documents bucket
-
-### Phase 5: Dark Mode & Badge Fixes
-
-**5a. Replace hardcoded badge colors** with dark-mode-aware variants using CSS variables or conditional classes across all status badge mappings.
+### 9. Login/SignUp pages
+- Background gradient shifts from violet to blue tint
+- Button gradients become blue→cyan
 
 ---
 
 ## Technical Details
 
-### Files Modified
-- `src/components/Logo.tsx` — forwardRef
-- `src/App.tsx` — motion.div wrapper for route children
-- `src/pages/admin/AdminAppointments.tsx` — session token auth, fix email payload bug
-- `src/pages/admin/AdminEmailManagement.tsx` — session token auth
-- `src/pages/admin/AdminAIAssistant.tsx` — session token auth
-- `src/pages/OneNotarySession.tsx` — ron_session_method support, document upload, cancel, witness, error handling
-- `src/pages/admin/AdminIntegrationTest.tsx` — database + storage + email tests
-- `src/contexts/AuthContext.tsx` — remove dynamic toast import
+### CSS Variable Mapping (Light Mode)
+```
+--background: 210 40% 98%    /* #F8FAFC */
+--foreground: 222 47% 11%    /* #0F172A */
+--primary: 217 91% 60%       /* #2563EB */
+--primary-glow: 192 91% 42%  /* #06B6D4 (cyan) */
+--muted-foreground: 215 16% 47%  /* #64748B */
+--border: 214 32% 91%        /* #E2E8F0 */
+```
 
-### Database Migrations
-1. Verify/create `handle_new_user` trigger on `auth.users`
-2. Enable realtime on appointments, chat_messages, notarization_sessions
-3. Add `updated_at` triggers
-4. Storage bucket RLS policies
+### CSS Variable Mapping (Dark Mode)
+```
+--background: 222 47% 11%    /* #0F172A navy */
+--foreground: 210 40% 98%    /* #F8FAFC */
+--primary: 217 91% 65%       /* lighter blue */
+--primary-glow: 192 91% 50%  /* brighter cyan */
+```
 
-### No Changes To
-- Edge function code (all fixes are client-side auth token usage)
-- Database schema (existing tables are correct)
-- Payment flows, existing content
+### Font Stack Change
+```
+sans: Inter (headings + body)
+mono: Fira Code (technical accents, step numbers)
+No separate display font needed
+```
+
+### Files touched (~12 core + bulk class rename across ~60 files)
+- `index.html` — font links
+- `src/index.css` — variables, utilities, gradients
+- `tailwind.config.ts` — fonts, animation colors
+- `src/components/Logo.tsx` — new SVG
+- `src/pages/Index.tsx` — hero styling
+- All files with `font-display` → `font-sans` (search-replace)
+- All files with `font-mono-accent` → `font-mono` (search-replace)
 
