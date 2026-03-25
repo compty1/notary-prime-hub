@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { FileText, Download, Loader2, ShieldCheck, ShieldX, ExternalLink, Eye, Search, ChevronLeft, ChevronRight, ArrowUpDown, Trash2 } from "lucide-react";
+import { TableSkeleton } from "@/components/AdminLoadingSkeleton";
 
 const docStatuses = ["uploaded", "pending_review", "approved", "notarized", "rejected"];
 
@@ -165,7 +166,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
     }
   };
 
-  if (loading) return <div className="flex justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" /></div>;
+  if (loading) return <div className="space-y-6"><div className="mb-6"><Skeleton className="h-8 w-48" /></div><TableSkeleton rows={8} cols={5} /></div>;
 
   return (
     <div ref={ref}>
