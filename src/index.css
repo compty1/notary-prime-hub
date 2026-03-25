@@ -268,3 +268,22 @@ button, a, [role="button"] {
     display: none;
   }
 }
+
+/* Print styles — only show receipt dialog content */
+@media print {
+  body > *:not(.print-receipt-area) {
+    display: none !important;
+  }
+  .print-receipt-area {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+  }
+  /* Hide non-printable elements */
+  [data-no-print],
+  nav, header, aside, footer,
+  [role="dialog"]:not(.print-receipt-area),
+  .sidebar, [data-sidebar] {
+    display: none !important;
+  }
+}

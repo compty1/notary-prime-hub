@@ -28,16 +28,7 @@ const statusFlow: Record<string, string> = {
   in_session: "completed",
 };
 
-const statusColors: Record<string, string> = {
-  scheduled: "bg-blue-100 text-blue-800",
-  confirmed: "bg-green-100 text-green-800",
-  id_verification: "bg-yellow-100 text-yellow-800",
-  kba_pending: "bg-orange-100 text-orange-800",
-  in_session: "bg-purple-100 text-purple-800",
-  completed: "bg-emerald-100 text-emerald-800",
-  cancelled: "bg-red-100 text-red-800",
-  no_show: "bg-gray-100 text-gray-800",
-};
+import { appointmentStatusColors as statusColors, serviceRequestStatusColors } from "@/lib/statusColors";
 
 const formatDate = (dateStr: string) => new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 const formatTime = (timeStr: string) => {
@@ -440,7 +431,7 @@ export default function AdminAppointments() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <p className="font-medium text-sm">{req.service_name}</p>
-                          <Badge className={req.status === "completed" ? "bg-emerald-100 text-emerald-800" : req.status === "in_progress" ? "bg-blue-100 text-blue-800" : "bg-amber-100 text-amber-800"}>
+                          <Badge className={serviceRequestStatusColors[req.status] || serviceRequestStatusColors.pending}>
                             {req.status.replace(/_/g, " ")}
                           </Badge>
                         </div>

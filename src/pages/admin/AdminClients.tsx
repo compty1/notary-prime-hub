@@ -13,13 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Users, Search, Phone, Calendar, Star, MapPin, Monitor, Mail, Download, Save, Loader2, ChevronLeft, ChevronRight, Send, Upload, UserPlus, Pencil } from "lucide-react";
 import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 
-const statusColors: Record<string, string> = {
-  scheduled: "bg-blue-100 text-blue-800",
-  confirmed: "bg-green-100 text-green-800",
-  completed: "bg-emerald-100 text-emerald-800",
-  cancelled: "bg-red-100 text-red-800",
-  no_show: "bg-gray-100 text-gray-800",
-};
+import { appointmentStatusColors as statusColors } from "@/lib/statusColors";
 
 const formatDate = (dateStr: string) => new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 

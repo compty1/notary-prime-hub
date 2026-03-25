@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,16 +11,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { FileText, Download, Loader2, ShieldCheck, ShieldX, ExternalLink, Eye, Search, ChevronLeft, ChevronRight, ArrowUpDown, Trash2 } from "lucide-react";
+import { TableSkeleton } from "@/components/AdminLoadingSkeleton";
 
 const docStatuses = ["uploaded", "pending_review", "approved", "notarized", "rejected"];
 
-const docStatusColors: Record<string, string> = {
-  uploaded: "bg-blue-100 text-blue-800",
-  pending_review: "bg-yellow-100 text-yellow-800",
-  approved: "bg-green-100 text-green-800",
-  notarized: "bg-emerald-100 text-emerald-800",
-  rejected: "bg-red-100 text-red-800",
-};
+import { documentStatusColors as docStatusColors } from "@/lib/statusColors";
 
 const PAGE_SIZE = 20;
 
@@ -171,7 +167,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
     }
   };
 
-  if (loading) return <div className="flex justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" /></div>;
+  if (loading) return <div className="space-y-6"><div className="mb-6"><Skeleton className="h-8 w-48" /></div><TableSkeleton rows={8} cols={5} /></div>;
 
   return (
     <div ref={ref}>

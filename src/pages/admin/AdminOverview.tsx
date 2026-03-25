@@ -9,16 +9,7 @@ import { Calendar, Users, CheckCircle, Clock, DollarSign, Plus, BookMarked, File
 import { motion } from "framer-motion";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
-const statusColors: Record<string, string> = {
-  scheduled: "bg-blue-100 text-blue-800",
-  confirmed: "bg-green-100 text-green-800",
-  id_verification: "bg-yellow-100 text-yellow-800",
-  kba_pending: "bg-orange-100 text-orange-800",
-  in_session: "bg-purple-100 text-purple-800",
-  completed: "bg-emerald-100 text-emerald-800",
-  cancelled: "bg-red-100 text-red-800",
-  no_show: "bg-gray-100 text-gray-800",
-};
+import { appointmentStatusColors as statusColors } from "@/lib/statusColors";
 
 const formatDate = (dateStr: string) => new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
 const formatTime = (timeStr: string) => {

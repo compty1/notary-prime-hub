@@ -14,15 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Package, Plus, Loader2, Truck, FileText, Pencil, ExternalLink, Globe, Printer, Download, CheckCircle2, Clock, ChevronRight, MessageSquare, X } from "lucide-react";
 import { motion } from "framer-motion";
 
-const statusColors: Record<string, string> = {
-  intake: "bg-blue-100 text-blue-800",
-  payment_received: "bg-yellow-100 text-yellow-800",
-  submitted_to_sos: "bg-orange-100 text-orange-800",
-  processing: "bg-purple-100 text-purple-800",
-  shipped: "bg-cyan-100 text-cyan-800",
-  delivered: "bg-emerald-100 text-emerald-800",
-  cancelled: "bg-red-100 text-red-800",
-};
+import { apostilleStatusColors as statusColors } from "@/lib/statusColors";
 
 const statusFlow = ["intake", "payment_received", "submitted_to_sos", "processing", "shipped", "delivered"];
 
