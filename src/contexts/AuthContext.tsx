@@ -23,8 +23,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [roles, setRoles] = useState<UserRole[]>([]);
   const [loading, setLoading] = useState(true);
+  const [rolesLoading, setRolesLoading] = useState(false);
 
   const fetchRoles = async (userId: string) => {
+    setRolesLoading(true);
     const { data } = await supabase
       .from("user_roles")
       .select("role")
@@ -32,6 +34,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (data) {
       setRoles(data.map((r) => r.role as UserRole));
     }
+    setRolesLoading(false);
   };
 
   // Session timeout: periodically check if session is still valid with warning
@@ -68,19 +71,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
-          setTimeout(() => fetchRoles(session.user.id), 0);
+          await fetchRoles(session.user.id);
         } else {
           setRoles([]);
+          setRolesLoading(false);
         }
         setLoading(false);
       }
     );
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        fetchRoles(session.user.id);
+        await fetchRoles(session.user.id);
       }
       setLoading(false);
     });
@@ -120,7 +124,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         roles,
         isAdmin: roles.includes("admin"),
         isNotary: roles.includes("notary"),
-        loading,
+        loading: loading || rolesLoading,
         signUp,
         signIn,
         signOut,
