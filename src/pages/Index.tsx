@@ -156,9 +156,9 @@ export default function Index() {
   return (
     <PageShell>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-hero py-24 md:py-36">
+      <section className="relative overflow-hidden bg-background py-24 md:py-36">
         <div className="absolute inset-0 gradient-mesh" />
-        <div className="absolute inset-0 grid-pattern" />
+        <div className="scanline" />
         <div className="container relative mx-auto px-4">
           <motion.div
             initial="hidden"
@@ -166,34 +166,34 @@ export default function Index() {
             className="mx-auto max-w-3xl text-center">
             
             <motion.div variants={blurIn} custom={0}>
-              <Badge className="mb-6 border-primary/20 bg-primary/10 text-primary dark:text-primary-foreground dark:bg-primary/20">
+              <Badge className="mb-6 border-primary/20 bg-primary/10 text-primary">
                 <Shield className="mr-1.5 h-3 w-3" /> Ohio Commissioned Notary Public
               </Badge>
             </motion.div>
             <motion.h1
               variants={blurIn}
               custom={1}
-              className="mb-6 text-4xl font-bold tracking-tight text-white md:text-6xl lg:text-7xl font-sans">
+              className="mb-6 text-4xl font-extrabold tracking-tight text-foreground md:text-6xl lg:text-7xl">
               
-              Professional Notary Services in{" "}
-              <span className="text-gradient-primary">Franklin County</span>
+              The Future of{" "}
+              <span className="text-gradient-primary">Digital Trust.</span>
             </motion.h1>
             <motion.p
               variants={blurIn}
               custom={2}
-              className="mb-10 text-lg text-white/60 md:text-xl font-sans">
+              className="mb-10 text-lg text-muted-foreground md:text-xl">
               
               In-person and remote online notarization — secure, convenient, and fully compliant with Ohio law.
             </motion.p>
 
             {/* Service Type Toggle — pill style */}
-            <motion.div variants={blurIn} custom={3} className="mb-8 inline-flex items-center rounded-full bg-white/10 p-1 backdrop-blur-sm">
+            <motion.div variants={blurIn} custom={3} className="mb-8 inline-flex items-center rounded-full border border-border bg-card p-1 shadow-sm">
               <button
                 onClick={() => setServiceType("in_person")}
                 className={`flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-medium transition-all duration-200 ${
                 serviceType === "in_person" ?
                 "bg-primary text-white shadow-lg glow-sm" :
-                "text-white/60 hover:text-white"}`
+                "text-muted-foreground hover:text-foreground"}`
                 }>
                 
                 <MapPin className="h-4 w-4" /> In-Person
@@ -203,7 +203,7 @@ export default function Index() {
                 className={`flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-medium transition-all duration-200 ${
                 serviceType === "ron" ?
                 "bg-primary text-white shadow-lg glow-sm" :
-                "text-white/60 hover:text-white"}`
+                "text-muted-foreground hover:text-foreground"}`
                 }>
                 
                 <Monitor className="h-4 w-4" /> Remote (RON)
@@ -212,11 +212,11 @@ export default function Index() {
 
             <motion.div variants={fadeUp} custom={4}>
               {serviceType === "in_person" ?
-              <p className="mb-8 text-white/50 text-sm">
+              <p className="mb-8 text-muted-foreground text-sm">
                   Available throughout Franklin County & greater Columbus area. Mobile notary within 30 miles.
                 </p> :
 
-              <p className="mb-8 text-white/50 text-sm">
+              <p className="mb-8 text-muted-foreground text-sm">
                   Secure video notarization from anywhere — authorized under Ohio Revised Code §147.65-.66.
                 </p>
               }
@@ -229,7 +229,7 @@ export default function Index() {
                 </Button>
               </Link>
               <a href={`tel:${contactInfo.phone.replace(/\D/g, '')}`}>
-                <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10 backdrop-blur-sm">
+                <Button size="lg" variant="outline" className="border-border text-foreground hover:bg-muted">
                   <Phone className="mr-2 h-4 w-4" /> {contactInfo.phone}
                 </Button>
               </a>
@@ -251,7 +251,7 @@ export default function Index() {
           map((badge, i) =>
           <div
             key={badge.text}
-            className="flex items-center gap-2 rounded-full bg-white/5 px-4 py-2 text-xs text-white/50 backdrop-blur-sm border border-white/10 animate-float"
+            className="flex items-center gap-2 rounded-full bg-card px-4 py-2 text-xs text-muted-foreground border border-border shadow-sm animate-float"
             style={{ animationDelay: `${i * 0.5}s` }}>
             
               <badge.icon className="h-3.5 w-3.5 text-primary" />
