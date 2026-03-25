@@ -133,11 +133,13 @@ export default function AdminEmailManagement() {
     if (!replyForm.to_address || !replyForm.subject || !replyForm.body || !showDetail) return;
     setSendingReply(true);
     try {
+      const { data: { session: authSession } } = await supabase.auth.getSession();
       const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-correspondence`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          Authorization: `Bearer ${authSession?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
         body: JSON.stringify({
           to_address: replyForm.to_address,

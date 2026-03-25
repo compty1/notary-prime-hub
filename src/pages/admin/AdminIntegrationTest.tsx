@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getEdgeFunctionHeaders } from "@/lib/edgeFunctionAuth";
 import {
   Wifi, WifiOff, CheckCircle, XCircle, Loader2, Play, ArrowRight,
-  Monitor, CreditCard, UserPlus, FileText, Shield, Clock, Video
+  Monitor, CreditCard, UserPlus, FileText, Shield, Clock, Video,
+  Database, HardDrive, Mail
 } from "lucide-react";
 
 type TestStatus = "idle" | "running" | "success" | "error";
@@ -50,23 +52,18 @@ export default function AdminIntegrationTest() {
   const { toast } = useToast();
   const [apiTest, setApiTest] = useState<StepResult>({ status: "idle", message: "" });
   const [stripeTest, setStripeTest] = useState<StepResult>({ status: "idle", message: "" });
+  const [dbTest, setDbTest] = useState<StepResult>({ status: "idle", message: "" });
+  const [storageTest, setStorageTest] = useState<StepResult>({ status: "idle", message: "" });
+  const [emailTest, setEmailTest] = useState<StepResult>({ status: "idle", message: "" });
 
   const testOneNotaryConnection = async () => {
     setApiTest({ status: "running", message: "Pinging OneNotary API..." });
     const start = Date.now();
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) {
-        setApiTest({ status: "error", message: "No active session — please log in first", responseTime: 0 });
-        return;
-      }
+      const headers = await getEdgeFunctionHeaders();
       const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/onenotary`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
+        headers,
         body: JSON.stringify({ action: "list_sessions" }),
       });
       const elapsed = Date.now() - start;
@@ -85,14 +82,10 @@ export default function AdminIntegrationTest() {
     setStripeTest({ status: "running", message: "Checking Stripe configuration..." });
     const start = Date.now();
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const headers = await getEdgeFunctionHeaders();
       const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-stripe-config`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
+        headers,
         body: JSON.stringify({}),
       });
       const elapsed = Date.now() - start;
@@ -107,6 +100,60 @@ export default function AdminIntegrationTest() {
     }
   };
 
+  const testDatabaseConnection = async () => {
+    setDbTest({ status: "running", message: "Querying database..." });
+    const start = Date.now();
+    try {
+      const { data, error } = await supabase.from("platform_settings").select("setting_key").limit(1);
+      const elapsed = Date.now() - start;
+      if (error) {
+        setDbTest({ status: "error", message: error.message, responseTime: elapsed });
+      } else {
+        setDbTest({ status: "success", message: `Database connected. Query returned ${data?.length ?? 0} row(s).`, responseTime: elapsed });
+      }
+    } catch (e: any) {
+      setDbTest({ status: "error", message: e.message, responseTime: Date.now() - start });
+    }
+  };
+
+  const testStorageConnection = async () => {
+    setStorageTest({ status: "running", message: "Listing storage bucket..." });
+    const start = Date.now();
+    try {
+      const { data, error } = await supabase.storage.from("documents").list("", { limit: 1 });
+      const elapsed = Date.now() - start;
+      if (error) {
+        setStorageTest({ status: "error", message: error.message, responseTime: elapsed });
+      } else {
+        setStorageTest({ status: "success", message: `Storage bucket accessible. Found ${data?.length ?? 0} item(s).`, responseTime: elapsed });
+      }
+    } catch (e: any) {
+      setStorageTest({ status: "error", message: e.message, responseTime: Date.now() - start });
+    }
+  };
+
+  const testEmailFunction = async () => {
+    setEmailTest({ status: "running", message: "Testing email function..." });
+    const start = Date.now();
+    try {
+      const headers = await getEdgeFunctionHeaders();
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-correspondence`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ dry_run: true }),
+      });
+      const elapsed = Date.now() - start;
+      if (resp.ok) {
+        setEmailTest({ status: "success", message: "Email function reachable and responding.", responseTime: elapsed });
+      } else {
+        const data = await resp.json().catch(() => ({}));
+        setEmailTest({ status: "error", message: data.error || `HTTP ${resp.status}`, responseTime: elapsed });
+      }
+    } catch (e: any) {
+      setEmailTest({ status: "error", message: e.message, responseTime: Date.now() - start });
+    }
+  };
+
   const StatusIcon = ({ status }: { status: TestStatus }) => {
     if (status === "running") return <Loader2 className="h-4 w-4 animate-spin text-primary" />;
     if (status === "success") return <CheckCircle className="h-4 w-4 text-emerald-500" />;
@@ -114,11 +161,43 @@ export default function AdminIntegrationTest() {
     return <div className="h-4 w-4 rounded-full border-2 border-muted-foreground/30" />;
   };
 
+  const TestCard = ({ title, icon: Icon, result, onTest, description }: {
+    title: string;
+    icon: React.ElementType;
+    result: StepResult;
+    onTest: () => void;
+    description: string;
+  }) => (
+    <Card className="border-border/50">
+      <CardHeader>
+        <CardTitle className="font-display text-lg flex items-center gap-2">
+          <Icon className="h-5 w-5 text-primary" /> {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-center gap-4 flex-wrap">
+          <Button onClick={onTest} disabled={result.status === "running"} variant="outline">
+            {result.status === "running" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
+            Test Connection
+          </Button>
+          <div className="flex items-center gap-2">
+            <StatusIcon status={result.status} />
+            <span className="text-sm text-muted-foreground">{result.message || "Not tested"}</span>
+          </div>
+          {result.responseTime !== undefined && (
+            <Badge variant="outline" className="text-xs">{result.responseTime}ms</Badge>
+          )}
+        </div>
+        <p className="text-xs text-muted-foreground">{description}</p>
+      </CardContent>
+    </Card>
+  );
+
   return (
     <div>
       <div className="mb-6">
         <h1 className="font-display text-2xl font-bold text-foreground">Integration Testing & Process Flows</h1>
-        <p className="text-sm text-muted-foreground">Test API connections and view integration process documentation</p>
+        <p className="text-sm text-muted-foreground">Test API connections, database, storage, and view integration process documentation</p>
       </div>
 
       <Tabs defaultValue="connections" className="space-y-6">
@@ -128,55 +207,27 @@ export default function AdminIntegrationTest() {
         </TabsList>
 
         <TabsContent value="connections" className="space-y-4">
-          {/* OneNotary Test */}
-          <Card className="border-border/50">
-            <CardHeader>
-              <CardTitle className="font-display text-lg flex items-center gap-2">
-                <Monitor className="h-5 w-5 text-primary" /> OneNotary API
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-4">
-                <Button onClick={testOneNotaryConnection} disabled={apiTest.status === "running"} variant="outline">
-                  {apiTest.status === "running" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
-                  Test Connection
-                </Button>
-                <div className="flex items-center gap-2">
-                  <StatusIcon status={apiTest.status} />
-                  <span className="text-sm text-muted-foreground">{apiTest.message || "Not tested"}</span>
-                </div>
-                {apiTest.responseTime !== undefined && (
-                  <Badge variant="outline" className="text-xs">{apiTest.responseTime}ms</Badge>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground">Tests the OneNotary REST API v2 connection by listing sessions. Requires ONENOTARY_API_TOKEN secret.</p>
-            </CardContent>
-          </Card>
+          <div className="flex gap-2 mb-4 flex-wrap">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                testDatabaseConnection();
+                testStorageConnection();
+                testOneNotaryConnection();
+                testStripeConnection();
+                testEmailFunction();
+              }}
+            >
+              <Play className="mr-2 h-4 w-4" /> Run All Tests
+            </Button>
+          </div>
 
-          {/* Stripe Test */}
-          <Card className="border-border/50">
-            <CardHeader>
-              <CardTitle className="font-display text-lg flex items-center gap-2">
-                <CreditCard className="h-5 w-5 text-primary" /> Stripe Payment Gateway
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-4">
-                <Button onClick={testStripeConnection} disabled={stripeTest.status === "running"} variant="outline">
-                  {stripeTest.status === "running" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
-                  Test Connection
-                </Button>
-                <div className="flex items-center gap-2">
-                  <StatusIcon status={stripeTest.status} />
-                  <span className="text-sm text-muted-foreground">{stripeTest.message || "Not tested"}</span>
-                </div>
-                {stripeTest.responseTime !== undefined && (
-                  <Badge variant="outline" className="text-xs">{stripeTest.responseTime}ms</Badge>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground">Verifies Stripe publishable key is configured and the get-stripe-config function responds.</p>
-            </CardContent>
-          </Card>
+          <TestCard title="Database" icon={Database} result={dbTest} onTest={testDatabaseConnection} description="Queries the platform_settings table to verify database connectivity and RLS policies." />
+          <TestCard title="File Storage" icon={HardDrive} result={storageTest} onTest={testStorageConnection} description="Lists the documents storage bucket to verify file storage access." />
+          <TestCard title="OneNotary API" icon={Monitor} result={apiTest} onTest={testOneNotaryConnection} description="Tests the OneNotary REST API v2 connection by listing sessions. Requires ONENOTARY_API_TOKEN secret." />
+          <TestCard title="Stripe Payment Gateway" icon={CreditCard} result={stripeTest} onTest={testStripeConnection} description="Verifies Stripe publishable key is configured and the get-stripe-config function responds." />
+          <TestCard title="Email Function" icon={Mail} result={emailTest} onTest={testEmailFunction} description="Sends a dry-run request to the send-correspondence edge function to verify it's deployed and reachable." />
         </TabsContent>
 
         <TabsContent value="flows" className="space-y-6">
@@ -194,15 +245,12 @@ export default function AdminIntegrationTest() {
                 <div className="relative space-y-0">
                   {steps.map((step, idx) => (
                     <div key={step.id} className="relative flex gap-4 pb-6 last:pb-0">
-                      {/* Connector line */}
                       {idx < steps.length - 1 && (
                         <div className="absolute left-[19px] top-10 h-[calc(100%-24px)] w-0.5 bg-border" />
                       )}
-                      {/* Step icon */}
                       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-primary/30 bg-primary/5">
                         <step.icon className="h-4 w-4 text-primary" />
                       </div>
-                      {/* Step content */}
                       <div className="pt-1">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-mono text-muted-foreground">Step {idx + 1}</span>

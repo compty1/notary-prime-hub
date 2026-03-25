@@ -213,11 +213,13 @@ export default function AdminAppointments() {
 
       // Send status change email notification
       try {
+        const { data: { session: authSession } } = await supabase.auth.getSession();
         await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-appointment-emails`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            Authorization: `Bearer ${authSession?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
           },
           body: JSON.stringify({ appointment_id: id, status_change: newStatus }),
         });
@@ -344,7 +346,7 @@ export default function AdminAppointments() {
       return;
     }
     setCreatingAppt(true);
-    const { error } = await supabase.from("appointments").insert({
+    const { data: insertedAppt, error } = await supabase.from("appointments").insert({
       client_id: newAppt.client_id,
       service_type: newAppt.service_type,
       notarization_type: newAppt.notarization_type as any,
@@ -354,7 +356,7 @@ export default function AdminAppointments() {
       notes: newAppt.notes || null,
       estimated_price: newAppt.estimated_price ? parseFloat(newAppt.estimated_price) : null,
       status: "confirmed" as any,
-    });
+    }).select("id").single();
     if (error) {
       toast({ title: "Error creating appointment", description: error.message, variant: "destructive" });
     } else {
@@ -367,10 +369,15 @@ export default function AdminAppointments() {
       });
       // Send email notification for admin-created appointment
       try {
+        const { data: { session: authSession } } = await supabase.auth.getSession();
         await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-appointment-emails`, {
           method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-          body: JSON.stringify({ appointment_id: newAppt.client_id, emailType: "confirmation" }),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authSession?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({ appointment_id: insertedAppt?.id || newAppt.client_id, emailType: "confirmation" }),
         });
       } catch {}
       setShowCreateDialog(false);
