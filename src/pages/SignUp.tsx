@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { lovable } from "@/integrations/lovable/index";
@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Eye, EyeOff } from "lucide-react";
 import { Logo } from "@/components/Logo";
 
 function getPasswordStrength(pw: string) {
@@ -24,23 +25,43 @@ function getPasswordStrength(pw: string) {
 const strengthLabels = ["", "Very Weak", "Weak", "Fair", "Strong", "Very Strong"];
 
 export default function SignUp() {
-  const { user, signUp, loading } = useAuth();
+  const { user, signUp, isAdmin, isNotary, loading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [signupSuccess, setSignupSuccess] = useState(false);
 
   const strength = useMemo(() => getPasswordStrength(password), [password]);
 
-  if (!loading && user) return <Navigate to="/portal" replace />;
+  useEffect(() => {
+    document.title = "Sign Up — Notar";
+    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
+  }, []);
+
+  // Redirect already-authenticated users based on role
+  if (!loading && user) {
+    if (isAdmin || isNotary) return <Navigate to="/admin" replace />;
+    return <Navigate to="/portal" replace />;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password.length < 6) {
       toast({ title: "Password too short", description: "Password must be at least 6 characters.", variant: "destructive" });
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast({ title: "Passwords don't match", description: "Please make sure both passwords match.", variant: "destructive" });
+      return;
+    }
+    if (!acceptTerms) {
+      toast({ title: "Accept Terms", description: "Please accept the Terms of Service to continue.", variant: "destructive" });
       return;
     }
     setSubmitting(true);
@@ -99,7 +120,12 @@ export default function SignUp() {
             </div>
             <div>
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+              <div className="relative">
+                <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+                <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Hide password" : "Show password"}>
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
               {password.length > 0 && (
                 <div className="mt-2 space-y-1">
                   <div className="flex items-center gap-2">
@@ -113,7 +139,20 @@ export default function SignUp() {
               )}
               {!password && <p className="mt-1 text-xs text-muted-foreground">Minimum 6 characters</p>}
             </div>
-            <Button type="submit" className="w-full bg-gradient-primary text-white hover:opacity-90" disabled={submitting}>
+            <div>
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input id="confirmPassword" type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} />
+              {confirmPassword && password !== confirmPassword && (
+                <p className="mt-1 text-xs text-destructive">Passwords don't match</p>
+              )}
+            </div>
+            <div className="flex items-start gap-2">
+              <Checkbox id="terms" checked={acceptTerms} onCheckedChange={(checked) => setAcceptTerms(checked === true)} className="mt-0.5" />
+              <Label htmlFor="terms" className="text-xs text-muted-foreground leading-tight cursor-pointer">
+                I agree to the <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link> and <Link to="/terms" className="text-primary hover:underline">Privacy Policy</Link>
+              </Label>
+            </div>
+            <Button type="submit" className="w-full bg-gradient-primary text-white hover:opacity-90" disabled={submitting || !acceptTerms}>
               {submitting ? "Creating account..." : "Create Account"}
             </Button>
             <div className="relative my-4">

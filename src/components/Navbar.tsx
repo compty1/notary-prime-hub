@@ -5,6 +5,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Logo } from "@/components/Logo";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navLinks = [
   { to: "/services", label: "Services" },
@@ -16,6 +17,10 @@ const navLinks = [
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const { user, isAdmin, isNotary } = useAuth();
+
+  const portalLink = isAdmin || isNotary ? "/admin" : "/portal";
+  const portalLabel = isAdmin || isNotary ? "Dashboard" : "Portal";
 
   return (
     <nav className="sticky top-0 z-50 border-b border-border/40 bg-background/60 backdrop-blur-xl" aria-label="Main navigation">
@@ -37,9 +42,15 @@ export function Navbar() {
           ))}
           <div className="ml-2 flex items-center gap-2">
             <DarkModeToggle />
-            <Link to="/login">
-              <Button variant="ghost" size="sm" className="text-sm">Sign In</Button>
-            </Link>
+            {user ? (
+              <Link to={portalLink}>
+                <Button variant="ghost" size="sm" className="text-sm">{portalLabel}</Button>
+              </Link>
+            ) : (
+              <Link to="/login">
+                <Button variant="ghost" size="sm" className="text-sm">Sign In</Button>
+              </Link>
+            )}
             <Link to="/book">
               <Button size="sm" className="bg-gradient-primary text-primary-foreground glow-sm hover:opacity-90 transition-opacity">
                 Book Now
@@ -67,9 +78,18 @@ export function Navbar() {
                 </Link>
               ))}
               <hr className="my-3 border-border" />
-              <Link to="/login" onClick={() => setOpen(false)}>
-                <Button variant="outline" className="w-full">Sign In</Button>
-              </Link>
+              <div className="px-4 py-2">
+                <DarkModeToggle />
+              </div>
+              {user ? (
+                <Link to={portalLink} onClick={() => setOpen(false)}>
+                  <Button variant="outline" className="w-full">{portalLabel}</Button>
+                </Link>
+              ) : (
+                <Link to="/login" onClick={() => setOpen(false)}>
+                  <Button variant="outline" className="w-full">Sign In</Button>
+                </Link>
+              )}
               <Link to="/book" onClick={() => setOpen(false)}>
                 <Button className="w-full bg-gradient-primary text-primary-foreground">Book Now</Button>
               </Link>

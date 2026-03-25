@@ -15,16 +15,56 @@ export async function getEdgeFunctionHeaders(): Promise<Record<string, string>> 
 }
 
 /**
- * Shorthand for calling an edge function with proper auth.
+ * Shorthand for calling an edge function with proper auth and timeout.
  */
 export async function callEdgeFunction(
   functionName: string,
-  body: Record<string, unknown>
+  body: Record<string, unknown>,
+  timeoutMs = 30000
 ): Promise<Response> {
   const headers = await getEdgeFunctionHeaders();
-  return fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(body),
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    return response;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
+ * Streaming edge function call with proper auth. Returns a ReadableStream reader.
+ */
+export async function callEdgeFunctionStream(
+  functionName: string,
+  body: Record<string, unknown>,
+  timeoutMs = 60000
+): Promise<Response> {
+  const headers = await getEdgeFunctionHeaders();
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    // Don't clear timeout for streams - it'll be cleared when the stream ends
+    if (!response.ok) {
+      clearTimeout(timer);
+    }
+    return response;
+  } catch (err) {
+    clearTimeout(timer);
+    throw err;
+  }
 }
