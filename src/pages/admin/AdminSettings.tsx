@@ -443,31 +443,31 @@ export default function AdminSettings() {
             </p>
             <div>
               <Label>Confirmation Email</Label>
-              <Textarea
+              <RichTextEditor
                 value={editValues.email_template_confirmation || ""}
-                onChange={(e) => updateValue("email_template_confirmation", e.target.value)}
+                onChange={(html) => updateValue("email_template_confirmation", html)}
                 placeholder="Enter confirmation email template..."
-                rows={6}
-                className="mt-1 font-mono text-sm"
+                className="mt-1"
               />
             </div>
             <div>
               <Label>Reminder Email</Label>
-              <Textarea
+              <RichTextEditor
                 value={editValues.email_template_reminder || ""}
-                onChange={(e) => updateValue("email_template_reminder", e.target.value)}
+                onChange={(html) => updateValue("email_template_reminder", html)}
                 placeholder="Enter reminder email template..."
-                rows={6}
-                className="mt-1 font-mono text-sm"
+                className="mt-1"
               />
             </div>
             <div>
               <Label>Follow-Up Email</Label>
-              <Textarea
+              <RichTextEditor
                 value={editValues.email_template_followup || ""}
-                onChange={(e) => updateValue("email_template_followup", e.target.value)}
+                onChange={(html) => updateValue("email_template_followup", html)}
                 placeholder="Enter follow-up email template..."
-                rows={6}
+                className="mt-1"
+              />
+            </div>
                 className="mt-1 font-mono text-sm"
               />
             </div>
