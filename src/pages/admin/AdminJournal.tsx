@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Search, BookOpen, Calendar, FileText, Shield, DollarSign, Download, Pencil, Trash2, Loader2, Camera } from "lucide-react";
+import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 
 const serviceTypes = ["acknowledgment", "jurat", "oath", "copy_certification", "other"];
 

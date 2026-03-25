@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { Users, Search, Phone, Calendar, Star, MapPin, Monitor, Mail, Download, Save, Loader2, ChevronLeft, ChevronRight, Send, Upload, UserPlus, Pencil } from "lucide-react";
+import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 
 const statusColors: Record<string, string> = {
   scheduled: "bg-blue-100 text-blue-800",
