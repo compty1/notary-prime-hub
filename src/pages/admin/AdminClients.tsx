@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { Users, Search, Phone, Calendar, Star, MapPin, Monitor, Mail, Download, Save, Loader2, ChevronLeft, ChevronRight, Send, Upload, UserPlus, Pencil } from "lucide-react";
+import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 
 const statusColors: Record<string, string> = {
   scheduled: "bg-blue-100 text-blue-800",
@@ -242,7 +243,7 @@ export default function AdminClients() {
       <p className="mb-4 text-xs text-muted-foreground">{filtered.length} client{filtered.length !== 1 ? "s" : ""}</p>
 
       {loading ? (
-        <div className="flex justify-center py-12"><div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" /></div>
+        <CardListSkeleton count={6} />
       ) : paginated.length === 0 ? (
         <Card className="border-border/50"><CardContent className="flex flex-col items-center py-12 text-center"><Users className="mb-4 h-12 w-12 text-muted-foreground/50" /><p className="text-muted-foreground">No clients found</p></CardContent></Card>
       ) : (

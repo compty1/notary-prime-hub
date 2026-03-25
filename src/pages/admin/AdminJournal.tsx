@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Search, BookOpen, Calendar, FileText, Shield, DollarSign, Download, Pencil, Trash2, Loader2, Camera } from "lucide-react";
+import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 
 const serviceTypes = ["acknowledgment", "jurat", "oath", "copy_certification", "other"];
 
@@ -281,7 +282,7 @@ export default function AdminJournal() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-12"><div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" /></div>
+        <CardListSkeleton count={4} />
       ) : filtered.length === 0 ? (
         <Card className="border-border/50">
           <CardContent className="flex flex-col items-center py-12 text-center">
