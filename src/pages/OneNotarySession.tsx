@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Shield, Monitor, ArrowLeft, CheckCircle, AlertCircle, Mic, MicOff, BookOpen, Save, Loader2, XCircle, FileCheck, CreditCard, Calendar, ExternalLink, Play, Video } from "lucide-react";
+import { Shield, Monitor, ArrowLeft, CheckCircle, AlertCircle, Mic, MicOff, BookOpen, Save, Loader2, XCircle, FileCheck, CreditCard, Calendar, ExternalLink, Play, Video, Upload, UserPlus, Ban, RefreshCw, Link2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const oathScripts = {
@@ -36,12 +36,19 @@ export default function OneNotarySession() {
   const [clientProfile, setClientProfile] = useState<any>(null);
   const [saving, setSaving] = useState(false);
   const [completing, setCompleting] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   // OneNotary session state
   const [onenotarySessionId, setOnenotarySessionId] = useState<string | null>(null);
   const [participantLink, setParticipantLink] = useState<string | null>(null);
   const [creatingSession, setCreatingSession] = useState(false);
   const [initializingSession, setInitializingSession] = useState(false);
+  const [cancellingSession, setCancellingSession] = useState(false);
+  const [requestingWitness, setRequestingWitness] = useState(false);
+
+  // Manual link mode (email_invite)
+  const [ronMethod, setRonMethod] = useState<string>("onenotary_platform");
+  const [manualLink, setManualLink] = useState("");
 
   // ID Verification fields
   const [idVerified, setIdVerified] = useState(false);
@@ -59,32 +66,65 @@ export default function OneNotarySession() {
 
   const [sessionStatus, setSessionStatus] = useState<string>("waiting");
 
-  // Load appointment data
+  // Load appointment data and ron_session_method setting
   useEffect(() => {
     const loadData = async () => {
-      if (appointmentId) {
-        const { data: appt } = await supabase.from("appointments").select("*").eq("id", appointmentId).single();
-        if (appt) {
-          setAppointment(appt);
-          if (appt.admin_notes && isAdminOrNotary) setNotes(appt.admin_notes);
-
-          const { data: profile } = await supabase.from("profiles").select("*").eq("user_id", appt.client_id).single();
-          if (profile) setClientProfile(profile);
-
-          // Load existing session data
-          const { data: session } = await supabase.from("notarization_sessions").select("*").eq("appointment_id", appointmentId).single();
-
-          if (session) {
-            setIdVerified(session.id_verified || false);
-            setKbaCompleted(session.kba_completed || false);
-            setSessionStatus(session.status || "scheduled");
-            if ((session as any).onenotary_session_id) setOnenotarySessionId((session as any).onenotary_session_id);
-            if ((session as any).participant_link) setParticipantLink((session as any).participant_link);
-          }
-        }
+      if (!appointmentId) {
+        setLoadError("No appointment ID provided. Please open this page from an appointment.");
+        return;
       }
+
+      const { data: appt, error: apptError } = await supabase.from("appointments").select("*").eq("id", appointmentId).single();
+      if (apptError || !appt) {
+        setLoadError("Appointment not found or you don't have access.");
+        return;
+      }
+
+      setAppointment(appt);
+      if (appt.admin_notes && isAdminOrNotary) setNotes(appt.admin_notes);
+
+      const { data: profile } = await supabase.from("profiles").select("*").eq("user_id", appt.client_id).single();
+      if (profile) setClientProfile(profile);
+
+      // Load existing session data
+      const { data: session } = await supabase.from("notarization_sessions").select("*").eq("appointment_id", appointmentId).single();
+      if (session) {
+        setIdVerified(session.id_verified || false);
+        setKbaCompleted(session.kba_completed || false);
+        setSessionStatus(session.status || "scheduled");
+        if ((session as any).onenotary_session_id) setOnenotarySessionId((session as any).onenotary_session_id);
+        if ((session as any).participant_link) setParticipantLink((session as any).participant_link);
+      }
+
+      // Load RON session method preference
+      const { data: setting } = await supabase.from("platform_settings").select("setting_value").eq("setting_key", "ron_session_method").single();
+      if (setting?.setting_value) setRonMethod(setting.setting_value);
     };
     loadData();
+  }, [appointmentId]);
+
+  // Subscribe to realtime updates on notarization_sessions
+  useEffect(() => {
+    if (!appointmentId) return;
+    const channel = supabase
+      .channel(`session-${appointmentId}`)
+      .on("postgres_changes", {
+        event: "*",
+        schema: "public",
+        table: "notarization_sessions",
+        filter: `appointment_id=eq.${appointmentId}`,
+      }, (payload: any) => {
+        const newRow = payload.new;
+        if (newRow) {
+          setSessionStatus(newRow.status || "scheduled");
+          if (newRow.participant_link) setParticipantLink(newRow.participant_link);
+          if (newRow.onenotary_session_id) setOnenotarySessionId(newRow.onenotary_session_id);
+          setIdVerified(newRow.id_verified || false);
+          setKbaCompleted(newRow.kba_completed || false);
+        }
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, [appointmentId]);
 
   // Voice recognition setup
@@ -142,48 +182,49 @@ export default function OneNotarySession() {
     }
   };
 
+  // Save manual link to session
+  const saveManualLink = async () => {
+    if (!appointmentId || !manualLink.trim()) return;
+    setSaving(true);
+    // Upsert notarization_sessions with the manual link
+    const { data: existing } = await supabase.from("notarization_sessions").select("id").eq("appointment_id", appointmentId).single();
+    if (existing) {
+      await supabase.from("notarization_sessions").update({ participant_link: manualLink.trim() }).eq("appointment_id", appointmentId);
+    } else {
+      await supabase.from("notarization_sessions").insert({
+        appointment_id: appointmentId,
+        session_type: "ron" as any,
+        participant_link: manualLink.trim(),
+        status: "scheduled" as any,
+      });
+    }
+    setParticipantLink(manualLink.trim());
+    setSaving(false);
+    toast({ title: "Manual session link saved", description: "The client can now access this link from their portal." });
+  };
+
   // OneNotary: Create session
   const handleCreateSession = async () => {
     if (!appointmentId || !clientProfile) return;
     setCreatingSession(true);
     try {
-      // Step 1: Create session
       const createResp = await supabase.functions.invoke("onenotary", {
-        body: {
-          action: "create_session",
-          appointment_id: appointmentId,
-          session_type: "ron",
-        },
+        body: { action: "create_session", appointment_id: appointmentId, session_type: "ron" },
       });
-
       if (createResp.error) throw new Error(createResp.error.message);
       const sessionData = createResp.data;
       const sessionId = sessionData?.id || sessionData?.session_id;
-
       if (!sessionId) throw new Error("No session ID returned from OneNotary");
       setOnenotarySessionId(sessionId);
 
-      // Step 2: Add client as primary signer
+      // Add client as primary signer
       const nameParts = (clientProfile.full_name || "Client").split(" ");
       const firstName = nameParts[0] || "Client";
       const lastName = nameParts.slice(1).join(" ") || "User";
-
       const participantResp = await supabase.functions.invoke("onenotary", {
-        body: {
-          action: "add_participant",
-          session_id: sessionId,
-          appointment_id: appointmentId,
-          role: "primary_signer",
-          first_name: firstName,
-          last_name: lastName,
-          email: clientProfile.email,
-        },
+        body: { action: "add_participant", session_id: sessionId, appointment_id: appointmentId, role: "primary_signer", first_name: firstName, last_name: lastName, email: clientProfile.email },
       });
-
-      if (participantResp.data?.join_url) {
-        setParticipantLink(participantResp.data.join_url);
-      }
-
+      if (participantResp.data?.join_url) setParticipantLink(participantResp.data.join_url);
       toast({ title: "OneNotary session created", description: "You can now add documents and initialize the session." });
     } catch (err: any) {
       toast({ title: "Failed to create session", description: err.message, variant: "destructive" });
@@ -191,19 +232,14 @@ export default function OneNotarySession() {
     setCreatingSession(false);
   };
 
-  // OneNotary: Initialize session (send invites)
+  // OneNotary: Initialize session
   const handleInitSession = async () => {
     if (!onenotarySessionId || !appointmentId) return;
     setInitializingSession(true);
     try {
       const resp = await supabase.functions.invoke("onenotary", {
-        body: {
-          action: "init_session",
-          session_id: onenotarySessionId,
-          appointment_id: appointmentId,
-        },
+        body: { action: "init_session", session_id: onenotarySessionId, appointment_id: appointmentId },
       });
-
       if (resp.error) throw new Error(resp.error.message);
       setSessionStatus("in_session");
       toast({ title: "Session initialized", description: "Invitations sent to the signer. The RON session is now active." });
@@ -213,13 +249,69 @@ export default function OneNotarySession() {
     setInitializingSession(false);
   };
 
+  // OneNotary: Cancel session
+  const handleCancelSession = async () => {
+    if (!onenotarySessionId || !appointmentId) return;
+    setCancellingSession(true);
+    try {
+      const resp = await supabase.functions.invoke("onenotary", {
+        body: { action: "cancel_session", session_id: onenotarySessionId, appointment_id: appointmentId },
+      });
+      if (resp.error) throw new Error(resp.error.message);
+      setSessionStatus("cancelled");
+      toast({ title: "Session cancelled", description: "The OneNotary session has been cancelled." });
+    } catch (err: any) {
+      toast({ title: "Failed to cancel session", description: err.message, variant: "destructive" });
+    }
+    setCancellingSession(false);
+  };
+
+  // OneNotary: Request witness
+  const handleRequestWitness = async () => {
+    if (!onenotarySessionId || !appointmentId) return;
+    setRequestingWitness(true);
+    try {
+      const resp = await supabase.functions.invoke("onenotary", {
+        body: { action: "request_witness", session_id: onenotarySessionId, appointment_id: appointmentId },
+      });
+      if (resp.error) throw new Error(resp.error.message);
+      toast({ title: "Witness requested", description: "A witness request has been submitted to OneNotary." });
+    } catch (err: any) {
+      toast({ title: "Failed to request witness", description: err.message, variant: "destructive" });
+    }
+    setRequestingWitness(false);
+  };
+
+  // OneNotary: Upload document
+  const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !onenotarySessionId || !appointmentId) return;
+    if (file.size > 20 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Maximum file size is 20MB.", variant: "destructive" });
+      return;
+    }
+    try {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64 = (reader.result as string).split(",")[1];
+        const resp = await supabase.functions.invoke("onenotary", {
+          body: { action: "add_document", session_id: onenotarySessionId, appointment_id: appointmentId, file_name: file.name, file_base64: base64 },
+        });
+        if (resp.error) throw new Error(resp.error.message);
+        toast({ title: "Document uploaded", description: `"${file.name}" added to OneNotary session.` });
+      };
+      reader.readAsDataURL(file);
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    }
+  };
+
   const saveSessionData = async () => {
     if (!appointmentId) {
       toast({ title: "No appointment linked", description: "Open this session from an appointment to save data.", variant: "destructive" });
       return;
     }
     setSaving(true);
-
     await supabase.from("appointments").update({ admin_notes: notes }).eq("id", appointmentId);
     await supabase.from("notarization_sessions").update({
       id_verified: idVerified,
@@ -241,7 +333,7 @@ export default function OneNotarySession() {
   };
 
   const completeAndFinalize = async () => {
-    if (!appointmentId || !user) return;
+    if (!appointmentId || !user || !appointment) return;
     if (!idVerified || !kbaCompleted) {
       toast({ title: "Cannot complete", description: "ID verification and KBA must both be completed before finalizing.", variant: "destructive" });
       return;
@@ -252,17 +344,79 @@ export default function OneNotarySession() {
     await supabase.from("notarization_sessions").update({ id_verified: true, kba_completed: true, status: "completed" as any, completed_at: new Date().toISOString() }).eq("appointment_id", appointmentId);
     await supabase.from("documents").update({ status: "notarized" as any }).eq("appointment_id", appointmentId);
 
-    if (appointment) {
-      const fee = appointment.estimated_price || 5;
-      await supabase.from("payments").insert({ client_id: appointment.client_id, appointment_id: appointmentId, amount: fee, status: "pending", notes: `RON session completed via OneNotary — ${appointment.service_type}` });
+    const fee = appointment.estimated_price || 5;
+
+    // Create payment record
+    await supabase.from("payments").insert({
+      client_id: appointment.client_id,
+      appointment_id: appointmentId,
+      amount: fee,
+      status: "pending",
+      notes: `RON session completed via OneNotary — ${appointment.service_type}`,
+    });
+
+    // Create journal entry automatically
+    await supabase.from("notary_journal").insert({
+      appointment_id: appointmentId,
+      created_by: user.id,
+      signer_name: clientProfile?.full_name || "Unknown Signer",
+      document_type: appointment.service_type || "General",
+      service_performed: oathType === "acknowledgment" ? "acknowledgment" : oathType,
+      notarization_type: "ron" as any,
+      fees_charged: fee,
+      oath_administered: oathAdministered,
+      oath_timestamp: oathTimestamp,
+      id_type: idType || null,
+      id_number: idNumber || null,
+      id_expiration: idExpiration || null,
+      notes: notes || null,
+    });
+
+    // Create e-seal verification
+    const { data: docs } = await supabase.from("documents").select("id, file_name").eq("appointment_id", appointmentId).limit(1);
+    if (docs && docs.length > 0) {
+      await supabase.from("e_seal_verifications").insert({
+        document_id: docs[0].id,
+        document_name: docs[0].file_name,
+        appointment_id: appointmentId,
+        created_by: user.id,
+        signer_name: clientProfile?.full_name || null,
+        notary_name: "Notar",
+        commissioned_state: "OH",
+        status: "valid",
+      });
     }
 
-    await supabase.from("audit_log").insert({ user_id: user.id, action: "ron_session_completed", entity_type: "appointment", entity_id: appointmentId, details: { oath_type: oathType, oath_timestamp: oathTimestamp, id_type: idType, onenotary_session_id: onenotarySessionId } });
+    await supabase.from("audit_log").insert({
+      user_id: user.id,
+      action: "ron_session_completed",
+      entity_type: "appointment",
+      entity_id: appointmentId,
+      details: { oath_type: oathType, oath_timestamp: oathTimestamp, id_type: idType, onenotary_session_id: onenotarySessionId },
+    });
 
     setCompleting(false);
-    toast({ title: "Session finalized", description: "Appointment completed, documents marked as notarized, and payment record created." });
+    toast({ title: "Session finalized", description: "Appointment completed, journal entry & e-seal created, documents marked as notarized." });
     navigate("/admin/appointments");
   };
+
+  // Error state
+  if (loadError) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="flex flex-col items-center py-12 text-center">
+            <AlertCircle className="h-12 w-12 text-destructive mb-4" />
+            <h2 className="font-display text-xl font-bold text-foreground mb-2">Session Error</h2>
+            <p className="text-sm text-muted-foreground mb-6">{loadError}</p>
+            <Link to={isAdminOrNotary ? "/admin/appointments" : "/portal"}>
+              <Button variant="outline"><ArrowLeft className="mr-2 h-4 w-4" /> Go Back</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // Client view
   if (!isAdminOrNotary) {
@@ -334,14 +488,14 @@ export default function OneNotarySession() {
                   <Video className="mx-auto h-16 w-16 text-primary" />
                   <h3 className="font-display text-xl font-semibold text-foreground">Your Session is Ready</h3>
                   <p className="max-w-md text-sm text-muted-foreground">
-                    Click the button below to join your RON session via OneNotary. You'll complete ID verification and KBA within the platform.
+                    Click the button below to join your RON session. You'll complete ID verification and KBA within the platform.
                   </p>
                   <a href={participantLink} target="_blank" rel="noopener noreferrer">
                     <Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">
                       <ExternalLink className="mr-2 h-5 w-5" /> Join RON Session
                     </Button>
                   </a>
-                  <p className="text-xs text-muted-foreground">Opens in a new tab — OneNotary's secure platform</p>
+                  <p className="text-xs text-muted-foreground">Opens in a new tab — secure notarization platform</p>
                 </div>
               ) : (
                 <>
@@ -350,8 +504,8 @@ export default function OneNotarySession() {
                   <p className="mb-6 max-w-md text-sm text-muted-foreground">
                     Your notary will start the session shortly. You'll receive a join link here and via email once the session is initialized.
                   </p>
-                  <Badge className="bg-purple-100 text-purple-800">
-                    {appointment?.status === "in_session" ? "Session Active" : "Waiting for Notary"}
+                  <Badge variant="secondary">
+                    {sessionStatus === "in_session" ? "Session Active" : "Waiting for Notary"}
                   </Badge>
                 </>
               )}
@@ -393,6 +547,9 @@ export default function OneNotarySession() {
                   <span className="text-muted-foreground">
                     {new Date(appointment.scheduled_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                   </span>
+                  <Badge variant="outline" className="ml-auto text-xs">
+                    {ronMethod === "email_invite" ? "Manual / Email Invite" : "OneNotary Platform"}
+                  </Badge>
                 </CardContent>
               </Card>
             )}
@@ -400,44 +557,106 @@ export default function OneNotarySession() {
             {/* OneNotary Session Controls */}
             <Card className="mb-6 border-border/50">
               <CardContent className="p-6">
-                <h2 className="mb-4 font-display text-xl font-semibold">OneNotary Session</h2>
-                {!onenotarySessionId ? (
+                <h2 className="mb-4 font-display text-xl font-semibold">
+                  {ronMethod === "email_invite" ? "Manual RON Session" : "OneNotary Session"}
+                </h2>
+
+                {ronMethod === "email_invite" ? (
+                  /* Manual / Email Invite Flow */
                   <div className="space-y-4">
                     <p className="text-sm text-muted-foreground">
-                      Create a OneNotary session to begin the RON process. This will set up the session and add the client as the primary signer.
+                      Paste the session link from OneNotary (or another RON platform) below. The client will see this link in their portal.
                     </p>
-                    <Button onClick={handleCreateSession} disabled={creatingSession || !clientProfile} className="bg-gradient-primary text-white hover:opacity-90">
-                      {creatingSession ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
-                      Create OneNotary Session
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-emerald-100 text-emerald-800">Session Created</Badge>
-                      <span className="text-xs text-muted-foreground">ID: {onenotarySessionId}</span>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="https://app.onenotary.us/session/..."
+                        value={manualLink}
+                        onChange={(e) => setManualLink(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Button onClick={saveManualLink} disabled={saving || !manualLink.trim()} className="bg-gradient-primary text-white hover:opacity-90">
+                        {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Link2 className="mr-2 h-4 w-4" />}
+                        Save Link
+                      </Button>
                     </div>
                     {participantLink && (
                       <div className="rounded-lg bg-muted/50 p-3">
-                        <p className="text-xs text-muted-foreground mb-1">Client Join Link:</p>
+                        <p className="text-xs text-muted-foreground mb-1">Current Client Join Link:</p>
                         <a href={participantLink} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline break-all">
                           {participantLink}
                         </a>
                       </div>
                     )}
-                    {sessionStatus !== "in_session" && sessionStatus !== "completed" && (
-                      <Button onClick={handleInitSession} disabled={initializingSession} className="bg-emerald-600 text-white hover:bg-emerald-700">
-                        {initializingSession ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ExternalLink className="mr-2 h-4 w-4" />}
-                        Initialize & Send Invites
-                      </Button>
-                    )}
-                    {sessionStatus === "in_session" && (
-                      <Badge className="bg-purple-100 text-purple-800">Session Active — Awaiting Completion</Badge>
-                    )}
-                    {sessionStatus === "completed" && (
-                      <Badge className="bg-emerald-100 text-emerald-800">Session Completed</Badge>
-                    )}
                   </div>
+                ) : (
+                  /* OneNotary Platform API Flow */
+                  <>
+                    {!onenotarySessionId ? (
+                      <div className="space-y-4">
+                        <p className="text-sm text-muted-foreground">
+                          Create a OneNotary session to begin the RON process. This will set up the session and add the client as the primary signer.
+                        </p>
+                        <Button onClick={handleCreateSession} disabled={creatingSession || !clientProfile} className="bg-gradient-primary text-white hover:opacity-90">
+                          {creatingSession ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
+                          Create OneNotary Session
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Badge variant="secondary">Session Created</Badge>
+                          <span className="text-xs text-muted-foreground">ID: {onenotarySessionId}</span>
+                        </div>
+
+                        {participantLink && (
+                          <div className="rounded-lg bg-muted/50 p-3">
+                            <p className="text-xs text-muted-foreground mb-1">Client Join Link:</p>
+                            <a href={participantLink} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline break-all">
+                              {participantLink}
+                            </a>
+                          </div>
+                        )}
+
+                        {/* Action buttons */}
+                        <div className="flex flex-wrap gap-2">
+                          {sessionStatus !== "in_session" && sessionStatus !== "completed" && sessionStatus !== "cancelled" && (
+                            <>
+                              <Button onClick={handleInitSession} disabled={initializingSession} size="sm" className="bg-emerald-600 text-white hover:bg-emerald-700">
+                                {initializingSession ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <ExternalLink className="mr-1 h-3 w-3" />}
+                                Initialize & Send Invites
+                              </Button>
+                              <label>
+                                <Button size="sm" variant="outline" asChild>
+                                  <span><Upload className="mr-1 h-3 w-3" /> Upload Document</span>
+                                </Button>
+                                <input type="file" className="hidden" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onChange={handleDocUpload} />
+                              </label>
+                              <Button size="sm" variant="outline" onClick={handleRequestWitness} disabled={requestingWitness}>
+                                {requestingWitness ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <UserPlus className="mr-1 h-3 w-3" />}
+                                Request Witness
+                              </Button>
+                            </>
+                          )}
+                          {sessionStatus !== "completed" && sessionStatus !== "cancelled" && (
+                            <Button size="sm" variant="destructive" onClick={handleCancelSession} disabled={cancellingSession}>
+                              {cancellingSession ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Ban className="mr-1 h-3 w-3" />}
+                              Cancel Session
+                            </Button>
+                          )}
+                        </div>
+
+                        {sessionStatus === "in_session" && (
+                          <Badge variant="secondary" className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">Session Active — Awaiting Completion</Badge>
+                        )}
+                        {sessionStatus === "completed" && (
+                          <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">Session Completed</Badge>
+                        )}
+                        {sessionStatus === "cancelled" && (
+                          <Badge variant="destructive">Session Cancelled</Badge>
+                        )}
+                      </div>
+                    )}
+                  </>
                 )}
               </CardContent>
             </Card>
@@ -499,7 +718,7 @@ export default function OneNotarySession() {
                     <Switch checked={idVerified} onCheckedChange={setIdVerified} />
                     <Label className="text-xs">ID Verified — matches signer</Label>
                   </div>
-                  {idVerified && <Badge className="bg-emerald-100 text-emerald-700 text-xs"><CheckCircle className="mr-1 h-3 w-3" /> Verified</Badge>}
+                  {idVerified && <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 text-xs"><CheckCircle className="mr-1 h-3 w-3" /> Verified</Badge>}
                 </div>
               </CardContent>
             </Card>
@@ -515,12 +734,12 @@ export default function OneNotarySession() {
                   <Label className="text-xs">KBA {kbaCompleted ? "Passed" : "Pending"}</Label>
                 </div>
                 {kbaCompleted ? (
-                  <Badge className="bg-emerald-100 text-emerald-700 text-xs"><CheckCircle className="mr-1 h-3 w-3" /> KBA Passed</Badge>
+                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 text-xs"><CheckCircle className="mr-1 h-3 w-3" /> KBA Passed</Badge>
                 ) : (
-                  <Badge className="bg-amber-100 text-amber-700 text-xs"><AlertCircle className="mr-1 h-3 w-3" /> Awaiting KBA</Badge>
+                  <Badge variant="secondary" className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 text-xs"><AlertCircle className="mr-1 h-3 w-3" /> Awaiting KBA</Badge>
                 )}
                 <p className="mt-2 text-[10px] text-muted-foreground">
-                  KBA is handled by OneNotary during the session. Toggle manually after confirmation or wait for webhook update.
+                  KBA is handled during the session. Toggle manually after confirmation or wait for webhook update.
                 </p>
               </CardContent>
             </Card>
@@ -547,8 +766,8 @@ export default function OneNotarySession() {
                 {!oathAdministered ? (
                   <Button size="sm" className="w-full bg-gradient-primary text-white hover:opacity-90" onClick={administerOath}>Mark Oath Administered</Button>
                 ) : (
-                  <div className="rounded-lg bg-emerald-50 p-2 text-center">
-                    <p className="flex items-center justify-center gap-1 text-xs text-emerald-700">
+                  <div className="rounded-lg bg-emerald-50 dark:bg-emerald-900/20 p-2 text-center">
+                    <p className="flex items-center justify-center gap-1 text-xs text-emerald-700 dark:text-emerald-300">
                       <CheckCircle className="h-3 w-3" /> Oath administered at {oathTimestamp ? new Date(oathTimestamp).toLocaleTimeString() : ""}
                     </p>
                   </div>
@@ -565,7 +784,7 @@ export default function OneNotarySession() {
                     {isListening ? <><MicOff className="mr-1 h-3 w-3" /> Stop</> : <><Mic className="mr-1 h-3 w-3" /> Dictate</>}
                   </Button>
                 </div>
-                {isListening && <Badge className="mb-2 bg-red-100 text-red-700 text-xs animate-pulse">● Recording</Badge>}
+                {isListening && <Badge variant="destructive" className="mb-2 text-xs animate-pulse">● Recording</Badge>}
                 <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Type or dictate session notes..." rows={6} className="text-sm" />
                 <Button size="sm" className="mt-3 w-full bg-gradient-primary text-white hover:opacity-90" onClick={saveSessionData} disabled={saving}>
                   {saving ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Save className="mr-1 h-3 w-3" />} Save Session Data
@@ -574,16 +793,16 @@ export default function OneNotarySession() {
             </Card>
 
             {/* Complete & Finalize */}
-            <Card className="border-border/50 border-emerald-200 bg-emerald-50/30">
+            <Card className="border-border/50 border-emerald-200 dark:border-emerald-800 bg-emerald-50/30 dark:bg-emerald-900/10">
               <CardContent className="p-4">
                 <h3 className="mb-3 flex items-center gap-2 font-display text-sm font-semibold">
-                  <FileCheck className="h-4 w-4 text-emerald-600" /> Complete & Finalize
+                  <FileCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" /> Complete & Finalize
                 </h3>
-                <p className="mb-3 text-xs text-muted-foreground">Marks appointment as completed, documents as notarized, and creates a payment record.</p>
+                <p className="mb-3 text-xs text-muted-foreground">Marks appointment as completed, creates journal entry, e-seal verification, and payment record.</p>
                 <ul className="mb-3 space-y-1 text-xs">
-                  <li className="flex items-center gap-1">{idVerified ? <CheckCircle className="h-3 w-3 text-emerald-500" /> : <XCircle className="h-3 w-3 text-red-400" />} ID Verification</li>
-                  <li className="flex items-center gap-1">{kbaCompleted ? <CheckCircle className="h-3 w-3 text-emerald-500" /> : <XCircle className="h-3 w-3 text-red-400" />} KBA Completed</li>
-                  <li className="flex items-center gap-1">{oathAdministered ? <CheckCircle className="h-3 w-3 text-emerald-500" /> : <XCircle className="h-3 w-3 text-red-400" />} Oath Administered</li>
+                  <li className="flex items-center gap-1">{idVerified ? <CheckCircle className="h-3 w-3 text-emerald-500" /> : <XCircle className="h-3 w-3 text-destructive" />} ID Verification</li>
+                  <li className="flex items-center gap-1">{kbaCompleted ? <CheckCircle className="h-3 w-3 text-emerald-500" /> : <XCircle className="h-3 w-3 text-destructive" />} KBA Completed</li>
+                  <li className="flex items-center gap-1">{oathAdministered ? <CheckCircle className="h-3 w-3 text-emerald-500" /> : <XCircle className="h-3 w-3 text-destructive" />} Oath Administered</li>
                 </ul>
                 <Button className="w-full bg-emerald-600 text-white hover:bg-emerald-700" disabled={!idVerified || !kbaCompleted || completing} onClick={completeAndFinalize}>
                   {completing ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <FileCheck className="mr-1 h-4 w-4" />} Complete Session
