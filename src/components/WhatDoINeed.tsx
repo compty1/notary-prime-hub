@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Loader2, Sparkles, ArrowRight, Copy, Download, Printer } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useToast } from "@/hooks/use-toast";
+import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
 
 export default function WhatDoINeed() {
   const [query, setQuery] = useState("");
@@ -22,14 +23,7 @@ export default function WhatDoINeed() {
 
     let soFar = "";
     try {
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/client-assistant`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
-        body: JSON.stringify({ messages: [{ role: "user", content: query }] }),
-      });
+      const resp = await callEdgeFunctionStream("client-assistant", { messages: [{ role: "user", content: query }] }, 60000);
       if (!resp.ok) throw new Error("AI unavailable");
       const reader = resp.body?.getReader();
       if (!reader) throw new Error("No stream");

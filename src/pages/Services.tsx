@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -85,11 +86,7 @@ export default function Services() {
     setHelpResult("");
     let soFar = "";
     try {
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/client-assistant`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-        body: JSON.stringify({ messages: [{ role: "user", content: helpQuery }] }),
-      });
+      const resp = await callEdgeFunctionStream("client-assistant", { messages: [{ role: "user", content: helpQuery }] }, 60000);
       if (!resp.ok) throw new Error("AI unavailable");
       const reader = resp.body?.getReader();
       if (!reader) throw new Error("No stream");

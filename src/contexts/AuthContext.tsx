@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 type UserRole = "admin" | "client" | "notary";
 
@@ -24,6 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [roles, setRoles] = useState<UserRole[]>([]);
   const [loading, setLoading] = useState(true);
   const [rolesLoading, setRolesLoading] = useState(false);
+  const { toast } = useToast();
 
   const fetchRoles = async (userId: string) => {
     setRolesLoading(true);
@@ -37,33 +39,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setRolesLoading(false);
   };
 
-  // Session timeout: periodically check if session is still valid with warning
+  // Session timeout: periodically check if session is still valid
   useEffect(() => {
     if (!session) return;
     const CHECK_INTERVAL = 5 * 60 * 1000; // 5 minutes
-    const WARNING_BEFORE = 30 * 1000; // 30 seconds before check
-
-    // Show warning 30s before the check
-    const warningTimeout = setTimeout(() => {
-      // We'll import toast dynamically to avoid circular deps
-      import("@/hooks/use-toast").then(({ toast }) => {
-        toast({ title: "Session check", description: "Your session will be verified shortly." });
-      });
-    }, CHECK_INTERVAL - WARNING_BEFORE);
 
     const interval = setInterval(async () => {
       const { data: { session: current }, error } = await supabase.auth.getSession();
       if (error || !current) {
-        import("@/hooks/use-toast").then(({ toast }) => {
-          toast({ title: "Session expired", description: "You have been signed out for security.", variant: "destructive" });
-        });
+        toast({ title: "Session expired", description: "You have been signed out for security.", variant: "destructive" });
         setSession(null);
         setUser(null);
         setRoles([]);
       }
     }, CHECK_INTERVAL);
-    return () => { clearInterval(interval); clearTimeout(warningTimeout); };
-  }, [session]);
+    return () => { clearInterval(interval); };
+  }, [session, toast]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -112,7 +103,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = async () => {
     await supabase.auth.signOut();
     setRoles([]);
-    try { localStorage.clear(); sessionStorage.clear(); } catch {}
+    // Only clear auth-related storage, not theme preferences
+    try {
+      const theme = localStorage.getItem("theme");
+      sessionStorage.clear();
+      // Preserve theme preference
+      if (theme) localStorage.setItem("theme", theme);
+      // Remove auth-specific keys
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith("sb-") || key === "ai_assistant_history" || key === "pendingBooking")) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach(k => localStorage.removeItem(k));
+    } catch {}
     window.location.href = "/";
   };
 

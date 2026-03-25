@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { callEdgeFunction } from "@/lib/edgeFunctionAuth";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -133,21 +134,12 @@ export default function AdminEmailManagement() {
     if (!replyForm.to_address || !replyForm.subject || !replyForm.body || !showDetail) return;
     setSendingReply(true);
     try {
-      const { data: { session: authSession } } = await supabase.auth.getSession();
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-correspondence`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authSession?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
-        body: JSON.stringify({
-          to_address: replyForm.to_address,
-          subject: replyForm.subject,
-          body: replyForm.body,
-          client_id: showDetail.client_id,
-          reply_to_id: showDetail.id,
-        }),
+      const resp = await callEdgeFunction("send-correspondence", {
+        to_address: replyForm.to_address,
+        subject: replyForm.subject,
+        body: replyForm.body,
+        client_id: showDetail.client_id,
+        reply_to_id: showDetail.id,
       });
       const result = await resp.json();
       if (result.error) throw new Error(result.error);
