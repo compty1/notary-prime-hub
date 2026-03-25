@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
-import { Users, Search, Phone, Calendar, Star, MapPin, Monitor, Mail, Download, Save, Loader2, ChevronLeft, ChevronRight, Send } from "lucide-react";
+import { Users, Search, Phone, Calendar, Star, MapPin, Monitor, Mail, Download, Save, Loader2, ChevronLeft, ChevronRight, Send, Upload, UserPlus, Pencil } from "lucide-react";
 
 const statusColors: Record<string, string> = {
   scheduled: "bg-blue-100 text-blue-800",
@@ -34,6 +35,16 @@ export default function AdminClients() {
   const [adminNotes, setAdminNotes] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
   const [page, setPage] = useState(0);
+  // Edit profile state
+  const [editMode, setEditMode] = useState(false);
+  const [editForm, setEditForm] = useState({ full_name: "", phone: "", email: "", address: "", city: "", state: "", zip: "" });
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarUrls, setAvatarUrls] = useState<Record<string, string>>({});
+  // Create profile state
+  const [showCreate, setShowCreate] = useState(false);
+  const [createForm, setCreateForm] = useState({ full_name: "", email: "", phone: "", address: "", city: "", state: "OH", zip: "" });
+  const [creating, setCreating] = useState(false);
   // Message state
   const [messageClient, setMessageClient] = useState<any>(null);
   const [messageSubject, setMessageSubject] = useState("");
@@ -59,18 +70,29 @@ export default function AdminClients() {
     setSendingMessage(false);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const [profileRes, apptRes] = await Promise.all([
-        supabase.from("profiles").select("*").order("created_at", { ascending: false }),
-        supabase.from("appointments").select("*").order("scheduled_date", { ascending: false }),
-      ]);
-      if (profileRes.data) setProfiles(profileRes.data);
-      if (apptRes.data) setAppointments(apptRes.data);
-      setLoading(false);
-    };
-    fetchData();
-  }, []);
+  const fetchData = async () => {
+    const [profileRes, apptRes] = await Promise.all([
+      supabase.from("profiles").select("*").order("created_at", { ascending: false }),
+      supabase.from("appointments").select("*").order("scheduled_date", { ascending: false }),
+    ]);
+    if (profileRes.data) {
+      setProfiles(profileRes.data);
+      // Load avatar URLs for profiles with avatar_path
+      const withAvatars = profileRes.data.filter((p: any) => p.avatar_path);
+      if (withAvatars.length > 0) {
+        const urls: Record<string, string> = {};
+        await Promise.all(withAvatars.map(async (p: any) => {
+          const { data } = await supabase.storage.from("documents").createSignedUrl(p.avatar_path, 3600);
+          if (data?.signedUrl) urls[p.user_id] = data.signedUrl;
+        }));
+        setAvatarUrls(urls);
+      }
+    }
+    if (apptRes.data) setAppointments(apptRes.data);
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchData(); }, []);
 
   const getClientStats = (userId: string) => {
     const clientAppts = appointments.filter((a) => a.client_id === userId);
@@ -93,6 +115,37 @@ export default function AdminClients() {
   const openClient = (p: any) => {
     setSelectedClient(p);
     setAdminNotes(p.admin_notes || "");
+    setEditMode(false);
+    setEditForm({ full_name: p.full_name || "", phone: p.phone || "", email: p.email || "", address: p.address || "", city: p.city || "", state: p.state || "", zip: p.zip || "" });
+  };
+
+  const saveProfile = async () => {
+    if (!selectedClient || !user) return;
+    setSavingProfile(true);
+    const { error } = await supabase.from("profiles").update({
+      full_name: editForm.full_name || null,
+      phone: editForm.phone || null,
+      email: editForm.email || null,
+      address: editForm.address || null,
+      city: editForm.city || null,
+      state: editForm.state || null,
+      zip: editForm.zip || null,
+      admin_notes: adminNotes || null,
+    } as any).eq("user_id", selectedClient.user_id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Profile updated" });
+      const updated = { ...selectedClient, ...editForm, admin_notes: adminNotes };
+      setProfiles((prev) => prev.map((p) => p.user_id === selectedClient.user_id ? { ...p, ...editForm, admin_notes: adminNotes } : p));
+      setSelectedClient(updated);
+      setEditMode(false);
+      await supabase.from("audit_log").insert({
+        user_id: user.id, action: "client_profile_updated", entity_type: "profile",
+        entity_id: selectedClient.user_id, details: { fields: Object.keys(editForm) },
+      });
+    }
+    setSavingProfile(false);
   };
 
   const saveAdminNotes = async () => {
@@ -104,13 +157,56 @@ export default function AdminClients() {
       toast({ title: "Notes saved" });
       setProfiles((prev) => prev.map((p) => p.user_id === selectedClient.user_id ? { ...p, admin_notes: adminNotes } : p));
       setSelectedClient({ ...selectedClient, admin_notes: adminNotes });
-      // Audit log for profile update
-      await supabase.from("audit_log").insert({
-        user_id: user.id, action: "client_profile_updated", entity_type: "profile",
-        entity_id: selectedClient.user_id, details: { updated_field: "admin_notes" },
-      });
     }
     setSavingNotes(false);
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !selectedClient) return;
+    setUploadingAvatar(true);
+    const ext = file.name.split(".").pop();
+    const path = `profiles/${selectedClient.user_id}/avatar.${ext}`;
+    const { error: uploadError } = await supabase.storage.from("documents").upload(path, file, { upsert: true });
+    if (uploadError) {
+      toast({ title: "Upload failed", description: uploadError.message, variant: "destructive" });
+      setUploadingAvatar(false);
+      return;
+    }
+    await supabase.from("profiles").update({ avatar_path: path } as any).eq("user_id", selectedClient.user_id);
+    const { data: urlData } = await supabase.storage.from("documents").createSignedUrl(path, 3600);
+    if (urlData?.signedUrl) {
+      setAvatarUrls((prev) => ({ ...prev, [selectedClient.user_id]: urlData.signedUrl }));
+    }
+    setProfiles((prev) => prev.map((p) => p.user_id === selectedClient.user_id ? { ...p, avatar_path: path } : p));
+    setSelectedClient({ ...selectedClient, avatar_path: path });
+    toast({ title: "Avatar uploaded" });
+    setUploadingAvatar(false);
+  };
+
+  const createProfile = async () => {
+    if (!createForm.full_name.trim() && !createForm.email.trim()) return;
+    setCreating(true);
+    const placeholderId = crypto.randomUUID();
+    const { error } = await supabase.from("profiles").insert({
+      user_id: placeholderId,
+      full_name: createForm.full_name || null,
+      email: createForm.email || null,
+      phone: createForm.phone || null,
+      address: createForm.address || null,
+      city: createForm.city || null,
+      state: createForm.state || "OH",
+      zip: createForm.zip || null,
+    });
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Profile created", description: "This profile will link when the user signs up with that email." });
+      setShowCreate(false);
+      setCreateForm({ full_name: "", email: "", phone: "", address: "", city: "", state: "OH", zip: "" });
+      fetchData();
+    }
+    setCreating(false);
   };
 
   const exportCSV = () => {
@@ -130,9 +226,14 @@ export default function AdminClients() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="font-display text-2xl font-bold text-foreground">Client Directory</h1>
-        <Button variant="outline" size="sm" onClick={exportCSV} disabled={filtered.length === 0}>
-          <Download className="mr-1 h-3 w-3" /> Export CSV
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => setShowCreate(true)}>
+            <UserPlus className="mr-1 h-3 w-3" /> Create Profile
+          </Button>
+          <Button variant="outline" size="sm" onClick={exportCSV} disabled={filtered.length === 0}>
+            <Download className="mr-1 h-3 w-3" /> Export CSV
+          </Button>
+        </div>
       </div>
       <div className="relative mb-4">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -152,9 +253,14 @@ export default function AdminClients() {
               <Card key={p.id} className="cursor-pointer border-border/50 transition-shadow hover:shadow-md" onClick={() => openClient(p)}>
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
-                      {(p.full_name || "?").charAt(0).toUpperCase()}
-                    </div>
+                    <Avatar className="h-10 w-10">
+                      {avatarUrls[p.user_id] ? (
+                        <AvatarImage src={avatarUrls[p.user_id]} alt={p.full_name || "Avatar"} />
+                      ) : null}
+                      <AvatarFallback className="bg-primary text-sm font-bold text-primary-foreground">
+                        {(p.full_name || "?").charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <p className="truncate font-medium text-foreground">{p.full_name || "Unnamed"}</p>
@@ -185,42 +291,98 @@ export default function AdminClients() {
         </div>
       )}
 
+      {/* Client Detail / Edit Dialog */}
       <Dialog open={!!selectedClient} onOpenChange={() => setSelectedClient(null)}>
-        <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-lg">
-          <DialogHeader><DialogTitle className="font-display">{selectedClient?.full_name || "Client Details"}</DialogTitle></DialogHeader>
+        <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center justify-between">
+              {selectedClient?.full_name || "Client Details"}
+              <Button variant="ghost" size="sm" onClick={() => setEditMode(!editMode)}>
+                <Pencil className="mr-1 h-3 w-3" /> {editMode ? "Cancel" : "Edit"}
+              </Button>
+            </DialogTitle>
+          </DialogHeader>
           {selectedClient && (() => {
             const stats = getClientStats(selectedClient.user_id);
             return (
               <div className="space-y-4">
-                <div className="grid gap-2 text-sm">
-                  {selectedClient.email && <p className="flex items-center gap-2"><Mail className="h-3 w-3 text-muted-foreground" /> {selectedClient.email}</p>}
-                  {selectedClient.phone && <p className="flex items-center gap-2"><Phone className="h-3 w-3 text-muted-foreground" /> {selectedClient.phone}</p>}
-                  {selectedClient.address && (
-                    <p className="flex items-center gap-2"><MapPin className="h-3 w-3 text-muted-foreground" /> {selectedClient.address}{selectedClient.city ? `, ${selectedClient.city}` : ""}{selectedClient.state ? `, ${selectedClient.state}` : ""} {selectedClient.zip || ""}</p>
-                  )}
-                  <p className="flex items-center gap-2 text-xs text-muted-foreground"><Calendar className="h-3 w-3" /> Member since {new Date(selectedClient.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" })}</p>
+                {/* Avatar Section */}
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-16 w-16">
+                    {avatarUrls[selectedClient.user_id] ? (
+                      <AvatarImage src={avatarUrls[selectedClient.user_id]} alt={selectedClient.full_name || "Avatar"} />
+                    ) : null}
+                    <AvatarFallback className="bg-primary text-lg font-bold text-primary-foreground">
+                      {(selectedClient.full_name || "?").charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <Label htmlFor="avatar-upload" className="cursor-pointer inline-flex items-center gap-1 text-xs text-primary hover:underline">
+                      <Upload className="h-3 w-3" /> {uploadingAvatar ? "Uploading..." : "Upload Photo"}
+                    </Label>
+                    <input id="avatar-upload" type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} disabled={uploadingAvatar} />
+                  </div>
                 </div>
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="rounded-lg bg-muted/50 p-3 text-center"><p className="text-xl font-bold text-foreground">{stats.total}</p><p className="text-xs text-muted-foreground">Total</p></div>
-                  <div className="rounded-lg bg-muted/50 p-3 text-center"><p className="text-xl font-bold text-emerald-600">{stats.completed}</p><p className="text-xs text-muted-foreground">Completed</p></div>
-                  <div className="rounded-lg bg-muted/50 p-3 text-center"><p className="text-xs font-bold text-foreground">{stats.lastVisit ? formatDate(stats.lastVisit) : "—"}</p><p className="text-xs text-muted-foreground">Last Visit</p></div>
-                </div>
-                <div>
-                  <Label className="text-sm font-semibold">Admin Notes (internal)</Label>
-                  <Textarea value={adminNotes} onChange={(e) => setAdminNotes(e.target.value)} rows={3} placeholder="Preferences, history, special instructions..." className="mt-1" />
-                  <Button size="sm" onClick={saveAdminNotes} disabled={savingNotes} className="mt-2 bg-gradient-primary text-white hover:opacity-90">
-                    {savingNotes ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Save className="mr-1 h-3 w-3" />} Save Notes
-                  </Button>
-                  {selectedClient.email && (
-                    <Button size="sm" variant="outline" className="mt-2 ml-2" onClick={() => {
-                      setMessageClient(selectedClient);
-                      setMessageSubject(`Message from Notar`);
-                      setMessageBody("");
-                    }}>
-                      <Mail className="mr-1 h-3 w-3" /> Message
+
+                {editMode ? (
+                  <div className="grid gap-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div><Label className="text-xs">Full Name</Label><Input value={editForm.full_name} onChange={(e) => setEditForm({ ...editForm, full_name: e.target.value })} /></div>
+                      <div><Label className="text-xs">Email</Label><Input value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} /></div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div><Label className="text-xs">Phone</Label><Input value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} /></div>
+                      <div><Label className="text-xs">Address</Label><Input value={editForm.address} onChange={(e) => setEditForm({ ...editForm, address: e.target.value })} /></div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div><Label className="text-xs">City</Label><Input value={editForm.city} onChange={(e) => setEditForm({ ...editForm, city: e.target.value })} /></div>
+                      <div><Label className="text-xs">State</Label><Input value={editForm.state} onChange={(e) => setEditForm({ ...editForm, state: e.target.value })} /></div>
+                      <div><Label className="text-xs">Zip</Label><Input value={editForm.zip} onChange={(e) => setEditForm({ ...editForm, zip: e.target.value })} /></div>
+                    </div>
+                    <div>
+                      <Label className="text-xs">Admin Notes</Label>
+                      <Textarea value={adminNotes} onChange={(e) => setAdminNotes(e.target.value)} rows={3} placeholder="Internal notes..." />
+                    </div>
+                    <Button onClick={saveProfile} disabled={savingProfile} className="bg-gradient-primary text-white hover:opacity-90">
+                      {savingProfile ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Save className="mr-1 h-3 w-3" />} Save All Changes
                     </Button>
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid gap-2 text-sm">
+                      {selectedClient.email && <p className="flex items-center gap-2"><Mail className="h-3 w-3 text-muted-foreground" /> {selectedClient.email}</p>}
+                      {selectedClient.phone && <p className="flex items-center gap-2"><Phone className="h-3 w-3 text-muted-foreground" /> {selectedClient.phone}</p>}
+                      {selectedClient.address && (
+                        <p className="flex items-center gap-2"><MapPin className="h-3 w-3 text-muted-foreground" /> {selectedClient.address}{selectedClient.city ? `, ${selectedClient.city}` : ""}{selectedClient.state ? `, ${selectedClient.state}` : ""} {selectedClient.zip || ""}</p>
+                      )}
+                      <p className="flex items-center gap-2 text-xs text-muted-foreground"><Calendar className="h-3 w-3" /> Member since {new Date(selectedClient.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" })}</p>
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="rounded-lg bg-muted/50 p-3 text-center"><p className="text-xl font-bold text-foreground">{stats.total}</p><p className="text-xs text-muted-foreground">Total</p></div>
+                      <div className="rounded-lg bg-muted/50 p-3 text-center"><p className="text-xl font-bold text-emerald-600">{stats.completed}</p><p className="text-xs text-muted-foreground">Completed</p></div>
+                      <div className="rounded-lg bg-muted/50 p-3 text-center"><p className="text-xs font-bold text-foreground">{stats.lastVisit ? formatDate(stats.lastVisit) : "—"}</p><p className="text-xs text-muted-foreground">Last Visit</p></div>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-semibold">Admin Notes (internal)</Label>
+                      <Textarea value={adminNotes} onChange={(e) => setAdminNotes(e.target.value)} rows={3} placeholder="Preferences, history, special instructions..." className="mt-1" />
+                      <div className="flex gap-2 mt-2">
+                        <Button size="sm" onClick={saveAdminNotes} disabled={savingNotes} className="bg-gradient-primary text-white hover:opacity-90">
+                          {savingNotes ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Save className="mr-1 h-3 w-3" />} Save Notes
+                        </Button>
+                        {selectedClient.email && (
+                          <Button size="sm" variant="outline" onClick={() => {
+                            setMessageClient(selectedClient);
+                            setMessageSubject("Message from Notar");
+                            setMessageBody("");
+                          }}>
+                            <Mail className="mr-1 h-3 w-3" /> Message
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+
                 <div>
                   <h4 className="mb-2 text-sm font-semibold text-foreground">Appointment History</h4>
                   {stats.appointments.length === 0 ? (
@@ -242,6 +404,35 @@ export default function AdminClients() {
               </div>
             );
           })()}
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Profile Dialog */}
+      <Dialog open={showCreate} onOpenChange={setShowCreate}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader><DialogTitle className="font-display flex items-center gap-2"><UserPlus className="h-5 w-5 text-primary" /> Create Client Profile</DialogTitle></DialogHeader>
+          <p className="text-xs text-muted-foreground">Pre-create a profile. It will link automatically when the user signs up with the same email.</p>
+          <div className="grid gap-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label className="text-xs">Full Name</Label><Input value={createForm.full_name} onChange={(e) => setCreateForm({ ...createForm, full_name: e.target.value })} /></div>
+              <div><Label className="text-xs">Email</Label><Input type="email" value={createForm.email} onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })} /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label className="text-xs">Phone</Label><Input value={createForm.phone} onChange={(e) => setCreateForm({ ...createForm, phone: e.target.value })} /></div>
+              <div><Label className="text-xs">Address</Label><Input value={createForm.address} onChange={(e) => setCreateForm({ ...createForm, address: e.target.value })} /></div>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div><Label className="text-xs">City</Label><Input value={createForm.city} onChange={(e) => setCreateForm({ ...createForm, city: e.target.value })} /></div>
+              <div><Label className="text-xs">State</Label><Input value={createForm.state} onChange={(e) => setCreateForm({ ...createForm, state: e.target.value })} /></div>
+              <div><Label className="text-xs">Zip</Label><Input value={createForm.zip} onChange={(e) => setCreateForm({ ...createForm, zip: e.target.value })} /></div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
+            <Button onClick={createProfile} disabled={creating || (!createForm.full_name.trim() && !createForm.email.trim())} className="bg-gradient-primary text-white hover:opacity-90">
+              {creating ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <UserPlus className="mr-1 h-4 w-4" />} Create
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
