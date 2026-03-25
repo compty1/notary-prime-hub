@@ -468,9 +468,6 @@ export default function AdminSettings() {
                 className="mt-1"
               />
             </div>
-                className="mt-1 font-mono text-sm"
-              />
-            </div>
             <div>
               <Label>Business Hours Display</Label>
               <Input
