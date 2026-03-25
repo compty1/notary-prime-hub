@@ -8,6 +8,7 @@ import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
+import { AdminNotificationCenter } from "@/components/AdminNotificationCenter";
 
 const adminNavItems = [
   { title: "Overview", url: "/admin", icon: LayoutDashboard, adminOnly: false },
@@ -101,7 +102,10 @@ export default function AdminDashboard() {
                 Notar — {isAdmin ? "Admin" : "Notary"}
               </span>
             </div>
-            <DarkModeToggle />
+            <div className="flex items-center gap-1">
+              <AdminNotificationCenter />
+              <DarkModeToggle />
+            </div>
           </header>
           <main id="admin-main" className="flex-1 overflow-auto p-6"><Outlet /></main>
         </div>

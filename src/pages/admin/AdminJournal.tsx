@@ -281,7 +281,7 @@ export default function AdminJournal() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-12"><div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" /></div>
+        <CardListSkeleton count={4} />
       ) : filtered.length === 0 ? (
         <Card className="border-border/50">
           <CardContent className="flex flex-col items-center py-12 text-center">

@@ -242,7 +242,7 @@ export default function AdminClients() {
       <p className="mb-4 text-xs text-muted-foreground">{filtered.length} client{filtered.length !== 1 ? "s" : ""}</p>
 
       {loading ? (
-        <div className="flex justify-center py-12"><div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" /></div>
+        <CardListSkeleton count={6} />
       ) : paginated.length === 0 ? (
         <Card className="border-border/50"><CardContent className="flex flex-col items-center py-12 text-center"><Users className="mb-4 h-12 w-12 text-muted-foreground/50" /><p className="text-muted-foreground">No clients found</p></CardContent></Card>
       ) : (
