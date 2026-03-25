@@ -5,12 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Settings, DollarSign, MapPin, Monitor, Save, Loader2, AlertTriangle, CalendarClock, Shield, Upload, Eye, Mail, CheckCircle, XCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { RichTextEditor } from "@/components/RichTextEditor";
 
 interface SettingItem {
   id: string;
@@ -268,6 +268,21 @@ export default function AdminSettings() {
                 <Badge className="bg-emerald-100 text-emerald-800 text-xs">Connected</Badge>
                 <span className="text-xs text-muted-foreground">API token configured as server secret — manage in Lovable Cloud settings</span>
               </div>
+            </div>
+            <div>
+              <Label>RON Session Method</Label>
+              <Select value={editValues.ron_session_method || "onenotary_platform"} onValueChange={(v) => updateValue("ron_session_method", v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="onenotary_platform">OneNotary Platform (Full API Integration)</SelectItem>
+                  <SelectItem value="email_invite">Email Invite (Manual Session Link)</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {editValues.ron_session_method === "email_invite"
+                  ? "Sends an email invite to the signer with a session link instead of using the OneNotary API flow."
+                  : "Creates sessions, adds participants, and manages documents via OneNotary REST API v2."}
+              </p>
             </div>
             <div><Label>KBA Platform URL</Label><Input value={editValues.kba_platform_url || ""} onChange={(e) => updateValue("kba_platform_url", e.target.value)} placeholder="https://kba-platform.com/session" /></div>
 
