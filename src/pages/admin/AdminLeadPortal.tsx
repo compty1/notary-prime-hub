@@ -14,19 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Phone, Mail, MapPin, Plus, Search, Loader2, Calendar, Building2, User, Star, ArrowRight, Download, Upload, ExternalLink, Pencil, Trash2, Sparkles, RefreshCw } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const intentColors: Record<string, string> = {
-  high: "bg-red-100 text-red-800",
-  medium: "bg-amber-100 text-amber-800",
-  low: "bg-blue-100 text-blue-800",
-};
-
-const statusColors: Record<string, string> = {
-  new: "bg-blue-100 text-blue-800",
-  contacted: "bg-amber-100 text-amber-800",
-  qualified: "bg-purple-100 text-purple-800",
-  converted: "bg-emerald-100 text-emerald-800",
-  closed: "bg-muted text-muted-foreground",
-};
+import { leadIntentColors as intentColors, leadStatusColors as statusColors } from "@/lib/statusColors";
 
 const pipelineStatuses = ["new", "contacted", "qualified", "converted", "closed"];
 const leadTypes = ["all", "individual", "business"];

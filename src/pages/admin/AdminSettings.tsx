@@ -265,7 +265,7 @@ export default function AdminSettings() {
             <div>
               <Label>OneNotary API Status</Label>
               <div className="mt-1 flex items-center gap-2">
-                <Badge className="bg-emerald-100 text-emerald-800 text-xs">Connected</Badge>
+                <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 text-xs">Connected</Badge>
                 <span className="text-xs text-muted-foreground">API token configured as server secret — manage in Lovable Cloud settings</span>
               </div>
             </div>
@@ -338,8 +338,8 @@ export default function AdminSettings() {
                 const passed = checks.filter(Boolean).length;
                 const total = checks.length;
                 return passed === total
-                  ? <Badge className="bg-emerald-100 text-emerald-800 text-xs">Compliant</Badge>
-                  : <Badge className="bg-amber-100 text-amber-800 text-xs">{passed}/{total} Requirements Met</Badge>;
+                  ? <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 text-xs">Compliant</Badge>
+                  : <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 text-xs">{passed}/{total} Requirements Met</Badge>;
               })()}
             </CardTitle>
           </CardHeader>

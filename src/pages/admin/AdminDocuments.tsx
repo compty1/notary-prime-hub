@@ -13,13 +13,7 @@ import { FileText, Download, Loader2, ShieldCheck, ShieldX, ExternalLink, Eye, S
 
 const docStatuses = ["uploaded", "pending_review", "approved", "notarized", "rejected"];
 
-const docStatusColors: Record<string, string> = {
-  uploaded: "bg-blue-100 text-blue-800",
-  pending_review: "bg-yellow-100 text-yellow-800",
-  approved: "bg-green-100 text-green-800",
-  notarized: "bg-emerald-100 text-emerald-800",
-  rejected: "bg-red-100 text-red-800",
-};
+import { documentStatusColors as docStatusColors } from "@/lib/statusColors";
 
 const PAGE_SIZE = 20;
 
