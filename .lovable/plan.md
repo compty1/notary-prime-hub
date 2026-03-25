@@ -1,119 +1,101 @@
 
 
-# Complete All Gaps & Add Route Transitions
+# Complete All Gaps, Route Transitions & Admin User Management
 
 ## Summary
 
-The redesign partially landed — only 3 of ~20 public pages use `PageShell`. Most pages still render their own inline nav/footer, missing the shared Navbar, Footer, glassmorphism styling, and consistent layout. Additionally, `AnimatePresence` route transitions were planned but never implemented.
+This plan extends the existing gap-completion work with a new feature: full admin user/profile management including profile editing, image uploads, and user creation.
 
-## Gaps Found
+---
 
-### Category 1: Pages Missing PageShell (17 pages)
-These pages have inline nav/footer instead of using the shared `PageShell` wrapper:
+## Existing Plan (Steps 1-4 unchanged)
 
-| Page | File | Has inline nav? | Has inline footer? |
-|------|------|-----------------|---------------------|
-| BookAppointment | BookAppointment.tsx | Yes (custom) | No footer |
-| FeeCalculator | FeeCalculator.tsx | Yes (custom) | Yes (minimal) |
-| DocumentTemplates | DocumentTemplates.tsx | Yes (custom) | Likely |
-| DocumentDigitize | DocumentDigitize.tsx | Yes (custom) | Likely |
-| DocumentBuilder | DocumentBuilder.tsx | Yes (custom) | Likely |
-| NotaryGuide | NotaryGuide.tsx | Yes (custom) | Yes (minimal) |
-| RonInfo | RonInfo.tsx | Yes (custom) | Yes (minimal) |
-| LoanSigningServices | LoanSigningServices.tsx | Yes (custom) | Likely |
-| ServiceDetail | ServiceDetail.tsx | Yes (custom) | Likely |
-| JoinPlatform | JoinPlatform.tsx | Yes (custom) | Likely |
-| TermsPrivacy | TermsPrivacy.tsx | Yes (custom) | No |
-| SubscriptionPlans | SubscriptionPlans.tsx | Yes (custom) | Likely |
-| RonEligibilityChecker | RonEligibilityChecker.tsx | Yes (custom) | Likely |
-| ServiceRequest | ServiceRequest.tsx | Yes (custom) | Likely |
-| NotaryProcessGuide | NotaryProcessGuide.tsx | Likely | Likely |
-| VerifySeal | VerifySeal.tsx | Likely | Likely |
-| MobileUpload | MobileUpload.tsx | Yes (custom) | Likely |
+### Step 1: AnimatePresence in App.tsx
+Extract routes into child component, wrap in `<AnimatePresence mode="wait">` with `useLocation()` key.
 
-**Note:** Login, SignUp, and portal pages (ClientPortal, BusinessPortal, AdminDashboard) intentionally have custom layouts and should NOT use PageShell.
-
-### Category 2: Duplicate Animation Definitions
-- `NotaryGuide.tsx` and `RonInfo.tsx` define their own `fadeUp` variant locally instead of importing from `@/lib/animations`
-
-### Category 3: AnimatePresence Route Transitions Missing
-- `App.tsx` has no `AnimatePresence` wrapper — page transitions are instant with no animation
-
-### Category 4: Mobile Responsive Issues
-- Navbar: looks good at 518px viewport already (md breakpoint handles hamburger)
-- Hero toggle pills: may overflow on very small screens (<360px)
-- Trust bar: horizontal wrap works but items may be cramped on mobile
-- Service cards on Index: single column on mobile is fine
-- Services page TabsList: `overflow-x-auto` set but may not scroll cleanly on mobile
-
-## Implementation Plan
-
-### Step 1: Add AnimatePresence to App.tsx
-Wrap the `<Routes>` in `AnimatePresence mode="wait"` and use `useLocation()` as key. The `PageShell` already has `motion.main` with `pageTransition` — this completes the exit/enter cycle.
-
-```tsx
-import { useLocation } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
-// Inside BrowserRouter:
-const location = useLocation();
-<AnimatePresence mode="wait">
-  <Routes location={location} key={location.pathname}>
-    ...
-  </Routes>
-</AnimatePresence>
-```
-This requires extracting the Routes into a child component since `useLocation` must be inside `BrowserRouter`.
-
-### Step 2: Migrate 17 pages to PageShell
-For each page listed above:
-1. Import `PageShell` from `@/components/PageShell`
-2. Remove inline `<nav>` block and inline `<footer>` block
-3. Remove `Logo`, `DarkModeToggle`, `Sheet/SheetContent/SheetTrigger`, `Menu` imports if no longer used
-4. Wrap content in `<PageShell>...</PageShell>`
-5. Keep all content, forms, logic, and data fetching untouched
-
-Pages that should keep custom layout (NO PageShell):
-- Login, SignUp, ForgotPassword — centered card layout, no nav needed
-- ClientPortal, BusinessPortal — portal layout with sidebar
-- AdminDashboard — admin sidebar layout
-- MobileUpload — minimal upload-focused UI
-- AppointmentConfirmation, OneNotarySession — session-specific layouts
-
-That means ~12-13 pages get PageShell:
-- BookAppointment, FeeCalculator, DocumentTemplates, DocumentDigitize, DocumentBuilder
-- NotaryGuide, RonInfo, LoanSigningServices, ServiceDetail, JoinPlatform
-- TermsPrivacy, SubscriptionPlans, RonEligibilityChecker, ServiceRequest, NotaryProcessGuide, VerifySeal
+### Step 2: Migrate ~16 pages to PageShell
+Remove inline nav/footer, wrap in `<PageShell>`. Pages: BookAppointment, FeeCalculator, DocumentTemplates, DocumentDigitize, DocumentBuilder, NotaryGuide, RonInfo, LoanSigningServices, ServiceDetail, JoinPlatform, TermsPrivacy, SubscriptionPlans, RonEligibilityChecker, ServiceRequest, NotaryProcessGuide, VerifySeal.
 
 ### Step 3: Remove duplicate fadeUp definitions
-In `NotaryGuide.tsx` and `RonInfo.tsx`, remove the local `fadeUp` const and import from `@/lib/animations`.
+Import from `@/lib/animations` in NotaryGuide and RonInfo.
 
 ### Step 4: Mobile responsive fixes
-- Hero pill toggle: add `text-xs` and `px-4` on small screens via responsive classes
-- Trust bar: add `text-xs` class on mobile for better fit
-- Services page TabsList: ensure `scrollbar-hide` class is applied for cleaner mobile scroll
+Hero pill toggle sizing, trust bar spacing, scrollbar-hide on tabs.
 
-### Technical Details
+---
 
-**Files modified:**
-- `src/App.tsx` — AnimatePresence + location-keyed Routes
-- `src/pages/BookAppointment.tsx` — PageShell migration
-- `src/pages/FeeCalculator.tsx` — PageShell migration
-- `src/pages/DocumentTemplates.tsx` — PageShell migration
-- `src/pages/DocumentDigitize.tsx` — PageShell migration
-- `src/pages/DocumentBuilder.tsx` — PageShell migration
-- `src/pages/NotaryGuide.tsx` — PageShell + import shared animations
-- `src/pages/RonInfo.tsx` — PageShell + import shared animations
-- `src/pages/LoanSigningServices.tsx` — PageShell migration
-- `src/pages/ServiceDetail.tsx` — PageShell migration
-- `src/pages/JoinPlatform.tsx` — PageShell migration
-- `src/pages/TermsPrivacy.tsx` — PageShell migration
-- `src/pages/SubscriptionPlans.tsx` — PageShell migration
-- `src/pages/RonEligibilityChecker.tsx` — PageShell migration
-- `src/pages/ServiceRequest.tsx` — PageShell migration
-- `src/pages/NotaryProcessGuide.tsx` — PageShell migration
-- `src/pages/VerifySeal.tsx` — PageShell migration
-- `src/pages/Index.tsx` — minor mobile responsive tweaks
-- `src/index.css` — add `scrollbar-hide` utility if missing
+## NEW: Step 5 — Admin User Profile Management
 
-**No functionality changes.** All routing, data fetching, forms, auth flows remain identical. Only layout wrappers and animation transitions change.
+### 5a. Database Changes
+
+**Migration 1**: Add `avatar_path` column to `profiles` table:
+```sql
+ALTER TABLE public.profiles ADD COLUMN avatar_path text;
+```
+
+**Migration 2**: Create `notary_certifications` table:
+```sql
+CREATE TABLE public.notary_certifications (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  certification_name text NOT NULL,
+  issuing_body text,
+  certification_number text,
+  issued_date date,
+  expiry_date date,
+  file_path text,
+  created_at timestamptz DEFAULT now()
+);
+ALTER TABLE public.notary_certifications ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Admins manage certs" ON public.notary_certifications FOR ALL USING (has_role(auth.uid(), 'admin'));
+CREATE POLICY "Users view own certs" ON public.notary_certifications FOR SELECT USING (auth.uid() = user_id);
+```
+
+**Migration 3**: Make `documents` storage bucket support profile avatars (already exists, reuse `documents` bucket with `profiles/` prefix path).
+
+### 5b. Enhance AdminClients.tsx
+
+Currently shows client list with notes and messaging. Add:
+- **Edit Profile Dialog**: Click a client to open a dialog with editable fields (full_name, phone, email, address, city, state, zip, admin_notes)
+- **Avatar Upload**: File input in the dialog that uploads to `documents` bucket at path `profiles/{user_id}/avatar.{ext}`, updates `avatar_path` on profile
+- **Avatar Display**: Show avatar thumbnail in client list and detail dialog using signed URL from storage
+- **Save**: Updates `profiles` table via supabase client
+
+### 5c. Enhance AdminTeam.tsx
+
+Currently shows notary list with invite/remove. Add:
+- **Notary Detail Dialog**: Click a notary card to open expanded view with:
+  - Editable profile fields (same as clients)
+  - Avatar upload (same mechanism)
+  - **Certifications Section**: List existing certs from `notary_certifications`, add/edit/delete with fields: name, issuing body, number, issued date, expiry date, optional file upload
+- **Save All Changes**: Single save button that updates profile + manages certifications
+
+### 5d. Admin Create User (Manual Profile)
+
+Add a "Create Profile" button in AdminClients that opens a dialog to:
+- Enter full_name, email, phone, address fields
+- Insert directly into `profiles` table with a generated user_id placeholder
+- Note: This creates a profile record only (not an auth user). The profile links when the person signs up with that email. Alternatively, display a note that the user must sign up themselves.
+
+---
+
+## Technical Details
+
+### Files Modified
+- `src/App.tsx` — AnimatePresence wrapper
+- 16 page files — PageShell migration (listed in Step 2)
+- `src/pages/admin/AdminClients.tsx` — profile edit dialog, avatar upload, avatar display
+- `src/pages/admin/AdminTeam.tsx` — notary detail dialog, certifications CRUD, avatar upload
+- `src/index.css` — scrollbar-hide utility
+
+### Files Created
+- None (all UI added inline to existing admin pages)
+
+### Database Migrations
+1. `ALTER TABLE profiles ADD COLUMN avatar_path text`
+2. `CREATE TABLE notary_certifications` with RLS
+
+### No Changes To
+- Auth flows, routing logic, edge functions, payment flows
+- Existing content or functionality on any page
 
