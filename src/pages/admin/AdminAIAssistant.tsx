@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
+import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -21,7 +21,7 @@ const quickQuestions = [
   "Signature by mark — what's the procedure?",
 ];
 
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/notary-assistant`;
+// Edge function called via standardized helper
 
 export default function AdminAIAssistant() {
   const [messages, setMessages] = useState<Message[]>(() => {
@@ -75,16 +75,7 @@ export default function AdminAIAssistant() {
     let assistantContent = "";
 
     try {
-      const { data: { session: authSession } } = await supabase.auth.getSession();
-      const resp = await fetch(CHAT_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authSession?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
-        body: JSON.stringify({ messages: updatedMessages }),
-      });
+      const resp = await callEdgeFunctionStream("notary-assistant", { messages: updatedMessages }, 60000);
 
       if (!resp.ok) {
         const errData = await resp.json().catch(() => ({}));
