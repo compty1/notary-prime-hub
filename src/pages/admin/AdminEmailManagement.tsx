@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/RichTextEditor";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -301,7 +302,7 @@ export default function AdminEmailManagement() {
           <div className="space-y-4">
             <div><Label>To</Label><Input value={replyForm.to_address} onChange={(e) => setReplyForm({ ...replyForm, to_address: e.target.value })} /></div>
             <div><Label>Subject</Label><Input value={replyForm.subject} onChange={(e) => setReplyForm({ ...replyForm, subject: e.target.value })} /></div>
-            <div><Label>Body</Label><Textarea value={replyForm.body} onChange={(e) => setReplyForm({ ...replyForm, body: e.target.value })} rows={6} placeholder="Type your reply..." /></div>
+            <div><Label>Body</Label><RichTextEditor value={replyForm.body} onChange={(html) => setReplyForm({ ...replyForm, body: html })} placeholder="Type your reply..." className="mt-1" /></div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowReplyDialog(false)}>Cancel</Button>
@@ -348,7 +349,7 @@ export default function AdminEmailManagement() {
               <div><Label>To</Label><Input value={newItem.to_address} onChange={(e) => setNewItem({ ...newItem, to_address: e.target.value })} placeholder="recipient@email.com" /></div>
             </div>
             <div><Label>Subject *</Label><Input value={newItem.subject} onChange={(e) => setNewItem({ ...newItem, subject: e.target.value })} placeholder="Email subject line" /></div>
-            <div><Label>Body *</Label><Textarea value={newItem.body} onChange={(e) => setNewItem({ ...newItem, body: e.target.value })} rows={4} placeholder="Full email content..." /></div>
+            <div><Label>Body *</Label><RichTextEditor value={newItem.body} onChange={(html) => setNewItem({ ...newItem, body: html })} placeholder="Full email content..." className="mt-1" /></div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>

@@ -65,6 +65,7 @@ const AdminTeam = lazy(() => import("./pages/admin/AdminTeam"));
 const AdminEmailManagement = lazy(() => import("./pages/admin/AdminEmailManagement"));
 const AdminLeadPortal = lazy(() => import("./pages/admin/AdminLeadPortal"));
 const NotaryProcessGuide = lazy(() => import("./pages/NotaryProcessGuide"));
+const AdminIntegrationTest = lazy(() => import("./pages/admin/AdminIntegrationTest"));
 
 const queryClient = new QueryClient();
 
@@ -131,6 +132,7 @@ function AnimatedRoutes() {
           <Route path="email-management" element={<ErrorBoundary fallbackMessage="Email management failed to load"><AdminEmailManagement /></ErrorBoundary>} />
           <Route path="leads" element={<ErrorBoundary fallbackMessage="Lead portal failed to load"><AdminLeadPortal /></ErrorBoundary>} />
           <Route path="settings" element={<ErrorBoundary fallbackMessage="Settings failed to load"><AdminSettings /></ErrorBoundary>} />
+          <Route path="integrations" element={<ErrorBoundary fallbackMessage="Integration testing failed to load"><AdminIntegrationTest /></ErrorBoundary>} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
