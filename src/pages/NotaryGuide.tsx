@@ -227,7 +227,7 @@ export default function NotaryGuide() {
                 <FileText className="mr-1 h-3 w-3" /> Comprehensive Notary Guide
               </Badge>
             </motion.div>
-            <motion.h1 variants={fadeUp} custom={1} className="mb-4 font-display text-3xl font-bold text-primary-foreground md:text-5xl">
+            <motion.h1 variants={fadeUp} custom={1} className="mb-4 font-sans text-3xl font-bold text-primary-foreground md:text-5xl">
               What You Need to Know
             </motion.h1>
             <motion.p variants={fadeUp} custom={2} className="mx-auto max-w-2xl text-primary-foreground/70">
@@ -255,7 +255,7 @@ export default function NotaryGuide() {
       {/* Accepted ID Section */}
       <section className="border-b border-border/50 py-12">
         <div className="container mx-auto max-w-4xl px-4">
-          <h2 className="mb-6 font-display text-2xl font-bold text-foreground">Accepted Forms of Identification</h2>
+          <h2 className="mb-6 font-sans text-2xl font-bold text-foreground">Accepted Forms of Identification</h2>
           <p className="mb-4 text-sm text-muted-foreground">Per ORC §147.542, a notary must identify each signer through satisfactory evidence:</p>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {["State Driver's License", "State ID Card", "U.S. Passport", "U.S. Military ID"].map((id) => (
@@ -277,7 +277,7 @@ export default function NotaryGuide() {
       {/* Document Categories */}
       <section className="py-12">
         <div className="container mx-auto max-w-4xl px-4">
-          <h2 className="mb-8 font-display text-2xl font-bold text-foreground">Document Types & Requirements</h2>
+          <h2 className="mb-8 font-sans text-2xl font-bold text-foreground">Document Types & Requirements</h2>
           <div className="space-y-8">
             {filteredCategories.map((category, catIdx) => (
               <motion.div key={category.title} initial="hidden" whileInView="visible" viewport={{ once: true }}>
@@ -286,7 +286,7 @@ export default function NotaryGuide() {
                     <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${category.bgColor}`}>
                       <category.icon className={`h-5 w-5 ${category.color}`} />
                     </div>
-                    <h3 className="font-display text-xl font-semibold text-foreground">{category.title}</h3>
+                    <h3 className="font-sans text-xl font-semibold text-foreground">{category.title}</h3>
                   </div>
                   <Accordion type="single" collapsible className="space-y-2">
                     {category.documents.map((doc, docIdx) => (
@@ -352,13 +352,13 @@ export default function NotaryGuide() {
       {/* Workflow Steps */}
       <section className="bg-muted/30 py-16">
         <div className="container mx-auto max-w-5xl px-4">
-          <h2 className="mb-12 text-center font-display text-2xl font-bold text-foreground">Step-by-Step Process</h2>
+          <h2 className="mb-12 text-center font-sans text-2xl font-bold text-foreground">Step-by-Step Process</h2>
           <div className="grid gap-12 lg:grid-cols-2">
             {/* In-Person */}
             <div>
               <div className="mb-6 flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-primary" />
-                <h3 className="font-display text-lg font-semibold">In-Person Notarization</h3>
+                <h3 className="font-sans text-lg font-semibold">In-Person Notarization</h3>
               </div>
               <div className="space-y-4">
                 {inPersonSteps.map((s) => (
@@ -376,7 +376,7 @@ export default function NotaryGuide() {
             <div>
               <div className="mb-6 flex items-center gap-2">
                 <Monitor className="h-5 w-5 text-primary" />
-                <h3 className="font-display text-lg font-semibold">Remote Online Notarization (RON)</h3>
+                <h3 className="font-sans text-lg font-semibold">Remote Online Notarization (RON)</h3>
               </div>
               <div className="space-y-4">
                 {ronSteps.map((s) => (
@@ -397,11 +397,11 @@ export default function NotaryGuide() {
       {/* Out-of-State Signers */}
       <section className="py-12">
         <div className="container mx-auto max-w-4xl px-4">
-          <h2 className="mb-6 font-display text-2xl font-bold text-foreground">If You're Outside Ohio</h2>
+          <h2 className="mb-6 font-sans text-2xl font-bold text-foreground">If You're Outside Ohio</h2>
           <div className="grid gap-6 md:grid-cols-2">
             <Card className="border-border/50">
               <CardContent className="p-6">
-                <h3 className="mb-2 font-display text-lg font-semibold flex items-center gap-2">
+                <h3 className="mb-2 font-sans text-lg font-semibold flex items-center gap-2">
                   <CheckCircle className="h-5 w-5 text-emerald-500" /> Full Faith & Credit
                 </h3>
                 <p className="text-sm text-muted-foreground">
@@ -412,7 +412,7 @@ export default function NotaryGuide() {
             </Card>
             <Card className="border-border/50">
               <CardContent className="p-6">
-                <h3 className="mb-2 font-display text-lg font-semibold flex items-center gap-2">
+                <h3 className="mb-2 font-sans text-lg font-semibold flex items-center gap-2">
                   <AlertTriangle className="h-5 w-5 text-amber-500" /> Receiving Entity Requirements
                 </h3>
                 <p className="text-sm text-muted-foreground">
@@ -423,7 +423,7 @@ export default function NotaryGuide() {
             </Card>
             <Card className="border-border/50">
               <CardContent className="p-6">
-                <h3 className="mb-2 font-display text-lg font-semibold flex items-center gap-2">
+                <h3 className="mb-2 font-sans text-lg font-semibold flex items-center gap-2">
                   <Info className="h-5 w-5 text-primary" /> Common Acceptance Issues
                 </h3>
                 <ul className="space-y-1 text-sm text-muted-foreground">
@@ -436,7 +436,7 @@ export default function NotaryGuide() {
             </Card>
             <Card className="border-border/50">
               <CardContent className="p-6">
-                <h3 className="mb-2 font-display text-lg font-semibold flex items-center gap-2">
+                <h3 className="mb-2 font-sans text-lg font-semibold flex items-center gap-2">
                   <Scale className="h-5 w-5 text-primary" /> Tips for Out-of-State Signers
                 </h3>
                 <ul className="space-y-1 text-sm text-muted-foreground">
@@ -454,7 +454,7 @@ export default function NotaryGuide() {
       {/* CTA */}
       <section className="py-16 text-center">
         <div className="container mx-auto px-4">
-          <h2 className="mb-4 font-display text-2xl font-bold text-foreground">Ready to Get Started?</h2>
+          <h2 className="mb-4 font-sans text-2xl font-bold text-foreground">Ready to Get Started?</h2>
           <p className="mb-6 text-muted-foreground">Book your notarization appointment in minutes</p>
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link to="/book"><Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">Book Appointment <ChevronRight className="ml-1 h-4 w-4" /></Button></Link>

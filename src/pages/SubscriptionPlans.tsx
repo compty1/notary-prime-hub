@@ -79,7 +79,7 @@ export default function SubscriptionPlans() {
       {/* Hero */}
       <section className="bg-gradient-hero py-16">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="mb-4 font-display text-4xl font-bold text-primary-foreground">Business Plans</h1>
+          <h1 className="mb-4 font-sans text-4xl font-bold text-primary-foreground">Business Plans</h1>
           <p className="mx-auto max-w-2xl text-lg text-primary-foreground/70">
             Scalable notarization and document services for teams of every size.
           </p>
@@ -103,11 +103,11 @@ export default function SubscriptionPlans() {
                       <plan.icon className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-display text-lg font-bold">{plan.name}</h3>
+                      <h3 className="font-sans text-lg font-bold">{plan.name}</h3>
                     </div>
                   </div>
                   <div className="mb-4">
-                    <span className="font-display text-3xl font-bold">{plan.price}</span>
+                    <span className="font-sans text-3xl font-bold">{plan.price}</span>
                     <span className="text-muted-foreground">{plan.period}</span>
                   </div>
                   <p className="mb-6 text-sm text-muted-foreground">{plan.description}</p>
@@ -136,14 +136,14 @@ export default function SubscriptionPlans() {
         <div className="container mx-auto max-w-4xl px-4">
           <div className="text-center mb-10">
             <Badge className="mb-3 bg-primary/10 text-primary"><Award className="mr-1 h-3 w-3" /> Partner Program</Badge>
-            <h2 className="font-display text-2xl font-bold mb-2">White-Label & API Partners</h2>
+            <h2 className="font-sans text-2xl font-bold mb-2">White-Label & API Partners</h2>
             <p className="text-muted-foreground">Integrate notarization into your platform with our partner programs.</p>
           </div>
           <div className="grid gap-6 sm:grid-cols-2">
             {partnerBenefits.map(b => (
               <Card key={b.label} className="border-border/50">
                 <CardContent className="p-5">
-                  <h3 className="font-display text-sm font-semibold mb-1">{b.label}</h3>
+                  <h3 className="font-sans text-sm font-semibold mb-1">{b.label}</h3>
                   <p className="text-sm text-muted-foreground">{b.desc}</p>
                 </CardContent>
               </Card>

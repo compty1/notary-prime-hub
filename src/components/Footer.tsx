@@ -19,7 +19,7 @@ export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com
             </p>
           </div>
           <div>
-            <h4 className="mb-3 font-display text-sm font-semibold text-foreground">Services</h4>
+            <h4 className="mb-3 font-sans text-sm font-semibold text-foreground">Services</h4>
             <div className="space-y-2 text-sm text-muted-foreground">
               <Link to="/book" className="block transition-colors hover:text-primary">Book Appointment</Link>
               <Link to="/services" className="block transition-colors hover:text-primary">All Services</Link>
@@ -28,7 +28,7 @@ export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com
             </div>
           </div>
           <div>
-            <h4 className="mb-3 font-display text-sm font-semibold text-foreground">Resources</h4>
+            <h4 className="mb-3 font-sans text-sm font-semibold text-foreground">Resources</h4>
             <div className="space-y-2 text-sm text-muted-foreground">
               <Link to="/fee-calculator" className="block transition-colors hover:text-primary">Pricing</Link>
               <Link to="/ron-check" className="block transition-colors hover:text-primary">RON Eligibility</Link>
@@ -38,7 +38,7 @@ export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com
             </div>
           </div>
           <div>
-            <h4 className="mb-3 font-display text-sm font-semibold text-foreground">Contact</h4>
+            <h4 className="mb-3 font-sans text-sm font-semibold text-foreground">Contact</h4>
             <div className="space-y-2 text-sm text-muted-foreground">
               <a href={`tel:${phone.replace(/\D/g, '')}`} className="flex items-center gap-2 transition-colors hover:text-primary">
                 <Phone className="h-3.5 w-3.5" /> {phone}

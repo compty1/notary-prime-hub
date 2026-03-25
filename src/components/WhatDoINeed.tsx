@@ -96,7 +96,7 @@ export default function WhatDoINeed() {
   return (
     <section className="py-10 bg-muted/30 border-b border-border/50">
       <div className="container mx-auto max-w-2xl px-4 text-center">
-        <h2 className="mb-2 font-display text-xl font-bold text-foreground flex items-center justify-center gap-2">
+        <h2 className="mb-2 font-sans text-xl font-bold text-foreground flex items-center justify-center gap-2">
           <Sparkles className="h-5 w-5 text-primary" /> What Do I Need?
         </h2>
         <p className="mb-4 text-sm text-muted-foreground">

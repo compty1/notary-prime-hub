@@ -240,7 +240,7 @@ export default function ClientPortal() {
     <div className="min-h-screen bg-muted/30">
       <nav className="border-b border-border/50 bg-background/80 backdrop-blur-lg">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-2"><Logo size="md" /><span className="font-display text-lg font-bold text-foreground">Client Portal</span></Link>
+          <Link to="/" className="flex items-center gap-2"><Logo size="md" /><span className="font-sans text-lg font-bold text-foreground">Client Portal</span></Link>
           <div className="flex items-center gap-3">
             {isAdmin && <Link to="/admin"><Button variant="outline" size="sm">Admin Dashboard</Button></Link>}
             <Button variant="ghost" size="sm" onClick={signOut}><LogOut className="mr-1 h-4 w-4" /> Sign Out</Button>
@@ -251,7 +251,7 @@ export default function ClientPortal() {
       <div className="container mx-auto max-w-5xl px-4 py-8">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 flex items-start justify-between">
           <div>
-            <h1 className="font-display text-3xl font-bold text-foreground">Welcome{profile?.full_name ? `, ${profile.full_name}` : ""}</h1>
+            <h1 className="font-sans text-3xl font-bold text-foreground">Welcome{profile?.full_name ? `, ${profile.full_name}` : ""}</h1>
             <p className="text-muted-foreground">Manage your documents, appointments, and notarization status</p>
           </div>
           <div className="flex gap-2">
@@ -290,7 +290,7 @@ export default function ClientPortal() {
 
           {/* STATUS TAB */}
           <TabsContent value="status" className="space-y-6">
-            <h2 className="font-display text-xl font-semibold">Document Pipeline</h2>
+            <h2 className="font-sans text-xl font-semibold">Document Pipeline</h2>
             {documents.length === 0 ? (
               <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground"><FileText className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" /><p>No documents to track</p></CardContent></Card>
             ) : (
@@ -319,7 +319,7 @@ export default function ClientPortal() {
 
           {/* CORRESPONDENCE TAB */}
           <TabsContent value="correspondence" className="space-y-6">
-            <h2 className="font-display text-xl font-semibold">Email Correspondence</h2>
+            <h2 className="font-sans text-xl font-semibold">Email Correspondence</h2>
             {correspondence.length === 0 ? (
               <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground"><Mail className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" /><p>No correspondence yet</p></CardContent></Card>
             ) : (
@@ -343,7 +343,7 @@ export default function ClientPortal() {
 
           {/* APOSTILLE TAB */}
           <TabsContent value="apostille" className="space-y-6">
-            <h2 className="font-display text-xl font-semibold">Apostille Requests</h2>
+            <h2 className="font-sans text-xl font-semibold">Apostille Requests</h2>
             <Card className="border-border/50">
               <CardContent className="p-4 space-y-4">
                 <h3 className="text-sm font-semibold">Request New Apostille</h3>
@@ -389,7 +389,7 @@ export default function ClientPortal() {
           {/* PAYMENTS TAB */}
           <TabsContent value="payments" className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="font-display text-xl font-semibold">Payments & Invoices</h2>
+              <h2 className="font-sans text-xl font-semibold">Payments & Invoices</h2>
               {!showPaymentForm && <Button size="sm" onClick={() => setShowPaymentForm(true)}><CreditCard className="mr-1 h-4 w-4" /> Make Payment</Button>}
             </div>
             {showPaymentForm && <PaymentForm onSuccess={() => { setShowPaymentForm(false); supabase.from("payments").select("*").eq("client_id", user!.id).order("created_at", { ascending: false }).then(({ data }) => { if (data) setPayments(data); }); }} onCancel={() => setShowPaymentForm(false)} />}
@@ -423,7 +423,7 @@ export default function ClientPortal() {
 
           {/* REVIEWS TAB */}
           <TabsContent value="reviews" className="space-y-6">
-            <h2 className="font-display text-xl font-semibold">Leave a Review</h2>
+            <h2 className="font-sans text-xl font-semibold">Leave a Review</h2>
             {past.filter(a => a.status === "completed").length > 0 && (
               <Card className="border-border/50"><CardContent className="p-4 space-y-4">
                 <div><Label>Select Appointment</Label><Select value={reviewForm.appointment_id} onValueChange={v => setReviewForm({ ...reviewForm, appointment_id: v })}><SelectTrigger><SelectValue placeholder="Choose completed appointment..." /></SelectTrigger><SelectContent>{past.filter(a => a.status === "completed" && !reviews.some(r => r.appointment_id === a.id)).map(a => <SelectItem key={a.id} value={a.id}>{a.service_type} — {formatDate(a.scheduled_date)}</SelectItem>)}</SelectContent></Select></div>
@@ -439,12 +439,12 @@ export default function ClientPortal() {
                 }} className="bg-gradient-primary text-white hover:opacity-90">{submittingReview ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Star className="mr-1 h-4 w-4" />} Submit Review</Button>
               </CardContent></Card>
             )}
-            {reviews.length > 0 && <><h3 className="font-display text-lg font-semibold mt-6">Your Reviews</h3><div className="space-y-3">{reviews.map(r => <Card key={r.id} className="border-border/50"><CardContent className="p-4"><div className="flex items-center gap-1 mb-2">{[1,2,3,4,5].map(n => <Star key={n} className={`h-4 w-4 ${n <= r.rating ? "text-amber-500 fill-amber-500" : "text-muted-foreground"}`} />)}</div>{r.comment && <p className="text-sm">{r.comment}</p>}<p className="text-xs text-muted-foreground mt-2">{new Date(r.created_at).toLocaleDateString()}</p></CardContent></Card>)}</div></>}
+            {reviews.length > 0 && <><h3 className="font-sans text-lg font-semibold mt-6">Your Reviews</h3><div className="space-y-3">{reviews.map(r => <Card key={r.id} className="border-border/50"><CardContent className="p-4"><div className="flex items-center gap-1 mb-2">{[1,2,3,4,5].map(n => <Star key={n} className={`h-4 w-4 ${n <= r.rating ? "text-amber-500 fill-amber-500" : "text-muted-foreground"}`} />)}</div>{r.comment && <p className="text-sm">{r.comment}</p>}<p className="text-xs text-muted-foreground mt-2">{new Date(r.created_at).toLocaleDateString()}</p></CardContent></Card>)}</div></>}
           </TabsContent>
 
           {/* SERVICE REQUESTS TAB */}
           <TabsContent value="requests" className="space-y-6">
-            <div className="flex items-center justify-between"><h2 className="font-display text-xl font-semibold">Service Requests</h2><Link to="/request"><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90"><Plus className="mr-1 h-4 w-4" /> New Request</Button></Link></div>
+            <div className="flex items-center justify-between"><h2 className="font-sans text-xl font-semibold">Service Requests</h2><Link to="/request"><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90"><Plus className="mr-1 h-4 w-4" /> New Request</Button></Link></div>
             {serviceRequests.length === 0 ? (
               <Card className="border-border/50"><CardContent className="flex flex-col items-center py-12 text-center"><Clock className="mb-4 h-12 w-12 text-muted-foreground/50" /><p className="text-muted-foreground">No service requests yet</p></CardContent></Card>
             ) : (
@@ -459,7 +459,7 @@ export default function ClientPortal() {
 
           {/* REMINDERS TAB */}
           <TabsContent value="reminders" className="space-y-6">
-            <h2 className="font-display text-xl font-semibold">Document Reminders & Renewals</h2>
+            <h2 className="font-sans text-xl font-semibold">Document Reminders & Renewals</h2>
             <Card className="border-border/50"><CardContent className="p-4 space-y-4">
               <h3 className="text-sm font-semibold">Set Expiry Reminder</h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -491,7 +491,7 @@ export default function ClientPortal() {
 
           {/* SERVICES TAB */}
           <TabsContent value="services" className="space-y-6">
-            <div className="flex items-center justify-between"><h2 className="font-display text-xl font-semibold">Available Services</h2><Button variant="outline" size="sm" onClick={() => setShowWizard(!showWizard)}><Sparkles className="mr-1 h-3 w-3" /> {showWizard ? "Hide Guide" : "Not Sure What You Need?"}</Button></div>
+            <div className="flex items-center justify-between"><h2 className="font-sans text-xl font-semibold">Available Services</h2><Button variant="outline" size="sm" onClick={() => setShowWizard(!showWizard)}><Sparkles className="mr-1 h-3 w-3" /> {showWizard ? "Hide Guide" : "Not Sure What You Need?"}</Button></div>
             <Card className="border-primary/20 bg-primary/5"><CardContent className="flex items-center justify-between p-4"><div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/20"><FileText className="h-5 w-5 text-primary" /></div><div><h3 className="text-sm font-semibold text-foreground">Digitize Documents</h3><p className="text-xs text-muted-foreground">Upload scanned documents and convert them to editable digital formats with AI-powered OCR</p></div></div><Link to="/digitize"><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90"><ArrowRight className="mr-1 h-3 w-3" /> Start</Button></Link></CardContent></Card>
             {showWizard && <DocumentWizard onSelectService={svc => { setShowWizard(false); navigate(`/book?service=${encodeURIComponent(svc)}`); }} onClose={() => setShowWizard(false)} />}
             <div className="grid gap-4 sm:grid-cols-2">{services.map(svc => (
@@ -504,7 +504,7 @@ export default function ClientPortal() {
       {/* Dialogs */}
       <Dialog open={explainDialogOpen} onOpenChange={setExplainDialogOpen}>
         <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="font-display flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary" /> AI Document Explanation</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="font-sans flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary" /> AI Document Explanation</DialogTitle></DialogHeader>
           {explaining ? <div className="flex flex-col items-center py-8 gap-3"><Loader2 className="h-8 w-8 animate-spin text-primary" /><p className="text-sm text-muted-foreground">Analyzing document...</p></div> : explanation ? <div className="prose prose-sm max-w-none text-foreground whitespace-pre-wrap text-sm">{explanation}</div> : null}
         </DialogContent>
       </Dialog>
@@ -515,7 +515,7 @@ export default function ClientPortal() {
 
       <Dialog open={editProfileOpen} onOpenChange={setEditProfileOpen}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader><DialogTitle className="font-display flex items-center gap-2"><User className="h-5 w-5 text-primary" /> Edit Profile</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="font-sans flex items-center gap-2"><User className="h-5 w-5 text-primary" /> Edit Profile</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <div><Label>Full Name</Label><Input value={profileForm.full_name} onChange={e => setProfileForm({ ...profileForm, full_name: e.target.value })} /></div>
             <div><Label>Phone</Label><Input value={profileForm.phone} onChange={e => setProfileForm({ ...profileForm, phone: formatPhone(e.target.value) })} placeholder="(614) 555-1234" /></div>
@@ -539,7 +539,7 @@ export default function ClientPortal() {
       </Dialog>
 
       <Dialog open={qrDialogOpen} onOpenChange={setQrDialogOpen}>
-        <DialogContent className="sm:max-w-sm text-center"><DialogHeader><DialogTitle className="font-display">Scan to Upload from Mobile</DialogTitle></DialogHeader><div className="flex justify-center py-4"><QRCodeSVG value={qrUrl} size={200} level="H" /></div><p className="text-sm text-muted-foreground">Scan this QR code with your phone to upload documents or join a session.</p></DialogContent>
+        <DialogContent className="sm:max-w-sm text-center"><DialogHeader><DialogTitle className="font-sans">Scan to Upload from Mobile</DialogTitle></DialogHeader><div className="flex justify-center py-4"><QRCodeSVG value={qrUrl} size={200} level="H" /></div><p className="text-sm text-muted-foreground">Scan this QR code with your phone to upload documents or join a session.</p></DialogContent>
       </Dialog>
 
       <Dialog open={techCheckOpen} onOpenChange={setTechCheckOpen}>

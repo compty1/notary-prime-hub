@@ -263,7 +263,7 @@ export default function ServiceDetail() {
   if (!service) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-background gap-4">
-        <h1 className="font-display text-2xl font-bold">Service Not Found</h1>
+        <h1 className="font-sans text-2xl font-bold">Service Not Found</h1>
         <p className="text-muted-foreground">This service may no longer be available.</p>
         <Link to="/services"><Button variant="outline"><ChevronLeft className="mr-1 h-4 w-4" /> Back to Services</Button></Link>
       </div>
@@ -324,7 +324,7 @@ export default function ServiceDetail() {
                   {complexity.level} · {complexity.duration}
                 </Badge>
               </div>
-              <h1 className="mb-2 font-display text-3xl font-bold text-primary-foreground md:text-4xl">{service.name}</h1>
+              <h1 className="mb-2 font-sans text-3xl font-bold text-primary-foreground md:text-4xl">{service.name}</h1>
               <p className="text-primary-foreground/70">{service.description || service.short_description}</p>
               <div className="mt-4 flex items-center gap-3">
                 <Badge variant="outline" className="text-primary-foreground/80 border-primary-foreground/20 text-base px-3 py-1">{formatPrice(service)}</Badge>
@@ -354,7 +354,7 @@ export default function ServiceDetail() {
             {requirements.length > 0 && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-display text-xl font-bold">Preparation Checklist</h2>
+                  <h2 className="font-sans text-xl font-bold">Preparation Checklist</h2>
                   {requirements.filter(r => r.is_required).length > 0 && (
                     <Badge variant="outline" className={readinessPercent === 100 ? "border-emerald-500 text-emerald-600" : ""}>
                       {readinessPercent}% ready
@@ -395,7 +395,7 @@ export default function ServiceDetail() {
             {/* Phase 3.7: Visual workflow timeline */}
             {workflow.length > 0 && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                <h2 className="mb-4 font-display text-xl font-bold">How It Works</h2>
+                <h2 className="mb-4 font-sans text-xl font-bold">How It Works</h2>
                 <div className="relative">
                   {/* Vertical line */}
                   <div className="absolute left-4 top-4 bottom-4 w-0.5 bg-border" />
@@ -403,10 +403,10 @@ export default function ServiceDetail() {
                     {workflow.map((wfStep, i) => (
                       <div key={wfStep.id} className="relative flex items-start gap-4 pl-0">
                         <div className="relative z-10 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 border-2 border-accent">
-                          <span className="font-display text-xs font-bold text-primary">{wfStep.step_number}</span>
+                          <span className="font-sans text-xs font-bold text-primary">{wfStep.step_number}</span>
                         </div>
                         <div className="flex-1 pb-2">
-                          <h3 className="font-display font-semibold text-sm">{wfStep.step_name}</h3>
+                          <h3 className="font-sans font-semibold text-sm">{wfStep.step_name}</h3>
                           {wfStep.step_description && <p className="text-xs text-muted-foreground mt-0.5">{wfStep.step_description}</p>}
                           <div className="mt-1 flex gap-1">
                             {wfStep.requires_client_action && (
@@ -427,7 +427,7 @@ export default function ServiceDetail() {
             {/* Phase 3.2: Category-specific FAQs */}
             {faqs.length > 0 && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-                <h2 className="mb-4 font-display text-xl font-bold">Frequently Asked Questions</h2>
+                <h2 className="mb-4 font-sans text-xl font-bold">Frequently Asked Questions</h2>
                 <Accordion type="single" collapsible className="space-y-2">
                   {faqs.map((faq, i) => (
                     <AccordionItem key={i} value={`faq-${i}`} className="rounded-lg border border-border/50 bg-card px-4">
@@ -444,7 +444,7 @@ export default function ServiceDetail() {
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.33 }}>
                 <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-800">
                   <CardContent className="p-5 space-y-3">
-                    <h3 className="font-display text-sm font-semibold flex items-center gap-2">
+                    <h3 className="font-sans text-sm font-semibold flex items-center gap-2">
                       <Briefcase className="h-4 w-4 text-blue-600" /> Partner Services
                     </h3>
                     <p className="text-xs text-muted-foreground">
@@ -465,7 +465,7 @@ export default function ServiceDetail() {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.34 }}>
               <Card className="border-primary/20 bg-primary/5">
                 <CardContent className="p-5 space-y-3">
-                  <h3 className="font-display text-sm font-semibold flex items-center gap-2">
+                  <h3 className="font-sans text-sm font-semibold flex items-center gap-2">
                     <Monitor className="h-4 w-4 text-primary" /> Have Questions?
                   </h3>
                   <p className="text-xs text-muted-foreground">
@@ -490,7 +490,7 @@ export default function ServiceDetail() {
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
                 <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-800">
                   <CardContent className="p-5 space-y-3">
-                    <h3 className="font-display text-sm font-semibold flex items-center gap-2">
+                    <h3 className="font-sans text-sm font-semibold flex items-center gap-2">
                       <FileText className="h-4 w-4 text-blue-600" /> Acceptable I-9 Documents
                     </h3>
                     <div className="text-xs text-muted-foreground space-y-3">
@@ -535,7 +535,7 @@ export default function ServiceDetail() {
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
                 <Card className="border-amber-200 bg-amber-50/50">
                   <CardContent className="p-5 space-y-3">
-                    <h3 className="font-display text-sm font-semibold flex items-center gap-2">
+                    <h3 className="font-sans text-sm font-semibold flex items-center gap-2">
                       <AlertTriangle className="h-4 w-4 text-amber-600" /> Important: Notary Role Clarification
                     </h3>
                     <p className="text-xs text-muted-foreground">
@@ -566,7 +566,7 @@ export default function ServiceDetail() {
             ) : (
               <Card className="border-primary/20 bg-primary/5">
                 <CardContent className="p-5 space-y-4">
-                  <h3 className="font-display text-lg font-semibold">Ready to Get Started?</h3>
+                  <h3 className="font-sans text-lg font-semibold">Ready to Get Started?</h3>
                   {(() => {
                     const SAAS_LINKS: Record<string, string> = {
                       "Document Storage Vault": "/portal", "Cloud Document Storage": "/portal",
@@ -638,7 +638,7 @@ export default function ServiceDetail() {
             {/* Phase 3.1: Dynamic resource links */}
             <Card className="border-border/50">
               <CardContent className="p-5">
-                <h3 className="font-display text-sm font-semibold mb-3">Helpful Resources</h3>
+                <h3 className="font-sans text-sm font-semibold mb-3">Helpful Resources</h3>
                 <div className="space-y-2 text-sm">
                   {resources.map((r, i) => (
                     <a key={i} href={r.url} target={r.url.startsWith("http") ? "_blank" : undefined} rel={r.url.startsWith("http") ? "noreferrer" : undefined} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
@@ -657,7 +657,7 @@ export default function ServiceDetail() {
             {bundles.length > 0 && (
               <Card className="border-border/50">
                 <CardContent className="p-5">
-                  <h3 className="font-display text-sm font-semibold mb-2 flex items-center gap-1">
+                  <h3 className="font-sans text-sm font-semibold mb-2 flex items-center gap-1">
                     <Sparkles className="h-4 w-4 text-primary" /> Often Paired With
                   </h3>
                   <div className="space-y-2 text-sm">
@@ -676,7 +676,7 @@ export default function ServiceDetail() {
         {/* Related Services */}
         {relatedServices.length > 0 && (
           <div className="mt-12">
-            <h2 className="mb-4 font-display text-xl font-bold">Related Services</h2>
+            <h2 className="mb-4 font-sans text-xl font-bold">Related Services</h2>
             <div className="grid gap-4 sm:grid-cols-3">
               {relatedServices.map(s => {
                 const Icon = iconMap[s.icon || "FileText"] || FileText;
@@ -685,7 +685,7 @@ export default function ServiceDetail() {
                     <Card className="h-full border-border/50 hover:shadow-md transition-shadow">
                       <CardContent className="p-5">
                         <Icon className="mb-2 h-5 w-5 text-primary" />
-                        <h3 className="font-display text-sm font-semibold mb-1">{s.name}</h3>
+                        <h3 className="font-sans text-sm font-semibold mb-1">{s.name}</h3>
                         <p className="text-xs text-muted-foreground line-clamp-2">{s.short_description || s.description}</p>
                         <p className="mt-2 text-xs font-medium text-primary flex items-center gap-1">Learn More <ArrowRight className="h-3 w-3" /></p>
                       </CardContent>

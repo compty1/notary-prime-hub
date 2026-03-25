@@ -104,7 +104,7 @@ export default function DocumentWizard({ onSelectService, onClose }: DocumentWiz
           <div className="flex items-center justify-between">
             <div>
               <Badge className="bg-primary/10 text-primary mb-2">{result.category}</Badge>
-              <h3 className="font-display text-lg font-bold text-foreground">{result.serviceType}</h3>
+              <h3 className="font-sans text-lg font-bold text-foreground">{result.serviceType}</h3>
             </div>
             <Button variant="ghost" size="sm" onClick={() => setSelectedPurpose(null)}>← Back</Button>
           </div>
@@ -161,7 +161,7 @@ export default function DocumentWizard({ onSelectService, onClose }: DocumentWiz
       <CardContent className="p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-display text-lg font-bold text-foreground">{questions[0].question}</h3>
+            <h3 className="font-sans text-lg font-bold text-foreground">{questions[0].question}</h3>
             <p className="text-sm text-muted-foreground">{questions[0].subtitle}</p>
           </div>
           {onClose && <Button variant="ghost" size="sm" onClick={onClose}>✕</Button>}

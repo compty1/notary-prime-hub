@@ -220,7 +220,7 @@ export default function AdminClients() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-foreground">Client Directory</h1>
+        <h1 className="font-sans text-2xl font-bold text-foreground">Client Directory</h1>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={() => setShowCreate(true)}>
             <UserPlus className="mr-1 h-3 w-3" /> Create Profile
@@ -290,7 +290,7 @@ export default function AdminClients() {
       <Dialog open={!!selectedClient} onOpenChange={() => setSelectedClient(null)}>
         <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="font-display flex items-center justify-between">
+            <DialogTitle className="font-sans flex items-center justify-between">
               {selectedClient?.full_name || "Client Details"}
               <Button variant="ghost" size="sm" onClick={() => setEditMode(!editMode)}>
                 <Pencil className="mr-1 h-3 w-3" /> {editMode ? "Cancel" : "Edit"}
@@ -405,7 +405,7 @@ export default function AdminClients() {
       {/* Create Profile Dialog */}
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader><DialogTitle className="font-display flex items-center gap-2"><UserPlus className="h-5 w-5 text-primary" /> Create Client Profile</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="font-sans flex items-center gap-2"><UserPlus className="h-5 w-5 text-primary" /> Create Client Profile</DialogTitle></DialogHeader>
           <p className="text-xs text-muted-foreground">Pre-create a profile. It will link automatically when the user signs up with the same email.</p>
           <div className="grid gap-3">
             <div className="grid grid-cols-2 gap-3">
@@ -434,7 +434,7 @@ export default function AdminClients() {
       {/* Message Client Dialog */}
       <Dialog open={!!messageClient} onOpenChange={() => setMessageClient(null)}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader><DialogTitle className="font-display flex items-center gap-2"><Mail className="h-5 w-5 text-primary" /> Message Client</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="font-sans flex items-center gap-2"><Mail className="h-5 w-5 text-primary" /> Message Client</DialogTitle></DialogHeader>
           {messageClient && (
             <div className="space-y-4">
               <div className="rounded-lg bg-muted/50 p-3 text-sm">

@@ -171,7 +171,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
 
   return (
     <div ref={ref}>
-      <h1 className="mb-4 font-display text-2xl font-bold text-foreground">Document Management</h1>
+      <h1 className="mb-4 font-sans text-2xl font-bold text-foreground">Document Management</h1>
 
       {/* Search, Filter, Sort */}
       <div className="mb-4 flex items-center gap-3 flex-wrap">
@@ -291,7 +291,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
 
       <Dialog open={!!previewDoc} onOpenChange={() => { setPreviewDoc(null); setPreviewUrl(null); }}>
         <DialogContent className="max-w-3xl max-h-[85vh]">
-          <DialogHeader><DialogTitle className="font-display">{previewDoc?.file_name}</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="font-sans">{previewDoc?.file_name}</DialogTitle></DialogHeader>
           {previewUrl ? (
             previewDoc?.file_name?.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
               <img src={previewUrl} alt={previewDoc.file_name} className="max-h-[65vh] w-full object-contain rounded" />

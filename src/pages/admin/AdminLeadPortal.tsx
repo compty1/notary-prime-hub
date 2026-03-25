@@ -216,7 +216,7 @@ export default function AdminLeadPortal() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="font-display text-2xl font-bold text-foreground">Lead Portal</h1>
+          <h1 className="font-sans text-2xl font-bold text-foreground">Lead Portal</h1>
           <p className="text-sm text-muted-foreground">Ohio notarization leads — discover, manage, convert</p>
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -384,7 +384,7 @@ export default function AdminLeadPortal() {
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
         <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="font-display">{editingLead ? "Edit Lead" : "Add New Lead"}</DialogTitle>
+            <DialogTitle className="font-sans">{editingLead ? "Edit Lead" : "Add New Lead"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">

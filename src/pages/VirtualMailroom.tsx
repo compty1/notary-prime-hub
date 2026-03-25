@@ -67,7 +67,7 @@ export default function VirtualMailroom() {
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
             <Logo size="md" />
-            <span className="font-display text-lg font-bold text-foreground">Virtual Mailroom</span>
+            <span className="font-sans text-lg font-bold text-foreground">Virtual Mailroom</span>
           </Link>
           <div className="flex items-center gap-2">
             <Link to="/portal"><Button variant="outline" size="sm"><ChevronLeft className="mr-1 h-3 w-3" /> Portal</Button></Link>
@@ -79,7 +79,7 @@ export default function VirtualMailroom() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
           <div className="flex items-center gap-3 mb-2">
             <Inbox className="h-6 w-6 text-primary" />
-            <h1 className="font-display text-2xl font-bold">Your Mailroom</h1>
+            <h1 className="font-sans text-2xl font-bold">Your Mailroom</h1>
             {newCount > 0 && <Badge className="bg-gradient-primary text-white">{newCount} new</Badge>}
           </div>
           <p className="text-sm text-muted-foreground">View scanned mail, forward items, and manage your correspondence.</p>

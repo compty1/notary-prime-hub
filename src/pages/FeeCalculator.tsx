@@ -113,13 +113,13 @@ export default function FeeCalculator() {
 
       <div className="container mx-auto max-w-4xl px-4 py-8">
         <div className="mb-8 text-center">
-          <h1 className="font-display text-3xl font-bold mb-2">Notarization Fee Calculator</h1>
+          <h1 className="font-sans text-3xl font-bold mb-2">Notarization Fee Calculator</h1>
           <p className="text-muted-foreground">Get a transparent estimate before you book</p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
           <Card className="border-border/50">
-            <CardHeader><CardTitle className="font-display flex items-center gap-2"><Calculator className="h-5 w-5 text-primary" /> Configure</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="font-sans flex items-center gap-2"><Calculator className="h-5 w-5 text-primary" /> Configure</CardTitle></CardHeader>
             <CardContent className="space-y-5">
               {settingsLoading ? (
                 <div className="space-y-4">
@@ -206,7 +206,7 @@ export default function FeeCalculator() {
 
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
             <Card className="border-primary/20 bg-primary/5">
-              <CardHeader><CardTitle className="font-display flex items-center gap-2"><DollarSign className="h-5 w-5 text-primary" /> Estimated Total</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="font-sans flex items-center gap-2"><DollarSign className="h-5 w-5 text-primary" /> Estimated Total</CardTitle></CardHeader>
               <CardContent>
                 {settingsLoading ? (
                   <div className="space-y-3">

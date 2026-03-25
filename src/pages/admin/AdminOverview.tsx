@@ -153,7 +153,7 @@ export default function AdminOverview() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-foreground">Dashboard Overview</h1>
+        <h1 className="font-sans text-2xl font-bold text-foreground">Dashboard Overview</h1>
         <Button variant="ghost" size="sm" onClick={fetchData}><RefreshCw className="mr-1 h-3 w-3" /> Refresh</Button>
       </div>
 
@@ -260,7 +260,7 @@ export default function AdminOverview() {
       {recentActivity.length > 0 && (
         <div className="mb-8">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-display text-lg font-semibold text-foreground flex items-center gap-2">
+            <h2 className="font-sans text-lg font-semibold text-foreground flex items-center gap-2">
               <ScrollText className="h-5 w-5 text-muted-foreground" /> Recent Activity
             </h2>
             <Link to="/admin/audit-log"><Button variant="ghost" size="sm" className="text-xs">View All →</Button></Link>
@@ -285,7 +285,7 @@ export default function AdminOverview() {
         </div>
       )}
 
-      <h2 className="mb-4 font-display text-lg font-semibold text-foreground">Recent Appointments</h2>
+      <h2 className="mb-4 font-sans text-lg font-semibold text-foreground">Recent Appointments</h2>
       {appointments.length === 0 ? (
         <Card className="border-border/50"><CardContent className="py-8 text-center text-muted-foreground">No appointments yet</CardContent></Card>
       ) : (

@@ -101,7 +101,7 @@ export default function KBAVerification({ signerName, onComplete, onCancel }: KB
       <CardContent className="p-5 space-y-4">
         <div className="flex items-center gap-2">
           <Shield className="h-5 w-5 text-primary" />
-          <h3 className="font-display font-semibold">Knowledge-Based Authentication (KBA)</h3>
+          <h3 className="font-sans font-semibold">Knowledge-Based Authentication (KBA)</h3>
           <Badge variant="outline" className="text-xs">ORC §147.66</Badge>
         </div>
 
@@ -174,13 +174,13 @@ export default function KBAVerification({ signerName, onComplete, onCancel }: KB
             {result ? (
               <>
                 <CheckCircle className="mx-auto h-12 w-12 text-emerald-500" />
-                <h4 className="font-display text-lg font-bold text-emerald-600">KBA Passed</h4>
+                <h4 className="font-sans text-lg font-bold text-emerald-600">KBA Passed</h4>
                 <p className="text-sm text-muted-foreground">Identity verification successful. The signer has been authenticated.</p>
               </>
             ) : (
               <>
                 <XCircle className="mx-auto h-12 w-12 text-destructive" />
-                <h4 className="font-display text-lg font-bold text-destructive">KBA Failed</h4>
+                <h4 className="font-sans text-lg font-bold text-destructive">KBA Failed</h4>
                 <p className="text-sm text-muted-foreground">Identity verification unsuccessful. The signer did not meet the authentication threshold.</p>
               </>
             )}

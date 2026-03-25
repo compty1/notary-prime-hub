@@ -66,7 +66,7 @@ export default function AdminBusinessClients() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="font-display text-2xl font-bold">Business Clients</h1>
+        <h1 className="font-sans text-2xl font-bold">Business Clients</h1>
         <p className="text-sm text-muted-foreground">Manage business client accounts and KYC verification</p>
       </div>
 

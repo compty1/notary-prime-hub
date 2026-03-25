@@ -49,7 +49,7 @@ export default function VerifySeal() {
 
         <Card className="border-border/50 shadow-lg">
           <CardHeader>
-            <CardTitle className="font-display text-2xl">E-Seal Verification</CardTitle>
+            <CardTitle className="font-sans text-2xl">E-Seal Verification</CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -60,7 +60,7 @@ export default function VerifySeal() {
             ) : !record ? (
               <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-6 text-center">
                 <ShieldX className="mx-auto mb-3 h-10 w-10 text-destructive" />
-                <h2 className="mb-1 font-display text-xl font-semibold text-foreground">Verification Not Found</h2>
+                <h2 className="mb-1 font-sans text-xl font-semibold text-foreground">Verification Not Found</h2>
                 <p className="text-sm text-muted-foreground">This verification record is invalid, revoked, or does not exist.</p>
               </div>
             ) : (

@@ -140,7 +140,7 @@ export default function AdminServices() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-2xl font-bold text-foreground">Services Catalog</h1>
+          <h1 className="font-sans text-2xl font-bold text-foreground">Services Catalog</h1>
           <p className="text-sm text-muted-foreground">Manage all services, pricing, and availability</p>
         </div>
         <Button onClick={openAdd} className="bg-gradient-primary text-white hover:opacity-90">
@@ -208,7 +208,7 @@ export default function AdminServices() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="font-display">{editingId ? "Edit Service" : "Add New Service"}</DialogTitle>
+            <DialogTitle className="font-sans">{editingId ? "Edit Service" : "Add New Service"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div><Label>Service Name *</Label><Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></div>

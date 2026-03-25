@@ -170,7 +170,7 @@ export default function AdminIntegrationTest() {
   }) => (
     <Card className="border-border/50">
       <CardHeader>
-        <CardTitle className="font-display text-lg flex items-center gap-2">
+        <CardTitle className="font-sans text-lg flex items-center gap-2">
           <Icon className="h-5 w-5 text-primary" /> {title}
         </CardTitle>
       </CardHeader>
@@ -196,7 +196,7 @@ export default function AdminIntegrationTest() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="font-display text-2xl font-bold text-foreground">Integration Testing & Process Flows</h1>
+        <h1 className="font-sans text-2xl font-bold text-foreground">Integration Testing & Process Flows</h1>
         <p className="text-sm text-muted-foreground">Test API connections, database, storage, and view integration process documentation</p>
       </div>
 
@@ -234,7 +234,7 @@ export default function AdminIntegrationTest() {
           {Object.entries(flowSteps).map(([key, steps]) => (
             <Card key={key} className="border-border/50">
               <CardHeader>
-                <CardTitle className="font-display text-lg flex items-center gap-2">
+                <CardTitle className="font-sans text-lg flex items-center gap-2">
                   {key === "ron" && <Video className="h-5 w-5 text-primary" />}
                   {key === "payment" && <CreditCard className="h-5 w-5 text-primary" />}
                   {key === "onboarding" && <UserPlus className="h-5 w-5 text-primary" />}

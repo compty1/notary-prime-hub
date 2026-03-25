@@ -155,7 +155,7 @@ export default function AdminAIAssistant() {
     <div className="flex h-[calc(100vh-7rem)] flex-col">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h1 className="font-display text-2xl font-bold text-foreground">AI Notary Assistant</h1>
+          <h1 className="font-sans text-2xl font-bold text-foreground">AI Notary Assistant</h1>
           <p className="text-sm text-muted-foreground">Ask questions about Ohio notary law, procedures, and document requirements</p>
         </div>
         {messages.length > 0 && (
@@ -170,7 +170,7 @@ export default function AdminAIAssistant() {
           <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
             <Bot className="h-8 w-8 text-primary" />
           </div>
-          <h2 className="mb-2 font-display text-lg font-semibold text-foreground">How can I help?</h2>
+          <h2 className="mb-2 font-sans text-lg font-semibold text-foreground">How can I help?</h2>
           <p className="mb-6 max-w-md text-center text-sm text-muted-foreground">
             I'm trained on Ohio Revised Code §147 and notary best practices. Ask me anything about procedures, requirements, or compliance.
           </p>

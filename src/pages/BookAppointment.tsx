@@ -480,7 +480,7 @@ export default function BookAppointment() {
         <motion.div key={step} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }}>
           <Card className="border-border/50">
             <CardHeader>
-              <CardTitle className="font-display text-xl">
+              <CardTitle className="font-sans text-xl">
                 {isNonNotarial
                   ? (step === 1 ? "Choose Service" : step === 2 ? "Pick Date & Time" : "Review & Confirm")
                   : (step === 1 ? "Select Notarization Type" : step === 2 ? "Choose Service" : step === 3 ? "Pick Date & Time" : "Review & Confirm")}
@@ -502,10 +502,10 @@ export default function BookAppointment() {
               ) : (
                 <div className="grid gap-4 sm:grid-cols-2">
                   <button onClick={() => setNotarizationType("in_person")} className={`rounded-lg border-2 p-6 text-left transition-all ${notarizationType === "in_person" ? "border-accent bg-primary/5" : "border-border hover:border-primary/20"}`} aria-label="Select in-person notarization">
-                    <MapPin className="mb-2 h-8 w-8 text-primary" /><h3 className="font-display text-lg font-semibold">In-Person</h3><p className="text-sm text-muted-foreground">Franklin County & Columbus area</p>
+                    <MapPin className="mb-2 h-8 w-8 text-primary" /><h3 className="font-sans text-lg font-semibold">In-Person</h3><p className="text-sm text-muted-foreground">Franklin County & Columbus area</p>
                   </button>
                   <button onClick={() => setNotarizationType("ron")} className={`rounded-lg border-2 p-6 text-left transition-all ${notarizationType === "ron" ? "border-accent bg-primary/5" : "border-border hover:border-primary/20"}`} aria-label="Select remote online notarization">
-                    <Monitor className="mb-2 h-8 w-8 text-primary" /><h3 className="font-display text-lg font-semibold">Remote (RON)</h3><p className="text-sm text-muted-foreground">Secure video call from anywhere</p>
+                    <Monitor className="mb-2 h-8 w-8 text-primary" /><h3 className="font-sans text-lg font-semibold">Remote (RON)</h3><p className="text-sm text-muted-foreground">Secure video call from anywhere</p>
                   </button>
                 </div>
               ))}

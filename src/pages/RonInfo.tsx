@@ -140,7 +140,7 @@ export default function RonInfo() {
                 <Monitor className="mr-1 h-3 w-3" /> Remote Online Notarization
               </Badge>
             </motion.div>
-            <motion.h1 variants={fadeUp} custom={1} className="mb-4 font-display text-3xl font-bold text-primary-foreground md:text-5xl">
+            <motion.h1 variants={fadeUp} custom={1} className="mb-4 font-sans text-3xl font-bold text-primary-foreground md:text-5xl">
               RON: The Future of Notarization
             </motion.h1>
             <motion.p variants={fadeUp} custom={2} className="mx-auto max-w-2xl text-primary-foreground/70">
@@ -157,21 +157,21 @@ export default function RonInfo() {
             <Card className="border-border/50 bg-primary/5">
               <CardContent className="p-6 text-center">
                 <Shield className="mx-auto mb-3 h-8 w-8 text-primary" />
-                <h3 className="mb-1 font-display text-lg font-semibold">Ohio Law</h3>
+                <h3 className="mb-1 font-sans text-lg font-semibold">Ohio Law</h3>
                 <p className="text-sm text-muted-foreground">Authorized under ORC §147.65-.66</p>
               </CardContent>
             </Card>
             <Card className="border-border/50 bg-primary/5">
               <CardContent className="p-6 text-center">
                 <Lock className="mx-auto mb-3 h-8 w-8 text-primary" />
-                <h3 className="mb-1 font-display text-lg font-semibold">Multi-Factor Security</h3>
+                <h3 className="mb-1 font-sans text-lg font-semibold">Multi-Factor Security</h3>
                 <p className="text-sm text-muted-foreground">ID scan + KBA + live video + recording</p>
               </CardContent>
             </Card>
             <Card className="border-border/50 bg-primary/5">
               <CardContent className="p-6 text-center">
                 <Globe className="mx-auto mb-3 h-8 w-8 text-primary" />
-                <h3 className="mb-1 font-display text-lg font-semibold">50-State Recognition</h3>
+                <h3 className="mb-1 font-sans text-lg font-semibold">50-State Recognition</h3>
                 <p className="text-sm text-muted-foreground">Full Faith & Credit Clause</p>
               </CardContent>
             </Card>
@@ -182,7 +182,7 @@ export default function RonInfo() {
       {/* Comparison Table */}
       <section className="py-12">
         <div className="container mx-auto max-w-4xl px-4">
-          <h2 className="mb-8 text-center font-display text-2xl font-bold text-foreground">RON vs. Traditional Notarization</h2>
+          <h2 className="mb-8 text-center font-sans text-2xl font-bold text-foreground">RON vs. Traditional Notarization</h2>
           <Card className="overflow-hidden border-border/50">
             <CardContent className="p-0">
               <div className="overflow-x-auto">
@@ -218,14 +218,14 @@ export default function RonInfo() {
       {/* State Acceptance */}
       <section className="bg-muted/30 py-12">
         <div className="container mx-auto max-w-4xl px-4">
-          <h2 className="mb-8 text-center font-display text-2xl font-bold text-foreground">Who Accepts RON?</h2>
+          <h2 className="mb-8 text-center font-sans text-2xl font-bold text-foreground">Who Accepts RON?</h2>
           <div className="space-y-6">
             {stateCategories.map((cat) => (
               <Card key={cat.title} className="border-border/50">
                 <CardContent className="p-6">
                   <div className="mb-3 flex items-center gap-2">
                     <Badge className={cat.color}>{cat.badge}</Badge>
-                    <h3 className="font-display text-lg font-semibold">{cat.title}</h3>
+                    <h3 className="font-sans text-lg font-semibold">{cat.title}</h3>
                   </div>
                   <p className="mb-2 text-sm text-muted-foreground">{cat.description}</p>
                   <p className="text-sm">{cat.states}</p>
@@ -244,7 +244,7 @@ export default function RonInfo() {
       {/* Use Cases */}
       <section className="py-12">
         <div className="container mx-auto max-w-4xl px-4">
-          <h2 className="mb-8 text-center font-display text-2xl font-bold text-foreground">Perfect For</h2>
+          <h2 className="mb-8 text-center font-sans text-2xl font-bold text-foreground">Perfect For</h2>
           <div className="grid gap-6 md:grid-cols-2">
             {useCases.map((uc) => (
               <Card key={uc.title} className="border-border/50 transition-shadow hover:shadow-md">
@@ -253,7 +253,7 @@ export default function RonInfo() {
                     <uc.icon className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <h3 className="mb-1 font-display font-semibold text-foreground">{uc.title}</h3>
+                    <h3 className="mb-1 font-sans font-semibold text-foreground">{uc.title}</h3>
                     <p className="text-sm text-muted-foreground">{uc.desc}</p>
                   </div>
                 </CardContent>
@@ -266,7 +266,7 @@ export default function RonInfo() {
       {/* FAQ */}
       <section className="bg-muted/30 py-12">
         <div className="container mx-auto max-w-3xl px-4">
-          <h2 className="mb-8 text-center font-display text-2xl font-bold text-foreground">RON FAQ</h2>
+          <h2 className="mb-8 text-center font-sans text-2xl font-bold text-foreground">RON FAQ</h2>
           <Accordion type="single" collapsible className="space-y-2">
             {ronFaqs.map((faq, i) => (
               <AccordionItem key={i} value={`faq-${i}`} className="rounded-lg border border-border/50 bg-card px-4">
@@ -281,12 +281,12 @@ export default function RonInfo() {
       {/* KBA & Compliance Info */}
       <section className="py-12">
         <div className="container mx-auto max-w-4xl px-4">
-          <h2 className="mb-6 text-center font-display text-2xl font-bold text-foreground">Knowledge-Based Authentication (KBA)</h2>
+          <h2 className="mb-6 text-center font-sans text-2xl font-bold text-foreground">Knowledge-Based Authentication (KBA)</h2>
           <Card className="border-border/50">
             <CardContent className="p-6">
               <div className="grid gap-6 md:grid-cols-2">
                 <div>
-                  <h3 className="mb-2 font-display text-lg font-semibold">Required Under Ohio Law</h3>
+                  <h3 className="mb-2 font-sans text-lg font-semibold">Required Under Ohio Law</h3>
                   <p className="text-sm text-muted-foreground mb-3">
                     Ohio Revised Code §147.66 requires Knowledge-Based Authentication (KBA) as part of the identity verification process for all Remote Online Notarization sessions. This is a security measure that protects both signers and relying parties.
                   </p>
@@ -298,7 +298,7 @@ export default function RonInfo() {
                   </ul>
                 </div>
                 <div>
-                  <h3 className="mb-2 font-display text-lg font-semibold">Accepted KBA Providers</h3>
+                  <h3 className="mb-2 font-sans text-lg font-semibold">Accepted KBA Providers</h3>
                   <p className="text-sm text-muted-foreground mb-3">
                     Ohio law requires the use of compliant KBA providers that meet STESSO (Secure Technology Standards for Electronic Submission and Storage of Online) standards. Commonly accepted providers include:
                   </p>
@@ -327,7 +327,7 @@ export default function RonInfo() {
       {/* 50-State RON Legal Reference */}
       <section className="bg-muted/30 py-12">
         <div className="container mx-auto max-w-5xl px-4">
-          <h2 className="mb-4 text-center font-display text-2xl font-bold text-foreground">50-State RON Legal Reference</h2>
+          <h2 className="mb-4 text-center font-sans text-2xl font-bold text-foreground">50-State RON Legal Reference</h2>
           <p className="mb-6 text-center text-sm text-muted-foreground">
             Search any state to see its RON status, governing statute, KBA requirements, and retention rules. Ohio RON notarizations are accepted nationwide under the Full Faith & Credit Clause.
           </p>
@@ -380,7 +380,7 @@ export default function RonInfo() {
       <section className="py-16 text-center">
         <div className="container mx-auto px-4">
           <Zap className="mx-auto mb-4 h-10 w-10 text-primary" />
-          <h2 className="mb-4 font-display text-2xl font-bold text-foreground">Try RON Today</h2>
+          <h2 className="mb-4 font-sans text-2xl font-bold text-foreground">Try RON Today</h2>
           <p className="mb-6 mx-auto max-w-lg text-muted-foreground">
             Experience the convenience of remote notarization. Book a RON session and have your documents notarized from anywhere.
           </p>

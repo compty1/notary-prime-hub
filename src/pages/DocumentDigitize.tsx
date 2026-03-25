@@ -214,7 +214,7 @@ export default function DocumentDigitize() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <Card className="border-border/50">
               <CardHeader>
-                <CardTitle className="font-display">Upload Documents for Digitization</CardTitle>
+                <CardTitle className="font-sans">Upload Documents for Digitization</CardTitle>
               </CardHeader>
               <CardContent>
                 <div
@@ -271,7 +271,7 @@ export default function DocumentDigitize() {
             <Card className="border-border/50">
               <CardContent className="py-16 text-center">
                 <Loader2 className="mx-auto mb-4 h-12 w-12 animate-spin text-primary" />
-                <h2 className="mb-2 font-display text-xl font-bold">Processing Documents...</h2>
+                <h2 className="mb-2 font-sans text-xl font-bold">Processing Documents...</h2>
                 <p className="mb-4 text-muted-foreground">AI is transcribing your documents with OCR</p>
                 <div className="mx-auto max-w-xs">
                   <Progress value={progress} className="h-2" />
@@ -305,7 +305,7 @@ export default function DocumentDigitize() {
             <Card className="border-border/50">
               <CardHeader className="pb-0">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="font-display text-lg">
+                  <CardTitle className="font-sans text-lg">
                     {processedDocs[activeDocIndex]?.fileName || "Document"} — Edit
                   </CardTitle>
                   <div className="flex gap-2">

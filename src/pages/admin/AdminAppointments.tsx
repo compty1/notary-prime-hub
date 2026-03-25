@@ -381,7 +381,7 @@ export default function AdminAppointments() {
   return (
     <div>
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="font-display text-2xl font-bold text-foreground">Appointments</h1>
+        <h1 className="font-sans text-2xl font-bold text-foreground">Appointments</h1>
         <div className="flex items-center gap-2 flex-wrap">
           <Button onClick={() => setShowCreateDialog(true)} className="bg-gradient-primary text-white hover:opacity-90">
             <Plus className="mr-1 h-4 w-4" /> New
@@ -413,7 +413,7 @@ export default function AdminAppointments() {
       {/* Service Requests Section */}
       {showRequests && (
         <div className="mb-6 space-y-3">
-          <h2 className="font-display text-lg font-semibold text-foreground">Service Requests (Non-Appointment)</h2>
+          <h2 className="font-sans text-lg font-semibold text-foreground">Service Requests (Non-Appointment)</h2>
           {requestsLoading ? (
             <div className="flex justify-center py-6">
               <div className="h-6 w-6 animate-spin rounded-full border-4 border-accent border-t-transparent" />
@@ -567,7 +567,7 @@ export default function AdminAppointments() {
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
         <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="font-display flex items-center gap-2">
+            <DialogTitle className="font-sans flex items-center gap-2">
               <Plus className="h-5 w-5 text-primary" /> Create Appointment
             </DialogTitle>
           </DialogHeader>
@@ -643,7 +643,7 @@ export default function AdminAppointments() {
       <Dialog open={!!detailAppt} onOpenChange={() => setDetailAppt(null)}>
         <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="font-display">Appointment Details</DialogTitle>
+            <DialogTitle className="font-sans">Appointment Details</DialogTitle>
           </DialogHeader>
           {detailAppt && (() => {
             const clientProfile = profiles.find((p) => p.user_id === detailAppt.client_id);
@@ -818,7 +818,7 @@ export default function AdminAppointments() {
       <Dialog open={!!quickJournalAppt} onOpenChange={() => setQuickJournalAppt(null)}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="font-display flex items-center gap-2">
+            <DialogTitle className="font-sans flex items-center gap-2">
               <BookMarked className="h-5 w-5 text-primary" />
               Quick Journal Entry
             </DialogTitle>
@@ -868,12 +868,12 @@ export default function AdminAppointments() {
       <Dialog open={!!receiptAppt} onOpenChange={() => setReceiptAppt(null)}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="font-display">Notarization Receipt</DialogTitle>
+            <DialogTitle className="font-sans">Notarization Receipt</DialogTitle>
           </DialogHeader>
           {receiptAppt && (
             <div className="space-y-4" id="receipt-content" data-print-receipt>
               <div className="text-center border-b border-border pb-4">
-                <h2 className="font-display text-xl font-bold text-foreground">Notar</h2>
+                <h2 className="font-sans text-xl font-bold text-foreground">Notar</h2>
                 <p className="text-sm text-muted-foreground">Ohio Commissioned Notary Public</p>
                 <p className="text-xs text-muted-foreground">Franklin County, Ohio</p>
               </div>
@@ -920,7 +920,7 @@ export default function AdminAppointments() {
       <Dialog open={!!messageAppt} onOpenChange={() => setMessageAppt(null)}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="font-display flex items-center gap-2">
+            <DialogTitle className="font-sans flex items-center gap-2">
               <Mail className="h-5 w-5 text-primary" /> Message Client
             </DialogTitle>
           </DialogHeader>

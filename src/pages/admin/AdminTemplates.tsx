@@ -165,7 +165,7 @@ export default function AdminTemplates() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="font-display text-2xl font-bold text-foreground">Templates & Forms Library</h1>
+        <h1 className="font-sans text-2xl font-bold text-foreground">Templates & Forms Library</h1>
         <p className="text-sm text-muted-foreground">Ohio notary forms, certificates, and your custom form library</p>
       </div>
 
@@ -179,7 +179,7 @@ export default function AdminTemplates() {
         <TabsContent value="ohio-forms" className="space-y-6">
           {ohioForms.map((cat) => (
             <div key={cat.category}>
-              <h2 className="font-display text-lg font-semibold mb-3">{cat.category}</h2>
+              <h2 className="font-sans text-lg font-semibold mb-3">{cat.category}</h2>
               <div className="grid gap-3 md:grid-cols-2">
                 {cat.forms.map((form) => (
                   <Card key={form.title} className="border-border/50">
@@ -207,7 +207,7 @@ export default function AdminTemplates() {
             <Card key={cert.title} className="border-border/50">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-display font-semibold">{cert.title}</h3>
+                  <h3 className="font-sans font-semibold">{cert.title}</h3>
                   <Button size="sm" variant="outline" onClick={() => {
                     const w = window.open("", "_blank");
                     if (w) {
@@ -227,7 +227,7 @@ export default function AdminTemplates() {
           {/* Upload section */}
           <Card className="border-primary/20 bg-primary/5">
             <CardContent className="p-4 space-y-3">
-              <h3 className="font-display text-sm font-semibold">Upload New Form</h3>
+              <h3 className="font-sans text-sm font-semibold">Upload New Form</h3>
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <Label>Title</Label>

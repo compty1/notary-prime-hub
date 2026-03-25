@@ -171,7 +171,7 @@ export default function ServicePreQualifier({ category, serviceName, onComplete,
     <Card className="border-primary/20 shadow-lg">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="font-display text-lg">{serviceName} — Quick Questions</CardTitle>
+          <CardTitle className="font-sans text-lg">{serviceName} — Quick Questions</CardTitle>
           <Badge variant="outline" className="text-xs">{step + 1} of {steps.length}</Badge>
         </div>
         <div className="flex gap-1 mt-2">

@@ -30,7 +30,7 @@ export default class ErrorBoundary extends Component<Props, State> {
         <div className="flex items-center justify-center px-4 py-16">
           <div className="mx-auto max-w-md text-center">
             <AlertTriangle className="mx-auto mb-4 h-10 w-10 text-destructive" />
-            <h2 className="mb-2 font-display text-xl font-bold text-foreground">
+            <h2 className="mb-2 font-sans text-xl font-bold text-foreground">
               {this.props.fallbackMessage || "Something went wrong"}
             </h2>
             <p className="mb-4 text-sm text-muted-foreground">

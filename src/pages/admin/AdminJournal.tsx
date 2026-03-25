@@ -157,7 +157,7 @@ export default function AdminJournal() {
     <div>
       <div className="mb-6 flex items-center justify-between flex-wrap gap-2">
         <div>
-          <h1 className="font-display text-2xl font-bold text-foreground">Notary Journal</h1>
+          <h1 className="font-sans text-2xl font-bold text-foreground">Notary Journal</h1>
           <p className="text-sm text-muted-foreground">ORC §147.551 compliant record keeping</p>
         </div>
         <div className="flex items-center gap-2">
@@ -174,7 +174,7 @@ export default function AdminJournal() {
             </DialogTrigger>
             <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
               <DialogHeader>
-                <DialogTitle className="font-display">{editingEntry ? "Edit Journal Entry" : "New Journal Entry"}</DialogTitle>
+                <DialogTitle className="font-sans">{editingEntry ? "Edit Journal Entry" : "New Journal Entry"}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <div>

@@ -167,7 +167,7 @@ export default function AppointmentConfirmation() {
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
             <Logo size="md" />
-            <span className="font-display text-lg font-bold text-foreground">Notar</span>
+            <span className="font-sans text-lg font-bold text-foreground">Notar</span>
           </Link>
           <Link to="/portal"><Button variant="outline" size="sm">My Portal</Button></Link>
         </div>
@@ -180,7 +180,7 @@ export default function AppointmentConfirmation() {
           </div>
         </div>
 
-        <h1 className="mb-2 font-display text-3xl font-bold text-foreground">Appointment Confirmed!</h1>
+        <h1 className="mb-2 font-sans text-3xl font-bold text-foreground">Appointment Confirmed!</h1>
         <p className="mb-8 text-muted-foreground">Your notarization appointment has been booked successfully.</p>
 
         <Card className="mb-6 border-border/50 text-left">

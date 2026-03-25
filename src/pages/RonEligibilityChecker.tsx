@@ -270,7 +270,7 @@ export default function RonEligibilityChecker() {
           <Badge className="mb-4 border-primary/20 bg-primary/10 text-primary">
             <Monitor className="mr-1 h-3 w-3" /> RON Eligibility Tool
           </Badge>
-          <h1 className="mb-3 font-display text-3xl font-bold text-primary-foreground md:text-4xl">
+          <h1 className="mb-3 font-sans text-3xl font-bold text-primary-foreground md:text-4xl">
             Will Remote Notarization Work for You?
           </h1>
           <p className="mx-auto max-w-2xl text-primary-foreground/70">
@@ -349,7 +349,7 @@ export default function RonEligibilityChecker() {
                     <Badge className={`mb-2 ${levelConfig[result.level].badge}`}>
                       {result.level === "green" ? "Widely Accepted" : result.level === "yellow" ? "Verify First" : "In-Person Recommended"}
                     </Badge>
-                    <h2 className="font-display text-xl font-bold mb-2">{result.title}</h2>
+                    <h2 className="font-sans text-xl font-bold mb-2">{result.title}</h2>
                     <p className="text-muted-foreground mb-4">{result.explanation}</p>
                     <ul className="space-y-2 mb-4">
                       {result.details.map((d, i) => (
@@ -392,7 +392,7 @@ export default function RonEligibilityChecker() {
           <Card className="border-border/50 hover:shadow-md transition-shadow">
             <CardContent className="p-5 text-center">
               <Globe className="mx-auto mb-2 h-6 w-6 text-primary" />
-              <h3 className="font-display text-sm font-semibold mb-1">Learn About RON</h3>
+              <h3 className="font-sans text-sm font-semibold mb-1">Learn About RON</h3>
               <p className="text-xs text-muted-foreground mb-3">Full comparison, state acceptance, and FAQ</p>
               <Link to="/ron-info"><Button variant="outline" size="sm" className="w-full">RON Info <ArrowRight className="ml-1 h-3 w-3" /></Button></Link>
             </CardContent>
@@ -400,7 +400,7 @@ export default function RonEligibilityChecker() {
           <Card className="border-border/50 hover:shadow-md transition-shadow">
             <CardContent className="p-5 text-center">
               <FileText className="mx-auto mb-2 h-6 w-6 text-primary" />
-              <h3 className="font-display text-sm font-semibold mb-1">Document Templates</h3>
+              <h3 className="font-sans text-sm font-semibold mb-1">Document Templates</h3>
               <p className="text-xs text-muted-foreground mb-3">Free templates for common documents</p>
               <Link to="/templates"><Button variant="outline" size="sm" className="w-full">View Templates <ArrowRight className="ml-1 h-3 w-3" /></Button></Link>
             </CardContent>
@@ -408,7 +408,7 @@ export default function RonEligibilityChecker() {
           <Card className="border-border/50 hover:shadow-md transition-shadow">
             <CardContent className="p-5 text-center">
               <Briefcase className="mx-auto mb-2 h-6 w-6 text-primary" />
-              <h3 className="font-display text-sm font-semibold mb-1">All Services</h3>
+              <h3 className="font-sans text-sm font-semibold mb-1">All Services</h3>
               <p className="text-xs text-muted-foreground mb-3">View our full catalog of notary & document services</p>
               <Link to="/services"><Button variant="outline" size="sm" className="w-full">View Services <ArrowRight className="ml-1 h-3 w-3" /></Button></Link>
             </CardContent>

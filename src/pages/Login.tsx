@@ -71,7 +71,7 @@ export default function Login() {
           <Link to="/" className="mx-auto mb-4">
             <Logo size="lg" />
           </Link>
-          <CardTitle className="font-display text-2xl">
+          <CardTitle className="font-sans text-2xl">
             {forgotMode ? "Reset Password" : "Welcome Back"}
           </CardTitle>
           <CardDescription>

@@ -90,7 +90,7 @@ export default function VerifyIdentity() {
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
             <Logo size="md" />
-            <span className="font-display text-lg font-bold text-foreground">Notar</span>
+            <span className="font-sans text-lg font-bold text-foreground">Notar</span>
           </Link>
           <div className="flex items-center gap-2">
             <Link to="/services"><Button variant="outline" size="sm"><ChevronLeft className="mr-1 h-3 w-3" /> Services</Button></Link>
@@ -104,7 +104,7 @@ export default function VerifyIdentity() {
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto mb-4">
               <Shield className="h-8 w-8 text-primary" />
             </div>
-            <h1 className="font-display text-2xl font-bold">ID Verification / KYC Check</h1>
+            <h1 className="font-sans text-2xl font-bold">ID Verification / KYC Check</h1>
             <p className="text-sm text-muted-foreground mt-2">Upload a photo of your government-issued ID for instant AI verification. No appointment needed.</p>
           </div>
 

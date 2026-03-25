@@ -148,7 +148,7 @@ export default function AdminAuditLog() {
   return (
     <div>
       <div className="mb-2 flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-foreground">Audit Log</h1>
+        <h1 className="font-sans text-2xl font-bold text-foreground">Audit Log</h1>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" onClick={() => setCompact(!compact)} title={compact ? "Comfortable view" : "Compact view"}>
             {compact ? <Rows4 className="h-4 w-4" /> : <Rows3 className="h-4 w-4" />}
@@ -327,7 +327,7 @@ export default function AdminAuditLog() {
       <Sheet open={!!selectedLog} onOpenChange={(open) => !open && setSelectedLog(null)}>
         <SheetContent className="sm:max-w-lg overflow-y-auto">
           <SheetHeader>
-            <SheetTitle className="font-display">Audit Log Detail</SheetTitle>
+            <SheetTitle className="font-sans">Audit Log Detail</SheetTitle>
           </SheetHeader>
           {selectedLog && (
             <div className="mt-6 space-y-4">

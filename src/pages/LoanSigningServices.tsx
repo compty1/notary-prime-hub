@@ -107,7 +107,7 @@ export default function LoanSigningServices() {
           <Badge className="mb-4 border-primary/20 bg-primary/10 text-primary">
             <Building2 className="mr-1 h-3 w-3" /> For Title Companies & Lenders
           </Badge>
-          <h1 className="mb-4 font-display text-3xl font-bold text-primary-foreground md:text-5xl">
+          <h1 className="mb-4 font-sans text-3xl font-bold text-primary-foreground md:text-5xl">
             Loan Signing Agent Services
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-primary-foreground/70">
@@ -126,7 +126,7 @@ export default function LoanSigningServices() {
                 <Card className="h-full border-border/50">
                   <CardContent className="p-5">
                     <cap.icon className="mb-3 h-8 w-8 text-primary" />
-                    <h3 className="mb-1 font-display text-base font-semibold">{cap.title}</h3>
+                    <h3 className="mb-1 font-sans text-base font-semibold">{cap.title}</h3>
                     <p className="text-sm text-muted-foreground">{cap.desc}</p>
                   </CardContent>
                 </Card>
@@ -141,7 +141,7 @@ export default function LoanSigningServices() {
         <div className="container mx-auto max-w-5xl px-4">
           <div className="grid gap-8 md:grid-cols-2">
             <div>
-              <h2 className="mb-4 font-display text-2xl font-bold">Signing Types We Handle</h2>
+              <h2 className="mb-4 font-sans text-2xl font-bold">Signing Types We Handle</h2>
               <div className="grid gap-2 sm:grid-cols-2">
                 {signingTypes.map(type => (
                   <div key={type} className="flex items-center gap-2 text-sm">
@@ -152,7 +152,7 @@ export default function LoanSigningServices() {
               </div>
             </div>
             <div>
-              <h2 className="mb-4 font-display text-2xl font-bold">Business Hours & Response</h2>
+              <h2 className="mb-4 font-sans text-2xl font-bold">Business Hours & Response</h2>
               <Card className="border-border/50">
                 <CardContent className="p-5 space-y-4">
                   <div className="flex items-start gap-3">
@@ -193,7 +193,7 @@ export default function LoanSigningServices() {
       {/* Partnership Inquiry Form */}
       <section className="bg-muted/30 py-12">
         <div className="container mx-auto max-w-2xl px-4">
-          <h2 className="mb-2 text-center font-display text-2xl font-bold">Partner With Us</h2>
+          <h2 className="mb-2 text-center font-sans text-2xl font-bold">Partner With Us</h2>
           <p className="mb-8 text-center text-muted-foreground">
             Fill out the form below and we'll reach out to discuss how we can support your signing needs.
           </p>
@@ -203,7 +203,7 @@ export default function LoanSigningServices() {
               <Card className="border-emerald-200 bg-emerald-50">
                 <CardContent className="p-8 text-center">
                   <CheckCircle className="mx-auto mb-4 h-12 w-12 text-emerald-600" />
-                  <h3 className="mb-2 font-display text-xl font-bold">Inquiry Received!</h3>
+                  <h3 className="mb-2 font-sans text-xl font-bold">Inquiry Received!</h3>
                   <p className="mb-6 text-muted-foreground">
                     Thank you for your interest. We'll review your information and contact you within 24 hours 
                     to discuss partnership opportunities.
@@ -285,7 +285,7 @@ export default function LoanSigningServices() {
       {/* Other Services CTA */}
       <section className="py-12">
         <div className="container mx-auto max-w-3xl px-4 text-center">
-          <h2 className="mb-3 font-display text-2xl font-bold">Explore All Our Services</h2>
+          <h2 className="mb-3 font-sans text-2xl font-bold">Explore All Our Services</h2>
           <p className="mb-6 text-muted-foreground">
             Beyond loan signings, we offer a full range of notary, document, and professional services for individuals and businesses.
           </p>

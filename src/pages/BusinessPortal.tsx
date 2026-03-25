@@ -132,7 +132,7 @@ export default function BusinessPortal() {
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
             <Logo size="md" />
-            <span className="font-display text-lg font-bold text-foreground">Business Portal</span>
+            <span className="font-sans text-lg font-bold text-foreground">Business Portal</span>
           </Link>
           <div className="flex gap-2">
             <Link to="/portal"><Button variant="outline" size="sm"><ChevronLeft className="mr-1 h-3 w-3" /> Client Portal</Button></Link>
@@ -145,7 +145,7 @@ export default function BusinessPortal() {
         {!business ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
             <Building2 className="mx-auto mb-4 h-16 w-16 text-muted-foreground/50" />
-            <h1 className="font-display text-2xl font-bold mb-2">Business Client Portal</h1>
+            <h1 className="font-sans text-2xl font-bold mb-2">Business Client Portal</h1>
             <p className="text-muted-foreground mb-6">Register your business for bulk uploads, team accounts, and dedicated service</p>
             <Button onClick={() => setRegisterOpen(true)} className="bg-gradient-primary text-white hover:opacity-90"><Plus className="mr-1 h-4 w-4" /> Register Business</Button>
           </motion.div>
@@ -154,7 +154,7 @@ export default function BusinessPortal() {
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-1">
                 <Building2 className="h-6 w-6 text-primary" />
-                <h1 className="font-display text-2xl font-bold">{business.business_name}</h1>
+                <h1 className="font-sans text-2xl font-bold">{business.business_name}</h1>
                 <Badge className={business.verification_status === "verified" ? "bg-emerald-100 text-emerald-800" : "bg-yellow-100 text-yellow-800"}>
                   {business.verification_status}
                 </Badge>
@@ -171,7 +171,7 @@ export default function BusinessPortal() {
 
               <TabsContent value="documents" className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="font-display text-lg font-semibold">Bulk Document Upload</h2>
+                  <h2 className="font-sans text-lg font-semibold">Bulk Document Upload</h2>
                   <div>
                     <input ref={fileInputRef} type="file" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.tiff,.xlsx,.csv" className="hidden" onChange={handleBulkUpload} />
                     <Button size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="bg-gradient-primary text-white hover:opacity-90">
@@ -196,7 +196,7 @@ export default function BusinessPortal() {
               </TabsContent>
 
               <TabsContent value="team" className="space-y-4">
-                <h2 className="font-display text-lg font-semibold">Team Members</h2>
+                <h2 className="font-sans text-lg font-semibold">Team Members</h2>
                 <div className="flex gap-2">
                   <Input value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="Enter team member's email..." className="max-w-sm" />
                   <Button size="sm" onClick={addTeamMember} disabled={!inviteEmail.trim()} className="bg-gradient-primary text-white hover:opacity-90">
@@ -228,7 +228,7 @@ export default function BusinessPortal() {
               </TabsContent>
 
               <TabsContent value="history" className="space-y-4">
-                <h2 className="font-display text-lg font-semibold">Billing & Appointment History</h2>
+                <h2 className="font-sans text-lg font-semibold">Billing & Appointment History</h2>
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <Card className="border-border/50">
                     <CardContent className="p-4 text-center">
@@ -277,7 +277,7 @@ export default function BusinessPortal() {
       {/* Register Dialog */}
       <Dialog open={registerOpen} onOpenChange={setRegisterOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle className="font-display">Register Your Business</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="font-sans">Register Your Business</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <div><Label>Business Name *</Label><Input value={form.business_name} onChange={(e) => setForm({ ...form, business_name: e.target.value })} /></div>
             <div><Label>EIN (optional)</Label><Input value={form.ein} onChange={(e) => setForm({ ...form, ein: e.target.value })} placeholder="XX-XXXXXXX" /></div>

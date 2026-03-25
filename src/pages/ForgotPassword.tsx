@@ -76,7 +76,7 @@ export default function ResetPassword() {
           <Link to="/" className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary">
             <Shield className="h-6 w-6 text-primary-foreground" />
           </Link>
-          <CardTitle className="font-display text-2xl">
+          <CardTitle className="font-sans text-2xl">
             {success ? "Password Updated" : mode === "reset" ? "Set New Password" : "Forgot Password"}
           </CardTitle>
           <CardDescription>

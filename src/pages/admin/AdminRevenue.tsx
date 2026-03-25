@@ -217,7 +217,7 @@ export default function AdminRevenue() {
     <div>
       <div className="mb-6 flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="font-display text-2xl font-bold text-foreground">Revenue & Payments</h1>
+          <h1 className="font-sans text-2xl font-bold text-foreground">Revenue & Payments</h1>
           <p className="text-sm text-muted-foreground">Track earnings, expenses, and payment status</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
@@ -403,7 +403,7 @@ export default function AdminRevenue() {
 
         <TabsContent value="journal">
           <Card className="border-border/50">
-            <CardHeader><CardTitle className="font-display text-lg">Per-Session Breakdown</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="font-sans text-lg">Per-Session Breakdown</CardTitle></CardHeader>
             <CardContent className="p-0">
               {filtered.length === 0 ? (
                 <div className="py-8 text-center text-muted-foreground">No journal entries for this period</div>
@@ -457,7 +457,7 @@ export default function AdminRevenue() {
       {/* Request Payment Dialog */}
       <Dialog open={showPaymentRequest} onOpenChange={setShowPaymentRequest}>
         <DialogContent>
-          <DialogHeader><DialogTitle className="font-display">Request Payment</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="font-sans">Request Payment</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <div>
               <Label>Client</Label>
@@ -492,7 +492,7 @@ export default function AdminRevenue() {
       {/* Record Payment Dialog */}
       <Dialog open={showRecordPayment} onOpenChange={setShowRecordPayment}>
         <DialogContent>
-          <DialogHeader><DialogTitle className="font-display">Record Payment</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="font-sans">Record Payment</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <div>
               <Label>Client</Label>
