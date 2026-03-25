@@ -9,10 +9,10 @@ interface LogoProps {
 }
 
 const sizeMap = {
-  sm: { box: "h-8 w-8", text: "text-[10px]" },
-  md: { box: "h-10 w-10", text: "text-xs" },
-  lg: { box: "h-12 w-12", text: "text-sm" },
-  xl: { box: "h-16 w-16", text: "text-base" },
+  sm: { box: "h-8 w-8", text: "text-[10px]", letter: "text-sm" },
+  md: { box: "h-10 w-10", text: "text-xs", letter: "text-base" },
+  lg: { box: "h-12 w-12", text: "text-sm", letter: "text-lg" },
+  xl: { box: "h-16 w-16", text: "text-base", letter: "text-2xl" },
 };
 
 export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
@@ -20,30 +20,29 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
     const s = sizeMap[size];
     return (
       <div ref={ref} className={cn("flex items-center gap-2.5", className)}>
-        <div className={cn(s.box, "relative flex items-center justify-center rounded-xl bg-gradient-primary overflow-hidden")}>
-          {/* Geometric "N" mark */}
-          <svg viewBox="0 0 40 40" fill="none" className="h-full w-full p-1.5">
-            <path
-              d="M10 32V8L22 24V8"
-              stroke="white"
-              strokeWidth="3.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M22 24L30 32V8"
-              stroke="white"
-              strokeWidth="3.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              opacity="0.7"
-            />
-          </svg>
+        <div
+          className={cn(
+            s.box,
+            "relative flex items-center justify-center rounded-xl bg-gradient-primary overflow-hidden shadow-md"
+          )}
+          style={{
+            boxShadow: "0 4px 14px rgba(37, 99, 235, 0.3)",
+          }}
+        >
+          <span className={cn(s.letter, "font-extrabold text-white select-none")}>
+            N
+          </span>
         </div>
         {showText && (
           <div>
-            <span className="block font-display text-lg font-bold tracking-tight text-foreground">Notar</span>
-            {subtitle && <span className={cn("block text-muted-foreground", s.text)}>{subtitle}</span>}
+            <span className="block text-lg font-extrabold tracking-tight text-foreground">
+              Notar
+            </span>
+            {subtitle && (
+              <span className={cn("block text-muted-foreground", s.text)}>
+                {subtitle}
+              </span>
+            )}
           </div>
         )}
       </div>
