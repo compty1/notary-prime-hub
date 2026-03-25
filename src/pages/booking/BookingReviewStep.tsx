@@ -1,0 +1,100 @@
+import { Link } from "react-router-dom";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { MapPin, Monitor, Calendar, Shield, DollarSign, AlertTriangle } from "lucide-react";
+import { formatTimeSlot, isDigitalOnly, HAGUE_COUNTRIES } from "./bookingConstants";
+
+interface ReviewStepProps {
+  isNonNotarial: boolean;
+  notarizationType: string;
+  serviceType: string;
+  serviceCategories: Record<string, string>;
+  date: string; time: string;
+  clientAddress: string; clientCity: string; clientState: string; clientZip: string;
+  location: string;
+  destinationCountry: string; uscisForm: string;
+  sourceLanguage: string; targetLanguage: string;
+  translationDocType: string; translationPageCount: string;
+  employerName: string;
+  idData: any; docAnalysis: any;
+  documentCount: number; notes: string;
+  estimatedPrice: number | null;
+  pricingSettings: Record<string, string>;
+  urgencyLevel: string;
+  // Guest fields
+  user: any;
+  guestName: string; setGuestName: (v: string) => void;
+  guestEmail: string; setGuestEmail: (v: string) => void;
+  guestPassword: string; setGuestPassword: (v: string) => void;
+}
+
+export default function BookingReviewStep(props: ReviewStepProps) {
+  const { notarizationType, serviceType, serviceCategories, date, time, estimatedPrice, pricingSettings, urgencyLevel, documentCount } = props;
+
+  return (
+    <div className="space-y-4">
+      <div className="rounded-lg bg-muted/50 p-4 space-y-3">
+        {!props.isNonNotarial && (
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Type</span>
+            <span className="font-medium flex items-center gap-1">
+              {notarizationType === "in_person" ? <><MapPin className="h-3 w-3" /> In-Person</> : <><Monitor className="h-3 w-3" /> Remote (RON)</>}
+            </span>
+          </div>
+        )}
+        <div className="flex justify-between text-sm"><span className="text-muted-foreground">Service</span><span className="font-medium">{serviceType}</span></div>
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">Date</span>
+          <span className="font-medium flex items-center gap-1"><Calendar className="h-3 w-3" />{date && new Date(date + "T00:00:00").toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}</span>
+        </div>
+        <div className="flex justify-between text-sm"><span className="text-muted-foreground">Time</span><span className="font-medium">{time && formatTimeSlot(time)}</span></div>
+        {(props.clientAddress || props.location) && notarizationType === "in_person" && !isDigitalOnly(serviceType, serviceCategories) && (
+          <div className="flex justify-between text-sm"><span className="text-muted-foreground">Location</span><span className="font-medium text-right max-w-[60%]">{props.clientAddress ? `${props.clientAddress}, ${props.clientCity}, ${props.clientState} ${props.clientZip}` : props.location}</span></div>
+        )}
+        {props.destinationCountry && <div className="flex justify-between text-sm"><span className="text-muted-foreground">Destination</span><span className="font-medium">{props.destinationCountry} {HAGUE_COUNTRIES.includes(props.destinationCountry) ? "(Hague)" : "(Non-Hague)"}</span></div>}
+        {props.uscisForm && <div className="flex justify-between text-sm"><span className="text-muted-foreground">USCIS Form</span><span className="font-medium">{props.uscisForm}</span></div>}
+        {props.targetLanguage && <div className="flex justify-between text-sm"><span className="text-muted-foreground">Translation</span><span className="font-medium">{props.sourceLanguage} → {props.targetLanguage}</span></div>}
+        {props.translationDocType && <div className="flex justify-between text-sm"><span className="text-muted-foreground">Document</span><span className="font-medium">{props.translationDocType} ({props.translationPageCount} page{parseInt(props.translationPageCount) !== 1 ? "s" : ""})</span></div>}
+        {props.employerName && <div className="flex justify-between text-sm"><span className="text-muted-foreground">Employer</span><span className="font-medium">{props.employerName}</span></div>}
+        {props.idData && !props.idData.error && <div className="flex justify-between text-sm"><span className="text-muted-foreground">ID Verified</span><span className="font-medium flex items-center gap-1"><Shield className="h-3 w-3 text-primary" /> {props.idData.id_type}</span></div>}
+        {documentCount > 1 && <div className="flex justify-between text-sm"><span className="text-muted-foreground">Documents</span><span className="font-medium">{documentCount} documents (batch session)</span></div>}
+        {props.docAnalysis && !props.docAnalysis.error && <div className="flex justify-between text-sm"><span className="text-muted-foreground">Detected</span><span className="font-medium">{props.docAnalysis.document_name} ({props.docAnalysis.notarization_method})</span></div>}
+        {props.notes && <div className="text-sm"><span className="text-muted-foreground">Notes: </span><span>{props.notes}</span></div>}
+      </div>
+
+      {estimatedPrice !== null && (
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-2">
+          <p className="text-sm font-medium flex items-center gap-2"><DollarSign className="h-4 w-4 text-primary" /> Estimated Pricing</p>
+          <div className="space-y-1 text-sm">
+            <div className="flex justify-between"><span className="text-muted-foreground">Notary fee ({documentCount} signature{documentCount > 1 ? "s" : ""})</span><span>${(parseFloat(pricingSettings.base_fee_per_signature || "5") * documentCount).toFixed(2)}</span></div>
+            {notarizationType === "in_person" && !isDigitalOnly(serviceType, serviceCategories) && <div className="flex justify-between"><span className="text-muted-foreground">Travel fee (est.)</span><span>${parseFloat(pricingSettings.travel_fee_minimum || "25").toFixed(2)}</span></div>}
+            {notarizationType === "ron" && (
+              <>
+                <div className="flex justify-between"><span className="text-muted-foreground">RON platform fee</span><span>${parseFloat(pricingSettings.ron_platform_fee || "25").toFixed(2)}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">KBA verification</span><span>${parseFloat(pricingSettings.kba_fee || "15").toFixed(2)}</span></div>
+              </>
+            )}
+            {urgencyLevel === "rush" && <div className="flex justify-between"><span className="text-muted-foreground">Rush processing</span><span>$50.00</span></div>}
+            {urgencyLevel === "same_day" && <div className="flex justify-between"><span className="text-muted-foreground">Same-day processing</span><span>$100.00</span></div>}
+            <div className="flex justify-between border-t border-border pt-1 font-semibold">
+              <span>Estimated Total</span>
+              <span className="text-primary">${(estimatedPrice + (urgencyLevel === "rush" ? 50 : urgencyLevel === "same_day" ? 100 : 0)).toFixed(2)}</span>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">Final price may vary based on actual travel distance and document complexity.</p>
+        </div>
+      )}
+
+      {!props.user && (
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
+          <p className="text-sm font-medium flex items-center gap-2"><Shield className="h-4 w-4 text-primary" /> Create your account to confirm</p>
+          <div><Label>Full Name</Label><Input value={props.guestName} onChange={e => props.setGuestName(e.target.value)} placeholder="Your full name" /></div>
+          <div><Label>Email</Label><Input type="email" value={props.guestEmail} onChange={e => props.setGuestEmail(e.target.value)} placeholder="your@email.com" /></div>
+          <div><Label>Password</Label><Input type="password" value={props.guestPassword} onChange={e => props.setGuestPassword(e.target.value)} placeholder="Create a password (min 6 characters)" minLength={6} /></div>
+          {props.guestPassword && props.guestPassword.length < 6 && <p className="text-xs text-destructive">Password must be at least 6 characters.</p>}
+          <p className="text-xs text-muted-foreground">Already have an account? <Link to="/login" className="text-primary hover:underline">Sign in</Link></p>
+        </div>
+      )}
+    </div>
+  );
+}
