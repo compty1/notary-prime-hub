@@ -68,6 +68,7 @@ export default function Index() {
   const [serviceType, setServiceType] = useState<"in_person" | "ron">("in_person");
   const { toast } = useToast();
   const [contactForm, setContactForm] = useState({ name: "", email: "", phone: "", service: "", message: "" });
+  const [honeypot, setHoneypot] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [lastSubmitTime, setLastSubmitTime] = useState(0);
 
@@ -117,6 +118,8 @@ export default function Index() {
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Honeypot check
+    if (honeypot) return;
     if (!contactForm.name.trim() || !contactForm.email.trim() || !contactForm.message.trim()) {
       toast({ title: "Required fields missing", description: "Please fill in your name, email, and message.", variant: "destructive" });
       return;
