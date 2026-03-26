@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
+import { useDebounce } from "@/lib/useDebounce";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -135,11 +136,13 @@ export default function Services() {
     return to > from ? `$${from}–$${to}${suffix}` : `$${from}${suffix}`;
   };
 
-  const filteredServices = searchQuery
+  const debouncedSearch = useDebounce(searchQuery, 300);
+
+  const filteredServices = debouncedSearch
     ? services.filter(s => 
-        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (s.description || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (s.short_description || "").toLowerCase().includes(searchQuery.toLowerCase())
+        s.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        (s.description || "").toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        (s.short_description || "").toLowerCase().includes(debouncedSearch.toLowerCase())
       )
     : services;
 

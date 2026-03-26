@@ -68,6 +68,7 @@ export default function Index() {
   const [serviceType, setServiceType] = useState<"in_person" | "ron">("in_person");
   const { toast } = useToast();
   const [contactForm, setContactForm] = useState({ name: "", email: "", phone: "", service: "", message: "" });
+  const [honeypot, setHoneypot] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [lastSubmitTime, setLastSubmitTime] = useState(0);
 
@@ -86,7 +87,7 @@ export default function Index() {
       const clientIds = [...new Set(reviews.map((r) => r.client_id))];
       const { data: profiles } = await supabase.from("profiles").select("user_id, full_name").in("user_id", clientIds);
       const enriched = reviews.map((r) => ({
-        name: profiles?.find((p) => p.user_id === r.client_id)?.full_name?.split(" ")[0] || "Client",
+        name: (profiles?.find((p) => p.user_id === r.client_id)?.full_name || "").split(" ")[0] || "Client",
         text: r.comment || "Excellent service!",
         rating: r.rating
       }));
@@ -117,6 +118,8 @@ export default function Index() {
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Honeypot check
+    if (honeypot) return;
     if (!contactForm.name.trim() || !contactForm.email.trim() || !contactForm.message.trim()) {
       toast({ title: "Required fields missing", description: "Please fill in your name, email, and message.", variant: "destructive" });
       return;
@@ -153,8 +156,23 @@ export default function Index() {
     }
   };
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Notar — Ohio Notary Public",
+    "description": "Professional notary services in Columbus, Ohio. In-person and Remote Online Notarization (RON).",
+    "url": window.location.origin,
+    "telephone": contactInfo.phone,
+    "email": contactInfo.email,
+    "address": { "@type": "PostalAddress", "addressLocality": "Columbus", "addressRegion": "OH", "addressCountry": "US" },
+    "areaServed": { "@type": "State", "name": "Ohio" },
+    "priceRange": "$$",
+    "openingHours": "Mo-Fr 09:00-18:00",
+  };
+
   return (
     <PageShell>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* Hero */}
       <section className="relative overflow-hidden bg-background py-24 md:py-36">
         <div className="absolute inset-0 gradient-mesh" />

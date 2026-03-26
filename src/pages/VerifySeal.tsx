@@ -24,20 +24,23 @@ export default function VerifySeal() {
   const [record, setRecord] = useState<ESealRecord | null>(null);
 
   useEffect(() => {
+    document.title = "Verify E-Seal — Notar";
     const run = async () => {
       if (!id) {
         setLoading(false);
         return;
       }
-      const { data } = await (supabase
-        .from("e_seal_verifications" as any)
-        .select("*")
+      const { data } = await supabase
+        .from("e_seal_verifications")
+        .select("id, document_name, notarized_at, signer_name, notary_name, commissioned_state, verification_note, status")
         .eq("id", id)
-        .maybeSingle() as any);
-      setRecord(data || null);
+        .eq("status", "valid")
+        .maybeSingle();
+      setRecord((data as ESealRecord | null) || null);
       setLoading(false);
     };
     run();
+    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
   }, [id]);
 
   return (
