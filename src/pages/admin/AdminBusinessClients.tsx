@@ -10,9 +10,9 @@ import { Building2, CheckCircle, XCircle, Search, Loader2, Users, Mail } from "l
 import { motion } from "framer-motion";
 
 const verificationColors: Record<string, string> = {
-  pending: "bg-yellow-100 text-yellow-800",
-  verified: "bg-emerald-100 text-emerald-800",
-  rejected: "bg-red-100 text-red-800",
+  pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
+  verified: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
+  rejected: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
 };
 
 export default function AdminBusinessClients() {
