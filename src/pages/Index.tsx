@@ -156,8 +156,23 @@ export default function Index() {
     }
   };
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Notar — Ohio Notary Public",
+    "description": "Professional notary services in Columbus, Ohio. In-person and Remote Online Notarization (RON).",
+    "url": window.location.origin,
+    "telephone": contactInfo.phone,
+    "email": contactInfo.email,
+    "address": { "@type": "PostalAddress", "addressLocality": "Columbus", "addressRegion": "OH", "addressCountry": "US" },
+    "areaServed": { "@type": "State", "name": "Ohio" },
+    "priceRange": "$$",
+    "openingHours": "Mo-Fr 09:00-18:00",
+  };
+
   return (
     <PageShell>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* Hero */}
       <section className="relative overflow-hidden bg-background py-24 md:py-36">
         <div className="absolute inset-0 gradient-mesh" />
