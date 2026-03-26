@@ -135,6 +135,7 @@ export default function ClientPortal() {
       }
       setLoading(false);
       setInitialLoad(false);
+    };
     fetchData();
 
     supabase.from("chat_messages").select("*").or(`sender_id.eq.${user.id},and(is_admin.eq.true,recipient_id.eq.${user.id})`).order("created_at").then(({ data }) => {
