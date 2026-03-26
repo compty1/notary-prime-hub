@@ -244,6 +244,21 @@ export default function ClientPortal() {
   };
 
   const qrUrl = `${window.location.origin}/mobile-upload`;
+  if (initialLoad) {
+    return (
+      <div className="min-h-screen bg-muted/30">
+        <nav className="border-b border-border/50 bg-background/80 backdrop-blur-lg">
+          <div className="container mx-auto flex items-center justify-between px-4 py-4">
+            <Link to="/" className="flex items-center gap-2"><Logo size="md" /><span className="font-sans text-lg font-bold text-foreground">Client Portal</span></Link>
+            <Button variant="ghost" size="sm" onClick={signOut}><LogOut className="mr-1 h-4 w-4" /> Sign Out</Button>
+          </div>
+        </nav>
+        <div className="container mx-auto max-w-5xl px-4 py-8">
+          <PortalLoadingSkeleton />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-muted/30">

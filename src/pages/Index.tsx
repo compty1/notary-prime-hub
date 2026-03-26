@@ -86,7 +86,7 @@ export default function Index() {
       const clientIds = [...new Set(reviews.map((r) => r.client_id))];
       const { data: profiles } = await supabase.from("profiles").select("user_id, full_name").in("user_id", clientIds);
       const enriched = reviews.map((r) => ({
-        name: profiles?.find((p) => p.user_id === r.client_id)?.full_name?.split(" ")[0] || "Client",
+        name: (profiles?.find((p) => p.user_id === r.client_id)?.full_name || "").split(" ")[0] || "Client",
         text: r.comment || "Excellent service!",
         rating: r.rating
       }));
