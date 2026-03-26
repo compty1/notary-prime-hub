@@ -25,7 +25,7 @@ import { formatPhone } from "@/lib/formatPhone";
 import PortalAppointmentsTab from "./portal/PortalAppointmentsTab";
 import PortalDocumentsTab from "./portal/PortalDocumentsTab";
 import PortalChatTab from "./portal/PortalChatTab";
-
+import { PortalLoadingSkeleton } from "@/components/PortalLoadingSkeleton";
 const pipelineSteps = [
   { key: "uploaded", label: "Intake", icon: Upload },
   { key: "pending_review", label: "Review", icon: FileText },
@@ -41,6 +41,7 @@ export default function ClientPortal() {
   const [documents, setDocuments] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [initialLoad, setInitialLoad] = useState(true);
   const [cancelDialogId, setCancelDialogId] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
   const [techCheckOpen, setTechCheckOpen] = useState(false);
@@ -133,7 +134,7 @@ export default function ClientPortal() {
         setProfileForm({ full_name: profileRes.data.full_name || "", phone: profileRes.data.phone || "", address: profileRes.data.address || "", city: profileRes.data.city || "", state: profileRes.data.state || "", zip: profileRes.data.zip || "" });
       }
       setLoading(false);
-    };
+      setInitialLoad(false);
     fetchData();
 
     supabase.from("chat_messages").select("*").or(`sender_id.eq.${user.id},and(is_admin.eq.true,recipient_id.eq.${user.id})`).order("created_at").then(({ data }) => {
@@ -171,6 +172,13 @@ export default function ClientPortal() {
   const past = appointments.filter(a => ["completed", "cancelled", "no_show"].includes(a.status));
 
   const cancelAppointment = async (id: string) => {
+    // Check if appointment is cancellable
+    const appt = appointments.find(a => a.id === id);
+    if (appt && ["in_session", "completed", "cancelled"].includes(appt.status)) {
+      toast({ title: "Cannot cancel", description: `This appointment is already ${appt.status.replace(/_/g, " ")}.`, variant: "destructive" });
+      setCancelDialogId(null);
+      return;
+    }
     setCancelling(true);
     const { error } = await supabase.from("appointments").update({ status: "cancelled" as any }).eq("id", id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -266,7 +274,7 @@ export default function ClientPortal() {
             if (unreadIds.length > 0) supabase.from("chat_messages").update({ read: true }).in("id", unreadIds).then(() => { setChatMessages(prev => prev.map(m => unreadIds.includes(m.id) ? { ...m, read: true } : m)); setUnreadCount(0); });
           }
         }}>
-          <TabsList className="grid w-full grid-cols-5 sm:grid-cols-11">
+          <TabsList className="w-full overflow-x-auto flex flex-nowrap gap-1 h-auto justify-start sm:justify-center scrollbar-hide">
             <TabsTrigger value="appointments"><Calendar className="mr-1 h-4 w-4 hidden sm:inline" /> Appts</TabsTrigger>
             <TabsTrigger value="documents"><FileText className="mr-1 h-4 w-4 hidden sm:inline" /> Docs</TabsTrigger>
             <TabsTrigger value="status"><Shield className="mr-1 h-4 w-4 hidden sm:inline" /> Status</TabsTrigger>
