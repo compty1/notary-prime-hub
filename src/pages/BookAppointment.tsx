@@ -113,6 +113,19 @@ export default function BookAppointment() {
     return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
   }, []);
 
+  // Expire stale bookings in localStorage (24h)
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(BOOKING_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed._savedAt && Date.now() - parsed._savedAt > 24 * 60 * 60 * 1000) {
+          localStorage.removeItem(BOOKING_STORAGE_KEY);
+        }
+      }
+    } catch { localStorage.removeItem(BOOKING_STORAGE_KEY); }
+  }, []);
+
   useEffect(() => {
     const hasData = serviceType || date || time || notes;
     const handler = (e: BeforeUnloadEvent) => { if (hasData && step > 1) e.preventDefault(); };
@@ -302,7 +315,10 @@ export default function BookAppointment() {
   const handleRebook = (appt: any) => {
     setNotarizationType(appt.notarization_type); setServiceType(appt.service_type);
     if (appt.location && appt.location !== "Remote") setLocation(appt.location);
-    setRebookingId(appt.id); setDate(""); setTime(""); setAvailableSlots([]); setSuggestedSlots([]); setStep(3);
+    setRebookingId(appt.id); setDate(""); setTime(""); setAvailableSlots([]); setSuggestedSlots([]);
+    // For notarial services step 3 is Schedule, for non-notarial step 2 is Schedule
+    const isNon = !requiresNotarizationType(appt.service_type, serviceCategories);
+    setStep(isNon ? 2 as BookingStep : 3 as BookingStep);
     toast({ title: "Details pre-filled", description: "Pick a new date and time to reschedule." });
   };
 
@@ -358,9 +374,24 @@ export default function BookAppointment() {
   };
 
   const handleSubmit = async () => {
+    // Validate date is not in the past
+    if (date) {
+      const today = new Date().toISOString().split("T")[0];
+      if (date < today) {
+        toast({ title: "Invalid date", description: "Please select a future date.", variant: "destructive" });
+        return;
+      }
+    }
+    // Validate document count
+    if (documentCount < 1) {
+      toast({ title: "Invalid document count", description: "At least 1 document is required.", variant: "destructive" });
+      return;
+    }
+
     if (!user) {
       if (!guestEmail || !guestPassword || !guestName) { setShowSignup(true); toast({ title: "Create account to confirm", variant: "destructive" }); return; }
-      localStorage.setItem(BOOKING_STORAGE_KEY, JSON.stringify({ notarizationType, serviceType, date, time, location, notes, documentCount, clientAddress, clientCity, clientState, clientZip }));
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) { toast({ title: "Invalid email", description: "Please enter a valid email address.", variant: "destructive" }); return; }
+      localStorage.setItem(BOOKING_STORAGE_KEY, JSON.stringify({ notarizationType, serviceType, date, time, location, notes, documentCount, clientAddress, clientCity, clientState, clientZip, _savedAt: Date.now() }));
       const { error } = await signUp(guestEmail, guestPassword, guestName);
       if (error) { const { error: signInErr } = await signIn(guestEmail, guestPassword); if (signInErr) { localStorage.removeItem(BOOKING_STORAGE_KEY); toast({ title: "Account error", description: error.message, variant: "destructive" }); } return; }
       toast({ title: "Check your email", description: "We sent a verification link." }); navigate("/login"); return;
