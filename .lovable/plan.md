@@ -1,478 +1,294 @@
 
 
-# Comprehensive Gap Analysis & Enhancement Plan
+# 200 Additional Gaps & Fixes — Round 2
 
-300 total items: 100 recommendations + 200 gaps, with implementation plan.
-
----
-
-## PART A: 200 GAPS (Bugs, Missing Logic, Broken Flows)
-
-### Authentication & Session (1-15)
-1. `ForgotPassword.tsx` line 76 — uses hardcoded `Shield` icon instead of `Logo` component (inconsistent branding)
-2. `ForgotPassword.tsx` — no `PageShell` wrapper (inconsistent layout)
-3. `SignUp` redirects to `/portal` on success even if user is admin/notary (line 38)
-4. Google OAuth `redirect_uri` is `window.location.origin` — no post-auth routing to `/admin` or `/portal`
-5. `AuthContext` dynamic `import("@/hooks/use-toast")` may fail silently in SSR or bundling edge cases
-6. No rate limiting on login attempts (client-side)
-7. No "show password" toggle on login/signup forms
-8. No password confirmation field on signup
-9. Session timeout warning fires on every 5-min interval without clearing previous warning
-10. `signOut` clears all localStorage — may destroy non-auth data
-11. No account lockout messaging after repeated failed logins
-12. No "remember me" option on login
-13. No auto-redirect from `/login` to `/portal` when already authenticated (race condition on slow networks)
-14. Password strength meter doesn't enforce minimum strength before submit
-15. No terms of service checkbox on signup form
-
-### Database & Data Integrity (16-35)
-16. `handle_new_user` trigger not attached (confirmed by `<db-triggers>` showing "no triggers")
-17. No `updated_at` triggers attached to any tables
-18. No FK on `appointments.client_id` → `profiles.user_id`
-19. No FK on `payments.client_id` → `profiles.user_id`
-20. No FK on `documents.uploaded_by` → `profiles.user_id`
-21. No FK on `notarization_sessions.appointment_id` → `appointments.id`
-22. No FK on `appointment_emails.appointment_id` → `appointments.id`
-23. No FK on `notary_journal.appointment_id` → `appointments.id`
-24. `notary_certifications.user_id` references `auth.users` — should reference `profiles`
-25. No database indexes on `appointments.scheduled_date`, `appointments.client_id`, `appointments.status`
-26. No database indexes on `payments.client_id`, `documents.uploaded_by`, `chat_messages.sender_id`
-27. No `profiles` DELETE RLS policy — users can't delete accounts properly
-28. Realtime not enabled for `appointments`, `chat_messages`, `notarization_sessions`
-29. `AdminClients` "Create Profile" uses `crypto.randomUUID()` — creates orphaned records with no auth user
-30. No validation trigger preventing appointments with past dates
-31. No unique constraint on `appointments(client_id, scheduled_date, scheduled_time)` to prevent double-booking
-32. `e_seal_verifications` queried with `as any` cast (line 32-36 of VerifySeal) — type not in generated types
-33. `AdminBusinessClients` verification colors not dark-mode aware (line 12-16)
-34. `AdminRevenue` payment status colors not dark-mode aware (line 30-35)
-35. `platform_settings` has no seed data — first-time setup has no defaults
-
-### Edge Function Auth & Invocation (36-55)
-36. `AdminAppointments` calls `send-appointment-emails` with anon key as Bearer in raw fetch
-37. `AdminEmailManagement` calls `send-correspondence` with anon key as Bearer
-38. `AdminAIAssistant` calls `notary-assistant` with anon key as Bearer
-39. `Services.tsx` calls `client-assistant` with anon key as Bearer
-40. `DocumentTemplates` calls edge function with anon key
-41. `WhatDoINeed` calls edge function with anon key
-42. `BookAppointment` line 353 — uses `supabase.functions.invoke` (correct) but other calls in same file use raw fetch (inconsistent)
-43. `ClientPortal` line 221-222 — raw fetch to `explain-document` with manual URL construction
-44. Several raw fetch calls omit `apikey` header
-45. `send-appointment-emails` called with different payload shapes across files (`appointment_id` vs `appointmentId`)
-46. `send-correspondence` called with different payload shapes (`to_address` vs `to`)
-47. `create-payment-intent` uses `getClaims` which may not exist in all Supabase SDK versions
-48. `stripe-webhook` doesn't verify webhook signature (commented out)
-49. No edge function error retry logic on any calls
-50. `scan-id` and `detect-document` called via raw fetch with manual auth headers
-51. `edgeFunctionAuth.ts` `callEdgeFunction` helper exists but is not used in most files
-52. No timeout handling on edge function calls — UI hangs if function doesn't respond
-53. `notary-assistant` response not validated before display
-54. `client-assistant` response not validated before display
-55. `discover-leads` and `scrape-social-leads` functions exist but `AdminLeadPortal` calls them without error handling UX
-
-### Booking Flow (56-80)
-56. `BookAppointment` — no validation that selected date is not in the past
-57. No minimum notice period enforcement (e.g., can't book same-day within 1 hour)
-58. Guest signup during booking doesn't validate email format before submission
-59. `submitBooking` line 331 — `buildIntakeNotes()` called but intake data not passed to the function properly when using stored booking data
-60. `handleRebook` sets step to 3 — but step 3 is "Schedule" and step numbering may be wrong for the 4-step flow
-61. No confirmation dialog before final submission
-62. No back-button support (browser back doesn't navigate between booking steps)
-63. Booking persistence in localStorage doesn't expire — stale bookings persist forever
-64. `estimatedPrice` only calculated when `pricingSettings` loads — not updated when service type changes
-65. `BOOKING_STORAGE_KEY` — if user logs in with different account, stored booking may be applied to wrong user
-66. No document upload capability during booking (only scan)
-67. Address autocomplete `AddressAutocomplete` component not verified with API key
-68. `findNearestSlots` returns slots without checking if they're booked
-69. No calendar view for date selection — just a text input
-70. No timezone handling — all times assumed local
-71. `documentCount` can be set to 0 or negative
-72. No service-specific time slot duration (all services use same slot length)
-73. Booking confirmation page doesn't show notary details
-74. No email confirmation number or reference ID shown to user
-75. `BookingScheduleStep` imported but step routing logic still in parent — potential state sync issues
-76. No accessibility labels on step navigation buttons
-77. Fee calculator on booking page doesn't match standalone fee calculator results
-78. No "add to calendar" (.ics) option after booking
-79. Witness mode selection available for non-witness services
-80. RON booking doesn't enforce KBA/ID verification pre-check
-
-### Client Portal (81-110)
-81. 11-tab TabsList (`grid-cols-5 sm:grid-cols-11`) — tabs overflow on mobile, text truncated
-82. No loading skeleton — shows blank until all 10 parallel queries complete
-83. `cancelAppointment` doesn't check if appointment is cancellable (e.g., already in-session)
-84. Document upload has no file type validation
-85. Document upload has no file size limit display
-86. No document preview (PDF inline viewer)
-87. `explainDocument` downloads entire file as text — binary PDFs will fail
-88. QR code mobile upload link doesn't include user authentication token
-89. No appointment rescheduling UI (only cancel + rebook separately)
-90. Payment "Pay Now" button initiates Stripe but PaymentForm component not verified
-91. Review form doesn't prevent duplicate reviews on same appointment
-92. Apostille request form has no file attachment capability
-93. Correspondence tab shows emails but client can't compose new messages
-94. Document reminders — `notified` field exists but no cron job or push notification
-95. No profile avatar upload for clients
-96. No "Close My Account" cascading deletion implemented in UI
-97. `chatRecipient` defaults to first staff user — may message wrong person
-98. Chat has no typing indicator
-99. Chat has no message search
-100. No notification sound/badge for new messages when portal tab is not active
-101. Service requests tab — no way to cancel a pending request
-102. No appointment status timeline/progress tracker
-103. Business portal link exists but no navigation from client portal
-104. `showPaymentForm` state persists across tab switches
-105. Payment history doesn't show linked appointment details inline
-106. No export/download of payment receipts
-107. No way to update payment method
-108. Reminder form doesn't validate that expiry date is in the future
-109. `documents` channel filter uses `uploaded_by=eq.${user.id}` — won't get docs uploaded by admin for this user
-110. No empty state illustration for any tab
-
-### Admin Dashboard (111-150)
-111. `AdminOverview` — no RON session count metrics
-112. `AdminOverview` — revenue chart doesn't include payments table data, only journal `fees_charged`
-113. `AdminOverview` — recent activity shows raw action names without formatting
-114. `AdminAppointments` receipt print uses `window.print()` printing entire page
-115. `AdminAppointments` — no email validation on admin-created appointments
-116. `AdminAppointments` — no duplicate check for same client/date/time
-117. `AdminAppointments` — KBA verification component shown but no integration with actual KBA provider
-118. `AdminDocuments` — no bulk actions (approve/reject multiple)
-119. `AdminDocuments` — inline preview only works for images, not PDFs
-120. `AdminJournal` — CSV export exists but no PDF export for compliance archiving
-121. `AdminJournal` — certificate photo upload exists but storage path not verified
-122. `AdminRevenue` — payment request creates DB record but doesn't send email notification
-123. `AdminRevenue` — "Record Payment" doesn't link to appointment
-124. `AdminAvailability` — no specific date override capability in UI (only day-of-week)
-125. `AdminAvailability` — overlap check only on creation, not on time edit
-126. `AdminApostille` — no file attachment for tracking documents
-127. `AdminApostille` — no integration with Ohio SOS API
-128. `AdminChat` — no realtime subscription for message updates (actually has one — verified)
-129. `AdminChat` — no unread message count display
-130. `AdminChat` — no search/filter for conversations
-131. `AdminBusinessClients` — no detail view for individual businesses
-132. `AdminBusinessClients` — no member management (add/remove members)
-133. `AdminBusinessClients` — verification status colors not dark-mode aware
-134. `AdminTemplates` — upload/download not verified with storage
-135. `AdminResources` — content not verified
-136. `AdminServices` — no service reordering UI (display_order editable?)
-137. `AdminTeam` — certification file upload exists but file_path not auto-populated
-138. `AdminTeam` — no certification expiry alerts
-139. `AdminLeadPortal` — CSV import parses but doesn't validate data
-140. `AdminLeadPortal` — discover leads function called but no loading state recovery on error
-141. `AdminEmailManagement` — correspondence list has no pagination
-142. `AdminEmailManagement` — reply-to-correspondence doesn't pre-fill client address
-143. `AdminNotificationCenter` — queries run every 30 seconds regardless of visibility (wasteful)
-144. `AdminIntegrationTest` — email test may fail without Resend API key
-145. `AdminSettings` — seal image upload path not validated
-146. `AdminSettings` — commission expiry check runs on every render
-147. `AdminSettings` — no "reset to defaults" option
-148. `AdminDashboard` — sidebar has no active state indicator (NavLink handles it but not verified)
-149. `AdminDashboard` — no breadcrumb navigation
-150. `AdminDashboard` — header only shows notification bell and dark mode toggle, no user avatar
-
-### OneNotary Session Flow (151-170)
-151. `ron_session_method` setting not read by `OneNotarySession`
-152. No manual session link input when `email_invite` mode active
-153. `OneNotarySession` has no `PageShell` wrapper
-154. No document upload UI in session
-155. No witness request UI in session
-156. No cancel session button in session
-157. Session status not synced via realtime
-158. No video/recording retrieval UI post-completion
-159. No document download UI post-completion
-160. Participant link not visible to client in real-time
-161. Missing appointment graceful error handling
-162. Session finalization doesn't create e-seal verification
-163. Session finalization doesn't create journal entry
-164. No way to re-send participant invite link
-165. `completeAndFinalize` creates payment but amount is hardcoded or missing
-166. No commission expiry check before starting RON session
-167. No browser compatibility check (WebRTC) before joining session
-168. No session recording consent UI
-169. Session timer not displayed during active session
-170. No ability to add notes during an active session
-
-### Public Pages (171-195)
-171. `ServiceDetail` — dynamic route may not handle invalid/missing `serviceId`
-172. `Services` — search doesn't debounce (fires on every keystroke)
-173. `FeeCalculator` — travel distance uses `AddressAutocomplete` which needs Google Places API key
-174. `FeeCalculator` — no "get a quote" CTA that leads to booking
-175. `DocumentDigitize` — OCR results display not verified
-176. `DocumentBuilder` — template generation not verified
-177. `VerifySeal` — uses `as any` cast on table query
-178. `LoanSigningServices` — lead capture form submission not verified
-179. `JoinPlatform` — notary application form submission not verified
-180. `About` page content not verified
-181. `TermsPrivacy` — content not verified, single page for both
-182. `NotFound` — 404 page renders but no "search" or "popular pages" suggestions
-183. `MobileUpload` — QR flow not verified end-to-end
-184. `SubscriptionPlans` — Stripe checkout integration not verified
-185. `NotaryGuide` — external links not verified
-186. `NotaryProcessGuide` — content not verified
-187. `RonEligibilityChecker` — eligibility logic not verified against Ohio statute
-188. `RonInfo` — content not verified
-189. `VirtualMailroom` — mailroom CRUD not verified
-190. `ServiceRequest` — form fields config for all service types not verified
-191. `ServiceRequest` — no file upload capability
-192. `ServicePreQualifier` — logic not verified
-193. Index page contact form — no honeypot or CAPTCHA for spam prevention
-194. Index page — testimonials show first name only but `full_name.split(" ")[0]` may return empty string
-195. Index page — `dbServices` icon mapping always uses `FileText` fallback
-
-### Theme & UX (196-200)
-196. Loading bar animation in `PageLoader` uses `loading-bar` class but CSS may not define proper animation
-197. Dark mode toggle doesn't persist preference across sessions (no localStorage)
-198. `scrollbar-hide` utility added but not applied to horizontal scroll areas
-199. Mobile hamburger menu doesn't show dark mode toggle
-200. Navbar "Sign In" button visible when user is already authenticated
+Building on the previous 200 gaps already addressed/planned. These are net-new issues found across the codebase.
 
 ---
 
-## PART B: 100 RECOMMENDATIONS
+## Routing & Navigation (1-20)
 
-### UX Enhancements (1-25)
-1. Add breadcrumb navigation to all inner pages
-2. Add "Add to Calendar" (.ics download) after booking confirmation
-3. Add appointment rescheduling (not just cancel + rebook)
-4. Add document inline preview (PDF.js viewer)
-5. Add typing indicators to chat
-6. Add push notification / browser notification for new messages
-7. Add "Close My Account" with cascading deletion
-8. Add client avatar upload
-9. Add appointment status timeline/progress stepper in portal
-10. Collapse client portal tabs into a sidebar on mobile instead of 11-column grid
-11. Add empty state illustrations for all tabs
-12. Add "add to favorites" for frequently used services
-13. Add search functionality to client portal
-14. Add "quick actions" floating button (new booking, upload doc, chat)
-15. Add estimated wait time display on booking page
-16. Add date picker calendar widget instead of text input for booking
-17. Add service comparison table on services page
-18. Add FAQ search/filter on homepage
-19. Add "back to top" button on long pages
-20. Add page transition loading indicator in navbar (thin progress bar)
-21. Add keyboard shortcuts for admin dashboard (Ctrl+N = new appointment, etc.)
-22. Add "last seen" indicator in admin chat
-23. Add batch document upload with drag-and-drop
-24. Add document version history
-25. Add "share document" via secure link
+1. No `<Route>` for `/builder` uses `PageShell` — `DocumentBuilder` may render without Navbar/Footer
+2. `/request` route is not protected — unauthenticated users can access `ServiceRequest` but submission requires `user.id`, causing silent failure
+3. `/subscribe` route is not protected — `SubscriptionPlans` Stripe checkout will fail without auth
+4. `/mobile-upload` has its own login form instead of redirecting to `/login` with a return URL
+5. No route for `/business` referenced in `ServiceDetail` categoryResources — leads to 404
+6. `ServiceDetail` references `/document-builder` URL but route is `/builder`
+7. `AnimatedRoutes` re-renders all routes on every pathname change due to `key={location.pathname}` on Routes — causes unnecessary unmount/remount of persisted layouts
+8. No wildcard catch inside `/admin/*` — unknown admin sub-routes fall through to top-level `*` (NotFound) without admin layout
+9. `AppointmentConfirmation` has no `PageShell` — renders custom nav instead of shared Navbar
+10. `OneNotarySession` has no `PageShell` — renders custom nav
+11. `MobileUpload` has its own custom nav — inconsistent with `PageShell`
+12. `ClientPortal` has its own custom nav — inconsistent with `PageShell`
+13. `BusinessPortal` likely has custom nav (pattern matches ClientPortal)
+14. No redirect from `/portal` to `/admin` if user has admin/notary role — they must manually navigate
+15. `BookAppointment` doesn't redirect authenticated admin/notary away from booking for themselves
+16. Tab query parameter `?tab=documents` referenced in `AppointmentConfirmation` link but `ClientPortal` doesn't read URL params to set initial tab
+17. No loading fallback text on `PageLoader` — just an animated bar with no context
+18. `ScrollToTop` scrolls on every route change even when user clicks back button — loses scroll position
+19. `ErrorBoundary` wraps admin routes but not portal tabs — a crash in one portal tab takes down the whole portal
+20. No `<meta name="description">` set per route — all pages share the same default
 
-### Admin Productivity (26-50)
-26. Add bulk status update for appointments
-27. Add bulk document approve/reject
-28. Add drag-and-drop reordering for services catalog
-29. Add appointment calendar view (weekly/monthly) in addition to list
-30. Add revenue forecasting based on upcoming appointments
-31. Add client lifetime value calculation
-32. Add automated follow-up email scheduling
-33. Add template-based email responses in admin chat
-34. Add journal PDF export for compliance
-35. Add dashboard widgets customization (drag/rearrange cards)
-36. Add export all data (appointments, clients, journal) as ZIP
-37. Add staff performance metrics (appointments per notary)
-38. Add client satisfaction score aggregation
-39. Add automated invoice generation
-40. Add recurring appointment support
-41. Add appointment conflict detection across all notaries
-42. Add document expiry dashboard widget
-43. Add lead scoring automation based on engagement
-44. Add email open/click tracking
-45. Add admin activity log (who changed what)
-46. Add role-based dashboard views (admin sees everything, notary sees their assignments)
-47. Add appointment notes templates
-48. Add quick-reply snippets for chat
-49. Add storage usage monitoring
-50. Add system health dashboard
+## Data Fetching & State Management (21-45)
 
-### Security & Compliance (51-65)
-51. Add rate limiting on contact form (already has 60s cooldown — extend to server-side)
-52. Add CAPTCHA on public forms (contact, booking, join)
-53. Add input sanitization for all text fields (XSS prevention)
-54. Add CSP headers in HTML meta tags
-55. Add session activity log visible to users
-56. Add two-factor authentication option
-57. Add IP-based login alerts
-58. Add GDPR data export endpoint
-59. Add cookie consent banner
-60. Add audit log for client-side actions (document views, downloads)
-61. Add commission certificate verification before RON sessions
-62. Add encrypted document storage with per-user encryption keys
-63. Add watermarking for document previews
-64. Add automated compliance report generation
-65. Add breach notification system
+21. `ClientPortal` fires 10 parallel queries on mount without React Query — no caching, no stale-while-revalidate, no automatic retry
+22. `AdminOverview` auto-refreshes every 60 seconds with full re-fetch — no delta/incremental approach
+23. `AdminNotificationCenter` polls every 30 seconds — duplicates the `AdminOverview` 60-second polling
+24. `BookAppointment` fetches `platform_settings` on every mount — no caching across page navigations
+25. `AdminAppointments` re-fetches all data when any filter changes — no local filtering of already-fetched data
+26. `AdminChat` fetches ALL chat messages with no pagination — will degrade with volume
+27. `AdminJournal` fetches ALL journal entries with no pagination — same concern
+28. `AdminOverview` fetches ALL appointments for charts (`allApptData`) — no limit, could be thousands
+29. `ClientPortal` fetches ALL appointments, documents, payments — no pagination
+30. `AdminClients` likely fetches all profiles — no pagination
+31. `AdminAuditLog` likely has no pagination
+32. `platform_settings` is fetched independently in `BookAppointment`, `AdminSettings`, `AdminOverview`, `ClientPortal`, `AppointmentConfirmation` — 5+ separate fetches of the same table
+33. `AdminAppointments.fetchData` is called inside `useEffect` dependency array that includes `filter` — but `fetchData` is not memoized with `useCallback`
+34. `AdminOverview` revenue only comes from `notary_journal.fees_charged` — ignores `payments` table entirely
+35. `AdminAppointments` realtime channel re-subscribes when `filter` changes — previous channel may not be cleaned up
+36. `ClientPortal` realtime channels don't clean up properly on user change (dependency is `[user]` but channels reference `user.id` closure)
+37. `AdminTeam` avatar signed URLs expire after 1 hour — no refresh mechanism
+38. `AdminSettings` seal preview URL expires after 1 hour — no refresh mechanism
+39. `BookAppointment` has 100+ lines of state declarations (40+ `useState` calls) — needs refactoring into a reducer or form library
+40. `AdminAppointments` stores `profiles` as full array and searches with `.find()` on every render — O(n) per row
+41. No global loading state indicator in admin layout — individual pages show their own skeletons
+42. `BookAppointment` `useEffect` dependencies include `pricingSettings` for slot fetch — refetches slots when pricing changes (unrelated)
+43. `submitBooking` in `BookAppointment` called from `setTimeout` after signup — may execute with stale state
+44. `fetchData` in `AdminAppointments` defined as regular function inside component — recreated every render
+45. No error recovery UI on failed data fetches in admin pages — errors logged to console only
 
-### Performance & Technical (66-85)
-66. Add service worker for offline-capable PWA
-67. Implement React Query for all data fetching (replace raw useEffect + state)
-68. Add image lazy loading and optimization
-69. Add code splitting per admin route (already done with lazy)
-70. Add error boundary around each portal tab
-71. Add Sentry or similar error tracking
-72. Add performance monitoring (Web Vitals)
-73. Add database connection pooling awareness
-74. Add caching layer for platform_settings (queried on every page)
-75. Add debounce on all search inputs
-76. Add virtual scrolling for long lists (appointments, documents)
-77. Add optimistic updates for status changes
-78. Add background sync for offline-created appointments
-79. Add WebSocket heartbeat monitoring
-80. Add asset preloading for critical paths
-81. Add database query batching (reduce N+1 queries)
-82. Add response caching headers on edge functions
-83. Add CDN for static assets
-84. Add bundle size monitoring
-85. Add automated E2E tests for critical flows
+## Form Validation & Input (46-70)
 
-### Content & SEO (86-100)
-86. Add structured data (JSON-LD) for local business SEO
-87. Add Open Graph meta tags for social sharing
-88. Add sitemap generation automation
-89. Add blog/news section for content marketing
-90. Add testimonial carousel with auto-rotation
-91. Add service area map (Google Maps embed)
-92. Add video explainer for RON process
-93. Add pricing comparison table
-94. Add "trusted by" partner logos section
-95. Add accessibility audit and WCAG 2.1 AA compliance
-96. Add multilingual support (Spanish at minimum for Columbus market)
-97. Add chatbot for after-hours inquiries
-98. Add appointment booking widget embeddable on partner sites
-99. Add referral program tracking
-100. Add dynamic page titles and meta descriptions per route
+46. `AdminAppointments` create dialog — no date validation (allows past dates)
+47. `AdminAppointments` create dialog — no time format validation
+48. `AdminJournal` — no validation that `id_expiration` date is in the future for new entries
+49. `AdminJournal` — fee fields accept negative numbers
+50. `ClientPortal` apostille form — `document_count` accepts negative and zero via HTML input
+51. `ClientPortal` review form — no minimum comment length when comment is provided
+52. `ClientPortal` reminder form — no validation that `expiry_date` is in the future
+53. `ServiceRequest` — no file upload capability for supporting documents
+54. `BookAppointment` — `witnessCount` is a string, never converted to number for validation
+55. `BookAppointment` — `translationPageCount` is a string, no min/max validation
+56. `AdminTeam` invite email — no format validation before submission
+57. `AdminAvailability` — `updateSlotTime` allows setting end_time before start_time
+58. `AdminRevenue` payment amount field — no minimum value validation
+59. `ContactForm` on Index page — `phone` field has no format validation
+60. `JoinPlatform` application form — phone/email fields have no client-side validation
+61. `LoanSigningServices` lead form — no email format validation
+62. `AdminSettings` — pricing fields (base_fee, travel_fee) accept negative values
+63. `AdminSettings` — commission expiration date can be set to a past date
+64. `AdminBusinessClients` — no EIN format validation (should be XX-XXXXXXX)
+65. `BookAppointment` — `customDocCount` allows toggling to a text input but no numeric enforcement on the text field
+66. `AdminJournal` — certificate photo upload doesn't link uploaded URLs back to the journal entry `certificate_photos` field
+67. `BookAppointment` ID scan — `file.size > 10MB` check but no file type validation (could scan a .zip)
+68. `BookAppointment` document scan — no file type validation (accepts any file)
+69. `AdminAppointments` — `estimated_price` field in create dialog accepts empty string, stored as NaN
+70. `AdminChat` — message input has no character limit
+
+## Security & Access Control (71-90)
+
+71. `ServiceRequest` page accessible without auth but submits `client_id: user.id` — will crash if `user` is null
+72. `MobileUpload` shows a login form with credentials sent directly to Supabase — no brute force protection
+73. `explainDocument` sends full document text to edge function — no size limit, could send huge files
+74. `AdminAppointments` status change sends raw fetch to edge function with inline auth — not using standardized helper
+75. `AdminAppointments` create appointment sends raw fetch with inline auth — same issue
+76. `BookAppointment` ID scan and doc scan use raw fetch with inline auth — not using standardized helper
+77. `ClientPortal` chat allows sending messages to any staff user — no validation that recipient is actually a staff member
+78. No CSRF protection on any form submissions
+79. `AdminClients` can create profiles with `crypto.randomUUID()` as `user_id` — orphaned records with no auth user
+80. `OneNotarySession` — `completeAndFinalize` creates e-seal verification without checking if one already exists for this appointment
+81. `OneNotarySession` — journal entry creation doesn't prevent duplicates if finalize is clicked twice
+82. `AdminAppointments` — quick journal entry doesn't prevent duplicates if dialog submitted twice
+83. `AdminChat` — admin can see all messages from all clients, including messages sent to other admins
+84. Document download in portal — no audit log entry when client downloads a document
+85. `AdminTeam` — delete invite doesn't require confirmation
+86. `BookAppointment` — `localStorage` stores booking data including address in plain text
+87. No content-type validation on storage uploads — only file extension checked
+88. `AdminSettings` — seal image upload has no file type restriction (could upload non-image)
+89. `AdminJournal` — certificate photos uploaded to `documents` bucket under `certificates/` path but no separate RLS for this prefix
+90. No rate limiting on chat message sending — client can spam messages
+
+## UI/UX Issues (91-130)
+
+91. `AdminOverview` — E&O and Bond alert banners use hardcoded `bg-amber-50 text-amber-800` — not dark-mode aware
+92. `AdminOverview` — commission alert dynamically generates class but E&O/Bond alerts don't use same pattern
+93. `AppointmentConfirmation` — no booking reference number displayed (just "Appointment Confirmed!")
+94. `AppointmentConfirmation` — no confirmation email status indicator
+95. `AppointmentConfirmation` — notary profile fetches first admin/notary found — may not be the assigned notary
+96. `ClientPortal` — "Edit Profile" dialog has no cancel button
+97. `ClientPortal` — `showPaymentForm` doesn't reset when switching tabs
+98. `ClientPortal` — correspondence tab has no "Compose" button — clients can only view, not send
+99. `ClientPortal` — service requests tab has no cancel button for pending requests
+100. `ClientPortal` — reminders tab reminder form doesn't validate document_id exists
+101. `AdminAppointments` — receipt dialog prints entire page content (verified: still uses `window.print()`)
+102. `AdminAppointments` — no appointment detail view accessible from the list (requires clicking multiple actions)
+103. `AdminAvailability` — specific date override exists in DB schema (`specific_date` field) but UI doesn't expose it
+104. `AdminAvailability` — no visual calendar showing which days have slots
+105. `AdminChat` — no search/filter for conversations
+106. `AdminChat` — no message timestamp formatting (raw `created_at` display)
+107. `AdminChat` — no file attachment support (field exists in schema: `attachment_url`)
+108. `AdminJournal` — certificate photos uploaded but URLs never saved back to the `certificate_photos` JSON field
+109. `AdminJournal` — no PDF export option (only CSV)
+110. `AdminJournal` — search only filters by signer_name and document_type — not by date, service type, or notes
+111. `AdminServices` — no drag-and-drop reordering (display_order exists but no UI to change it)
+112. `AdminRevenue` — no chart or visualization of revenue data
+113. `AdminRevenue` — no date range filter for payment history
+114. `AdminApostille` — no inline status timeline (like portal has)
+115. `AdminTemplates` — upload exists but download/preview for stored templates not verified
+116. `AdminLeadPortal` — CSV import has no column mapping UI
+117. `AdminLeadPortal` — no lead detail view
+118. `AdminBusinessClients` — no member management UI (table exists)
+119. `AdminDashboard` — no user avatar/profile dropdown in header
+120. `AdminDashboard` — no breadcrumb showing current page
+121. `OneNotarySession` — no session timer showing elapsed time
+122. `OneNotarySession` — no browser compatibility check before starting
+123. `OneNotarySession` — no recording consent UI
+124. `OneNotarySession` — client view only shows participant link but no session progress
+125. `FeeCalculator` — no "Book Now" CTA linking to booking with pre-filled estimate
+126. `DocumentDigitize` — no progress indicator during OCR processing
+127. `VirtualMailroom` — no pagination for mail items
+128. `SubscriptionPlans` — no comparison table between plan tiers
+129. `RonEligibilityChecker` — result not linkable/shareable (no URL state)
+130. Index page — no service icon dynamic resolution; all fallback to `FileText`
+
+## Edge Function & API Issues (131-155)
+
+131. `AdminAppointments` line 208-218 — status change email still uses raw `fetch()` instead of `supabase.functions.invoke()`
+132. `AdminAppointments` line 364-373 — admin-created appointment email uses raw `fetch()` instead of invoke
+133. `BookAppointment` line 270-271 — ID scan uses raw `fetch()` to `scan-id`
+134. `BookAppointment` line 293-294 — doc scan uses raw `fetch()` to `detect-document`
+135. `ClientPortal` line 230-231 — `explain-document` call uses raw `fetch()`
+136. `send-appointment-emails` called with `appointment_id` in some places and `appointmentId` in others — inconsistent payload
+137. `send-correspondence` called with `to_address` in some places and `to` in others
+138. No timeout/AbortController on any raw `fetch()` calls to edge functions
+139. `AdminAppointments` review request email calls both `client_correspondence.insert` AND `send-correspondence` — double email risk
+140. `onenotary` edge function called with no timeout — UI hangs if OneNotary API is down
+141. `create-payment-intent` edge function — not verified if it handles missing Stripe secret key gracefully
+142. `stripe-webhook` — webhook signature verification is commented out
+143. `process-inbound-email` — no verification of sender domain
+144. `send-appointment-reminders` — no cron job configured to actually trigger it
+145. `discover-leads` — no error handling in the edge function for rate-limited scraping
+146. `ocr-digitize` — no file size limit enforcement in the edge function
+147. `translate-document` — no validation of language pair support
+148. Edge functions return raw error messages to the client — may leak internal details
+149. No unified error response format across edge functions
+150. `notary-assistant` and `client-assistant` — no response streaming for long AI responses (blocks UI)
+151. `detect-document` — no validation that input is actually an image
+152. `scan-id` — no validation that input is actually an ID image
+153. `explain-document` — no text length limit before sending to AI
+154. `send-correspondence` — no check for Resend API key presence before attempting send
+155. `get-stripe-config` — returns raw Stripe config without validating key existence
+
+## Database & Data Integrity (156-175)
+
+156. No FK constraint `apostille_requests.client_id` → `profiles.user_id`
+157. No FK constraint `chat_messages.sender_id` → `profiles.user_id`
+158. No FK constraint `chat_messages.recipient_id` → `profiles.user_id`
+159. No FK constraint `client_correspondence.client_id` → `profiles.user_id`
+160. No FK constraint `document_reminders.document_id` → `documents.id`
+161. No FK constraint `document_reminders.user_id` → `profiles.user_id`
+162. No FK constraint `mailroom_items.client_id` → `profiles.user_id`
+163. No FK constraint `reviews.client_id` → `profiles.user_id`
+164. No FK constraint `reviews.appointment_id` → `appointments.id`
+165. No FK constraint `service_requests.client_id` → `profiles.user_id`
+166. No FK constraint `service_requirements.service_id` → `services.id`
+167. No FK constraint `service_workflows.service_id` → `services.id`
+168. No unique constraint on `reviews(client_id, appointment_id)` — allows duplicate reviews
+169. `leads` table has no index on `email` — slow lookups for conversion tracking
+170. `chat_messages` has no index on `recipient_id` — slow for admin message filtering
+171. No cascade delete on `documents` when `appointments` are deleted
+172. No cascade delete on `payments` when `appointments` are deleted
+173. `handle_new_user` trigger not attached per `<db-triggers>` showing "no triggers"
+174. `updated_at` triggers not attached to any table per `<db-triggers>`
+175. No seed data for `platform_settings` — new deployments have no default pricing/fees
+
+## Dark Mode & Theme (176-185)
+
+176. `AdminOverview` — E&O/Bond alert uses `bg-amber-50` without dark variant
+177. `AdminAppointments` — receipt dialog content uses hardcoded light colors
+178. `ClientPortal` — document pipeline step icons use conditional colors without dark variants
+179. `OneNotarySession` — checklist cards use `bg-primary/5` which may not be visible in dark mode
+180. `AppointmentConfirmation` — checklist background `bg-primary/5` — low contrast in dark mode
+181. `AdminAvailability` — slot cards have no dark mode styling
+182. `AdminTeam` — certification badge colors not dark-mode aware
+183. `AdminLeadPortal` — intent score badge colors likely hardcoded
+184. `FeeCalculator` — result card styling may not adapt to dark mode
+185. `ServiceDetail` — pre-qualifier card backgrounds may not be dark-mode aware
+
+## Accessibility (186-195)
+
+186. `AdminChat` — conversation list has no keyboard navigation
+187. `AdminChat` — no ARIA labels on conversation items
+188. `ClientPortal` — tab triggers lack descriptive `aria-label` (show abbreviations like "Appts", "Docs")
+189. `BookAppointment` — step navigation buttons lack `aria-label` ("Previous"/"Next" but no context)
+190. `BookAppointment` — notarization type selection buttons use `button` element but no `role="radio"` pattern
+191. `OneNotarySession` — voice toggle button has no `aria-pressed` state
+192. `AdminJournal` — oath switch has no associated label with `htmlFor`
+193. `Index` page — AnimatedCounter has no `aria-live` region for screen readers
+194. `AdminOverview` — chart components have no `aria-label` or fallback text
+195. `AdminDashboard` — sidebar menu items lack `aria-current="page"` on active item
+
+## Performance (196-200)
+
+196. `AdminOverview` fetches ALL appointments with no limit for chart data — O(n) chart rendering
+197. `Index` page fetches services and reviews on every visit — no caching
+198. `ClientPortal` creates 4 realtime channels per user — each with its own WebSocket overhead
+199. `BookAppointment` calls `navigator.geolocation.getCurrentPosition` on mount even when not needed (in_person not yet selected)
+200. `AdminAppointments` re-subscribes to realtime on every `filter` change — channel leak risk
 
 ---
 
-## PART C: IMPLEMENTATION PLAN
+## Implementation Plan
 
-### Phase 1: Critical Database & Auth Fixes (Blocks everything)
+### Migration: Add missing FKs, indexes, and constraints
+- Add FK constraints for all orphaned references (gaps 156-167)
+- Add unique constraint on `reviews(client_id, appointment_id)` (gap 168)
+- Add indexes on `leads.email`, `chat_messages.recipient_id` (gaps 169-170)
+- Attach `handle_new_user` and `updated_at` triggers (gaps 173-174)
+- Seed `platform_settings` with defaults (gap 175)
 
-**Migration 1: Triggers & Indexes**
-- Attach `handle_new_user` trigger to `auth.users`
-- Attach `updated_at` triggers to all tables
-- Add indexes on frequently queried columns
-- Enable realtime on `appointments`, `chat_messages`, `notarization_sessions`
-- Add `profiles` DELETE policy
-- Add double-booking prevention constraint
+### Standardize edge function calls
+- Replace remaining raw `fetch()` calls in `AdminAppointments` (2 locations), `BookAppointment` (2 locations), and `ClientPortal` (1 location) with `supabase.functions.invoke()` or `callEdgeFunction()`
+- Standardize payload key names (`appointmentId` everywhere, `to_address` everywhere)
+- Add AbortController with 30s timeout to all edge function calls
 
-**Auth Fixes**
-- Fix `ForgotPassword.tsx` to use `Logo` and `PageShell`
-- Fix `SignUp` post-signup redirect for admin/notary roles
-- Fix `AuthContext` dynamic toast import → use direct import
-- Add "show password" toggle to login/signup
-- Persist dark mode preference in localStorage
+### Fix routing issues
+- Wrap `ServiceRequest`, `SubscriptionPlans`, `DocumentBuilder` in `ProtectedRoute`
+- Fix `/business` URL reference in `ServiceDetail` to point to `/business-portal`
+- Fix `/document-builder` URL to `/builder`
+- Add `PageShell` wrapper to `AppointmentConfirmation`, `OneNotarySession`, `MobileUpload`
+- Read `?tab=` query param in `ClientPortal` to set initial tab
 
-### Phase 2: Edge Function Auth Standardization
+### Fix form validation
+- Add date/time validation to `AdminAppointments` create dialog
+- Add minimum value enforcement on all numeric inputs
+- Add email format validation on `AdminTeam` invite, `LoanSigningServices` form
+- Fix `AdminJournal` certificate photo upload to write URLs to `certificate_photos` field
+- Add file type validation on ID scan and doc scan inputs
 
-- Replace ALL raw `fetch()` calls to edge functions with `callEdgeFunction()` from `edgeFunctionAuth.ts` or `supabase.functions.invoke()`
-- Files: `AdminAppointments`, `AdminEmailManagement`, `AdminAIAssistant`, `Services`, `DocumentTemplates`, `WhatDoINeed`, `BookAppointment`, `ClientPortal`
-- Standardize payload shapes for `send-appointment-emails` and `send-correspondence`
-- Add timeout handling (AbortController with 30s timeout)
+### Fix dark mode gaps
+- Update `AdminOverview` E&O/Bond alerts with dark variants
+- Update `AdminAvailability`, `AdminTeam`, `AdminLeadPortal` badge colors
+- Add dark mode classes to `AppointmentConfirmation` and `OneNotarySession` cards
 
-### Phase 3: Booking Flow Fixes
+### Add accessibility attributes
+- Add `aria-label` to all abbreviated tab triggers
+- Add `role="radiogroup"` and `role="radio"` to booking type selection
+- Add `aria-pressed` to voice toggle
+- Add `aria-live="polite"` to AnimatedCounter
+- Add `aria-current="page"` to active sidebar items
 
-- Add past-date validation
-- Add minimum notice period (2 hours)
-- Add confirmation dialog before submission
-- Fix `documentCount` minimum to 1
-- Add date picker calendar (use existing shadcn Calendar component)
-- Add booking reference number display on confirmation
-- Fix `handleRebook` step numbering
-- Add localStorage expiry for pending bookings (24 hours)
-- Add browser back-button support (popstate listener)
+### Performance
+- Limit `AdminOverview` appointment query to last 12 months
+- Add React Query wrapping for `platform_settings` with 5-min stale time
+- Consolidate `ClientPortal` realtime channels into a single multiplexed channel
+- Remove eager geolocation request from `BookAppointment`
 
-### Phase 4: Client Portal Fixes
-
-- Refactor 11-tab layout to 4 main tabs + sub-navigation (Appointments, Documents, Payments, Account)
-- Add file type/size validation on upload (PDF, JPEG, PNG, TIFF, DOC, DOCX; max 25MB)
-- Fix `explainDocument` to handle binary PDFs (convert to base64 or extract text server-side)
-- Add appointment rescheduling
-- Fix cancellation to check status is cancellable
-- Add profile avatar upload
-- Fix tab overflow on mobile
-- Add loading skeletons
-- Fix reminder date validation (must be future)
-
-### Phase 5: Admin Dashboard Fixes
-
-- Add RON session metrics to AdminOverview
-- Fix receipt print styling (scope to `.print-receipt-area`)
-- Add pagination to AdminEmailManagement
-- Fix AdminBusinessClients dark mode colors
-- Fix AdminRevenue dark mode colors
-- Add breadcrumb navigation to AdminDashboard header
-- Add user avatar to admin header
-- Reduce AdminNotificationCenter polling (use visibility API)
-- Add certification file upload to AdminTeam
-- Add service reordering to AdminServices
-
-### Phase 6: OneNotary Session Completion
-
-- Read `ron_session_method` from platform_settings
-- Add manual link input for email_invite mode
-- Wrap in PageShell
-- Add document upload, cancel, witness request buttons
-- Enable realtime subscription for session updates
-- Auto-create journal entry + e-seal on finalization
-- Add error handling for missing appointment
-
-### Phase 7: Public Page Verification & Polish
-
-- Fix `ServiceDetail` invalid ID handling
-- Add debounce to Services search
-- Fix `VerifySeal` type cast
-- Add spam prevention to contact form (honeypot field)
-- Fix testimonial name handling for empty names
-- Fix service icon mapping (use dynamic icon resolution)
-- Fix Navbar to hide "Sign In" when authenticated
-- Add `PageShell` to `ForgotPassword`
-- Set proper `document.title` on all pages
-
-### Phase 8: Dark Mode & Theme Consistency
-
-- Replace all hardcoded badge colors with dark-mode aware variants from `statusColors.ts`
-- Files: `AdminBusinessClients`, `AdminRevenue`, `ClientPortal` inline badges
-- Persist dark mode toggle in localStorage
-- Add dark mode to mobile menu
-
-### Phase 9: Performance & Polish
-
-- Add debounce to all search inputs
-- Cache `platform_settings` in React Query with 5-min stale time
-- Add error boundaries around each portal tab
-- Add virtual scrolling for long appointment/document lists
-- Add page title management per route
-- Add structured data for local business SEO
-
----
-
-## Technical Details
-
-### Database Migration SQL
-```sql
--- Trigger: handle_new_user
-CREATE OR REPLACE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
-
--- Updated_at triggers for 11 tables
--- Indexes on 13 columns
--- Realtime enablement for 3 tables
--- Profiles DELETE policy
--- Double-booking prevention
-```
-
-### Files Modified (estimated ~40 files)
-- Core: `AuthContext.tsx`, `Navbar.tsx`, `ForgotPassword.tsx`, `SignUp.tsx`, `Login.tsx`
-- Booking: `BookAppointment.tsx`, `BookingScheduleStep.tsx`, `BookingReviewStep.tsx`
-- Portal: `ClientPortal.tsx`, `PortalAppointmentsTab.tsx`, `PortalDocumentsTab.tsx`
-- Admin: All 20 admin pages
+### Files touched (~35 files)
+- Core: `App.tsx`, `ClientPortal.tsx`, `BookAppointment.tsx`, `AppointmentConfirmation.tsx`
+- Admin: `AdminOverview.tsx`, `AdminAppointments.tsx`, `AdminChat.tsx`, `AdminJournal.tsx`, `AdminAvailability.tsx`, `AdminTeam.tsx`, `AdminLeadPortal.tsx`, `AdminServices.tsx`, `AdminRevenue.tsx`, `AdminDashboard.tsx`, `AdminSettings.tsx`
 - Session: `OneNotarySession.tsx`
-- Utils: `edgeFunctionAuth.ts`, `statusColors.ts`
-- Public: `Index.tsx`, `Services.tsx`, `FeeCalculator.tsx`, `VerifySeal.tsx`
-
-### No Changes To
-- `src/integrations/supabase/client.ts` (auto-generated)
-- `src/integrations/supabase/types.ts` (auto-generated)
-- `.env` (auto-generated)
-- Edge function code (fixes are client-side auth usage)
+- Public: `ServiceDetail.tsx`, `ServiceRequest.tsx`, `MobileUpload.tsx`, `Index.tsx`, `FeeCalculator.tsx`
+- Utils: `edgeFunctionAuth.ts`
+- DB: 1 migration file
 
