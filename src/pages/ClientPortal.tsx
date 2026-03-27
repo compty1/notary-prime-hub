@@ -226,12 +226,12 @@ export default function ClientPortal() {
       const { data: fileData, error } = await supabase.storage.from("documents").download(doc.file_path);
       if (error) throw error;
       const text = await fileData.text();
-      const { data: { session } } = await supabase.auth.getSession();
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/explain-document`, {
-        method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`, apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
-        body: JSON.stringify({ documentText: text, fileName: doc.file_name }),
+      // Limit text to 50k chars to avoid sending huge payloads
+      const truncatedText = text.slice(0, 50000);
+      const { data: result, error: fnError } = await supabase.functions.invoke("explain-document", {
+        body: { documentText: truncatedText, fileName: doc.file_name },
       });
-      const result = await resp.json();
+      if (fnError) throw fnError;
       if (result.error) throw new Error(result.error);
       setExplanation(result.explanation + "\n\n" + result.disclaimer);
     } catch (e: any) { setExplanation("Could not analyze this document. " + (e.message || "")); }
