@@ -101,12 +101,12 @@ function AnimatedRoutes() {
         <Route path="/join" element={<JoinPlatform />} />
         <Route path="/notary-guide-process" element={<NotaryProcessGuide />} />
         <Route path="/digitize" element={<ProtectedRoute><DocumentDigitize /></ProtectedRoute>} />
-        <Route path="/request" element={<ServiceRequest />} />
+        <Route path="/request" element={<ProtectedRoute><ServiceRequest /></ProtectedRoute>} />
         <Route path="/mailroom" element={<ProtectedRoute><VirtualMailroom /></ProtectedRoute>} />
-        <Route path="/subscribe" element={<SubscriptionPlans />} />
+        <Route path="/subscribe" element={<ProtectedRoute><SubscriptionPlans /></ProtectedRoute>} />
         <Route path="/verify-id" element={<ProtectedRoute><VerifyIdentity /></ProtectedRoute>} />
-        <Route path="/mobile-upload" element={<MobileUpload />} />
-        <Route path="/builder" element={<DocumentBuilder />} />
+        <Route path="/mobile-upload" element={<ProtectedRoute><MobileUpload /></ProtectedRoute>} />
+        <Route path="/builder" element={<ProtectedRoute><DocumentBuilder /></ProtectedRoute>} />
         <Route path="/fee-calculator" element={<FeeCalculator />} />
         <Route path="/portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
         <Route path="/confirmation" element={<ProtectedRoute><AppointmentConfirmation /></ProtectedRoute>} />
