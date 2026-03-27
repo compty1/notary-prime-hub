@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,8 @@ export default function ClientPortal() {
   const { user, signOut, isAdmin } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get("tab") || "appointments";
   const [appointments, setAppointments] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
@@ -226,12 +228,12 @@ export default function ClientPortal() {
       const { data: fileData, error } = await supabase.storage.from("documents").download(doc.file_path);
       if (error) throw error;
       const text = await fileData.text();
-      const { data: { session } } = await supabase.auth.getSession();
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/explain-document`, {
-        method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`, apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
-        body: JSON.stringify({ documentText: text, fileName: doc.file_name }),
+      // Limit text to 50k chars to avoid sending huge payloads
+      const truncatedText = text.slice(0, 50000);
+      const { data: result, error: fnError } = await supabase.functions.invoke("explain-document", {
+        body: { documentText: truncatedText, fileName: doc.file_name },
       });
-      const result = await resp.json();
+      if (fnError) throw fnError;
       if (result.error) throw new Error(result.error);
       setExplanation(result.explanation + "\n\n" + result.disclaimer);
     } catch (e: any) { setExplanation("Could not analyze this document. " + (e.message || "")); }
@@ -284,24 +286,24 @@ export default function ClientPortal() {
           </div>
         </motion.div>
 
-        <Tabs defaultValue="appointments" className="space-y-6" onValueChange={val => {
+        <Tabs defaultValue={initialTab} className="space-y-6" onValueChange={val => {
           if (val === "chat" && user && unreadCount > 0) {
             const unreadIds = chatMessages.filter(m => m.is_admin && !m.read).map(m => m.id);
             if (unreadIds.length > 0) supabase.from("chat_messages").update({ read: true }).in("id", unreadIds).then(() => { setChatMessages(prev => prev.map(m => unreadIds.includes(m.id) ? { ...m, read: true } : m)); setUnreadCount(0); });
           }
         }}>
           <TabsList className="w-full overflow-x-auto flex flex-nowrap gap-1 h-auto justify-start sm:justify-center scrollbar-hide">
-            <TabsTrigger value="appointments"><Calendar className="mr-1 h-4 w-4 hidden sm:inline" /> Appts</TabsTrigger>
-            <TabsTrigger value="documents"><FileText className="mr-1 h-4 w-4 hidden sm:inline" /> Docs</TabsTrigger>
-            <TabsTrigger value="status"><Shield className="mr-1 h-4 w-4 hidden sm:inline" /> Status</TabsTrigger>
-            <TabsTrigger value="chat" className="relative"><MessageSquare className="mr-1 h-4 w-4 hidden sm:inline" /> Chat{unreadCount > 0 && <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] text-destructive-foreground">{unreadCount}</span>}</TabsTrigger>
-            <TabsTrigger value="correspondence"><Mail className="mr-1 h-4 w-4 hidden sm:inline" /> Mail</TabsTrigger>
-            <TabsTrigger value="payments"><DollarSign className="mr-1 h-4 w-4 hidden sm:inline" /> Pay</TabsTrigger>
-            <TabsTrigger value="apostille"><Package className="mr-1 h-4 w-4 hidden sm:inline" /> Apost.</TabsTrigger>
-            <TabsTrigger value="requests"><Clock className="mr-1 h-4 w-4 hidden sm:inline" /> Requests</TabsTrigger>
-            <TabsTrigger value="reminders"><Bell className="mr-1 h-4 w-4 hidden sm:inline" /> Remind</TabsTrigger>
-            <TabsTrigger value="reviews"><Star className="mr-1 h-4 w-4 hidden sm:inline" /> Reviews</TabsTrigger>
-            <TabsTrigger value="services"><ShoppingBag className="mr-1 h-4 w-4 hidden sm:inline" /> Services</TabsTrigger>
+            <TabsTrigger value="appointments" aria-label="Appointments"><Calendar className="mr-1 h-4 w-4 hidden sm:inline" /> Appts</TabsTrigger>
+            <TabsTrigger value="documents" aria-label="Documents"><FileText className="mr-1 h-4 w-4 hidden sm:inline" /> Docs</TabsTrigger>
+            <TabsTrigger value="status" aria-label="Document Status"><Shield className="mr-1 h-4 w-4 hidden sm:inline" /> Status</TabsTrigger>
+            <TabsTrigger value="chat" className="relative" aria-label="Live Chat"><MessageSquare className="mr-1 h-4 w-4 hidden sm:inline" /> Chat{unreadCount > 0 && <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] text-destructive-foreground">{unreadCount}</span>}</TabsTrigger>
+            <TabsTrigger value="correspondence" aria-label="Email Correspondence"><Mail className="mr-1 h-4 w-4 hidden sm:inline" /> Mail</TabsTrigger>
+            <TabsTrigger value="payments" aria-label="Payments"><DollarSign className="mr-1 h-4 w-4 hidden sm:inline" /> Pay</TabsTrigger>
+            <TabsTrigger value="apostille" aria-label="Apostille Requests"><Package className="mr-1 h-4 w-4 hidden sm:inline" /> Apost.</TabsTrigger>
+            <TabsTrigger value="requests" aria-label="Service Requests"><Clock className="mr-1 h-4 w-4 hidden sm:inline" /> Requests</TabsTrigger>
+            <TabsTrigger value="reminders" aria-label="Document Reminders"><Bell className="mr-1 h-4 w-4 hidden sm:inline" /> Remind</TabsTrigger>
+            <TabsTrigger value="reviews" aria-label="Reviews"><Star className="mr-1 h-4 w-4 hidden sm:inline" /> Reviews</TabsTrigger>
+            <TabsTrigger value="services" aria-label="Available Services"><ShoppingBag className="mr-1 h-4 w-4 hidden sm:inline" /> Services</TabsTrigger>
           </TabsList>
 
           <TabsContent value="appointments">

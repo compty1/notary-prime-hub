@@ -261,17 +261,17 @@ export default function BookAppointment() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 10 * 1024 * 1024) { toast({ title: "File too large", description: "Please upload an image under 10MB.", variant: "destructive" }); return; }
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/heic"];
+    if (!allowedTypes.includes(file.type)) { toast({ title: "Invalid file type", description: "Please upload a JPEG, PNG, or WebP image.", variant: "destructive" }); return; }
     setIdScanning(true);
     const reader = new FileReader();
     reader.onload = async () => {
       const base64 = (reader.result as string).split(",")[1];
-      const { data: { session } } = await supabase.auth.getSession();
       try {
-        const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scan-id`, {
-          method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`, apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
-          body: JSON.stringify({ imageBase64: base64 }),
+        const { data, error } = await supabase.functions.invoke("scan-id", {
+          body: { imageBase64: base64 },
         });
-        const data = await resp.json();
+        if (error) throw error;
         if (data.error) toast({ title: "ID scan issue", description: data.error, variant: "destructive" });
         else { setIdData(data); if (!guestName && data.full_name) setGuestName(data.full_name); if (data.is_expired) toast({ title: "Expired ID Detected", description: "This ID appears to be expired.", variant: "destructive" }); else toast({ title: "ID scanned successfully", description: `${data.id_type} — ${data.full_name}` }); }
       } catch { toast({ title: "Scan failed", variant: "destructive" }); }
@@ -284,17 +284,17 @@ export default function BookAppointment() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 20 * 1024 * 1024) { toast({ title: "File too large", variant: "destructive" }); return; }
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+    if (!allowedTypes.includes(file.type)) { toast({ title: "Invalid file type", description: "Please upload a JPEG, PNG, WebP, or PDF.", variant: "destructive" }); return; }
     setDocScanning(true);
     const reader = new FileReader();
     reader.onload = async () => {
       const base64 = (reader.result as string).split(",")[1];
-      const { data: { session } } = await supabase.auth.getSession();
       try {
-        const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/detect-document`, {
-          method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`, apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
-          body: JSON.stringify({ imageBase64: base64, fileName: file.name }),
+        const { data, error } = await supabase.functions.invoke("detect-document", {
+          body: { imageBase64: base64, fileName: file.name },
         });
-        const data = await resp.json();
+        if (error) throw error;
         if (data.error) toast({ title: "Document analysis issue", description: data.error, variant: "destructive" });
         else {
           setDocAnalysis(data);

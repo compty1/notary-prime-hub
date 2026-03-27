@@ -204,15 +204,8 @@ export default function AdminAppointments() {
 
       // Send status change email notification
       try {
-        const { data: { session: authSession } } = await supabase.auth.getSession();
-        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-appointment-emails`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authSession?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          },
-          body: JSON.stringify({ appointment_id: id, status_change: newStatus }),
+        await supabase.functions.invoke("send-appointment-emails", {
+          body: { appointment_id: id, status_change: newStatus },
         });
       } catch (emailErr) {
         console.error("Email notification error:", emailErr);
@@ -236,7 +229,7 @@ export default function AdminAppointments() {
               });
               await supabase.functions.invoke("send-correspondence", {
                 body: {
-                  to: clientProfile.email,
+                  to_address: clientProfile.email,
                   subject: "How was your notarization experience?",
                   body: `Your ${appt.service_type} appointment has been completed. We'd love to hear your feedback! Please visit your Client Portal to leave a review.`,
                 },
@@ -336,6 +329,12 @@ export default function AdminAppointments() {
       toast({ title: "Missing fields", description: "Please fill in all required fields.", variant: "destructive" });
       return;
     }
+    // Validate date is not in the past
+    const today = new Date().toISOString().split("T")[0];
+    if (newAppt.scheduled_date < today) {
+      toast({ title: "Invalid date", description: "Cannot create appointments in the past.", variant: "destructive" });
+      return;
+    }
     setCreatingAppt(true);
     const { data: insertedAppt, error } = await supabase.from("appointments").insert({
       client_id: newAppt.client_id,
@@ -360,15 +359,8 @@ export default function AdminAppointments() {
       });
       // Send email notification for admin-created appointment
       try {
-        const { data: { session: authSession } } = await supabase.auth.getSession();
-        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-appointment-emails`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authSession?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          },
-          body: JSON.stringify({ appointment_id: insertedAppt?.id || newAppt.client_id, emailType: "confirmation" }),
+        await supabase.functions.invoke("send-appointment-emails", {
+          body: { appointment_id: insertedAppt?.id, emailType: "confirmation" },
         });
       } catch {}
       setShowCreateDialog(false);

@@ -168,6 +168,12 @@ export default function AdminTeam() {
 
   const sendInvite = async () => {
     if (!inviteEmail.trim() || !user) return;
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(inviteEmail.trim())) {
+      toast({ title: "Invalid email", description: "Please enter a valid email address.", variant: "destructive" });
+      return;
+    }
     setSending(true);
     const existing = invites.find((i) => i.email.toLowerCase() === inviteEmail.toLowerCase());
     if (existing) {

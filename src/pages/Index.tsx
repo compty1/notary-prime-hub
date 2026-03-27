@@ -61,7 +61,7 @@ function AnimatedCounter({ value, suffix = "" }: {value: number;suffix?: string;
     return () => clearInterval(timer);
   }, [isInView, value]);
 
-  return <span ref={ref} className="font-mono font-bold">{count.toLocaleString()}{suffix}</span>;
+  return <span ref={ref} aria-live="polite" className="font-mono font-bold">{count.toLocaleString()}{suffix}</span>;
 }
 
 export default function Index() {

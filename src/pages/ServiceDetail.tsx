@@ -50,10 +50,10 @@ const categoryResources: Record<string, { label: string; url: string; icon: any 
   ],
   document_services: [
     { label: "Document Templates", url: "/templates", icon: FileText },
-    { label: "Document Builder", url: "/document-builder", icon: FileText },
+    { label: "Document Builder", url: "/builder", icon: FileText },
   ],
   business: [
-    { label: "Business Portal", url: "/business", icon: Briefcase },
+    { label: "Business Portal", url: "/business-portal", icon: Briefcase },
     { label: "Loan Signing Partnership", url: "/loan-signing", icon: Briefcase },
   ],
 };
