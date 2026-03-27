@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,8 @@ export default function ClientPortal() {
   const { user, signOut, isAdmin } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get("tab") || "appointments";
   const [appointments, setAppointments] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
@@ -284,7 +286,7 @@ export default function ClientPortal() {
           </div>
         </motion.div>
 
-        <Tabs defaultValue="appointments" className="space-y-6" onValueChange={val => {
+        <Tabs defaultValue={initialTab} className="space-y-6" onValueChange={val => {
           if (val === "chat" && user && unreadCount > 0) {
             const unreadIds = chatMessages.filter(m => m.is_admin && !m.read).map(m => m.id);
             if (unreadIds.length > 0) supabase.from("chat_messages").update({ read: true }).in("id", unreadIds).then(() => { setChatMessages(prev => prev.map(m => unreadIds.includes(m.id) ? { ...m, read: true } : m)); setUnreadCount(0); });

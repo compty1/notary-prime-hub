@@ -228,14 +228,14 @@ export default function AdminJournal() {
                       <SelectContent><SelectItem value="in_person">In Person</SelectItem><SelectItem value="ron">RON</SelectItem></SelectContent>
                     </Select>
                   </div>
-                  <div><Label>Fee Charged ($)</Label><Input type="number" step="0.01" value={form.fees_charged} onChange={(e) => setForm({ ...form, fees_charged: e.target.value })} placeholder="5.00" /></div>
+                  <div><Label>Fee Charged ($)</Label><Input type="number" step="0.01" min="0" value={form.fees_charged} onChange={(e) => setForm({ ...form, fees_charged: e.target.value })} placeholder="5.00" /></div>
                   <div><Label>Witnesses Present</Label><Input type="number" min="0" value={form.witnesses_present} onChange={(e) => setForm({ ...form, witnesses_present: e.target.value })} /></div>
                 </div>
                 <div className="rounded-lg border border-border/50 p-3 space-y-3">
                   <p className="text-sm font-medium flex items-center gap-2"><DollarSign className="h-4 w-4 text-primary" /> Profit Tracking</p>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <div><Label>Platform Fees ($)</Label><Input type="number" step="0.01" value={form.platform_fees} onChange={(e) => setForm({ ...form, platform_fees: e.target.value })} placeholder="KBA + OneNotary fees" /></div>
-                    <div><Label>Travel Fee ($)</Label><Input type="number" step="0.01" value={form.travel_fee} onChange={(e) => setForm({ ...form, travel_fee: e.target.value })} placeholder="Travel costs" /></div>
+                     <div><Label>Platform Fees ($)</Label><Input type="number" step="0.01" min="0" value={form.platform_fees} onChange={(e) => setForm({ ...form, platform_fees: e.target.value })} placeholder="KBA + OneNotary fees" /></div>
+                     <div><Label>Travel Fee ($)</Label><Input type="number" step="0.01" min="0" value={form.travel_fee} onChange={(e) => setForm({ ...form, travel_fee: e.target.value })} placeholder="Travel costs" /></div>
                   </div>
                   {form.fees_charged && (
                     <p className="text-xs text-muted-foreground">
@@ -243,9 +243,9 @@ export default function AdminJournal() {
                     </p>
                   )}
                 </div>
-                <div className="flex items-center gap-3">
-                  <Switch checked={form.oath_administered} onCheckedChange={(v) => setForm({ ...form, oath_administered: v })} />
-                  <Label>Oath/Affirmation Administered</Label>
+                 <div className="flex items-center gap-3">
+                   <Switch id="oath-switch" checked={form.oath_administered} onCheckedChange={(v) => setForm({ ...form, oath_administered: v })} />
+                   <Label htmlFor="oath-switch">Oath/Affirmation Administered</Label>
                 </div>
                 <div><Label>Notes</Label><Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} placeholder="Any additional notes..." /></div>
                 {/* Certificate Photo Upload */}

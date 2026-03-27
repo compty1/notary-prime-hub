@@ -124,15 +124,17 @@ export default function AdminChat() {
                   const unread = getUnreadCount(uid);
                   const name = profiles[uid] || uid.slice(0, 8);
                   return (
-                    <div key={uid} onClick={() => selectConversation(uid)}
-                      className={`flex items-center gap-2 p-3 rounded-lg cursor-pointer transition-colors ${selectedUser === uid ? "bg-primary/10" : "hover:bg-muted"}`}>
-                      <User className="h-5 w-5 text-muted-foreground" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{name}</p>
-                        {lastMsg && <p className="text-xs text-muted-foreground truncate">{lastMsg.message}</p>}
-                      </div>
-                      {unread > 0 && <Badge className="bg-gradient-primary text-white text-xs">{unread}</Badge>}
-                    </div>
+                     <div key={uid} onClick={() => selectConversation(uid)}
+                       role="button" tabIndex={0} aria-label={`Chat with ${name}${unread > 0 ? `, ${unread} unread` : ""}`}
+                       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectConversation(uid); } }}
+                       className={`flex items-center gap-2 p-3 rounded-lg cursor-pointer transition-colors ${selectedUser === uid ? "bg-primary/10" : "hover:bg-muted"}`}>
+                       <User className="h-5 w-5 text-muted-foreground" />
+                       <div className="flex-1 min-w-0">
+                         <p className="text-sm font-medium truncate">{name}</p>
+                         {lastMsg && <p className="text-xs text-muted-foreground truncate">{lastMsg.message}</p>}
+                       </div>
+                       {unread > 0 && <Badge className="bg-gradient-primary text-white text-xs">{unread}</Badge>}
+                     </div>
                   );
                 })
               )}
@@ -163,7 +165,7 @@ export default function AdminChat() {
           </div>
           {selectedUser && (
             <div className="border-t p-3 flex gap-2">
-              <Input value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Type a reply..." onKeyDown={(e) => e.key === "Enter" && sendMessage()} />
+              <Input value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Type a reply..." maxLength={2000} onKeyDown={(e) => e.key === "Enter" && sendMessage()} />
               <Button size="sm" onClick={sendMessage} disabled={sending} className="bg-gradient-primary text-white hover:opacity-90">
                 {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               </Button>
