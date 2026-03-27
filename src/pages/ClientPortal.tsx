@@ -291,17 +291,17 @@ export default function ClientPortal() {
           }
         }}>
           <TabsList className="w-full overflow-x-auto flex flex-nowrap gap-1 h-auto justify-start sm:justify-center scrollbar-hide">
-            <TabsTrigger value="appointments"><Calendar className="mr-1 h-4 w-4 hidden sm:inline" /> Appts</TabsTrigger>
-            <TabsTrigger value="documents"><FileText className="mr-1 h-4 w-4 hidden sm:inline" /> Docs</TabsTrigger>
-            <TabsTrigger value="status"><Shield className="mr-1 h-4 w-4 hidden sm:inline" /> Status</TabsTrigger>
-            <TabsTrigger value="chat" className="relative"><MessageSquare className="mr-1 h-4 w-4 hidden sm:inline" /> Chat{unreadCount > 0 && <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] text-destructive-foreground">{unreadCount}</span>}</TabsTrigger>
-            <TabsTrigger value="correspondence"><Mail className="mr-1 h-4 w-4 hidden sm:inline" /> Mail</TabsTrigger>
-            <TabsTrigger value="payments"><DollarSign className="mr-1 h-4 w-4 hidden sm:inline" /> Pay</TabsTrigger>
-            <TabsTrigger value="apostille"><Package className="mr-1 h-4 w-4 hidden sm:inline" /> Apost.</TabsTrigger>
-            <TabsTrigger value="requests"><Clock className="mr-1 h-4 w-4 hidden sm:inline" /> Requests</TabsTrigger>
-            <TabsTrigger value="reminders"><Bell className="mr-1 h-4 w-4 hidden sm:inline" /> Remind</TabsTrigger>
-            <TabsTrigger value="reviews"><Star className="mr-1 h-4 w-4 hidden sm:inline" /> Reviews</TabsTrigger>
-            <TabsTrigger value="services"><ShoppingBag className="mr-1 h-4 w-4 hidden sm:inline" /> Services</TabsTrigger>
+            <TabsTrigger value="appointments" aria-label="Appointments"><Calendar className="mr-1 h-4 w-4 hidden sm:inline" /> Appts</TabsTrigger>
+            <TabsTrigger value="documents" aria-label="Documents"><FileText className="mr-1 h-4 w-4 hidden sm:inline" /> Docs</TabsTrigger>
+            <TabsTrigger value="status" aria-label="Document Status"><Shield className="mr-1 h-4 w-4 hidden sm:inline" /> Status</TabsTrigger>
+            <TabsTrigger value="chat" className="relative" aria-label="Live Chat"><MessageSquare className="mr-1 h-4 w-4 hidden sm:inline" /> Chat{unreadCount > 0 && <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] text-destructive-foreground">{unreadCount}</span>}</TabsTrigger>
+            <TabsTrigger value="correspondence" aria-label="Email Correspondence"><Mail className="mr-1 h-4 w-4 hidden sm:inline" /> Mail</TabsTrigger>
+            <TabsTrigger value="payments" aria-label="Payments"><DollarSign className="mr-1 h-4 w-4 hidden sm:inline" /> Pay</TabsTrigger>
+            <TabsTrigger value="apostille" aria-label="Apostille Requests"><Package className="mr-1 h-4 w-4 hidden sm:inline" /> Apost.</TabsTrigger>
+            <TabsTrigger value="requests" aria-label="Service Requests"><Clock className="mr-1 h-4 w-4 hidden sm:inline" /> Requests</TabsTrigger>
+            <TabsTrigger value="reminders" aria-label="Document Reminders"><Bell className="mr-1 h-4 w-4 hidden sm:inline" /> Remind</TabsTrigger>
+            <TabsTrigger value="reviews" aria-label="Reviews"><Star className="mr-1 h-4 w-4 hidden sm:inline" /> Reviews</TabsTrigger>
+            <TabsTrigger value="services" aria-label="Available Services"><ShoppingBag className="mr-1 h-4 w-4 hidden sm:inline" /> Services</TabsTrigger>
           </TabsList>
 
           <TabsContent value="appointments">

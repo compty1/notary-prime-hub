@@ -52,7 +52,7 @@ export default function AdminOverview() {
       supabase.from("notary_journal").select("fees_charged, created_at, notarization_type"),
       supabase.from("platform_settings").select("setting_key, setting_value"),
       supabase.from("profiles").select("user_id, full_name, email"),
-      supabase.from("appointments").select("scheduled_date, status, notarization_type").order("scheduled_date", { ascending: true }),
+      supabase.from("appointments").select("scheduled_date, status, notarization_type").order("scheduled_date", { ascending: true }).gte("scheduled_date", new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]),
     ]);
 
     // Fetch recent audit activity
@@ -165,16 +165,16 @@ export default function AdminOverview() {
               <Link to="/admin/settings" className="ml-auto"><Button size="sm" variant="outline" className="text-xs">Update Settings</Button></Link>
             </div>
           )}
-          {eoAlert && (
-            <div className="flex items-center gap-2 rounded-lg border border-amber-500 bg-amber-50 p-3 text-sm font-medium text-amber-800">
-              <AlertTriangle className="h-4 w-4 flex-shrink-0" /> {eoAlert}
-            </div>
-          )}
-          {bondAlert && (
-            <div className="flex items-center gap-2 rounded-lg border border-amber-500 bg-amber-50 p-3 text-sm font-medium text-amber-800">
-              <AlertTriangle className="h-4 w-4 flex-shrink-0" /> {bondAlert}
-            </div>
-          )}
+           {eoAlert && (
+             <div className="flex items-center gap-2 rounded-lg border border-amber-500 bg-amber-50 dark:bg-amber-900/20 p-3 text-sm font-medium text-amber-800 dark:text-amber-300">
+               <AlertTriangle className="h-4 w-4 flex-shrink-0" /> {eoAlert}
+             </div>
+           )}
+           {bondAlert && (
+             <div className="flex items-center gap-2 rounded-lg border border-amber-500 bg-amber-50 dark:bg-amber-900/20 p-3 text-sm font-medium text-amber-800 dark:text-amber-300">
+               <AlertTriangle className="h-4 w-4 flex-shrink-0" /> {bondAlert}
+             </div>
+           )}
         </div>
       )}
 
