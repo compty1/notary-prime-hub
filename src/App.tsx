@@ -20,7 +20,7 @@ import NotFound from "./pages/NotFound";
 const ResetPassword = lazy(() => import("./pages/ForgotPassword"));
 const BookAppointment = lazy(() => import("./pages/BookAppointment"));
 const ClientPortal = lazy(() => import("./pages/ClientPortal"));
-const OneNotarySession = lazy(() => import("./pages/OneNotarySession"));
+const RonSession = lazy(() => import("./pages/RonSession"));
 const NotaryGuide = lazy(() => import("./pages/NotaryGuide"));
 const RonInfo = lazy(() => import("./pages/RonInfo"));
 const DocumentTemplates = lazy(() => import("./pages/DocumentTemplates"));
