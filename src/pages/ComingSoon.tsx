@@ -6,7 +6,7 @@ import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ShieldCheck, FileSignature, Video, CheckCircle, Loader2, ArrowRight, Phone, Mail } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { submitLead } from "@/lib/submitLead";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 
