@@ -147,8 +147,8 @@ export default function FeeCalculator() {
                         <p className="text-xs text-muted-foreground flex items-start gap-2">
                           <Info className="h-4 w-4 flex-shrink-0 text-primary mt-0.5" />
                           <span>
-                            Travel distance is calculated from our central meeting point at <strong>Hollywood Casino on West Broad Street, Columbus</strong> — 
-                            a convenient, central location for fair and efficient travel fees for both notary and client.
+                            Travel distance is calculated from our central Columbus office location — 
+                            ensuring fair and efficient travel fees for both notary and client.
                           </span>
                         </p>
                       </div>
