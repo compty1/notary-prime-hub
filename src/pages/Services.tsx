@@ -167,13 +167,31 @@ export default function Services() {
   } = useQuery({
     queryKey: ["services-catalog"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const primary = await supabase
         .from("services")
         .select("*")
         .eq("is_active", true)
         .order("display_order");
-      if (error) throw error;
-      return (data ?? []) as Service[];
+
+      if (!primary.error && primary.data && primary.data.length > 0) {
+        return primary.data as Service[];
+      }
+
+      const restUrl = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/services?select=*&is_active=eq.true&order=display_order.asc`;
+      const apiKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
+      const restResponse = await fetch(restUrl, {
+        headers: {
+          apikey: apiKey,
+          Authorization: `Bearer ${apiKey}`,
+        },
+      });
+
+      if (!restResponse.ok) {
+        throw primary.error ?? new Error(`REST fallback failed (${restResponse.status})`);
+      }
+
+      const restData = (await restResponse.json()) as Service[];
+      return restData;
     },
     staleTime: 10 * 60 * 1000,
     retry: 2,
