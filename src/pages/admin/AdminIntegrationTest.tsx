@@ -250,6 +250,7 @@ export default function AdminIntegrationTest() {
           <TestCard title="Database" icon={Database} result={dbTest} onTest={testDatabaseConnection} description="Queries the platform_settings table to verify database connectivity and RLS policies." />
           <TestCard title="File Storage" icon={HardDrive} result={storageTest} onTest={testStorageConnection} description="Lists the documents storage bucket to verify file storage access." />
           <TestCard title="SignNow API" icon={Monitor} result={apiTest} onTest={testSignNowConnection} description="Tests the SignNow REST API connection by listing documents. Requires SIGNNOW_API_TOKEN secret." />
+          <TestCard title="SignNow Token" icon={Shield} result={tokenTest} onTest={testSignNowToken} description="Verifies the current SignNow API token is valid and shows time until expiration. Tokens expire after 30 days." />
           <TestCard title="Stripe Payment Gateway" icon={CreditCard} result={stripeTest} onTest={testStripeConnection} description="Verifies Stripe publishable key is configured and the get-stripe-config function responds." />
           <TestCard title="Email Function" icon={Mail} result={emailTest} onTest={testEmailFunction} description="Sends a dry-run request to the send-correspondence edge function to verify it's deployed and reachable." />
         </TabsContent>
