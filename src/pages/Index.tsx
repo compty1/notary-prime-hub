@@ -548,7 +548,7 @@ export default function Index() {
                       required />
                     
                   </div>
-                  <Button type="submit" className="w-full bg-gradient-primary text-white hover:opacity-90" disabled={submitting}>
+                  <Button type="submit" className="w-full" disabled={submitting}>
                     {submitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending...</> : <><Send className="mr-2 h-4 w-4" /> Send Message</>}
                   </Button>
                 </form>
