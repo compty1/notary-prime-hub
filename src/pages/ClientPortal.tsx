@@ -41,6 +41,9 @@ export default function ClientPortal() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialTab = searchParams.get("tab") || "appointments";
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  usePageTitle("Client Portal");
   const [appointments, setAppointments] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
