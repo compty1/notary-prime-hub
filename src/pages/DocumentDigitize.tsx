@@ -395,6 +395,45 @@ export default function DocumentDigitize() {
             </Card>
           </motion.div>
         )}
+
+        {/* Translation panel - shown after edit step when in translate mode */}
+        {activeMode === "translate" && step === "edit" && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-6">
+            <Card className="border-border/50">
+              <CardHeader>
+                <CardTitle className="font-sans text-lg flex items-center gap-2">
+                  <Languages className="h-5 w-5 text-primary" /> Translate Document
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Source Language</Label>
+                    <Select value={sourceLang} onValueChange={setSourceLang}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>{LANGUAGES.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Target Language</Label>
+                    <Select value={targetLang} onValueChange={setTargetLang}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>{LANGUAGES.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <Button onClick={handleTranslate} disabled={translating}>
+                  {translating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Translating...</> : <><Languages className="mr-2 h-4 w-4" /> Translate</>}
+                </Button>
+                {translationResult && (
+                  <div className="rounded-lg border border-border/50 bg-muted/30 p-4 max-h-[300px] overflow-y-auto">
+                    <p className="text-sm whitespace-pre-wrap">{translationResult}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
       </div>
 
     </PageShell>
