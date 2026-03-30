@@ -559,7 +559,7 @@ export default function Index() {
       </section>
 
       {/* Industry Insights */}
-      <section className="bg-muted/30 py-16">
+      <section className="border-t border-border bg-card py-16">
         <div className="container mx-auto px-4">
           <h2 className="mb-8 text-center font-sans text-2xl font-bold text-foreground">Industry Insights</h2>
           <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-2">

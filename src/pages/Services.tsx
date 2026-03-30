@@ -249,12 +249,12 @@ export default function Services() {
       </div>
 
       {/* CTA */}
-      <section className="bg-muted/30 py-16">
+      <section className="border-t border-border bg-card py-16">
         <div className="container mx-auto px-4 text-center">
           <h2 className="mb-4 font-sans text-2xl font-bold text-foreground">Ready to Get Started?</h2>
           <p className="mb-6 text-muted-foreground">Book an appointment or contact us for a custom quote.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link to="/book"><Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">Book Appointment</Button></Link>
+            <Link to="/book"><Button size="lg" className="rounded-full px-8">Book Appointment</Button></Link>
             <Link to="/fee-calculator"><Button size="lg" variant="outline">View Pricing</Button></Link>
             <Link to="/loan-signing"><Button size="lg" variant="outline">Loan Signing Partnership</Button></Link>
             <Link to="/ron-check"><Button size="lg" variant="outline">RON Eligibility Checker</Button></Link>
