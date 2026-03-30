@@ -58,6 +58,30 @@ const categoryResources: Record<string, { label: string; url: string; icon: any 
     { label: "Business Portal", url: "/business-portal", icon: Briefcase },
     { label: "Loan Signing Partnership", url: "/loan-signing", icon: Briefcase },
   ],
+  admin_support: [
+    { label: "Service Request Form", url: "/request", icon: FileText },
+    { label: "Fee Calculator", url: "/fee-calculator", icon: Shield },
+  ],
+  content_creation: [
+    { label: "AI Writing Tools", url: "/ai-writer", icon: FileText },
+    { label: "Request Content", url: "/request", icon: FileText },
+  ],
+  research: [
+    { label: "Submit Research Request", url: "/request", icon: FileText },
+    { label: "Services Overview", url: "/services", icon: Shield },
+  ],
+  customer_service: [
+    { label: "Submit Support Request", url: "/request", icon: FileText },
+    { label: "Contact Us", url: "/#contact", icon: ExternalLink },
+  ],
+  technical_support: [
+    { label: "Website Update Request", url: "/request", icon: FileText },
+    { label: "Services Overview", url: "/services", icon: Shield },
+  ],
+  ux_testing: [
+    { label: "Request UX Audit", url: "/request", icon: FileText },
+    { label: "Services Overview", url: "/services", icon: Shield },
+  ],
 };
 
 // Service-specific FAQs (checked before category FAQs)
