@@ -45,8 +45,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const CHECK_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
     const interval = setInterval(async () => {
-      const { data: { session: current }, error } = await supabase.auth.getSession();
-      if (error || !current) {
+      const { data: { user: currentUser }, error } = await supabase.auth.getUser();
+      if (error || !currentUser) {
         toast({ title: "Session expired", description: "You have been signed out for security.", variant: "destructive" });
         setSession(null);
         setUser(null);

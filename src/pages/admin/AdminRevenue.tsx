@@ -98,6 +98,14 @@ export default function AdminRevenue() {
 
   const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
+   const escapeCSV = (val: string | number) => {
+    const str = String(val);
+    if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+      return `"${str.replace(/"/g, '""')}"`;
+    }
+    return str;
+  };
+
   const exportCSV = () => {
     const headers = ["Date", "Client", "Service", "Type", "Fee", "Platform Fees", "Signing Platform Fee", "Travel Fee", "Notary Payout", "Net Profit"];
     const rows = filtered.map((e) => {
@@ -106,9 +114,9 @@ export default function AdminRevenue() {
       const signingFee = parseFloat(e.platform_fee) || 0;
       const travel = parseFloat(e.travel_fee) || 0;
       const payout = parseFloat(e.notary_payout) || 0;
-      return [formatDate(e.created_at), e.signer_name, e.document_type, e.notarization_type, fee.toFixed(2), platform.toFixed(2), signingFee.toFixed(2), travel.toFixed(2), payout.toFixed(2), (fee - platform - signingFee - travel).toFixed(2)];
+      return [formatDate(e.created_at), e.signer_name, e.document_type, e.notarization_type, fee.toFixed(2), platform.toFixed(2), signingFee.toFixed(2), travel.toFixed(2), payout.toFixed(2), (fee - platform - signingFee - travel).toFixed(2)].map(escapeCSV);
     });
-    const csv = [headers, ...rows].map((r) => r.join(",")).join("\n");
+    const csv = [headers.map(escapeCSV), ...rows].map((r) => r.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a"); a.href = url; a.download = `revenue_${dateRange}.csv`; a.click();
@@ -249,7 +257,7 @@ export default function AdminRevenue() {
         </div>
       </div>
 
-      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {statCards.map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
             <Card className="border-border/50">
@@ -328,7 +336,7 @@ export default function AdminRevenue() {
                       <XAxis dataKey="month" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
                       <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickFormatter={(v) => `$${v}`} />
                       <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} formatter={(value: number) => [`$${value.toFixed(2)}`, "Net Profit"]} />
-                      <Line type="monotone" dataKey="net" stroke="hsl(var(--accent))" strokeWidth={2} dot={{ fill: "hsl(var(--accent))", r: 4 }} />
+                      <Line type="monotone" dataKey="net" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ fill: "hsl(var(--primary))", r: 4 }} />
                     </LineChart>
                   </ResponsiveContainer>
                 ) : <p className="py-10 text-center text-sm text-muted-foreground">No data yet</p>}

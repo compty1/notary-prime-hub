@@ -20,7 +20,7 @@ import NotFound from "./pages/NotFound";
 const ResetPassword = lazy(() => import("./pages/ForgotPassword"));
 const BookAppointment = lazy(() => import("./pages/BookAppointment"));
 const ClientPortal = lazy(() => import("./pages/ClientPortal"));
-const OneNotarySession = lazy(() => import("./pages/OneNotarySession"));
+const RonSession = lazy(() => import("./pages/RonSession"));
 const NotaryGuide = lazy(() => import("./pages/NotaryGuide"));
 const RonInfo = lazy(() => import("./pages/RonInfo"));
 const DocumentTemplates = lazy(() => import("./pages/DocumentTemplates"));
@@ -67,7 +67,15 @@ const AdminLeadPortal = lazy(() => import("./pages/admin/AdminLeadPortal"));
 const NotaryProcessGuide = lazy(() => import("./pages/NotaryProcessGuide"));
 const AdminIntegrationTest = lazy(() => import("./pages/admin/AdminIntegrationTest"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const PageLoader = () => (
   <div className="flex min-h-screen items-center justify-center bg-background">
@@ -110,7 +118,7 @@ function AnimatedRoutes() {
         <Route path="/fee-calculator" element={<FeeCalculator />} />
         <Route path="/portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
         <Route path="/confirmation" element={<ProtectedRoute><AppointmentConfirmation /></ProtectedRoute>} />
-        <Route path="/ron-session" element={<ProtectedRoute><OneNotarySession /></ProtectedRoute>} />
+        <Route path="/ron-session" element={<ProtectedRoute><RonSession /></ProtectedRoute>} />
         <Route path="/business-portal" element={<ProtectedRoute><BusinessPortal /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>}>
           <Route index element={<ErrorBoundary fallbackMessage="Overview failed to load"><AdminOverview /></ErrorBoundary>} />

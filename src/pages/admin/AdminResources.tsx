@@ -259,22 +259,22 @@ const documentGuides = [
     icon: "🖥️",
     guides: [
       {
-        title: "OneNotary RON Session Setup & Execution",
-        tags: ["RON", "remote", "OneNotary", "online"],
+        title: "SignNow RON Session Setup & Execution",
+        tags: ["RON", "remote", "SignNow", "online"],
         steps: [
           "Verify you have an active Ohio RON commission and authorization",
-          "From the appointment, click 'Start RON Session' to create a OneNotary session",
+          "From the appointment, click 'Start RON Session' to create a SignNow session",
           "The system automatically adds the client as primary signer and sends invitation",
           "Signer completes Knowledge-Based Authentication (KBA) — they must answer 5 questions correctly",
-          "Signer completes ID verification (credential analysis) via OneNotary",
+          "Signer completes ID verification (credential analysis) via SignNow",
           "Once both KBA and ID verification pass, the live video session begins",
           "During session: verify signer identity on camera, confirm willingness",
           "Walk through each document — signer applies electronic signature",
           "Apply your electronic notary seal and signature",
-          "Complete the session — OneNotary auto-generates the recording",
+          "Complete the session — SignNow auto-generates the recording",
           "Download the notarized document and recording for your records",
           "Record in notary journal with RON-specific fields: session ID, KBA result, recording reference",
-          "Deliver notarized document to signer via OneNotary or email",
+          "Deliver notarized document to signer via SignNow or email",
         ],
         whoPresent: "Signer(s) via live audio-video connection. Must be real-time, not pre-recorded.",
         warnings: [
@@ -484,7 +484,7 @@ const newNotaryGuide = [
   { step: "5", title: "Purchase Your Notary Seal", content: "Your seal must include: your name as commissioned, 'Notary Public', 'State of Ohio', and your commission expiration date. Both embossing seals and ink stamps are acceptable in Ohio. Order from an authorized vendor." },
   { step: "6", title: "Take Your Oath of Office", content: "After your commission is approved, take the oath of office before the county clerk of courts. You must do this before performing any notarial acts. Keep a copy of your commission certificate." },
   { step: "7", title: "Purchase a Notary Journal", content: "While not mandatory for all acts in Ohio, a journal is REQUIRED for RON sessions and strongly recommended for all notarizations. Record every notarial act including date, signer info, document type, ID type, and fee charged." },
-  { step: "8", title: "For RON: Apply for RON Authorization", content: "Submit a separate RON application to the Ohio SOS. Complete 3 hours of additional RON-specific training. Choose an approved RON technology provider (like OneNotary). RON commission is separate from traditional commission." },
+  { step: "8", title: "For RON: Apply for RON Authorization", content: "Submit a separate RON application to the Ohio SOS. Complete 3 hours of additional RON-specific training. Choose an approved RON technology provider (like SignNow). RON commission is separate from traditional commission." },
 ];
 
 const externalResources = [
@@ -510,7 +510,7 @@ const externalResources = [
   { category: "Other Professional Resources", links: [
     { title: "American Society of Notaries", url: "https://www.asnnotary.org/", desc: "Professional association, education, resources" },
     { title: "Notary.net — Ohio Info", url: "https://www.notary.net/states/ohio", desc: "State-specific notary requirements and resources" },
-    { title: "OneNotary RON Platform", url: "https://onenotary.us/", desc: "RON platform for remote online notarization sessions" },
+    { title: "SignNow RON Platform", url: "https://www.signnow.com/", desc: "RON platform for remote online notarization sessions" },
     { title: "Notarize.com", url: "https://www.notarize.com/", desc: "Another popular RON platform option" },
   ]},
   { category: "Multi-State RON Laws & Standards", links: [

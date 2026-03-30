@@ -681,9 +681,12 @@ export type Database = {
           created_at: string
           id: string
           id_verified: boolean | null
+          kba_attempts: number | null
           kba_completed: boolean | null
           participant_link: string | null
+          recording_url: string | null
           session_type: Database["public"]["Enums"]["notarization_type"]
+          signer_ip: string | null
           signnow_document_id: string | null
           started_at: string | null
           status: Database["public"]["Enums"]["appointment_status"]
@@ -696,9 +699,12 @@ export type Database = {
           created_at?: string
           id?: string
           id_verified?: boolean | null
+          kba_attempts?: number | null
           kba_completed?: boolean | null
           participant_link?: string | null
+          recording_url?: string | null
           session_type?: Database["public"]["Enums"]["notarization_type"]
+          signer_ip?: string | null
           signnow_document_id?: string | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
@@ -711,9 +717,12 @@ export type Database = {
           created_at?: string
           id?: string
           id_verified?: boolean | null
+          kba_attempts?: number | null
           kba_completed?: boolean | null
           participant_link?: string | null
+          recording_url?: string | null
           session_type?: Database["public"]["Enums"]["notarization_type"]
+          signer_ip?: string | null
           signnow_document_id?: string | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
@@ -723,7 +732,7 @@ export type Database = {
           {
             foreignKeyName: "notarization_sessions_appointment_id_fkey"
             columns: ["appointment_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "appointments"
             referencedColumns: ["id"]
           },
@@ -814,8 +823,10 @@ export type Database = {
           platform_fee: number | null
           platform_fees: number | null
           platform_markup: number | null
+          recording_url: string | null
           service_performed: string
           signer_address: string | null
+          signer_location_attestation: string | null
           signer_name: string
           travel_fee: number | null
           updated_at: string
@@ -842,8 +853,10 @@ export type Database = {
           platform_fee?: number | null
           platform_fees?: number | null
           platform_markup?: number | null
+          recording_url?: string | null
           service_performed?: string
           signer_address?: string | null
+          signer_location_attestation?: string | null
           signer_name: string
           travel_fee?: number | null
           updated_at?: string
@@ -870,8 +883,10 @@ export type Database = {
           platform_fee?: number | null
           platform_fees?: number | null
           platform_markup?: number | null
+          recording_url?: string | null
           service_performed?: string
           signer_address?: string | null
+          signer_location_attestation?: string | null
           signer_name?: string
           travel_fee?: number | null
           updated_at?: string

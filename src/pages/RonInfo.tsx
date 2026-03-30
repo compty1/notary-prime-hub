@@ -144,7 +144,7 @@ export default function RonInfo() {
               RON: The Future of Notarization
             </motion.h1>
             <motion.p variants={fadeUp} custom={2} className="mx-auto max-w-2xl text-primary-foreground/70">
-              More secure than traditional notarization, accepted in all 50 states, and available from anywhere. Learn why RON is the smarter choice. Notar uses <strong>OneNotary</strong> as our certified RON platform.
+              More secure than traditional notarization, accepted in all 50 states, and available from anywhere. Learn why RON is the smarter choice. Notar uses <strong>SignNow</strong> as our certified RON platform.
             </motion.p>
           </motion.div>
         </div>
@@ -305,7 +305,7 @@ export default function RonInfo() {
                   <ul className="space-y-2 text-sm text-muted-foreground">
                     <li className="flex items-start gap-2"><Shield className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> <strong>IDology</strong> — Widely used in the RON industry, MISMO-compliant</li>
                     <li className="flex items-start gap-2"><Shield className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> <strong>LexisNexis</strong> — Industry-standard identity verification platform</li>
-                    <li className="flex items-start gap-2"><Shield className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> <strong>OneNotary</strong> — Platform-integrated KBA with full RON workflow</li>
+                    <li className="flex items-start gap-2"><Shield className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> <strong>SignNow</strong> — Platform-integrated KBA with full RON workflow</li>
                   </ul>
                   <p className="mt-3 text-xs text-muted-foreground italic">
                     Our RON platform handles KBA automatically — signers complete the process as part of the session.

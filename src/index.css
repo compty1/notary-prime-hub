@@ -309,20 +309,4 @@ button, a, [role="button"] {
   }
 }
 
-/* Print styles — only show receipt dialog content */
-@media print {
-  body > *:not(.print-receipt-area) {
-    display: none !important;
-  }
-  .print-receipt-area {
-    display: block !important;
-    position: static !important;
-    width: 100% !important;
-  }
-  [data-no-print],
-  nav, header, aside, footer,
-  [role="dialog"]:not(.print-receipt-area),
-  .sidebar, [data-sidebar] {
-    display: none !important;
-  }
-}
+/* Note: Print styles are defined above in the main @media print block */

@@ -20,7 +20,7 @@ const oathScripts = {
   affirmation: "Do you solemnly affirm, under penalty of perjury, that the statements in this document are true and correct?",
 };
 
-export default function OneNotarySession() {
+export default function RonSession() {
   const { user, isAdmin, isNotary } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -218,9 +218,13 @@ export default function OneNotarySession() {
       return;
     }
     setUploadingDoc(true);
-    try {
-      const reader = new FileReader();
-      reader.onload = async () => {
+    const reader = new FileReader();
+    reader.onerror = () => {
+      toast({ title: "Upload failed", description: "Could not read the file.", variant: "destructive" });
+      setUploadingDoc(false);
+    };
+    reader.onload = async () => {
+      try {
         const base64 = (reader.result as string).split(",")[1];
         const resp = await supabase.functions.invoke("signnow", {
           body: { action: "upload_document", appointment_id: appointmentId, file_name: file.name, file_content: base64 },
@@ -231,13 +235,13 @@ export default function OneNotarySession() {
           setSignnowDocumentId(docId);
           toast({ title: "Document uploaded to SignNow", description: `"${file.name}" is ready for signing fields and invite.` });
         }
+      } catch (err: any) {
+        toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+      } finally {
         setUploadingDoc(false);
-      };
-      reader.readAsDataURL(file);
-    } catch (err: any) {
-      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
-      setUploadingDoc(false);
-    }
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   // SignNow: Send invite
@@ -599,7 +603,7 @@ export default function OneNotarySession() {
                         )}
 
                         {/* Invite form */}
-                        {sessionStatus !== "completed" && sessionStatus !== "cancelled" && sessionStatus !== "confirmed" && (
+                        {sessionStatus !== "completed" && sessionStatus !== "cancelled" && sessionStatus !== "confirmed" && sessionStatus !== "in_session" && (
                           <div className="space-y-3 rounded-lg border border-border/50 p-4">
                             <h3 className="text-sm font-semibold">Send Signing Invite</h3>
                             <div>

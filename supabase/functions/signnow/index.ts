@@ -179,9 +179,27 @@ Deno.serve(async (req) => {
       case "download_document": {
         const { document_id } = body;
         if (!document_id) throw new Error("document_id is required");
-        const result = await signnowFetch(`/document/${document_id}/download?type=collapsed`, { method: "GET" });
-        return new Response(JSON.stringify(result), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        const token = Deno.env.get("SIGNNOW_API_TOKEN");
+        if (!token) throw new Error("SIGNNOW_API_TOKEN not configured");
+        const resp = await fetch(`${SIGNNOW_BASE}/document/${document_id}/download?type=collapsed`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/pdf",
+          },
+        });
+        if (!resp.ok) {
+          const text = await resp.text();
+          throw new Error(`SignNow download error ${resp.status}: ${text}`);
+        }
+        // Return the binary PDF directly
+        const pdfData = await resp.arrayBuffer();
+        return new Response(pdfData, {
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/pdf",
+            "Content-Disposition": `attachment; filename="${document_id}.pdf"`,
+          },
         });
       }
 
