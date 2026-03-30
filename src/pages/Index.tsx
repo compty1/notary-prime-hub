@@ -174,109 +174,85 @@ export default function Index() {
   return (
     <PageShell>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-background py-24 md:py-36">
-        <div className="absolute inset-0 gradient-mesh opacity-50" />
+      {/* Hero — Dealflow-style split layout */}
+      <section className="relative overflow-hidden bg-background py-16 md:py-24">
         <div className="container relative mx-auto px-4">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            className="mx-auto max-w-3xl text-center">
-            
-            <motion.div variants={blurIn} custom={0}>
-              <Badge className="mb-6 border-primary/20 bg-primary/10 text-primary">
-                <Shield className="mr-1.5 h-3 w-3" /> Ohio Commissioned Notary Public
-              </Badge>
-            </motion.div>
-            <motion.h1
-              variants={blurIn}
-              custom={1}
-              className="mb-6 text-4xl font-extrabold tracking-tight text-foreground md:text-6xl lg:text-7xl">
-              
-              The Future of{" "}
-              <span className="text-gradient-primary">Digital Trust.</span>
-            </motion.h1>
-            <motion.p
-              variants={blurIn}
-              custom={2}
-              className="mb-10 text-lg text-muted-foreground md:text-xl">
-              
-              In-person and remote online notarization — secure, convenient, and fully compliant with Ohio law.
-            </motion.p>
-
-            {/* Service Type Toggle — pill style */}
-            <motion.div variants={blurIn} custom={3} className="mb-8 inline-flex items-center rounded-full border border-border bg-card p-1 shadow-sm">
-              <button
-                onClick={() => setServiceType("in_person")}
-                className={`flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-medium transition-all duration-200 ${
-                serviceType === "in_person" ?
-                "bg-primary text-primary-foreground shadow-sm" :
-                "text-muted-foreground hover:text-foreground"}`
-                }>
-                
-                <MapPin className="h-4 w-4" /> In-Person
-              </button>
-              <button
-                onClick={() => setServiceType("ron")}
-                className={`flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-medium transition-all duration-200 ${
-                serviceType === "ron" ?
-                "bg-primary text-primary-foreground shadow-sm" :
-                "text-muted-foreground hover:text-foreground"}`
-                }>
-                
-                <Monitor className="h-4 w-4" /> Remote (RON)
-              </button>
+          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+            {/* Left — Copy */}
+            <motion.div initial="hidden" animate="visible">
+              <motion.p variants={blurIn} custom={0} className="mb-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                Designed for High-Touch Document Services
+              </motion.p>
+              <motion.h1
+                variants={blurIn}
+                custom={1}
+                className="mb-6 text-4xl font-extrabold tracking-tight text-foreground md:text-5xl lg:text-6xl"
+              >
+                Get documents notarized with less hassle
+              </motion.h1>
+              <motion.p
+                variants={blurIn}
+                custom={2}
+                className="mb-10 max-w-lg text-lg text-muted-foreground"
+              >
+                Notar is a full-service notary platform you'll actually enjoy using. Book appointments, verify identities, and sign documents — not chase paperwork.
+              </motion.p>
+              <motion.div variants={fadeUp} custom={3}>
+                <Link to="/book">
+                  <Button size="lg" className="rounded-full px-8 shadow-sm">
+                    Get started free <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </motion.div>
             </motion.div>
 
-            <motion.div variants={fadeUp} custom={4}>
-              {serviceType === "in_person" ?
-              <p className="mb-8 text-muted-foreground text-sm">
-                  Available throughout Franklin County & greater Columbus area. Mobile notary within 30 miles.
-                </p> :
+            {/* Right — Image with floating cards */}
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.3 }}
+              className="relative"
+            >
+              {/* Floating metric card — top left */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8, duration: 0.5 }}
+                className="absolute -left-4 top-4 z-10 rounded-xl border border-border bg-card p-4 shadow-lg md:-left-8 md:top-8"
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                  <span className="text-xs text-muted-foreground">Documents notarized</span>
+                </div>
+                <p className="text-2xl font-bold text-foreground"><AnimatedCounter value={2847} /></p>
+              </motion.div>
 
-              <p className="mb-8 text-muted-foreground text-sm">
-                  Secure video notarization from anywhere — authorized under Ohio Revised Code §147.65-.66.
+              {/* Main image */}
+              <div className="overflow-hidden rounded-2xl">
+                <img
+                  src={heroImage}
+                  alt="Professional notary signing documents with a client"
+                  className="h-full w-full object-cover"
+                  width={960}
+                  height={1024}
+                />
+              </div>
+
+              {/* Floating notification card — bottom right */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.1, duration: 0.5 }}
+                className="absolute -bottom-4 -right-4 z-10 rounded-xl border border-border bg-card px-5 py-3 shadow-lg md:-bottom-6 md:-right-8"
+              >
+                <p className="text-[10px] text-muted-foreground">
+                  <span className="text-primary font-medium">Completed</span> · Notarized · 2m ago
                 </p>
-              }
+                <p className="text-sm font-semibold text-foreground">Power of Attorney — $25.00</p>
+              </motion.div>
             </motion.div>
-
-            <motion.div variants={fadeUp} custom={5} className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link to={`/book?type=${serviceType}`}>
-                 <Button size="lg" className="shadow-sm">
-                   Schedule Appointment <ArrowRight className="ml-1 h-4 w-4" />
-                 </Button>
-              </Link>
-              <a href={`tel:${contactInfo.phone.replace(/\D/g, '')}`}>
-                <Button size="lg" variant="outline" className="border-border text-foreground hover:bg-muted">
-                  <Phone className="mr-2 h-4 w-4" /> {contactInfo.phone}
-                </Button>
-              </a>
-            </motion.div>
-          </motion.div>
+          </div>
         </div>
-
-        {/* Floating trust badges */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 0.8 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden md:flex items-center gap-6">
-          
-          {[
-          { icon: Shield, text: "ORC §147 Compliant" },
-          { icon: CheckCircle, text: "NNA Certified" },
-          { icon: Clock, text: "Same-Day Available" }].
-          map((badge, i) =>
-          <div
-            key={badge.text}
-            className="flex items-center gap-2 rounded-full bg-card px-4 py-2 text-xs text-muted-foreground border border-border shadow-sm animate-float"
-            style={{ animationDelay: `${i * 0.5}s` }}>
-            
-              <badge.icon className="h-3.5 w-3.5 text-primary" />
-              {badge.text}
-            </div>
-          )}
-        </motion.div>
       </section>
 
       {/* Trust Bar */}
