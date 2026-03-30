@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
 
 /**
- * Log an action to the audit_log table.
+ * Log an action to the audit_log table via a secure RPC function.
  * Fails silently — audit logging should never break the user flow.
  */
 export async function logAuditEvent(
@@ -15,13 +15,12 @@ export async function logAuditEvent(
   }
 ) {
   try {
-    await supabase.from("audit_log").insert([{
-      action,
-      entity_type: opts?.entityType ?? null,
-      entity_id: opts?.entityId ?? null,
-      details: (opts?.details ?? null) as Json,
-      user_id: opts?.userId ?? null,
-    }]);
+    await supabase.rpc("log_audit_event", {
+      _action: action,
+      _entity_type: opts?.entityType ?? null,
+      _entity_id: opts?.entityId ?? null,
+      _details: (opts?.details ?? null) as Json,
+    });
   } catch {
     // Never throw from audit logging
   }

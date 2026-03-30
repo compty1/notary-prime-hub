@@ -1,12 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 
-// Item 602: Test that auditLog utility never throws
+// Test that auditLog utility never throws
 
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
-    from: () => ({
-      insert: () => Promise.reject(new Error("DB error")),
-    }),
+    rpc: () => Promise.reject(new Error("DB error")),
   },
 }));
 
