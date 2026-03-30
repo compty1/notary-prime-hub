@@ -57,9 +57,9 @@ function AdminSidebar() {
               {visibleNav.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <NavLink to={item.url} end={item.url === "/admin"} activeClassName="bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
+                    <NavLink to={item.url} end={item.url === "/admin"}
                       className="text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
-                      activeClassName="bg-sidebar-accent text-sidebar-primary font-medium">
+                      activeClassName="bg-sidebar-accent text-sidebar-primary font-semibold">
                       <item.icon className="mr-2 h-4 w-4" />
                       {!collapsed && <span>{item.title}</span>}
                     </NavLink>
