@@ -255,30 +255,33 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Trust Bar */}
-      <section className="border-b border-border/40 bg-muted/50 py-5">
-        <div className="container mx-auto flex flex-wrap items-center justify-center gap-8 px-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-primary" />
-            <span>Ohio Revised Code §147 Compliant</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle className="h-4 w-4 text-primary" />
-            <span>Franklin County Commissioned</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-primary" />
-            <span>$<AnimatedCounter value={25000} /> Surety Bond</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-primary" />
-            <span>Same-Day Appointments</span>
+      {/* Trust Bar — Dealflow partner-strip style */}
+      <section className="border-y border-border bg-card py-6">
+        <div className="container mx-auto px-4">
+          <p className="mb-4 text-center text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Trusted & Compliant</p>
+          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Shield className="h-4 w-4 text-foreground/40" />
+              <span>ORC §147 Compliant</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-foreground/40" />
+              <span>Franklin County Commissioned</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Shield className="h-4 w-4 text-foreground/40" />
+              <span>$25,000 Surety Bond</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-foreground/40" />
+              <span>Same-Day Appointments</span>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Beyond Notarization Banner */}
-      <section className="bg-primary/5 border-b border-primary/10 py-4">
+      <section className="border-b border-border py-4">
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm text-muted-foreground">
             <span className="font-medium text-foreground">Beyond notarization:</span> document digitization, secure cloud storage, form preparation, business services, and more.{" "}
