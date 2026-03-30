@@ -73,7 +73,7 @@ export default function VerifySeal() {
                     <ShieldCheck className="h-5 w-5 text-primary" />
                     <span className="font-semibold text-primary">Verified & Active</span>
                   </div>
-                  <p className="text-sm text-emerald-700">This notarization verification record is valid and has not been revoked.</p>
+                  <p className="text-sm text-primary">This notarization verification record is valid and has not been revoked.</p>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">
