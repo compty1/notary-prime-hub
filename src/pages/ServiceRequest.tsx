@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { usePageTitle } from "@/lib/usePageTitle";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { ChevronLeft, CheckCircle, FileText, Globe, Upload, Loader2, Shield, Briefcase, ClipboardList } from "lucide-react";
+import { ChevronLeft, CheckCircle, FileText, Globe, Upload, Loader2, Shield, Briefcase, ClipboardList, X } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
 
