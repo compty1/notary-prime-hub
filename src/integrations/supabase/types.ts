@@ -906,9 +906,13 @@ export type Database = {
           kba_attempts: number | null
           kba_completed: boolean | null
           participant_link: string | null
+          recording_consent: boolean | null
+          recording_consent_at: string | null
           recording_url: string | null
           session_type: Database["public"]["Enums"]["notarization_type"]
+          session_unique_id: string | null
           signer_ip: string | null
+          signer_location_state: string | null
           signnow_document_id: string | null
           started_at: string | null
           status: Database["public"]["Enums"]["appointment_status"]
@@ -926,9 +930,13 @@ export type Database = {
           kba_attempts?: number | null
           kba_completed?: boolean | null
           participant_link?: string | null
+          recording_consent?: boolean | null
+          recording_consent_at?: string | null
           recording_url?: string | null
           session_type?: Database["public"]["Enums"]["notarization_type"]
+          session_unique_id?: string | null
           signer_ip?: string | null
+          signer_location_state?: string | null
           signnow_document_id?: string | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
@@ -946,9 +954,13 @@ export type Database = {
           kba_attempts?: number | null
           kba_completed?: boolean | null
           participant_link?: string | null
+          recording_consent?: boolean | null
+          recording_consent_at?: string | null
           recording_url?: string | null
           session_type?: Database["public"]["Enums"]["notarization_type"]
+          session_unique_id?: string | null
           signer_ip?: string | null
+          signer_location_state?: string | null
           signnow_document_id?: string | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
