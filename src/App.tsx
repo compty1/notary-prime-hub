@@ -8,6 +8,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { lazy, Suspense } from "react";
 import ScrollToTop from "@/components/ScrollToTop";
+import { CommandPalette } from "@/components/CommandPalette";
 import { AnimatePresence } from "framer-motion";
 
 // Eager load critical pages
@@ -42,6 +43,7 @@ const VirtualMailroom = lazy(() => import("./pages/VirtualMailroom"));
 const SubscriptionPlans = lazy(() => import("./pages/SubscriptionPlans"));
 const VerifyIdentity = lazy(() => import("./pages/VerifyIdentity"));
 const MobileUpload = lazy(() => import("./pages/MobileUpload"));
+const AIWriter = lazy(() => import("./pages/AIWriter"));
 
 // Admin pages
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
@@ -118,6 +120,7 @@ function AnimatedRoutes() {
         <Route path="/mobile-upload" element={<ProtectedRoute><MobileUpload /></ProtectedRoute>} />
         <Route path="/builder" element={<ProtectedRoute><DocumentBuilder /></ProtectedRoute>} />
         <Route path="/fee-calculator" element={<FeeCalculator />} />
+        <Route path="/ai-writer" element={<ProtectedRoute><AIWriter /></ProtectedRoute>} />
         <Route path="/portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
         <Route path="/confirmation" element={<ProtectedRoute><AppointmentConfirmation /></ProtectedRoute>} />
         <Route path="/ron-session" element={<ProtectedRoute><RonSession /></ProtectedRoute>} />
@@ -158,6 +161,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
+          <CommandPalette />
           <Suspense fallback={<PageLoader />}>
             <AnimatedRoutes />
           </Suspense>

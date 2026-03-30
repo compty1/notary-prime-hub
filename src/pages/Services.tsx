@@ -10,12 +10,36 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
-import { ChevronRight, Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home, Loader2, Search, Sparkles, ArrowRight, Headphones, PenTool, BarChart3, MessageSquare, Wrench, Eye } from "lucide-react";
+import { ChevronRight, Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home, Loader2, Search, Sparkles, ArrowRight, Headphones, PenTool, BarChart3, MessageSquare, Wrench, Eye, Mail, Scan, FileEdit } from "lucide-react";
 import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ServicesLoadingSkeleton } from "@/components/ServicesLoadingSkeleton";
 import { fadeUp, scaleReveal } from "@/lib/animations";
+
+const aiTools = [
+  {
+    icon: Mail,
+    title: "AI Writing Tools",
+    description: "Generate professional emails, social media posts, and documents in seconds with AI.",
+    link: "/ai-writer",
+    cta: "Start Writing",
+  },
+  {
+    icon: FileEdit,
+    title: "Document Generator",
+    description: "Build resumes, invoices, and contracts with beautiful templates and PDF export.",
+    link: "/builder",
+    cta: "Create Document",
+  },
+  {
+    icon: Scan,
+    title: "Document Digitization",
+    description: "AI-powered OCR to convert paper documents and scans into editable, searchable text.",
+    link: "/digitize",
+    cta: "Digitize Now",
+  },
+];
 
 const iconMap: Record<string, any> = {
   Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home,
@@ -186,6 +210,39 @@ export default function Services() {
       </section>
 
       <WhatDoINeed />
+
+      {/* Do It Yourself — AI SaaS Tools */}
+      <section className="border-b border-border bg-gradient-to-br from-primary/5 via-background to-accent/5 py-12">
+        <div className="container mx-auto px-4">
+          <div className="mb-8 text-center">
+            <Badge variant="secondary" className="mb-3"><Sparkles className="mr-1 h-3 w-3" /> AI-Powered</Badge>
+            <h2 className="mb-2 text-2xl font-bold text-foreground md:text-3xl">Do It Yourself</h2>
+            <p className="mx-auto max-w-lg text-muted-foreground">
+              Every tool is enhanced with AI — smarter suggestions, auto-fill, and intelligent recommendations.
+            </p>
+          </div>
+          <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-3">
+            {aiTools.map((tool, i) => (
+              <motion.div key={tool.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
+                <Card className="group h-full border-primary/10 hover:border-primary/30 transition-colors">
+                  <CardContent className="flex h-full flex-col items-center p-6 text-center">
+                    <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 group-hover:bg-primary/15 transition-colors">
+                      <tool.icon className="h-7 w-7 text-primary" />
+                    </div>
+                    <h3 className="mb-2 font-semibold text-foreground">{tool.title}</h3>
+                    <p className="mb-4 flex-1 text-sm text-muted-foreground">{tool.description}</p>
+                    <Link to={tool.link} className="w-full">
+                      <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                        {tool.cta} <ArrowRight className="ml-2 h-3 w-3" />
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Search + Filter */}
       <div className="container mx-auto px-4 py-8">
