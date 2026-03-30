@@ -1,33 +1,71 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+// Webhooks are server-to-server — no CORS needed, but keep minimal headers for health checks
+const responseHeaders = {
+  "Content-Type": "application/json",
 };
 
+async function verifyWebhookSignature(body: string, signature: string | null): Promise<boolean> {
+  const secret = Deno.env.get("SIGNNOW_WEBHOOK_SECRET");
+  if (!secret) {
+    // If no secret is configured, log warning but allow (for initial setup)
+    console.warn("SIGNNOW_WEBHOOK_SECRET not configured — skipping signature verification");
+    return true;
+  }
+  if (!signature) return false;
+
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const sig = await crypto.subtle.sign("HMAC", key, encoder.encode(body));
+  const computed = Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, "0")).join("");
+  return computed === signature;
+}
+
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+  // Webhooks only accept POST
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+      status: 405,
+      headers: responseHeaders,
+    });
   }
 
   try {
+    const bodyText = await req.text();
+    const signature = req.headers.get("x-signnow-signature") || req.headers.get("x-event-hash");
+
+    // Verify webhook signature
+    const valid = await verifyWebhookSignature(bodyText, signature);
+    if (!valid) {
+      console.error("Invalid webhook signature");
+      return new Response(JSON.stringify({ error: "Invalid signature" }), {
+        status: 401,
+        headers: responseHeaders,
+      });
+    }
+
+    const body = JSON.parse(bodyText);
+    console.log("SignNow webhook received:", JSON.stringify(body));
+
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const body = await req.json();
-    console.log("SignNow webhook received:", JSON.stringify(body));
-
     // SignNow webhook format varies by event type
-    // Common fields: event, meta.timestamp, content (document data)
     const event = body.event || body.action;
     const documentId = body.content?.document_id || body.document_id || body.meta?.document_id;
 
     if (!documentId) {
       console.log("No document_id in webhook payload");
       return new Response(JSON.stringify({ ok: true, message: "No document_id" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: responseHeaders,
       });
     }
 
@@ -41,7 +79,7 @@ Deno.serve(async (req) => {
     if (!session) {
       console.log("No matching session found for SignNow document:", documentId);
       return new Response(JSON.stringify({ ok: true, message: "No matching session" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: responseHeaders,
       });
     }
 
@@ -96,7 +134,6 @@ Deno.serve(async (req) => {
       }).eq("id", appointmentId);
 
     } else if (event === "invite.update" || event === "invite.sent") {
-      // Signer interaction with invite
       await supabase.from("audit_log").insert({
         action: "signnow_invite_update",
         entity_type: "appointment",
@@ -118,13 +155,13 @@ Deno.serve(async (req) => {
     }
 
     return new Response(JSON.stringify({ ok: true }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: responseHeaders,
     });
   } catch (err: any) {
     console.error("SignNow webhook error:", err);
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: responseHeaders,
     });
   }
 });
