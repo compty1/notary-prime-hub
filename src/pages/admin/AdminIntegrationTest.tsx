@@ -24,10 +24,9 @@ const flowSteps = {
   ron: [
     { id: "booking", label: "Client Books RON Session", icon: Clock, description: "Client selects RON service, picks date/time, submits booking form" },
     { id: "confirmation", label: "Appointment Confirmed", icon: CheckCircle, description: "Appointment created in database, confirmation email sent to client" },
-    { id: "session_create", label: "OneNotary Session Created", icon: Monitor, description: "Admin/system creates RON session via OneNotary API (create_session)" },
-    { id: "participant", label: "Participant Added", icon: UserPlus, description: "Signer added to session via add_participant API call" },
-    { id: "documents", label: "Documents Uploaded", icon: FileText, description: "Documents uploaded to OneNotary session via upload_document" },
-    { id: "initialize", label: "Session Initialized", icon: Play, description: "Session initialized via initialize_session, participant link generated" },
+    { id: "doc_upload", label: "Document Uploaded to SignNow", icon: Monitor, description: "Admin uploads document to SignNow via upload_document API" },
+    { id: "invite_sent", label: "Signing Invite Sent", icon: UserPlus, description: "Signer receives email invite to sign via SignNow send_invite API" },
+    { id: "documents", label: "Documents Ready", icon: FileText, description: "Documents with signing fields prepared in SignNow" },
     { id: "kba", label: "KBA & ID Verification", icon: Shield, description: "Signer completes Knowledge-Based Authentication (ORC §147.66 compliant)" },
     { id: "notarization", label: "Live Notarization", icon: Video, description: "Audio/video session with notary, oath administered, documents signed & sealed" },
     { id: "completion", label: "Session Completed", icon: CheckCircle, description: "Journal entry created, e-seal verification generated, documents stored" },
