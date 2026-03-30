@@ -296,6 +296,37 @@ export default function AdminServiceRequests() {
                 <Label>Admin Notes</Label>
                 <Textarea value={editNotes} onChange={e => setEditNotes(e.target.value)} rows={3} />
               </div>
+
+              <div>
+                <Label>Assign To</Label>
+                <Select value={editAssignedTo} onValueChange={setEditAssignedTo}>
+                  <SelectTrigger><SelectValue placeholder="Unassigned" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Unassigned</SelectItem>
+                    {teamProfiles.map(p => (
+                      <SelectItem key={p.user_id} value={p.user_id}>{p.full_name || p.email}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label>Upload Deliverable</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <Input type="file" onChange={e => setDeliverableFile(e.target.files?.[0] || null)} className="text-sm" />
+                  {selectedRequest?.deliverable_url && (
+                    <a href={selectedRequest.deliverable_url} target="_blank" rel="noreferrer">
+                      <Button size="sm" variant="outline"><Download className="mr-1 h-3 w-3" /> Current</Button>
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {selectedRequest?.sla_deadline && (
+                <div className="rounded-lg bg-muted/50 p-3">
+                  <p className="text-xs text-muted-foreground">SLA Deadline: {new Date(selectedRequest.sla_deadline).toLocaleString()}</p>
+                </div>
+              )}
             </div>
           )}
           <DialogFooter>
