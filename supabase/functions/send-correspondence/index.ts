@@ -1,41 +1,58 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://esm.sh/zod@3.23.8";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+const BodySchema = z.object({
+  to_address: z.string().email().max(255),
+  subject: z.string().min(1).max(500),
+  body: z.string().min(1).max(50000),
+  client_id: z.string().uuid(),
+  reply_to_id: z.string().uuid().optional(),
+});
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+    // Auth check — only admins/notaries should send correspondence
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    const supabaseAuth = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    // Validate input
+    const parsed = BodySchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: parsed.error.flatten().fieldErrors }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const { to_address, subject, body, client_id, reply_to_id } = parsed.data;
+
     const FROM_EMAIL = Deno.env.get("FROM_EMAIL") || "noreply@shanegoble.com";
 
-    if (!RESEND_API_KEY) {
-      // If no Resend key, just log the correspondence without sending
-      console.warn("RESEND_API_KEY not configured - logging correspondence only");
-    }
-
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    const { to_address, subject, body, client_id, reply_to_id } = await req.json();
-
-    if (!to_address || !subject || !body || !client_id) {
-      return new Response(
-        JSON.stringify({ error: "Missing required fields: to_address, subject, body, client_id" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    // Use service role for DB operations
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
 
     let emailSent = false;
 
-    // Try IONOS SMTP first, fallback to Resend
+    // Try IONOS SMTP first
     const IONOS_EMAIL = Deno.env.get("IONOS_EMAIL_ADDRESS");
     const IONOS_PASSWORD = Deno.env.get("IONOS_EMAIL_PASSWORD");
     const IONOS_SMTP = Deno.env.get("IONOS_SMTP_HOST") || "smtp.ionos.com";
@@ -60,13 +77,13 @@ serve(async (req) => {
         });
         await client.close();
         emailSent = true;
-        console.log("Email sent via IONOS SMTP");
       } catch (ionosErr) {
-        console.error("IONOS SMTP failed, falling back to Resend:", ionosErr);
+        console.error("IONOS SMTP failed:", ionosErr);
       }
     }
 
-    // Fallback to Resend if IONOS failed or not configured
+    // Fallback to Resend
+    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     if (!emailSent && RESEND_API_KEY) {
       const emailRes = await fetch("https://api.resend.com/emails", {
         method: "POST",
@@ -81,45 +98,35 @@ serve(async (req) => {
           text: body,
         }),
       });
-
-      if (!emailRes.ok) {
-        const errData = await emailRes.json();
-        console.error("Resend API error:", errData);
-      } else {
-        emailSent = true;
-      }
+      if (emailRes.ok) emailSent = true;
+      else console.error("Resend error:", await emailRes.json());
     }
 
-    // Log outbound correspondence record
-    const { error: insertError } = await supabase
-      .from("client_correspondence")
-      .insert({
-        client_id,
-        direction: "outbound",
-        subject,
-        body,
-        from_address: FROM_EMAIL,
-        to_address,
-        status: emailSent ? "replied" : "pending",
-        handled_at: new Date().toISOString(),
-      });
+    // Log correspondence
+    await supabase.from("client_correspondence").insert({
+      client_id,
+      direction: "outbound",
+      subject,
+      body,
+      from_address: FROM_EMAIL,
+      to_address,
+      status: emailSent ? "replied" : "pending",
+      handled_by: user.id,
+      handled_at: new Date().toISOString(),
+    });
 
-    if (insertError) {
-      console.error("Failed to log correspondence:", insertError);
-    }
-
-    // If replying to an existing correspondence, update its status
     if (reply_to_id) {
       await supabase
         .from("client_correspondence")
-        .update({ status: "replied", handled_at: new Date().toISOString() })
+        .update({ status: "replied", handled_at: new Date().toISOString(), handled_by: user.id })
         .eq("id", reply_to_id);
     }
 
-    // Log to audit
+    // Audit log
     await supabase.from("audit_log").insert({
       action: "correspondence_sent",
       entity_type: "client_correspondence",
+      user_id: user.id,
       details: { to_address, subject, email_sent: emailSent },
     });
 
