@@ -2,7 +2,7 @@
 
 ## ✅ COMPLETED
 
-### Batch 1 (Previous Session)
+### Batch 1
 - Issues 1-14: All OneNotary→SignNow branding replaced
 - Issue 15: SignNow webhook signature verification (HMAC)
 - Issue 24: AuthContext session check uses getUser() (server-side)
@@ -20,7 +20,7 @@
 - Issue 71: QueryClient has sensible defaults
 - Issues 81-85: Ohio compliance columns added (recording_url, kba_attempts, signer_ip, signer_location_attestation)
 
-### Batch 2 (This Session)
+### Batch 2
 - Issue 16: platform_settings RLS restricts sensitive keys from anon/non-admin users
 - Issue 17: Webhook CORS removed (server-to-server only)
 - Issue 43: Voice recognition cleanup on unmount
@@ -30,13 +30,16 @@
 - Issue 57: Stripe webhook uses metadata.payment_id instead of fragile .like() matching
 - Issue 72: useEffect dependency fixed in voice recognition
 - Issue 73: AuthContext fetchRoles abort controller prevents memory leaks
-- Issue 76: ServiceDetail already had 404 handling (confirmed)
+
+### Batch 3
+- Issue 22: refresh_token response masks access_token (only shows last 8 chars)
+- Issue 48: Pagination on payments table (25 per page with prev/next controls)
+- Issue 53: AnimatePresence key uses pathname only (no query param re-mounts)
 
 ## 📋 REMAINING (Lower Priority)
 - Issue 18: Rate limiting on edge functions (infrastructure-level)
 - Issue 19: ID number encryption at rest (requires migration + encrypt/decrypt helpers)
 - Issue 20-21: Zod input validation on edge functions (incremental improvement)
-- Issue 22: refresh_token response masking
 - Issue 23: CSRF protection (Supabase handles via tokens)
 - Issue 25: signOut localStorage cleanup scope
 - Issue 26: Remove ONENOTARY_API_TOKEN secret
@@ -44,12 +47,10 @@
 - Issue 33: platform_fee vs platform_fees column consolidation
 - Issue 36: notary_payouts.platform_fees rename
 - Issue 41: formatDate consistency
-- Issue 42: Portal tab loading skeletons
+- Issue 42: Portal tab loading skeletons (already has full-page skeleton)
 - Issue 44: Error boundary around SignNow API calls
 - Issue 47: Suspense boundaries for admin sub-routes
-- Issue 48: Pagination on payments table
 - Issue 51: Touch target sizing
-- Issue 53: AnimatePresence key optimization
 - Issues 61-65: Edge function minor improvements
 - Issues 66-70: TypeScript strict mode & type cleanup
 - Issues 74-75, 77-80: Missing features & incomplete flows
