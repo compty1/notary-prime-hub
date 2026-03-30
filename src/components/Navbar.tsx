@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
@@ -18,16 +18,22 @@ const navLinks = [
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const { user, isAdmin, isNotary } = useAuth();
+  const location = useLocation();
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setOpen(false);
+  }, [location.pathname]);
 
   const portalLink = isAdmin || isNotary ? "/admin" : "/portal";
   const portalLabel = isAdmin || isNotary ? "Dashboard" : "Portal";
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm" aria-label="Main navigation">
+    <nav className="sticky top-0 z-50 border-b border-border/60 glass" aria-label="Main navigation">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
         <Link to="/" className="flex items-center gap-2.5">
           <Logo size="sm" />
-          <span className="font-sans text-lg font-semibold tracking-tight text-foreground">Notar</span>
+          <span className="font-heading text-lg font-bold tracking-tight text-foreground">Notar</span>
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">
@@ -52,7 +58,7 @@ export function Navbar() {
               </Link>
             )}
             <Link to="/book">
-              <Button size="sm" className="text-primary-foreground">
+              <Button size="sm">
                 Book Now
               </Button>
             </Link>
@@ -72,7 +78,6 @@ export function Navbar() {
                   key={link.to}
                   to={link.to}
                   className="rounded-lg px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-                  onClick={() => setOpen(false)}
                 >
                   {link.label}
                 </Link>
@@ -82,16 +87,16 @@ export function Navbar() {
                 <DarkModeToggle />
               </div>
               {user ? (
-                <Link to={portalLink} onClick={() => setOpen(false)}>
+                <Link to={portalLink}>
                   <Button variant="outline" className="w-full">{portalLabel}</Button>
                 </Link>
               ) : (
-                <Link to="/login" onClick={() => setOpen(false)}>
+                <Link to="/login">
                   <Button variant="outline" className="w-full">Sign In</Button>
                 </Link>
               )}
-              <Link to="/book" onClick={() => setOpen(false)}>
-                <Button className="w-full text-primary-foreground">Book Now</Button>
+              <Link to="/book">
+                <Button className="w-full">Book Now</Button>
               </Link>
             </div>
           </SheetContent>
