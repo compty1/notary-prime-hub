@@ -252,10 +252,12 @@ export default function ServiceDetail() {
       ]);
       if (svcRes.data) {
         setService(svcRes.data as ServiceData);
-        const { data: related } = await supabase
-          .from("services").select("*").eq("is_active", true)
-          .eq("category", svcRes.data.category).neq("id", serviceId).limit(3);
-        setRelatedServices((related || []) as ServiceData[]);
+        const [relRes, allSvcRes] = await Promise.all([
+          supabase.from("services").select("*").eq("is_active", true).eq("category", svcRes.data.category).neq("id", serviceId).limit(3),
+          supabase.from("services").select("id, name, category").eq("is_active", true),
+        ]);
+        setRelatedServices((relRes.data || []) as ServiceData[]);
+        setAllServices((allSvcRes.data || []) as ServiceData[]);
       }
       setRequirements((reqRes.data || []) as Requirement[]);
       setWorkflow((wfRes.data || []) as WorkflowStep[]);
@@ -264,6 +266,35 @@ export default function ServiceDetail() {
     };
     load();
   }, [serviceId]);
+
+  // AI Chat handler
+  const sendChatMessage = async () => {
+    if (!chatInput.trim() || chatLoading) return;
+    const userMsg = { role: "user", content: chatInput };
+    setChatMessages(prev => [...prev, userMsg]);
+    setChatInput("");
+    setChatLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("client-assistant", {
+        body: {
+          messages: [...chatMessages, userMsg].map(m => ({ role: m.role, content: m.content })),
+          context: `Service: ${service?.name}. Category: ${service?.category}. Description: ${service?.description || ""}`,
+        },
+      });
+      if (error) throw error;
+      const reply = data?.choices?.[0]?.message?.content || data?.reply || "I'm sorry, I couldn't process that request.";
+      setChatMessages(prev => [...prev, { role: "assistant", content: reply }]);
+    } catch {
+      setChatMessages(prev => [...prev, { role: "assistant", content: "AI assistant is temporarily unavailable. Please contact us directly." }]);
+    }
+    setChatLoading(false);
+  };
+
+  // Bundle link lookup helper
+  const getBundleServiceId = (name: string) => {
+    const match = allServices.find(s => s.name.toLowerCase().includes(name.toLowerCase()));
+    return match ? `/services/${match.id}` : `/services`;
+  };
 
 
   const formatPrice = (s: ServiceData) => {
