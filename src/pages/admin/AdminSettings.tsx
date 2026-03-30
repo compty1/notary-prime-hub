@@ -292,20 +292,20 @@ export default function AdminSettings() {
                 <Shield className="h-4 w-4" /> KBA Provider Configuration
               </CollapsibleTrigger>
               <CollapsibleContent className="mt-3 space-y-3 rounded-lg border border-border/50 p-4">
-                <p className="text-xs text-muted-foreground">Ohio ORC §147.66 requires Knowledge-Based Authentication for all RON sessions. OneNotary handles KBA natively — configure an external provider only if needed.</p>
+                <p className="text-xs text-muted-foreground">Ohio ORC §147.66 requires Knowledge-Based Authentication for all RON sessions. SignNow handles KBA natively — configure an external provider only if needed.</p>
                 <div>
                   <Label>KBA Provider</Label>
-                  <Select value={editValues.kba_provider || "onenotary_builtin"} onValueChange={(v) => updateValue("kba_provider", v)}>
+                  <Select value={editValues.kba_provider || "signnow_builtin"} onValueChange={(v) => updateValue("kba_provider", v)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="onenotary_builtin">OneNotary Built-in</SelectItem>
+                      <SelectItem value="signnow_builtin">SignNow Built-in</SelectItem>
                       <SelectItem value="idology">IDology</SelectItem>
                       <SelectItem value="evident">Evident</SelectItem>
                       <SelectItem value="lexisnexis">LexisNexis</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                {editValues.kba_provider && editValues.kba_provider !== "onenotary_builtin" && (
+                {editValues.kba_provider && editValues.kba_provider !== "signnow_builtin" && (
                   <>
                     <div>
                       <Label>KBA API Key</Label>
