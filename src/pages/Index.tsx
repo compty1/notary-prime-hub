@@ -373,7 +373,7 @@ export default function Index() {
           </motion.div>
           <div className="mt-12 text-center">
             <Link to="/book">
-              <Button size="lg" className="rounded-full px-8">
+              <Button variant="accent" size="lg" className="rounded-full px-8">
                 Get Started <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
             </Link>

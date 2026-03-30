@@ -132,7 +132,7 @@ export default function SignUp() {
                 <div className="mt-2 space-y-1">
                   <div className="flex items-center gap-2">
                     <Progress value={strength * 20} className="h-1.5 flex-1" />
-                    <span className={`text-xs font-medium ${strength <= 2 ? "text-destructive" : strength <= 3 ? "text-yellow-600" : "text-emerald-600"}`}>
+                    <span className={`text-xs font-medium ${strength <= 2 ? "text-destructive" : strength <= 3 ? "text-yellow-600" : "text-primary"}`}>
                       {strengthLabels[strength]}
                     </span>
                   </div>
