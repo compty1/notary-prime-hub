@@ -96,7 +96,7 @@ export function Navbar() {
                 </Link>
               )}
               <Link to="/book">
-                <Button className="w-full">Book Now</Button>
+                <Button variant="accent" className="w-full">Book Now</Button>
               </Link>
             </div>
           </SheetContent>
