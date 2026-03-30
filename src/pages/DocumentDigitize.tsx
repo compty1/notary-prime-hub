@@ -48,6 +48,11 @@ export default function DocumentDigitize() {
   const [processedDocs, setProcessedDocs] = useState<ProcessedDoc[]>([]);
   const [activeDocIndex, setActiveDocIndex] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [activeMode, setActiveMode] = useState<"digitize" | "translate">("digitize");
+  const [sourceLang, setSourceLang] = useState("Spanish");
+  const [targetLang, setTargetLang] = useState("English");
+  const [translating, setTranslating] = useState(false);
+  const [translationResult, setTranslationResult] = useState("");
 
   const editor = useEditor({
     extensions: [
