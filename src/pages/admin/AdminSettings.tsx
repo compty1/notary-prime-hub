@@ -263,7 +263,7 @@ export default function AdminSettings() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label>OneNotary API Status</Label>
+              <Label>SignNow API Status</Label>
               <div className="mt-1 flex items-center gap-2">
                 <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 text-xs">Connected</Badge>
                 <span className="text-xs text-muted-foreground">API token configured as server secret — manage in Lovable Cloud settings</span>
@@ -271,17 +271,17 @@ export default function AdminSettings() {
             </div>
             <div>
               <Label>RON Session Method</Label>
-              <Select value={editValues.ron_session_method || "onenotary_platform"} onValueChange={(v) => updateValue("ron_session_method", v)}>
+              <Select value={editValues.ron_session_method || "signnow_platform"} onValueChange={(v) => updateValue("ron_session_method", v)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="onenotary_platform">OneNotary Platform (Full API Integration)</SelectItem>
+                  <SelectItem value="signnow_platform">SignNow Platform (Full API Integration)</SelectItem>
                   <SelectItem value="email_invite">Email Invite (Manual Session Link)</SelectItem>
                 </SelectContent>
               </Select>
               <p className="mt-1 text-xs text-muted-foreground">
                 {editValues.ron_session_method === "email_invite"
-                  ? "Sends an email invite to the signer with a session link instead of using the OneNotary API flow."
-                  : "Creates sessions, adds participants, and manages documents via OneNotary REST API v2."}
+                  ? "Sends an email invite to the signer with a session link instead of using the SignNow API flow."
+                  : "Uploads documents, adds signing fields, and sends invites via SignNow REST API."}
               </p>
             </div>
             <div><Label>KBA Platform URL</Label><Input value={editValues.kba_platform_url || ""} onChange={(e) => updateValue("kba_platform_url", e.target.value)} placeholder="https://kba-platform.com/session" /></div>
@@ -292,20 +292,20 @@ export default function AdminSettings() {
                 <Shield className="h-4 w-4" /> KBA Provider Configuration
               </CollapsibleTrigger>
               <CollapsibleContent className="mt-3 space-y-3 rounded-lg border border-border/50 p-4">
-                <p className="text-xs text-muted-foreground">Ohio ORC §147.66 requires Knowledge-Based Authentication for all RON sessions. OneNotary handles KBA natively — configure an external provider only if needed.</p>
+                <p className="text-xs text-muted-foreground">Ohio ORC §147.66 requires Knowledge-Based Authentication for all RON sessions. SignNow handles KBA natively — configure an external provider only if needed.</p>
                 <div>
                   <Label>KBA Provider</Label>
-                  <Select value={editValues.kba_provider || "onenotary_builtin"} onValueChange={(v) => updateValue("kba_provider", v)}>
+                  <Select value={editValues.kba_provider || "signnow_builtin"} onValueChange={(v) => updateValue("kba_provider", v)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="onenotary_builtin">OneNotary Built-in</SelectItem>
+                      <SelectItem value="signnow_builtin">SignNow Built-in</SelectItem>
                       <SelectItem value="idology">IDology</SelectItem>
                       <SelectItem value="evident">Evident</SelectItem>
                       <SelectItem value="lexisnexis">LexisNexis</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                {editValues.kba_provider && editValues.kba_provider !== "onenotary_builtin" && (
+                {editValues.kba_provider && editValues.kba_provider !== "signnow_builtin" && (
                   <>
                     <div>
                       <Label>KBA API Key</Label>
@@ -352,8 +352,8 @@ export default function AdminSettings() {
                 { label: "RON Authorization", ok: !!editValues.ron_authorization_number, detail: editValues.ron_authorization_number || "Not configured" },
                 { label: "E&O Insurance Current", ok: !!editValues.eo_expiration_date && new Date(editValues.eo_expiration_date) > new Date(), detail: editValues.eo_expiration_date ? `Expires ${new Date(editValues.eo_expiration_date).toLocaleDateString()}` : "Not configured" },
                 { label: "Surety Bond Current", ok: !!editValues.bond_expiration_date && new Date(editValues.bond_expiration_date) > new Date(), detail: editValues.bond_expiration_date ? `Expires ${new Date(editValues.bond_expiration_date).toLocaleDateString()}` : "Not configured" },
-                { label: "OneNotary API", ok: true, detail: "Connected (server secret)" },
-                { label: "KBA Integration", ok: true, detail: editValues.kba_provider === "onenotary_builtin" || !editValues.kba_provider ? "OneNotary built-in" : editValues.kba_provider },
+                { label: "SignNow API", ok: true, detail: "Connected (server secret)" },
+                { label: "KBA Integration", ok: true, detail: editValues.kba_provider === "signnow_builtin" || !editValues.kba_provider ? "SignNow built-in" : editValues.kba_provider },
               ].map((item) => (
                 <div key={item.label} className="flex items-start gap-2 rounded-lg border border-border/50 p-3">
                   {item.ok ? <CheckCircle className="h-4 w-4 mt-0.5 text-emerald-500 flex-shrink-0" /> : <XCircle className="h-4 w-4 mt-0.5 text-destructive flex-shrink-0" />}

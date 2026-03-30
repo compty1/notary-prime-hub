@@ -17,15 +17,16 @@ Deno.serve(async (req) => {
     );
 
     const body = await req.json();
-    console.log("OneNotary webhook received:", JSON.stringify(body));
+    console.log("SignNow webhook received:", JSON.stringify(body));
 
-    // OneNotary webhook format: { event: "session.status.updated_*", data: { id, status, price, ... } }
-    const { event, data } = body;
-    const session_id = data?.id || body.session_id;
+    // SignNow webhook format varies by event type
+    // Common fields: event, meta.timestamp, content (document data)
+    const event = body.event || body.action;
+    const documentId = body.content?.document_id || body.document_id || body.meta?.document_id;
 
-    if (!session_id) {
-      return new Response(JSON.stringify({ error: "Missing session_id" }), {
-        status: 400,
+    if (!documentId) {
+      console.log("No document_id in webhook payload");
+      return new Response(JSON.stringify({ ok: true, message: "No document_id" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -34,11 +35,11 @@ Deno.serve(async (req) => {
     const { data: session } = await supabase
       .from("notarization_sessions")
       .select("*, appointments(*)")
-      .eq("onenotary_session_id", session_id)
+      .eq("signnow_document_id", documentId)
       .single();
 
     if (!session) {
-      console.log("No matching session found for OneNotary session:", session_id);
+      console.log("No matching session found for SignNow document:", documentId);
       return new Response(JSON.stringify({ ok: true, message: "No matching session" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -46,18 +47,8 @@ Deno.serve(async (req) => {
 
     const appointmentId = session.appointment_id;
 
-    // Handle OneNotary webhook events (full event names from v2 API)
-    if (event?.includes("session_started") || event?.includes("ready_to_start")) {
-      await supabase.from("notarization_sessions").update({
-        status: "in_session",
-        started_at: new Date().toISOString(),
-      }).eq("id", session.id);
-
-      await supabase.from("appointments").update({
-        status: "in_session",
-      }).eq("id", appointmentId);
-
-    } else if (event?.includes("completed_successfully")) {
+    // Handle SignNow webhook events
+    if (event === "document.complete" || event === "document.signed") {
       await supabase.from("notarization_sessions").update({
         status: "completed",
         completed_at: new Date().toISOString(),
@@ -74,16 +65,15 @@ Deno.serve(async (req) => {
         status: "notarized",
       }).eq("appointment_id", appointmentId);
 
-      // Create payment record with OneNotary session price
+      // Create payment record
       if (session.appointments) {
         const appt = session.appointments;
-        const sessionPrice = data?.price || 0;
         await supabase.from("payments").insert({
           client_id: appt.client_id,
           appointment_id: appointmentId,
-          amount: appt.estimated_price || sessionPrice || 5,
+          amount: appt.estimated_price || 5,
           status: "pending",
-          notes: `RON session completed via OneNotary — ${appt.service_type}. Platform fee: $${sessionPrice}`,
+          notes: `RON session completed via SignNow — ${appt.service_type}`,
         });
       }
 
@@ -92,55 +82,46 @@ Deno.serve(async (req) => {
         action: "ron_session_completed_webhook",
         entity_type: "appointment",
         entity_id: appointmentId,
-        details: { onenotary_session_id: session_id, event, price: data?.price },
+        details: { signnow_document_id: documentId, event },
       });
 
-    } else if (event?.includes("canceled") || event?.includes("cancelled") || event?.includes("terminated")) {
-      await supabase.from("notarization_sessions").update({
-        status: "cancelled",
-      }).eq("id", session.id);
-
-      await supabase.from("appointments").update({
-        status: "cancelled",
-      }).eq("id", appointmentId);
-
-    } else if (event?.includes("notary_assigned")) {
-      // Notary was assigned — log it
-      await supabase.from("audit_log").insert({
-        action: "ron_notary_assigned",
-        entity_type: "appointment",
-        entity_id: appointmentId,
-        details: { onenotary_session_id: session_id, event, notary: data?.notary },
-      });
-
-    } else if (event?.includes("processing")) {
+    } else if (event === "document.update" || event === "document.viewed") {
       await supabase.from("notarization_sessions").update({
         status: "in_session",
+        started_at: session.started_at || new Date().toISOString(),
       }).eq("id", session.id);
 
-    } else if (event?.includes("identity_check") || event?.includes("id_verification")) {
       await supabase.from("appointments").update({
-        status: "id_verification",
+        status: "in_session",
       }).eq("id", appointmentId);
 
-    } else if (event?.includes("paused")) {
-      // Log pause events for audit
+    } else if (event === "invite.update" || event === "invite.sent") {
+      // Signer interaction with invite
       await supabase.from("audit_log").insert({
-        action: "ron_session_paused",
+        action: "signnow_invite_update",
         entity_type: "appointment",
         entity_id: appointmentId,
-        details: { onenotary_session_id: session_id, event, pause_details: data?.pause_details },
+        details: { signnow_document_id: documentId, event, content: body.content },
       });
 
+    } else if (event === "document.cancel" || event === "invite.cancel") {
+      await supabase.from("notarization_sessions").update({
+        status: "cancelled",
+      }).eq("id", session.id);
+
+      await supabase.from("appointments").update({
+        status: "cancelled",
+      }).eq("id", appointmentId);
+
     } else {
-      console.log("Unhandled OneNotary event:", event);
+      console.log("Unhandled SignNow event:", event);
     }
 
     return new Response(JSON.stringify({ ok: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err: any) {
-    console.error("OneNotary webhook error:", err);
+    console.error("SignNow webhook error:", err);
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

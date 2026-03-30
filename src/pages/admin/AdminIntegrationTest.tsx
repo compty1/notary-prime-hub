@@ -24,10 +24,9 @@ const flowSteps = {
   ron: [
     { id: "booking", label: "Client Books RON Session", icon: Clock, description: "Client selects RON service, picks date/time, submits booking form" },
     { id: "confirmation", label: "Appointment Confirmed", icon: CheckCircle, description: "Appointment created in database, confirmation email sent to client" },
-    { id: "session_create", label: "OneNotary Session Created", icon: Monitor, description: "Admin/system creates RON session via OneNotary API (create_session)" },
-    { id: "participant", label: "Participant Added", icon: UserPlus, description: "Signer added to session via add_participant API call" },
-    { id: "documents", label: "Documents Uploaded", icon: FileText, description: "Documents uploaded to OneNotary session via upload_document" },
-    { id: "initialize", label: "Session Initialized", icon: Play, description: "Session initialized via initialize_session, participant link generated" },
+    { id: "doc_upload", label: "Document Uploaded to SignNow", icon: Monitor, description: "Admin uploads document to SignNow via upload_document API" },
+    { id: "invite_sent", label: "Signing Invite Sent", icon: UserPlus, description: "Signer receives email invite to sign via SignNow send_invite API" },
+    { id: "documents", label: "Documents Ready", icon: FileText, description: "Documents with signing fields prepared in SignNow" },
     { id: "kba", label: "KBA & ID Verification", icon: Shield, description: "Signer completes Knowledge-Based Authentication (ORC §147.66 compliant)" },
     { id: "notarization", label: "Live Notarization", icon: Video, description: "Audio/video session with notary, oath administered, documents signed & sealed" },
     { id: "completion", label: "Session Completed", icon: CheckCircle, description: "Journal entry created, e-seal verification generated, documents stored" },
@@ -56,20 +55,20 @@ export default function AdminIntegrationTest() {
   const [storageTest, setStorageTest] = useState<StepResult>({ status: "idle", message: "" });
   const [emailTest, setEmailTest] = useState<StepResult>({ status: "idle", message: "" });
 
-  const testOneNotaryConnection = async () => {
-    setApiTest({ status: "running", message: "Pinging OneNotary API..." });
+  const testSignNowConnection = async () => {
+    setApiTest({ status: "running", message: "Pinging SignNow API..." });
     const start = Date.now();
     try {
       const headers = await getEdgeFunctionHeaders();
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/onenotary`, {
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/signnow`, {
         method: "POST",
         headers,
-        body: JSON.stringify({ action: "list_sessions" }),
+        body: JSON.stringify({ action: "list_documents" }),
       });
       const elapsed = Date.now() - start;
       const data = await resp.json();
       if (resp.ok && !data.error) {
-        setApiTest({ status: "success", message: `Connected successfully. ${Array.isArray(data.sessions) ? data.sessions.length : 0} sessions found.`, responseTime: elapsed });
+        setApiTest({ status: "success", message: `Connected successfully.`, responseTime: elapsed });
       } else {
         setApiTest({ status: "error", message: data.error || `HTTP ${resp.status}`, responseTime: elapsed });
       }
@@ -214,7 +213,7 @@ export default function AdminIntegrationTest() {
               onClick={() => {
                 testDatabaseConnection();
                 testStorageConnection();
-                testOneNotaryConnection();
+                testSignNowConnection();
                 testStripeConnection();
                 testEmailFunction();
               }}
@@ -225,7 +224,7 @@ export default function AdminIntegrationTest() {
 
           <TestCard title="Database" icon={Database} result={dbTest} onTest={testDatabaseConnection} description="Queries the platform_settings table to verify database connectivity and RLS policies." />
           <TestCard title="File Storage" icon={HardDrive} result={storageTest} onTest={testStorageConnection} description="Lists the documents storage bucket to verify file storage access." />
-          <TestCard title="OneNotary API" icon={Monitor} result={apiTest} onTest={testOneNotaryConnection} description="Tests the OneNotary REST API v2 connection by listing sessions. Requires ONENOTARY_API_TOKEN secret." />
+          <TestCard title="SignNow API" icon={Monitor} result={apiTest} onTest={testSignNowConnection} description="Tests the SignNow REST API connection by listing documents. Requires SIGNNOW_API_TOKEN secret." />
           <TestCard title="Stripe Payment Gateway" icon={CreditCard} result={stripeTest} onTest={testStripeConnection} description="Verifies Stripe publishable key is configured and the get-stripe-config function responds." />
           <TestCard title="Email Function" icon={Mail} result={emailTest} onTest={testEmailFunction} description="Sends a dry-run request to the send-correspondence edge function to verify it's deployed and reachable." />
         </TabsContent>

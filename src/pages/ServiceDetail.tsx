@@ -61,7 +61,7 @@ const categoryResources: Record<string, { label: string; url: string; icon: any 
 // Service-specific FAQs (checked before category FAQs)
 const serviceFaqs: Record<string, { q: string; a: string }[]> = {
   "ron onboarding": [
-    { q: "What equipment do I need for RON?", a: "A computer with webcam, microphone, stable internet, and a RON-compliant platform like OneNotary or Notarize." },
+    { q: "What equipment do I need for RON?", a: "A computer with webcam, microphone, stable internet, and a RON-compliant platform like SignNow." },
     { q: "How long is the RON onboarding process?", a: "Typically 1-2 weeks including platform setup, training, and practice sessions." },
     { q: "What states authorize RON?", a: "Over 40 states now authorize RON. Ohio has authorized RON under ORC §147.65-.66 since 2019." },
     { q: "Do I need a separate RON commission?", a: "Yes. Ohio requires a separate RON authorization in addition to your traditional notary commission." },
