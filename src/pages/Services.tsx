@@ -43,7 +43,7 @@ const categoryLabels: Record<string, { label: string; description: string }> = {
   ux_testing: { label: "User Experience", description: "UX audits, usability testing, workflow analysis, and research" },
 };
 
-const categoryOrder = ["notarization", "verification", "document_services", "authentication", "business", "recurring", "consulting", "business_services"];
+const categoryOrder = ["notarization", "verification", "document_services", "authentication", "business", "recurring", "consulting", "business_services", "admin_support", "content_creation", "research", "customer_service", "technical_support", "ux_testing"];
 
 const INTAKE_ONLY_SERVICES = new Set([
   "Apostille Facilitation", "Consular Legalization Prep", "Background Check Coordination",
