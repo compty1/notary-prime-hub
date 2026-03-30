@@ -1,14 +1,26 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://esm.sh/zod@3.23.8";
 
-// Webhooks are server-to-server — no CORS needed, but keep minimal headers for health checks
 const responseHeaders = {
   "Content-Type": "application/json",
 };
 
+// Zod schema for the webhook payload
+const WebhookPayloadSchema = z.object({
+  event: z.string().optional(),
+  action: z.string().optional(),
+  content: z.object({
+    document_id: z.string().optional(),
+  }).passthrough().optional(),
+  document_id: z.string().optional(),
+  meta: z.object({
+    document_id: z.string().optional(),
+  }).passthrough().optional(),
+}).passthrough();
+
 async function verifyWebhookSignature(body: string, signature: string | null): Promise<boolean> {
   const secret = Deno.env.get("SIGNNOW_WEBHOOK_SECRET");
   if (!secret) {
-    // If no secret is configured, log warning but allow (for initial setup)
     console.warn("SIGNNOW_WEBHOOK_SECRET not configured — skipping signature verification");
     return true;
   }
@@ -28,7 +40,6 @@ async function verifyWebhookSignature(body: string, signature: string | null): P
 }
 
 Deno.serve(async (req) => {
-  // Webhooks only accept POST
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), {
       status: 405,
@@ -40,7 +51,6 @@ Deno.serve(async (req) => {
     const bodyText = await req.text();
     const signature = req.headers.get("x-signnow-signature") || req.headers.get("x-event-hash");
 
-    // Verify webhook signature
     const valid = await verifyWebhookSignature(bodyText, signature);
     if (!valid) {
       console.error("Invalid webhook signature");
@@ -50,7 +60,17 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body = JSON.parse(bodyText);
+    // Validate payload shape
+    const parseResult = WebhookPayloadSchema.safeParse(JSON.parse(bodyText));
+    if (!parseResult.success) {
+      console.error("Invalid webhook payload:", parseResult.error.flatten());
+      return new Response(JSON.stringify({ error: "Invalid payload", details: parseResult.error.flatten().fieldErrors }), {
+        status: 400,
+        headers: responseHeaders,
+      });
+    }
+
+    const body = parseResult.data;
     console.log("SignNow webhook received:", JSON.stringify(body));
 
     const supabase = createClient(
@@ -58,7 +78,6 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // SignNow webhook format varies by event type
     const event = body.event || body.action;
     const documentId = body.content?.document_id || body.document_id || body.meta?.document_id;
 
@@ -69,7 +88,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Find our session record
     const { data: session } = await supabase
       .from("notarization_sessions")
       .select("*, appointments(*)")
@@ -85,7 +103,6 @@ Deno.serve(async (req) => {
 
     const appointmentId = session.appointment_id;
 
-    // Handle SignNow webhook events
     if (event === "document.complete" || event === "document.signed") {
       await supabase.from("notarization_sessions").update({
         status: "completed",
@@ -98,12 +115,10 @@ Deno.serve(async (req) => {
         status: "completed",
       }).eq("id", appointmentId);
 
-      // Mark linked documents as notarized
       await supabase.from("documents").update({
         status: "notarized",
       }).eq("appointment_id", appointmentId);
 
-      // Create payment record
       if (session.appointments) {
         const appt = session.appointments;
         await supabase.from("payments").insert({
@@ -115,7 +130,6 @@ Deno.serve(async (req) => {
         });
       }
 
-      // Audit log
       await supabase.from("audit_log").insert({
         action: "ron_session_completed_webhook",
         entity_type: "appointment",

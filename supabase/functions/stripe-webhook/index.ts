@@ -1,10 +1,17 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import Stripe from "https://esm.sh/stripe@14.21.0";
+import { z } from "https://esm.sh/zod@3.23.8";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, stripe-signature",
 };
+
+// Validate that the Stripe event has valid metadata when we need it
+const PaymentMetadataSchema = z.object({
+  payment_id: z.string().uuid().optional(),
+  appointment_id: z.string().uuid().optional(),
+}).passthrough();
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -16,7 +23,6 @@ Deno.serve(async (req) => {
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
     const body = await req.text();
 
-    // Verify webhook signature if secret is configured
     const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
     let event: Stripe.Event;
 
@@ -50,10 +56,10 @@ Deno.serve(async (req) => {
     switch (event.type) {
       case "payment_intent.succeeded": {
         const pi = event.data.object as Stripe.PaymentIntent;
-        const appointmentId = pi.metadata?.appointment_id;
-        const paymentId = pi.metadata?.payment_id;
+        const metaParsed = PaymentMetadataSchema.safeParse(pi.metadata || {});
+        const meta = metaParsed.success ? metaParsed.data : {};
+        const { payment_id: paymentId, appointment_id: appointmentId } = meta;
 
-        // Prefer exact match via payment_id metadata, fall back to appointment_id
         if (paymentId) {
           await supabase
             .from("payments")
@@ -70,8 +76,9 @@ Deno.serve(async (req) => {
       }
       case "payment_intent.payment_failed": {
         const pi = event.data.object as Stripe.PaymentIntent;
-        const paymentId = pi.metadata?.payment_id;
-        const appointmentId = pi.metadata?.appointment_id;
+        const metaParsed = PaymentMetadataSchema.safeParse(pi.metadata || {});
+        const meta = metaParsed.success ? metaParsed.data : {};
+        const { payment_id: paymentId, appointment_id: appointmentId } = meta;
 
         if (paymentId) {
           await supabase
