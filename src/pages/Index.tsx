@@ -235,6 +235,7 @@ export default function Index() {
                   className="h-full w-full object-cover"
                   width={960}
                   height={1024}
+                  loading="lazy"
                 />
               </div>
 
