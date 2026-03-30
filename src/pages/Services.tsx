@@ -161,7 +161,8 @@ export default function Services() {
   usePageTitle("Services");
 
   useEffect(() => {
-    supabase.from("services").select("*").eq("is_active", true).order("display_order").then(({ data }) => {
+    supabase.from("services").select("*").eq("is_active", true).order("display_order").then(({ data, error }) => {
+      console.log("Services fetch result:", { count: data?.length, error });
       if (data) setServices(data as Service[]);
       setLoading(false);
     });
