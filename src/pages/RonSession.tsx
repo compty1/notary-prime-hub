@@ -11,9 +11,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Shield, Monitor, ArrowLeft, CheckCircle, AlertCircle, Mic, MicOff, BookOpen, Save, Loader2, XCircle, FileCheck, CreditCard, ExternalLink, Video, Link2 } from "lucide-react";
+import { Shield, Monitor, ArrowLeft, CheckCircle, AlertCircle, Mic, MicOff, BookOpen, Save, Loader2, XCircle, FileCheck, CreditCard, ExternalLink, Video, Link2, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { logAuditEvent } from "@/lib/auditLog";
+import type { Json } from "@/integrations/supabase/types";
 
 const oathScripts = {
   acknowledgment: null,
@@ -23,11 +25,22 @@ const oathScripts = {
 };
 
 const STEPS = [
-  { label: "Paste Link", icon: Link2 },
+  { label: "Session Setup", icon: Link2 },
   { label: "Verify ID / KBA", icon: Shield },
   { label: "Administer Oath", icon: BookOpen },
   { label: "Finalize", icon: FileCheck },
 ];
+
+const SIGNING_PLATFORMS = [
+  { value: "signnow", label: "SignNow" },
+  { value: "docusign", label: "DocuSign" },
+  { value: "notarize", label: "Notarize" },
+  { value: "bluenotary", label: "BlueNotary" },
+  { value: "other", label: "Other" },
+];
+
+/** Platforms that handle KBA/ID natively within their signing flow */
+const PLATFORMS_WITH_NATIVE_KBA = ["signnow", "notarize", "bluenotary"];
 
 function StepIndicator({ currentStep }: { currentStep: number }) {
   return (
@@ -83,7 +96,13 @@ export default function RonSession() {
   const [sessionLink, setSessionLink] = useState("");
   const [sessionUniqueId, setSessionUniqueId] = useState<string | null>(null);
 
-  // Recording consent (Ohio two-party consent, item 334-335)
+  // Mode & platform metadata
+  const [sessionMode, setSessionMode] = useState<"manual" | "api">("manual");
+  const [signingPlatform, setSigningPlatform] = useState("signnow");
+  const [documentName, setDocumentName] = useState("");
+  const [signerEmail, setSignerEmail] = useState("");
+
+  // Recording consent (Ohio two-party consent)
   const [recordingConsent, setRecordingConsent] = useState(false);
   const [recordingConsentAt, setRecordingConsentAt] = useState<string | null>(null);
 
@@ -102,6 +121,8 @@ export default function RonSession() {
   const finalTranscriptRef = useRef("");
 
   const [sessionStatus, setSessionStatus] = useState<string>("scheduled");
+
+  const hasNativeKba = PLATFORMS_WITH_NATIVE_KBA.includes(signingPlatform);
 
   // Compute current step
   const currentStep = (() => {
@@ -143,6 +164,11 @@ export default function RonSession() {
           setRecordingConsent(true);
           setRecordingConsentAt((session as any).recording_consent_at || null);
         }
+        // Load new fields
+        if ((session as any).session_mode) setSessionMode((session as any).session_mode);
+        if ((session as any).signing_platform) setSigningPlatform((session as any).signing_platform);
+        if ((session as any).document_name) setDocumentName((session as any).document_name);
+        if ((session as any).signer_email) setSignerEmail((session as any).signer_email);
       }
 
       // Check commission expiry (Ohio ORC §147.03)
@@ -243,7 +269,7 @@ export default function RonSession() {
     }
   };
 
-  // Save session link
+  // Save session link with metadata
   const saveSessionLink = async () => {
     if (!appointmentId || !sessionLink.trim()) return;
 
@@ -257,20 +283,25 @@ export default function RonSession() {
 
     setSaving(true);
     const link = sessionLink.trim();
+    const metadataFields = {
+      participant_link: link,
+      status: "confirmed" as any,
+      session_mode: sessionMode,
+      signing_platform: signingPlatform,
+      document_name: documentName || null,
+      signer_email: signerEmail || null,
+    };
+
     const { data: existing } = await supabase.from("notarization_sessions").select("id, session_unique_id").eq("appointment_id", appointmentId).single();
     if (existing) {
-      await supabase.from("notarization_sessions").update({
-        participant_link: link,
-        status: "confirmed" as any,
-      }).eq("appointment_id", appointmentId);
+      await supabase.from("notarization_sessions").update(metadataFields as any).eq("appointment_id", appointmentId);
       if ((existing as any).session_unique_id) setSessionUniqueId((existing as any).session_unique_id);
     } else {
       const { data: newSession } = await supabase.from("notarization_sessions").insert({
         appointment_id: appointmentId,
         session_type: "ron" as any,
-        participant_link: link,
-        status: "confirmed" as any,
-      }).select("session_unique_id").single();
+        ...metadataFields,
+      } as any).select("session_unique_id").single();
       if ((newSession as any)?.session_unique_id) setSessionUniqueId((newSession as any).session_unique_id);
     }
     setParticipantLink(link);
@@ -293,14 +324,25 @@ export default function RonSession() {
       completed_at: oathAdministered ? new Date().toISOString() : null,
       recording_consent: recordingConsent,
       recording_consent_at: recordingConsentAt,
+      session_mode: sessionMode,
+      signing_platform: signingPlatform,
+      document_name: documentName || null,
+      signer_email: signerEmail || null,
     } as any).eq("appointment_id", appointmentId);
 
-    await supabase.from("audit_log").insert({
-      user_id: user?.id,
-      action: "ron_session_saved",
-      entity_type: "appointment",
-      entity_id: appointmentId,
-      details: { oath_administered: oathAdministered, oath_type: oathType, oath_timestamp: oathTimestamp, id_verified: idVerified, kba_completed: kbaCompleted, notes_length: notes.length },
+    await logAuditEvent("ron_session_saved", {
+      entityType: "appointment",
+      entityId: appointmentId,
+      details: {
+        oath_administered: oathAdministered,
+        oath_type: oathType,
+        oath_timestamp: oathTimestamp,
+        id_verified: idVerified,
+        kba_completed: kbaCompleted,
+        notes_length: notes.length,
+        session_mode: sessionMode,
+        signing_platform: signingPlatform,
+      } as Record<string, Json | undefined>,
     });
 
     setSaving(false);
@@ -316,24 +358,44 @@ export default function RonSession() {
     setCompleting(true);
 
     await supabase.from("appointments").update({ status: "completed" as any, admin_notes: notes }).eq("id", appointmentId);
-    await supabase.from("notarization_sessions").update({ id_verified: true, kba_completed: true, status: "completed" as any, completed_at: new Date().toISOString() }).eq("appointment_id", appointmentId);
+    await supabase.from("notarization_sessions").update({
+      id_verified: true,
+      kba_completed: true,
+      status: "completed" as any,
+      completed_at: new Date().toISOString(),
+      session_mode: sessionMode,
+      signing_platform: signingPlatform,
+      document_name: documentName || null,
+      signer_email: signerEmail || null,
+    } as any).eq("appointment_id", appointmentId);
     await supabase.from("documents").update({ status: "notarized" as any }).eq("appointment_id", appointmentId);
 
     const fee = appointment.estimated_price || 5;
+    const platformLabel = SIGNING_PLATFORMS.find(p => p.value === signingPlatform)?.label || signingPlatform;
 
     await supabase.from("payments").insert({
       client_id: appointment.client_id,
       appointment_id: appointmentId,
       amount: fee,
       status: "pending",
-      notes: `RON session completed — ${appointment.service_type}`,
+      notes: `RON session completed — ${appointment.service_type} (${platformLabel})`,
     });
+
+    // Build enriched journal notes
+    const journalNotes = [
+      notes || "",
+      `Platform: ${platformLabel}`,
+      documentName ? `Document: ${documentName}` : "",
+      signerEmail ? `Signer email: ${signerEmail}` : "",
+      `Mode: ${sessionMode}`,
+    ].filter(Boolean).join(" | ");
 
     await supabase.from("notary_journal").insert({
       appointment_id: appointmentId,
       created_by: user.id,
       signer_name: clientProfile?.full_name || "Unknown Signer",
       document_type: appointment.service_type || "General",
+      document_description: documentName || null,
       service_performed: oathType === "acknowledgment" ? "acknowledgment" : oathType,
       notarization_type: "ron" as any,
       fees_charged: fee,
@@ -342,9 +404,10 @@ export default function RonSession() {
       id_type: idType || null,
       id_number: idNumber || null,
       id_expiration: idExpiration || null,
-      notes: notes || null,
+      notes: journalNotes,
     });
 
+    // e-seal: prefer uploaded doc, fall back to manual document_name
     const { data: docs } = await supabase.from("documents").select("id, file_name").eq("appointment_id", appointmentId).limit(1);
     if (docs && docs.length > 0) {
       await supabase.from("e_seal_verifications").insert({
@@ -359,12 +422,17 @@ export default function RonSession() {
       });
     }
 
-    await supabase.from("audit_log").insert({
-      user_id: user.id,
-      action: "ron_session_completed",
-      entity_type: "appointment",
-      entity_id: appointmentId,
-      details: { oath_type: oathType, oath_timestamp: oathTimestamp, id_type: idType },
+    await logAuditEvent("ron_session_completed", {
+      entityType: "appointment",
+      entityId: appointmentId,
+      details: {
+        oath_type: oathType,
+        oath_timestamp: oathTimestamp,
+        id_type: idType,
+        session_mode: sessionMode,
+        signing_platform: signingPlatform,
+        document_name: documentName || null,
+      } as Record<string, Json | undefined>,
     });
 
     setCompleting(false);
@@ -547,19 +615,75 @@ export default function RonSession() {
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Main session area */}
           <div className="lg:col-span-2">
-            {/* Step 1: Paste SignNow Link */}
+            {/* Step 1: Session Setup — Mode selector + Link + Metadata */}
             <Card className="mb-6 border-border/50">
               <CardContent className="p-6">
                 <h2 className="mb-1 font-sans text-xl font-semibold flex items-center gap-2">
-                  <Link2 className="h-5 w-5 text-primary" /> Session Link
+                  <Link2 className="h-5 w-5 text-primary" /> Session Setup
                 </h2>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Open SignNow, prepare the document and signing session there, then paste the signing link below. The client will see this link in their portal.
+                  Choose your workflow mode, then paste the signing link and capture session details.
                 </p>
 
+                {/* Mode selector */}
+                {!participantLink && (
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    <button
+                      onClick={() => setSessionMode("manual")}
+                      className={cn(
+                        "rounded-lg border-2 p-3 text-left transition-all",
+                        sessionMode === "manual"
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/40"
+                      )}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <Link2 className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-semibold">Paste Signing Link</span>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">Use any signing platform — paste the link manually</p>
+                    </button>
+                    <button
+                      disabled
+                      className="rounded-lg border-2 border-border p-3 text-left opacity-50 cursor-not-allowed relative"
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <Monitor className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm font-semibold text-muted-foreground">Use SignNow API</span>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">Automated document upload & invite</p>
+                      <Badge variant="secondary" className="absolute top-2 right-2 text-[10px]">Coming Soon</Badge>
+                    </button>
+                  </div>
+                )}
+
+                {/* Platform & metadata fields */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                  <div>
+                    <Label className="text-xs mb-1 block">Signing Platform</Label>
+                    <Select value={signingPlatform} onValueChange={setSigningPlatform}>
+                      <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {SIGNING_PLATFORMS.map(p => (
+                          <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs mb-1 block">Document Name</Label>
+                    <Input className="h-8 text-xs" placeholder="e.g. Power of Attorney" value={documentName} onChange={e => setDocumentName(e.target.value)} />
+                  </div>
+                  <div>
+                    <Label className="text-xs mb-1 block">Signer Email <span className="text-muted-foreground">(optional)</span></Label>
+                    <Input className="h-8 text-xs" type="email" placeholder="signer@example.com" value={signerEmail} onChange={e => setSignerEmail(e.target.value)} />
+                  </div>
+                </div>
+
+                {/* Link input */}
                 <div className="flex gap-2">
                   <Input
-                    placeholder="https://app.signnow.com/webapp/document/..."
+                    placeholder={`https://${signingPlatform === "docusign" ? "docusign.net" : signingPlatform === "notarize" ? "app.notarize.com" : "app.signnow.com"}/...`}
                     value={sessionLink}
                     onChange={(e) => setSessionLink(e.target.value)}
                     className="flex-1"
@@ -574,7 +698,9 @@ export default function RonSession() {
                   <div className="mt-4 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 p-3">
                     <div className="flex items-center gap-2 mb-1">
                       <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                      <p className="text-xs font-medium text-emerald-700 dark:text-emerald-300">Session link active — client can join</p>
+                      <p className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                        Session link active — client can join via {SIGNING_PLATFORMS.find(p => p.value === signingPlatform)?.label || signingPlatform}
+                      </p>
                     </div>
                     <a href={participantLink} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline break-all">
                       {participantLink}
@@ -593,7 +719,7 @@ export default function RonSession() {
                     {participantLink ? <CheckCircle className="mt-0.5 h-5 w-5 text-emerald-500" /> : <AlertCircle className="mt-0.5 h-5 w-5 text-amber-500" />}
                     <div>
                       <p className="font-medium">Session Link {participantLink ? "✓ Active" : "— Paste above"}</p>
-                      <p className="text-sm text-muted-foreground">SignNow signing link shared with client</p>
+                      <p className="text-sm text-muted-foreground">Signing link shared with client</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
@@ -630,6 +756,19 @@ export default function RonSession() {
                 <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
                   <CreditCard className="h-4 w-4 text-primary" /> ID Verification
                 </h3>
+
+                {/* SignNow native KBA guidance */}
+                {hasNativeKba && (
+                  <div className="mb-3 rounded-md bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-2.5">
+                    <div className="flex items-start gap-2">
+                      <Info className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+                      <p className="text-[10px] text-blue-700 dark:text-blue-300 leading-relaxed">
+                        <strong>{SIGNING_PLATFORMS.find(p => p.value === signingPlatform)?.label}</strong> handles ID verification and KBA natively within its signing flow (MISMO-compliant per ORC §147.66). Toggle these after the signer completes the session.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 <div className="space-y-3">
                   <div>
                     <Label className="text-xs">ID Type</Label>
@@ -666,6 +805,18 @@ export default function RonSession() {
                 <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
                   <Shield className="h-4 w-4 text-primary" /> Knowledge-Based Authentication
                 </h3>
+
+                {hasNativeKba && (
+                  <div className="mb-3 rounded-md bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-2.5">
+                    <div className="flex items-start gap-2">
+                      <Info className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+                      <p className="text-[10px] text-blue-700 dark:text-blue-300 leading-relaxed">
+                        KBA is performed within the {SIGNING_PLATFORMS.find(p => p.value === signingPlatform)?.label} platform. Toggle this once the signer completes signing — the platform verifies identity before allowing the signature.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex items-center gap-2 mb-2">
                   <Switch checked={kbaCompleted} onCheckedChange={setKbaCompleted} />
                   <Label className="text-xs">KBA {kbaCompleted ? "Passed" : "Pending"}</Label>
@@ -676,12 +827,15 @@ export default function RonSession() {
                   <Badge variant="secondary" className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 text-xs"><AlertCircle className="mr-1 h-3 w-3" /> Awaiting KBA</Badge>
                 )}
                 <p className="mt-2 text-[10px] text-muted-foreground">
-                  KBA is handled during the session. Toggle manually after confirmation.
+                  {hasNativeKba
+                    ? `${SIGNING_PLATFORMS.find(p => p.value === signingPlatform)?.label} performs MISMO-compliant KBA automatically. Toggle after signer completes.`
+                    : "KBA is handled during the session. Toggle manually after confirmation."
+                  }
                 </p>
               </CardContent>
             </Card>
 
-            {/* Recording Consent (Ohio two-party consent, items 334-335) */}
+            {/* Recording Consent */}
             <Card className="border-border/50">
               <CardContent className="p-4">
                 <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">

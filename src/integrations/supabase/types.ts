@@ -945,6 +945,7 @@ export type Database = {
           bluenotary_session_url: string | null
           completed_at: string | null
           created_at: string
+          document_name: string | null
           id: string
           id_verified: boolean | null
           kba_attempts: number | null
@@ -954,11 +955,14 @@ export type Database = {
           recording_consent: boolean | null
           recording_consent_at: string | null
           recording_url: string | null
+          session_mode: string
           session_timeout_minutes: number | null
           session_type: Database["public"]["Enums"]["notarization_type"]
           session_unique_id: string | null
+          signer_email: string | null
           signer_ip: string | null
           signer_location_state: string | null
+          signing_platform: string | null
           signnow_document_id: string | null
           started_at: string | null
           status: Database["public"]["Enums"]["appointment_status"]
@@ -971,6 +975,7 @@ export type Database = {
           bluenotary_session_url?: string | null
           completed_at?: string | null
           created_at?: string
+          document_name?: string | null
           id?: string
           id_verified?: boolean | null
           kba_attempts?: number | null
@@ -980,11 +985,14 @@ export type Database = {
           recording_consent?: boolean | null
           recording_consent_at?: string | null
           recording_url?: string | null
+          session_mode?: string
           session_timeout_minutes?: number | null
           session_type?: Database["public"]["Enums"]["notarization_type"]
           session_unique_id?: string | null
+          signer_email?: string | null
           signer_ip?: string | null
           signer_location_state?: string | null
+          signing_platform?: string | null
           signnow_document_id?: string | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
@@ -997,6 +1005,7 @@ export type Database = {
           bluenotary_session_url?: string | null
           completed_at?: string | null
           created_at?: string
+          document_name?: string | null
           id?: string
           id_verified?: boolean | null
           kba_attempts?: number | null
@@ -1006,11 +1015,14 @@ export type Database = {
           recording_consent?: boolean | null
           recording_consent_at?: string | null
           recording_url?: string | null
+          session_mode?: string
           session_timeout_minutes?: number | null
           session_type?: Database["public"]["Enums"]["notarization_type"]
           session_unique_id?: string | null
+          signer_email?: string | null
           signer_ip?: string | null
           signer_location_state?: string | null
+          signing_platform?: string | null
           signnow_document_id?: string | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
