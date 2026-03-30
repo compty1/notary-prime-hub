@@ -43,6 +43,7 @@ const VirtualMailroom = lazy(() => import("./pages/VirtualMailroom"));
 const SubscriptionPlans = lazy(() => import("./pages/SubscriptionPlans"));
 const VerifyIdentity = lazy(() => import("./pages/VerifyIdentity"));
 const MobileUpload = lazy(() => import("./pages/MobileUpload"));
+const AIWriter = lazy(() => import("./pages/AIWriter"));
 
 // Admin pages
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
