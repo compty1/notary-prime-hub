@@ -426,10 +426,10 @@ export default function AdminRevenue() {
                       {filtered.map((entry) => {
                         const fee = parseFloat(entry.fees_charged) || 0;
                         const platform = parseFloat(entry.platform_fees) || 0;
-                        const onenotary = parseFloat(entry.onenotary_fee) || 0;
+                        const signingFee = parseFloat(entry.platform_fee) || 0;
                         const travel = parseFloat(entry.travel_fee) || 0;
                         const payout = parseFloat(entry.notary_payout) || 0;
-                        const net = fee - platform - onenotary - travel;
+                        const net = fee - platform - signingFee - travel;
                         return (
                           <tr key={entry.id} className="border-b border-border/30 last:border-0 hover:bg-muted/30">
                             <td className="px-4 py-3">{formatDate(entry.created_at)}</td>
