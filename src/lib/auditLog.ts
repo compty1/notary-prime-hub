@@ -19,7 +19,7 @@ export async function logAuditEvent(
       action,
       entity_type: opts?.entityType ?? null,
       entity_id: opts?.entityId ?? null,
-      details: (opts?.details as Record<string, unknown>) ?? null,
+      details: (opts?.details ?? null) as Json,
       user_id: opts?.userId ?? null,
     }]);
   } catch {
