@@ -681,7 +681,41 @@ export default function RonSession() {
               </CardContent>
             </Card>
 
-            {/* Digital Oath/Affirmation */}
+            {/* Recording Consent (Ohio two-party consent, items 334-335) */}
+            <Card className="border-border/50">
+              <CardContent className="p-4">
+                <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
+                  <Video className="h-4 w-4 text-primary" /> Recording Consent
+                </h3>
+                <p className="text-[10px] text-muted-foreground mb-2">
+                  Ohio is a one-party consent state, but RON best practice requires explicit consent per ORC §147.66.
+                </p>
+                <div className="flex items-center gap-2 mb-2">
+                  <Switch
+                    checked={recordingConsent}
+                    onCheckedChange={(checked) => {
+                      setRecordingConsent(checked);
+                      if (checked && !recordingConsentAt) {
+                        setRecordingConsentAt(new Date().toISOString());
+                      }
+                    }}
+                  />
+                  <Label className="text-xs">Signer consented to session recording</Label>
+                </div>
+                {recordingConsent && recordingConsentAt && (
+                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 text-xs">
+                    <CheckCircle className="mr-1 h-3 w-3" /> Consent at {new Date(recordingConsentAt).toLocaleTimeString()}
+                  </Badge>
+                )}
+                {sessionUniqueId && (
+                  <div className="mt-2 text-[10px] text-muted-foreground">
+                    Session ID: <span className="font-mono text-foreground">{sessionUniqueId}</span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+
             <Card className="border-border/50">
               <CardContent className="p-4">
                 <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
