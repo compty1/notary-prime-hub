@@ -66,7 +66,7 @@ export default function About() {
                 Professional Notary & Document Services — Ohio
               </p>
               <p className="text-muted-foreground/70 max-w-xl">
-                Notar is a team of Ohio-commissioned notaries led by Shane Goble, providing professional notarization, 
+                Notar is a team of Ohio-commissioned notaries providing professional notarization, 
                 document management, and business services throughout Franklin County and the greater Columbus area.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
