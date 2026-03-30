@@ -280,7 +280,8 @@ export default function ClientPortal() {
       </nav>
 
       <div className="container mx-auto max-w-5xl px-4 py-8">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 flex items-start justify-between">
+        <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Client Portal" }]} />
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 flex items-start justify-between mt-4">
           <div>
             <h1 className="font-sans text-3xl font-bold text-foreground">Welcome{profile?.full_name ? `, ${profile.full_name}` : ""}</h1>
             <p className="text-muted-foreground">Manage your documents, appointments, and notarization status</p>
