@@ -241,13 +241,20 @@ Deno.serve(async (req) => {
         const result = await resp.json();
         const documentId = result.id;
 
-        if (documentId && appointment_id) {
-          await serviceClient.from("notarization_sessions").upsert({
-            appointment_id,
-            signnow_document_id: documentId,
-            session_type: "ron",
-            status: "scheduled",
-          }, { onConflict: "appointment_id" });
+        if (documentId) {
+          // Register per-document webhooks (non-blocking)
+          registerDocumentWebhooks(documentId, token).catch((e) =>
+            console.error("Webhook registration error:", e)
+          );
+
+          if (appointment_id) {
+            await serviceClient.from("notarization_sessions").upsert({
+              appointment_id,
+              signnow_document_id: documentId,
+              session_type: "ron",
+              status: "scheduled",
+            }, { onConflict: "appointment_id" });
+          }
         }
 
         return new Response(JSON.stringify(result), {
