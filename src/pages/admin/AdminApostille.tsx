@@ -209,7 +209,7 @@ export default function AdminApostille() {
           <a href="https://www.ohiosos.gov/businesses/apostilles-authentications/" target="_blank" rel="noopener noreferrer">
             <Button size="sm" variant="outline"><ExternalLink className="mr-1 h-3 w-3" /> Ohio SOS Portal</Button>
           </a>
-          <Button size="sm" onClick={() => setCreateOpen(true)} className="bg-gradient-primary text-white hover:opacity-90">
+          <Button size="sm" onClick={() => setCreateOpen(true)} className="">
             <Plus className="mr-1 h-4 w-4" /> New Request
           </Button>
         </div>
@@ -288,7 +288,7 @@ export default function AdminApostille() {
                 <div className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
                   {statusFlow.map((s, i) => (
                     <button key={s} className="flex flex-col items-center gap-1 group" onClick={() => updateStatus(detailReq.id, s)}>
-                      <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${i <= currentIdx ? "bg-gradient-primary text-white" : "bg-muted-foreground/20 text-muted-foreground group-hover:bg-accent/30"}`}>
+                      <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${i <= currentIdx ? "bg-primary text-primary-foreground" : "bg-muted-foreground/20 text-muted-foreground group-hover:bg-accent/30"}`}>
                         {i < currentIdx ? <CheckCircle2 className="h-4 w-4" /> : i + 1}
                       </div>
                       <span className={`text-[10px] ${i <= currentIdx ? "text-foreground font-medium" : "text-muted-foreground"}`}>
@@ -413,7 +413,7 @@ export default function AdminApostille() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-            <Button className="bg-gradient-primary text-white hover:opacity-90" disabled={!newClientId || !newDesc} onClick={async () => {
+            <Button className="" disabled={!newClientId || !newDesc} onClick={async () => {
               const { error } = await supabase.from("apostille_requests").insert({
                 document_description: newDesc, notes: newNotes || null, client_id: newClientId, fee: parseFloat(newFee) || 75,
                 destination_country: newDestCountry || null, document_count: parseInt(newDocCount) || 1,

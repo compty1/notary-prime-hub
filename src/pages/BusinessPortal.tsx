@@ -147,7 +147,7 @@ export default function BusinessPortal() {
             <Building2 className="mx-auto mb-4 h-16 w-16 text-muted-foreground/50" />
             <h1 className="font-sans text-2xl font-bold mb-2">Business Client Portal</h1>
             <p className="text-muted-foreground mb-6">Register your business for bulk uploads, team accounts, and dedicated service</p>
-            <Button onClick={() => setRegisterOpen(true)} className="bg-gradient-primary text-white hover:opacity-90"><Plus className="mr-1 h-4 w-4" /> Register Business</Button>
+            <Button onClick={() => setRegisterOpen(true)} className=""><Plus className="mr-1 h-4 w-4" /> Register Business</Button>
           </motion.div>
         ) : (
           <>
@@ -174,7 +174,7 @@ export default function BusinessPortal() {
                   <h2 className="font-sans text-lg font-semibold">Bulk Document Upload</h2>
                   <div>
                     <input ref={fileInputRef} type="file" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.tiff,.xlsx,.csv" className="hidden" onChange={handleBulkUpload} />
-                    <Button size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="bg-gradient-primary text-white hover:opacity-90">
+                    <Button size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="">
                       {uploading ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />} Upload Files
                     </Button>
                   </div>
@@ -199,7 +199,7 @@ export default function BusinessPortal() {
                 <h2 className="font-sans text-lg font-semibold">Team Members</h2>
                 <div className="flex gap-2">
                   <Input value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="Enter team member's email..." className="max-w-sm" />
-                  <Button size="sm" onClick={addTeamMember} disabled={!inviteEmail.trim()} className="bg-gradient-primary text-white hover:opacity-90">
+                  <Button size="sm" onClick={addTeamMember} disabled={!inviteEmail.trim()} className="">
                     <Plus className="mr-1 h-4 w-4" /> Add Member
                   </Button>
                 </div>
@@ -286,7 +286,7 @@ export default function BusinessPortal() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setRegisterOpen(false)}>Cancel</Button>
-            <Button onClick={registerBusiness} disabled={!form.business_name} className="bg-gradient-primary text-white hover:opacity-90">Register</Button>
+            <Button onClick={registerBusiness} disabled={!form.business_name} className="">Register</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

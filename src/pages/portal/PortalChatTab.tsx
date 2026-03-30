@@ -43,7 +43,7 @@ export default function PortalChatTab({ userId, chatMessages, chatInput, setChat
             {filteredMessages.length === 0 && <p className="text-center text-sm text-muted-foreground py-8">No messages yet. Send a message to get started!</p>}
             {filteredMessages.map(msg => (
               <div key={msg.id} className={`flex ${msg.is_admin ? "justify-start" : "justify-end"}`}>
-                <div className={`max-w-[75%] rounded-lg px-3 py-2 text-sm ${msg.is_admin ? "bg-muted text-foreground" : "bg-gradient-primary text-white"}`}>
+                <div className={`max-w-[75%] rounded-lg px-3 py-2 text-sm ${msg.is_admin ? "bg-muted text-foreground" : "bg-primary text-primary-foreground"}`}>
                   <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:m-0"><ReactMarkdown>{msg.message}</ReactMarkdown></div>
                   <p className="mt-1 text-[10px] opacity-60">{new Date(msg.created_at).toLocaleTimeString()}</p>
                 </div>
@@ -53,7 +53,7 @@ export default function PortalChatTab({ userId, chatMessages, chatInput, setChat
           </div>
           <div className="flex gap-2">
             <Textarea value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder="Type a message..." className="min-h-[40px] resize-none" rows={1} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); onSend(); } }} />
-            <Button onClick={onSend} disabled={sendingChat || !chatInput.trim()} className="bg-gradient-primary text-white hover:opacity-90">
+            <Button onClick={onSend} disabled={sendingChat || !chatInput.trim()} className="">
               {sendingChat ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </Button>
           </div>

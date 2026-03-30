@@ -80,7 +80,7 @@ const queryClient = new QueryClient({
 const PageLoader = () => (
   <div className="flex min-h-screen items-center justify-center bg-background">
     <div className="relative h-12 w-48 overflow-hidden rounded-full bg-muted">
-      <div className="loading-bar absolute inset-y-0 w-1/3 rounded-full bg-gradient-primary" />
+      <div className="loading-bar absolute inset-y-0 w-1/3 rounded-full bg-primary" />
     </div>
   </div>
 );

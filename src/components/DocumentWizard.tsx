@@ -145,7 +145,7 @@ export default function DocumentWizard({ onSelectService, onClose }: DocumentWiz
 
           <div className="flex gap-2 pt-2">
             {onSelectService && (
-              <Button onClick={() => onSelectService(result.serviceType)} className="bg-gradient-primary text-white hover:opacity-90">
+              <Button onClick={() => onSelectService(result.serviceType)} className="">
                 <ChevronRight className="mr-1 h-4 w-4" /> Book This Service
               </Button>
             )}

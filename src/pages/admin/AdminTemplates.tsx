@@ -244,7 +244,7 @@ export default function AdminTemplates() {
                 </div>
                 <div className="flex items-end">
                   <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.tiff" className="hidden" onChange={handleUpload} />
-                  <Button onClick={() => fileInputRef.current?.click()} disabled={uploading} className="bg-gradient-primary text-white hover:opacity-90">
+                  <Button onClick={() => fileInputRef.current?.click()} disabled={uploading} className="">
                     {uploading ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />}
                     Upload
                   </Button>

@@ -519,7 +519,7 @@ export default function RonSession() {
                     Click the button below to join your RON session. You'll complete ID verification and KBA within the platform.
                   </p>
                   <a href={participantLink} target="_blank" rel="noopener noreferrer">
-                    <Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">
+                    <Button size="lg" className="">
                       <ExternalLink className="mr-2 h-5 w-5" /> Join RON Session
                     </Button>
                   </a>
@@ -602,7 +602,7 @@ export default function RonSession() {
                         onChange={(e) => setManualLink(e.target.value)}
                         className="flex-1"
                       />
-                      <Button onClick={saveManualLink} disabled={saving || !manualLink.trim()} className="bg-gradient-primary text-white hover:opacity-90">
+                      <Button onClick={saveManualLink} disabled={saving || !manualLink.trim()} className="">
                         {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Link2 className="mr-2 h-4 w-4" />}
                         Save Link
                       </Button>
@@ -625,7 +625,7 @@ export default function RonSession() {
                           Upload a document to SignNow to begin the signing process. The document will be stored in SignNow and you can then send a signing invite to the client.
                         </p>
                         <label>
-                          <Button disabled={uploadingDoc} className="bg-gradient-primary text-white hover:opacity-90" asChild>
+                          <Button disabled={uploadingDoc} className="" asChild>
                             <span>
                               {uploadingDoc ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
                               Upload Document to SignNow
@@ -803,7 +803,7 @@ export default function RonSession() {
                 </h3>
                 <div className="mb-3 flex flex-wrap gap-1">
                   {(Object.keys(oathScripts) as (keyof typeof oathScripts)[]).filter((k) => oathScripts[k]).map((key) => (
-                    <Button key={key} size="sm" variant={oathType === key ? "default" : "outline"} className={`text-xs ${oathType === key ? "bg-gradient-primary text-white" : ""}`} onClick={() => { setOathType(key); setOathAdministered(false); }}>
+                    <Button key={key} size="sm" variant={oathType === key ? "default" : "outline"} className={`text-xs ${oathType === key ? "bg-primary text-primary-foreground" : ""}`} onClick={() => { setOathType(key); setOathAdministered(false); }}>
                       {key}
                     </Button>
                   ))}
@@ -815,7 +815,7 @@ export default function RonSession() {
                   </div>
                 )}
                 {!oathAdministered ? (
-                  <Button size="sm" className="w-full bg-gradient-primary text-white hover:opacity-90" onClick={administerOath}>Mark Oath Administered</Button>
+                  <Button size="sm" className="w-full " onClick={administerOath}>Mark Oath Administered</Button>
                 ) : (
                   <div className="rounded-lg bg-emerald-50 dark:bg-emerald-900/20 p-2 text-center">
                     <p className="flex items-center justify-center gap-1 text-xs text-emerald-700 dark:text-emerald-300">
@@ -837,7 +837,7 @@ export default function RonSession() {
                 </div>
                 {isListening && <Badge variant="destructive" className="mb-2 text-xs animate-pulse">● Recording</Badge>}
                 <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Type or dictate session notes..." rows={6} className="text-sm" />
-                <Button size="sm" className="mt-3 w-full bg-gradient-primary text-white hover:opacity-90" onClick={saveSessionData} disabled={saving}>
+                <Button size="sm" className="mt-3 w-full " onClick={saveSessionData} disabled={saving}>
                   {saving ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Save className="mr-1 h-3 w-3" />} Save Session Data
                 </Button>
               </CardContent>

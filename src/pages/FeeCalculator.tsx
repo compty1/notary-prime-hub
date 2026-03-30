@@ -230,7 +230,7 @@ export default function FeeCalculator() {
                     </div>
                     <p className="mt-3 text-xs text-muted-foreground">* Estimates only. Final pricing may vary based on document complexity and specific requirements.</p>
                     <Link to={bookingUrl} className="mt-4 block">
-                      <Button className="w-full bg-gradient-primary text-white hover:opacity-90">Book Appointment <ChevronRight className="ml-1 h-4 w-4" /></Button>
+                      <Button className="w-full ">Book Appointment <ChevronRight className="ml-1 h-4 w-4" /></Button>
                     </Link>
                   </>
                 )}

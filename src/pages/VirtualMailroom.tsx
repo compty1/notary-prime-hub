@@ -80,7 +80,7 @@ export default function VirtualMailroom() {
           <div className="flex items-center gap-3 mb-2">
             <Inbox className="h-6 w-6 text-primary" />
             <h1 className="font-sans text-2xl font-bold">Your Mailroom</h1>
-            {newCount > 0 && <Badge className="bg-gradient-primary text-white">{newCount} new</Badge>}
+            {newCount > 0 && <Badge className="">{newCount} new</Badge>}
           </div>
           <p className="text-sm text-muted-foreground">View scanned mail, forward items, and manage your correspondence.</p>
         </motion.div>

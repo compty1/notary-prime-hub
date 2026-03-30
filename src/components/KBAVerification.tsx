@@ -129,7 +129,7 @@ export default function KBAVerification({ signerName, onComplete, onCancel }: KB
               <Input type="date" value={signerDOB} onChange={(e) => setSignerDOB(e.target.value)} />
             </div>
             <div className="flex gap-2">
-              <Button onClick={startKBA} disabled={!signerSSNLast4 || !signerDOB} className="bg-gradient-primary text-white hover:opacity-90">
+              <Button onClick={startKBA} disabled={!signerSSNLast4 || !signerDOB} className="">
                 Generate KBA Questions
               </Button>
               <Button variant="outline" onClick={onCancel}>Cancel</Button>
@@ -161,7 +161,7 @@ export default function KBAVerification({ signerName, onComplete, onCancel }: KB
               </div>
             ))}
             <div className="flex gap-2">
-              <Button onClick={submitAnswers} disabled={Object.keys(answers).length < PLACEHOLDER_QUESTIONS.length} className="bg-gradient-primary text-white hover:opacity-90">
+              <Button onClick={submitAnswers} disabled={Object.keys(answers).length < PLACEHOLDER_QUESTIONS.length} className="">
                 Submit Answers
               </Button>
               <Button variant="outline" onClick={onCancel}>Cancel</Button>
@@ -184,7 +184,7 @@ export default function KBAVerification({ signerName, onComplete, onCancel }: KB
                 <p className="text-sm text-muted-foreground">Identity verification unsuccessful. The signer did not meet the authentication threshold.</p>
               </>
             )}
-            <Button onClick={() => onComplete(result!)} className="bg-gradient-primary text-white hover:opacity-90">
+            <Button onClick={() => onComplete(result!)} className="">
               Continue
             </Button>
           </div>

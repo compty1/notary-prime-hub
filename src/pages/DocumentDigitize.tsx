@@ -197,7 +197,7 @@ export default function DocumentDigitize() {
           ].map((s, i) => (
             <div key={s.key} className="flex items-center gap-2">
               <div className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                step === s.key ? "bg-gradient-primary text-white" :
+                step === s.key ? "bg-primary text-primary-foreground" :
                 ["processing", "edit", "done"].indexOf(step) > ["upload", "processing", "edit"].indexOf(s.key) ? "bg-primary/20 text-primary" :
                 "bg-muted text-muted-foreground"
               }`}>
@@ -245,7 +245,7 @@ export default function DocumentDigitize() {
                         <span className="text-muted-foreground">{(f.size / 1024).toFixed(0)} KB</span>
                       </div>
                     ))}
-                    <Button onClick={processFiles} className="mt-4 w-full bg-gradient-primary text-white hover:opacity-90">
+                    <Button onClick={processFiles} className="mt-4 w-full ">
                       <Eye className="mr-2 h-4 w-4" /> Digitize {files.length} Document{files.length > 1 ? "s" : ""}
                     </Button>
                   </div>
@@ -293,7 +293,7 @@ export default function DocumentDigitize() {
                     key={i}
                     size="sm"
                     variant={i === activeDocIndex ? "default" : "outline"}
-                    className={i === activeDocIndex ? "bg-gradient-primary text-white" : ""}
+                    className={i === activeDocIndex ? "bg-primary text-primary-foreground" : ""}
                     onClick={() => switchDoc(i)}
                   >
                     <FileText className="mr-1 h-3 w-3" /> {doc.fileName}
@@ -343,7 +343,7 @@ export default function DocumentDigitize() {
 
                 {/* Export actions */}
                 <div className="mt-4 flex flex-wrap gap-3">
-                  <Button onClick={handleSaveToVault} disabled={saving} className="bg-gradient-primary text-white hover:opacity-90">
+                  <Button onClick={handleSaveToVault} disabled={saving} className="">
                     {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FolderOpen className="mr-2 h-4 w-4" />}
                     Save to Vault
                   </Button>

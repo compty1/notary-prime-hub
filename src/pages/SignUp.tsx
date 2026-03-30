@@ -89,7 +89,7 @@ export default function SignUp() {
             <p className="text-sm text-muted-foreground mb-2">Click the link in the email to verify your account, then sign in.</p>
             <p className="text-xs text-muted-foreground mb-6">Don't see it? Check your spam or junk folder.</p>
             <Link to="/login">
-              <Button className="bg-gradient-primary text-white hover:opacity-90">Go to Sign In</Button>
+              <Button className="">Go to Sign In</Button>
             </Link>
           </CardContent>
         </Card>
@@ -152,7 +152,7 @@ export default function SignUp() {
                 I agree to the <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link> and <Link to="/terms" className="text-primary hover:underline">Privacy Policy</Link>
               </Label>
             </div>
-            <Button type="submit" className="w-full bg-gradient-primary text-white hover:opacity-90" disabled={submitting || !acceptTerms}>
+            <Button type="submit" className="w-full " disabled={submitting || !acceptTerms}>
               {submitting ? "Creating account..." : "Create Account"}
             </Button>
             <div className="relative my-4">

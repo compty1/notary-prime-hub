@@ -338,7 +338,7 @@ export default function AdminClients() {
                       <Label className="text-xs">Admin Notes</Label>
                       <Textarea value={adminNotes} onChange={(e) => setAdminNotes(e.target.value)} rows={3} placeholder="Internal notes..." />
                     </div>
-                    <Button onClick={saveProfile} disabled={savingProfile} className="bg-gradient-primary text-white hover:opacity-90">
+                    <Button onClick={saveProfile} disabled={savingProfile} className="">
                       {savingProfile ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Save className="mr-1 h-3 w-3" />} Save All Changes
                     </Button>
                   </div>
@@ -361,7 +361,7 @@ export default function AdminClients() {
                       <Label className="text-sm font-semibold">Admin Notes (internal)</Label>
                       <Textarea value={adminNotes} onChange={(e) => setAdminNotes(e.target.value)} rows={3} placeholder="Preferences, history, special instructions..." className="mt-1" />
                       <div className="flex gap-2 mt-2">
-                        <Button size="sm" onClick={saveAdminNotes} disabled={savingNotes} className="bg-gradient-primary text-white hover:opacity-90">
+                        <Button size="sm" onClick={saveAdminNotes} disabled={savingNotes} className="">
                           {savingNotes ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Save className="mr-1 h-3 w-3" />} Save Notes
                         </Button>
                         {selectedClient.email && (
@@ -424,7 +424,7 @@ export default function AdminClients() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
-            <Button onClick={createProfile} disabled={creating || (!createForm.full_name.trim() && !createForm.email.trim())} className="bg-gradient-primary text-white hover:opacity-90">
+            <Button onClick={createProfile} disabled={creating || (!createForm.full_name.trim() && !createForm.email.trim())} className="">
               {creating ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <UserPlus className="mr-1 h-4 w-4" />} Create
             </Button>
           </DialogFooter>
@@ -446,7 +446,7 @@ export default function AdminClients() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setMessageClient(null)}>Cancel</Button>
-            <Button onClick={sendClientMessage} disabled={sendingMessage || !messageBody.trim()} className="bg-gradient-primary text-white hover:opacity-90">
+            <Button onClick={sendClientMessage} disabled={sendingMessage || !messageBody.trim()} className="">
               {sendingMessage ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Send className="mr-1 h-4 w-4" />} Send
             </Button>
           </DialogFooter>

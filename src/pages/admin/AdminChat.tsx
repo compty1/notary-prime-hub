@@ -133,7 +133,7 @@ export default function AdminChat() {
                          <p className="text-sm font-medium truncate">{name}</p>
                          {lastMsg && <p className="text-xs text-muted-foreground truncate">{lastMsg.message}</p>}
                        </div>
-                       {unread > 0 && <Badge className="bg-gradient-primary text-white text-xs">{unread}</Badge>}
+                       {unread > 0 && <Badge className="bg-primary text-primary-foreground text-xs">{unread}</Badge>}
                      </div>
                   );
                 })
@@ -153,7 +153,7 @@ export default function AdminChat() {
           <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3" style={{ maxHeight: "450px" }}>
             {currentMessages.map((msg) => (
               <div key={msg.id} className={`flex ${msg.is_admin ? "justify-end" : "justify-start"}`}>
-                <div className={`max-w-[70%] rounded-lg px-3 py-2 text-sm ${msg.is_admin ? "bg-gradient-primary text-white" : "bg-muted text-foreground"}`}>
+                <div className={`max-w-[70%] rounded-lg px-3 py-2 text-sm ${msg.is_admin ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}>
                   <div className="flex items-center gap-1 mb-1">
                     {msg.is_admin ? <Shield className="h-3 w-3" /> : <User className="h-3 w-3" />}
                     <span className="text-xs opacity-70">{new Date(msg.created_at).toLocaleTimeString()}</span>
@@ -166,7 +166,7 @@ export default function AdminChat() {
           {selectedUser && (
             <div className="border-t p-3 flex gap-2">
               <Input value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Type a reply..." maxLength={2000} onKeyDown={(e) => e.key === "Enter" && sendMessage()} />
-              <Button size="sm" onClick={sendMessage} disabled={sending} className="bg-gradient-primary text-white hover:opacity-90">
+              <Button size="sm" onClick={sendMessage} disabled={sending} className="">
                 {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               </Button>
             </div>

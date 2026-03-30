@@ -94,7 +94,7 @@ export default function SubscriptionPlans() {
               <Card className={`h-full ${plan.highlight ? "border-2 border-accent shadow-lg relative" : "border-border/50"}`}>
                 {plan.highlight && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-gradient-primary text-white">Most Popular</Badge>
+                    <Badge className="">Most Popular</Badge>
                   </div>
                 )}
                 <CardContent className="flex h-full flex-col p-6">
@@ -120,7 +120,7 @@ export default function SubscriptionPlans() {
                     ))}
                   </ul>
                   <Link to={plan.price === "Custom" ? "/#contact" : "/signup"}>
-                    <Button className={`w-full ${plan.highlight ? "bg-gradient-primary text-white hover:opacity-90" : ""}`} variant={plan.highlight ? "default" : "outline"} size="lg">
+                    <Button className={`w-full ${plan.highlight ? "" : ""}`} variant={plan.highlight ? "default" : "outline"} size="lg">
                       {plan.cta}
                     </Button>
                   </Link>
@@ -150,7 +150,7 @@ export default function SubscriptionPlans() {
             ))}
           </div>
           <div className="mt-8 text-center">
-            <Link to="/join"><Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">Apply for Partnership</Button></Link>
+            <Link to="/join"><Button size="lg" className="">Apply for Partnership</Button></Link>
           </div>
         </div>
       </section>

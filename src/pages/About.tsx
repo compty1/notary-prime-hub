@@ -47,37 +47,36 @@ export default function About() {
   return (
     <PageShell>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-hero py-16 md:py-24">
-        <div className="absolute inset-0 gradient-mesh" />
+      <section className="relative overflow-hidden border-b border-border bg-card py-16 md:py-24">
         <div className="container relative mx-auto max-w-4xl px-4">
           <motion.div initial="hidden" animate="visible" className="flex flex-col md:flex-row items-center gap-8">
             <motion.div variants={fadeUp} custom={0} className="flex-shrink-0">
-              <div className="flex h-40 w-40 items-center justify-center rounded-2xl bg-primary/20 border border-primary/30">
-                <span className="font-sans text-5xl font-bold text-primary">N</span>
+              <div className="flex h-40 w-40 items-center justify-center rounded-2xl bg-foreground">
+                <span className="font-sans text-5xl font-bold text-background">N</span>
               </div>
             </motion.div>
             <motion.div variants={fadeUp} custom={1}>
-              <Badge className="mb-3 border-primary/20 bg-primary/10 text-primary dark:text-primary-foreground">
+              <Badge className="mb-3 border-primary/20 bg-primary/10 text-primary">
                 <Award className="mr-1 h-3 w-3" /> NNA Certified Notary Signing Agent
               </Badge>
-              <h1 className="mb-3 font-sans text-4xl font-bold text-white md:text-5xl">
+              <h1 className="mb-3 font-sans text-4xl font-bold text-foreground md:text-5xl">
                 Notar
               </h1>
-              <p className="mb-2 text-xl text-white/80">
+              <p className="mb-2 text-xl text-muted-foreground">
                 Professional Notary & Document Services — Ohio
               </p>
-              <p className="text-white/50 max-w-xl">
+              <p className="text-muted-foreground/70 max-w-xl">
                 Notar is a team of Ohio-commissioned notaries led by Shane Goble, providing professional notarization, 
                 document management, and business services throughout Franklin County and the greater Columbus area.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <a href={`tel:${contactInfo.phone.replace(/\D/g, '')}`}>
-                  <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
+                  <Button variant="outline">
                     <Phone className="mr-2 h-4 w-4" /> {contactInfo.phone}
                   </Button>
                 </a>
                 <a href={`mailto:${contactInfo.email}`}>
-                  <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
+                  <Button variant="outline">
                     <Mail className="mr-2 h-4 w-4" /> {contactInfo.email}
                   </Button>
                 </a>
@@ -183,7 +182,7 @@ export default function About() {
       </section>
 
       {/* Response time + CTA */}
-      <section className="bg-muted/30 py-16">
+      <section className="border-t border-border bg-card py-16">
         <div className="container mx-auto max-w-2xl px-4 text-center">
           <h2 className="mb-4 font-sans text-2xl font-bold text-foreground">Get in Touch</h2>
           <p className="mb-2 text-muted-foreground">
@@ -192,7 +191,7 @@ export default function About() {
           <p className="mb-6 text-xs text-muted-foreground">Mon–Wed 10 AM – 7 PM EST</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link to="/book">
-              <Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">
+              <Button size="lg" className="">
                 Book Appointment <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             </Link>

@@ -245,7 +245,7 @@ export default function AppointmentConfirmation() {
             </Button>
           </Link>
           <Link to="/portal">
-            <Button className="w-full bg-gradient-primary text-white hover:opacity-90 sm:w-auto">
+            <Button className="w-full  sm:w-auto">
               Go to Portal
             </Button>
           </Link>
@@ -282,7 +282,7 @@ export default function AppointmentConfirmation() {
             </p>
             <p className="text-xs text-muted-foreground mb-3">Your consultation will take place via Zoom. Click below to join when it's time.</p>
             <a href={zoomLink} target="_blank" rel="noopener noreferrer">
-              <Button size="sm" className="bg-gradient-primary text-white hover:opacity-90 gap-2">
+              <Button size="sm" className=" gap-2">
                 <Video className="h-4 w-4" /> Join Zoom Meeting
               </Button>
             </a>

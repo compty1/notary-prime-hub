@@ -457,7 +457,7 @@ export default function NotaryGuide() {
           <h2 className="mb-4 font-sans text-2xl font-bold text-foreground">Ready to Get Started?</h2>
           <p className="mb-6 text-muted-foreground">Book your notarization appointment in minutes</p>
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link to="/book"><Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">Book Appointment <ChevronRight className="ml-1 h-4 w-4" /></Button></Link>
+            <Link to="/book"><Button size="lg" className="">Book Appointment <ChevronRight className="ml-1 h-4 w-4" /></Button></Link>
             <Link to="/ron-info"><Button size="lg" variant="outline">Learn About RON <ChevronRight className="ml-1 h-4 w-4" /></Button></Link>
           </div>
         </div>

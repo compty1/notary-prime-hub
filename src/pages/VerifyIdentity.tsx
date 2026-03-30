@@ -170,7 +170,7 @@ export default function VerifyIdentity() {
                   )}
 
                   <div className="text-center space-y-2">
-                    <Link to="/book"><Button className="bg-gradient-primary text-white hover:opacity-90">Book a Notarization</Button></Link>
+                    <Link to="/book"><Button className="">Book a Notarization</Button></Link>
                     <p className="text-xs text-muted-foreground">Your ID data will be pre-filled during booking.</p>
                   </div>
                 </motion.div>

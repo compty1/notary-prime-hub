@@ -243,7 +243,7 @@ export default function ServicePreQualifier({ category, serviceName, onComplete,
           <Button variant="ghost" onClick={step > 0 ? () => setStep(s => s - 1) : onCancel} size="sm">
             <ChevronLeft className="mr-1 h-3 w-3" /> {step > 0 ? "Back" : "Skip"}
           </Button>
-          <Button onClick={() => isLastStep ? onComplete(answers) : setStep(s => s + 1)} disabled={!canProceed} size="sm" className="bg-gradient-primary text-white hover:opacity-90">
+          <Button onClick={() => isLastStep ? onComplete(answers) : setStep(s => s + 1)} disabled={!canProceed} size="sm" className="">
             {isLastStep ? "Continue to Booking" : "Next"} <ChevronRight className="ml-1 h-3 w-3" />
           </Button>
         </div>

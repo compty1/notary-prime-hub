@@ -97,7 +97,7 @@ export default function ResetPassword() {
             {success ? (
               <div className="flex flex-col items-center gap-4 py-4">
                 <CheckCircle className="h-12 w-12 text-emerald-500" />
-                <Link to="/login"><Button className="bg-gradient-primary text-white">Go to Sign In</Button></Link>
+                <Link to="/login"><Button className="">Go to Sign In</Button></Link>
               </div>
             ) : requestSent ? (
               <div className="flex flex-col items-center gap-4 py-4 text-center">
@@ -125,7 +125,7 @@ export default function ResetPassword() {
                     </button>
                   </div>
                 </div>
-                <Button type="submit" className="w-full bg-gradient-primary text-white hover:opacity-90" disabled={submitting}>
+                <Button type="submit" className="w-full " disabled={submitting}>
                   {submitting ? "Updating..." : "Update Password"}
                 </Button>
               </form>
@@ -135,7 +135,7 @@ export default function ResetPassword() {
                   <Label htmlFor="email">Email Address</Label>
                   <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" />
                 </div>
-                <Button type="submit" className="w-full bg-gradient-primary text-white hover:opacity-90" disabled={submitting}>
+                <Button type="submit" className="w-full " disabled={submitting}>
                   {submitting ? "Sending..." : "Send Reset Link"}
                 </Button>
                 <p className="text-center text-sm text-muted-foreground">

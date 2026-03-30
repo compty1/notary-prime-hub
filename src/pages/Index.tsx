@@ -255,30 +255,33 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Trust Bar */}
-      <section className="border-b border-border/40 bg-muted/50 py-5">
-        <div className="container mx-auto flex flex-wrap items-center justify-center gap-8 px-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-primary" />
-            <span>Ohio Revised Code §147 Compliant</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle className="h-4 w-4 text-primary" />
-            <span>Franklin County Commissioned</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-primary" />
-            <span>$<AnimatedCounter value={25000} /> Surety Bond</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-primary" />
-            <span>Same-Day Appointments</span>
+      {/* Trust Bar — Dealflow partner-strip style */}
+      <section className="border-y border-border bg-card py-6">
+        <div className="container mx-auto px-4">
+          <p className="mb-4 text-center text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Trusted & Compliant</p>
+          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Shield className="h-4 w-4 text-foreground/40" />
+              <span>ORC §147 Compliant</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-foreground/40" />
+              <span>Franklin County Commissioned</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Shield className="h-4 w-4 text-foreground/40" />
+              <span>$25,000 Surety Bond</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-foreground/40" />
+              <span>Same-Day Appointments</span>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Beyond Notarization Banner */}
-      <section className="bg-primary/5 border-b border-primary/10 py-4">
+      <section className="border-b border-border py-4">
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm text-muted-foreground">
             <span className="font-medium text-foreground">Beyond notarization:</span> document digitization, secure cloud storage, form preparation, business services, and more.{" "}
@@ -330,7 +333,7 @@ export default function Index() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="bg-muted/30 py-20">
+      <section id="how-it-works" className="border-t border-border bg-card py-20">
         <div className="container mx-auto px-4">
           <motion.div
             initial="hidden"
@@ -338,6 +341,7 @@ export default function Index() {
             viewport={{ once: true, margin: "-50px" }}
             className="mx-auto mb-16 max-w-2xl text-center">
             
+            <motion.p variants={fadeUp} custom={0} className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Simple Process</motion.p>
             <motion.h2 variants={fadeUp} custom={0} className="mb-4 font-sans text-3xl font-bold text-foreground md:text-4xl">
               How It Works
             </motion.h2>
@@ -353,14 +357,14 @@ export default function Index() {
             
             {steps.map((step, i) =>
             <motion.div key={step.num} variants={scaleReveal} custom={i} className="relative text-center">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-primary shadow-lg">
-                  <span className="font-mono text-lg font-bold text-white">{step.num}</span>
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-border bg-card">
+                  <span className="font-mono text-lg font-bold text-foreground">{step.num}</span>
                 </div>
                 <h3 className="mb-2 font-sans text-xl font-semibold text-foreground">{step.title}</h3>
                 <p className="text-sm text-muted-foreground">{step.desc}</p>
                 {i < steps.length - 1 &&
-              <div className="absolute right-0 top-8 hidden w-full -translate-y-1/2 md:block">
-                    <ChevronRight className="absolute -right-4 h-5 w-5 text-primary/30" />
+              <div className="absolute right-0 top-7 hidden w-full -translate-y-1/2 md:block">
+                    <ChevronRight className="absolute -right-4 h-5 w-5 text-border" />
                   </div>
               }
               </motion.div>
@@ -368,7 +372,7 @@ export default function Index() {
           </motion.div>
           <div className="mt-12 text-center">
             <Link to="/book">
-              <Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">
+              <Button size="lg" className="rounded-full px-8">
                 Get Started <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
             </Link>
@@ -379,16 +383,16 @@ export default function Index() {
       {/* Testimonials */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          <motion.h2
+          <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeUp}
             custom={0}
-            className="mb-12 text-center font-sans text-3xl font-bold text-foreground md:text-4xl">
-            
-            What Clients Say
-          </motion.h2>
+            className="mx-auto mb-12 max-w-2xl text-center">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Testimonials</p>
+            <h2 className="font-sans text-3xl font-bold text-foreground md:text-4xl">What Clients Say</h2>
+          </motion.div>
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -399,13 +403,12 @@ export default function Index() {
             <motion.div key={t.name} variants={scaleReveal} custom={i}>
                 <Card className="h-full">
                   <CardContent className="p-6">
-                    <div className="mb-4 text-4xl text-primary/20 font-sans">"</div>
                     <div className="mb-3 flex gap-0.5">
                       {Array.from({ length: t.rating }).map((_, j) =>
                     <Star key={j} className="h-4 w-4 fill-primary text-primary" />
                     )}
                     </div>
-                    <p className="mb-4 text-sm text-muted-foreground italic">{t.text}</p>
+                    <p className="mb-4 text-sm text-muted-foreground">{t.text}</p>
                     <p className="text-sm font-semibold text-foreground">{t.name}</p>
                   </CardContent>
                 </Card>
@@ -416,18 +419,12 @@ export default function Index() {
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="bg-muted/30 py-20">
+      <section id="faq" className="border-t border-border bg-card py-20">
         <div className="container mx-auto px-4">
-          <motion.h2
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-            custom={0}
-            className="mb-12 text-center font-sans text-3xl font-bold text-foreground md:text-4xl">
-            
-            Frequently Asked Questions
-          </motion.h2>
+          <div className="mx-auto mb-12 max-w-2xl text-center">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">FAQ</p>
+            <h2 className="font-sans text-3xl font-bold text-foreground md:text-4xl">Frequently Asked Questions</h2>
+          </div>
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -438,7 +435,7 @@ export default function Index() {
             
             <Accordion type="single" collapsible className="space-y-2">
               {faqs.map((faq, i) =>
-              <AccordionItem key={i} value={`faq-${i}`} className="rounded-xl border border-border/50 bg-card px-4">
+              <AccordionItem key={i} value={`faq-${i}`} className="rounded-xl border border-border bg-background px-4">
                   <AccordionTrigger className="text-left text-sm font-medium">{faq.q}</AccordionTrigger>
                   <AccordionContent className="text-sm text-muted-foreground">{faq.a}</AccordionContent>
                 </AccordionItem>
@@ -551,7 +548,7 @@ export default function Index() {
                       required />
                     
                   </div>
-                  <Button type="submit" className="w-full bg-gradient-primary text-white hover:opacity-90" disabled={submitting}>
+                  <Button type="submit" className="w-full" disabled={submitting}>
                     {submitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending...</> : <><Send className="mr-2 h-4 w-4" /> Send Message</>}
                   </Button>
                 </form>
@@ -562,7 +559,7 @@ export default function Index() {
       </section>
 
       {/* Industry Insights */}
-      <section className="bg-muted/30 py-16">
+      <section className="border-t border-border bg-card py-16">
         <div className="container mx-auto px-4">
           <h2 className="mb-8 text-center font-sans text-2xl font-bold text-foreground">Industry Insights</h2>
           <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-2">
