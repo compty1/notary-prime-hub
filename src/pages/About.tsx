@@ -30,9 +30,9 @@ const serviceAreas = [
 
 export default function About() {
   const [contactInfo, setContactInfo] = useState({ phone: "(614) 300-6890", email: "contact@notardex.com" });
+  usePageTitle("About");
 
   useEffect(() => {
-    document.title = "About Notar — Ohio Notary & Document Services";
     supabase.from("platform_settings").select("setting_key, setting_value")
       .in("setting_key", ["notary_phone", "notary_email"])
       .then(({ data }) => {
@@ -43,7 +43,6 @@ export default function About() {
           if (email) setContactInfo(prev => ({ ...prev, email }));
         }
       });
-    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
   }, []);
 
   return (
