@@ -82,8 +82,8 @@ export default function SignUp() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
         <Card className="relative z-10 w-full max-w-md">
           <CardContent className="flex flex-col items-center py-12 text-center">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10">
-              <CheckCircle className="h-8 w-8 text-emerald-500" />
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
+              <CheckCircle className="h-8 w-8 text-primary" />
             </div>
             <h2 className="font-sans text-2xl font-bold text-foreground mb-2">Check Your Email</h2>
             <p className="text-muted-foreground mb-2">We sent a verification link to</p>
