@@ -144,7 +144,7 @@ export default function RonInfo() {
               RON: The Future of Notarization
             </motion.h1>
             <motion.p variants={fadeUp} custom={2} className="mx-auto max-w-2xl text-primary-foreground/70">
-              More secure than traditional notarization, accepted in all 50 states, and available from anywhere. Learn why RON is the smarter choice. Notar uses <strong>OneNotary</strong> as our certified RON platform.
+              More secure than traditional notarization, accepted in all 50 states, and available from anywhere. Learn why RON is the smarter choice. Notar uses <strong>SignNow</strong> as our certified RON platform.
             </motion.p>
           </motion.div>
         </div>
