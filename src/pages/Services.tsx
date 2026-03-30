@@ -12,6 +12,8 @@ import { motion } from "framer-motion";
 import { ChevronRight, Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home, Loader2, Search, Sparkles, ArrowRight, Headphones, PenTool, BarChart3, MessageSquare, Wrench, Eye } from "lucide-react";
 import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { ServicesLoadingSkeleton } from "@/components/ServicesLoadingSkeleton";
 import { fadeUp, scaleReveal } from "@/lib/animations";
 
 const iconMap: Record<string, any> = {
