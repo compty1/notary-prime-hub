@@ -8,6 +8,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { lazy, Suspense } from "react";
 import ScrollToTop from "@/components/ScrollToTop";
+import { CommandPalette } from "@/components/CommandPalette";
 import { AnimatePresence } from "framer-motion";
 
 // Eager load critical pages
