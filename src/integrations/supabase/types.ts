@@ -691,6 +691,8 @@ export type Database = {
           started_at: string | null
           status: Database["public"]["Enums"]["appointment_status"]
           updated_at: string
+          webhook_events_registered: number | null
+          webhook_status: string | null
         }
         Insert: {
           appointment_id: string
@@ -709,6 +711,8 @@ export type Database = {
           started_at?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
           updated_at?: string
+          webhook_events_registered?: number | null
+          webhook_status?: string | null
         }
         Update: {
           appointment_id?: string
@@ -727,6 +731,8 @@ export type Database = {
           started_at?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
           updated_at?: string
+          webhook_events_registered?: number | null
+          webhook_status?: string | null
         }
         Relationships: [
           {

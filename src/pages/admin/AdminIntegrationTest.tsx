@@ -7,9 +7,12 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getEdgeFunctionHeaders } from "@/lib/edgeFunctionAuth";
 import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from "@/components/ui/table";
+import {
   Wifi, WifiOff, CheckCircle, XCircle, Loader2, Play, ArrowRight,
   Monitor, CreditCard, UserPlus, FileText, Shield, Clock, Video,
-  Database, HardDrive, Mail
+  Database, HardDrive, Mail, Webhook, RefreshCw, AlertTriangle,
 } from "lucide-react";
 
 type TestStatus = "idle" | "running" | "success" | "error";
@@ -18,6 +21,16 @@ interface StepResult {
   status: TestStatus;
   message: string;
   responseTime?: number;
+}
+
+interface WebhookSession {
+  id: string;
+  appointment_id: string;
+  signnow_document_id: string;
+  webhook_status: string;
+  webhook_events_registered: number;
+  status: string;
+  created_at: string;
 }
 
 const flowSteps = {
@@ -47,6 +60,19 @@ const flowSteps = {
   ],
 };
 
+const webhookStatusBadge = (status: string) => {
+  switch (status) {
+    case "active":
+      return <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20"><CheckCircle className="h-3 w-3 mr-1" />Active</Badge>;
+    case "partial":
+      return <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20"><AlertTriangle className="h-3 w-3 mr-1" />Partial</Badge>;
+    case "failed":
+      return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" />Failed</Badge>;
+    default:
+      return <Badge variant="outline"><Clock className="h-3 w-3 mr-1" />Pending</Badge>;
+  }
+};
+
 export default function AdminIntegrationTest() {
   const { toast } = useToast();
   const [apiTest, setApiTest] = useState<StepResult>({ status: "idle", message: "" });
@@ -55,6 +81,8 @@ export default function AdminIntegrationTest() {
   const [dbTest, setDbTest] = useState<StepResult>({ status: "idle", message: "" });
   const [storageTest, setStorageTest] = useState<StepResult>({ status: "idle", message: "" });
   const [emailTest, setEmailTest] = useState<StepResult>({ status: "idle", message: "" });
+  const [webhookSessions, setWebhookSessions] = useState<WebhookSession[]>([]);
+  const [webhookLoading, setWebhookLoading] = useState(false);
 
   const testSignNowConnection = async () => {
     setApiTest({ status: "running", message: "Pinging SignNow API..." });
@@ -177,6 +205,28 @@ export default function AdminIntegrationTest() {
     }
   };
 
+  const loadWebhookStatus = async () => {
+    setWebhookLoading(true);
+    try {
+      const headers = await getEdgeFunctionHeaders();
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/signnow`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ action: "check_webhooks" }),
+      });
+      const data = await resp.json();
+      if (resp.ok && data.sessions) {
+        setWebhookSessions(data.sessions);
+      } else {
+        toast({ title: "Error", description: data.error || "Failed to load webhook status", variant: "destructive" });
+      }
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
+    } finally {
+      setWebhookLoading(false);
+    }
+  };
+
   const StatusIcon = ({ status }: { status: TestStatus }) => {
     if (status === "running") return <Loader2 className="h-4 w-4 animate-spin text-primary" />;
     if (status === "success") return <CheckCircle className="h-4 w-4 text-emerald-500" />;
@@ -216,16 +266,23 @@ export default function AdminIntegrationTest() {
     </Card>
   );
 
+  const activeCount = webhookSessions.filter(s => s.webhook_status === "active").length;
+  const partialCount = webhookSessions.filter(s => s.webhook_status === "partial").length;
+  const failedCount = webhookSessions.filter(s => s.webhook_status === "failed").length;
+
   return (
     <div>
       <div className="mb-6">
         <h1 className="font-sans text-2xl font-bold text-foreground">Integration Testing & Process Flows</h1>
-        <p className="text-sm text-muted-foreground">Test API connections, database, storage, and view integration process documentation</p>
+        <p className="text-sm text-muted-foreground">Test API connections, database, storage, webhook status, and view integration process documentation</p>
       </div>
 
       <Tabs defaultValue="connections" className="space-y-6">
         <TabsList>
           <TabsTrigger value="connections">Connection Tests</TabsTrigger>
+          <TabsTrigger value="webhooks" className="flex items-center gap-1.5">
+            <Webhook className="h-3.5 w-3.5" /> Webhooks
+          </TabsTrigger>
           <TabsTrigger value="flows">Process Flows</TabsTrigger>
         </TabsList>
 
@@ -253,6 +310,82 @@ export default function AdminIntegrationTest() {
           <TestCard title="SignNow Token" icon={Shield} result={tokenTest} onTest={testSignNowToken} description="Verifies the current SignNow API token is valid and shows time until expiration. Tokens expire after 30 days." />
           <TestCard title="Stripe Payment Gateway" icon={CreditCard} result={stripeTest} onTest={testStripeConnection} description="Verifies Stripe publishable key is configured and the get-stripe-config function responds." />
           <TestCard title="Email Function" icon={Mail} result={emailTest} onTest={testEmailFunction} description="Sends a dry-run request to the send-correspondence edge function to verify it's deployed and reachable." />
+        </TabsContent>
+
+        <TabsContent value="webhooks" className="space-y-4">
+          <Card className="border-border/50">
+            <CardHeader>
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <CardTitle className="font-sans text-lg flex items-center gap-2">
+                  <Webhook className="h-5 w-5 text-primary" /> SignNow Webhook Subscriptions
+                </CardTitle>
+                <Button onClick={loadWebhookStatus} disabled={webhookLoading} variant="outline" size="sm">
+                  {webhookLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+                  Load Status
+                </Button>
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                Webhook subscriptions are automatically registered when documents are uploaded to SignNow. Each document subscribes to 6 events (complete, update, delete, invite create/update/cancel) with exponential backoff retry.
+              </p>
+            </CardHeader>
+            <CardContent>
+              {webhookSessions.length > 0 && (
+                <div className="flex gap-4 mb-4 flex-wrap">
+                  <div className="flex items-center gap-1.5 text-sm">
+                    <CheckCircle className="h-4 w-4 text-emerald-500" />
+                    <span className="text-muted-foreground">{activeCount} Active</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-sm">
+                    <AlertTriangle className="h-4 w-4 text-amber-500" />
+                    <span className="text-muted-foreground">{partialCount} Partial</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-sm">
+                    <XCircle className="h-4 w-4 text-destructive" />
+                    <span className="text-muted-foreground">{failedCount} Failed</span>
+                  </div>
+                </div>
+              )}
+
+              {webhookSessions.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-8 text-center">
+                  {webhookLoading ? "Loading..." : "Click \"Load Status\" to fetch webhook subscription data for all SignNow documents."}
+                </p>
+              ) : (
+                <div className="rounded-md border overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Document ID</TableHead>
+                        <TableHead>Webhook Status</TableHead>
+                        <TableHead>Events</TableHead>
+                        <TableHead>Session Status</TableHead>
+                        <TableHead>Created</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {webhookSessions.map((session) => (
+                        <TableRow key={session.id}>
+                          <TableCell className="font-mono text-xs max-w-[160px] truncate" title={session.signnow_document_id}>
+                            {session.signnow_document_id?.slice(0, 12)}…
+                          </TableCell>
+                          <TableCell>{webhookStatusBadge(session.webhook_status)}</TableCell>
+                          <TableCell>
+                            <span className="text-sm">{session.webhook_events_registered}/6</span>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="text-xs capitalize">{session.status}</Badge>
+                          </TableCell>
+                          <TableCell className="text-xs text-muted-foreground">
+                            {new Date(session.created_at).toLocaleDateString()}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="flows" className="space-y-6">

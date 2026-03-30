@@ -44,7 +44,7 @@ const CancelInviteSchema = z.object({
 });
 
 const NoParamsSchema = z.object({
-  action: z.enum(["list_documents", "verify_token", "refresh_token"]),
+  action: z.enum(["list_documents", "verify_token", "refresh_token", "check_webhooks"]),
 });
 
 const WEBHOOK_CALLBACK = `${Deno.env.get("SUPABASE_URL")}/functions/v1/signnow-webhook`;
@@ -57,38 +57,87 @@ const WEBHOOK_EVENTS = [
   "invite.cancel",
 ];
 
-async function registerDocumentWebhooks(documentId: string, token: string) {
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit,
+  retries = 3,
+  baseDelay = 500
+): Promise<Response> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const resp = await fetch(url, options);
+      if (resp.ok || attempt === retries) return resp;
+      if (resp.status >= 500) {
+        const delay = baseDelay * Math.pow(2, attempt);
+        console.warn(`Retry ${attempt + 1}/${retries} for ${url} after ${delay}ms (status ${resp.status})`);
+        await new Promise((r) => setTimeout(r, delay));
+        continue;
+      }
+      return resp; // 4xx errors don't retry
+    } catch (e) {
+      if (attempt === retries) throw e;
+      const delay = baseDelay * Math.pow(2, attempt);
+      console.warn(`Retry ${attempt + 1}/${retries} for ${url} after ${delay}ms (network error)`);
+      await new Promise((r) => setTimeout(r, delay));
+    }
+  }
+  throw new Error("fetchWithRetry exhausted");
+}
+
+async function registerDocumentWebhooks(
+  documentId: string,
+  token: string,
+  serviceClient?: any
+): Promise<{ succeeded: number; total: number }> {
   const secret = Deno.env.get("SIGNNOW_WEBHOOK_SECRET");
   const results = await Promise.allSettled(
     WEBHOOK_EVENTS.map((event) =>
-      fetch(`${SIGNNOW_BASE}/api/v2/events`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          event,
-          entity_id: documentId,
-          action: "callback",
-          attributes: {
-            callback: WEBHOOK_CALLBACK,
-            use_tls_12: true,
-            ...(secret ? { secret_key: secret } : {}),
+      fetchWithRetry(
+        `${SIGNNOW_BASE}/api/v2/events`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
           },
-        }),
-      }).then(async (r) => {
+          body: JSON.stringify({
+            event,
+            entity_id: documentId,
+            action: "callback",
+            attributes: {
+              callback: WEBHOOK_CALLBACK,
+              use_tls_12: true,
+              ...(secret ? { secret_key: secret } : {}),
+            },
+          }),
+        },
+        2, // 2 retries per event
+        300
+      ).then(async (r) => {
         if (!r.ok) {
           const t = await r.text();
           console.error(`Webhook register ${event} failed ${r.status}: ${t}`);
+          throw new Error(`${event}: ${r.status}`);
         }
         return r;
       })
     )
   );
-  const ok = results.filter((r) => r.status === "fulfilled").length;
-  console.log(`Webhook registration: ${ok}/${WEBHOOK_EVENTS.length} succeeded for doc ${documentId}`);
+  const succeeded = results.filter((r) => r.status === "fulfilled").length;
+  const total = WEBHOOK_EVENTS.length;
+  console.log(`Webhook registration: ${succeeded}/${total} succeeded for doc ${documentId}`);
+
+  // Update webhook status in notarization_sessions if serviceClient provided
+  if (serviceClient) {
+    const status = succeeded === total ? "active" : succeeded > 0 ? "partial" : "failed";
+    await serviceClient
+      .from("notarization_sessions")
+      .update({ webhook_status: status, webhook_events_registered: succeeded })
+      .eq("signnow_document_id", documentId);
+  }
+
+  return { succeeded, total };
 }
 
 async function signnowFetch(path: string, options: RequestInit = {}) {
@@ -242,19 +291,20 @@ Deno.serve(async (req) => {
         const documentId = result.id;
 
         if (documentId) {
-          // Register per-document webhooks (non-blocking)
-          registerDocumentWebhooks(documentId, token).catch((e) =>
-            console.error("Webhook registration error:", e)
-          );
-
           if (appointment_id) {
             await serviceClient.from("notarization_sessions").upsert({
               appointment_id,
               signnow_document_id: documentId,
               session_type: "ron",
               status: "scheduled",
+              webhook_status: "pending",
             }, { onConflict: "appointment_id" });
           }
+
+          // Register per-document webhooks (awaited so we can track status)
+          registerDocumentWebhooks(documentId, token, serviceClient).catch((e) =>
+            console.error("Webhook registration error:", e)
+          );
         }
 
         return new Response(JSON.stringify(result), {
@@ -445,6 +495,19 @@ Deno.serve(async (req) => {
           token_type: tokenData.token_type,
           note: "Token refreshed. Update the SIGNNOW_API_TOKEN secret with the new token via your dashboard.",
         }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      case "check_webhooks": {
+        const { data: sessions } = await serviceClient
+          .from("notarization_sessions")
+          .select("id, appointment_id, signnow_document_id, webhook_status, webhook_events_registered, status, created_at")
+          .not("signnow_document_id", "is", null)
+          .order("created_at", { ascending: false })
+          .limit(50);
+
+        return new Response(JSON.stringify({ sessions: sessions || [] }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
