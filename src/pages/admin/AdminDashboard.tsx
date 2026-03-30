@@ -42,13 +42,13 @@ function AdminSidebar() {
   const visibleNav = adminNavItems.filter((item) => !item.adminOnly || isAdmin);
 
   return (
-    <Sidebar collapsible="icon" className="border-r-0">
+    <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <SidebarContent className="bg-sidebar">
         <div className="flex items-center gap-2 px-4 py-4">
-          <div className="flex h-8 w-8 items-center justify-center rounded bg-sidebar-primary">
-            <Shield className="h-4 w-4 text-sidebar-primary-foreground" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+            <Shield className="h-4 w-4 text-primary-foreground" />
           </div>
-          {!collapsed && <span className="font-sans text-sm font-bold text-sidebar-foreground">{isAdmin ? "Admin Panel" : "Notary Panel"}</span>}
+          {!collapsed && <span className="font-sans text-sm font-semibold text-sidebar-foreground">{isAdmin ? "Admin Panel" : "Notary Panel"}</span>}
         </div>
         <SidebarGroup>
           <SidebarGroupLabel className="text-sidebar-foreground/50">Navigation</SidebarGroupLabel>

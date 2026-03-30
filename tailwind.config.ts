@@ -14,8 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['"Inter"', 'system-ui', 'sans-serif'],
-        mono: ['"Fira Code"', 'monospace'],
+        sans: ['"Inter"', 'system-ui', '-apple-system', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -102,8 +101,8 @@ export default {
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
         "glow-pulse": {
-          "0%, 100%": { boxShadow: "0 0 20px -5px hsl(217 91% 60% / 0.3)" },
-          "50%": { boxShadow: "0 0 30px -5px hsl(217 91% 60% / 0.5)" },
+          "0%, 100%": { boxShadow: "0 0 15px -5px hsl(142 64% 34% / 0.2)" },
+          "50%": { boxShadow: "0 0 25px -5px hsl(142 64% 34% / 0.35)" },
         },
         "float": {
           "0%, 100%": { transform: "translateY(0px)" },

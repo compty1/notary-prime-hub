@@ -23,19 +23,16 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
         <div
           className={cn(
             s.box,
-            "relative flex items-center justify-center rounded-xl bg-gradient-primary overflow-hidden shadow-md"
+            "relative flex items-center justify-center rounded-lg bg-primary overflow-hidden"
           )}
-          style={{
-            boxShadow: "0 4px 14px rgba(37, 99, 235, 0.3)",
-          }}
         >
-          <span className={cn(s.letter, "font-extrabold text-white select-none")}>
+          <span className={cn(s.letter, "font-bold text-primary-foreground select-none")}>
             N
           </span>
         </div>
         {showText && (
           <div>
-            <span className="block text-lg font-extrabold tracking-tight text-foreground">
+            <span className="block text-lg font-semibold tracking-tight text-foreground">
               Notar
             </span>
             {subtitle && (

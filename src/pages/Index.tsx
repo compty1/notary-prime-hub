@@ -61,7 +61,7 @@ function AnimatedCounter({ value, suffix = "" }: {value: number;suffix?: string;
     return () => clearInterval(timer);
   }, [isInView, value]);
 
-  return <span ref={ref} aria-live="polite" className="font-mono font-bold">{count.toLocaleString()}{suffix}</span>;
+  return <span ref={ref} aria-live="polite" className="font-semibold tabular-nums">{count.toLocaleString()}{suffix}</span>;
 }
 
 export default function Index() {
@@ -175,8 +175,7 @@ export default function Index() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* Hero */}
       <section className="relative overflow-hidden bg-background py-24 md:py-36">
-        <div className="absolute inset-0 gradient-mesh" />
-        <div className="scanline" />
+        <div className="absolute inset-0 gradient-mesh opacity-50" />
         <div className="container relative mx-auto px-4">
           <motion.div
             initial="hidden"
@@ -210,7 +209,7 @@ export default function Index() {
                 onClick={() => setServiceType("in_person")}
                 className={`flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-medium transition-all duration-200 ${
                 serviceType === "in_person" ?
-                "bg-primary text-white shadow-lg glow-sm" :
+                "bg-primary text-primary-foreground shadow-sm" :
                 "text-muted-foreground hover:text-foreground"}`
                 }>
                 
@@ -220,7 +219,7 @@ export default function Index() {
                 onClick={() => setServiceType("ron")}
                 className={`flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-medium transition-all duration-200 ${
                 serviceType === "ron" ?
-                "bg-primary text-white shadow-lg glow-sm" :
+                "bg-primary text-primary-foreground shadow-sm" :
                 "text-muted-foreground hover:text-foreground"}`
                 }>
                 
@@ -242,9 +241,9 @@ export default function Index() {
 
             <motion.div variants={fadeUp} custom={5} className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link to={`/book?type=${serviceType}`}>
-                <Button size="lg" className="bg-gradient-primary text-white shadow-lg glow-primary animate-glow-pulse hover:opacity-90">
-                  Schedule Appointment <ArrowRight className="ml-1 h-4 w-4" />
-                </Button>
+                 <Button size="lg" className="shadow-sm">
+                   Schedule Appointment <ArrowRight className="ml-1 h-4 w-4" />
+                 </Button>
               </Link>
               <a href={`tel:${contactInfo.phone.replace(/\D/g, '')}`}>
                 <Button size="lg" variant="outline" className="border-border text-foreground hover:bg-muted">

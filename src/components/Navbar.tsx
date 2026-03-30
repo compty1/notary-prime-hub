@@ -23,11 +23,11 @@ export function Navbar() {
   const portalLabel = isAdmin || isNotary ? "Dashboard" : "Portal";
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border/40 bg-background/60 backdrop-blur-xl" aria-label="Main navigation">
+    <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm" aria-label="Main navigation">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
         <Link to="/" className="flex items-center gap-2.5">
           <Logo size="sm" />
-          <span className="font-sans text-lg font-bold tracking-tight text-foreground">Notar</span>
+          <span className="font-sans text-lg font-semibold tracking-tight text-foreground">Notar</span>
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">
@@ -52,7 +52,7 @@ export function Navbar() {
               </Link>
             )}
             <Link to="/book">
-              <Button size="sm" className="bg-gradient-primary text-primary-foreground glow-sm hover:opacity-90 transition-opacity">
+              <Button size="sm" className="text-primary-foreground">
                 Book Now
               </Button>
             </Link>
@@ -65,7 +65,7 @@ export function Navbar() {
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-72 bg-background/95 backdrop-blur-xl">
+          <SheetContent side="right" className="w-72 bg-background">
             <div className="mt-8 flex flex-col gap-1">
               {navLinks.map((link) => (
                 <Link
@@ -91,7 +91,7 @@ export function Navbar() {
                 </Link>
               )}
               <Link to="/book" onClick={() => setOpen(false)}>
-                <Button className="w-full bg-gradient-primary text-primary-foreground">Book Now</Button>
+                <Button className="w-full text-primary-foreground">Book Now</Button>
               </Link>
             </div>
           </SheetContent>

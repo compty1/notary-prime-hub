@@ -9,7 +9,7 @@ interface FooterProps {
 
 export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com" }: FooterProps) {
   return (
-    <footer className="border-t border-border/40 bg-muted/30">
+    <footer className="border-t border-border bg-card">
       <div className="container mx-auto px-4 py-12">
         <div className="grid gap-8 md:grid-cols-4">
           <div className="md:col-span-1">
