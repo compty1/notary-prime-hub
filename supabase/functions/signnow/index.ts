@@ -288,7 +288,17 @@ Deno.serve(async (req) => {
           });
         }
         const tokenData = await tokenResp.json();
-        return new Response(JSON.stringify({ success: true, access_token: tokenData.access_token, expires_in: tokenData.expires_in, token_type: tokenData.token_type }), {
+        // Mask the token — only return last 8 chars for admin reference
+        const masked = tokenData.access_token
+          ? `***${tokenData.access_token.slice(-8)}`
+          : null;
+        return new Response(JSON.stringify({
+          success: true,
+          access_token_masked: masked,
+          expires_in: tokenData.expires_in,
+          token_type: tokenData.token_type,
+          note: "Token refreshed. Update the SIGNNOW_API_TOKEN secret with the new token via your dashboard.",
+        }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }

@@ -54,6 +54,11 @@ export default function AdminRevenue() {
   const [recordForm, setRecordForm] = useState({ client_id: "", amount: "", method: "cash", notes: "" });
   const [recordingPayment, setRecordingPayment] = useState(false);
 
+  // Pagination
+  const PAYMENTS_PER_PAGE = 25;
+  const [paymentPage, setPaymentPage] = useState(1);
+  const totalPaymentPages = Math.max(1, Math.ceil(payments.length / PAYMENTS_PER_PAGE));
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -384,7 +389,7 @@ export default function AdminRevenue() {
                       <th className="px-4 py-3 text-right font-medium text-muted-foreground">Actions</th>
                     </tr></thead>
                     <tbody>
-                      {payments.map((p) => (
+                      {payments.slice((paymentPage - 1) * PAYMENTS_PER_PAGE, paymentPage * PAYMENTS_PER_PAGE).map((p) => (
                         <tr key={p.id} className="border-b border-border/30 last:border-0 hover:bg-muted/30">
                           <td className="px-4 py-3 text-xs">{formatDate(p.created_at)}</td>
                           <td className="px-4 py-3 font-medium">{profiles[p.client_id] || p.client_id.slice(0, 8)}</td>
@@ -403,6 +408,17 @@ export default function AdminRevenue() {
                       ))}
                     </tbody>
                   </table>
+                </div>
+              )}
+              {payments.length > PAYMENTS_PER_PAGE && (
+                <div className="flex items-center justify-between border-t border-border/50 px-4 py-3">
+                  <p className="text-xs text-muted-foreground">
+                    Showing {(paymentPage - 1) * PAYMENTS_PER_PAGE + 1}–{Math.min(paymentPage * PAYMENTS_PER_PAGE, payments.length)} of {payments.length}
+                  </p>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" disabled={paymentPage <= 1} onClick={() => setPaymentPage(p => p - 1)}>Previous</Button>
+                    <Button size="sm" variant="outline" disabled={paymentPage >= totalPaymentPages} onClick={() => setPaymentPage(p => p + 1)}>Next</Button>
+                  </div>
                 </div>
               )}
             </CardContent>
