@@ -72,6 +72,10 @@ const NotaryProcessGuide = lazy(() => import("./pages/NotaryProcessGuide"));
 const AdminIntegrationTest = lazy(() => import("./pages/admin/AdminIntegrationTest"));
 const AdminServiceRequests = lazy(() => import("./pages/admin/AdminServiceRequests"));
 const AccountSettings = lazy(() => import("./pages/AccountSettings"));
+const AdminContentWorkspace = lazy(() => import("./pages/admin/AdminContentWorkspace"));
+const AdminTaskQueue = lazy(() => import("./pages/admin/AdminTaskQueue"));
+const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
+const Maintenance = lazy(() => import("./pages/Maintenance"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
