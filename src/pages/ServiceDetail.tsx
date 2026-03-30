@@ -58,6 +58,30 @@ const categoryResources: Record<string, { label: string; url: string; icon: any 
     { label: "Business Portal", url: "/business-portal", icon: Briefcase },
     { label: "Loan Signing Partnership", url: "/loan-signing", icon: Briefcase },
   ],
+  admin_support: [
+    { label: "Service Request Form", url: "/request", icon: FileText },
+    { label: "Fee Calculator", url: "/fee-calculator", icon: Shield },
+  ],
+  content_creation: [
+    { label: "AI Writing Tools", url: "/ai-writer", icon: FileText },
+    { label: "Request Content", url: "/request", icon: FileText },
+  ],
+  research: [
+    { label: "Submit Research Request", url: "/request", icon: FileText },
+    { label: "Services Overview", url: "/services", icon: Shield },
+  ],
+  customer_service: [
+    { label: "Submit Support Request", url: "/request", icon: FileText },
+    { label: "Contact Us", url: "/#contact", icon: ExternalLink },
+  ],
+  technical_support: [
+    { label: "Website Update Request", url: "/request", icon: FileText },
+    { label: "Services Overview", url: "/services", icon: Shield },
+  ],
+  ux_testing: [
+    { label: "Request UX Audit", url: "/request", icon: FileText },
+    { label: "Services Overview", url: "/services", icon: Shield },
+  ],
 };
 
 // Service-specific FAQs (checked before category FAQs)
@@ -204,12 +228,16 @@ export default function ServiceDetail() {
   const { serviceId } = useParams();
   const navigate = useNavigate();
   const [service, setService] = useState<ServiceData | null>(null);
+  const [allServices, setAllServices] = useState<ServiceData[]>([]);
   const [requirements, setRequirements] = useState<Requirement[]>([]);
   const [workflow, setWorkflow] = useState<WorkflowStep[]>([]);
   const [relatedServices, setRelatedServices] = useState<ServiceData[]>([]);
   const [loading, setLoading] = useState(true);
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
   const [showChat, setShowChat] = useState(false);
+  const [chatMessages, setChatMessages] = useState<{ role: string; content: string }[]>([]);
+  const [chatInput, setChatInput] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
   const [showPreQualifier, setShowPreQualifier] = useState(false);
   usePageTitle(service?.name || "Service Details");
 
@@ -224,10 +252,12 @@ export default function ServiceDetail() {
       ]);
       if (svcRes.data) {
         setService(svcRes.data as ServiceData);
-        const { data: related } = await supabase
-          .from("services").select("*").eq("is_active", true)
-          .eq("category", svcRes.data.category).neq("id", serviceId).limit(3);
-        setRelatedServices((related || []) as ServiceData[]);
+        const [relRes, allSvcRes] = await Promise.all([
+          supabase.from("services").select("*").eq("is_active", true).eq("category", svcRes.data.category).neq("id", serviceId).limit(3),
+          supabase.from("services").select("id, name, category").eq("is_active", true),
+        ]);
+        setRelatedServices((relRes.data || []) as ServiceData[]);
+        setAllServices((allSvcRes.data || []) as ServiceData[]);
       }
       setRequirements((reqRes.data || []) as Requirement[]);
       setWorkflow((wfRes.data || []) as WorkflowStep[]);
@@ -236,6 +266,35 @@ export default function ServiceDetail() {
     };
     load();
   }, [serviceId]);
+
+  // AI Chat handler
+  const sendChatMessage = async () => {
+    if (!chatInput.trim() || chatLoading) return;
+    const userMsg = { role: "user", content: chatInput };
+    setChatMessages(prev => [...prev, userMsg]);
+    setChatInput("");
+    setChatLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("client-assistant", {
+        body: {
+          messages: [...chatMessages, userMsg].map(m => ({ role: m.role, content: m.content })),
+          context: `Service: ${service?.name}. Category: ${service?.category}. Description: ${service?.description || ""}`,
+        },
+      });
+      if (error) throw error;
+      const reply = data?.choices?.[0]?.message?.content || data?.reply || "I'm sorry, I couldn't process that request.";
+      setChatMessages(prev => [...prev, { role: "assistant", content: reply }]);
+    } catch {
+      setChatMessages(prev => [...prev, { role: "assistant", content: "AI assistant is temporarily unavailable. Please contact us directly." }]);
+    }
+    setChatLoading(false);
+  };
+
+  // Bundle link lookup helper
+  const getBundleServiceId = (name: string) => {
+    const match = allServices.find(s => s.name.toLowerCase().includes(name.toLowerCase()));
+    return match ? `/services/${match.id}` : `/services`;
+  };
 
 
   const formatPrice = (s: ServiceData) => {
@@ -657,7 +716,7 @@ export default function ServiceDetail() {
                   </h3>
                   <div className="space-y-2 text-sm">
                     {bundles.map((b, i) => (
-                      <Link key={i} to={`/services`} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
+                      <Link key={i} to={getBundleServiceId(b)} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
                         <ArrowRight className="h-3 w-3" /> {b}
                       </Link>
                     ))}
@@ -693,7 +752,7 @@ export default function ServiceDetail() {
         )}
       </div>
 
-      {/* Phase 3.9: AI Chat Bubble */}
+      {/* AI Chat Bubble */}
       <button
         onClick={() => setShowChat(!showChat)}
         className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg hover:opacity-90 transition-colors"
@@ -703,20 +762,36 @@ export default function ServiceDetail() {
       </button>
 
       {showChat && (
-        <div className="fixed bottom-24 right-6 z-50 w-80 rounded-lg border border-border bg-card shadow-2xl">
+        <div className="fixed bottom-24 right-6 z-50 w-80 rounded-lg border border-border bg-card shadow-2xl flex flex-col max-h-[400px]">
           <div className="flex items-center justify-between border-b border-border p-3">
             <span className="text-sm font-medium flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-primary" /> Ask About {service.name}
             </span>
             <button onClick={() => setShowChat(false)} className="text-muted-foreground hover:text-foreground text-xs">✕</button>
           </div>
-          <div className="p-4 text-center">
-            <p className="text-xs text-muted-foreground mb-3">Have questions about this service? Contact us directly for personalized assistance.</p>
-            <Link to="/#contact">
-              <Button size="sm" className="w-full ">
-                <MessageSquare className="mr-1 h-3 w-3" /> Contact Us
-              </Button>
-            </Link>
+          <div className="flex-1 overflow-y-auto p-3 space-y-2 min-h-[150px]">
+            {chatMessages.length === 0 && (
+              <p className="text-xs text-muted-foreground text-center py-4">Ask any question about {service.name} and our AI will help you.</p>
+            )}
+            {chatMessages.map((msg, i) => (
+              <div key={i} className={`text-xs rounded-lg p-2 ${msg.role === "user" ? "bg-primary/10 text-foreground ml-6" : "bg-muted text-foreground mr-6"}`}>
+                {msg.content}
+              </div>
+            ))}
+            {chatLoading && <div className="text-xs text-muted-foreground animate-pulse">Thinking...</div>}
+          </div>
+          <div className="border-t border-border p-2 flex gap-2">
+            <input
+              type="text"
+              value={chatInput}
+              onChange={e => setChatInput(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && sendChatMessage()}
+              placeholder="Type a question..."
+              className="flex-1 bg-transparent text-sm outline-none px-2"
+            />
+            <Button size="sm" onClick={sendChatMessage} disabled={chatLoading || !chatInput.trim()}>
+              <ArrowRight className="h-3 w-3" />
+            </Button>
           </div>
         </div>
       )}

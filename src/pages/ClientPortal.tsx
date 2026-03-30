@@ -39,8 +39,8 @@ export default function ClientPortal() {
   const { user, signOut, isAdmin } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const initialTab = searchParams.get("tab") || "overview";
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = searchParams.get("tab") || window.location.hash?.slice(1) || "overview";
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   usePageTitle("Client Portal");
@@ -293,6 +293,8 @@ export default function ClientPortal() {
         </motion.div>
 
         <Tabs defaultValue={initialTab} className="space-y-6" onValueChange={val => {
+          // Deep link support
+          window.history.replaceState(null, "", `/portal#${val}`);
           if (val === "chat" && user && unreadCount > 0) {
             const unreadIds = chatMessages.filter(m => m.is_admin && !m.read).map(m => m.id);
             if (unreadIds.length > 0) supabase.from("chat_messages").update({ read: true }).in("id", unreadIds).then(() => { setChatMessages(prev => prev.map(m => unreadIds.includes(m.id) ? { ...m, read: true } : m)); setUnreadCount(0); });

@@ -4,8 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, Send, Loader2, ArrowLeft } from "lucide-react";
+import { Mail, Send, Loader2, Plus } from "lucide-react";
 
 interface PortalCorrespondenceTabProps {
   userId: string;
@@ -18,6 +20,9 @@ export default function PortalCorrespondenceTab({ userId, correspondence, setCor
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
   const [sending, setSending] = useState(false);
+  const [composing, setComposing] = useState(false);
+  const [composeSubject, setComposeSubject] = useState("");
+  const [composeBody, setComposeBody] = useState("");
 
   const sendReply = async (parentId: string) => {
     if (!replyText.trim()) return;
@@ -42,20 +47,63 @@ export default function PortalCorrespondenceTab({ userId, correspondence, setCor
     setSending(false);
   };
 
-  if (correspondence.length === 0) {
-    return (
-      <Card className="border-border/50">
-        <CardContent className="py-12 text-center text-muted-foreground">
-          <Mail className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
-          <p>No correspondence yet</p>
-        </CardContent>
-      </Card>
-    );
-  }
+  const sendNewMessage = async () => {
+    if (!composeSubject.trim() || !composeBody.trim()) return;
+    setSending(true);
+    const { data, error } = await supabase.from("client_correspondence").insert({
+      client_id: userId,
+      direction: "inbound",
+      subject: composeSubject.trim(),
+      body: composeBody.trim(),
+      status: "pending",
+    }).select().single();
+    if (error) toast({ title: "Error sending message", variant: "destructive" });
+    else {
+      toast({ title: "Message sent" });
+      if (data) setCorrespondence(prev => [data, ...prev]);
+      setComposing(false);
+      setComposeSubject("");
+      setComposeBody("");
+      // Also notify via edge function
+      try { await supabase.functions.invoke("send-correspondence", { body: { type: "new_client_message", clientId: userId, subject: composeSubject } }); } catch {}
+    }
+    setSending(false);
+  };
 
   return (
-    <div className="space-y-3">
-      {correspondence.map(c => (
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <Button size="sm" onClick={() => setComposing(!composing)}>
+          <Plus className="mr-1 h-4 w-4" /> New Message
+        </Button>
+      </div>
+
+      {composing && (
+        <Card className="border-primary/20">
+          <CardContent className="p-4 space-y-3">
+            <div><Label>Subject</Label><Input value={composeSubject} onChange={e => setComposeSubject(e.target.value)} placeholder="Subject..." /></div>
+            <div><Label>Message</Label><Textarea value={composeBody} onChange={e => setComposeBody(e.target.value)} rows={4} placeholder="Type your message..." maxLength={5000} /></div>
+            <div className="flex gap-2">
+              <Button size="sm" onClick={sendNewMessage} disabled={sending || !composeSubject.trim() || !composeBody.trim()}>
+                {sending ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Send className="mr-1 h-3 w-3" />} Send
+              </Button>
+              <Button size="sm" variant="ghost" onClick={() => { setComposing(false); setComposeSubject(""); setComposeBody(""); }}>Cancel</Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {correspondence.length === 0 && !composing ? (
+        <Card className="border-border/50">
+          <CardContent className="py-12 text-center text-muted-foreground">
+            <Mail className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
+            <p>No correspondence yet</p>
+            <p className="text-sm mt-1">Click "New Message" to start a conversation.</p>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {correspondence.length > 0 && correspondence.map(c => (
         <Card key={c.id} className="border-border/50">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">

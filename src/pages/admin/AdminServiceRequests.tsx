@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Filter, Clock, CheckCircle, AlertTriangle, Loader2, User, FileText } from "lucide-react";
+import { Search, Filter, Clock, CheckCircle, AlertTriangle, Loader2, User, FileText, Upload, Download } from "lucide-react";
 
 const STATUS_OPTIONS = ["submitted", "in_progress", "awaiting_client", "completed", "cancelled"];
 const PRIORITY_OPTIONS = ["low", "normal", "high", "urgent"];
@@ -47,10 +47,23 @@ export default function AdminServiceRequests() {
   const [editPriority, setEditPriority] = useState("");
   const [editNotes, setEditNotes] = useState("");
   const [editClientStatus, setEditClientStatus] = useState("");
+  const [editAssignedTo, setEditAssignedTo] = useState("");
+  const [teamProfiles, setTeamProfiles] = useState<any[]>([]);
+  const [deliverableFile, setDeliverableFile] = useState<File | null>(null);
+  const [uploadingDeliverable, setUploadingDeliverable] = useState(false);
 
   useEffect(() => {
     fetchRequests();
+    fetchTeam();
   }, []);
+
+  const fetchTeam = async () => {
+    const { data: roles } = await supabase.from("user_roles").select("user_id, role").in("role", ["admin", "notary"]);
+    if (!roles) return;
+    const userIds = [...new Set(roles.map(r => r.user_id))];
+    const { data: profs } = await supabase.from("profiles").select("user_id, full_name, email").in("user_id", userIds);
+    setTeamProfiles(profs || []);
+  };
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -76,22 +89,51 @@ export default function AdminServiceRequests() {
     setEditPriority(req.priority);
     setEditNotes(req.notes || "");
     setEditClientStatus(req.client_visible_status || "Submitted");
+    setEditAssignedTo(req.assigned_to || "");
+    setDeliverableFile(null);
     setDetailOpen(true);
   };
 
   const saveRequest = async () => {
     if (!selectedRequest) return;
     setUpdating(true);
+
+    // Upload deliverable if file selected
+    let deliverableUrl = selectedRequest.deliverable_url;
+    if (deliverableFile) {
+      setUploadingDeliverable(true);
+      const filePath = `deliverables/${selectedRequest.id}/${Date.now()}_${deliverableFile.name}`;
+      const { error: uploadErr } = await supabase.storage.from("documents").upload(filePath, deliverableFile);
+      if (!uploadErr) {
+        const { data: urlData } = supabase.storage.from("documents").getPublicUrl(filePath);
+        deliverableUrl = urlData.publicUrl;
+      }
+      setUploadingDeliverable(false);
+    }
+
+    // Auto-set SLA deadline when changing to in_progress
+    let slaDeadline = selectedRequest.sla_deadline;
+    if (editStatus === "in_progress" && selectedRequest.status !== "in_progress") {
+      const now = new Date();
+      const urgencyDays: Record<string, number> = { urgent: 1, high: 2, normal: 5, low: 7 };
+      const days = urgencyDays[editPriority] || 5;
+      now.setDate(now.getDate() + days);
+      slaDeadline = now.toISOString();
+    }
+
     const { error } = await supabase.from("service_requests").update({
       status: editStatus,
       priority: editPriority,
       notes: editNotes,
       client_visible_status: editClientStatus,
+      assigned_to: editAssignedTo || null,
+      deliverable_url: deliverableUrl || null,
+      sla_deadline: slaDeadline,
     }).eq("id", selectedRequest.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else {
       toast({ title: "Request updated" });
-      setRequests(prev => prev.map(r => r.id === selectedRequest.id ? { ...r, status: editStatus, priority: editPriority, notes: editNotes, client_visible_status: editClientStatus } : r));
+      setRequests(prev => prev.map(r => r.id === selectedRequest.id ? { ...r, status: editStatus, priority: editPriority, notes: editNotes, client_visible_status: editClientStatus, assigned_to: editAssignedTo || null, deliverable_url: deliverableUrl, sla_deadline: slaDeadline } : r));
       setDetailOpen(false);
     }
     setUpdating(false);
@@ -254,6 +296,37 @@ export default function AdminServiceRequests() {
                 <Label>Admin Notes</Label>
                 <Textarea value={editNotes} onChange={e => setEditNotes(e.target.value)} rows={3} />
               </div>
+
+              <div>
+                <Label>Assign To</Label>
+                <Select value={editAssignedTo} onValueChange={setEditAssignedTo}>
+                  <SelectTrigger><SelectValue placeholder="Unassigned" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Unassigned</SelectItem>
+                    {teamProfiles.map(p => (
+                      <SelectItem key={p.user_id} value={p.user_id}>{p.full_name || p.email}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label>Upload Deliverable</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <Input type="file" onChange={e => setDeliverableFile(e.target.files?.[0] || null)} className="text-sm" />
+                  {selectedRequest?.deliverable_url && (
+                    <a href={selectedRequest.deliverable_url} target="_blank" rel="noreferrer">
+                      <Button size="sm" variant="outline"><Download className="mr-1 h-3 w-3" /> Current</Button>
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {selectedRequest?.sla_deadline && (
+                <div className="rounded-lg bg-muted/50 p-3">
+                  <p className="text-xs text-muted-foreground">SLA Deadline: {new Date(selectedRequest.sla_deadline).toLocaleString()}</p>
+                </div>
+              )}
             </div>
           )}
           <DialogFooter>

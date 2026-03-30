@@ -7,11 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import {
-  Upload, FileText, Download, Save, Loader2, ChevronLeft, Eye, Menu,
+  Upload, FileText, Download, Save, Loader2, ChevronLeft, Eye, Menu, Languages,
   Bold, Italic, Underline as UnderlineIcon, AlignLeft, AlignCenter, AlignRight,
   List, ListOrdered, Heading1, Heading2, Undo, Redo, Trash2, FolderOpen, Printer
 } from "lucide-react";
@@ -22,6 +25,8 @@ import TiptapUnderline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
+
+const LANGUAGES = ["English","Spanish","French","German","Chinese","Japanese","Korean","Arabic","Russian","Vietnamese","Tagalog","Portuguese","Italian","Hindi","Polish","Dutch"];
 
 type DigiStep = "upload" | "processing" | "edit" | "done";
 
@@ -43,6 +48,11 @@ export default function DocumentDigitize() {
   const [processedDocs, setProcessedDocs] = useState<ProcessedDoc[]>([]);
   const [activeDocIndex, setActiveDocIndex] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [activeMode, setActiveMode] = useState<"digitize" | "translate">("digitize");
+  const [sourceLang, setSourceLang] = useState("Spanish");
+  const [targetLang, setTargetLang] = useState("English");
+  const [translating, setTranslating] = useState(false);
+  const [translationResult, setTranslationResult] = useState("");
 
   const editor = useEditor({
     extensions: [
@@ -186,10 +196,35 @@ export default function DocumentDigitize() {
 
   if (!editor) return null;
 
+  const handleTranslate = async () => {
+    if (!editor || !user) return;
+    setTranslating(true);
+    try {
+      const text = editor.getText();
+      const { data, error } = await supabase.functions.invoke("translate-document", {
+        body: { text, source_language: sourceLang, target_language: targetLang },
+      });
+      if (error) throw error;
+      setTranslationResult(data.translated_text || data.translation || "Translation unavailable.");
+      toast({ title: "Translation complete" });
+    } catch (err: any) {
+      toast({ title: "Translation failed", description: err.message, variant: "destructive" });
+    }
+    setTranslating(false);
+  };
+
   return (
     <PageShell>
 
       <div className="container mx-auto max-w-5xl px-4 py-8">
+        {/* Mode tabs */}
+        <Tabs value={activeMode} onValueChange={v => setActiveMode(v as any)} className="mb-6">
+          <TabsList>
+            <TabsTrigger value="digitize"><Eye className="mr-1 h-4 w-4" /> Digitize</TabsTrigger>
+            <TabsTrigger value="translate"><Languages className="mr-1 h-4 w-4" /> Translate</TabsTrigger>
+          </TabsList>
+        </Tabs>
+
         {/* Steps indicator */}
         <div className="mb-8 flex items-center justify-center gap-4">
           {[
@@ -356,6 +391,45 @@ export default function DocumentDigitize() {
                     <Download className="mr-2 h-4 w-4" /> Export DOCX
                   </Button>
                 </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Translation panel - shown after edit step when in translate mode */}
+        {activeMode === "translate" && step === "edit" && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-6">
+            <Card className="border-border/50">
+              <CardHeader>
+                <CardTitle className="font-sans text-lg flex items-center gap-2">
+                  <Languages className="h-5 w-5 text-primary" /> Translate Document
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Source Language</Label>
+                    <Select value={sourceLang} onValueChange={setSourceLang}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>{LANGUAGES.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Target Language</Label>
+                    <Select value={targetLang} onValueChange={setTargetLang}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>{LANGUAGES.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <Button onClick={handleTranslate} disabled={translating}>
+                  {translating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Translating...</> : <><Languages className="mr-2 h-4 w-4" /> Translate</>}
+                </Button>
+                {translationResult && (
+                  <div className="rounded-lg border border-border/50 bg-muted/30 p-4 max-h-[300px] overflow-y-auto">
+                    <p className="text-sm whitespace-pre-wrap">{translationResult}</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </motion.div>

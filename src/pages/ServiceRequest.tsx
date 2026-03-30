@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { usePageTitle } from "@/lib/usePageTitle";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { ChevronLeft, CheckCircle, FileText, Globe, Upload, Loader2, Shield, Briefcase, ClipboardList } from "lucide-react";
+import { ChevronLeft, CheckCircle, FileText, Globe, Upload, Loader2, Shield, Briefcase, ClipboardList, X } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
 
@@ -258,6 +258,8 @@ export default function ServiceRequest() {
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
 
   // Guest fields
   const [guestName, setGuestName] = useState("");
@@ -284,16 +286,37 @@ export default function ServiceRequest() {
     }
 
     setSubmitting(true);
+
+    // Upload files if any
+    let fileRefs: string[] = [];
+    if (uploadedFiles.length > 0 && user) {
+      setUploading(true);
+      for (const file of uploadedFiles) {
+        const filePath = `${user.id}/service-requests/${Date.now()}_${file.name}`;
+        const { error: uploadErr } = await supabase.storage.from("documents").upload(filePath, file);
+        if (!uploadErr) fileRefs.push(filePath);
+      }
+      setUploading(false);
+    }
+
+    const intakeData = { ...formData, ...(fileRefs.length > 0 ? { attached_files: fileRefs.join(", ") } : {}) };
+
     const { error } = await supabase.from("service_requests").insert({
       client_id: user.id,
       service_name: serviceName,
-      intake_data: formData,
+      intake_data: intakeData,
       notes: notes || null,
     });
 
     if (error) {
       toast({ title: "Submission failed", description: error.message, variant: "destructive" });
     } else {
+      // Send notification email
+      try {
+        await supabase.functions.invoke("send-correspondence", {
+          body: { type: "service_request_submitted", serviceName, clientId: user.id },
+        });
+      } catch {}
       toast({ title: "Request submitted!", description: "We'll review your request and get back to you shortly." });
       setSubmitted(true);
     }
@@ -370,6 +393,31 @@ export default function ServiceRequest() {
                   )}
                 </div>
               ))}
+
+              {/* File Upload Section */}
+              <div>
+                <Label>Attach Documents (optional)</Label>
+                <div
+                  className="mt-1 rounded-lg border-2 border-dashed border-primary/20 bg-primary/5 p-6 text-center cursor-pointer hover:border-primary/40 transition-colors"
+                  onClick={() => document.getElementById("sr-file-input")?.click()}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => { e.preventDefault(); const dropped = Array.from(e.dataTransfer.files); if (dropped.length) setUploadedFiles(prev => [...prev, ...dropped]); }}
+                >
+                  <Upload className="mx-auto mb-2 h-8 w-8 text-primary/50" />
+                  <p className="text-sm text-muted-foreground">Drag & drop or click to upload supporting documents</p>
+                  <input id="sr-file-input" type="file" multiple className="hidden" onChange={(e) => { const files = Array.from(e.target.files || []); if (files.length) setUploadedFiles(prev => [...prev, ...files]); }} />
+                </div>
+                {uploadedFiles.length > 0 && (
+                  <div className="mt-2 space-y-1">
+                    {uploadedFiles.map((f, i) => (
+                      <div key={i} className="flex items-center justify-between rounded border border-border/50 px-2 py-1 text-sm">
+                        <span className="flex items-center gap-1 truncate"><FileText className="h-3 w-3 text-primary" /> {f.name}</span>
+                        <button onClick={() => setUploadedFiles(prev => prev.filter((_, idx) => idx !== i))} className="text-muted-foreground hover:text-destructive"><X className="h-3 w-3" /></button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
 
               <div>
                 <Label>Additional Notes</Label>
