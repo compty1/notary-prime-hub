@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Clock, Loader2, AlertTriangle, LocateFixed, CalendarOff } from "lucide-react";
+import { Calendar, Clock, Loader2, AlertTriangle, LocateFixed, CalendarOff, Info } from "lucide-react";
+import { CharCounter } from "@/components/CharCounter";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { formatTimeSlot, isDigitalOnly, requiresNotarizationType, US_STATES, getHolidaysForYear, MINIMUM_ADVANCE_HOURS } from "./bookingConstants";
 
