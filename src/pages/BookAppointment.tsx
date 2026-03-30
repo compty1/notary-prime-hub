@@ -134,11 +134,13 @@ export default function BookAppointment() {
     supabase.from("platform_settings").select("setting_key, setting_value").then(({ data }) => {
       if (data) { const s: Record<string, string> = {}; data.forEach((r: any) => { s[r.setting_key] = r.setting_value; }); setPricingSettings(s); }
     });
+    const NON_BOOKABLE = ["admin_support","content_creation","research","customer_service","technical_support","ux_testing"];
     supabase.from("services").select("name, short_description, category").eq("is_active", true).order("display_order").then(({ data }) => {
       if (data && data.length > 0) {
-        setServiceTypes([...new Set(data.map((s: any) => s.name))]);
+        const bookable = data.filter((s: any) => !NON_BOOKABLE.includes(s.category));
+        setServiceTypes([...new Set(bookable.map((s: any) => s.name))]);
         const descs: Record<string, string> = {}, cats: Record<string, string> = {};
-        data.forEach((s: any) => { if (s.short_description) descs[s.name] = s.short_description; cats[s.name] = s.category; });
+        bookable.forEach((s: any) => { if (s.short_description) descs[s.name] = s.short_description; cats[s.name] = s.category; });
         setServiceDescriptions(descs);
         setServiceCategories(cats);
         const preService = new URLSearchParams(window.location.search).get("service");
