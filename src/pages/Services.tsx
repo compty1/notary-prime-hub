@@ -157,19 +157,18 @@ export default function Services() {
 
   usePageTitle("Services");
 
-  const {
-    data: services = [],
-    isLoading: loading,
-    isError,
-    error,
-    refetch,
-  } = useQuery({
-    queryKey: ["services-catalog"],
-    queryFn: async () => {
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchServices = async () => {
+    setLoading(true);
+    setIsError(false);
+    setError(null);
+    try {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const apiKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
-      
-      // Use direct REST API to avoid any SDK initialization issues
       const restUrl = `${supabaseUrl}/rest/v1/services?select=*&is_active=eq.true&order=display_order.asc`;
       const response = await fetch(restUrl, {
         headers: {
@@ -177,20 +176,22 @@ export default function Services() {
           Authorization: `Bearer ${apiKey}`,
         },
       });
-
-      if (!response.ok) {
-        throw new Error(`Failed to load services (${response.status})`);
-      }
-
+      if (!response.ok) throw new Error(`Failed to load services (${response.status})`);
       const data = (await response.json()) as Service[];
-      if (!data || data.length === 0) {
-        throw new Error("No services returned");
-      }
-      return data;
-    },
-    staleTime: 10 * 60 * 1000,
-    retry: 2,
-  });
+      setServices(data);
+    } catch (err) {
+      setIsError(true);
+      setError(err instanceof Error ? err : new Error(String(err)));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const refetch = fetchServices;
 
   const formatPrice = (s: Service) => {
     if (s.pricing_model === "custom") return "Custom Quote";
