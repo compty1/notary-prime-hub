@@ -7,11 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import {
-  Upload, FileText, Download, Save, Loader2, ChevronLeft, Eye, Menu,
+  Upload, FileText, Download, Save, Loader2, ChevronLeft, Eye, Menu, Languages,
   Bold, Italic, Underline as UnderlineIcon, AlignLeft, AlignCenter, AlignRight,
   List, ListOrdered, Heading1, Heading2, Undo, Redo, Trash2, FolderOpen, Printer
 } from "lucide-react";
@@ -22,6 +25,8 @@ import TiptapUnderline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
+
+const LANGUAGES = ["English","Spanish","French","German","Chinese","Japanese","Korean","Arabic","Russian","Vietnamese","Tagalog","Portuguese","Italian","Hindi","Polish","Dutch"];
 
 type DigiStep = "upload" | "processing" | "edit" | "done";
 
