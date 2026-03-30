@@ -99,7 +99,7 @@ export default function FeeCalculator() {
       .then(r => r.json())
       .then(data => {
         if (data?.[0]) {
-          const dist = haversineDistance(HOLLYWOOD_CASINO.lat, HOLLYWOOD_CASINO.lng, parseFloat(data[0].lat), parseFloat(data[0].lon));
+          const dist = haversineDistance(DEFAULT_OFFICE.lat, DEFAULT_OFFICE.lng, parseFloat(data[0].lat), parseFloat(data[0].lon));
           setCalculatedDistance(Math.round(dist * 10) / 10);
           if (!manualOverride) setTravelMiles(Math.round(dist * 10) / 10);
         }
@@ -159,8 +159,8 @@ export default function FeeCalculator() {
                           onChange={setMeetingAddress}
                           onSelect={handleAddressSelect}
                           placeholder="Enter your meeting address..."
-                          userLat={HOLLYWOOD_CASINO.lat}
-                          userLon={HOLLYWOOD_CASINO.lng}
+                          userLat={DEFAULT_OFFICE.lat}
+                          userLon={DEFAULT_OFFICE.lng}
                         />
                       </div>
                       {calculatedDistance !== null && !manualOverride && (
