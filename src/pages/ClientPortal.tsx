@@ -274,7 +274,7 @@ export default function ClientPortal() {
           <Link to="/" className="flex items-center gap-2"><Logo size="md" /><span className="font-sans text-lg font-bold text-foreground">Client Portal</span></Link>
           <div className="flex items-center gap-3">
             {isAdmin && <Link to="/admin"><Button variant="outline" size="sm">Admin Dashboard</Button></Link>}
-            <Button variant="ghost" size="sm" onClick={signOut}><LogOut className="mr-1 h-4 w-4" /> Sign Out</Button>
+            <Button variant="ghost" size="sm" onClick={() => setLogoutDialogOpen(true)}><LogOut className="mr-1 h-4 w-4" /> Sign Out</Button>
           </div>
         </div>
       </nav>
