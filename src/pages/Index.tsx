@@ -241,9 +241,9 @@ export default function Index() {
 
             <motion.div variants={fadeUp} custom={5} className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link to={`/book?type=${serviceType}`}>
-                <Button size="lg" className="bg-gradient-primary text-white shadow-lg glow-primary animate-glow-pulse hover:opacity-90">
-                  Schedule Appointment <ArrowRight className="ml-1 h-4 w-4" />
-                </Button>
+                 <Button size="lg" className="shadow-sm">
+                   Schedule Appointment <ArrowRight className="ml-1 h-4 w-4" />
+                 </Button>
               </Link>
               <a href={`tel:${contactInfo.phone.replace(/\D/g, '')}`}>
                 <Button size="lg" variant="outline" className="border-border text-foreground hover:bg-muted">
