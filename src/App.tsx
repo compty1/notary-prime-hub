@@ -150,6 +150,7 @@ function AnimatedRoutes() {
           <Route path="email-management" element={<ErrorBoundary fallbackMessage="Email management failed to load"><AdminEmailManagement /></ErrorBoundary>} />
           <Route path="leads" element={<ErrorBoundary fallbackMessage="Lead portal failed to load"><AdminLeadPortal /></ErrorBoundary>} />
           <Route path="users" element={<ErrorBoundary fallbackMessage="User management failed to load"><AdminUsers /></ErrorBoundary>} />
+          <Route path="service-requests" element={<ErrorBoundary fallbackMessage="Service requests failed to load"><AdminServiceRequests /></ErrorBoundary>} />
           <Route path="settings" element={<ErrorBoundary fallbackMessage="Settings failed to load"><AdminSettings /></ErrorBoundary>} />
           <Route path="integrations" element={<ErrorBoundary fallbackMessage="Integration testing failed to load"><AdminIntegrationTest /></ErrorBoundary>} />
         </Route>
