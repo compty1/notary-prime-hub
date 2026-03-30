@@ -103,9 +103,7 @@ export default function PortalCorrespondenceTab({ userId, correspondence, setCor
         </Card>
       ) : null}
 
-  return (
-    <div className="space-y-3">
-      {correspondence.map(c => (
+      {correspondence.length > 0 && correspondence.map(c => (
         <Card key={c.id} className="border-border/50">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
