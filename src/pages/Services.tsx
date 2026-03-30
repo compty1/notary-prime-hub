@@ -114,8 +114,6 @@ type Service = {
 };
 
 export default function Services() {
-  const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [helpQuery, setHelpQuery] = useState("");
@@ -161,13 +159,19 @@ export default function Services() {
 
   usePageTitle("Services");
 
-  useEffect(() => {
-    supabase.from("services").select("*").eq("is_active", true).order("display_order").then(({ data, error }) => {
-      console.log("Services fetch result:", { count: data?.length, error });
-      if (data) setServices(data as Service[]);
-      setLoading(false);
-    });
-  }, []);
+  const { data: services = [], isLoading: loading } = useQuery({
+    queryKey: ["services-catalog"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("services")
+        .select("*")
+        .eq("is_active", true)
+        .order("display_order");
+      if (error) throw error;
+      return (data ?? []) as Service[];
+    },
+    staleTime: 10 * 60 * 1000,
+  });
 
   const formatPrice = (s: Service) => {
     if (s.pricing_model === "custom") return "Custom Quote";
