@@ -211,6 +211,7 @@ export default function ServiceDetail() {
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
   const [showChat, setShowChat] = useState(false);
   const [showPreQualifier, setShowPreQualifier] = useState(false);
+  usePageTitle(service?.name || "Service Details");
 
   useEffect(() => {
     if (!serviceId) return;
