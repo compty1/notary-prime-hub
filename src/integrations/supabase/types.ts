@@ -895,7 +895,6 @@ export type Database = {
           net_payout: number
           notary_user_id: string
           notes: string | null
-          onenotary_fees: number
           paid_at: string | null
           period_end: string
           period_start: string
@@ -909,7 +908,6 @@ export type Database = {
           net_payout?: number
           notary_user_id: string
           notes?: string | null
-          onenotary_fees?: number
           paid_at?: string | null
           period_end: string
           period_start: string
@@ -923,7 +921,6 @@ export type Database = {
           net_payout?: number
           notary_user_id?: string
           notes?: string | null
-          onenotary_fees?: number
           paid_at?: string | null
           period_end?: string
           period_start?: string
