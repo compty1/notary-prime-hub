@@ -95,7 +95,7 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {appt.notarization_type === "ron" && isSessionNear(appt) && <Link to={`/ron-session?id=${appt.id}`}><Button size="sm" className="bg-emerald-600 text-white hover:bg-emerald-700"><Video className="mr-1 h-3 w-3" /> Join</Button></Link>}
+                    {appt.notarization_type === "ron" && isSessionNear(appt) && <Link to={`/ron-session?id=${appt.id}`}><Button size="sm" className="bg-primary text-white hover:bg-primary/90"><Video className="mr-1 h-3 w-3" /> Join</Button></Link>}
                     {appt.notarization_type === "ron" && !isSessionNear(appt) && <Button size="sm" variant="outline" className="text-xs" onClick={onTechCheck}><Wifi className="mr-1 h-3 w-3" /> Tech Check</Button>}
                     {zoomLink && (appt.service_type || "").toLowerCase().includes("consult") && (
                       <a href={zoomLink} target="_blank" rel="noopener noreferrer"><Button size="sm" variant="outline" className="text-xs"><Video className="mr-1 h-3 w-3" /> Zoom</Button></a>
