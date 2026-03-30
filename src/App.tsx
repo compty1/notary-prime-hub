@@ -87,10 +87,12 @@ const PageLoader = () => (
 
 function AnimatedRoutes() {
   const location = useLocation();
+  // Use only the base pathname (not query params) to avoid unnecessary re-mounts
+  const routeKey = location.pathname;
 
   return (
     <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
+      <Routes location={location} key={routeKey}>
         <Route path="/" element={<Index />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />

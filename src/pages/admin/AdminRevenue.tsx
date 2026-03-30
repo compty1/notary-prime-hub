@@ -410,6 +410,17 @@ export default function AdminRevenue() {
                   </table>
                 </div>
               )}
+              {payments.length > PAYMENTS_PER_PAGE && (
+                <div className="flex items-center justify-between border-t border-border/50 px-4 py-3">
+                  <p className="text-xs text-muted-foreground">
+                    Showing {(paymentPage - 1) * PAYMENTS_PER_PAGE + 1}–{Math.min(paymentPage * PAYMENTS_PER_PAGE, payments.length)} of {payments.length}
+                  </p>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" disabled={paymentPage <= 1} onClick={() => setPaymentPage(p => p - 1)}>Previous</Button>
+                    <Button size="sm" variant="outline" disabled={paymentPage >= totalPaymentPages} onClick={() => setPaymentPage(p => p + 1)}>Next</Button>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
