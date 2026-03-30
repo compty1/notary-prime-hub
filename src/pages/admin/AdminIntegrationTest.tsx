@@ -213,7 +213,7 @@ export default function AdminIntegrationTest() {
               onClick={() => {
                 testDatabaseConnection();
                 testStorageConnection();
-                testOneNotaryConnection();
+                testSignNowConnection();
                 testStripeConnection();
                 testEmailFunction();
               }}
