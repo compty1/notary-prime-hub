@@ -32,6 +32,21 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [deletingDocId, setDeletingDocId] = useState<string | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    if (e.dataTransfer.files.length > 0) {
+      const input = fileInputRef.current;
+      if (input) {
+        const dt = new DataTransfer();
+        Array.from(e.dataTransfer.files).forEach(f => dt.items.add(f));
+        input.files = dt.files;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    }
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
