@@ -752,7 +752,7 @@ export default function ServiceDetail() {
         )}
       </div>
 
-      {/* Phase 3.9: AI Chat Bubble */}
+      {/* AI Chat Bubble */}
       <button
         onClick={() => setShowChat(!showChat)}
         className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg hover:opacity-90 transition-colors"
@@ -762,20 +762,36 @@ export default function ServiceDetail() {
       </button>
 
       {showChat && (
-        <div className="fixed bottom-24 right-6 z-50 w-80 rounded-lg border border-border bg-card shadow-2xl">
+        <div className="fixed bottom-24 right-6 z-50 w-80 rounded-lg border border-border bg-card shadow-2xl flex flex-col max-h-[400px]">
           <div className="flex items-center justify-between border-b border-border p-3">
             <span className="text-sm font-medium flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-primary" /> Ask About {service.name}
             </span>
             <button onClick={() => setShowChat(false)} className="text-muted-foreground hover:text-foreground text-xs">✕</button>
           </div>
-          <div className="p-4 text-center">
-            <p className="text-xs text-muted-foreground mb-3">Have questions about this service? Contact us directly for personalized assistance.</p>
-            <Link to="/#contact">
-              <Button size="sm" className="w-full ">
-                <MessageSquare className="mr-1 h-3 w-3" /> Contact Us
-              </Button>
-            </Link>
+          <div className="flex-1 overflow-y-auto p-3 space-y-2 min-h-[150px]">
+            {chatMessages.length === 0 && (
+              <p className="text-xs text-muted-foreground text-center py-4">Ask any question about {service.name} and our AI will help you.</p>
+            )}
+            {chatMessages.map((msg, i) => (
+              <div key={i} className={`text-xs rounded-lg p-2 ${msg.role === "user" ? "bg-primary/10 text-foreground ml-6" : "bg-muted text-foreground mr-6"}`}>
+                {msg.content}
+              </div>
+            ))}
+            {chatLoading && <div className="text-xs text-muted-foreground animate-pulse">Thinking...</div>}
+          </div>
+          <div className="border-t border-border p-2 flex gap-2">
+            <input
+              type="text"
+              value={chatInput}
+              onChange={e => setChatInput(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && sendChatMessage()}
+              placeholder="Type a question..."
+              className="flex-1 bg-transparent text-sm outline-none px-2"
+            />
+            <Button size="sm" onClick={sendChatMessage} disabled={chatLoading || !chatInput.trim()}>
+              <ArrowRight className="h-3 w-3" />
+            </Button>
           </div>
         </div>
       )}
