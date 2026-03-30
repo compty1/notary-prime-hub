@@ -178,8 +178,18 @@ export default function AdminChat() {
           </div>
           {selectedUser && (
             <div className="border-t p-3 flex gap-2">
-              <Input value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Type a reply..." maxLength={2000} onKeyDown={(e) => e.key === "Enter" && sendMessage()} />
-              <Button size="sm" onClick={sendMessage} disabled={sending} className="">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="sm" variant="outline" title="Canned responses"><Zap className="h-4 w-4" /></Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-56">
+                  {CANNED_RESPONSES.map(r => (
+                    <DropdownMenuItem key={r.label} onClick={() => setMessage(r.text)}>{r.label}</DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Input value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Type a reply..." maxLength={2000} onKeyDown={(e) => e.key === "Enter" && sendMessage()} className="flex-1" />
+              <Button size="sm" onClick={sendMessage} disabled={sending}>
                 {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               </Button>
             </div>

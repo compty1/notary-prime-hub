@@ -202,9 +202,14 @@ export default function AdminJournal() {
         </div>
         <div className="flex items-center gap-2">
           {entries.length > 0 && (
-            <Button variant="outline" size="sm" onClick={exportCSV}>
-              <Download className="mr-1 h-4 w-4" /> Export CSV
-            </Button>
+            <>
+              <Button variant="outline" size="sm" onClick={exportCSV}>
+                <Download className="mr-1 h-4 w-4" /> CSV
+              </Button>
+              <Button variant="outline" size="sm" onClick={exportPrintablePDF}>
+                <FileText className="mr-1 h-4 w-4" /> Print PDF
+              </Button>
+            </>
           )}
           <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) resetForm(); }}>
             <DialogTrigger asChild>
