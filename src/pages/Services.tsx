@@ -167,33 +167,27 @@ export default function Services() {
   } = useQuery({
     queryKey: ["services-catalog"],
     queryFn: async () => {
-      console.log("[Services] queryFn executing...");
-      const primary = await supabase
-        .from("services")
-        .select("*")
-        .eq("is_active", true)
-        .order("display_order");
-
-      console.log("[Services] primary result:", primary.error, "count:", primary.data?.length);
-      if (!primary.error && primary.data && primary.data.length > 0) {
-        return primary.data as Service[];
-      }
-
-      const restUrl = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/services?select=*&is_active=eq.true&order=display_order.asc`;
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const apiKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
-      const restResponse = await fetch(restUrl, {
+      
+      // Use direct REST API to avoid any SDK initialization issues
+      const restUrl = `${supabaseUrl}/rest/v1/services?select=*&is_active=eq.true&order=display_order.asc`;
+      const response = await fetch(restUrl, {
         headers: {
           apikey: apiKey,
           Authorization: `Bearer ${apiKey}`,
         },
       });
 
-      if (!restResponse.ok) {
-        throw primary.error ?? new Error(`REST fallback failed (${restResponse.status})`);
+      if (!response.ok) {
+        throw new Error(`Failed to load services (${response.status})`);
       }
 
-      const restData = (await restResponse.json()) as Service[];
-      return restData;
+      const data = (await response.json()) as Service[];
+      if (!data || data.length === 0) {
+        throw new Error("No services returned");
+      }
+      return data;
     },
     staleTime: 10 * 60 * 1000,
     retry: 2,
