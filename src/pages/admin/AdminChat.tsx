@@ -10,6 +10,17 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { MessageSquare, Send, User, Shield, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Zap } from "lucide-react";
+
+const CANNED_RESPONSES = [
+  { label: "Greeting", text: "Hello! Thank you for reaching out. How can I assist you today?" },
+  { label: "Documents Needed", text: "To proceed, we'll need the following documents:\n1. Valid government-issued photo ID\n2. The document(s) requiring notarization\n\nPlease upload them via the portal." },
+  { label: "Appointment Reminder", text: "Just a reminder — your upcoming appointment is scheduled. Please have your documents and valid ID ready." },
+  { label: "RON Instructions", text: "For your Remote Online Notarization (RON) session:\n1. Ensure stable internet and a webcam\n2. Have your valid photo ID ready\n3. You'll complete identity verification (KBA) before we begin\n4. The session will be audio/video recorded per Ohio law" },
+  { label: "Payment Info", text: "You can make a payment through your Client Portal under the 'Payments' tab. We accept all major credit/debit cards." },
+  { label: "Closing", text: "Thank you for choosing our services! If you have any other questions, don't hesitate to reach out. Have a great day!" },
+];
 
 export default function AdminChat() {
   usePageTitle("Live Chat");
