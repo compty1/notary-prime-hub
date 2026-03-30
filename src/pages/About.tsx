@@ -47,6 +47,8 @@ export default function About() {
 
   return (
     <PageShell>
+      {/* Breadcrumbs */}
+      <div className="container mx-auto max-w-4xl px-4 pt-4"><Breadcrumbs /></div>
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-border bg-card py-16 md:py-24">
         <div className="container relative mx-auto max-w-4xl px-4">
