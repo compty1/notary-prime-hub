@@ -89,6 +89,8 @@ export default function AdminServiceRequests() {
     setEditPriority(req.priority);
     setEditNotes(req.notes || "");
     setEditClientStatus(req.client_visible_status || "Submitted");
+    setEditAssignedTo(req.assigned_to || "");
+    setDeliverableFile(null);
     setDetailOpen(true);
   };
 
