@@ -263,7 +263,7 @@ export default function AdminSettings() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label>OneNotary API Status</Label>
+              <Label>SignNow API Status</Label>
               <div className="mt-1 flex items-center gap-2">
                 <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 text-xs">Connected</Badge>
                 <span className="text-xs text-muted-foreground">API token configured as server secret — manage in Lovable Cloud settings</span>
@@ -271,17 +271,17 @@ export default function AdminSettings() {
             </div>
             <div>
               <Label>RON Session Method</Label>
-              <Select value={editValues.ron_session_method || "onenotary_platform"} onValueChange={(v) => updateValue("ron_session_method", v)}>
+              <Select value={editValues.ron_session_method || "signnow_platform"} onValueChange={(v) => updateValue("ron_session_method", v)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="onenotary_platform">OneNotary Platform (Full API Integration)</SelectItem>
+                  <SelectItem value="signnow_platform">SignNow Platform (Full API Integration)</SelectItem>
                   <SelectItem value="email_invite">Email Invite (Manual Session Link)</SelectItem>
                 </SelectContent>
               </Select>
               <p className="mt-1 text-xs text-muted-foreground">
                 {editValues.ron_session_method === "email_invite"
-                  ? "Sends an email invite to the signer with a session link instead of using the OneNotary API flow."
-                  : "Creates sessions, adds participants, and manages documents via OneNotary REST API v2."}
+                  ? "Sends an email invite to the signer with a session link instead of using the SignNow API flow."
+                  : "Uploads documents, adds signing fields, and sends invites via SignNow REST API."}
               </p>
             </div>
             <div><Label>KBA Platform URL</Label><Input value={editValues.kba_platform_url || ""} onChange={(e) => updateValue("kba_platform_url", e.target.value)} placeholder="https://kba-platform.com/session" /></div>
