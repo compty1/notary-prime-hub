@@ -188,6 +188,7 @@ export default function Services() {
 
       {/* Search + Filter */}
       <div className="container mx-auto px-4 py-8">
+        <Breadcrumbs />
         <div className="relative mb-4 max-w-md mx-auto">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
