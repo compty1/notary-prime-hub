@@ -64,7 +64,7 @@ const flowSteps = {
 const webhookStatusBadge = (status: string) => {
   switch (status) {
     case "active":
-      return <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20"><CheckCircle className="h-3 w-3 mr-1" />Active</Badge>;
+      return <Badge className="bg-primary/10 text-primary border-primary/20"><CheckCircle className="h-3 w-3 mr-1" />Active</Badge>;
     case "partial":
       return <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20"><AlertTriangle className="h-3 w-3 mr-1" />Partial</Badge>;
     case "failed":
@@ -231,7 +231,7 @@ export default function AdminIntegrationTest() {
 
   const StatusIcon = ({ status }: { status: TestStatus }) => {
     if (status === "running") return <Loader2 className="h-4 w-4 animate-spin text-primary" />;
-    if (status === "success") return <CheckCircle className="h-4 w-4 text-emerald-500" />;
+    if (status === "success") return <CheckCircle className="h-4 w-4 text-primary" />;
     if (status === "error") return <XCircle className="h-4 w-4 text-destructive" />;
     return <div className="h-4 w-4 rounded-full border-2 border-muted-foreground/30" />;
   };
@@ -334,7 +334,7 @@ export default function AdminIntegrationTest() {
               {webhookSessions.length > 0 && (
                 <div className="flex gap-4 mb-4 flex-wrap">
                   <div className="flex items-center gap-1.5 text-sm">
-                    <CheckCircle className="h-4 w-4 text-emerald-500" />
+                    <CheckCircle className="h-4 w-4 text-primary" />
                     <span className="text-muted-foreground">{activeCount} Active</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-sm">

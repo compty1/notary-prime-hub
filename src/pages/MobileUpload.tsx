@@ -227,7 +227,7 @@ export default function MobileUpload() {
                     </div>
                     <Badge variant="outline" className="text-xs flex-shrink-0">
                       {doc.status === "uploaded" ? (
-                        <><CheckCircle className="mr-1 h-3 w-3 text-emerald-500" /> Uploaded</>
+                        <><CheckCircle className="mr-1 h-3 w-3 text-primary" /> Uploaded</>
                       ) : doc.status}
                     </Badge>
                   </div>

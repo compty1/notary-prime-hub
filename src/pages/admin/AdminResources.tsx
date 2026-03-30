@@ -622,7 +622,7 @@ export default function AdminResources() {
                 <h3 className="mb-3 flex items-center gap-2 font-sans text-lg font-semibold"><Shield className="h-5 w-5 text-primary" />{section.title}</h3>
                 <ul className="space-y-2">
                   {section.items.map((item, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm"><CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-500" /><span>{item}</span></li>
+                    <li key={i} className="flex items-start gap-2 text-sm"><CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" /><span>{item}</span></li>
                   ))}
                 </ul>
               </CardContent>

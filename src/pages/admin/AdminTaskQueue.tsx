@@ -51,7 +51,7 @@ export default function AdminTaskQueue() {
             <div className="flex items-center gap-2 mb-3">
               {col === "submitted" && <Clock className="h-4 w-4 text-amber-500" />}
               {col === "in_progress" && <ArrowRight className="h-4 w-4 text-blue-500" />}
-              {col === "completed" && <CheckCircle className="h-4 w-4 text-emerald-500" />}
+              {col === "completed" && <CheckCircle className="h-4 w-4 text-primary" />}
               <h3 className="font-sans text-sm font-semibold capitalize">{col.replace(/_/g, " ")}</h3>
               <Badge variant="secondary" className="text-xs">{columns[col].length}</Badge>
             </div>

@@ -157,7 +157,7 @@ export default function BusinessPortal() {
               <div className="flex items-center gap-3 mb-1">
                 <Building2 className="h-6 w-6 text-primary" />
                 <h1 className="font-sans text-2xl font-bold">{business.business_name}</h1>
-                <Badge className={business.verification_status === "verified" ? "bg-emerald-100 text-emerald-800" : "bg-yellow-100 text-yellow-800"}>
+                <Badge className={business.verification_status === "verified" ? "bg-primary/10 text-primary" : "bg-yellow-100 text-yellow-800"}>
                   {business.verification_status}
                 </Badge>
               </div>

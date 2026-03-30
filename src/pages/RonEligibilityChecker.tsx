@@ -259,7 +259,7 @@ export default function RonEligibilityChecker() {
   };
 
   const levelConfig = {
-    green: { icon: CheckCircle, color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200", badge: "bg-emerald-100 text-emerald-800" },
+    green: { icon: CheckCircle, color: "text-primary", bg: "bg-primary/5 border-primary/20", badge: "bg-primary/10 text-primary" },
     yellow: { icon: AlertTriangle, color: "text-amber-600", bg: "bg-amber-50 border-amber-200", badge: "bg-amber-100 text-amber-800" },
     red: { icon: XCircle, color: "text-red-600", bg: "bg-red-50 border-red-200", badge: "bg-red-100 text-red-800" },
   };

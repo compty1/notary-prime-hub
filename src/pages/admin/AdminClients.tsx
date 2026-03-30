@@ -356,7 +356,7 @@ export default function AdminClients() {
                     </div>
                     <div className="grid grid-cols-3 gap-3">
                       <div className="rounded-lg bg-muted/50 p-3 text-center"><p className="text-xl font-bold text-foreground">{stats.total}</p><p className="text-xs text-muted-foreground">Total</p></div>
-                      <div className="rounded-lg bg-muted/50 p-3 text-center"><p className="text-xl font-bold text-emerald-600">{stats.completed}</p><p className="text-xs text-muted-foreground">Completed</p></div>
+                      <div className="rounded-lg bg-muted/50 p-3 text-center"><p className="text-xl font-bold text-primary">{stats.completed}</p><p className="text-xs text-muted-foreground">Completed</p></div>
                       <div className="rounded-lg bg-muted/50 p-3 text-center"><p className="text-xs font-bold text-foreground">{stats.lastVisit ? formatDate(stats.lastVisit) : "—"}</p><p className="text-xs text-muted-foreground">Last Visit</p></div>
                     </div>
                     <div>

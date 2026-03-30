@@ -98,7 +98,7 @@ export default function ResetPassword() {
           <CardContent>
             {success ? (
               <div className="flex flex-col items-center gap-4 py-4">
-                <CheckCircle className="h-12 w-12 text-emerald-500" />
+                <CheckCircle className="h-12 w-12 text-primary" />
                 <Link to="/login"><Button className="">Go to Sign In</Button></Link>
               </div>
             ) : requestSent ? (

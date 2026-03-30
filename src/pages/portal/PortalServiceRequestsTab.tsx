@@ -6,7 +6,7 @@ const statusColors: Record<string, string> = {
   submitted: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
   in_progress: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
   awaiting_client: "bg-orange-500/10 text-orange-700 dark:text-orange-400",
-  completed: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+  completed: "bg-primary/10 text-emerald-700 dark:text-emerald-400",
   cancelled: "bg-muted text-muted-foreground",
 };
 

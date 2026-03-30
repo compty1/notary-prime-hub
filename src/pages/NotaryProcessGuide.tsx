@@ -182,10 +182,10 @@ export default function NotaryProcessGuide() {
                   <MapPin className="h-4 w-4 text-primary" /> In-Person Session
                 </h3>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-emerald-500 flex-shrink-0" /> Original notarized document(s) with seal</li>
-                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-emerald-500 flex-shrink-0" /> Completed notarial certificate (acknowledgment or jurat)</li>
-                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-emerald-500 flex-shrink-0" /> Receipt with fee breakdown</li>
-                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-emerald-500 flex-shrink-0" /> E-seal verification link (if applicable)</li>
+                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> Original notarized document(s) with seal</li>
+                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> Completed notarial certificate (acknowledgment or jurat)</li>
+                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> Receipt with fee breakdown</li>
+                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> E-seal verification link (if applicable)</li>
                 </ul>
               </CardContent>
             </Card>
@@ -196,11 +196,11 @@ export default function NotaryProcessGuide() {
                   <Monitor className="h-4 w-4 text-primary" /> RON Session
                 </h3>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-emerald-500 flex-shrink-0" /> Digitally notarized document(s) with e-seal</li>
-                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-emerald-500 flex-shrink-0" /> Tamper-evident sealed PDF download</li>
-                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-emerald-500 flex-shrink-0" /> Session recording access (stored 10+ years)</li>
-                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-emerald-500 flex-shrink-0" /> Digital receipt and verification link</li>
-                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-emerald-500 flex-shrink-0" /> KBA completion confirmation</li>
+                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> Digitally notarized document(s) with e-seal</li>
+                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> Tamper-evident sealed PDF download</li>
+                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> Session recording access (stored 10+ years)</li>
+                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> Digital receipt and verification link</li>
+                  <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> KBA completion confirmation</li>
                 </ul>
               </CardContent>
             </Card>

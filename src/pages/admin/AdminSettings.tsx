@@ -272,7 +272,7 @@ export default function AdminSettings() {
             <div>
               <Label>SignNow API Status</Label>
               <div className="mt-1 flex items-center gap-2">
-                <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 text-xs">Connected</Badge>
+                <Badge className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary text-xs">Connected</Badge>
                 <span className="text-xs text-muted-foreground">API token configured as server secret — manage in Lovable Cloud settings</span>
               </div>
             </div>
@@ -355,7 +355,7 @@ export default function AdminSettings() {
                 const passed = checks.filter(Boolean).length;
                 const total = checks.length;
                 return passed === total
-                  ? <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 text-xs">Compliant</Badge>
+                  ? <Badge className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary text-xs">Compliant</Badge>
                   : <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 text-xs">{passed}/{total} Requirements Met</Badge>;
               })()}
             </CardTitle>
@@ -373,7 +373,7 @@ export default function AdminSettings() {
                 { label: "KBA Integration", ok: true, detail: editValues.kba_provider === "signnow_builtin" || !editValues.kba_provider ? "SignNow built-in" : editValues.kba_provider },
               ].map((item) => (
                 <div key={item.label} className="flex items-start gap-2 rounded-lg border border-border/50 p-3">
-                  {item.ok ? <CheckCircle className="h-4 w-4 mt-0.5 text-emerald-500 flex-shrink-0" /> : <XCircle className="h-4 w-4 mt-0.5 text-destructive flex-shrink-0" />}
+                  {item.ok ? <CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> : <XCircle className="h-4 w-4 mt-0.5 text-destructive flex-shrink-0" />}
                   <div>
                     <p className="text-sm font-medium">{item.label}</p>
                     <p className="text-xs text-muted-foreground">{item.detail}</p>

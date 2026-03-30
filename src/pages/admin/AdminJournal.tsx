@@ -313,7 +313,7 @@ export default function AdminJournal() {
                         {entry.oath_administered && <Badge className="bg-purple-100 text-purple-800 text-xs">Oath</Badge>}
                         {entry.fees_charged && <span className="font-medium text-foreground">${parseFloat(entry.fees_charged).toFixed(2)}</span>}
                         {entry.net_profit !== null && entry.net_profit !== undefined && (
-                          <span className={`font-medium ${entry.net_profit >= 0 ? "text-emerald-600" : "text-destructive"}`}>
+                          <span className={`font-medium ${entry.net_profit >= 0 ? "text-primary" : "text-destructive"}`}>
                             Net: ${parseFloat(entry.net_profit).toFixed(2)}
                           </span>
                         )}

@@ -29,7 +29,7 @@ const getDateRange = (range: string) => {
 };
 
 const paymentStatusColors: Record<string, string> = {
-  paid: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
+  paid: "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary",
   pending: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
   cancelled: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
   failed: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
@@ -222,7 +222,7 @@ export default function AdminRevenue() {
     { label: "Total Revenue", value: `$${totalRevenue.toFixed(2)}`, icon: DollarSign, color: "text-blue-600" },
     { label: "Signing Platform Fees", value: `$${totalSigningPlatformFees.toFixed(2)}`, icon: TrendingDown, color: "text-orange-500" },
     { label: "Total Expenses", value: `$${totalExpenses.toFixed(2)}`, icon: TrendingDown, color: "text-red-500" },
-    { label: "Net Profit", value: `$${netProfit.toFixed(2)}`, icon: TrendingUp, color: netProfit >= 0 ? "text-emerald-600" : "text-red-600" },
+    { label: "Net Profit", value: `$${netProfit.toFixed(2)}`, icon: TrendingUp, color: netProfit >= 0 ? "text-primary" : "text-red-600" },
     { label: "Avg Profit/Session", value: `$${avgPerSession.toFixed(2)}`, icon: Receipt, color: "text-primary" },
   ];
 
@@ -363,8 +363,8 @@ export default function AdminRevenue() {
           <div className="mb-4 grid gap-4 sm:grid-cols-2">
             <Card className="border-border/50">
               <CardContent className="p-4 flex items-center gap-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100"><DollarSign className="h-5 w-5 text-emerald-600" /></div>
-                <div><p className="text-2xl font-bold text-emerald-600">${totalPaid.toFixed(2)}</p><p className="text-xs text-muted-foreground">Total Collected</p></div>
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10"><DollarSign className="h-5 w-5 text-primary" /></div>
+                <div><p className="text-2xl font-bold text-primary">${totalPaid.toFixed(2)}</p><p className="text-xs text-muted-foreground">Total Collected</p></div>
               </CardContent>
             </Card>
             <Card className="border-border/50">
@@ -467,7 +467,7 @@ export default function AdminRevenue() {
                             <td className="px-4 py-3 text-right text-muted-foreground">${signingFee.toFixed(2)}</td>
                             <td className="px-4 py-3 text-right text-muted-foreground">${travel.toFixed(2)}</td>
                             <td className="px-4 py-3 text-right text-muted-foreground">${payout.toFixed(2)}</td>
-                            <td className={`px-4 py-3 text-right font-medium ${net >= 0 ? "text-emerald-600" : "text-destructive"}`}>${net.toFixed(2)}</td>
+                            <td className={`px-4 py-3 text-right font-medium ${net >= 0 ? "text-primary" : "text-destructive"}`}>${net.toFixed(2)}</td>
                           </tr>
                         );
                       })}

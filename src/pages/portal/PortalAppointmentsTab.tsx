@@ -11,7 +11,7 @@ const statusColors: Record<string, string> = {
   id_verification: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
   kba_pending: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
   in_session: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
-  completed: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
+  completed: "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary",
   cancelled: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
   no_show: "bg-muted text-muted-foreground",
 };

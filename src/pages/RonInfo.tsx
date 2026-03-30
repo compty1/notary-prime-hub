@@ -33,7 +33,7 @@ const stateCategories = [
     description: "These states have enacted their own RON legislation and fully recognize RON notarizations:",
     states: "Ohio, Virginia, Texas, Florida, Nevada, Montana, Michigan, Minnesota, Tennessee, Indiana, Nebraska, North Dakota, Iowa, Idaho, Oklahoma, Kentucky, Utah, Arizona, Colorado, Wyoming, Maryland, Vermont, Alaska, Hawaii, New York, Pennsylvania, and more",
     badge: "Full Recognition",
-    color: "bg-emerald-100 text-emerald-800",
+    color: "bg-primary/10 text-primary",
   },
   {
     title: "States Accepting Under Full Faith & Credit",
@@ -199,7 +199,7 @@ export default function RonInfo() {
                         <td className="px-4 py-3 text-muted-foreground">{row.inPerson}</td>
                         <td className="px-4 py-3">
                           <span className="flex items-start gap-1.5">
-                            {row.ronBetter ? <CheckCircle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-emerald-500" /> : <span className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" />}
+                            {row.ronBetter ? <CheckCircle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-primary" /> : <span className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" />}
                             <span className={row.ronBetter ? "text-foreground" : "text-muted-foreground"}>{row.ron}</span>
                           </span>
                         </td>
@@ -355,7 +355,7 @@ export default function RonInfo() {
                   <tr key={s.state} className={`border-b border-border/30 last:border-0 ${s.state === "Ohio" ? "bg-primary/5" : ""}`}>
                     <td className="px-3 py-2 font-medium">{s.state}</td>
                     <td className="px-3 py-2">
-                      <Badge className={s.status === "permanent" ? "bg-emerald-100 text-emerald-800" : s.status === "temporary" ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"}>
+                      <Badge className={s.status === "permanent" ? "bg-primary/10 text-primary" : s.status === "temporary" ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"}>
                         {s.status === "permanent" ? "Permanent Law" : s.status === "temporary" ? "Temporary" : "No Law"}
                       </Badge>
                     </td>

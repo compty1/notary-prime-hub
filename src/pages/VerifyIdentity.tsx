@@ -135,14 +135,14 @@ export default function VerifyIdentity() {
 
               {idData && !idData.error && (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-                  <div className={`rounded-lg border p-4 ${idData.is_expired ? "border-amber-300 bg-amber-50" : "border-emerald-300 bg-emerald-50"}`}>
+                  <div className={`rounded-lg border p-4 ${idData.is_expired ? "border-amber-300 bg-amber-50" : "border-emerald-300 bg-primary/5"}`}>
                     <div className="flex items-center gap-2 mb-3">
                       {idData.is_expired ? (
                         <AlertTriangle className="h-5 w-5 text-amber-600" />
                       ) : (
-                        <CheckCircle className="h-5 w-5 text-emerald-600" />
+                        <CheckCircle className="h-5 w-5 text-primary" />
                       )}
-                      <span className={`text-sm font-semibold ${idData.is_expired ? "text-amber-800" : "text-emerald-800"}`}>
+                      <span className={`text-sm font-semibold ${idData.is_expired ? "text-amber-800" : "text-primary"}`}>
                         {idData.is_expired ? "Expired ID Detected" : "ID Verified Successfully"}
                       </span>
                     </div>
@@ -162,7 +162,7 @@ export default function VerifyIdentity() {
                     </Button>
                   )}
                   {saved && (
-                    <p className="text-center text-sm text-emerald-600 flex items-center justify-center gap-1">
+                    <p className="text-center text-sm text-primary flex items-center justify-center gap-1">
                       <CheckCircle className="h-4 w-4" /> Saved to profile
                     </p>
                   )}

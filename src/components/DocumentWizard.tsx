@@ -115,7 +115,7 @@ export default function DocumentWizard({ onSelectService, onClose }: DocumentWiz
             <h4 className="text-sm font-semibold flex items-center gap-2"><FileText className="h-4 w-4 text-primary" /> What to Bring</h4>
             <ul className="space-y-1">
               {result.requiredDocs.map((doc, i) => (
-                <li key={i} className="text-sm flex items-start gap-2"><CheckCircle className="h-3 w-3 text-emerald-500 mt-1 shrink-0" />{doc}</li>
+                <li key={i} className="text-sm flex items-start gap-2"><CheckCircle className="h-3 w-3 text-primary mt-1 shrink-0" />{doc}</li>
               ))}
             </ul>
           </div>
@@ -124,7 +124,7 @@ export default function DocumentWizard({ onSelectService, onClose }: DocumentWiz
             <h4 className="text-sm font-semibold flex items-center gap-2"><Users className="h-4 w-4 text-primary" /> Required ID</h4>
             <ul className="space-y-1">
               {result.requiredIds.map((id, i) => (
-                <li key={i} className="text-sm flex items-start gap-2"><CheckCircle className="h-3 w-3 text-emerald-500 mt-1 shrink-0" />{id}</li>
+                <li key={i} className="text-sm flex items-start gap-2"><CheckCircle className="h-3 w-3 text-primary mt-1 shrink-0" />{id}</li>
               ))}
             </ul>
           </div>
