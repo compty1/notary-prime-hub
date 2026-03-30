@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePageTitle } from "@/lib/usePageTitle";
 import { Link } from "react-router-dom";
 // Services data is fetched via REST API directly
-import { useQuery } from "@tanstack/react-query";
 import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
 import { useDebounce } from "@/lib/useDebounce";
 import { Button } from "@/components/ui/button";
