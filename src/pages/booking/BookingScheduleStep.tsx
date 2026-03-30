@@ -34,6 +34,23 @@ interface ScheduleStepProps {
 export default function BookingScheduleStep(props: ScheduleStepProps) {
   const { date, setDate, time, setTime, serviceType, notarizationType, serviceCategories } = props;
 
+  // Holiday detection
+  const holidayName = useMemo(() => {
+    if (!date) return null;
+    const year = new Date(date + "T00:00:00").getFullYear();
+    const holidays = getHolidaysForYear(year);
+    return holidays[date] || null;
+  }, [date]);
+
+  // Minimum advance time check
+  const advanceWarning = useMemo(() => {
+    if (!date || !time) return null;
+    const selected = new Date(`${date}T${time}`);
+    const minTime = new Date(Date.now() + MINIMUM_ADVANCE_HOURS * 60 * 60 * 1000);
+    if (selected < minTime) return `Appointments require at least ${MINIMUM_ADVANCE_HOURS} hours advance notice. Please select a later time.`;
+    return null;
+  }, [date, time]);
+
   return (
     <div className="space-y-4">
       <div>
