@@ -70,6 +70,8 @@ const AdminLeadPortal = lazy(() => import("./pages/admin/AdminLeadPortal"));
 const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 const NotaryProcessGuide = lazy(() => import("./pages/NotaryProcessGuide"));
 const AdminIntegrationTest = lazy(() => import("./pages/admin/AdminIntegrationTest"));
+const AdminServiceRequests = lazy(() => import("./pages/admin/AdminServiceRequests"));
+const AccountSettings = lazy(() => import("./pages/AccountSettings"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
