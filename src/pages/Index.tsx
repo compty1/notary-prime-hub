@@ -138,16 +138,13 @@ export default function Index() {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.from("leads").insert({
-      name: contactForm.name.trim().slice(0, 100),
-      email: contactForm.email.trim().slice(0, 255),
-      phone: contactForm.phone.trim().slice(0, 20) || null,
+    const { success, error } = await submitLead({
+      name: contactForm.name.trim(),
+      email: contactForm.email.trim(),
+      phone: contactForm.phone.trim() || null,
       service_needed: contactForm.service || null,
-      notes: contactForm.message.trim().slice(0, 1000),
+      notes: contactForm.message.trim(),
       source: "website_contact_form",
-      lead_type: "individual",
-      intent_score: "medium",
-      status: "new"
     });
     setSubmitting(false);
     if (error) {
