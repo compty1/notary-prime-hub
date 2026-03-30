@@ -196,10 +196,35 @@ export default function DocumentDigitize() {
 
   if (!editor) return null;
 
+  const handleTranslate = async () => {
+    if (!editor || !user) return;
+    setTranslating(true);
+    try {
+      const text = editor.getText();
+      const { data, error } = await supabase.functions.invoke("translate-document", {
+        body: { text, source_language: sourceLang, target_language: targetLang },
+      });
+      if (error) throw error;
+      setTranslationResult(data.translated_text || data.translation || "Translation unavailable.");
+      toast({ title: "Translation complete" });
+    } catch (err: any) {
+      toast({ title: "Translation failed", description: err.message, variant: "destructive" });
+    }
+    setTranslating(false);
+  };
+
   return (
     <PageShell>
 
       <div className="container mx-auto max-w-5xl px-4 py-8">
+        {/* Mode tabs */}
+        <Tabs value={activeMode} onValueChange={v => setActiveMode(v as any)} className="mb-6">
+          <TabsList>
+            <TabsTrigger value="digitize"><Eye className="mr-1 h-4 w-4" /> Digitize</TabsTrigger>
+            <TabsTrigger value="translate"><Languages className="mr-1 h-4 w-4" /> Translate</TabsTrigger>
+          </TabsList>
+        </Tabs>
+
         {/* Steps indicator */}
         <div className="mb-8 flex items-center justify-center gap-4">
           {[
