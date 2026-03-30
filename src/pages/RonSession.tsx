@@ -291,7 +291,9 @@ export default function RonSession() {
       kba_completed: kbaCompleted,
       status: oathAdministered ? ("completed" as any) : ("in_session" as any),
       completed_at: oathAdministered ? new Date().toISOString() : null,
-    }).eq("appointment_id", appointmentId);
+      recording_consent: recordingConsent,
+      recording_consent_at: recordingConsentAt,
+    } as any).eq("appointment_id", appointmentId);
 
     await supabase.from("audit_log").insert({
       user_id: user?.id,
