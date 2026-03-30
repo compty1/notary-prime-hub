@@ -113,12 +113,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const attempts: number[] = stored ? JSON.parse(stored) : [];
     const recent = attempts.filter((t) => now - t < 60_000); // last 60s
     if (recent.length >= 5) {
+      logAuditEvent("login_rate_limited", { details: { email } });
       return { error: { message: "Too many login attempts. Please wait 60 seconds before trying again." } };
     }
     recent.push(now);
     sessionStorage.setItem(key, JSON.stringify(recent));
 
     const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      logAuditEvent("login_failed", { details: { email, reason: error.message } });
+    }
     return { error };
   };
 
