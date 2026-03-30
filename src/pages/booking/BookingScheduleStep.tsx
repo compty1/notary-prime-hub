@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Clock, Loader2, AlertTriangle, LocateFixed, CalendarOff } from "lucide-react";
+import { Calendar, Clock, Loader2, AlertTriangle, LocateFixed, CalendarOff, Info } from "lucide-react";
+import { CharCounter } from "@/components/CharCounter";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { formatTimeSlot, isDigitalOnly, requiresNotarizationType, US_STATES, getHolidaysForYear, MINIMUM_ADVANCE_HOURS } from "./bookingConstants";
 
@@ -147,9 +148,19 @@ export default function BookingScheduleStep(props: ScheduleStepProps) {
         </div>
       )}
 
+      {serviceType && requiresNotarizationType(serviceType, serviceCategories) && (
+        <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground flex items-start gap-2">
+          <Info className="h-4 w-4 flex-shrink-0 mt-0.5" />
+          <p><strong>Cancellation Policy:</strong> Appointments may be cancelled or rescheduled at no charge up to 2 hours before the scheduled time. Late cancellations or no-shows may incur a fee.</p>
+        </div>
+      )}
+
       <div>
-        <Label htmlFor="notes">Additional Notes</Label>
-        <Textarea id="notes" value={props.notes} onChange={e => props.setNotes(e.target.value)} placeholder="Number of documents, special instructions, etc." rows={3} />
+        <div className="flex items-center justify-between">
+          <Label htmlFor="notes">Additional Notes</Label>
+          <CharCounter current={props.notes.length} max={500} />
+        </div>
+        <Textarea id="notes" value={props.notes} onChange={e => props.setNotes(e.target.value.slice(0, 500))} placeholder="Number of documents, special instructions, etc." rows={3} />
       </div>
     </div>
   );

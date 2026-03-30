@@ -3,7 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Upload, Download, FolderOpen, Eye, Sparkles, RefreshCw, Loader2 } from "lucide-react";
+import { FileText, Upload, Download, Eye, Sparkles, RefreshCw, Loader2 } from "lucide-react";
+import { EmptyState } from "@/components/EmptyState";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -90,10 +91,14 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
         </div>
       </div>
       {documents.length === 0 ? (
-        <Card className="border-border/50"><CardContent className="flex flex-col items-center py-12 text-center">
-          <FolderOpen className="mb-4 h-12 w-12 text-muted-foreground/50" />
-          <p className="text-muted-foreground">No documents uploaded yet</p>
-          <p className="text-sm text-muted-foreground mt-1">Upload your documents to get started with the notarization process</p>
+        <Card className="border-border/50"><CardContent className="p-0">
+          <EmptyState
+            icon="documents"
+            title="No documents uploaded yet"
+            description="Upload your documents to get started with the notarization process."
+            actionLabel="Upload Documents"
+            onAction={() => fileInputRef.current?.click()}
+          />
         </CardContent></Card>
       ) : (
         <div className="space-y-3">

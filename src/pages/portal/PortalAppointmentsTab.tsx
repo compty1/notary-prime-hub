@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin, Monitor, Plus, Video, RefreshCw, Wifi } from "lucide-react";
+import { EmptyState } from "@/components/EmptyState";
 
 const statusColors: Record<string, string> = {
   scheduled: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
@@ -53,10 +54,14 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
       {loading ? (
         <div className="flex justify-center py-12"><div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" /></div>
       ) : upcoming.length === 0 && inSession.length === 0 ? (
-        <Card className="border-border/50"><CardContent className="flex flex-col items-center py-12 text-center">
-          <Calendar className="mb-4 h-12 w-12 text-muted-foreground/50" />
-          <p className="text-muted-foreground">No upcoming appointments</p>
-          <Link to="/book" className="mt-4"><Button className="">Book Your First Appointment</Button></Link>
+        <Card className="border-border/50"><CardContent className="p-0">
+          <EmptyState
+            icon="appointments"
+            title="No upcoming appointments"
+            description="Schedule your first notarization appointment to get started."
+            actionLabel="Book Your First Appointment"
+            actionTo="/book"
+          />
         </CardContent></Card>
       ) : (
         <div className="space-y-4">
