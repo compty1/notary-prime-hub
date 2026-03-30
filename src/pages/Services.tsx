@@ -280,17 +280,34 @@ export default function Services() {
 
         {loading ? (
           <ServicesLoadingSkeleton />
+        ) : isError ? (
+          <div className="py-20 text-center text-muted-foreground">
+            <Search className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
+            <p>We couldn’t load services right now.</p>
+            <p className="mt-2 text-xs text-muted-foreground/80">{(error as Error)?.message || "Please try again."}</p>
+            <Button variant="outline" className="mt-4" onClick={() => refetch()}>Retry</Button>
+          </div>
         ) : grouped.length === 0 && searchQuery ? (
           <div className="py-20 text-center text-muted-foreground">
             <Search className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
             <p>No services match "{searchQuery}"</p>
             <Button variant="outline" className="mt-4" onClick={() => setSearchQuery("")}>Clear Search</Button>
           </div>
+        ) : grouped.length === 0 ? (
+          <div className="py-20 text-center text-muted-foreground">
+            <p>No active services are available right now.</p>
+          </div>
         ) : (
           <div className="space-y-16">
             {grouped.map((group) => (
-              <motion.section key={group.category} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }}>
-                <motion.div variants={fadeUp} custom={0} className="mb-6">
+              <section key={group.category}>
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.35 }}
+                  className="mb-6"
+                >
                   <h2 className="font-sans text-2xl font-bold text-foreground">{group.label}</h2>
                   <p className="text-sm text-muted-foreground">{group.description}</p>
                 </motion.div>
@@ -299,7 +316,13 @@ export default function Services() {
                     const IconComp = iconMap[s.icon || "FileText"] || FileText;
                     const { url: actionUrl, label: actionLabel } = getServiceAction(s);
                     return (
-                      <motion.div key={s.id} variants={scaleReveal} custom={i + 1}>
+                      <motion.div
+                        key={s.id}
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true, margin: "-60px" }}
+                        transition={{ duration: 0.25, delay: i * 0.03 }}
+                      >
                         <Card className="group h-full hover:border-primary/20">
                           <CardContent className="flex h-full flex-col p-6">
                             <div className="mb-3 flex items-start justify-between">
@@ -328,7 +351,7 @@ export default function Services() {
                     );
                   })}
                 </div>
-              </motion.section>
+              </section>
             ))}
           </div>
         )}
