@@ -52,7 +52,7 @@ export function Navbar() {
               </Link>
             )}
             <Link to="/book">
-              <Button size="sm" className="bg-gradient-primary text-primary-foreground glow-sm hover:opacity-90 transition-opacity">
+              <Button size="sm" className="text-primary-foreground">
                 Book Now
               </Button>
             </Link>
