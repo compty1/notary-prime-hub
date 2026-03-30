@@ -135,9 +135,9 @@ export default function AdminJournal() {
   };
 
   const exportCSV = () => {
-    const headers = ["Date", "Signer Name", "Document Type", "Service", "Type", "ID Type", "ID Number", "Fee Charged", "Platform Fees", "Travel Fee", "Net Profit", "Oath", "Notes"];
-    const rows = entries.map((e) => [
-      new Date(e.created_at).toLocaleDateString(), e.signer_name, e.document_type,
+    const headers = ["Journal #", "Date", "Signer Name", "Document Type", "Service", "Type", "ID Type", "ID Number", "Fee Charged", "Platform Fees", "Travel Fee", "Net Profit", "Oath", "Notes"];
+    const rows = filtered.map((e) => [
+      e.journal_number || "", new Date(e.created_at).toLocaleDateString(), e.signer_name, e.document_type,
       e.service_performed, e.notarization_type, e.id_type || "", e.id_number || "",
       e.fees_charged || "", e.platform_fees || "", e.travel_fee || "", e.net_profit || "",
       e.oath_administered ? "Yes" : "No", (e.notes || "").replace(/,/g, ";"),
@@ -151,9 +151,47 @@ export default function AdminJournal() {
     toast({ title: "Journal exported", description: "CSV file downloaded." });
   };
 
-  const filtered = entries.filter(
-    (e) => e.signer_name.toLowerCase().includes(searchTerm.toLowerCase()) || e.document_type.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const exportPrintablePDF = () => {
+    const win = window.open("", "_blank");
+    if (!win) { toast({ title: "Popup blocked", description: "Please allow popups to export.", variant: "destructive" }); return; }
+    const rows = filtered.map((e) => `<tr>
+      <td>${e.journal_number || "—"}</td>
+      <td>${new Date(e.created_at).toLocaleDateString()}</td>
+      <td>${e.signer_name}</td>
+      <td>${e.document_type}</td>
+      <td>${e.service_performed?.replace(/_/g, " ")}</td>
+      <td>${e.notarization_type === "ron" ? "RON" : "In-Person"}</td>
+      <td>${e.id_type?.replace(/_/g, " ") || "—"}</td>
+      <td>${e.id_number || "—"}</td>
+      <td>$${parseFloat(e.fees_charged || 0).toFixed(2)}</td>
+      <td>${e.oath_administered ? "Yes" : "No"}</td>
+      <td>${e.notes || ""}</td>
+    </tr>`).join("");
+    win.document.write(`<!DOCTYPE html><html><head><title>Notary Journal Report</title><style>
+      body{font-family:Arial,sans-serif;margin:20px;color:#333}
+      h1{font-size:18px;margin-bottom:4px}
+      p{font-size:12px;color:#666;margin-top:0}
+      table{border-collapse:collapse;width:100%;font-size:11px;margin-top:16px}
+      th,td{border:1px solid #ccc;padding:6px 8px;text-align:left}
+      th{background:#f5f5f5;font-weight:bold}
+      @media print{body{margin:0}button{display:none}}
+    </style></head><body>
+      <h1>Notary Journal — ORC §147.551 Compliant</h1>
+      <p>Generated: ${new Date().toLocaleString()} · ${filtered.length} entries</p>
+      <table><thead><tr><th>#</th><th>Date</th><th>Signer</th><th>Doc Type</th><th>Service</th><th>Type</th><th>ID Type</th><th>ID #</th><th>Fee</th><th>Oath</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table>
+      <script>setTimeout(()=>window.print(),500)</script>
+    </body></html>`);
+    win.document.close();
+    toast({ title: "Print preview opened" });
+  };
+
+  const filtered = entries.filter((e) => {
+    const term = searchTerm.toLowerCase();
+    return e.signer_name.toLowerCase().includes(term) ||
+      e.document_type.toLowerCase().includes(term) ||
+      (e.notes || "").toLowerCase().includes(term) ||
+      (e.service_performed || "").toLowerCase().includes(term);
+  });
 
   return (
     <div>
