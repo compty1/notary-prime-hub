@@ -42,6 +42,7 @@ export function PageShell({ children, hideNav = false, hideFooter = false }: Pag
       {!hideFooter && <Footer phone={contactInfo.phone} email={contactInfo.email} />}
       <BackToTop />
       <CookieConsent />
+      <OfflineIndicator />
     </div>
   );
 }
