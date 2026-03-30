@@ -307,7 +307,7 @@ export default function ServiceDetail() {
 
   return (
     <PageShell>
-
+      <div className="container mx-auto max-w-4xl px-4 pt-4"><Breadcrumbs /></div>
       {/* Hero with complexity & timeline badges (Phase 3.4, 3.6) */}
       <section className="bg-gradient-hero py-12 md:py-16">
         <div className="container mx-auto max-w-4xl px-4">
