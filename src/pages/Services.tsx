@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePageTitle } from "@/lib/usePageTitle";
 import { Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+// Services data is fetched via REST API directly
 import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
 import { useDebounce } from "@/lib/useDebounce";
 import { Button } from "@/components/ui/button";
@@ -158,44 +157,41 @@ export default function Services() {
 
   usePageTitle("Services");
 
-  const {
-    data: services = [],
-    isLoading: loading,
-    isError,
-    error,
-    refetch,
-  } = useQuery({
-    queryKey: ["services-catalog"],
-    queryFn: async () => {
-      const primary = await supabase
-        .from("services")
-        .select("*")
-        .eq("is_active", true)
-        .order("display_order");
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
-      if (!primary.error && primary.data && primary.data.length > 0) {
-        return primary.data as Service[];
-      }
-
-      const restUrl = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/services?select=*&is_active=eq.true&order=display_order.asc`;
+  const fetchServices = async () => {
+    setLoading(true);
+    setIsError(false);
+    setError(null);
+    try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const apiKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
-      const restResponse = await fetch(restUrl, {
+      const restUrl = `${supabaseUrl}/rest/v1/services?select=*&is_active=eq.true&order=display_order.asc`;
+      const response = await fetch(restUrl, {
         headers: {
           apikey: apiKey,
           Authorization: `Bearer ${apiKey}`,
         },
       });
+      if (!response.ok) throw new Error(`Failed to load services (${response.status})`);
+      const data = (await response.json()) as Service[];
+      setServices(data);
+    } catch (err) {
+      setIsError(true);
+      setError(err instanceof Error ? err : new Error(String(err)));
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      if (!restResponse.ok) {
-        throw primary.error ?? new Error(`REST fallback failed (${restResponse.status})`);
-      }
+  useEffect(() => {
+    fetchServices();
+  }, []);
 
-      const restData = (await restResponse.json()) as Service[];
-      return restData;
-    },
-    staleTime: 10 * 60 * 1000,
-    retry: 2,
-  });
+  const refetch = fetchServices;
 
   const formatPrice = (s: Service) => {
     if (s.pricing_model === "custom") return "Custom Quote";
