@@ -136,6 +136,19 @@ export default function BookingScheduleStep(props: ScheduleStepProps) {
       )}
 
       {serviceType && requiresNotarizationType(serviceType, serviceCategories) && (
+        <div>
+          <Label>State of Document Execution</Label>
+          <Select value={props.clientState} onValueChange={props.setClientState}>
+            <SelectTrigger><SelectValue placeholder="Select state..." /></SelectTrigger>
+            <SelectContent>
+              {US_STATES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground mt-1">Where will this document be used or recorded?</p>
+        </div>
+      )}
+
+      {serviceType && requiresNotarizationType(serviceType, serviceCategories) && (
         <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground flex items-start gap-2">
           <Info className="h-4 w-4 flex-shrink-0 mt-0.5" />
           <p><strong>Cancellation Policy:</strong> Appointments may be cancelled or rescheduled at no charge up to 2 hours before the scheduled time. Late cancellations or no-shows may incur a fee.</p>
