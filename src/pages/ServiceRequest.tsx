@@ -286,16 +286,37 @@ export default function ServiceRequest() {
     }
 
     setSubmitting(true);
+
+    // Upload files if any
+    let fileRefs: string[] = [];
+    if (uploadedFiles.length > 0 && user) {
+      setUploading(true);
+      for (const file of uploadedFiles) {
+        const filePath = `${user.id}/service-requests/${Date.now()}_${file.name}`;
+        const { error: uploadErr } = await supabase.storage.from("documents").upload(filePath, file);
+        if (!uploadErr) fileRefs.push(filePath);
+      }
+      setUploading(false);
+    }
+
+    const intakeData = { ...formData, ...(fileRefs.length > 0 ? { attached_files: fileRefs.join(", ") } : {}) };
+
     const { error } = await supabase.from("service_requests").insert({
       client_id: user.id,
       service_name: serviceName,
-      intake_data: formData,
+      intake_data: intakeData,
       notes: notes || null,
     });
 
     if (error) {
       toast({ title: "Submission failed", description: error.message, variant: "destructive" });
     } else {
+      // Send notification email
+      try {
+        await supabase.functions.invoke("send-correspondence", {
+          body: { type: "service_request_submitted", serviceName, clientId: user.id },
+        });
+      } catch {}
       toast({ title: "Request submitted!", description: "We'll review your request and get back to you shortly." });
       setSubmitted(true);
     }
