@@ -1,32 +1,47 @@
 
 
-# Fix: Documents Not Appearing in SignNow After RON Upload
+## Plan: Simplify RON Flow to Link-Paste Only
 
-## Diagnosis
+### Problem
+The current RON session page has two modes controlled by a setting (`ron_session_method`): a complex SignNow API flow (upload → add fields → send invite) and a simpler "email invite" mode where the notary pastes a link. The user wants to consolidate to a single, streamlined flow where the notary always pastes a SignNow signing link directly.
 
-There are zero edge function invocation logs for the `signnow` function, which means either:
-1. The function was never deployed (or needs redeployment after recent webhook changes)
-2. The SignNow API token (`SIGNNOW_API_TOKEN`) has expired — these tokens have a limited lifespan (typically 30 days)
+### Changes
 
-The client-side code in `RonSession.tsx` correctly reads the file, converts to base64, and calls `supabase.functions.invoke("signnow", ...)`. The edge function code correctly sends a multipart form upload to `POST https://api.signnow.com/document`. So the issue is deployment or token-related, not a code bug.
+**1. Simplify `src/pages/RonSession.tsx` — Admin/Notary Session Controls**
+- Remove the `ronMethod` toggle and the entire SignNow API flow branch (upload document, send invite, cancel invite logic)
+- Remove related state: `uploadingDoc`, `sendingInvite`, `cancellingSession`, `inviteEmail`, `inviteSubject`, `inviteMessage`, `signnowDocumentId`
+- Make the "paste link" UI the only session initiation method — always shown, no conditional
+- Improve the paste-link section with clearer guidance: "Open SignNow, prepare the document and signing session there, then paste the signing link below"
+- Auto-update session status to "confirmed" when a link is saved (so the flow progresses)
+- Add a visual step indicator: Step 1 → Paste Link, Step 2 → Verify ID/KBA, Step 3 → Administer Oath, Step 4 → Finalize
+- Keep all existing: ID verification sidebar, KBA toggle, oath administration, voice-to-notes, save/finalize logic
 
-## Plan
+**2. Update `src/pages/RonSession.tsx` — Client View**
+- No changes needed — client view already shows the `participantLink` when available, which is exactly what gets saved from the paste flow
 
-### Step 1: Redeploy the `signnow` edge function
-The function was recently modified to add webhook registration logic. It needs to be redeployed to pick up those changes and ensure it's live.
+**3. Remove unused SignNow API call functions**
+- Remove `handleDocUpload`, `handleSendInvite`, `handleCancelSession` functions from the component
+- Remove the file upload input and invite form JSX entirely
+- Keep the `signnow` edge function intact (it's used elsewhere for integration testing, webhook management, and document download)
 
-### Step 2: Verify the SignNow API token
-Call the `verify_token` action on the deployed function to check if the `SIGNNOW_API_TOKEN` is still valid. SignNow tokens expire — if expired, use the `refresh_token` action to get a new one, then update the secret.
+**4. Update `saveManualLink` in `src/pages/RonSession.tsx`**
+- Rename to `saveSessionLink` for clarity
+- After saving the link, automatically set `sessionStatus` to `"confirmed"` and update the DB session status
+- Add URL validation to ensure the pasted link is a valid URL
 
-### Step 3: Test the upload flow end-to-end
-Use `curl_edge_functions` to call the `signnow` function with `action: "verify_token"` to confirm connectivity, then test a small document upload.
+**5. Update session status badge in the header**
+- Remove the "Manual / Email Invite" vs "SignNow Platform" badge distinction since there's now only one flow
+- Show a simple status badge instead
 
-### Step 4: Add error visibility
-Add a toast or console log in `RonSession.tsx` that surfaces the exact error message when `supabase.functions.invoke` fails, since currently `resp.error.message` may not contain the full SignNow API error detail. Update the error handling to also check `resp.data?.error`.
+### Files Modified
+- `src/pages/RonSession.tsx` — primary changes (simplify to link-paste flow, remove API upload/invite, add step indicator)
 
-## Technical Details
-
-- The `supabase.functions.invoke` call returns `{ data, error }` — but edge function HTTP errors (like 403 from expired commission or 500 from bad token) come back in `resp.data` not `resp.error` unless the function itself is unreachable
-- Current error handling on line 251 only checks `resp.error` (network/CORS errors), missing cases where the function returns a 4xx/5xx with an error body in `resp.data`
-- Fix: also check `if (resp.data?.error) throw new Error(resp.data.error)`
+### What Stays the Same
+- All loading animations
+- Client-side view (already works with paste flow)
+- SignNow edge function (used for other features)
+- ID verification, KBA, oath, voice notes, finalization logic
+- Realtime subscription for session updates
+- Commission expiry checks
+- All database tables and RLS policies
 
