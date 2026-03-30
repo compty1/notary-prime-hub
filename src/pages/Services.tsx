@@ -167,6 +167,7 @@ export default function Services() {
   } = useQuery({
     queryKey: ["services-catalog"],
     queryFn: async () => {
+      console.log("[Services] queryFn executing...");
       const primary = await supabase
         .from("services")
         .select("*")
