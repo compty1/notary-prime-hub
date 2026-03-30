@@ -47,6 +47,10 @@ export default function AdminServiceRequests() {
   const [editPriority, setEditPriority] = useState("");
   const [editNotes, setEditNotes] = useState("");
   const [editClientStatus, setEditClientStatus] = useState("");
+  const [editAssignedTo, setEditAssignedTo] = useState("");
+  const [teamProfiles, setTeamProfiles] = useState<any[]>([]);
+  const [deliverableFile, setDeliverableFile] = useState<File | null>(null);
+  const [uploadingDeliverable, setUploadingDeliverable] = useState(false);
 
   useEffect(() => {
     fetchRequests();
