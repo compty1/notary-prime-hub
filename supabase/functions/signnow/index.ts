@@ -499,6 +499,19 @@ Deno.serve(async (req) => {
         });
       }
 
+      case "check_webhooks": {
+        const { data: sessions } = await serviceClient
+          .from("notarization_sessions")
+          .select("id, appointment_id, signnow_document_id, webhook_status, webhook_events_registered, status, created_at")
+          .not("signnow_document_id", "is", null)
+          .order("created_at", { ascending: false })
+          .limit(50);
+
+        return new Response(JSON.stringify({ sessions: sessions || [] }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       default:
         return new Response(JSON.stringify({ error: `Unknown action: ${action}` }), {
           status: 400,
