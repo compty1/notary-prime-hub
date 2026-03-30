@@ -83,7 +83,18 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { messages } = await req.json();
+    const { z } = await import("https://esm.sh/zod@3.23.8");
+    const BodySchema = z.object({
+      messages: z.array(z.object({
+        role: z.enum(["user", "assistant", "system"]),
+        content: z.string().min(1).max(50000),
+      })).min(1).max(50),
+    });
+    const parsed = BodySchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: parsed.error.flatten().fieldErrors }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const { messages } = parsed.data;
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
