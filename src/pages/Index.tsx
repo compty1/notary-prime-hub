@@ -175,8 +175,7 @@ export default function Index() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* Hero */}
       <section className="relative overflow-hidden bg-background py-24 md:py-36">
-        <div className="absolute inset-0 gradient-mesh" />
-        <div className="scanline" />
+        <div className="absolute inset-0 gradient-mesh opacity-50" />
         <div className="container relative mx-auto px-4">
           <motion.div
             initial="hidden"
