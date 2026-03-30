@@ -419,18 +419,12 @@ export default function Index() {
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="bg-muted/30 py-20">
+      <section id="faq" className="border-t border-border bg-card py-20">
         <div className="container mx-auto px-4">
-          <motion.h2
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-            custom={0}
-            className="mb-12 text-center font-sans text-3xl font-bold text-foreground md:text-4xl">
-            
-            Frequently Asked Questions
-          </motion.h2>
+          <div className="mx-auto mb-12 max-w-2xl text-center">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">FAQ</p>
+            <h2 className="font-sans text-3xl font-bold text-foreground md:text-4xl">Frequently Asked Questions</h2>
+          </div>
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -441,7 +435,7 @@ export default function Index() {
             
             <Accordion type="single" collapsible className="space-y-2">
               {faqs.map((faq, i) =>
-              <AccordionItem key={i} value={`faq-${i}`} className="rounded-xl border border-border/50 bg-card px-4">
+              <AccordionItem key={i} value={`faq-${i}`} className="rounded-xl border border-border bg-background px-4">
                   <AccordionTrigger className="text-left text-sm font-medium">{faq.q}</AccordionTrigger>
                   <AccordionContent className="text-sm text-muted-foreground">{faq.a}</AccordionContent>
                 </AccordionItem>
