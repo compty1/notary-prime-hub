@@ -35,11 +35,10 @@ export function AILeadChatbot() {
     // Check if user shared contact info for lead capture
     const emailMatch = input.match(/[\w.-]+@[\w.-]+\.\w+/);
     if (emailMatch && !leadCaptured) {
-      await supabase.from("leads").insert({
+      await submitLead({
         email: emailMatch[0],
-        source: "ai_chatbot",
-        status: "new",
-        notes: messages.map(m => `${m.role}: ${m.content}`).join("\n").slice(0, 2000),
+        source: "chatbot",
+        notes: messages.map(m => `${m.role}: ${m.content}`).join("\n").slice(0, 1000),
       });
       setLeadCaptured(true);
     }

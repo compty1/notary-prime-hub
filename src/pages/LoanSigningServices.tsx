@@ -67,26 +67,23 @@ export default function LoanSigningServices() {
     }
 
     setSubmitting(true);
-    const { error } = await supabase.from("leads").insert({
-      business_name: form.companyName.trim().slice(0, 200),
-      name: form.contactName.trim().slice(0, 100),
-      email: form.email.trim().slice(0, 255),
-      phone: form.phone.trim().slice(0, 20) || null,
+    const { success, error } = await submitLead({
+      business_name: form.companyName.trim(),
+      name: form.contactName.trim(),
+      email: form.email.trim(),
+      phone: form.phone.trim() || null,
       service_needed: "Loan Signing Services",
       notes: [
         form.volumeEstimate && `Volume: ${form.volumeEstimate}`,
         form.signingTypes && `Types: ${form.signingTypes}`,
         form.preferredContact && `Preferred contact: ${form.preferredContact}`,
-        form.message && `Message: ${form.message.trim().slice(0, 500)}`,
+        form.message && `Message: ${form.message.trim()}`,
       ].filter(Boolean).join(" | "),
       source: "loan_signing_inquiry",
-      lead_type: "business",
-      intent_score: "high",
-      status: "new",
     });
 
     setSubmitting(false);
-    if (error) {
+    if (!success) {
       toast({ title: "Something went wrong", description: "Please try again or contact us directly.", variant: "destructive" });
     } else {
       setSubmitted(true);

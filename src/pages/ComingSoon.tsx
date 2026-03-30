@@ -22,14 +22,12 @@ export default function ComingSoon() {
 
     setSubmitting(true);
     try {
-      const { error } = await supabase.from("leads").insert({
+      const result = await submitLead({
         email,
         source: "coming_soon",
-        status: "new",
-        lead_type: "individual",
         notes: "Signed up for launch notifications",
       });
-      if (error) throw error;
+      if (!result.success) throw new Error(result.error);
       setSubmitted(true);
       toast({ title: "You're on the list!", description: "We'll notify you when we launch." });
     } catch {

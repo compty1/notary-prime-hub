@@ -147,7 +147,7 @@ export default function Index() {
       source: "website_contact_form",
     });
     setSubmitting(false);
-    if (error) {
+    if (!success) {
       toast({ title: "Something went wrong", description: "Please try again or call us directly.", variant: "destructive" });
     } else {
       setLastSubmitTime(now);

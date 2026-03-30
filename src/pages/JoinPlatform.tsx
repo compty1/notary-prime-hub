@@ -107,7 +107,7 @@ export default function JoinPlatform() {
       service_needed: "Provider Application",
     });
     setSubmitting(false);
-    if (error) {
+    if (!success) {
       toast({ title: "Submission failed", description: "Please try again or contact us directly.", variant: "destructive" });
     } else {
       setSubmitted(true);
