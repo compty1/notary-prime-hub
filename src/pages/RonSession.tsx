@@ -249,6 +249,7 @@ export default function RonSession() {
           body: { action: "upload_document", appointment_id: appointmentId, file_name: file.name, file_content: base64 },
         });
         if (resp.error) throw new Error(resp.error.message);
+        if (resp.data?.error) throw new Error(resp.data.error);
         const docId = resp.data?.id;
         if (docId) {
           setSignnowDocumentId(docId);
@@ -280,6 +281,7 @@ export default function RonSession() {
         },
       });
       if (resp.error) throw new Error(resp.error.message);
+      if (resp.data?.error) throw new Error(resp.data.error);
       setSessionStatus("confirmed");
       toast({ title: "Invite sent", description: `Signing invitation sent to ${inviteEmail} via SignNow.` });
     } catch (err: any) {
@@ -297,6 +299,7 @@ export default function RonSession() {
         body: { action: "cancel_invite", document_id: signnowDocumentId, appointment_id: appointmentId },
       });
       if (resp.error) throw new Error(resp.error.message);
+      if (resp.data?.error) throw new Error(resp.data.error);
       setSessionStatus("cancelled");
       toast({ title: "Session cancelled", description: "The SignNow invite has been cancelled." });
     } catch (err: any) {
