@@ -182,7 +182,7 @@ export default function About() {
       </section>
 
       {/* Response time + CTA */}
-      <section className="bg-muted/30 py-16">
+      <section className="border-t border-border bg-card py-16">
         <div className="container mx-auto max-w-2xl px-4 text-center">
           <h2 className="mb-4 font-sans text-2xl font-bold text-foreground">Get in Touch</h2>
           <p className="mb-2 text-muted-foreground">
