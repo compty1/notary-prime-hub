@@ -299,6 +299,7 @@ export default function ClientPortal() {
           }
         }}>
           <TabsList className="w-full overflow-x-auto flex flex-nowrap gap-1 h-auto justify-start sm:justify-center scrollbar-hide">
+            <TabsTrigger value="overview" aria-label="Dashboard Overview"><Home className="mr-1 h-4 w-4 hidden sm:inline" /> Home</TabsTrigger>
             <TabsTrigger value="appointments" aria-label="Appointments"><Calendar className="mr-1 h-4 w-4 hidden sm:inline" /> Appts</TabsTrigger>
             <TabsTrigger value="documents" aria-label="Documents"><FileText className="mr-1 h-4 w-4 hidden sm:inline" /> Docs</TabsTrigger>
             <TabsTrigger value="status" aria-label="Document Status"><Shield className="mr-1 h-4 w-4 hidden sm:inline" /> Status</TabsTrigger>
