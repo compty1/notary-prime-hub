@@ -716,7 +716,7 @@ export default function ServiceDetail() {
                   </h3>
                   <div className="space-y-2 text-sm">
                     {bundles.map((b, i) => (
-                      <Link key={i} to={`/services`} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
+                      <Link key={i} to={getBundleServiceId(b)} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
                         <ArrowRight className="h-3 w-3" /> {b}
                       </Link>
                     ))}
