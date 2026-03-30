@@ -138,6 +138,11 @@ export default function RonSession() {
         setKbaCompleted(session.kba_completed || false);
         setSessionStatus(session.status || "scheduled");
         if ((session as any).participant_link) setParticipantLink((session as any).participant_link);
+        if ((session as any).session_unique_id) setSessionUniqueId((session as any).session_unique_id);
+        if ((session as any).recording_consent) {
+          setRecordingConsent(true);
+          setRecordingConsentAt((session as any).recording_consent_at || null);
+        }
       }
 
       // Check commission expiry (Ohio ORC §147.03)
