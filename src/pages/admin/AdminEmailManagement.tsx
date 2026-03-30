@@ -282,7 +282,7 @@ export default function AdminEmailManagement() {
         setComposeInReplyTo(email.message_id);
       } else if (mode === "replyAll") {
         setComposeTo(email.from_address || "");
-        setComposeCc((email.to_addresses || []).filter(a => a !== Deno?.env?.get?.("IONOS_EMAIL_ADDRESS")).join(", "));
+        setComposeCc((email.to_addresses || []).join(", "));
         setComposeSubject(`Re: ${(email.subject || "").replace(/^Re:\s*/i, "")}`);
         setComposeInReplyTo(email.message_id);
       } else if (mode === "forward") {
