@@ -20,7 +20,7 @@ const oathScripts = {
   affirmation: "Do you solemnly affirm, under penalty of perjury, that the statements in this document are true and correct?",
 };
 
-export default function OneNotarySession() {
+export default function RonSession() {
   const { user, isAdmin, isNotary } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
