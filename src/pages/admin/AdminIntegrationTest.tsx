@@ -238,6 +238,7 @@ export default function AdminIntegrationTest() {
                 testDatabaseConnection();
                 testStorageConnection();
                 testSignNowConnection();
+                testSignNowToken();
                 testStripeConnection();
                 testEmailFunction();
               }}
