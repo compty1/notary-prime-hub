@@ -39,6 +39,8 @@ export function PageShell({ children, hideNav = false, hideFooter = false }: Pag
         {children}
       </motion.main>
       {!hideFooter && <Footer phone={contactInfo.phone} email={contactInfo.email} />}
+      <BackToTop />
+      <CookieConsent />
     </div>
   );
 }
