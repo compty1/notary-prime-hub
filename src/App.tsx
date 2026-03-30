@@ -67,7 +67,15 @@ const AdminLeadPortal = lazy(() => import("./pages/admin/AdminLeadPortal"));
 const NotaryProcessGuide = lazy(() => import("./pages/NotaryProcessGuide"));
 const AdminIntegrationTest = lazy(() => import("./pages/admin/AdminIntegrationTest"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const PageLoader = () => (
   <div className="flex min-h-screen items-center justify-center bg-background">
