@@ -99,14 +99,14 @@ export default function AdminRevenue() {
   const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
   const exportCSV = () => {
-    const headers = ["Date", "Client", "Service", "Type", "Fee", "Platform Fees", "OneNotary Fee", "Travel Fee", "Notary Payout", "Net Profit"];
+    const headers = ["Date", "Client", "Service", "Type", "Fee", "Platform Fees", "Signing Platform Fee", "Travel Fee", "Notary Payout", "Net Profit"];
     const rows = filtered.map((e) => {
       const fee = parseFloat(e.fees_charged) || 0;
       const platform = parseFloat(e.platform_fees) || 0;
-      const onenotary = parseFloat(e.onenotary_fee) || 0;
+      const signingFee = parseFloat(e.platform_fee) || 0;
       const travel = parseFloat(e.travel_fee) || 0;
       const payout = parseFloat(e.notary_payout) || 0;
-      return [formatDate(e.created_at), e.signer_name, e.document_type, e.notarization_type, fee.toFixed(2), platform.toFixed(2), onenotary.toFixed(2), travel.toFixed(2), payout.toFixed(2), (fee - platform - onenotary - travel).toFixed(2)];
+      return [formatDate(e.created_at), e.signer_name, e.document_type, e.notarization_type, fee.toFixed(2), platform.toFixed(2), signingFee.toFixed(2), travel.toFixed(2), payout.toFixed(2), (fee - platform - signingFee - travel).toFixed(2)];
     });
     const csv = [headers, ...rows].map((r) => r.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
