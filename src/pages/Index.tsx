@@ -333,7 +333,7 @@ export default function Index() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="bg-muted/30 py-20">
+      <section id="how-it-works" className="border-t border-border bg-card py-20">
         <div className="container mx-auto px-4">
           <motion.div
             initial="hidden"
@@ -341,6 +341,7 @@ export default function Index() {
             viewport={{ once: true, margin: "-50px" }}
             className="mx-auto mb-16 max-w-2xl text-center">
             
+            <motion.p variants={fadeUp} custom={0} className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Simple Process</motion.p>
             <motion.h2 variants={fadeUp} custom={0} className="mb-4 font-sans text-3xl font-bold text-foreground md:text-4xl">
               How It Works
             </motion.h2>
@@ -356,14 +357,14 @@ export default function Index() {
             
             {steps.map((step, i) =>
             <motion.div key={step.num} variants={scaleReveal} custom={i} className="relative text-center">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-primary shadow-lg">
-                  <span className="font-mono text-lg font-bold text-white">{step.num}</span>
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-border bg-card">
+                  <span className="font-mono text-lg font-bold text-foreground">{step.num}</span>
                 </div>
                 <h3 className="mb-2 font-sans text-xl font-semibold text-foreground">{step.title}</h3>
                 <p className="text-sm text-muted-foreground">{step.desc}</p>
                 {i < steps.length - 1 &&
-              <div className="absolute right-0 top-8 hidden w-full -translate-y-1/2 md:block">
-                    <ChevronRight className="absolute -right-4 h-5 w-5 text-primary/30" />
+              <div className="absolute right-0 top-7 hidden w-full -translate-y-1/2 md:block">
+                    <ChevronRight className="absolute -right-4 h-5 w-5 text-border" />
                   </div>
               }
               </motion.div>
@@ -371,7 +372,7 @@ export default function Index() {
           </motion.div>
           <div className="mt-12 text-center">
             <Link to="/book">
-              <Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">
+              <Button size="lg" className="rounded-full px-8">
                 Get Started <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
             </Link>
