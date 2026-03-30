@@ -2,7 +2,7 @@
 export const BRAND = {
   name: "Notar",
   initials: "N",
-  tagline: "Notary & Document Services — Ohio",
+  tagline: "Trusted Online Notary & Document Verification",
   taglineShort: "Notary & Document Services",
   fullTitle: "Notar — Ohio Notary Public | In-Person & RON",
   domain: "NotarDex.com",

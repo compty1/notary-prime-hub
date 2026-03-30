@@ -84,7 +84,7 @@ export default function TechCheck({ onComplete }: TechCheckProps) {
             {checking && item.result === null ? (
               <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
             ) : item.result === true ? (
-              <CheckCircle className="h-5 w-5 text-emerald-500" />
+              <CheckCircle className="h-5 w-5 text-primary" />
             ) : item.result === false ? (
               <XCircle className="h-5 w-5 text-destructive" />
             ) : (
@@ -94,7 +94,7 @@ export default function TechCheck({ onComplete }: TechCheckProps) {
         ))}
 
         {done && (
-          <div className={`rounded-lg p-3 text-sm font-medium text-center ${allPassed ? "bg-emerald-50 text-emerald-800 border border-emerald-200" : "bg-amber-50 text-amber-800 border border-amber-200"}`}>
+          <div className={`rounded-lg p-3 text-sm font-medium text-center ${allPassed ? "bg-primary/5 text-primary border border-primary/20" : "bg-amber-50 text-amber-800 border border-amber-200"}`}>
             {allPassed ? "✓ All checks passed — you're ready for your session!" : "⚠️ Some checks failed. Please resolve the issues above before your session."}
           </div>
         )}

@@ -68,12 +68,12 @@ export default function VerifySeal() {
               </div>
             ) : (
               <div className="space-y-6">
-                <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+                <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <ShieldCheck className="h-5 w-5 text-emerald-600" />
-                    <span className="font-semibold text-emerald-800">Verified & Active</span>
+                    <ShieldCheck className="h-5 w-5 text-primary" />
+                    <span className="font-semibold text-primary">Verified & Active</span>
                   </div>
-                  <p className="text-sm text-emerald-700">This notarization verification record is valid and has not been revoked.</p>
+                  <p className="text-sm text-primary">This notarization verification record is valid and has not been revoked.</p>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">

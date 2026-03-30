@@ -18,7 +18,7 @@ import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 
-const HOLLYWOOD_CASINO = { lat: 39.9555, lng: -83.1145 };
+const DEFAULT_OFFICE = { lat: 39.9612, lng: -82.9988 };
 
 const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
   const R = 3959; // Earth radius in miles
@@ -99,7 +99,7 @@ export default function FeeCalculator() {
       .then(r => r.json())
       .then(data => {
         if (data?.[0]) {
-          const dist = haversineDistance(HOLLYWOOD_CASINO.lat, HOLLYWOOD_CASINO.lng, parseFloat(data[0].lat), parseFloat(data[0].lon));
+          const dist = haversineDistance(DEFAULT_OFFICE.lat, DEFAULT_OFFICE.lng, parseFloat(data[0].lat), parseFloat(data[0].lon));
           setCalculatedDistance(Math.round(dist * 10) / 10);
           if (!manualOverride) setTravelMiles(Math.round(dist * 10) / 10);
         }
@@ -147,8 +147,8 @@ export default function FeeCalculator() {
                         <p className="text-xs text-muted-foreground flex items-start gap-2">
                           <Info className="h-4 w-4 flex-shrink-0 text-primary mt-0.5" />
                           <span>
-                            Travel distance is calculated from our central meeting point at <strong>Hollywood Casino on West Broad Street, Columbus</strong> — 
-                            a convenient, central location for fair and efficient travel fees for both notary and client.
+                            Travel distance is calculated from our central Columbus office location — 
+                            ensuring fair and efficient travel fees for both notary and client.
                           </span>
                         </p>
                       </div>
@@ -159,8 +159,8 @@ export default function FeeCalculator() {
                           onChange={setMeetingAddress}
                           onSelect={handleAddressSelect}
                           placeholder="Enter your meeting address..."
-                          userLat={HOLLYWOOD_CASINO.lat}
-                          userLon={HOLLYWOOD_CASINO.lng}
+                          userLat={DEFAULT_OFFICE.lat}
+                          userLon={DEFAULT_OFFICE.lng}
                         />
                       </div>
                       {calculatedDistance !== null && !manualOverride && (

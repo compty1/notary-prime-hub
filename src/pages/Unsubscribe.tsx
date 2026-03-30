@@ -34,7 +34,7 @@ export default function Unsubscribe() {
             {status === "loading" && <Loader2 className="h-12 w-12 animate-spin text-muted-foreground mb-4" />}
             {status === "success" && (
               <>
-                <CheckCircle className="h-12 w-12 text-emerald-500 mb-4" />
+                <CheckCircle className="h-12 w-12 text-primary mb-4" />
                 <h2 className="font-sans text-xl font-bold mb-2">Unsubscribed</h2>
                 <p className="text-sm text-muted-foreground">You have been successfully unsubscribed from our emails.</p>
               </>

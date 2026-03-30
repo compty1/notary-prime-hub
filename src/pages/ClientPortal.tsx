@@ -444,7 +444,7 @@ export default function ClientPortal() {
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">{c.direction === "inbound" ? <Mail className="h-4 w-4 text-primary" /> : <Send className="h-4 w-4 text-primary" />}<span className="text-sm font-medium">{c.subject}</span></div>
-                        <Badge className={c.status === "replied" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300" : c.status === "pending" ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300" : "bg-muted text-muted-foreground"}>{c.status.replace(/_/g, " ")}</Badge>
+                        <Badge className={c.status === "replied" ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" : c.status === "pending" ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300" : "bg-muted text-muted-foreground"}>{c.status.replace(/_/g, " ")}</Badge>
                       </div>
                       <p className="text-xs text-muted-foreground mb-1">{c.direction === "inbound" ? `From: ${c.from_address || "—"}` : `To: ${c.to_address || "—"}`}</p>
                       <p className="text-sm text-foreground line-clamp-2">{c.body}</p>
@@ -487,7 +487,7 @@ export default function ClientPortal() {
               return (
                 <Card key={req.id} className="border-border/50">
                   <CardContent className="p-4">
-                    <div className="flex items-center justify-between mb-2"><span className="text-sm font-medium">{req.document_description}</span><Badge className={req.status === "delivered" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300" : "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"}>{req.status.replace(/_/g, " ")}</Badge></div>
+                    <div className="flex items-center justify-between mb-2"><span className="text-sm font-medium">{req.document_description}</span><Badge className={req.status === "delivered" ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" : "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"}>{req.status.replace(/_/g, " ")}</Badge></div>
                     <div className="flex items-center gap-1 my-3">{apoSteps.map((s, i) => (<div key={s} className="flex items-center flex-1"><div className={`flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold ${i <= currentIdx ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>{i < currentIdx ? "✓" : i + 1}</div>{i < apoSteps.length - 1 && <div className={`flex-1 h-0.5 mx-1 ${i < currentIdx ? "bg-accent" : "bg-muted"}`} />}</div>))}</div>
                     <div className="flex justify-between text-[9px] text-muted-foreground mb-2">{apoLabels.map(l => <span key={l}>{l}</span>)}</div>
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
@@ -524,7 +524,7 @@ export default function ClientPortal() {
                         </div>
                         <div className="flex items-center gap-2">
                           {p.status === "pending" && <Button size="sm" className="text-xs " onClick={() => setPayingPaymentId(p.id)}><CreditCard className="mr-1 h-3 w-3" /> Pay Now</Button>}
-                          <Badge className={p.status === "paid" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300" : p.status === "pending" ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300" : "bg-muted text-muted-foreground"}>{p.status}</Badge>
+                          <Badge className={p.status === "paid" ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" : p.status === "pending" ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300" : "bg-muted text-muted-foreground"}>{p.status}</Badge>
                           {p.invoice_url && <a href={p.invoice_url} target="_blank" rel="noreferrer"><Button size="sm" variant="outline" className="text-xs">View Invoice</Button></a>}
                         </div>
                       </CardContent>
@@ -565,7 +565,7 @@ export default function ClientPortal() {
             ) : (
               <div className="space-y-3">{serviceRequests.map(req => {
                 const intakeData = typeof req.intake_data === 'object' ? req.intake_data : {};
-                return (<Card key={req.id} className="border-border/50"><CardContent className="p-4"><div className="flex items-center justify-between mb-2"><div><p className="font-medium text-sm">{req.service_name}</p><p className="text-xs text-muted-foreground">{new Date(req.created_at).toLocaleDateString()}</p></div><Badge className={req.status === "completed" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300" : req.status === "in_progress" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" : "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"}>{req.status.replace(/_/g, " ")}</Badge></div>
+                return (<Card key={req.id} className="border-border/50"><CardContent className="p-4"><div className="flex items-center justify-between mb-2"><div><p className="font-medium text-sm">{req.service_name}</p><p className="text-xs text-muted-foreground">{new Date(req.created_at).toLocaleDateString()}</p></div><Badge className={req.status === "completed" ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" : req.status === "in_progress" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" : "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"}>{req.status.replace(/_/g, " ")}</Badge></div>
                 {Object.entries(intakeData).length > 0 && <div className="mt-2 text-xs text-muted-foreground space-y-1">{Object.entries(intakeData).slice(0, 4).map(([key, value]) => <p key={key}><span className="font-medium capitalize">{key.replace(/_/g, " ")}:</span> {String(value)}</p>)}</div>}
                 {req.notes && <p className="text-xs text-muted-foreground mt-2 italic">{req.notes}</p>}</CardContent></Card>);
               })}</div>

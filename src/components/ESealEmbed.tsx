@@ -33,7 +33,7 @@ export function ESealEmbed({
 
       <div className="flex items-center gap-1">
         {status === "valid" ? (
-          <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 text-xs">
+          <Badge className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary text-xs">
             <CheckCircle className="mr-1 h-3 w-3" /> Valid
           </Badge>
         ) : (

@@ -173,8 +173,8 @@ export default function KBAVerification({ signerName, onComplete, onCancel }: KB
           <div className="text-center py-4 space-y-3">
             {result ? (
               <>
-                <CheckCircle className="mx-auto h-12 w-12 text-emerald-500" />
-                <h4 className="font-sans text-lg font-bold text-emerald-600">KBA Passed</h4>
+                <CheckCircle className="mx-auto h-12 w-12 text-primary" />
+                <h4 className="font-sans text-lg font-bold text-primary">KBA Passed</h4>
                 <p className="text-sm text-muted-foreground">Identity verification successful. The signer has been authenticated.</p>
               </>
             ) : (

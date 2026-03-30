@@ -195,9 +195,9 @@ export default function LoanSigningServices() {
 
           {submitted ? (
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-              <Card className="border-emerald-200 bg-emerald-50">
+              <Card className="border-primary/20 bg-primary/5">
                 <CardContent className="p-8 text-center">
-                  <CheckCircle className="mx-auto mb-4 h-12 w-12 text-emerald-600" />
+                  <CheckCircle className="mx-auto mb-4 h-12 w-12 text-primary" />
                   <h3 className="mb-2 font-sans text-xl font-bold">Inquiry Received!</h3>
                   <p className="mb-6 text-muted-foreground">
                     Thank you for your interest. We'll review your information and contact you within 24 hours 

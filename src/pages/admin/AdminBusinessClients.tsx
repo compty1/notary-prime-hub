@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 
 const verificationColors: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
-  verified: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
+  verified: "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary",
   rejected: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
 };
 

@@ -20,7 +20,7 @@ const statusColors: Record<string, string> = {
   submitted: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
   in_progress: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
   awaiting_client: "bg-orange-500/10 text-orange-700 dark:text-orange-400",
-  completed: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+  completed: "bg-primary/10 text-primary dark:text-primary",
   cancelled: "bg-muted text-muted-foreground",
 };
 
@@ -130,7 +130,7 @@ export default function AdminServiceRequests() {
           { label: "Total", value: stats.total, icon: FileText, color: "text-foreground" },
           { label: "New", value: stats.submitted, icon: AlertTriangle, color: "text-blue-500" },
           { label: "In Progress", value: stats.inProgress, icon: Clock, color: "text-yellow-500" },
-          { label: "Completed", value: stats.completed, icon: CheckCircle, color: "text-emerald-500" },
+          { label: "Completed", value: stats.completed, icon: CheckCircle, color: "text-primary" },
         ].map(s => (
           <Card key={s.label} className="border-border/50">
             <CardContent className="flex items-center gap-3 p-4">

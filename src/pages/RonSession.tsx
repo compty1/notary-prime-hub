@@ -53,7 +53,7 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
           <div key={step.label} className="flex items-center gap-1 flex-1">
             <div className={cn(
               "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-              isDone && "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
+              isDone && "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary",
               isActive && "bg-primary/10 text-primary ring-1 ring-primary/30",
               !isActive && !isDone && "bg-muted text-muted-foreground"
             )}>
@@ -62,7 +62,7 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
               <span className="sm:hidden">{i + 1}</span>
             </div>
             {i < STEPS.length - 1 && (
-              <div className={cn("h-px flex-1 min-w-4", isDone ? "bg-emerald-300 dark:bg-emerald-700" : "bg-border")} />
+              <div className={cn("h-px flex-1 min-w-4", isDone ? "bg-primary/30 dark:bg-primary" : "bg-border")} />
             )}
           </div>
         );
@@ -517,14 +517,14 @@ export default function RonSession() {
               <h2 className="mb-4 font-sans text-xl font-semibold">Session Checklist</h2>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="mt-0.5 h-5 w-5 text-emerald-500" />
+                  <CheckCircle className="mt-0.5 h-5 w-5 text-primary" />
                   <div>
                     <p className="font-medium">Government-Issued Photo ID Ready</p>
                     <p className="text-sm text-muted-foreground">Driver's license, passport, or state ID</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="mt-0.5 h-5 w-5 text-emerald-500" />
+                  <CheckCircle className="mt-0.5 h-5 w-5 text-primary" />
                   <div>
                     <p className="font-medium">Camera & Microphone Access</p>
                     <p className="text-sm text-muted-foreground">Required for identity verification and session recording</p>
@@ -695,10 +695,10 @@ export default function RonSession() {
                 </div>
 
                 {participantLink && (
-                  <div className="mt-4 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 p-3">
+                  <div className="mt-4 rounded-lg bg-primary/5 dark:bg-primary/10 border border-primary/20 dark:border-primary/20 p-3">
                     <div className="flex items-center gap-2 mb-1">
-                      <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                      <p className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                      <CheckCircle className="h-4 w-4 text-primary dark:text-primary" />
+                      <p className="text-xs font-medium text-primary dark:text-primary">
                         Session link active — client can join via {SIGNING_PLATFORMS.find(p => p.value === signingPlatform)?.label || signingPlatform}
                       </p>
                     </div>
@@ -716,28 +716,28 @@ export default function RonSession() {
                 <h2 className="mb-4 font-sans text-xl font-semibold">Verification Checklist</h2>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
-                    {participantLink ? <CheckCircle className="mt-0.5 h-5 w-5 text-emerald-500" /> : <AlertCircle className="mt-0.5 h-5 w-5 text-amber-500" />}
+                    {participantLink ? <CheckCircle className="mt-0.5 h-5 w-5 text-primary" /> : <AlertCircle className="mt-0.5 h-5 w-5 text-amber-500" />}
                     <div>
                       <p className="font-medium">Session Link {participantLink ? "✓ Active" : "— Paste above"}</p>
                       <p className="text-sm text-muted-foreground">Signing link shared with client</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    {idVerified ? <CheckCircle className="mt-0.5 h-5 w-5 text-emerald-500" /> : <AlertCircle className="mt-0.5 h-5 w-5 text-amber-500" />}
+                    {idVerified ? <CheckCircle className="mt-0.5 h-5 w-5 text-primary" /> : <AlertCircle className="mt-0.5 h-5 w-5 text-amber-500" />}
                     <div>
                       <p className="font-medium">Government-Issued Photo ID {idVerified ? "✓ Verified" : "— Pending"}</p>
                       <p className="text-sm text-muted-foreground">Driver's license, passport, or state ID</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    {kbaCompleted ? <CheckCircle className="mt-0.5 h-5 w-5 text-emerald-500" /> : <AlertCircle className="mt-0.5 h-5 w-5 text-amber-500" />}
+                    {kbaCompleted ? <CheckCircle className="mt-0.5 h-5 w-5 text-primary" /> : <AlertCircle className="mt-0.5 h-5 w-5 text-amber-500" />}
                     <div>
                       <p className="font-medium">Knowledge-Based Authentication (KBA) {kbaCompleted ? "✓ Passed" : "— Pending"}</p>
                       <p className="text-sm text-muted-foreground">Required under Ohio law (ORC §147.66). 5 identity questions via MISMO-compliant provider.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    {oathAdministered ? <CheckCircle className="mt-0.5 h-5 w-5 text-emerald-500" /> : <AlertCircle className="mt-0.5 h-5 w-5 text-amber-500" />}
+                    {oathAdministered ? <CheckCircle className="mt-0.5 h-5 w-5 text-primary" /> : <AlertCircle className="mt-0.5 h-5 w-5 text-amber-500" />}
                     <div>
                       <p className="font-medium">Oath / Affirmation {oathAdministered ? "✓ Administered" : "— Pending"}</p>
                       <p className="text-sm text-muted-foreground">Administer the appropriate oath using the sidebar panel</p>
@@ -794,7 +794,7 @@ export default function RonSession() {
                     <Switch checked={idVerified} onCheckedChange={setIdVerified} />
                     <Label className="text-xs">ID Verified — matches signer</Label>
                   </div>
-                  {idVerified && <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 text-xs"><CheckCircle className="mr-1 h-3 w-3" /> Verified</Badge>}
+                  {idVerified && <Badge variant="secondary" className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary text-xs"><CheckCircle className="mr-1 h-3 w-3" /> Verified</Badge>}
                 </div>
               </CardContent>
             </Card>
@@ -822,7 +822,7 @@ export default function RonSession() {
                   <Label className="text-xs">KBA {kbaCompleted ? "Passed" : "Pending"}</Label>
                 </div>
                 {kbaCompleted ? (
-                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 text-xs"><CheckCircle className="mr-1 h-3 w-3" /> KBA Passed</Badge>
+                  <Badge variant="secondary" className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary text-xs"><CheckCircle className="mr-1 h-3 w-3" /> KBA Passed</Badge>
                 ) : (
                   <Badge variant="secondary" className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 text-xs"><AlertCircle className="mr-1 h-3 w-3" /> Awaiting KBA</Badge>
                 )}
@@ -857,7 +857,7 @@ export default function RonSession() {
                   <Label className="text-xs">Signer consented to session recording</Label>
                 </div>
                 {recordingConsent && recordingConsentAt && (
-                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 text-xs">
+                  <Badge variant="secondary" className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary text-xs">
                     <CheckCircle className="mr-1 h-3 w-3" /> Consent at {new Date(recordingConsentAt).toLocaleTimeString()}
                   </Badge>
                 )}
@@ -891,8 +891,8 @@ export default function RonSession() {
                 {!oathAdministered ? (
                   <Button size="sm" className="w-full" onClick={administerOath}>Mark Oath Administered</Button>
                 ) : (
-                  <div className="rounded-lg bg-emerald-50 dark:bg-emerald-900/20 p-2 text-center">
-                    <p className="flex items-center justify-center gap-1 text-xs text-emerald-700 dark:text-emerald-300">
+                  <div className="rounded-lg bg-primary/5 dark:bg-primary/10 p-2 text-center">
+                    <p className="flex items-center justify-center gap-1 text-xs text-primary dark:text-primary">
                       <CheckCircle className="h-3 w-3" /> Oath administered at {oathTimestamp ? new Date(oathTimestamp).toLocaleTimeString() : ""}
                     </p>
                   </div>
@@ -918,19 +918,19 @@ export default function RonSession() {
             </Card>
 
             {/* Complete & Finalize */}
-            <Card className="border-border/50 border-emerald-200 dark:border-emerald-800 bg-emerald-50/30 dark:bg-emerald-900/10">
+            <Card className="border-border/50 border-primary/20 dark:border-primary/20 bg-primary/5/30 dark:bg-primary/5">
               <CardContent className="p-4">
                 <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
-                  <FileCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" /> Complete & Finalize
+                  <FileCheck className="h-4 w-4 text-primary dark:text-primary" /> Complete & Finalize
                 </h3>
                 <p className="mb-3 text-xs text-muted-foreground">Marks appointment as completed, creates journal entry, e-seal verification, and payment record.</p>
                 <ul className="mb-3 space-y-1 text-xs">
-                  <li className="flex items-center gap-1">{participantLink ? <CheckCircle className="h-3 w-3 text-emerald-500" /> : <XCircle className="h-3 w-3 text-destructive" />} Session Link</li>
-                  <li className="flex items-center gap-1">{idVerified ? <CheckCircle className="h-3 w-3 text-emerald-500" /> : <XCircle className="h-3 w-3 text-destructive" />} ID Verification</li>
-                  <li className="flex items-center gap-1">{kbaCompleted ? <CheckCircle className="h-3 w-3 text-emerald-500" /> : <XCircle className="h-3 w-3 text-destructive" />} KBA Completed</li>
-                  <li className="flex items-center gap-1">{oathAdministered ? <CheckCircle className="h-3 w-3 text-emerald-500" /> : <XCircle className="h-3 w-3 text-destructive" />} Oath Administered</li>
+                  <li className="flex items-center gap-1">{participantLink ? <CheckCircle className="h-3 w-3 text-primary" /> : <XCircle className="h-3 w-3 text-destructive" />} Session Link</li>
+                  <li className="flex items-center gap-1">{idVerified ? <CheckCircle className="h-3 w-3 text-primary" /> : <XCircle className="h-3 w-3 text-destructive" />} ID Verification</li>
+                  <li className="flex items-center gap-1">{kbaCompleted ? <CheckCircle className="h-3 w-3 text-primary" /> : <XCircle className="h-3 w-3 text-destructive" />} KBA Completed</li>
+                  <li className="flex items-center gap-1">{oathAdministered ? <CheckCircle className="h-3 w-3 text-primary" /> : <XCircle className="h-3 w-3 text-destructive" />} Oath Administered</li>
                 </ul>
-                <Button className="w-full bg-emerald-600 text-white hover:bg-emerald-700" disabled={!idVerified || !kbaCompleted || completing} onClick={completeAndFinalize}>
+                <Button className="w-full bg-primary text-white hover:bg-primary/90" disabled={!idVerified || !kbaCompleted || completing} onClick={completeAndFinalize}>
                   {completing ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <FileCheck className="mr-1 h-4 w-4" />} Complete Session
                 </Button>
               </CardContent>

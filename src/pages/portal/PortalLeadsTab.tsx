@@ -58,7 +58,7 @@ export default function PortalLeadsTab({ userId }: PortalLeadsTabProps) {
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
               <span className="font-medium text-sm">{req.service_name}</span>
-              <Badge className={req.status === "completed" || req.status === "delivered" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300" : "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"}>
+              <Badge className={req.status === "completed" || req.status === "delivered" ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" : "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"}>
                 {req.client_visible_status || req.status}
               </Badge>
             </div>

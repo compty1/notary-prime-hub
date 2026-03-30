@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 const actionColors: Record<string, string> = {
   appointment_status_changed: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
   appointment_created_by_admin: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-  journal_entry_created: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
+  journal_entry_created: "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary",
   document_status_changed: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
   document_deleted: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
   ron_session_saved: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",

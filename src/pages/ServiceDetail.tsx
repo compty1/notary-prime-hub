@@ -314,7 +314,7 @@ export default function ServiceDetail() {
                   <Clock className="mr-1 h-3 w-3" /> {timeline}
                 </Badge>
                 <Badge variant="outline" className={`text-xs border-primary-foreground/20 ${
-                  complexity.level === "Simple" ? "text-emerald-300" : complexity.level === "Complex" ? "text-amber-300" : "text-blue-300"
+                  complexity.level === "Simple" ? "text-primary" : complexity.level === "Complex" ? "text-amber-300" : "text-blue-300"
                 }`}>
                   {complexity.level} · {complexity.duration}
                 </Badge>
@@ -351,7 +351,7 @@ export default function ServiceDetail() {
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="font-sans text-xl font-bold">Preparation Checklist</h2>
                   {requirements.filter(r => r.is_required).length > 0 && (
-                    <Badge variant="outline" className={readinessPercent === 100 ? "border-emerald-500 text-emerald-600" : ""}>
+                    <Badge variant="outline" className={readinessPercent === 100 ? "border-primary text-primary" : ""}>
                       {readinessPercent}% ready
                     </Badge>
                   )}

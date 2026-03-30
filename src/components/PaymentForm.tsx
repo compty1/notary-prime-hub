@@ -62,7 +62,7 @@ function CheckoutForm({ amount, onSuccess, onCancel }: { amount: number; onSucce
   if (succeeded) {
     return (
       <div className="flex flex-col items-center gap-4 py-8">
-        <CheckCircle className="h-12 w-12 text-emerald-500" />
+        <CheckCircle className="h-12 w-12 text-primary" />
         <p className="text-lg font-medium text-foreground">Payment Successful</p>
         <p className="text-sm text-muted-foreground">${amount.toFixed(2)} has been charged.</p>
       </div>

@@ -259,7 +259,7 @@ export default function NotaryGuide() {
             {["State Driver's License", "State ID Card", "U.S. Passport", "U.S. Military ID"].map((id) => (
               <Card key={id} className="border-border/50">
                 <CardContent className="flex items-center gap-2 p-4">
-                  <CheckCircle className="h-4 w-4 text-emerald-500" />
+                  <CheckCircle className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium">{id}</span>
                 </CardContent>
               </Card>
@@ -293,7 +293,7 @@ export default function NotaryGuide() {
                           <div className="flex items-center gap-2">
                             <span>{doc.name}</span>
                             <Badge variant="outline" className="text-xs">{doc.method}</Badge>
-                            {doc.ronEligible && <Badge className="bg-emerald-100 text-emerald-800 text-xs">RON OK</Badge>}
+                            {doc.ronEligible && <Badge className="bg-primary/10 text-primary text-xs">RON OK</Badge>}
                           </div>
                         </AccordionTrigger>
                         <AccordionContent>
@@ -304,7 +304,7 @@ export default function NotaryGuide() {
                                 <ul className="space-y-1 text-sm">
                                   {doc.whoPresent.map((w, i) => (
                                     <li key={i} className="flex items-start gap-1.5">
-                                      <CheckCircle className="mt-0.5 h-3 w-3 flex-shrink-0 text-emerald-500" />
+                                      <CheckCircle className="mt-0.5 h-3 w-3 flex-shrink-0 text-primary" />
                                       <span>{w}</span>
                                     </li>
                                   ))}
@@ -400,7 +400,7 @@ export default function NotaryGuide() {
             <Card className="border-border/50">
               <CardContent className="p-6">
                 <h3 className="mb-2 font-sans text-lg font-semibold flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-emerald-500" /> Full Faith & Credit
+                  <CheckCircle className="h-5 w-5 text-primary" /> Full Faith & Credit
                 </h3>
                 <p className="text-sm text-muted-foreground">
                   Under Article IV, Section 1 of the U.S. Constitution, Ohio RON notarizations are recognized in all 50 states. 

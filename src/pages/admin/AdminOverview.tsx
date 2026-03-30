@@ -145,7 +145,7 @@ export default function AdminOverview() {
   const statCards = [
     { label: "Total Appointments", value: stats.total, icon: Calendar, color: "text-blue-600" },
     { label: "Upcoming", value: stats.upcoming, icon: Clock, color: "text-amber-600" },
-    { label: "Completed", value: stats.completed, icon: CheckCircle, color: "text-emerald-600" },
+    { label: "Completed", value: stats.completed, icon: CheckCircle, color: "text-primary" },
     { label: "Clients", value: stats.clients, icon: Users, color: "text-purple-600" },
     { label: "Revenue", value: `$${stats.revenue.toFixed(2)}`, icon: DollarSign, color: "text-primary" },
   ];

@@ -199,7 +199,7 @@ export default function Index() {
               </motion.p>
               <motion.div variants={fadeUp} custom={3}>
                 <Link to="/book">
-                  <Button size="lg" className="rounded-full px-8 shadow-sm">
+                  <Button variant="accent" size="lg" className="rounded-full px-8 shadow-sm">
                     Get started free <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
@@ -235,6 +235,7 @@ export default function Index() {
                   className="h-full w-full object-cover"
                   width={960}
                   height={1024}
+                  loading="lazy"
                 />
               </div>
 
@@ -372,7 +373,7 @@ export default function Index() {
           </motion.div>
           <div className="mt-12 text-center">
             <Link to="/book">
-              <Button size="lg" className="rounded-full px-8">
+              <Button variant="accent" size="lg" className="rounded-full px-8">
                 Get Started <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
             </Link>
