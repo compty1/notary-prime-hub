@@ -44,7 +44,7 @@ const CancelInviteSchema = z.object({
 });
 
 const NoParamsSchema = z.object({
-  action: z.enum(["list_documents", "verify_token", "refresh_token"]),
+  action: z.enum(["list_documents", "verify_token", "refresh_token", "check_webhooks"]),
 });
 
 const WEBHOOK_CALLBACK = `${Deno.env.get("SUPABASE_URL")}/functions/v1/signnow-webhook`;
