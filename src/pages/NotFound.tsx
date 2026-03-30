@@ -1,5 +1,6 @@
 import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
+import { usePageTitle } from "@/lib/usePageTitle";
 import { Button } from "@/components/ui/button";
 import { Home, ArrowLeft, FileQuestion, Search } from "lucide-react";
 
@@ -14,10 +15,9 @@ const popularPages = [
 const NotFound = () => {
   const location = useLocation();
 
+  usePageTitle("Page Not Found");
   useEffect(() => {
-    document.title = "Page Not Found — Notar";
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
-    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
   }, [location.pathname]);
 
   return (

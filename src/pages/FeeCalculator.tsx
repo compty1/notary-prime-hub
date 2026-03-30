@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { usePageTitle } from "@/lib/usePageTitle";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,10 +31,7 @@ export default function FeeCalculator() {
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [settingsLoading, setSettingsLoading] = useState(true);
 
-  useEffect(() => {
-    document.title = "Fee Calculator — Notar";
-    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
-  }, []);
+  usePageTitle("Fee Calculator");
   const [notarizationType, setNotarizationType] = useState<"in_person" | "ron">("in_person");
   const [documentCount, setDocumentCount] = useState(1);
   const [travelMiles, setTravelMiles] = useState(0);

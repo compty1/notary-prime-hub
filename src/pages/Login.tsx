@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { usePageTitle } from "@/lib/usePageTitle";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,10 +23,7 @@ export default function Login() {
   const [forgotMode, setForgotMode] = useState(false);
   const [resetSent, setResetSent] = useState(false);
 
-  useEffect(() => {
-    document.title = "Sign In — Notar";
-    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
-  }, []);
+  usePageTitle(forgotMode ? "Reset Password" : "Sign In");
 
   useEffect(() => {
     if (!loading && user) {

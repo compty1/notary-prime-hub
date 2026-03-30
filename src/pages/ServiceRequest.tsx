@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { usePageTitle } from "@/lib/usePageTitle";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -263,10 +264,7 @@ export default function ServiceRequest() {
   const [guestEmail, setGuestEmail] = useState("");
   const [guestPassword, setGuestPassword] = useState("");
 
-  useEffect(() => {
-    document.title = `${config.label} — Notar`;
-    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
-  }, [config.label]);
+  usePageTitle(config.label);
 
   const updateField = (name: string, value: string) => {
     setFormData(prev => ({ ...prev, [name]: value }));

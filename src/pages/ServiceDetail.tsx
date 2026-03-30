@@ -237,14 +237,6 @@ export default function ServiceDetail() {
     load();
   }, [serviceId]);
 
-  useEffect(() => {
-    if (service) {
-      document.title = `${service.name} — Notar`;
-    } else if (!loading) {
-      document.title = "Service Not Found — Notar";
-    }
-    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
-  }, [service, loading]);
 
   const formatPrice = (s: ServiceData) => {
     if (s.pricing_model === "custom") return "Custom Quote";

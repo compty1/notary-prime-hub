@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { usePageTitle } from "@/lib/usePageTitle";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,14 +26,14 @@ export default function VirtualMailroom() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
 
+  usePageTitle("Virtual Mailroom");
+
   useEffect(() => {
-    document.title = "Virtual Mailroom — Notar";
     if (!user) return;
     supabase.from("mailroom_items").select("*").eq("client_id", user.id).order("received_date", { ascending: false }).then(({ data }) => {
       if (data) setItems(data);
       setLoading(false);
     });
-    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
   }, [user]);
 
   const updateStatus = async (id: string, newStatus: string) => {

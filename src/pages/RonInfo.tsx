@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { usePageTitle } from "@/lib/usePageTitle";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -122,10 +123,7 @@ export default function RonInfo() {
   const filteredStates = stateRonData.filter(s =>
     s.state.toLowerCase().includes(stateSearch.toLowerCase())
   );
-  useEffect(() => {
-    document.title = "Remote Online Notarization (RON) — Notar";
-    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
-  }, []);
+  usePageTitle("Remote Online Notarization (RON)");
 
   return (
     <PageShell>

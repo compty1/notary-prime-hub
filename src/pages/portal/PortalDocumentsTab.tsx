@@ -32,6 +32,21 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [deletingDocId, setDeletingDocId] = useState<string | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    if (e.dataTransfer.files.length > 0) {
+      const input = fileInputRef.current;
+      if (input) {
+        const dt = new DataTransfer();
+        Array.from(e.dataTransfer.files).forEach(f => dt.items.add(f));
+        input.files = dt.files;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    }
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -80,12 +95,25 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6"
+      onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+      onDragLeave={() => setDragOver(false)}
+      onDrop={handleDrop}
+    >
+      {dragOver && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="rounded-2xl border-2 border-dashed border-primary bg-primary/5 px-12 py-16 text-center">
+            <Upload className="mx-auto mb-4 h-12 w-12 text-primary" />
+            <p className="text-lg font-semibold text-foreground">Drop files to upload</p>
+            <p className="text-sm text-muted-foreground">PDF, JPG, PNG, TIFF, DOC, DOCX (max 20MB)</p>
+          </div>
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <h2 className="font-sans text-xl font-semibold">My Documents</h2>
         <div>
           <input ref={fileInputRef} type="file" multiple accept={ACCEPTED_EXTENSIONS} className="hidden" onChange={handleFileUpload} />
-          <Button size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="">
+          <Button size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
             {uploading ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />} Upload Documents
           </Button>
         </div>

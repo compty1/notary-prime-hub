@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { usePageTitle } from "@/lib/usePageTitle";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,10 +21,7 @@ export default function VerifyIdentity() {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
-  useEffect(() => {
-    document.title = "ID Verification — Notar";
-    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
-  }, []);
+  usePageTitle("ID Verification");
 
   const handleIdScan = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

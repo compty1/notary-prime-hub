@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { usePageTitle } from "@/lib/usePageTitle";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
@@ -133,13 +134,13 @@ export default function Services() {
     setHelpLoading(false);
   };
 
+  usePageTitle("Services");
+
   useEffect(() => {
-    document.title = "Services — Notar";
     supabase.from("services").select("*").eq("is_active", true).order("display_order").then(({ data }) => {
       if (data) setServices(data as Service[]);
       setLoading(false);
     });
-    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
   }, []);
 
   const formatPrice = (s: Service) => {

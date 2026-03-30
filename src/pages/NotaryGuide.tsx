@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
+import { usePageTitle } from "@/lib/usePageTitle";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -200,10 +201,7 @@ const ronSteps = [
 export default function NotaryGuide() {
   const [searchTerm, setSearchTerm] = useState("");
   const { user } = useAuth();
-  useEffect(() => {
-    document.title = "What Can Be Notarized? — Notar";
-    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
-  }, []);
+  usePageTitle("What Can Be Notarized?");
 
   const filteredCategories = documentCategories.map((cat) => ({
     ...cat,
