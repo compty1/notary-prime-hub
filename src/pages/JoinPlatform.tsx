@@ -194,7 +194,7 @@ export default function JoinPlatform() {
           <div className="grid gap-8 md:grid-cols-4">
             {howItWorks.map((s, i) => (
               <motion.div key={s.step} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i} className="text-center">
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-primary shadow-lg">
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary shadow-lg">
                   <span className="font-sans text-lg font-bold text-primary-foreground">{s.step}</span>
                 </div>
                 <h3 className="mb-2 font-sans text-lg font-semibold">{s.title}</h3>

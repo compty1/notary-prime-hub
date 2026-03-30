@@ -33,7 +33,7 @@ const NotFound = () => {
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8">
           <Link to="/">
-            <Button className="bg-gradient-primary text-white hover:bg-accent/90">
+            <Button className="bg-primary text-primary-foreground hover:bg-accent/90">
               <Home className="mr-2 h-4 w-4" /> Back to Home
             </Button>
           </Link>

@@ -701,7 +701,7 @@ export default function ServiceDetail() {
       {/* Phase 3.9: AI Chat Bubble */}
       <button
         onClick={() => setShowChat(!showChat)}
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-primary text-white shadow-lg hover:opacity-90 transition-colors"
+        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg hover:opacity-90 transition-colors"
         aria-label="Ask a question about this service"
       >
         <MessageSquare className="h-6 w-6" />

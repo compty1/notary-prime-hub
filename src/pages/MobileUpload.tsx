@@ -117,7 +117,7 @@ export default function MobileUpload() {
                 <Label>Password</Label>
                 <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required autoComplete="current-password" />
               </div>
-              <Button type="submit" className="w-full bg-gradient-primary text-white hover:bg-accent/90" disabled={loginLoading}>
+              <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-accent/90" disabled={loginLoading}>
                 {loginLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Sign In
               </Button>

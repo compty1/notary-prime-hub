@@ -640,7 +640,7 @@ export default function AdminResources() {
             <Card key={item.step} className="border-border/50">
               <CardContent className="p-5">
                 <div className="flex gap-4">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-primary text-white font-bold text-lg">{item.step}</div>
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-lg">{item.step}</div>
                   <div>
                     <h3 className="font-sans font-semibold mb-1">{item.title}</h3>
                     <p className="text-sm text-muted-foreground">{item.content}</p>

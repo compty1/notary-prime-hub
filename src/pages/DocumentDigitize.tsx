@@ -197,7 +197,7 @@ export default function DocumentDigitize() {
           ].map((s, i) => (
             <div key={s.key} className="flex items-center gap-2">
               <div className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                step === s.key ? "bg-gradient-primary text-white" :
+                step === s.key ? "bg-primary text-primary-foreground" :
                 ["processing", "edit", "done"].indexOf(step) > ["upload", "processing", "edit"].indexOf(s.key) ? "bg-primary/20 text-primary" :
                 "bg-muted text-muted-foreground"
               }`}>
@@ -293,7 +293,7 @@ export default function DocumentDigitize() {
                     key={i}
                     size="sm"
                     variant={i === activeDocIndex ? "default" : "outline"}
-                    className={i === activeDocIndex ? "bg-gradient-primary text-white" : ""}
+                    className={i === activeDocIndex ? "bg-primary text-primary-foreground" : ""}
                     onClick={() => switchDoc(i)}
                   >
                     <FileText className="mr-1 h-3 w-3" /> {doc.fileName}

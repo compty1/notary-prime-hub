@@ -496,7 +496,7 @@ export default function BookAppointment() {
               return (
                 <div key={s} className="flex items-center gap-2">
                   <div className="flex flex-col items-center gap-1">
-                    <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors ${step >= s ? "bg-gradient-primary text-white" : "bg-muted text-muted-foreground"}`}>
+                    <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors ${step >= s ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
                       {step > s ? <CheckCircle className="h-4 w-4" /> : s}
                     </div>
                     <span className={`text-[10px] font-medium ${step >= s ? "text-primary" : "text-muted-foreground"}`}>{label}</span>
@@ -582,8 +582,8 @@ export default function BookAppointment() {
                   <div>
                     <Label>Number of Documents</Label>
                     <div className="mt-1 flex items-center gap-2 flex-wrap">
-                      {[1, 2, 3, 4, 5].map(n => <Button key={n} type="button" size="sm" variant={documentCount === n && !customDocCount ? "default" : "outline"} className={documentCount === n && !customDocCount ? "bg-gradient-primary text-white" : ""} onClick={() => { setDocumentCount(n); setCustomDocCount(false); }}>{n}</Button>)}
-                      <Button type="button" size="sm" variant={customDocCount ? "default" : "outline"} className={customDocCount ? "bg-gradient-primary text-white" : ""} onClick={() => { setCustomDocCount(true); setDocumentCount(6); }}>5+</Button>
+                      {[1, 2, 3, 4, 5].map(n => <Button key={n} type="button" size="sm" variant={documentCount === n && !customDocCount ? "default" : "outline"} className={documentCount === n && !customDocCount ? "bg-primary text-primary-foreground" : ""} onClick={() => { setDocumentCount(n); setCustomDocCount(false); }}>{n}</Button>)}
+                      <Button type="button" size="sm" variant={customDocCount ? "default" : "outline"} className={customDocCount ? "bg-primary text-primary-foreground" : ""} onClick={() => { setCustomDocCount(true); setDocumentCount(6); }}>5+</Button>
                       {customDocCount && <Input type="number" min={6} max={50} value={documentCount} onChange={e => setDocumentCount(Math.max(6, Math.min(50, parseInt(e.target.value) || 6)))} className="w-20" />}
                       <span className="text-xs text-muted-foreground">{documentCount > 1 ? "Same session, separate journal entries" : ""}</span>
                     </div>

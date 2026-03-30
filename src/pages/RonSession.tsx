@@ -803,7 +803,7 @@ export default function RonSession() {
                 </h3>
                 <div className="mb-3 flex flex-wrap gap-1">
                   {(Object.keys(oathScripts) as (keyof typeof oathScripts)[]).filter((k) => oathScripts[k]).map((key) => (
-                    <Button key={key} size="sm" variant={oathType === key ? "default" : "outline"} className={`text-xs ${oathType === key ? "bg-gradient-primary text-white" : ""}`} onClick={() => { setOathType(key); setOathAdministered(false); }}>
+                    <Button key={key} size="sm" variant={oathType === key ? "default" : "outline"} className={`text-xs ${oathType === key ? "bg-primary text-primary-foreground" : ""}`} onClick={() => { setOathType(key); setOathAdministered(false); }}>
                       {key}
                     </Button>
                   ))}

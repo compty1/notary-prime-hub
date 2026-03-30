@@ -288,7 +288,7 @@ export default function AdminApostille() {
                 <div className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
                   {statusFlow.map((s, i) => (
                     <button key={s} className="flex flex-col items-center gap-1 group" onClick={() => updateStatus(detailReq.id, s)}>
-                      <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${i <= currentIdx ? "bg-gradient-primary text-white" : "bg-muted-foreground/20 text-muted-foreground group-hover:bg-accent/30"}`}>
+                      <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${i <= currentIdx ? "bg-primary text-primary-foreground" : "bg-muted-foreground/20 text-muted-foreground group-hover:bg-accent/30"}`}>
                         {i < currentIdx ? <CheckCircle2 className="h-4 w-4" /> : i + 1}
                       </div>
                       <span className={`text-[10px] ${i <= currentIdx ? "text-foreground font-medium" : "text-muted-foreground"}`}>
