@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { useState, useRef, useEffect } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -58,6 +59,7 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
 }
 
 export default function RonSession() {
+  usePageTitle("RON Session");
   const { user, isAdmin, isNotary } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();

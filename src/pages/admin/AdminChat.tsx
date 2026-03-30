@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { useEffect, useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +12,7 @@ import { MessageSquare, Send, User, Shield, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 export default function AdminChat() {
+  usePageTitle("Live Chat");
   const { user } = useAuth();
   const { toast } = useToast();
   const [allMessages, setAllMessages] = useState<any[]>([]);

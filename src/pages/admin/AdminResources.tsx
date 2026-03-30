@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -526,6 +527,7 @@ const externalResources = [
 ];
 
 export default function AdminResources() {
+  usePageTitle("Resources");
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredGuides = documentGuides.map((cat) => ({

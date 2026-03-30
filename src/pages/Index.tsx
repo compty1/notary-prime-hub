@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
@@ -66,6 +67,7 @@ function AnimatedCounter({ value, suffix = "" }: {value: number;suffix?: string;
 }
 
 export default function Index() {
+  usePageTitle("Ohio Notary & Document Services");
   const [serviceType, setServiceType] = useState<"in_person" | "ron">("in_person");
   const { toast } = useToast();
   const [contactForm, setContactForm] = useState({ name: "", email: "", phone: "", service: "", message: "" });

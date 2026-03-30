@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -73,6 +74,7 @@ const partnerBenefits = [
 ];
 
 export default function SubscriptionPlans() {
+  usePageTitle("Subscription Plans");
   return (
     <PageShell>
 

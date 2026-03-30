@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ const categories = [
   { value: "business", label: "Business & Volume" },
   { value: "recurring", label: "Recurring & Value-Add" },
   { value: "consulting", label: "Consulting & Training" },
+  { value: "business_services", label: "Business Services" },
   { value: "admin_support", label: "Administrative Support" },
   { value: "content_creation", label: "Content Creation" },
   { value: "research", label: "Research" },
@@ -59,6 +61,7 @@ const emptyForm = {
 };
 
 export default function AdminServices() {
+  usePageTitle("Services");
   const { toast } = useToast();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);

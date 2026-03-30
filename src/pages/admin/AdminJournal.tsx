@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -17,6 +18,7 @@ import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 const serviceTypes = ["acknowledgment", "jurat", "oath", "copy_certification", "other"];
 
 export default function AdminJournal() {
+  usePageTitle("Notary Journal");
   const { user } = useAuth();
   const { toast } = useToast();
   const [entries, setEntries] = useState<any[]>([]);

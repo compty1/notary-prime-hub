@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -86,6 +87,7 @@ My Commission Expires: ___________`,
 const FORM_CATEGORIES = ["Notarial Certificates", "Client Forms", "Business Forms", "Legal Templates", "Immigration", "Real Estate", "General"];
 
 export default function AdminTemplates() {
+  usePageTitle("Templates");
   const { user } = useAuth();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);

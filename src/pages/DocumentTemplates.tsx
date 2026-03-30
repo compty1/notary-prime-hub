@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,6 +22,7 @@ import TextAlign from "@tiptap/extension-text-align";
 import ReactMarkdown from "react-markdown";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 interface TemplateField {
   name: string;
@@ -634,6 +636,7 @@ function EditorToolbar({ editor }: { editor: any }) {
 }
 
 export default function DocumentTemplates() {
+  usePageTitle("Document Templates");
   const [search, setSearch] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [formData, setFormData] = useState<Record<string, string>>({});
@@ -895,6 +898,7 @@ export default function DocumentTemplates() {
     <PageShell>
 
       <div className="container mx-auto max-w-5xl px-4 py-8">
+        <Breadcrumbs />
         <div className="mb-8 text-center">
           <h1 className="font-sans text-3xl font-bold text-foreground mb-2">Document Templates Library</h1>
           <p className="text-muted-foreground mb-4">Ready-to-use templates for common notarized documents</p>

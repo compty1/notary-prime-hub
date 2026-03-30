@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,6 +13,7 @@ import { Logo } from "@/components/Logo";
 import { Upload, Camera, FileText, CheckCircle, Loader2, LogOut, RefreshCw } from "lucide-react";
 
 export default function MobileUpload() {
+  usePageTitle("Mobile Upload");
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);

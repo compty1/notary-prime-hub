@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,6 +21,7 @@ interface SettingItem {
 }
 
 export default function AdminSettings() {
+  usePageTitle("Settings");
   const { user } = useAuth();
   const { toast } = useToast();
   const [settings, setSettings] = useState<Record<string, SettingItem>>({});
@@ -273,10 +275,6 @@ export default function AdminSettings() {
                 <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 text-xs">Connected</Badge>
                 <span className="text-xs text-muted-foreground">API token configured as server secret — manage in Lovable Cloud settings</span>
               </div>
-            </div>
-            <div>
-              <Label>RON Session Method</Label>
-              <p className="mt-1 text-sm text-muted-foreground">Link-paste mode — notary pastes a SignNow signing link directly into the session.</p>
             </div>
             <div><Label>KBA Platform URL</Label><Input value={editValues.kba_platform_url || ""} onChange={(e) => updateValue("kba_platform_url", e.target.value)} placeholder="https://kba-platform.com/session" /></div>
 

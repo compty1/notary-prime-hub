@@ -16,6 +16,7 @@ import { motion } from "framer-motion";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 const HOLLYWOOD_CASINO = { lat: 39.9555, lng: -83.1145 };
 
@@ -110,6 +111,7 @@ export default function FeeCalculator() {
     <PageShell>
 
       <div className="container mx-auto max-w-4xl px-4 py-8">
+        <Breadcrumbs />
         <div className="mb-8 text-center">
           <h1 className="font-sans text-3xl font-bold mb-2">Notarization Fee Calculator</h1>
           <p className="text-muted-foreground">Get a transparent estimate before you book</p>

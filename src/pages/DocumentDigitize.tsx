@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -30,6 +31,7 @@ interface ProcessedDoc {
 }
 
 export default function DocumentDigitize() {
+  usePageTitle("Digitize Documents");
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();

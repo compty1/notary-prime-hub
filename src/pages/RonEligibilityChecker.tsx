@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -235,6 +236,7 @@ function getEligibility(state: string, docType: string, entity: string, purpose:
 }
 
 export default function RonEligibilityChecker() {
+  usePageTitle("RON Eligibility Checker");
   const [state, setState] = useState("");
   const [docType, setDocType] = useState("");
   const [entity, setEntity] = useState("");

@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { Plus, Trash2, AlertTriangle } from "lucide-react";
 const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 export default function AdminAvailability() {
+  usePageTitle("Availability");
   const [slots, setSlots] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();

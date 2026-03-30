@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
@@ -35,6 +36,7 @@ const paymentStatusColors: Record<string, string> = {
 };
 
 export default function AdminRevenue() {
+  usePageTitle("Revenue");
   const { toast } = useToast();
   const [entries, setEntries] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);

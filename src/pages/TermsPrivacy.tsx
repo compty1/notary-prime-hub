@@ -1,14 +1,18 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Shield } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 export default function TermsPrivacy() {
+  usePageTitle("Terms & Privacy");
   return (
     <PageShell>
 
       <div className="container mx-auto max-w-3xl px-4 py-12 space-y-12">
+        <Breadcrumbs />
         {/* Terms of Service */}
         <section>
           <h1 className="mb-6 font-sans text-3xl font-bold text-foreground">Terms of Service</h1>
