@@ -91,7 +91,7 @@ export function Navbar() {
                 </Link>
               )}
               <Link to="/book" onClick={() => setOpen(false)}>
-                <Button className="w-full bg-gradient-primary text-primary-foreground">Book Now</Button>
+                <Button className="w-full text-primary-foreground">Book Now</Button>
               </Link>
             </div>
           </SheetContent>
