@@ -84,7 +84,7 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
         <h2 className="font-sans text-xl font-semibold">My Documents</h2>
         <div>
           <input ref={fileInputRef} type="file" multiple accept={ACCEPTED_EXTENSIONS} className="hidden" onChange={handleFileUpload} />
-          <Button size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="bg-gradient-primary text-white hover:opacity-90">
+          <Button size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="">
             {uploading ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />} Upload Documents
           </Button>
         </div>

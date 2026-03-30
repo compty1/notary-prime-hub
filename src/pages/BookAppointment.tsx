@@ -618,9 +618,9 @@ export default function BookAppointment() {
               <div className="flex justify-between pt-4">
                 <Button variant="outline" onClick={() => step > 1 && setStep((step - 1) as BookingStep)} disabled={step === 1}><ChevronLeft className="mr-1 h-4 w-4" /> Back</Button>
                 {step < lastStep ? (
-                  <Button onClick={() => setStep((step + 1) as BookingStep)} disabled={!canProceed()} className="bg-gradient-primary text-white hover:opacity-90">Next <ChevronRight className="ml-1 h-4 w-4" /></Button>
+                  <Button onClick={() => setStep((step + 1) as BookingStep)} disabled={!canProceed()} className="">Next <ChevronRight className="ml-1 h-4 w-4" /></Button>
                 ) : (
-                  <Button onClick={handleSubmit} disabled={submitting || !canProceed()} className="bg-gradient-primary text-white hover:opacity-90">{submitting ? "Booking..." : "Confirm Booking"}</Button>
+                  <Button onClick={handleSubmit} disabled={submitting || !canProceed()} className="">{submitting ? "Booking..." : "Confirm Booking"}</Button>
                 )}
               </div>
             </CardContent>

@@ -192,7 +192,7 @@ export default function About() {
           <p className="mb-6 text-xs text-muted-foreground">Mon–Wed 10 AM – 7 PM EST</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link to="/book">
-              <Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">
+              <Button size="lg" className="">
                 Book Appointment <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             </Link>

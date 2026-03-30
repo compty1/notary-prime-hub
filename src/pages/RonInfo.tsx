@@ -385,7 +385,7 @@ export default function RonInfo() {
             Experience the convenience of remote notarization. Book a RON session and have your documents notarized from anywhere.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <Link to="/book"><Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">Schedule RON Session <ChevronRight className="ml-1 h-4 w-4" /></Button></Link>
+            <Link to="/book"><Button size="lg" className="">Schedule RON Session <ChevronRight className="ml-1 h-4 w-4" /></Button></Link>
             <Link to="/services"><Button size="lg" variant="outline">View All Services</Button></Link>
           </div>
         </div>

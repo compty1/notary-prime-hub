@@ -233,7 +233,7 @@ export default function AdminAIAssistant() {
           disabled={isLoading}
           className="flex-1"
         />
-        <Button type="submit" disabled={isLoading || !input.trim()} className="bg-gradient-primary text-white hover:opacity-90">
+        <Button type="submit" disabled={isLoading || !input.trim()} className="">
           <Send className="h-4 w-4" />
         </Button>
       </form>

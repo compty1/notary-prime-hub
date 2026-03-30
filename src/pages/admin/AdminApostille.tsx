@@ -209,7 +209,7 @@ export default function AdminApostille() {
           <a href="https://www.ohiosos.gov/businesses/apostilles-authentications/" target="_blank" rel="noopener noreferrer">
             <Button size="sm" variant="outline"><ExternalLink className="mr-1 h-3 w-3" /> Ohio SOS Portal</Button>
           </a>
-          <Button size="sm" onClick={() => setCreateOpen(true)} className="bg-gradient-primary text-white hover:opacity-90">
+          <Button size="sm" onClick={() => setCreateOpen(true)} className="">
             <Plus className="mr-1 h-4 w-4" /> New Request
           </Button>
         </div>
@@ -413,7 +413,7 @@ export default function AdminApostille() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-            <Button className="bg-gradient-primary text-white hover:opacity-90" disabled={!newClientId || !newDesc} onClick={async () => {
+            <Button className="" disabled={!newClientId || !newDesc} onClick={async () => {
               const { error } = await supabase.from("apostille_requests").insert({
                 document_description: newDesc, notes: newNotes || null, client_id: newClientId, fee: parseFloat(newFee) || 75,
                 destination_country: newDestCountry || null, document_count: parseInt(newDocCount) || 1,

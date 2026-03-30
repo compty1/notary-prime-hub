@@ -100,7 +100,7 @@ export default function TechCheck({ onComplete }: TechCheckProps) {
         )}
 
         <div className="flex gap-2">
-          <Button onClick={runCheck} disabled={checking} className="flex-1 bg-gradient-primary text-white hover:opacity-90">
+          <Button onClick={runCheck} disabled={checking} className="flex-1 ">
             {checking ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : done ? <RefreshCw className="mr-1 h-4 w-4" /> : <Wifi className="mr-1 h-4 w-4" />}
             {checking ? "Checking..." : done ? "Re-run Check" : "Start Tech Check"}
           </Button>

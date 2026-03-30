@@ -184,7 +184,7 @@ export default function ServiceRequest() {
           <h1 className="font-sans text-2xl font-bold">Request Submitted!</h1>
           <p className="text-muted-foreground">Your {config.label.toLowerCase()} has been received. We'll review it and contact you within 1-2 business days.</p>
           <div className="flex gap-3 justify-center">
-            <Link to="/portal"><Button className="bg-gradient-primary text-white hover:opacity-90">Go to Portal</Button></Link>
+            <Link to="/portal"><Button className="">Go to Portal</Button></Link>
             <Link to="/services"><Button variant="outline">Browse Services</Button></Link>
           </div>
         </motion.div>
@@ -261,7 +261,7 @@ export default function ServiceRequest() {
                 </div>
               )}
 
-              <Button onClick={handleSubmit} disabled={submitting || !user} className="w-full bg-gradient-primary text-white hover:opacity-90" size="lg">
+              <Button onClick={handleSubmit} disabled={submitting || !user} className="w-full " size="lg">
                 {submitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : "Submit Request"}
               </Button>
             </CardContent>

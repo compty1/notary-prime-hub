@@ -238,7 +238,7 @@ export default function AdminTeam() {
                 <Input type="email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="notary@example.com" onKeyDown={(e) => e.key === "Enter" && sendInvite()} />
               </div>
               <div className="flex items-end">
-                <Button onClick={sendInvite} disabled={sending || !inviteEmail.trim()} className="bg-gradient-primary text-white hover:opacity-90">
+                <Button onClick={sendInvite} disabled={sending || !inviteEmail.trim()} className="">
                   {sending ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <UserPlus className="mr-1 h-4 w-4" />} Invite
                 </Button>
               </div>
@@ -406,7 +406,7 @@ export default function AdminTeam() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setSelectedNotary(null)}>Cancel</Button>
-            <Button onClick={saveNotary} disabled={saving} className="bg-gradient-primary text-white hover:opacity-90">
+            <Button onClick={saveNotary} disabled={saving} className="">
               {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />} Save All
             </Button>
           </DialogFooter>

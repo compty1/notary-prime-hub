@@ -139,7 +139,7 @@ export default function AdminSettings() {
           <h1 className="font-sans text-2xl font-bold text-foreground">Platform Settings</h1>
           <p className="text-sm text-muted-foreground">Configure pricing, credentials, platform integrations, and compliance reminders</p>
         </div>
-        <Button onClick={handleSave} disabled={saving} className="bg-gradient-primary text-white hover:opacity-90">
+        <Button onClick={handleSave} disabled={saving} className="">
           {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />} Save Changes
         </Button>
       </div>

@@ -375,7 +375,7 @@ export default function AdminAppointments() {
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="font-sans text-2xl font-bold text-foreground">Appointments</h1>
         <div className="flex items-center gap-2 flex-wrap">
-          <Button onClick={() => setShowCreateDialog(true)} className="bg-gradient-primary text-white hover:opacity-90">
+          <Button onClick={() => setShowCreateDialog(true)} className="">
             <Plus className="mr-1 h-4 w-4" /> New
           </Button>
           <Button variant={showRequests ? "default" : "outline"} onClick={() => setShowRequests(!showRequests)}>
@@ -623,7 +623,7 @@ export default function AdminAppointments() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-            <Button onClick={createAppointment} disabled={creatingAppt} className="bg-gradient-primary text-white hover:opacity-90">
+            <Button onClick={createAppointment} disabled={creatingAppt} className="">
               {creatingAppt ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Plus className="mr-1 h-4 w-4" />}
               Create
             </Button>
@@ -713,7 +713,7 @@ export default function AdminAppointments() {
                 <Label>Admin Notes (internal)</Label>
                 <Textarea value={editAdminNotes} onChange={(e) => setEditAdminNotes(e.target.value)} rows={3} placeholder="Internal notes, session observations..." />
               </div>
-              <Button onClick={saveNotes} disabled={savingNotes} className="w-full bg-gradient-primary text-white hover:opacity-90">
+              <Button onClick={saveNotes} disabled={savingNotes} className="w-full ">
                 {savingNotes ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}
                 Save Notes
               </Button>
@@ -849,7 +849,7 @@ export default function AdminAppointments() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setQuickJournalAppt(null)}>Skip</Button>
-            <Button onClick={saveQuickJournal} className="bg-gradient-primary text-white hover:opacity-90">
+            <Button onClick={saveQuickJournal} className="">
               Save Journal Entry
             </Button>
           </DialogFooter>
@@ -901,7 +901,7 @@ export default function AdminAppointments() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setReceiptAppt(null)}>Close</Button>
-            <Button onClick={() => window.print()} className="bg-gradient-primary text-white hover:opacity-90">
+            <Button onClick={() => window.print()} className="">
               <Printer className="mr-1 h-4 w-4" /> Print Receipt
             </Button>
           </DialogFooter>
@@ -937,7 +937,7 @@ export default function AdminAppointments() {
           })()}
           <DialogFooter>
             <Button variant="outline" onClick={() => setMessageAppt(null)}>Cancel</Button>
-            <Button onClick={sendMessage} disabled={sendingMessage || !messageBody.trim()} className="bg-gradient-primary text-white hover:opacity-90">
+            <Button onClick={sendMessage} disabled={sendingMessage || !messageBody.trim()} className="">
               {sendingMessage ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Send className="mr-1 h-4 w-4" />}
               Send
             </Button>

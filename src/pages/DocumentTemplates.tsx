@@ -983,7 +983,7 @@ export default function DocumentTemplates() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setQuickPreviewTemplate(null)}>Close</Button>
-            <Button onClick={() => { if (quickPreviewTemplate) { openTemplate(quickPreviewTemplate); setQuickPreviewTemplate(null); } }} className="bg-gradient-primary text-white hover:opacity-90">
+            <Button onClick={() => { if (quickPreviewTemplate) { openTemplate(quickPreviewTemplate); setQuickPreviewTemplate(null); } }} className="">
               Use This Template
             </Button>
           </DialogFooter>
@@ -1049,7 +1049,7 @@ export default function DocumentTemplates() {
             </div>
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => setSelectedTemplate(null)}>Cancel</Button>
-              <Button onClick={() => setPreviewOpen(true)} className="bg-gradient-primary text-white hover:opacity-90"><Eye className="mr-1 h-4 w-4" /> Preview & Edit</Button>
+              <Button onClick={() => setPreviewOpen(true)} className=""><Eye className="mr-1 h-4 w-4" /> Preview & Edit</Button>
             </div>
           </DialogFooter>
         </DialogContent>
@@ -1069,7 +1069,7 @@ export default function DocumentTemplates() {
             <Button variant="outline" onClick={handleSaveToVault} disabled={saving || !user} className="gap-1">
               {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />} Save to Vault
             </Button>
-            <Button onClick={handlePrint} className="bg-gradient-primary text-white hover:opacity-90 gap-1"><Printer className="h-3 w-3" /> Print / PDF</Button>
+            <Button onClick={handlePrint} className=" gap-1"><Printer className="h-3 w-3" /> Print / PDF</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1106,7 +1106,7 @@ export default function DocumentTemplates() {
               placeholder="e.g., Do I need witnesses for this?"
               onKeyDown={(e) => { if (e.key === "Enter") sendChatMessage(); }}
             />
-            <Button onClick={sendChatMessage} disabled={chatLoading || !chatInput.trim()} className="bg-gradient-primary text-white hover:opacity-90">
+            <Button onClick={sendChatMessage} disabled={chatLoading || !chatInput.trim()} className="">
               {chatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </Button>
           </div>

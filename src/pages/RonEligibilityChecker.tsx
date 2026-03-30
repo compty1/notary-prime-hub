@@ -330,7 +330,7 @@ export default function RonEligibilityChecker() {
                 <Button
                   onClick={handleCheck}
                   disabled={!canCheck}
-                  className="w-full bg-gradient-primary text-white hover:opacity-90"
+                  className="w-full "
                   size="lg"
                 >
                   <Shield className="mr-2 h-4 w-4" /> Check Eligibility
@@ -371,7 +371,7 @@ export default function RonEligibilityChecker() {
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-3">
               <Link to="/book" className="flex-1">
-                <Button className="w-full bg-gradient-primary text-white hover:opacity-90" size="lg">
+                <Button className="w-full " size="lg">
                   {result.level === "red" ? "Book In-Person Appointment" : "Book RON Session"} <ChevronRight className="ml-1 h-4 w-4" />
                 </Button>
               </Link>

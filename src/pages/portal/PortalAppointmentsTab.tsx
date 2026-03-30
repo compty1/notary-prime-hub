@@ -48,7 +48,7 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="font-sans text-xl font-semibold">Upcoming Appointments</h2>
-        <Link to="/book"><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90"><Plus className="mr-1 h-4 w-4" /> New Appointment</Button></Link>
+        <Link to="/book"><Button size="sm" className=""><Plus className="mr-1 h-4 w-4" /> New Appointment</Button></Link>
       </div>
       {loading ? (
         <div className="flex justify-center py-12"><div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" /></div>
@@ -56,7 +56,7 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
         <Card className="border-border/50"><CardContent className="flex flex-col items-center py-12 text-center">
           <Calendar className="mb-4 h-12 w-12 text-muted-foreground/50" />
           <p className="text-muted-foreground">No upcoming appointments</p>
-          <Link to="/book" className="mt-4"><Button className="bg-gradient-primary text-white hover:opacity-90">Book Your First Appointment</Button></Link>
+          <Link to="/book" className="mt-4"><Button className="">Book Your First Appointment</Button></Link>
         </CardContent></Card>
       ) : (
         <div className="space-y-4">

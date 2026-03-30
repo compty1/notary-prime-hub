@@ -137,7 +137,7 @@ export default function JoinPlatform() {
             </motion.p>
             <motion.div variants={fadeUp} custom={3} className="mt-8">
               <a href="#apply">
-                <Button size="lg" className="bg-gradient-primary text-white hover:opacity-90">
+                <Button size="lg" className="">
                   Apply Now <ChevronRight className="ml-1 h-4 w-4" />
                 </Button>
               </a>
@@ -298,7 +298,7 @@ export default function JoinPlatform() {
                     <Textarea id="join-message" value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))} placeholder="Tell us about your experience, certifications, and why you'd like to join..." rows={4} maxLength={1000} />
                   </div>
 
-                  <Button type="submit" className="w-full bg-gradient-primary text-white hover:opacity-90" disabled={submitting}>
+                  <Button type="submit" className="w-full " disabled={submitting}>
                     {submitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : <>Submit Application <ArrowRight className="ml-1 h-4 w-4" /></>}
                   </Button>
                 </form>

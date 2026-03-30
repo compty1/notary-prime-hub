@@ -53,7 +53,7 @@ export default function PortalChatTab({ userId, chatMessages, chatInput, setChat
           </div>
           <div className="flex gap-2">
             <Textarea value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder="Type a message..." className="min-h-[40px] resize-none" rows={1} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); onSend(); } }} />
-            <Button onClick={onSend} disabled={sendingChat || !chatInput.trim()} className="bg-gradient-primary text-white hover:opacity-90">
+            <Button onClick={onSend} disabled={sendingChat || !chatInput.trim()} className="">
               {sendingChat ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </Button>
           </div>

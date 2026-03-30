@@ -235,7 +235,7 @@ export default function AdminLeadPortal() {
           <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={importCSV} />
           <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}><Upload className="mr-1 h-3 w-3" /> Import CSV</Button>
           <Button variant="outline" size="sm" onClick={exportCSV}><Download className="mr-1 h-3 w-3" /> Export</Button>
-          <Button onClick={openCreate} className="bg-gradient-primary text-white hover:opacity-90"><Plus className="mr-1 h-4 w-4" /> Add Lead</Button>
+          <Button onClick={openCreate} className=""><Plus className="mr-1 h-4 w-4" /> Add Lead</Button>
         </div>
       </div>
 
@@ -433,7 +433,7 @@ export default function AdminLeadPortal() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
-            <Button onClick={saveLead} disabled={saving} className="bg-gradient-primary text-white hover:opacity-90">
+            <Button onClick={saveLead} disabled={saving} className="">
               {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Plus className="mr-1 h-4 w-4" />}
               {editingLead ? "Update" : "Add Lead"}
             </Button>

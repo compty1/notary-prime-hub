@@ -114,7 +114,7 @@ export default function TranslationPanel({ initialText = "", clientName = "", do
       </div>
 
       <div className="flex items-center gap-2 flex-wrap">
-        <Button onClick={handleTranslate} disabled={translating || !sourceText.trim() || !targetLanguage} className="bg-gradient-primary text-white hover:opacity-90">
+        <Button onClick={handleTranslate} disabled={translating || !sourceText.trim() || !targetLanguage} className="">
           {translating ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Languages className="mr-1 h-4 w-4" />}
           Translate
         </Button>

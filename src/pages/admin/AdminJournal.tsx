@@ -168,7 +168,7 @@ export default function AdminJournal() {
           )}
           <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) resetForm(); }}>
             <DialogTrigger asChild>
-              <Button className="bg-gradient-primary text-white hover:opacity-90">
+              <Button className="">
                 <Plus className="mr-1 h-4 w-4" /> New Entry
               </Button>
             </DialogTrigger>
@@ -267,7 +267,7 @@ export default function AdminJournal() {
                   }} className="text-xs" />
                   <p className="mt-1 text-xs text-muted-foreground">Upload photos of certificates, stamps, or seals for this notarization</p>
                 </div>
-                <Button onClick={handleSubmit} className="w-full bg-gradient-primary text-white hover:opacity-90">
+                <Button onClick={handleSubmit} className="w-full ">
                   {editingEntry ? "Update Entry" : "Save Journal Entry"}
                 </Button>
               </div>

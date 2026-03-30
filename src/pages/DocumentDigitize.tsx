@@ -245,7 +245,7 @@ export default function DocumentDigitize() {
                         <span className="text-muted-foreground">{(f.size / 1024).toFixed(0)} KB</span>
                       </div>
                     ))}
-                    <Button onClick={processFiles} className="mt-4 w-full bg-gradient-primary text-white hover:opacity-90">
+                    <Button onClick={processFiles} className="mt-4 w-full ">
                       <Eye className="mr-2 h-4 w-4" /> Digitize {files.length} Document{files.length > 1 ? "s" : ""}
                     </Button>
                   </div>
@@ -343,7 +343,7 @@ export default function DocumentDigitize() {
 
                 {/* Export actions */}
                 <div className="mt-4 flex flex-wrap gap-3">
-                  <Button onClick={handleSaveToVault} disabled={saving} className="bg-gradient-primary text-white hover:opacity-90">
+                  <Button onClick={handleSaveToVault} disabled={saving} className="">
                     {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FolderOpen className="mr-2 h-4 w-4" />}
                     Save to Vault
                   </Button>

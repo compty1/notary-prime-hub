@@ -171,7 +171,7 @@ export default function DocumentBuilder() {
                 <div className="whitespace-pre-wrap font-serif text-sm leading-relaxed border rounded-lg p-6 bg-white text-gray-900 mb-4">{buildDocument()}</div>
                 <div className="flex gap-2 flex-wrap">
                   <Button variant="outline" onClick={() => setShowPreview(false)}><ChevronLeft className="mr-1 h-4 w-4" /> Edit</Button>
-                  <Button onClick={handlePrint} className="bg-gradient-primary text-white hover:opacity-90"><Printer className="mr-1 h-4 w-4" /> Print / Save PDF</Button>
+                  <Button onClick={handlePrint} className=""><Printer className="mr-1 h-4 w-4" /> Print / Save PDF</Button>
                   {user && (
                     <Button variant="outline" disabled={saving} onClick={async () => {
                       if (!user || !docType) return;
@@ -225,11 +225,11 @@ export default function DocumentBuilder() {
                     <ChevronLeft className="mr-1 h-4 w-4" /> {currentStep === 0 ? "Back" : "Previous"}
                   </Button>
                   {currentStep < steps.length - 1 ? (
-                    <Button onClick={() => setCurrentStep(currentStep + 1)} className="bg-gradient-primary text-white hover:opacity-90">
+                    <Button onClick={() => setCurrentStep(currentStep + 1)} className="">
                       Next <ChevronRight className="ml-1 h-4 w-4" />
                     </Button>
                   ) : (
-                    <Button onClick={() => setShowPreview(true)} className="bg-gradient-primary text-white hover:opacity-90">
+                    <Button onClick={() => setShowPreview(true)} className="">
                       Preview Document <ChevronRight className="ml-1 h-4 w-4" />
                     </Button>
                   )}

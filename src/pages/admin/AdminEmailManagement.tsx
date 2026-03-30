@@ -165,7 +165,7 @@ export default function AdminEmailManagement() {
           <h1 className="font-sans text-2xl font-bold text-foreground">Email & Correspondence Management</h1>
           <p className="text-sm text-muted-foreground">Manage client correspondence, send replies, and track forwarding</p>
         </div>
-        <Button onClick={() => setShowCreate(true)} className="bg-gradient-primary text-white hover:opacity-90">
+        <Button onClick={() => setShowCreate(true)} className="">
           <Plus className="mr-1 h-4 w-4" /> Log Correspondence
         </Button>
       </div>
@@ -271,7 +271,7 @@ export default function AdminEmailManagement() {
                 <Textarea value={replyText} onChange={(e) => setReplyText(e.target.value)} rows={3} placeholder="Notes about how this was handled..." />
               </div>
               <div className="flex gap-2 flex-wrap">
-                <Button size="sm" onClick={() => addNote(showDetail.id, replyText)} className="bg-gradient-primary text-white hover:opacity-90">Save Notes</Button>
+                <Button size="sm" onClick={() => addNote(showDetail.id, replyText)} className="">Save Notes</Button>
                 <Button size="sm" variant="default" onClick={() => openReplyDialog(showDetail)}>
                   <Send className="mr-1 h-3 w-3" /> Send Reply
                 </Button>
@@ -300,7 +300,7 @@ export default function AdminEmailManagement() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowReplyDialog(false)}>Cancel</Button>
-            <Button onClick={sendReply} disabled={sendingReply || !replyForm.body.trim()} className="bg-gradient-primary text-white hover:opacity-90">
+            <Button onClick={sendReply} disabled={sendingReply || !replyForm.body.trim()} className="">
               {sendingReply ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Send className="mr-1 h-4 w-4" />}
               Send
             </Button>
@@ -347,7 +347,7 @@ export default function AdminEmailManagement() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
-            <Button onClick={createItem} disabled={saving} className="bg-gradient-primary text-white hover:opacity-90">
+            <Button onClick={createItem} disabled={saving} className="">
               {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Plus className="mr-1 h-4 w-4" />}
               Log
             </Button>

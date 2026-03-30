@@ -478,7 +478,7 @@ export default function ServiceDetail() {
                     You can also <Link to="/digitize" className="text-primary underline">upload your document</Link> for instant AI-powered answers about what's needed.
                   </p>
                   <div className="flex gap-2 flex-wrap">
-                    <Link to="/book?service=Consultation"><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90"><Monitor className="mr-1 h-3 w-3" /> Schedule Zoom</Button></Link>
+                    <Link to="/book?service=Consultation"><Button size="sm" className=""><Monitor className="mr-1 h-3 w-3" /> Schedule Zoom</Button></Link>
                     <Link to="/notary-guide"><Button size="sm" variant="outline">Browse Guides</Button></Link>
                   </div>
                 </CardContent>
@@ -586,7 +586,7 @@ export default function ServiceDetail() {
                     if (SAAS_LINKS[service.name]) {
                       return (
                         <Link to={SAAS_LINKS[service.name]} className="block">
-                          <Button className="w-full bg-gradient-primary text-white hover:opacity-90" size="lg">
+                          <Button className="w-full " size="lg">
                             Use This Service <ChevronRight className="ml-1 h-4 w-4" />
                           </Button>
                         </Link>
@@ -595,7 +595,7 @@ export default function ServiceDetail() {
                     if (INTAKE_ONLY.has(service.name)) {
                       return (
                         <Link to={`/request?service=${encodeURIComponent(service.name)}`} className="block">
-                          <Button className="w-full bg-gradient-primary text-white hover:opacity-90" size="lg">
+                          <Button className="w-full " size="lg">
                             Get Started <ChevronRight className="ml-1 h-4 w-4" />
                           </Button>
                         </Link>
@@ -604,7 +604,7 @@ export default function ServiceDetail() {
                     if (SUBSCRIPTION.has(service.name)) {
                       return (
                         <Link to="/subscribe" className="block">
-                          <Button className="w-full bg-gradient-primary text-white hover:opacity-90" size="lg">
+                          <Button className="w-full " size="lg">
                             View Plans <ChevronRight className="ml-1 h-4 w-4" />
                           </Button>
                         </Link>
@@ -612,14 +612,14 @@ export default function ServiceDetail() {
                     }
                     if (PRE_QUALIFY_CATEGORIES.includes(service?.category || "")) {
                       return (
-                        <Button className="w-full bg-gradient-primary text-white hover:opacity-90" size="lg" onClick={() => setShowPreQualifier(true)}>
+                        <Button className="w-full " size="lg" onClick={() => setShowPreQualifier(true)}>
                           Book This Service <ChevronRight className="ml-1 h-4 w-4" />
                         </Button>
                       );
                     }
                     return (
                       <Link to={bookUrl} className="block">
-                        <Button className="w-full bg-gradient-primary text-white hover:opacity-90" size="lg">
+                        <Button className="w-full " size="lg">
                           {["notarization", "authentication", "verification"].includes(service.category) ? "Book This Service" : "Get Started"} <ChevronRight className="ml-1 h-4 w-4" />
                         </Button>
                       </Link>
@@ -718,7 +718,7 @@ export default function ServiceDetail() {
           <div className="p-4 text-center">
             <p className="text-xs text-muted-foreground mb-3">Have questions about this service? Contact us directly for personalized assistance.</p>
             <Link to="/#contact">
-              <Button size="sm" className="w-full bg-gradient-primary text-white hover:opacity-90">
+              <Button size="sm" className="w-full ">
                 <MessageSquare className="mr-1 h-3 w-3" /> Contact Us
               </Button>
             </Link>

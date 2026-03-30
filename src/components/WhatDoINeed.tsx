@@ -104,7 +104,7 @@ export default function WhatDoINeed() {
             onKeyDown={(e) => { if (e.key === "Enter") handleSubmit(); }}
             className="flex-1"
           />
-          <Button onClick={handleSubmit} disabled={loading || !query.trim()} className="bg-gradient-primary text-white hover:opacity-90">
+          <Button onClick={handleSubmit} disabled={loading || !query.trim()} className="">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Sparkles className="mr-1 h-4 w-4" /> Go</>}
           </Button>
         </div>
@@ -134,7 +134,7 @@ export default function WhatDoINeed() {
                     </Button>
                   </div>
                   <div className="flex gap-2">
-                    <Link to="/book"><Button size="sm" className="bg-gradient-primary text-white hover:opacity-90">Book Appointment <ArrowRight className="ml-1 h-3 w-3" /></Button></Link>
+                    <Link to="/book"><Button size="sm" className="">Book Appointment <ArrowRight className="ml-1 h-3 w-3" /></Button></Link>
                     <Link to="/templates"><Button size="sm" variant="outline">View Templates</Button></Link>
                     <Link to="/services"><Button size="sm" variant="outline">All Services</Button></Link>
                   </div>
