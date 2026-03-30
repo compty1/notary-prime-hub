@@ -417,7 +417,7 @@ export default function AdminRevenue() {
                       <th className="px-4 py-3 text-left font-medium text-muted-foreground">Type</th>
                       <th className="px-4 py-3 text-right font-medium text-muted-foreground">Fee</th>
                       <th className="px-4 py-3 text-right font-medium text-muted-foreground">Platform</th>
-                      <th className="px-4 py-3 text-right font-medium text-muted-foreground">OneNotary</th>
+                      <th className="px-4 py-3 text-right font-medium text-muted-foreground">Signing Platform</th>
                       <th className="px-4 py-3 text-right font-medium text-muted-foreground">Travel</th>
                       <th className="px-4 py-3 text-right font-medium text-muted-foreground">Payout</th>
                       <th className="px-4 py-3 text-right font-medium text-muted-foreground">Net</th>
