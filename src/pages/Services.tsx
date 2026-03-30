@@ -158,7 +158,13 @@ export default function Services() {
 
   usePageTitle("Services");
 
-  const { data: services = [], isLoading: loading } = useQuery({
+  const {
+    data: services = [],
+    isLoading: loading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ["services-catalog"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -170,6 +176,7 @@ export default function Services() {
       return (data ?? []) as Service[];
     },
     staleTime: 10 * 60 * 1000,
+    retry: 2,
   });
 
   const formatPrice = (s: Service) => {
