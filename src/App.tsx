@@ -12,12 +12,13 @@ import { CommandPalette } from "@/components/CommandPalette";
 import { AnimatePresence } from "framer-motion";
 
 // Eager load critical pages
-import Index from "./pages/Index";
+import ComingSoon from "./pages/ComingSoon";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import NotFound from "./pages/NotFound";
 
 // Lazy load everything else
+const Index = lazy(() => import("./pages/Index"));
 const ResetPassword = lazy(() => import("./pages/ForgotPassword"));
 const BookAppointment = lazy(() => import("./pages/BookAppointment"));
 const ClientPortal = lazy(() => import("./pages/ClientPortal"));
@@ -66,6 +67,7 @@ const AdminServices = lazy(() => import("./pages/admin/AdminServices"));
 const AdminTeam = lazy(() => import("./pages/admin/AdminTeam"));
 const AdminEmailManagement = lazy(() => import("./pages/admin/AdminEmailManagement"));
 const AdminLeadPortal = lazy(() => import("./pages/admin/AdminLeadPortal"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 const NotaryProcessGuide = lazy(() => import("./pages/NotaryProcessGuide"));
 const AdminIntegrationTest = lazy(() => import("./pages/admin/AdminIntegrationTest"));
 
@@ -89,13 +91,13 @@ const PageLoader = () => (
 
 function AnimatedRoutes() {
   const location = useLocation();
-  // Use only the base pathname (not query params) to avoid unnecessary re-mounts
   const routeKey = location.pathname;
 
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={routeKey}>
-        <Route path="/" element={<Index />} />
+        <Route path="/" element={<ComingSoon />} />
+        <Route path="/home" element={<Index />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
@@ -144,6 +146,7 @@ function AnimatedRoutes() {
           <Route path="team" element={<ErrorBoundary fallbackMessage="Team failed to load"><AdminTeam /></ErrorBoundary>} />
           <Route path="email-management" element={<ErrorBoundary fallbackMessage="Email management failed to load"><AdminEmailManagement /></ErrorBoundary>} />
           <Route path="leads" element={<ErrorBoundary fallbackMessage="Lead portal failed to load"><AdminLeadPortal /></ErrorBoundary>} />
+          <Route path="users" element={<ErrorBoundary fallbackMessage="User management failed to load"><AdminUsers /></ErrorBoundary>} />
           <Route path="settings" element={<ErrorBoundary fallbackMessage="Settings failed to load"><AdminSettings /></ErrorBoundary>} />
           <Route path="integrations" element={<ErrorBoundary fallbackMessage="Integration testing failed to load"><AdminIntegrationTest /></ErrorBoundary>} />
         </Route>

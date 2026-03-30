@@ -1412,32 +1412,50 @@ export type Database = {
       }
       service_requests: {
         Row: {
+          assigned_to: string | null
           client_id: string
+          client_visible_status: string
           created_at: string
+          deliverable_url: string | null
+          due_date: string | null
           id: string
           intake_data: Json
           notes: string | null
+          priority: string
           service_name: string
+          sla_deadline: string | null
           status: string
           updated_at: string
         }
         Insert: {
+          assigned_to?: string | null
           client_id: string
+          client_visible_status?: string
           created_at?: string
+          deliverable_url?: string | null
+          due_date?: string | null
           id?: string
           intake_data?: Json
           notes?: string | null
+          priority?: string
           service_name: string
+          sla_deadline?: string | null
           status?: string
           updated_at?: string
         }
         Update: {
+          assigned_to?: string | null
           client_id?: string
+          client_visible_status?: string
           created_at?: string
+          deliverable_url?: string | null
+          due_date?: string | null
           id?: string
           intake_data?: Json
           notes?: string | null
+          priority?: string
           service_name?: string
+          sla_deadline?: string | null
           status?: string
           updated_at?: string
         }
