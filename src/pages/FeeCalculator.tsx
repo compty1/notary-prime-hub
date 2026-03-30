@@ -18,7 +18,7 @@ import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 
-const HOLLYWOOD_CASINO = { lat: 39.9555, lng: -83.1145 };
+// Office coordinates loaded from platform_settings (fallback to Columbus, OH)
 
 const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
   const R = 3959; // Earth radius in miles
