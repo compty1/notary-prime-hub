@@ -37,6 +37,7 @@ export default function RonSession() {
   const [saving, setSaving] = useState(false);
   const [completing, setCompleting] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [commissionExpired, setCommissionExpired] = useState(false);
 
   // SignNow session state
   const [signnowDocumentId, setSignnowDocumentId] = useState<string | null>(null);
