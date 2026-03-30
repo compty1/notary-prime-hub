@@ -37,11 +37,28 @@ export default function Login() {
 
   if (!loading && user) return null;
 
+  const [rateLimitEnd, setRateLimitEnd] = useState<number | null>(null);
+
+  // Countdown for rate limit
+  useEffect(() => {
+    if (!rateLimitEnd) return;
+    const interval = setInterval(() => {
+      if (Date.now() >= rateLimitEnd) { setRateLimitEnd(null); }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [rateLimitEnd]);
+
+  const rateLimitSeconds = rateLimitEnd ? Math.max(0, Math.ceil((rateLimitEnd - Date.now()) / 1000)) : 0;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (rateLimitEnd && Date.now() < rateLimitEnd) return;
     setSubmitting(true);
     const { error } = await signIn(email, password);
     if (error) {
+      if (error.message?.includes("Too many login attempts")) {
+        setRateLimitEnd(Date.now() + 60_000);
+      }
       toast({ title: "Sign in failed", description: error.message, variant: "destructive" });
     }
     setSubmitting(false);
