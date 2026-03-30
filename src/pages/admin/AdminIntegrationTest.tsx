@@ -55,20 +55,20 @@ export default function AdminIntegrationTest() {
   const [storageTest, setStorageTest] = useState<StepResult>({ status: "idle", message: "" });
   const [emailTest, setEmailTest] = useState<StepResult>({ status: "idle", message: "" });
 
-  const testOneNotaryConnection = async () => {
-    setApiTest({ status: "running", message: "Pinging OneNotary API..." });
+  const testSignNowConnection = async () => {
+    setApiTest({ status: "running", message: "Pinging SignNow API..." });
     const start = Date.now();
     try {
       const headers = await getEdgeFunctionHeaders();
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/onenotary`, {
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/signnow`, {
         method: "POST",
         headers,
-        body: JSON.stringify({ action: "list_sessions" }),
+        body: JSON.stringify({ action: "list_documents" }),
       });
       const elapsed = Date.now() - start;
       const data = await resp.json();
       if (resp.ok && !data.error) {
-        setApiTest({ status: "success", message: `Connected successfully. ${Array.isArray(data.sessions) ? data.sessions.length : 0} sessions found.`, responseTime: elapsed });
+        setApiTest({ status: "success", message: `Connected successfully.`, responseTime: elapsed });
       } else {
         setApiTest({ status: "error", message: data.error || `HTTP ${resp.status}`, responseTime: elapsed });
       }
