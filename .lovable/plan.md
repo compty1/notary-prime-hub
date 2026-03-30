@@ -1,57 +1,55 @@
-# Comprehensive Codebase Audit — Implementation Status
 
-## ✅ COMPLETED
 
-### Batch 1
-- Issues 1-14: All OneNotary→SignNow branding replaced
-- Issue 15: SignNow webhook signature verification (HMAC)
-- Issue 24: AuthContext session check uses getUser() (server-side)
-- Issue 28: Unique constraint on notarization_sessions.appointment_id
-- Issues 29-31: Performance indexes on payments, documents, chat_messages, appointments
-- Issue 32: updated_at triggers attached to all 11 tables
-- Issues 37-38: FileReader error handling with reader.onerror
-- Issue 39: Revenue chart line color fixed (--accent → --primary)
-- Issue 40: Stat cards grid changed to lg:grid-cols-5
-- Issue 45: Invite form hidden during in_session status
-- Issue 49: CSV export escapes commas/quotes
-- Issue 50: Chat RLS policy fixed (clients only see their own admin replies)
-- Issue 52: Duplicate print styles removed
-- Issue 59: download_document returns binary PDF
-- Issue 71: QueryClient has sensible defaults
-- Issues 81-85: Ohio compliance columns added (recording_url, kba_attempts, signer_ip, signer_location_attestation)
+# Add Automatic Per-Document Webhook Registration
 
-### Batch 2
-- Issue 16: platform_settings RLS restricts sensitive keys from anon/non-admin users
-- Issue 17: Webhook CORS removed (server-to-server only)
-- Issue 43: Voice recognition cleanup on unmount
-- Issue 46: sessionStatus default changed from "waiting" to "scheduled"
-- Issue 54: Save button debounced in AdminSettings
-- Issue 56: Stripe webhook signature verification added
-- Issue 57: Stripe webhook uses metadata.payment_id instead of fragile .like() matching
-- Issue 72: useEffect dependency fixed in voice recognition
-- Issue 73: AuthContext fetchRoles abort controller prevents memory leaks
+## Problem
+SignNow's webhook UI requires a specific document ID — it doesn't support wildcard subscriptions. This means webhooks must be registered per-document via the SignNow API after each upload.
 
-### Batch 3
-- Issue 22: refresh_token response masks access_token (only shows last 8 chars)
-- Issue 48: Pagination on payments table (25 per page with prev/next controls)
-- Issue 53: AnimatePresence key uses pathname only (no query param re-mounts)
+## Solution
+After each successful document upload in the `signnow` edge function, automatically register a webhook subscription for that document using the SignNow API's event subscription endpoint.
 
-## 📋 REMAINING (Lower Priority)
-- Issue 18: Rate limiting on edge functions (infrastructure-level)
-- Issue 19: ID number encryption at rest (requires migration + encrypt/decrypt helpers)
-- Issue 20-21: Zod input validation on edge functions (incremental improvement)
-- Issue 23: CSRF protection (Supabase handles via tokens)
-- Issue 25: signOut localStorage cleanup scope
-- Issue 26: Remove ONENOTARY_API_TOKEN secret
-- Issue 27: Foreign keys on all tables (major migration, risk of breaking existing data)
-- Issue 33: platform_fee vs platform_fees column consolidation
-- Issue 36: notary_payouts.platform_fees rename
-- Issue 41: formatDate consistency
-- Issue 42: Portal tab loading skeletons (already has full-page skeleton)
-- Issue 44: Error boundary around SignNow API calls
-- Issue 47: Suspense boundaries for admin sub-routes
-- Issue 51: Touch target sizing
-- Issues 61-65: Edge function minor improvements
-- Issues 66-70: TypeScript strict mode & type cleanup
-- Issues 74-75, 77-80: Missing features & incomplete flows
-- Issue 82: Commission expiry blocking RON sessions
+## Changes
+
+### 1. Update `supabase/functions/signnow/index.ts`
+
+After the document upload succeeds (line ~197-207), add a helper function and call it to register webhook events for the new document:
+
+**New helper function** `registerDocumentWebhook(documentId, token)`:
+- Calls `POST https://api.signnow.com/api/v2/events` (or the v1 equivalent `POST /document/{id}/event`) to subscribe to:
+  - `document.complete`
+  - `document.update`  
+  - `document.delete`
+  - `invite.create`, `invite.update`, `invite.cancel`
+- Callback URL: `https://svrebvbcsxaoluafblnq.supabase.co/functions/v1/signnow-webhook`
+- Includes the `SIGNNOW_WEBHOOK_SECRET` for HMAC signature verification if configured
+- Logs but does NOT fail the upload if webhook registration fails (non-blocking)
+
+**Insert point**: Right after the `notarization_sessions` upsert (line ~207), before the return statement.
+
+### 2. Add `SIGNNOW_WEBHOOK_SECRET` secret
+
+Use the `add_secret` tool to prompt the user to store the HMAC secret. This secret is used by both:
+- The `signnow-webhook` function (to verify inbound signatures)
+- The `signnow` function (to register webhooks with the correct secret)
+
+### 3. No other file changes needed
+The existing `signnow-webhook/index.ts` already handles all the event types. The build error shown (503 sandbox scheduler) is transient infrastructure — not caused by code.
+
+## Technical Details
+
+SignNow's Event Subscription API (v2):
+```
+POST /api/v2/events
+{
+  "event": "document.complete",
+  "entity_id": "<document_id>",
+  "action": "callback",
+  "attributes": {
+    "callback": "https://...signnow-webhook",
+    "use_tls_12": true
+  }
+}
+```
+
+Each event type requires a separate subscription call, so we'll fire them in parallel with `Promise.allSettled` to avoid blocking on any single failure.
+
