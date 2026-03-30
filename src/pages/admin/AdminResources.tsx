@@ -259,22 +259,22 @@ const documentGuides = [
     icon: "🖥️",
     guides: [
       {
-        title: "OneNotary RON Session Setup & Execution",
-        tags: ["RON", "remote", "OneNotary", "online"],
+        title: "SignNow RON Session Setup & Execution",
+        tags: ["RON", "remote", "SignNow", "online"],
         steps: [
           "Verify you have an active Ohio RON commission and authorization",
-          "From the appointment, click 'Start RON Session' to create a OneNotary session",
+          "From the appointment, click 'Start RON Session' to create a SignNow session",
           "The system automatically adds the client as primary signer and sends invitation",
           "Signer completes Knowledge-Based Authentication (KBA) — they must answer 5 questions correctly",
-          "Signer completes ID verification (credential analysis) via OneNotary",
+          "Signer completes ID verification (credential analysis) via SignNow",
           "Once both KBA and ID verification pass, the live video session begins",
           "During session: verify signer identity on camera, confirm willingness",
           "Walk through each document — signer applies electronic signature",
           "Apply your electronic notary seal and signature",
-          "Complete the session — OneNotary auto-generates the recording",
+          "Complete the session — SignNow auto-generates the recording",
           "Download the notarized document and recording for your records",
           "Record in notary journal with RON-specific fields: session ID, KBA result, recording reference",
-          "Deliver notarized document to signer via OneNotary or email",
+          "Deliver notarized document to signer via SignNow or email",
         ],
         whoPresent: "Signer(s) via live audio-video connection. Must be real-time, not pre-recorded.",
         warnings: [
