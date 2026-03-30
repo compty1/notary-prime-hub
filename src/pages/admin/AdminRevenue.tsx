@@ -384,7 +384,7 @@ export default function AdminRevenue() {
                       <th className="px-4 py-3 text-right font-medium text-muted-foreground">Actions</th>
                     </tr></thead>
                     <tbody>
-                      {payments.map((p) => (
+                      {payments.slice((paymentPage - 1) * PAYMENTS_PER_PAGE, paymentPage * PAYMENTS_PER_PAGE).map((p) => (
                         <tr key={p.id} className="border-b border-border/30 last:border-0 hover:bg-muted/30">
                           <td className="px-4 py-3 text-xs">{formatDate(p.created_at)}</td>
                           <td className="px-4 py-3 font-medium">{profiles[p.client_id] || p.client_id.slice(0, 8)}</td>
