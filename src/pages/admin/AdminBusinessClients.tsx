@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -16,6 +17,7 @@ const verificationColors: Record<string, string> = {
 };
 
 export default function AdminBusinessClients() {
+  usePageTitle("Business Clients");
   const { toast } = useToast();
   const { user } = useAuth();
   const [businesses, setBusinesses] = useState<any[]>([]);

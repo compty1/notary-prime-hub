@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -101,6 +102,7 @@ const getSteps = (docType: DocType): StepConfig[] => {
 };
 
 export default function DocumentBuilder() {
+  usePageTitle("Document Builder");
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();

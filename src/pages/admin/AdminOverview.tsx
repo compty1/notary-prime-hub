@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { OverviewSkeleton } from "@/components/AdminLoadingSkeleton";
 import { Link } from "react-router-dom";
@@ -21,6 +22,7 @@ const formatTime = (timeStr: string) => {
 const CHART_COLORS = ["#2563eb", "#d4a853", "#22c55e", "#eab308", "#ef4444", "#8b5cf6", "#06b6d4", "#f97316"];
 
 export default function AdminOverview() {
+  usePageTitle("Overview");
   const [appointments, setAppointments] = useState<any[]>([]);
   const [allAppointments, setAllAppointments] = useState<any[]>([]);
   const [journalEntries, setJournalEntries] = useState<any[]>([]);

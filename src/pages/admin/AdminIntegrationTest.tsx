@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -74,6 +75,7 @@ const webhookStatusBadge = (status: string) => {
 };
 
 export default function AdminIntegrationTest() {
+  usePageTitle("Integration Test");
   const { toast } = useToast();
   const [apiTest, setApiTest] = useState<StepResult>({ status: "idle", message: "" });
   const [tokenTest, setTokenTest] = useState<StepResult>({ status: "idle", message: "" });

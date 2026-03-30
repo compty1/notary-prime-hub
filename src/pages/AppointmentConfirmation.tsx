@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -105,6 +106,7 @@ const getCrossSells = (appt: any) => {
 };
 
 export default function AppointmentConfirmation() {
+  usePageTitle("Appointment Confirmed");
   const [searchParams] = useSearchParams();
   const appointmentId = searchParams.get("id");
   const { user } = useAuth();

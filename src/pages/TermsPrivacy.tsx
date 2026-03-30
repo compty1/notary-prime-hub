@@ -1,3 +1,4 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Shield } from "lucide-react";
@@ -5,6 +6,7 @@ import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
 
 export default function TermsPrivacy() {
+  usePageTitle("Terms & Privacy");
   return (
     <PageShell>
 
