@@ -208,7 +208,7 @@ export default function Services() {
         </Tabs>
 
         {loading ? (
-          <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
+          <ServicesLoadingSkeleton />
         ) : grouped.length === 0 && searchQuery ? (
           <div className="py-20 text-center text-muted-foreground">
             <Search className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
