@@ -22,6 +22,8 @@ const iconMap: Record<string, any> = {
   Layers: FileText, CreditCard: Briefcase, Code: FileText, Award: Shield,
   Building2: Briefcase, Inbox: FileText, Bell: FileText, Layout: FileText,
   GraduationCap: Briefcase, ClipboardList: FileText, Workflow: FileText, Plane: Globe,
+  Headphones, PenTool, BarChart3, MessageSquare, Wrench, Eye,
+  Mail: MessageSquare,
 };
 
 const categoryLabels: Record<string, { label: string; description: string }> = {
