@@ -50,6 +50,7 @@ const flowSteps = {
 export default function AdminIntegrationTest() {
   const { toast } = useToast();
   const [apiTest, setApiTest] = useState<StepResult>({ status: "idle", message: "" });
+  const [tokenTest, setTokenTest] = useState<StepResult>({ status: "idle", message: "" });
   const [stripeTest, setStripeTest] = useState<StepResult>({ status: "idle", message: "" });
   const [dbTest, setDbTest] = useState<StepResult>({ status: "idle", message: "" });
   const [storageTest, setStorageTest] = useState<StepResult>({ status: "idle", message: "" });
@@ -74,6 +75,29 @@ export default function AdminIntegrationTest() {
       }
     } catch (e: any) {
       setApiTest({ status: "error", message: e.message, responseTime: Date.now() - start });
+    }
+  };
+
+  const testSignNowToken = async () => {
+    setTokenTest({ status: "running", message: "Verifying SignNow token..." });
+    const start = Date.now();
+    try {
+      const headers = await getEdgeFunctionHeaders();
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/signnow`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ action: "verify_token" }),
+      });
+      const elapsed = Date.now() - start;
+      const data = await resp.json();
+      if (data.valid) {
+        const expiresHours = data.expires_in ? Math.round(parseInt(data.expires_in) / 3600) : null;
+        setTokenTest({ status: "success", message: `Token valid.${expiresHours ? ` Expires in ~${expiresHours}h.` : ""}`, responseTime: elapsed });
+      } else {
+        setTokenTest({ status: "error", message: data.error || "Token invalid or expired", responseTime: elapsed });
+      }
+    } catch (e: any) {
+      setTokenTest({ status: "error", message: e.message, responseTime: Date.now() - start });
     }
   };
 
@@ -214,6 +238,7 @@ export default function AdminIntegrationTest() {
                 testDatabaseConnection();
                 testStorageConnection();
                 testSignNowConnection();
+                testSignNowToken();
                 testStripeConnection();
                 testEmailFunction();
               }}
@@ -225,6 +250,7 @@ export default function AdminIntegrationTest() {
           <TestCard title="Database" icon={Database} result={dbTest} onTest={testDatabaseConnection} description="Queries the platform_settings table to verify database connectivity and RLS policies." />
           <TestCard title="File Storage" icon={HardDrive} result={storageTest} onTest={testStorageConnection} description="Lists the documents storage bucket to verify file storage access." />
           <TestCard title="SignNow API" icon={Monitor} result={apiTest} onTest={testSignNowConnection} description="Tests the SignNow REST API connection by listing documents. Requires SIGNNOW_API_TOKEN secret." />
+          <TestCard title="SignNow Token" icon={Shield} result={tokenTest} onTest={testSignNowToken} description="Verifies the current SignNow API token is valid and shows time until expiration. Tokens expire after 30 days." />
           <TestCard title="Stripe Payment Gateway" icon={CreditCard} result={stripeTest} onTest={testStripeConnection} description="Verifies Stripe publishable key is configured and the get-stripe-config function responds." />
           <TestCard title="Email Function" icon={Mail} result={emailTest} onTest={testEmailFunction} description="Sends a dry-run request to the send-correspondence edge function to verify it's deployed and reachable." />
         </TabsContent>

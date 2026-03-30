@@ -682,9 +682,9 @@ export type Database = {
           id: string
           id_verified: boolean | null
           kba_completed: boolean | null
-          onenotary_session_id: string | null
           participant_link: string | null
           session_type: Database["public"]["Enums"]["notarization_type"]
+          signnow_document_id: string | null
           started_at: string | null
           status: Database["public"]["Enums"]["appointment_status"]
           updated_at: string
@@ -697,9 +697,9 @@ export type Database = {
           id?: string
           id_verified?: boolean | null
           kba_completed?: boolean | null
-          onenotary_session_id?: string | null
           participant_link?: string | null
           session_type?: Database["public"]["Enums"]["notarization_type"]
+          signnow_document_id?: string | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
           updated_at?: string
@@ -712,9 +712,9 @@ export type Database = {
           id?: string
           id_verified?: boolean | null
           kba_completed?: boolean | null
-          onenotary_session_id?: string | null
           participant_link?: string | null
           session_type?: Database["public"]["Enums"]["notarization_type"]
+          signnow_document_id?: string | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
           updated_at?: string
@@ -811,7 +811,7 @@ export type Database = {
           notes: string | null
           oath_administered: boolean | null
           oath_timestamp: string | null
-          onenotary_fee: number | null
+          platform_fee: number | null
           platform_fees: number | null
           platform_markup: number | null
           service_performed: string
@@ -839,7 +839,7 @@ export type Database = {
           notes?: string | null
           oath_administered?: boolean | null
           oath_timestamp?: string | null
-          onenotary_fee?: number | null
+          platform_fee?: number | null
           platform_fees?: number | null
           platform_markup?: number | null
           service_performed?: string
@@ -867,7 +867,7 @@ export type Database = {
           notes?: string | null
           oath_administered?: boolean | null
           oath_timestamp?: string | null
-          onenotary_fee?: number | null
+          platform_fee?: number | null
           platform_fees?: number | null
           platform_markup?: number | null
           service_performed?: string

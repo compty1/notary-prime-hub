@@ -286,6 +286,31 @@ export default function AdminSettings() {
             </div>
             <div><Label>KBA Platform URL</Label><Input value={editValues.kba_platform_url || ""} onChange={(e) => updateValue("kba_platform_url", e.target.value)} placeholder="https://kba-platform.com/session" /></div>
 
+            {/* SignNow Webhook URL */}
+            <div>
+              <Label>SignNow Webhook URL</Label>
+              <div className="mt-1 flex items-center gap-2">
+                <Input
+                  readOnly
+                  value={`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/signnow-webhook`}
+                  className="font-mono text-xs bg-muted"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/signnow-webhook`);
+                    toast({ title: "Copied!", description: "Webhook URL copied to clipboard." });
+                  }}
+                >
+                  Copy
+                </Button>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Register this URL in your SignNow account under API Settings → Webhooks. Subscribe to events: <code className="text-foreground">document.complete</code>, <code className="text-foreground">document.update</code>, <code className="text-foreground">invite.update</code>.
+              </p>
+            </div>
+
             {/* KBA Integration Setup */}
             <Collapsible>
               <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors">
