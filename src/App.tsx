@@ -161,6 +161,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
+          <CommandPalette />
           <Suspense fallback={<PageLoader />}>
             <AnimatedRoutes />
           </Suspense>
