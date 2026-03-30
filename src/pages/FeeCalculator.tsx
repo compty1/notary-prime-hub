@@ -18,7 +18,7 @@ import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 
-// Office coordinates loaded from platform_settings (fallback to Columbus, OH)
+const DEFAULT_OFFICE = { lat: 39.9612, lng: -82.9988 };
 
 const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
   const R = 3959; // Earth radius in miles
