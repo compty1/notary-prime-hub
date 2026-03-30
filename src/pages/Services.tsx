@@ -50,6 +50,11 @@ const INTAKE_ONLY_SERVICES = new Set([
   "Clerical Document Preparation", "Document Cleanup & Formatting", "Form Filling Assistance",
   "Certified Document Prep for Agencies", "Registered Agent Coordination",
   "Email Management & Correspondence", "Notarized Translation Coordination",
+  "Data Entry", "Travel Arrangements", "Blog Post Writing", "Social Media Content",
+  "Newsletter Design", "Market Research Report", "Lead Generation",
+  "Email Support Handling", "Live Chat Support", "Website Content Updates",
+  "UX Audit & Heuristic Review", "User Flow & Workflow Testing",
+  "Usability Testing & Report", "UX Research & Persona Development",
 ]);
 const SAAS_LINKS: Record<string, string> = {
   "Document Storage Vault": "/portal",
