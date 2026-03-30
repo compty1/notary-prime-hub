@@ -299,6 +299,7 @@ export default function RonSession() {
         body: { action: "cancel_invite", document_id: signnowDocumentId, appointment_id: appointmentId },
       });
       if (resp.error) throw new Error(resp.error.message);
+      if (resp.data?.error) throw new Error(resp.data.error);
       setSessionStatus("cancelled");
       toast({ title: "Session cancelled", description: "The SignNow invite has been cancelled." });
     } catch (err: any) {
