@@ -1119,6 +1119,7 @@ export type Database = {
           id_expiration: string | null
           id_number: string | null
           id_type: string | null
+          journal_number: number
           net_profit: number | null
           notarization_type: Database["public"]["Enums"]["notarization_type"]
           notary_payout: number | null
@@ -1149,6 +1150,7 @@ export type Database = {
           id_expiration?: string | null
           id_number?: string | null
           id_type?: string | null
+          journal_number?: number
           net_profit?: number | null
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
           notary_payout?: number | null
@@ -1179,6 +1181,7 @@ export type Database = {
           id_expiration?: string | null
           id_number?: string | null
           id_type?: string | null
+          journal_number?: number
           net_profit?: number | null
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
           notary_payout?: number | null
