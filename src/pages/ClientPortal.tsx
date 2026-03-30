@@ -313,6 +313,88 @@ export default function ClientPortal() {
             <TabsTrigger value="services" aria-label="Available Services"><ShoppingBag className="mr-1 h-4 w-4 hidden sm:inline" /> Services</TabsTrigger>
           </TabsList>
 
+          {/* DASHBOARD OVERVIEW TAB — Item 171 */}
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card className="border-border/50">
+                <CardContent className="p-4 flex items-center gap-3">
+                  <div className="rounded-lg bg-primary/10 p-2"><Calendar className="h-5 w-5 text-primary" /></div>
+                  <div><p className="text-2xl font-bold">{upcoming.length}</p><p className="text-xs text-muted-foreground">Upcoming Appts</p></div>
+                </CardContent>
+              </Card>
+              <Card className="border-border/50">
+                <CardContent className="p-4 flex items-center gap-3">
+                  <div className="rounded-lg bg-accent/10 p-2"><FileText className="h-5 w-5 text-accent-foreground" /></div>
+                  <div><p className="text-2xl font-bold">{documents.length}</p><p className="text-xs text-muted-foreground">Documents</p></div>
+                </CardContent>
+              </Card>
+              <Card className="border-border/50">
+                <CardContent className="p-4 flex items-center gap-3">
+                  <div className="rounded-lg bg-green-500/10 p-2"><DollarSign className="h-5 w-5 text-green-600 dark:text-green-400" /></div>
+                  <div><p className="text-2xl font-bold">${payments.filter(p => p.status === "paid").reduce((s, p) => s + Number(p.amount), 0).toFixed(0)}</p><p className="text-xs text-muted-foreground">Total Paid</p></div>
+                </CardContent>
+              </Card>
+              <Card className="border-border/50">
+                <CardContent className="p-4 flex items-center gap-3">
+                  <div className="rounded-lg bg-destructive/10 p-2"><Bell className="h-5 w-5 text-destructive" /></div>
+                  <div><p className="text-2xl font-bold">{payments.filter(p => p.status === "pending").length + unreadCount}</p><p className="text-xs text-muted-foreground">Action Needed</p></div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Quick actions */}
+            <div className="flex flex-wrap gap-2">
+              <Link to="/book"><Button size="sm"><Plus className="mr-1 h-4 w-4" /> Book Appointment</Button></Link>
+              <Button size="sm" variant="outline" onClick={() => setShowWizard(true)}><Sparkles className="mr-1 h-4 w-4" /> AI Document Wizard</Button>
+              <Button size="sm" variant="outline" onClick={() => setQrDialogOpen(true)}><QrCode className="mr-1 h-4 w-4" /> Mobile Upload</Button>
+            </div>
+
+            {/* Upcoming appointments preview */}
+            {upcoming.length > 0 && (
+              <div>
+                <h3 className="font-semibold text-sm mb-2">Next Appointments</h3>
+                <div className="space-y-2">
+                  {upcoming.slice(0, 3).map(a => (
+                    <Card key={a.id} className="border-border/50">
+                      <CardContent className="p-3 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <Calendar className="h-4 w-4 text-muted-foreground" />
+                          <div>
+                            <p className="text-sm font-medium">{a.service_type}</p>
+                            <p className="text-xs text-muted-foreground">{formatDate(a.scheduled_date)} at {a.scheduled_time} ET</p>
+                          </div>
+                        </div>
+                        <Badge variant="outline" className="text-xs">{a.status.replace(/_/g, " ")}</Badge>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Pending payments */}
+            {payments.filter(p => p.status === "pending").length > 0 && (
+              <div>
+                <h3 className="font-semibold text-sm mb-2">Pending Payments</h3>
+                <div className="space-y-2">
+                  {payments.filter(p => p.status === "pending").slice(0, 3).map(p => (
+                    <Card key={p.id} className="border-border/50 border-l-4 border-l-destructive">
+                      <CardContent className="p-3 flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium">${Number(p.amount).toFixed(2)}</p>
+                          <p className="text-xs text-muted-foreground">{p.notes || "Payment due"}</p>
+                        </div>
+                        <Button size="sm" variant="default" onClick={() => { setPayingPaymentId(p.id); setShowPaymentForm(true); }}>
+                          <CreditCard className="mr-1 h-3 w-3" /> Pay Now
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+          </TabsContent>
+
           <TabsContent value="appointments">
             <PortalAppointmentsTab appointments={appointments} loading={loading} zoomLink={zoomLink} onCancelClick={setCancelDialogId} onTechCheck={() => setTechCheckOpen(true)} />
           </TabsContent>

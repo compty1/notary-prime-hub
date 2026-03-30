@@ -22,8 +22,15 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    const { imageBase64 } = await req.json();
-    if (!imageBase64) throw new Error("No image provided");
+    const { z } = await import("https://esm.sh/zod@3.23.8");
+    const BodySchema = z.object({
+      imageBase64: z.string().min(1, "No image provided").max(10_000_000),
+    });
+    const parsed = BodySchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: parsed.error.flatten().fieldErrors }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const { imageBase64 } = parsed.data;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");

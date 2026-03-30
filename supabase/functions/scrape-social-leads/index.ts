@@ -41,23 +41,23 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Optional auth check - skip for cron jobs
+    // Auth check — admin only
     const authHeader = req.headers.get("Authorization");
-    if (authHeader?.startsWith("Bearer ") && !authHeader.includes(Deno.env.get("SUPABASE_ANON_KEY")!)) {
-      const supabase = createClient(
-        Deno.env.get("SUPABASE_URL")!,
-        Deno.env.get("SUPABASE_ANON_KEY")!,
-        { global: { headers: { Authorization: authHeader } } }
-      );
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: roleData } = await serviceRoleClient.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin").single();
-        if (!roleData) {
-          return new Response(JSON.stringify({ error: "Admin access required" }), {
-            status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-      }
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const { data: roleData } = await serviceRoleClient.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin").single();
+    if (!roleData) {
+      return new Response(JSON.stringify({ error: "Admin access required" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     const allResults: any[] = [];
