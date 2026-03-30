@@ -97,16 +97,43 @@ export default function AdminServiceRequests() {
   const saveRequest = async () => {
     if (!selectedRequest) return;
     setUpdating(true);
+
+    // Upload deliverable if file selected
+    let deliverableUrl = selectedRequest.deliverable_url;
+    if (deliverableFile) {
+      setUploadingDeliverable(true);
+      const filePath = `deliverables/${selectedRequest.id}/${Date.now()}_${deliverableFile.name}`;
+      const { error: uploadErr } = await supabase.storage.from("documents").upload(filePath, deliverableFile);
+      if (!uploadErr) {
+        const { data: urlData } = supabase.storage.from("documents").getPublicUrl(filePath);
+        deliverableUrl = urlData.publicUrl;
+      }
+      setUploadingDeliverable(false);
+    }
+
+    // Auto-set SLA deadline when changing to in_progress
+    let slaDeadline = selectedRequest.sla_deadline;
+    if (editStatus === "in_progress" && selectedRequest.status !== "in_progress") {
+      const now = new Date();
+      const urgencyDays: Record<string, number> = { urgent: 1, high: 2, normal: 5, low: 7 };
+      const days = urgencyDays[editPriority] || 5;
+      now.setDate(now.getDate() + days);
+      slaDeadline = now.toISOString();
+    }
+
     const { error } = await supabase.from("service_requests").update({
       status: editStatus,
       priority: editPriority,
       notes: editNotes,
       client_visible_status: editClientStatus,
+      assigned_to: editAssignedTo || null,
+      deliverable_url: deliverableUrl || null,
+      sla_deadline: slaDeadline,
     }).eq("id", selectedRequest.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else {
       toast({ title: "Request updated" });
-      setRequests(prev => prev.map(r => r.id === selectedRequest.id ? { ...r, status: editStatus, priority: editPriority, notes: editNotes, client_visible_status: editClientStatus } : r));
+      setRequests(prev => prev.map(r => r.id === selectedRequest.id ? { ...r, status: editStatus, priority: editPriority, notes: editNotes, client_visible_status: editClientStatus, assigned_to: editAssignedTo || null, deliverable_url: deliverableUrl, sla_deadline: slaDeadline } : r));
       setDetailOpen(false);
     }
     setUpdating(false);
