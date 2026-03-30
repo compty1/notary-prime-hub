@@ -249,6 +249,7 @@ export default function RonSession() {
           body: { action: "upload_document", appointment_id: appointmentId, file_name: file.name, file_content: base64 },
         });
         if (resp.error) throw new Error(resp.error.message);
+        if (resp.data?.error) throw new Error(resp.data.error);
         const docId = resp.data?.id;
         if (docId) {
           setSignnowDocumentId(docId);
