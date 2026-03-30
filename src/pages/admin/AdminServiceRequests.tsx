@@ -54,7 +54,16 @@ export default function AdminServiceRequests() {
 
   useEffect(() => {
     fetchRequests();
+    fetchTeam();
   }, []);
+
+  const fetchTeam = async () => {
+    const { data: roles } = await supabase.from("user_roles").select("user_id, role").in("role", ["admin", "notary"]);
+    if (!roles) return;
+    const userIds = [...new Set(roles.map(r => r.user_id))];
+    const { data: profs } = await supabase.from("profiles").select("user_id, full_name, email").in("user_id", userIds);
+    setTeamProfiles(profs || []);
+  };
 
   const fetchRequests = async () => {
     setLoading(true);
