@@ -228,12 +228,16 @@ export default function ServiceDetail() {
   const { serviceId } = useParams();
   const navigate = useNavigate();
   const [service, setService] = useState<ServiceData | null>(null);
+  const [allServices, setAllServices] = useState<ServiceData[]>([]);
   const [requirements, setRequirements] = useState<Requirement[]>([]);
   const [workflow, setWorkflow] = useState<WorkflowStep[]>([]);
   const [relatedServices, setRelatedServices] = useState<ServiceData[]>([]);
   const [loading, setLoading] = useState(true);
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
   const [showChat, setShowChat] = useState(false);
+  const [chatMessages, setChatMessages] = useState<{ role: string; content: string }[]>([]);
+  const [chatInput, setChatInput] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
   const [showPreQualifier, setShowPreQualifier] = useState(false);
   usePageTitle(service?.name || "Service Details");
 
