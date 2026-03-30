@@ -1,0 +1,267 @@
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { Search, Filter, Clock, CheckCircle, AlertTriangle, Loader2, User, FileText } from "lucide-react";
+
+const STATUS_OPTIONS = ["submitted", "in_progress", "awaiting_client", "completed", "cancelled"];
+const PRIORITY_OPTIONS = ["low", "normal", "high", "urgent"];
+
+const statusColors: Record<string, string> = {
+  submitted: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
+  in_progress: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
+  awaiting_client: "bg-orange-500/10 text-orange-700 dark:text-orange-400",
+  completed: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+  cancelled: "bg-muted text-muted-foreground",
+};
+
+const priorityColors: Record<string, string> = {
+  low: "bg-muted text-muted-foreground",
+  normal: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
+  high: "bg-orange-500/10 text-orange-700 dark:text-orange-400",
+  urgent: "bg-destructive/10 text-destructive",
+};
+
+export default function AdminServiceRequests() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [requests, setRequests] = useState<any[]>([]);
+  const [profiles, setProfiles] = useState<Record<string, any>>({});
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [priorityFilter, setPriorityFilter] = useState("all");
+  const [selectedRequest, setSelectedRequest] = useState<any>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [updating, setUpdating] = useState(false);
+  const [editStatus, setEditStatus] = useState("");
+  const [editPriority, setEditPriority] = useState("");
+  const [editNotes, setEditNotes] = useState("");
+  const [editClientStatus, setEditClientStatus] = useState("");
+
+  useEffect(() => {
+    fetchRequests();
+  }, []);
+
+  const fetchRequests = async () => {
+    setLoading(true);
+    const { data } = await supabase.from("service_requests").select("*").order("created_at", { ascending: false });
+    if (data) {
+      setRequests(data);
+      const clientIds = [...new Set(data.map((r: any) => r.client_id))];
+      if (clientIds.length > 0) {
+        const { data: profs } = await supabase.from("profiles").select("user_id, full_name, email").in("user_id", clientIds);
+        if (profs) {
+          const map: Record<string, any> = {};
+          profs.forEach(p => { map[p.user_id] = p; });
+          setProfiles(map);
+        }
+      }
+    }
+    setLoading(false);
+  };
+
+  const openDetail = (req: any) => {
+    setSelectedRequest(req);
+    setEditStatus(req.status);
+    setEditPriority(req.priority);
+    setEditNotes(req.notes || "");
+    setEditClientStatus(req.client_visible_status || "Submitted");
+    setDetailOpen(true);
+  };
+
+  const saveRequest = async () => {
+    if (!selectedRequest) return;
+    setUpdating(true);
+    const { error } = await supabase.from("service_requests").update({
+      status: editStatus,
+      priority: editPriority,
+      notes: editNotes,
+      client_visible_status: editClientStatus,
+    }).eq("id", selectedRequest.id);
+    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    else {
+      toast({ title: "Request updated" });
+      setRequests(prev => prev.map(r => r.id === selectedRequest.id ? { ...r, status: editStatus, priority: editPriority, notes: editNotes, client_visible_status: editClientStatus } : r));
+      setDetailOpen(false);
+    }
+    setUpdating(false);
+  };
+
+  const filtered = requests.filter(r => {
+    if (statusFilter !== "all" && r.status !== statusFilter) return false;
+    if (priorityFilter !== "all" && r.priority !== priorityFilter) return false;
+    if (search) {
+      const s = search.toLowerCase();
+      const clientName = profiles[r.client_id]?.full_name?.toLowerCase() || "";
+      return r.service_name.toLowerCase().includes(s) || clientName.includes(s) || r.id.includes(s);
+    }
+    return true;
+  });
+
+  const stats = {
+    total: requests.length,
+    submitted: requests.filter(r => r.status === "submitted").length,
+    inProgress: requests.filter(r => r.status === "in_progress").length,
+    completed: requests.filter(r => r.status === "completed").length,
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="font-sans text-2xl font-bold text-foreground">Service Requests</h2>
+          <p className="text-sm text-muted-foreground">Manage all client service requests across categories</p>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: "Total", value: stats.total, icon: FileText, color: "text-foreground" },
+          { label: "New", value: stats.submitted, icon: AlertTriangle, color: "text-blue-500" },
+          { label: "In Progress", value: stats.inProgress, icon: Clock, color: "text-yellow-500" },
+          { label: "Completed", value: stats.completed, icon: CheckCircle, color: "text-emerald-500" },
+        ].map(s => (
+          <Card key={s.label} className="border-border/50">
+            <CardContent className="flex items-center gap-3 p-4">
+              <s.icon className={`h-5 w-5 ${s.color}`} />
+              <div>
+                <p className="text-2xl font-bold">{s.value}</p>
+                <p className="text-xs text-muted-foreground">{s.label}</p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-wrap gap-3">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Search by service, client..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+        </div>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-[140px]"><SelectValue placeholder="Status" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            {STATUS_OPTIONS.map(s => <SelectItem key={s} value={s}>{s.replace(/_/g, " ")}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+          <SelectTrigger className="w-[130px]"><SelectValue placeholder="Priority" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Priority</SelectItem>
+            {PRIORITY_OPTIONS.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Table */}
+      {loading ? (
+        <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+      ) : filtered.length === 0 ? (
+        <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground">No service requests found.</CardContent></Card>
+      ) : (
+        <Card className="border-border/50 overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Service</TableHead>
+                <TableHead>Client</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Priority</TableHead>
+                <TableHead>Created</TableHead>
+                <TableHead className="text-right">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.map(req => (
+                <TableRow key={req.id} className="cursor-pointer hover:bg-muted/50" onClick={() => openDetail(req)}>
+                  <TableCell className="font-medium">{req.service_name}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <User className="h-3.5 w-3.5 text-muted-foreground" />
+                      <span className="text-sm">{profiles[req.client_id]?.full_name || "Unknown"}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell><Badge className={statusColors[req.status] || ""}>{req.status.replace(/_/g, " ")}</Badge></TableCell>
+                  <TableCell><Badge variant="outline" className={priorityColors[req.priority] || ""}>{req.priority}</Badge></TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{new Date(req.created_at).toLocaleDateString()}</TableCell>
+                  <TableCell className="text-right"><Button size="sm" variant="ghost">View</Button></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      )}
+
+      {/* Detail Dialog */}
+      <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{selectedRequest?.service_name}</DialogTitle>
+          </DialogHeader>
+          {selectedRequest && (
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Client: {profiles[selectedRequest.client_id]?.full_name || "Unknown"}</p>
+                <p className="text-sm text-muted-foreground">Email: {profiles[selectedRequest.client_id]?.email || "—"}</p>
+                <p className="text-sm text-muted-foreground">Submitted: {new Date(selectedRequest.created_at).toLocaleString()}</p>
+              </div>
+
+              {selectedRequest.intake_data && Object.keys(selectedRequest.intake_data).length > 0 && (
+                <div className="rounded-lg bg-muted/50 p-3">
+                  <p className="text-sm font-medium mb-2">Intake Data</p>
+                  {Object.entries(selectedRequest.intake_data).map(([key, val]) => (
+                    <p key={key} className="text-sm"><span className="text-muted-foreground">{key}:</span> {String(val)}</p>
+                  ))}
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Status</Label>
+                  <Select value={editStatus} onValueChange={setEditStatus}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>{STATUS_OPTIONS.map(s => <SelectItem key={s} value={s}>{s.replace(/_/g, " ")}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Priority</Label>
+                  <Select value={editPriority} onValueChange={setEditPriority}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>{PRIORITY_OPTIONS.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label>Client-Visible Status</Label>
+                <Input value={editClientStatus} onChange={e => setEditClientStatus(e.target.value)} placeholder="e.g. In Review, Ready for Pickup" />
+              </div>
+
+              <div>
+                <Label>Admin Notes</Label>
+                <Textarea value={editNotes} onChange={e => setEditNotes(e.target.value)} rows={3} />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDetailOpen(false)}>Cancel</Button>
+            <Button onClick={saveRequest} disabled={updating}>{updating ? "Saving..." : "Save Changes"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
