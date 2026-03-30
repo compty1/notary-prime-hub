@@ -159,6 +159,13 @@ export default function RonSession() {
       recognition.onend = () => setIsListening(false);
       recognitionRef.current = recognition;
     }
+    return () => {
+      // Clean up: stop recognition on unmount
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch {}
+        recognitionRef.current = null;
+      }
+    };
   }, [isAdminOrNotary]);
 
   const toggleVoice = () => {
