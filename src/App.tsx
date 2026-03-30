@@ -120,6 +120,7 @@ function AnimatedRoutes() {
         <Route path="/mobile-upload" element={<ProtectedRoute><MobileUpload /></ProtectedRoute>} />
         <Route path="/builder" element={<ProtectedRoute><DocumentBuilder /></ProtectedRoute>} />
         <Route path="/fee-calculator" element={<FeeCalculator />} />
+        <Route path="/ai-writer" element={<ProtectedRoute><AIWriter /></ProtectedRoute>} />
         <Route path="/portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
         <Route path="/confirmation" element={<ProtectedRoute><AppointmentConfirmation /></ProtectedRoute>} />
         <Route path="/ron-session" element={<ProtectedRoute><RonSession /></ProtectedRoute>} />
