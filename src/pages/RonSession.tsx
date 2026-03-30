@@ -81,6 +81,11 @@ export default function RonSession() {
   // Session link
   const [participantLink, setParticipantLink] = useState<string | null>(null);
   const [sessionLink, setSessionLink] = useState("");
+  const [sessionUniqueId, setSessionUniqueId] = useState<string | null>(null);
+
+  // Recording consent (Ohio two-party consent, item 334-335)
+  const [recordingConsent, setRecordingConsent] = useState(false);
+  const [recordingConsentAt, setRecordingConsentAt] = useState<string | null>(null);
 
   // ID Verification fields
   const [idVerified, setIdVerified] = useState(false);
@@ -133,6 +138,11 @@ export default function RonSession() {
         setKbaCompleted(session.kba_completed || false);
         setSessionStatus(session.status || "scheduled");
         if ((session as any).participant_link) setParticipantLink((session as any).participant_link);
+        if ((session as any).session_unique_id) setSessionUniqueId((session as any).session_unique_id);
+        if ((session as any).recording_consent) {
+          setRecordingConsent(true);
+          setRecordingConsentAt((session as any).recording_consent_at || null);
+        }
       }
 
       // Check commission expiry (Ohio ORC §147.03)
@@ -247,19 +257,21 @@ export default function RonSession() {
 
     setSaving(true);
     const link = sessionLink.trim();
-    const { data: existing } = await supabase.from("notarization_sessions").select("id").eq("appointment_id", appointmentId).single();
+    const { data: existing } = await supabase.from("notarization_sessions").select("id, session_unique_id").eq("appointment_id", appointmentId).single();
     if (existing) {
       await supabase.from("notarization_sessions").update({
         participant_link: link,
         status: "confirmed" as any,
       }).eq("appointment_id", appointmentId);
+      if ((existing as any).session_unique_id) setSessionUniqueId((existing as any).session_unique_id);
     } else {
-      await supabase.from("notarization_sessions").insert({
+      const { data: newSession } = await supabase.from("notarization_sessions").insert({
         appointment_id: appointmentId,
         session_type: "ron" as any,
         participant_link: link,
         status: "confirmed" as any,
-      });
+      }).select("session_unique_id").single();
+      if ((newSession as any)?.session_unique_id) setSessionUniqueId((newSession as any).session_unique_id);
     }
     setParticipantLink(link);
     setSessionStatus("confirmed");
@@ -279,7 +291,9 @@ export default function RonSession() {
       kba_completed: kbaCompleted,
       status: oathAdministered ? ("completed" as any) : ("in_session" as any),
       completed_at: oathAdministered ? new Date().toISOString() : null,
-    }).eq("appointment_id", appointmentId);
+      recording_consent: recordingConsent,
+      recording_consent_at: recordingConsentAt,
+    } as any).eq("appointment_id", appointmentId);
 
     await supabase.from("audit_log").insert({
       user_id: user?.id,
@@ -667,7 +681,41 @@ export default function RonSession() {
               </CardContent>
             </Card>
 
-            {/* Digital Oath/Affirmation */}
+            {/* Recording Consent (Ohio two-party consent, items 334-335) */}
+            <Card className="border-border/50">
+              <CardContent className="p-4">
+                <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
+                  <Video className="h-4 w-4 text-primary" /> Recording Consent
+                </h3>
+                <p className="text-[10px] text-muted-foreground mb-2">
+                  Ohio is a one-party consent state, but RON best practice requires explicit consent per ORC §147.66.
+                </p>
+                <div className="flex items-center gap-2 mb-2">
+                  <Switch
+                    checked={recordingConsent}
+                    onCheckedChange={(checked) => {
+                      setRecordingConsent(checked);
+                      if (checked && !recordingConsentAt) {
+                        setRecordingConsentAt(new Date().toISOString());
+                      }
+                    }}
+                  />
+                  <Label className="text-xs">Signer consented to session recording</Label>
+                </div>
+                {recordingConsent && recordingConsentAt && (
+                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 text-xs">
+                    <CheckCircle className="mr-1 h-3 w-3" /> Consent at {new Date(recordingConsentAt).toLocaleTimeString()}
+                  </Badge>
+                )}
+                {sessionUniqueId && (
+                  <div className="mt-2 text-[10px] text-muted-foreground">
+                    Session ID: <span className="font-mono text-foreground">{sessionUniqueId}</span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+
             <Card className="border-border/50">
               <CardContent className="p-4">
                 <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
