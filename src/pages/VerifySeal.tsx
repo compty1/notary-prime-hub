@@ -95,6 +95,11 @@ export default function VerifySeal() {
                   </div>
                 </div>
 
+                <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+                  <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1"><Scale className="h-3 w-3" /> Ohio Compliance</p>
+                  <p className="text-xs text-foreground">This notarization was performed in compliance with Ohio Revised Code §147.60-66. The notary public was duly commissioned by the State of Ohio at the time of notarization.</p>
+                </div>
+
                 <div className="rounded-lg border border-border/60 p-3">
                   <p className="text-xs text-muted-foreground">Verification ID</p>
                   <p className="font-mono text-sm text-foreground break-all">{record.id}</p>
