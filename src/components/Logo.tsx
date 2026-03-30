@@ -32,7 +32,7 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
         </div>
         {showText && (
           <div>
-            <span className="block text-lg font-extrabold tracking-tight text-foreground">
+            <span className="block text-lg font-semibold tracking-tight text-foreground">
               Notar
             </span>
             {subtitle && (
