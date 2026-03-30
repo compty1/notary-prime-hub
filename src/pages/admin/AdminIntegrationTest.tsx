@@ -78,6 +78,29 @@ export default function AdminIntegrationTest() {
     }
   };
 
+  const testSignNowToken = async () => {
+    setTokenTest({ status: "running", message: "Verifying SignNow token..." });
+    const start = Date.now();
+    try {
+      const headers = await getEdgeFunctionHeaders();
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/signnow`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ action: "verify_token" }),
+      });
+      const elapsed = Date.now() - start;
+      const data = await resp.json();
+      if (data.valid) {
+        const expiresHours = data.expires_in ? Math.round(parseInt(data.expires_in) / 3600) : null;
+        setTokenTest({ status: "success", message: `Token valid.${expiresHours ? ` Expires in ~${expiresHours}h.` : ""}`, responseTime: elapsed });
+      } else {
+        setTokenTest({ status: "error", message: data.error || "Token invalid or expired", responseTime: elapsed });
+      }
+    } catch (e: any) {
+      setTokenTest({ status: "error", message: e.message, responseTime: Date.now() - start });
+    }
+  };
+
   const testStripeConnection = async () => {
     setStripeTest({ status: "running", message: "Checking Stripe configuration..." });
     const start = Date.now();
