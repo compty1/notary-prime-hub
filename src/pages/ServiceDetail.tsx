@@ -16,6 +16,8 @@ import {
   MessageSquare, ExternalLink, Sparkles, User
 } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 const iconMap: Record<string, any> = {
   Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home,
