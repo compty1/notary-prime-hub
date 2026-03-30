@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, ShieldX, Calendar, FileText, User, Building2, Loader2, ArrowLeft } from "lucide-react";
+import { ShieldCheck, ShieldX, Calendar, FileText, User, Building2, Loader2, ArrowLeft, Scale } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 interface ESealRecord {
   id: string;
