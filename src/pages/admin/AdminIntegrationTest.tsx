@@ -50,6 +50,7 @@ const flowSteps = {
 export default function AdminIntegrationTest() {
   const { toast } = useToast();
   const [apiTest, setApiTest] = useState<StepResult>({ status: "idle", message: "" });
+  const [tokenTest, setTokenTest] = useState<StepResult>({ status: "idle", message: "" });
   const [stripeTest, setStripeTest] = useState<StepResult>({ status: "idle", message: "" });
   const [dbTest, setDbTest] = useState<StepResult>({ status: "idle", message: "" });
   const [storageTest, setStorageTest] = useState<StepResult>({ status: "idle", message: "" });

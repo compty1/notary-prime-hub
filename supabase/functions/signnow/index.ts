@@ -217,12 +217,64 @@ Deno.serve(async (req) => {
         });
       }
 
-      default:
-        return new Response(JSON.stringify({ error: `Unknown action: ${action}` }), {
-          status: 400,
+      case "verify_token": {
+        const token = Deno.env.get("SIGNNOW_API_TOKEN");
+        if (!token) {
+          return new Response(JSON.stringify({ valid: false, error: "SIGNNOW_API_TOKEN not configured" }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        try {
+          const resp = await fetch(`${SIGNNOW_BASE}/oauth2/token`, {
+            method: "GET",
+            headers: { "Authorization": `Bearer ${token}`, "Accept": "application/json" },
+          });
+          if (!resp.ok) {
+            return new Response(JSON.stringify({ valid: false, error: `Token invalid (${resp.status})` }), {
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+          const data = await resp.json();
+          return new Response(JSON.stringify({ valid: true, expires_in: data.expires_in, scope: data.scope, token_type: data.token_type }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        } catch (e: any) {
+          return new Response(JSON.stringify({ valid: false, error: e.message }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+
+      case "refresh_token": {
+        const basicToken = Deno.env.get("SIGNNOW_BASIC_TOKEN");
+        const username = Deno.env.get("SIGNNOW_USERNAME");
+        const password = Deno.env.get("SIGNNOW_PASSWORD");
+        if (!basicToken || !username || !password) {
+          return new Response(JSON.stringify({ error: "SIGNNOW_BASIC_TOKEN, SIGNNOW_USERNAME, and SIGNNOW_PASSWORD secrets are required for token refresh" }), {
+            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const tokenResp = await fetch(`${SIGNNOW_BASE}/oauth2/token`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Basic ${basicToken}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Accept": "application/json",
+          },
+          body: new URLSearchParams({ username, password, grant_type: "password", scope: "*", expiration_time: "2592000" }),
+        });
+        if (!tokenResp.ok) {
+          const text = await tokenResp.text();
+          return new Response(JSON.stringify({ error: `Token refresh failed (${tokenResp.status}): ${text}` }), {
+            status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const tokenData = await tokenResp.json();
+        return new Response(JSON.stringify({ success: true, access_token: tokenData.access_token, expires_in: tokenData.expires_in, token_type: tokenData.token_type }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
-    }
+      }
+
   } catch (err: any) {
     console.error("SignNow function error:", err);
     return new Response(JSON.stringify({ error: err.message }), {
