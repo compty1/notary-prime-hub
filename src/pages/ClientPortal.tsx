@@ -541,9 +541,32 @@ export default function ClientPortal() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!cancelDialogId} onOpenChange={() => setCancelDialogId(null)}>
-        <DialogContent><DialogHeader><DialogTitle>Cancel Appointment</DialogTitle><DialogDescription>Are you sure? This action cannot be undone.</DialogDescription></DialogHeader><DialogFooter><Button variant="outline" onClick={() => setCancelDialogId(null)}>Keep</Button><Button variant="destructive" onClick={() => cancelDialogId && cancelAppointment(cancelDialogId)} disabled={cancelling}>{cancelling ? "Cancelling..." : "Cancel Appointment"}</Button></DialogFooter></DialogContent>
+      <Dialog open={!!cancelDialogId} onOpenChange={() => { setCancelDialogId(null); setCancelReason(""); }}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Cancel Appointment</DialogTitle><DialogDescription>Are you sure? This action cannot be undone.</DialogDescription></DialogHeader>
+          <div className="py-2">
+            <Label htmlFor="cancel-reason">Reason for cancellation (optional)</Label>
+            <Textarea id="cancel-reason" value={cancelReason} onChange={e => setCancelReason(e.target.value)} placeholder="e.g., scheduling conflict, no longer needed..." rows={2} className="mt-1" />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setCancelDialogId(null); setCancelReason(""); }}>Keep Appointment</Button>
+            <Button variant="destructive" onClick={() => { if (cancelDialogId) cancelAppointment(cancelDialogId); setCancelReason(""); }} disabled={cancelling}>{cancelling ? "Cancelling..." : "Cancel Appointment"}</Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
+
+      <AlertDialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Sign out?</AlertDialogTitle>
+            <AlertDialogDescription>You'll need to sign in again to access your portal.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Stay signed in</AlertDialogCancel>
+            <AlertDialogAction onClick={signOut}>Sign out</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Dialog open={editProfileOpen} onOpenChange={setEditProfileOpen}>
         <DialogContent className="sm:max-w-md">
