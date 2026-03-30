@@ -26,6 +26,8 @@ import PortalAppointmentsTab from "./portal/PortalAppointmentsTab";
 import PortalDocumentsTab from "./portal/PortalDocumentsTab";
 import PortalChatTab from "./portal/PortalChatTab";
 import { PortalLoadingSkeleton } from "@/components/PortalLoadingSkeleton";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { usePageTitle } from "@/lib/usePageTitle";
 const pipelineSteps = [
   { key: "uploaded", label: "Intake", icon: Upload },
   { key: "pending_review", label: "Review", icon: FileText },
