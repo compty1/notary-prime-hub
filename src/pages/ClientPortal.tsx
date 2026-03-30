@@ -330,7 +330,7 @@ export default function ClientPortal() {
               </Card>
               <Card className="border-border/50">
                 <CardContent className="p-4 flex items-center gap-3">
-                  <div className="rounded-lg bg-green-500/10 p-2"><DollarSign className="h-5 w-5 text-green-600 dark:text-green-400" /></div>
+                  <div className="rounded-lg bg-primary/10 p-2"><DollarSign className="h-5 w-5 text-primary" /></div>
                   <div><p className="text-2xl font-bold">${payments.filter(p => p.status === "paid").reduce((s, p) => s + Number(p.amount), 0).toFixed(0)}</p><p className="text-xs text-muted-foreground">Total Paid</p></div>
                 </CardContent>
               </Card>
