@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://esm.sh/zod@3.23.8";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -6,6 +7,45 @@ const corsHeaders = {
 };
 
 const SIGNNOW_BASE = "https://api.signnow.com";
+
+// --- Zod schemas for each action ---
+const UploadDocumentSchema = z.object({
+  action: z.literal("upload_document"),
+  appointment_id: z.string().uuid().optional(),
+  file_content: z.string().min(1, "file_content (base64) is required"),
+  file_name: z.string().min(1, "file_name is required"),
+});
+
+const AddFieldsSchema = z.object({
+  action: z.literal("add_fields"),
+  document_id: z.string().min(1, "document_id is required"),
+  fields: z.array(z.any()).optional().default([]),
+});
+
+const SendInviteSchema = z.object({
+  action: z.literal("send_invite"),
+  document_id: z.string().min(1, "document_id is required"),
+  to: z.array(z.any()).min(1, "to[] is required"),
+  from_email: z.string().email().optional(),
+  subject: z.string().optional(),
+  message: z.string().optional(),
+  appointment_id: z.string().uuid().optional(),
+});
+
+const DocumentIdSchema = z.object({
+  action: z.enum(["get_document", "download_document", "create_signing_link"]),
+  document_id: z.string().min(1, "document_id is required"),
+});
+
+const CancelInviteSchema = z.object({
+  action: z.literal("cancel_invite"),
+  document_id: z.string().min(1, "document_id is required"),
+  appointment_id: z.string().uuid().optional(),
+});
+
+const NoParamsSchema = z.object({
+  action: z.enum(["list_documents", "verify_token", "refresh_token"]),
+});
 
 async function signnowFetch(path: string, options: RequestInit = {}) {
   const token = Deno.env.get("SIGNNOW_API_TOKEN");
@@ -26,6 +66,13 @@ async function signnowFetch(path: string, options: RequestInit = {}) {
   }
   if (resp.status === 204) return null;
   return resp.json();
+}
+
+function zodError(error: z.ZodError) {
+  return new Response(JSON.stringify({ error: "Validation failed", details: error.flatten().fieldErrors }), {
+    status: 400,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
 }
 
 Deno.serve(async (req) => {
@@ -73,16 +120,57 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { action } = body;
 
+    // --- Commission expiry check for session-creating actions ---
+    if (["upload_document", "send_invite"].includes(action)) {
+      const { data: certs } = await serviceClient
+        .from("notary_certifications")
+        .select("expiry_date")
+        .eq("user_id", user.id)
+        .eq("certification_name", "Notary Commission")
+        .order("expiry_date", { ascending: false })
+        .limit(1);
+
+      if (certs && certs.length > 0 && certs[0].expiry_date) {
+        const expiryDate = new Date(certs[0].expiry_date);
+        if (expiryDate < new Date()) {
+          return new Response(JSON.stringify({
+            error: "Your notary commission has expired. Per Ohio ORC §147.03, you cannot perform notarial acts with an expired commission. Please renew your commission before proceeding.",
+          }), {
+            status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+
+      // Also check platform_settings for commission_expiry_date
+      const { data: setting } = await serviceClient
+        .from("platform_settings")
+        .select("setting_value")
+        .eq("setting_key", "commission_expiry_date")
+        .single();
+
+      if (setting?.setting_value) {
+        const expiryDate = new Date(setting.setting_value);
+        if (expiryDate < new Date()) {
+          return new Response(JSON.stringify({
+            error: "Notary commission has expired per platform settings. Update your commission expiry date in Settings before proceeding.",
+          }), {
+            status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+    }
+
     switch (action) {
       case "upload_document": {
-        const { appointment_id, file_content, file_name } = body;
-        if (!file_content || !file_name) throw new Error("file_content (base64) and file_name are required");
+        const parsed = UploadDocumentSchema.safeParse(body);
+        if (!parsed.success) return zodError(parsed.error);
+        const { appointment_id, file_content, file_name } = parsed.data;
 
-        // SignNow expects multipart/form-data for document upload
         const token = Deno.env.get("SIGNNOW_API_TOKEN");
         if (!token) throw new Error("SIGNNOW_API_TOKEN not configured");
 
-        // Decode base64 to binary
         const binaryStr = atob(file_content);
         const bytes = new Uint8Array(binaryStr.length);
         for (let i = 0; i < binaryStr.length; i++) {
@@ -124,13 +212,13 @@ Deno.serve(async (req) => {
       }
 
       case "add_fields": {
-        const { document_id, fields } = body;
-        if (!document_id) throw new Error("document_id is required");
+        const parsed = AddFieldsSchema.safeParse(body);
+        if (!parsed.success) return zodError(parsed.error);
+        const { document_id, fields } = parsed.data;
 
-        // PUT /document/{id} with fields array
         const result = await signnowFetch(`/document/${document_id}`, {
           method: "PUT",
-          body: JSON.stringify({ fields: fields || [] }),
+          body: JSON.stringify({ fields }),
         });
 
         return new Response(JSON.stringify(result), {
@@ -139,8 +227,9 @@ Deno.serve(async (req) => {
       }
 
       case "send_invite": {
-        const { document_id, to, from_email, subject, message, appointment_id } = body;
-        if (!document_id || !to) throw new Error("document_id and to[] are required");
+        const parsed = SendInviteSchema.safeParse(body);
+        if (!parsed.success) return zodError(parsed.error);
+        const { document_id, to, from_email, subject, message, appointment_id } = parsed.data;
 
         const invitePayload: Record<string, any> = {
           document_id,
@@ -168,8 +257,9 @@ Deno.serve(async (req) => {
       }
 
       case "get_document": {
-        const { document_id } = body;
-        if (!document_id) throw new Error("document_id is required");
+        const parsed = DocumentIdSchema.safeParse(body);
+        if (!parsed.success) return zodError(parsed.error);
+        const { document_id } = parsed.data;
         const result = await signnowFetch(`/document/${document_id}`, { method: "GET" });
         return new Response(JSON.stringify(result), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -177,8 +267,9 @@ Deno.serve(async (req) => {
       }
 
       case "download_document": {
-        const { document_id } = body;
-        if (!document_id) throw new Error("document_id is required");
+        const parsed = DocumentIdSchema.safeParse(body);
+        if (!parsed.success) return zodError(parsed.error);
+        const { document_id } = parsed.data;
         const token = Deno.env.get("SIGNNOW_API_TOKEN");
         if (!token) throw new Error("SIGNNOW_API_TOKEN not configured");
         const resp = await fetch(`${SIGNNOW_BASE}/document/${document_id}/download?type=collapsed`, {
@@ -192,7 +283,6 @@ Deno.serve(async (req) => {
           const text = await resp.text();
           throw new Error(`SignNow download error ${resp.status}: ${text}`);
         }
-        // Return the binary PDF directly
         const pdfData = await resp.arrayBuffer();
         return new Response(pdfData, {
           headers: {
@@ -204,8 +294,9 @@ Deno.serve(async (req) => {
       }
 
       case "cancel_invite": {
-        const { document_id, appointment_id } = body;
-        if (!document_id) throw new Error("document_id is required");
+        const parsed = CancelInviteSchema.safeParse(body);
+        if (!parsed.success) return zodError(parsed.error);
+        const { document_id, appointment_id } = parsed.data;
         await signnowFetch(`/document/${document_id}/invite/cancel`, { method: "PUT" });
         if (appointment_id) {
           await serviceClient.from("notarization_sessions").update({ status: "cancelled" }).eq("signnow_document_id", document_id);
@@ -224,12 +315,16 @@ Deno.serve(async (req) => {
       }
 
       case "create_signing_link": {
-        const { document_id } = body;
-        if (!document_id) throw new Error("document_id is required");
+        const parsed = DocumentIdSchema.safeParse(body);
+        if (!parsed.success) return zodError(parsed.error);
+        const { document_id } = parsed.data;
         const result = await signnowFetch("/link", {
           method: "POST",
           body: JSON.stringify({ document_id }),
         });
+        if (!result?.url && !result?.url_no_es) {
+          throw new Error("SignNow did not return a valid signing link");
+        }
         return new Response(JSON.stringify(result), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
@@ -248,6 +343,7 @@ Deno.serve(async (req) => {
             headers: { "Authorization": `Bearer ${token}`, "Accept": "application/json" },
           });
           if (!resp.ok) {
+            await resp.text(); // consume body
             return new Response(JSON.stringify({ valid: false, error: `Token invalid (${resp.status})` }), {
               headers: { ...corsHeaders, "Content-Type": "application/json" },
             });
@@ -288,7 +384,6 @@ Deno.serve(async (req) => {
           });
         }
         const tokenData = await tokenResp.json();
-        // Mask the token — only return last 8 chars for admin reference
         const masked = tokenData.access_token
           ? `***${tokenData.access_token.slice(-8)}`
           : null;

@@ -37,6 +37,7 @@ export default function RonSession() {
   const [saving, setSaving] = useState(false);
   const [completing, setCompleting] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [commissionExpired, setCommissionExpired] = useState(false);
 
   // SignNow session state
   const [signnowDocumentId, setSignnowDocumentId] = useState<string | null>(null);
@@ -106,6 +107,17 @@ export default function RonSession() {
       // Load RON session method preference
       const { data: setting } = await supabase.from("platform_settings").select("setting_value").eq("setting_key", "ron_session_method").single();
       if (setting?.setting_value) setRonMethod(setting.setting_value);
+
+      // Check commission expiry (Ohio ORC §147.03)
+      if (isAdminOrNotary) {
+        const { data: expirySetting } = await supabase.from("platform_settings").select("setting_value").eq("setting_key", "commission_expiry_date").single();
+        if (expirySetting?.setting_value) {
+          const expiryDate = new Date(expirySetting.setting_value);
+          if (expiryDate < new Date()) {
+            setCommissionExpired(true);
+          }
+        }
+      }
     };
     loadData();
   }, [appointmentId]);
@@ -405,7 +417,33 @@ export default function RonSession() {
     );
   }
 
-  // Client view
+  // Commission expired — block RON session for notary/admin
+  if (commissionExpired && isAdminOrNotary) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
+        <Card className="w-full max-w-md border-destructive">
+          <CardContent className="flex flex-col items-center py-12 text-center">
+            <XCircle className="h-12 w-12 text-destructive mb-4" />
+            <h2 className="font-sans text-xl font-bold text-foreground mb-2">Commission Expired</h2>
+            <p className="text-sm text-muted-foreground mb-2">
+              Your notary commission has expired. Per Ohio ORC §147.03, you cannot perform notarial acts with an expired commission.
+            </p>
+            <p className="text-sm text-muted-foreground mb-6">
+              Please renew your commission and update the expiry date in Settings before starting a RON session.
+            </p>
+            <div className="flex gap-3">
+              <Link to="/admin/settings">
+                <Button variant="default">Update Settings</Button>
+              </Link>
+              <Link to="/admin/appointments">
+                <Button variant="outline"><ArrowLeft className="mr-2 h-4 w-4" /> Go Back</Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   if (!isAdminOrNotary) {
     return (
       <div className="min-h-screen bg-background">
