@@ -1,5 +1,51 @@
 export const BOOKING_STORAGE_KEY = "pending_booking_data";
 
+// Ohio state holidays — booking blocked on these dates
+export const OHIO_HOLIDAYS: Record<string, string> = {
+  "01-01": "New Year's Day",
+  "07-04": "Independence Day",
+  "11-11": "Veterans Day",
+  "12-25": "Christmas Day",
+};
+// Dynamic holidays (computed per year)
+export function getHolidaysForYear(year: number): Record<string, string> {
+  const holidays: Record<string, string> = {};
+  // Fixed holidays
+  Object.entries(OHIO_HOLIDAYS).forEach(([mmdd, name]) => {
+    holidays[`${year}-${mmdd}`] = name;
+  });
+  // MLK Day: 3rd Monday of January
+  holidays[nthWeekday(year, 1, 1, 3)] = "Martin Luther King Jr. Day";
+  // Presidents' Day: 3rd Monday of February
+  holidays[nthWeekday(year, 2, 1, 3)] = "Presidents' Day";
+  // Memorial Day: last Monday of May
+  holidays[lastWeekday(year, 5, 1)] = "Memorial Day";
+  // Labor Day: 1st Monday of September
+  holidays[nthWeekday(year, 9, 1, 1)] = "Labor Day";
+  // Thanksgiving: 4th Thursday of November
+  holidays[nthWeekday(year, 11, 4, 4)] = "Thanksgiving Day";
+  return holidays;
+}
+function nthWeekday(year: number, month: number, dow: number, n: number): string {
+  let count = 0;
+  for (let d = 1; d <= 31; d++) {
+    const dt = new Date(year, month - 1, d);
+    if (dt.getMonth() !== month - 1) break;
+    if (dt.getDay() === dow) { count++; if (count === n) return dt.toISOString().split("T")[0]; }
+  }
+  return "";
+}
+function lastWeekday(year: number, month: number, dow: number): string {
+  for (let d = 31; d >= 1; d--) {
+    const dt = new Date(year, month - 1, d);
+    if (dt.getMonth() !== month - 1) continue;
+    if (dt.getDay() === dow) return dt.toISOString().split("T")[0];
+  }
+  return "";
+}
+
+export const MINIMUM_ADVANCE_HOURS = 2;
+
 export const fallbackServiceTypes = [
   "Real Estate Documents",
   "Power of Attorney",

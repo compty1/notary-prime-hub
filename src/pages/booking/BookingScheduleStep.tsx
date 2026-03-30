@@ -1,11 +1,12 @@
+import { useMemo } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Clock, Loader2, AlertTriangle, LocateFixed } from "lucide-react";
+import { Calendar, Clock, Loader2, AlertTriangle, LocateFixed, CalendarOff } from "lucide-react";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
-import { formatTimeSlot, isDigitalOnly, requiresNotarizationType, US_STATES } from "./bookingConstants";
+import { formatTimeSlot, isDigitalOnly, requiresNotarizationType, US_STATES, getHolidaysForYear, MINIMUM_ADVANCE_HOURS } from "./bookingConstants";
 
 interface ScheduleStepProps {
   date: string; setDate: (v: string) => void;
@@ -33,12 +34,35 @@ interface ScheduleStepProps {
 export default function BookingScheduleStep(props: ScheduleStepProps) {
   const { date, setDate, time, setTime, serviceType, notarizationType, serviceCategories } = props;
 
+  // Holiday detection
+  const holidayName = useMemo(() => {
+    if (!date) return null;
+    const year = new Date(date + "T00:00:00").getFullYear();
+    const holidays = getHolidaysForYear(year);
+    return holidays[date] || null;
+  }, [date]);
+
+  // Minimum advance time check
+  const advanceWarning = useMemo(() => {
+    if (!date || !time) return null;
+    const selected = new Date(`${date}T${time}`);
+    const minTime = new Date(Date.now() + MINIMUM_ADVANCE_HOURS * 60 * 60 * 1000);
+    if (selected < minTime) return `Appointments require at least ${MINIMUM_ADVANCE_HOURS} hours advance notice. Please select a later time.`;
+    return null;
+  }, [date, time]);
+
   return (
     <div className="space-y-4">
       <div>
         <Label htmlFor="date">Date</Label>
         <Input id="date" type="date" value={date} onChange={e => setDate(e.target.value)} min={new Date().toISOString().split("T")[0]} />
       </div>
+
+      {holidayName && (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800 flex items-center gap-2 dark:bg-amber-900/20 dark:border-amber-700 dark:text-amber-300">
+          <CalendarOff className="h-4 w-4 flex-shrink-0" /> <strong>{holidayName}</strong> — We may have limited availability on this holiday. Consider an alternate date.
+        </div>
+      )}
 
       {date && props.loadingSlots && (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -83,6 +107,12 @@ export default function BookingScheduleStep(props: ScheduleStepProps) {
       {props.leadTimeWarning && (
         <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800 flex items-center gap-2">
           <AlertTriangle className="h-4 w-4 flex-shrink-0" /> {props.leadTimeWarning}
+        </div>
+      )}
+
+      {advanceWarning && (
+        <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4 flex-shrink-0" /> {advanceWarning}
         </div>
       )}
 

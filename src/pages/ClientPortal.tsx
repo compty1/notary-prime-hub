@@ -13,7 +13,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Clock, Plus, LogOut, Shield, FileText, CheckCircle, User, Pencil, Save, Loader2, Upload, FolderOpen, QrCode, ArrowRight, MessageSquare, Send, Sparkles, Eye, DollarSign, Star, ShoppingBag, Mail, Package, CreditCard, Bell, XCircle } from "lucide-react";
+import { Calendar, Clock, Plus, LogOut, Shield, FileText, CheckCircle, User, Pencil, Save, Loader2, Upload, FolderOpen, QrCode, ArrowRight, MessageSquare, Send, Sparkles, Eye, DollarSign, Star, ShoppingBag, Mail, Package, CreditCard, Bell, XCircle, Home } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { QRCodeSVG } from "qrcode.react";
@@ -26,6 +26,8 @@ import PortalAppointmentsTab from "./portal/PortalAppointmentsTab";
 import PortalDocumentsTab from "./portal/PortalDocumentsTab";
 import PortalChatTab from "./portal/PortalChatTab";
 import { PortalLoadingSkeleton } from "@/components/PortalLoadingSkeleton";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { usePageTitle } from "@/lib/usePageTitle";
 const pipelineSteps = [
   { key: "uploaded", label: "Intake", icon: Upload },
   { key: "pending_review", label: "Review", icon: FileText },
@@ -39,6 +41,9 @@ export default function ClientPortal() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialTab = searchParams.get("tab") || "appointments";
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  usePageTitle("Client Portal");
   const [appointments, setAppointments] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
@@ -252,7 +257,7 @@ export default function ClientPortal() {
         <nav className="border-b border-border/50 bg-background/80 backdrop-blur-lg">
           <div className="container mx-auto flex items-center justify-between px-4 py-4">
             <Link to="/" className="flex items-center gap-2"><Logo size="md" /><span className="font-sans text-lg font-bold text-foreground">Client Portal</span></Link>
-            <Button variant="ghost" size="sm" onClick={signOut}><LogOut className="mr-1 h-4 w-4" /> Sign Out</Button>
+            <Button variant="ghost" size="sm" onClick={() => setLogoutDialogOpen(true)}><LogOut className="mr-1 h-4 w-4" /> Sign Out</Button>
           </div>
         </nav>
         <div className="container mx-auto max-w-5xl px-4 py-8">
@@ -269,13 +274,14 @@ export default function ClientPortal() {
           <Link to="/" className="flex items-center gap-2"><Logo size="md" /><span className="font-sans text-lg font-bold text-foreground">Client Portal</span></Link>
           <div className="flex items-center gap-3">
             {isAdmin && <Link to="/admin"><Button variant="outline" size="sm">Admin Dashboard</Button></Link>}
-            <Button variant="ghost" size="sm" onClick={signOut}><LogOut className="mr-1 h-4 w-4" /> Sign Out</Button>
+            <Button variant="ghost" size="sm" onClick={() => setLogoutDialogOpen(true)}><LogOut className="mr-1 h-4 w-4" /> Sign Out</Button>
           </div>
         </div>
       </nav>
 
       <div className="container mx-auto max-w-5xl px-4 py-8">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 flex items-start justify-between">
+        <Breadcrumbs />
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 flex items-start justify-between mt-4">
           <div>
             <h1 className="font-sans text-3xl font-bold text-foreground">Welcome{profile?.full_name ? `, ${profile.full_name}` : ""}</h1>
             <p className="text-muted-foreground">Manage your documents, appointments, and notarization status</p>
@@ -535,9 +541,32 @@ export default function ClientPortal() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!cancelDialogId} onOpenChange={() => setCancelDialogId(null)}>
-        <DialogContent><DialogHeader><DialogTitle>Cancel Appointment</DialogTitle><DialogDescription>Are you sure? This action cannot be undone.</DialogDescription></DialogHeader><DialogFooter><Button variant="outline" onClick={() => setCancelDialogId(null)}>Keep</Button><Button variant="destructive" onClick={() => cancelDialogId && cancelAppointment(cancelDialogId)} disabled={cancelling}>{cancelling ? "Cancelling..." : "Cancel Appointment"}</Button></DialogFooter></DialogContent>
+      <Dialog open={!!cancelDialogId} onOpenChange={() => { setCancelDialogId(null); setCancelReason(""); }}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Cancel Appointment</DialogTitle><DialogDescription>Are you sure? This action cannot be undone.</DialogDescription></DialogHeader>
+          <div className="py-2">
+            <Label htmlFor="cancel-reason">Reason for cancellation (optional)</Label>
+            <Textarea id="cancel-reason" value={cancelReason} onChange={e => setCancelReason(e.target.value)} placeholder="e.g., scheduling conflict, no longer needed..." rows={2} className="mt-1" />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setCancelDialogId(null); setCancelReason(""); }}>Keep Appointment</Button>
+            <Button variant="destructive" onClick={() => { if (cancelDialogId) cancelAppointment(cancelDialogId); setCancelReason(""); }} disabled={cancelling}>{cancelling ? "Cancelling..." : "Cancel Appointment"}</Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
+
+      <AlertDialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Sign out?</AlertDialogTitle>
+            <AlertDialogDescription>You'll need to sign in again to access your portal.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Stay signed in</AlertDialogCancel>
+            <AlertDialogAction onClick={signOut}>Sign out</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Dialog open={editProfileOpen} onOpenChange={setEditProfileOpen}>
         <DialogContent className="sm:max-w-md">

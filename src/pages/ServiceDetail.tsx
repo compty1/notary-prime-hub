@@ -16,6 +16,8 @@ import {
   MessageSquare, ExternalLink, Sparkles, User
 } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 const iconMap: Record<string, any> = {
   Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home,
@@ -209,6 +211,7 @@ export default function ServiceDetail() {
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
   const [showChat, setShowChat] = useState(false);
   const [showPreQualifier, setShowPreQualifier] = useState(false);
+  usePageTitle(service?.name || "Service Details");
 
   useEffect(() => {
     if (!serviceId) return;
@@ -304,7 +307,7 @@ export default function ServiceDetail() {
 
   return (
     <PageShell>
-
+      <div className="container mx-auto max-w-4xl px-4 pt-4"><Breadcrumbs /></div>
       {/* Hero with complexity & timeline badges (Phase 3.4, 3.6) */}
       <section className="bg-gradient-hero py-12 md:py-16">
         <div className="container mx-auto max-w-4xl px-4">

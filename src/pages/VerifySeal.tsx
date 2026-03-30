@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, ShieldX, Calendar, FileText, User, Building2, Loader2, ArrowLeft } from "lucide-react";
+import { ShieldCheck, ShieldX, Calendar, FileText, User, Building2, Loader2, ArrowLeft, Scale } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 interface ESealRecord {
   id: string;
@@ -22,9 +23,9 @@ export default function VerifySeal() {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [record, setRecord] = useState<ESealRecord | null>(null);
+  usePageTitle("Verify E-Seal");
 
   useEffect(() => {
-    document.title = "Verify E-Seal — Notar";
     const run = async () => {
       if (!id) {
         setLoading(false);
@@ -40,7 +41,6 @@ export default function VerifySeal() {
       setLoading(false);
     };
     run();
-    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
   }, [id]);
 
   return (
@@ -93,6 +93,11 @@ export default function VerifySeal() {
                     <p className="text-xs text-muted-foreground flex items-center gap-1"><Building2 className="h-3 w-3" /> Commission</p>
                     <p className="font-medium text-sm text-foreground">{record.notary_name} ({record.commissioned_state})</p>
                   </div>
+                </div>
+
+                <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+                  <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1"><Scale className="h-3 w-3" /> Ohio Compliance</p>
+                  <p className="text-xs text-foreground">This notarization was performed in compliance with Ohio Revised Code §147.60-66. The notary public was duly commissioned by the State of Ohio at the time of notarization.</p>
                 </div>
 
                 <div className="rounded-lg border border-border/60 p-3">

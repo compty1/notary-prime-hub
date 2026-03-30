@@ -43,7 +43,7 @@ export function Breadcrumbs() {
   const { pathname } = useLocation();
   const segments = pathname.split("/").filter(Boolean);
 
-  if (segments.length <= 1) return null;
+  if (segments.length === 0) return null;
 
   const crumbs = segments.map((seg, i) => ({
     label: labelMap[seg] || seg.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()),

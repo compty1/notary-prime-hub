@@ -10,6 +10,8 @@ import {
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/PageShell";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { usePageTitle } from "@/lib/usePageTitle";
 import { fadeUp, scaleReveal } from "@/lib/animations";
 
 const credentials = [
@@ -28,9 +30,9 @@ const serviceAreas = [
 
 export default function About() {
   const [contactInfo, setContactInfo] = useState({ phone: "(614) 300-6890", email: "contact@notardex.com" });
+  usePageTitle("About");
 
   useEffect(() => {
-    document.title = "About Notar — Ohio Notary & Document Services";
     supabase.from("platform_settings").select("setting_key, setting_value")
       .in("setting_key", ["notary_phone", "notary_email"])
       .then(({ data }) => {
@@ -41,11 +43,12 @@ export default function About() {
           if (email) setContactInfo(prev => ({ ...prev, email }));
         }
       });
-    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
   }, []);
 
   return (
     <PageShell>
+      {/* Breadcrumbs */}
+      <div className="container mx-auto max-w-4xl px-4 pt-4"><Breadcrumbs /></div>
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-border bg-card py-16 md:py-24">
         <div className="container relative mx-auto max-w-4xl px-4">
