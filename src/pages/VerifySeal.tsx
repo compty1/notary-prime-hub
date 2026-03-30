@@ -23,9 +23,9 @@ export default function VerifySeal() {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [record, setRecord] = useState<ESealRecord | null>(null);
+  usePageTitle("Verify E-Seal");
 
   useEffect(() => {
-    document.title = "Verify E-Seal — Notar";
     const run = async () => {
       if (!id) {
         setLoading(false);
@@ -41,7 +41,6 @@ export default function VerifySeal() {
       setLoading(false);
     };
     run();
-    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
   }, [id]);
 
   return (
