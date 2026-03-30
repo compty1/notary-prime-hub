@@ -58,6 +58,12 @@ export default function BookingScheduleStep(props: ScheduleStepProps) {
         <Input id="date" type="date" value={date} onChange={e => setDate(e.target.value)} min={new Date().toISOString().split("T")[0]} />
       </div>
 
+      {holidayName && (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800 flex items-center gap-2 dark:bg-amber-900/20 dark:border-amber-700 dark:text-amber-300">
+          <CalendarOff className="h-4 w-4 flex-shrink-0" /> <strong>{holidayName}</strong> — We may have limited availability on this holiday. Consider an alternate date.
+        </div>
+      )}
+
       {date && props.loadingSlots && (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" /> Checking availability...
