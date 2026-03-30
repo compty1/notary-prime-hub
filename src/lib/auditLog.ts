@@ -1,0 +1,28 @@
+import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
+
+/**
+ * Log an action to the audit_log table.
+ * Fails silently — audit logging should never break the user flow.
+ */
+export async function logAuditEvent(
+  action: string,
+  opts?: {
+    entityType?: string;
+    entityId?: string;
+    details?: Record<string, Json | undefined>;
+    userId?: string;
+  }
+) {
+  try {
+    await supabase.from("audit_log").insert([{
+      action,
+      entity_type: opts?.entityType ?? null,
+      entity_id: opts?.entityId ?? null,
+      details: (opts?.details ?? null) as Json,
+      user_id: opts?.userId ?? null,
+    }]);
+  } catch {
+    // Never throw from audit logging
+  }
+}

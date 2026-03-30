@@ -1,24 +1,41 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://esm.sh/zod@3.23.8";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-serve(async (req) => {
+const BodySchema = z.object({
+  image_base64: z.string().min(1).max(10_000_000),
+  file_name: z.string().max(500).optional(),
+});
+
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    // Auth check
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    const parsed = BodySchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: parsed.error.flatten().fieldErrors }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const { image_base64, file_name } = parsed.data;
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
-
-    const { image_base64, file_name } = await req.json();
-    if (!image_base64) {
-      return new Response(JSON.stringify({ error: "image_base64 is required" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -35,32 +52,24 @@ serve(async (req) => {
 
 Formatting Rules:
 - Wrap the entire output in <div style="font-family: 'Times New Roman', Georgia, serif; line-height: 1.8; color: #1a1a1a; max-width: 800px; margin: 0 auto;">
-- Preserve headings using <h1>–<h6> with appropriate font-size and margin-bottom (e.g., style="font-size: 18px; margin-bottom: 16px; font-weight: bold; text-align: center;")
+- Preserve headings using <h1>–<h6> with appropriate font-size and margin-bottom
 - Use <p> tags with style="margin-bottom: 12px;" for standard paragraphs
-- Preserve indentation using style="padding-left: 2em;" or style="text-indent: 2em;" where the original document shows indented text
-- Use <br/> for intentional line breaks within the same paragraph (e.g., address blocks, letterhead)
+- Preserve indentation using style="padding-left: 2em;" or style="text-indent: 2em;"
+- Use <br/> for intentional line breaks within the same paragraph
 - Preserve alignment: use style="text-align: center;" or "text-align: right;" where applicable
 - Use <strong> for bold text, <em> for italic text
-- Use <ul>/<ol>/<li> for lists with style="margin-bottom: 8px; padding-left: 1.5em;"
-- Preserve tables using <table style="width: 100%; border-collapse: collapse; margin: 16px 0;"> with <th>/<td> styled with border and padding
+- Use <ul>/<ol>/<li> for lists
+- Preserve tables using <table> with borders
 - Signature lines: <p style="margin-top: 32px; border-bottom: 1px solid #000; width: 60%; display: inline-block;">&nbsp;</p>
-- For letter-spaced text (common in titles), use style="letter-spacing: 0.15em;"
-- For right-aligned dates or reference numbers, use style="text-align: right;"
-- Add style="page-break-before: always;" if the document clearly has multiple pages
-- Preserve any numbered clauses with proper hanging indentation: style="padding-left: 3em; text-indent: -1.5em;"
-
-Content Rules:
 - If text is unclear, use <span style="color: #999; font-style: italic;">[illegible]</span>
-- Do NOT add any commentary, explanation, or extra content
-- Return ONLY the HTML content — no \`\`\`html code blocks
-- Maintain the exact document structure, paragraph breaks, and logical flow`
+- Do NOT add any commentary. Return ONLY the HTML content.`
           },
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: `Transcribe this document (${file_name || "uploaded document"}) into richly formatted HTML. Carefully preserve the original layout including margins, indentation, alignment, spacing between sections, and any visual hierarchy.`
+                text: `Transcribe this document (${file_name || "uploaded document"}) into richly formatted HTML.`
               },
               {
                 type: "image_url",
@@ -79,15 +88,11 @@ Content Rules:
         });
       }
       if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted. Please add credits." }), {
+        return new Response(JSON.stringify({ error: "AI credits exhausted." }), {
           status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const text = await response.text();
-      console.error("AI gateway error:", response.status, text);
-      return new Response(JSON.stringify({ error: "OCR processing failed" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      throw new Error("OCR processing failed");
     }
 
     const data = await response.json();
