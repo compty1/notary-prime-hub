@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MapPin, Monitor, Calendar, Shield, DollarSign, AlertTriangle } from "lucide-react";
+import { MapPin, Monitor, Calendar, Shield, DollarSign, AlertTriangle, Clock } from "lucide-react";
 import { formatTimeSlot, isDigitalOnly, HAGUE_COUNTRIES } from "./bookingConstants";
+import { OhioComplianceNotice } from "@/components/OhioComplianceNotice";
 
 interface ReviewStepProps {
   isNonNotarial: boolean;
