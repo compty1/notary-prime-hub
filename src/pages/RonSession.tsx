@@ -63,7 +63,7 @@ export default function RonSession() {
   const recognitionRef = useRef<any>(null);
   const finalTranscriptRef = useRef("");
 
-  const [sessionStatus, setSessionStatus] = useState<string>("waiting");
+  const [sessionStatus, setSessionStatus] = useState<string>("scheduled");
 
   // Invite form
   const [inviteEmail, setInviteEmail] = useState("");
