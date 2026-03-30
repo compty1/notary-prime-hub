@@ -47,6 +47,50 @@ const NoParamsSchema = z.object({
   action: z.enum(["list_documents", "verify_token", "refresh_token"]),
 });
 
+const WEBHOOK_CALLBACK = `${Deno.env.get("SUPABASE_URL")}/functions/v1/signnow-webhook`;
+const WEBHOOK_EVENTS = [
+  "document.complete",
+  "document.update",
+  "document.delete",
+  "invite.create",
+  "invite.update",
+  "invite.cancel",
+];
+
+async function registerDocumentWebhooks(documentId: string, token: string) {
+  const secret = Deno.env.get("SIGNNOW_WEBHOOK_SECRET");
+  const results = await Promise.allSettled(
+    WEBHOOK_EVENTS.map((event) =>
+      fetch(`${SIGNNOW_BASE}/api/v2/events`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          event,
+          entity_id: documentId,
+          action: "callback",
+          attributes: {
+            callback: WEBHOOK_CALLBACK,
+            use_tls_12: true,
+            ...(secret ? { secret_key: secret } : {}),
+          },
+        }),
+      }).then(async (r) => {
+        if (!r.ok) {
+          const t = await r.text();
+          console.error(`Webhook register ${event} failed ${r.status}: ${t}`);
+        }
+        return r;
+      })
+    )
+  );
+  const ok = results.filter((r) => r.status === "fulfilled").length;
+  console.log(`Webhook registration: ${ok}/${WEBHOOK_EVENTS.length} succeeded for doc ${documentId}`);
+}
+
 async function signnowFetch(path: string, options: RequestInit = {}) {
   const token = Deno.env.get("SIGNNOW_API_TOKEN");
   if (!token) throw new Error("SIGNNOW_API_TOKEN not configured");
@@ -197,13 +241,20 @@ Deno.serve(async (req) => {
         const result = await resp.json();
         const documentId = result.id;
 
-        if (documentId && appointment_id) {
-          await serviceClient.from("notarization_sessions").upsert({
-            appointment_id,
-            signnow_document_id: documentId,
-            session_type: "ron",
-            status: "scheduled",
-          }, { onConflict: "appointment_id" });
+        if (documentId) {
+          // Register per-document webhooks (non-blocking)
+          registerDocumentWebhooks(documentId, token).catch((e) =>
+            console.error("Webhook registration error:", e)
+          );
+
+          if (appointment_id) {
+            await serviceClient.from("notarization_sessions").upsert({
+              appointment_id,
+              signnow_document_id: documentId,
+              session_type: "ron",
+              status: "scheduled",
+            }, { onConflict: "appointment_id" });
+          }
         }
 
         return new Response(JSON.stringify(result), {
