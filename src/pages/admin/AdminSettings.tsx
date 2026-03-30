@@ -352,8 +352,8 @@ export default function AdminSettings() {
                 { label: "RON Authorization", ok: !!editValues.ron_authorization_number, detail: editValues.ron_authorization_number || "Not configured" },
                 { label: "E&O Insurance Current", ok: !!editValues.eo_expiration_date && new Date(editValues.eo_expiration_date) > new Date(), detail: editValues.eo_expiration_date ? `Expires ${new Date(editValues.eo_expiration_date).toLocaleDateString()}` : "Not configured" },
                 { label: "Surety Bond Current", ok: !!editValues.bond_expiration_date && new Date(editValues.bond_expiration_date) > new Date(), detail: editValues.bond_expiration_date ? `Expires ${new Date(editValues.bond_expiration_date).toLocaleDateString()}` : "Not configured" },
-                { label: "OneNotary API", ok: true, detail: "Connected (server secret)" },
-                { label: "KBA Integration", ok: true, detail: editValues.kba_provider === "onenotary_builtin" || !editValues.kba_provider ? "OneNotary built-in" : editValues.kba_provider },
+                { label: "SignNow API", ok: true, detail: "Connected (server secret)" },
+                { label: "KBA Integration", ok: true, detail: editValues.kba_provider === "signnow_builtin" || !editValues.kba_provider ? "SignNow built-in" : editValues.kba_provider },
               ].map((item) => (
                 <div key={item.label} className="flex items-start gap-2 rounded-lg border border-border/50 p-3">
                   {item.ok ? <CheckCircle className="h-4 w-4 mt-0.5 text-emerald-500 flex-shrink-0" /> : <XCircle className="h-4 w-4 mt-0.5 text-destructive flex-shrink-0" />}

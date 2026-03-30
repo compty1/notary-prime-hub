@@ -38,16 +38,15 @@ export default function OneNotarySession() {
   const [completing, setCompleting] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
 
-  // OneNotary session state
-  const [onenotarySessionId, setOnenotarySessionId] = useState<string | null>(null);
+  // SignNow session state
+  const [signnowDocumentId, setSignnowDocumentId] = useState<string | null>(null);
   const [participantLink, setParticipantLink] = useState<string | null>(null);
-  const [creatingSession, setCreatingSession] = useState(false);
-  const [initializingSession, setInitializingSession] = useState(false);
+  const [uploadingDoc, setUploadingDoc] = useState(false);
+  const [sendingInvite, setSendingInvite] = useState(false);
   const [cancellingSession, setCancellingSession] = useState(false);
-  const [requestingWitness, setRequestingWitness] = useState(false);
 
   // Manual link mode (email_invite)
-  const [ronMethod, setRonMethod] = useState<string>("onenotary_platform");
+  const [ronMethod, setRonMethod] = useState<string>("signnow_platform");
   const [manualLink, setManualLink] = useState("");
 
   // ID Verification fields
@@ -65,6 +64,11 @@ export default function OneNotarySession() {
   const finalTranscriptRef = useRef("");
 
   const [sessionStatus, setSessionStatus] = useState<string>("waiting");
+
+  // Invite form
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteSubject, setInviteSubject] = useState("Please sign this document");
+  const [inviteMessage, setInviteMessage] = useState("You have a document to sign. Please review and sign at your earliest convenience.");
 
   // Load appointment data and ron_session_method setting
   useEffect(() => {
@@ -84,7 +88,10 @@ export default function OneNotarySession() {
       if (appt.admin_notes && isAdminOrNotary) setNotes(appt.admin_notes);
 
       const { data: profile } = await supabase.from("profiles").select("*").eq("user_id", appt.client_id).single();
-      if (profile) setClientProfile(profile);
+      if (profile) {
+        setClientProfile(profile);
+        if (profile.email) setInviteEmail(profile.email);
+      }
 
       // Load existing session data
       const { data: session } = await supabase.from("notarization_sessions").select("*").eq("appointment_id", appointmentId).single();
@@ -92,7 +99,7 @@ export default function OneNotarySession() {
         setIdVerified(session.id_verified || false);
         setKbaCompleted(session.kba_completed || false);
         setSessionStatus(session.status || "scheduled");
-        if ((session as any).onenotary_session_id) setOnenotarySessionId((session as any).onenotary_session_id);
+        if ((session as any).signnow_document_id) setSignnowDocumentId((session as any).signnow_document_id);
         if ((session as any).participant_link) setParticipantLink((session as any).participant_link);
       }
 
@@ -118,7 +125,7 @@ export default function OneNotarySession() {
         if (newRow) {
           setSessionStatus(newRow.status || "scheduled");
           if (newRow.participant_link) setParticipantLink(newRow.participant_link);
-          if (newRow.onenotary_session_id) setOnenotarySessionId(newRow.onenotary_session_id);
+          if (newRow.signnow_document_id) setSignnowDocumentId(newRow.signnow_document_id);
           setIdVerified(newRow.id_verified || false);
           setKbaCompleted(newRow.kba_completed || false);
         }
@@ -186,7 +193,6 @@ export default function OneNotarySession() {
   const saveManualLink = async () => {
     if (!appointmentId || !manualLink.trim()) return;
     setSaving(true);
-    // Upsert notarization_sessions with the manual link
     const { data: existing } = await supabase.from("notarization_sessions").select("id").eq("appointment_id", appointmentId).single();
     if (existing) {
       await supabase.from("notarization_sessions").update({ participant_link: manualLink.trim() }).eq("appointment_id", appointmentId);
@@ -203,107 +209,77 @@ export default function OneNotarySession() {
     toast({ title: "Manual session link saved", description: "The client can now access this link from their portal." });
   };
 
-  // OneNotary: Create session
-  const handleCreateSession = async () => {
-    if (!appointmentId || !clientProfile) return;
-    setCreatingSession(true);
-    try {
-      const createResp = await supabase.functions.invoke("onenotary", {
-        body: { action: "create_session", appointment_id: appointmentId, session_type: "ron" },
-      });
-      if (createResp.error) throw new Error(createResp.error.message);
-      const sessionData = createResp.data;
-      const sessionId = sessionData?.id || sessionData?.session_id;
-      if (!sessionId) throw new Error("No session ID returned from OneNotary");
-      setOnenotarySessionId(sessionId);
-
-      // Add client as primary signer
-      const nameParts = (clientProfile.full_name || "Client").split(" ");
-      const firstName = nameParts[0] || "Client";
-      const lastName = nameParts.slice(1).join(" ") || "User";
-      const participantResp = await supabase.functions.invoke("onenotary", {
-        body: { action: "add_participant", session_id: sessionId, appointment_id: appointmentId, role: "primary_signer", first_name: firstName, last_name: lastName, email: clientProfile.email },
-      });
-      if (participantResp.data?.join_url) setParticipantLink(participantResp.data.join_url);
-      toast({ title: "OneNotary session created", description: "You can now add documents and initialize the session." });
-    } catch (err: any) {
-      toast({ title: "Failed to create session", description: err.message, variant: "destructive" });
-    }
-    setCreatingSession(false);
-  };
-
-  // OneNotary: Initialize session
-  const handleInitSession = async () => {
-    if (!onenotarySessionId || !appointmentId) return;
-    setInitializingSession(true);
-    try {
-      const resp = await supabase.functions.invoke("onenotary", {
-        body: { action: "init_session", session_id: onenotarySessionId, appointment_id: appointmentId },
-      });
-      if (resp.error) throw new Error(resp.error.message);
-      setSessionStatus("in_session");
-      toast({ title: "Session initialized", description: "Invitations sent to the signer. The RON session is now active." });
-    } catch (err: any) {
-      toast({ title: "Failed to initialize session", description: err.message, variant: "destructive" });
-    }
-    setInitializingSession(false);
-  };
-
-  // OneNotary: Cancel session
-  const handleCancelSession = async () => {
-    if (!onenotarySessionId || !appointmentId) return;
-    setCancellingSession(true);
-    try {
-      const resp = await supabase.functions.invoke("onenotary", {
-        body: { action: "cancel_session", session_id: onenotarySessionId, appointment_id: appointmentId },
-      });
-      if (resp.error) throw new Error(resp.error.message);
-      setSessionStatus("cancelled");
-      toast({ title: "Session cancelled", description: "The OneNotary session has been cancelled." });
-    } catch (err: any) {
-      toast({ title: "Failed to cancel session", description: err.message, variant: "destructive" });
-    }
-    setCancellingSession(false);
-  };
-
-  // OneNotary: Request witness
-  const handleRequestWitness = async () => {
-    if (!onenotarySessionId || !appointmentId) return;
-    setRequestingWitness(true);
-    try {
-      const resp = await supabase.functions.invoke("onenotary", {
-        body: { action: "request_witness", session_id: onenotarySessionId, appointment_id: appointmentId },
-      });
-      if (resp.error) throw new Error(resp.error.message);
-      toast({ title: "Witness requested", description: "A witness request has been submitted to OneNotary." });
-    } catch (err: any) {
-      toast({ title: "Failed to request witness", description: err.message, variant: "destructive" });
-    }
-    setRequestingWitness(false);
-  };
-
-  // OneNotary: Upload document
+  // SignNow: Upload document
   const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !onenotarySessionId || !appointmentId) return;
+    if (!file || !appointmentId) return;
     if (file.size > 20 * 1024 * 1024) {
       toast({ title: "File too large", description: "Maximum file size is 20MB.", variant: "destructive" });
       return;
     }
+    setUploadingDoc(true);
     try {
       const reader = new FileReader();
       reader.onload = async () => {
         const base64 = (reader.result as string).split(",")[1];
-        const resp = await supabase.functions.invoke("onenotary", {
-          body: { action: "add_document", session_id: onenotarySessionId, appointment_id: appointmentId, file_name: file.name, file_base64: base64 },
+        const resp = await supabase.functions.invoke("signnow", {
+          body: { action: "upload_document", appointment_id: appointmentId, file_name: file.name, file_content: base64 },
         });
         if (resp.error) throw new Error(resp.error.message);
-        toast({ title: "Document uploaded", description: `"${file.name}" added to OneNotary session.` });
+        const docId = resp.data?.id;
+        if (docId) {
+          setSignnowDocumentId(docId);
+          toast({ title: "Document uploaded to SignNow", description: `"${file.name}" is ready for signing fields and invite.` });
+        }
+        setUploadingDoc(false);
       };
       reader.readAsDataURL(file);
     } catch (err: any) {
       toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+      setUploadingDoc(false);
     }
+  };
+
+  // SignNow: Send invite
+  const handleSendInvite = async () => {
+    if (!signnowDocumentId || !appointmentId || !inviteEmail) return;
+    setSendingInvite(true);
+    try {
+      const resp = await supabase.functions.invoke("signnow", {
+        body: {
+          action: "send_invite",
+          document_id: signnowDocumentId,
+          appointment_id: appointmentId,
+          to: [{ email: inviteEmail, role: "Signer", role_id: "", order: 1 }],
+          from_email: "noreply@notardex.com",
+          subject: inviteSubject,
+          message: inviteMessage,
+        },
+      });
+      if (resp.error) throw new Error(resp.error.message);
+      setSessionStatus("confirmed");
+      toast({ title: "Invite sent", description: `Signing invitation sent to ${inviteEmail} via SignNow.` });
+    } catch (err: any) {
+      toast({ title: "Failed to send invite", description: err.message, variant: "destructive" });
+    }
+    setSendingInvite(false);
+  };
+
+  // SignNow: Cancel
+  const handleCancelSession = async () => {
+    if (!signnowDocumentId || !appointmentId) return;
+    setCancellingSession(true);
+    try {
+      const resp = await supabase.functions.invoke("signnow", {
+        body: { action: "cancel_invite", document_id: signnowDocumentId, appointment_id: appointmentId },
+      });
+      if (resp.error) throw new Error(resp.error.message);
+      setSessionStatus("cancelled");
+      toast({ title: "Session cancelled", description: "The SignNow invite has been cancelled." });
+    } catch (err: any) {
+      toast({ title: "Failed to cancel session", description: err.message, variant: "destructive" });
+    }
+    setCancellingSession(false);
   };
 
   const saveSessionData = async () => {
@@ -352,7 +328,7 @@ export default function OneNotarySession() {
       appointment_id: appointmentId,
       amount: fee,
       status: "pending",
-      notes: `RON session completed via OneNotary — ${appointment.service_type}`,
+      notes: `RON session completed via SignNow — ${appointment.service_type}`,
     });
 
     // Create journal entry automatically
@@ -392,7 +368,7 @@ export default function OneNotarySession() {
       action: "ron_session_completed",
       entity_type: "appointment",
       entity_id: appointmentId,
-      details: { oath_type: oathType, oath_timestamp: oathTimestamp, id_type: idType, onenotary_session_id: onenotarySessionId },
+      details: { oath_type: oathType, oath_timestamp: oathTimestamp, id_type: idType, signnow_document_id: signnowDocumentId },
     });
 
     setCompleting(false);
@@ -495,14 +471,14 @@ export default function OneNotarySession() {
                       <ExternalLink className="mr-2 h-5 w-5" /> Join RON Session
                     </Button>
                   </a>
-                  <p className="text-xs text-muted-foreground">Opens in a new tab — secure notarization platform</p>
+                  <p className="text-xs text-muted-foreground">Opens in a new tab — secure signing platform</p>
                 </div>
               ) : (
                 <>
                   <Monitor className="mb-4 h-16 w-16 text-primary/50" />
                   <h3 className="mb-2 font-sans text-xl font-semibold text-foreground">Waiting for Session</h3>
                   <p className="mb-6 max-w-md text-sm text-muted-foreground">
-                    Your notary will start the session shortly. You'll receive a join link here and via email once the session is initialized.
+                    Your notary will start the session shortly. You'll receive a signing link here and via email once the document is ready.
                   </p>
                   <Badge variant="secondary">
                     {sessionStatus === "in_session" ? "Session Active" : "Waiting for Notary"}
@@ -529,7 +505,7 @@ export default function OneNotarySession() {
               <span className="text-sm text-muted-foreground">Client: <span className="font-medium text-foreground">{clientProfile.full_name}</span></span>
             )}
             <Shield className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium">OneNotary RON Session</span>
+            <span className="text-sm font-medium">SignNow RON Session</span>
           </div>
         </div>
       </nav>
@@ -548,28 +524,28 @@ export default function OneNotarySession() {
                     {new Date(appointment.scheduled_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                   </span>
                   <Badge variant="outline" className="ml-auto text-xs">
-                    {ronMethod === "email_invite" ? "Manual / Email Invite" : "OneNotary Platform"}
+                    {ronMethod === "email_invite" ? "Manual / Email Invite" : "SignNow Platform"}
                   </Badge>
                 </CardContent>
               </Card>
             )}
 
-            {/* OneNotary Session Controls */}
+            {/* SignNow Session Controls */}
             <Card className="mb-6 border-border/50">
               <CardContent className="p-6">
                 <h2 className="mb-4 font-sans text-xl font-semibold">
-                  {ronMethod === "email_invite" ? "Manual RON Session" : "OneNotary Session"}
+                  {ronMethod === "email_invite" ? "Manual RON Session" : "SignNow Session"}
                 </h2>
 
                 {ronMethod === "email_invite" ? (
                   /* Manual / Email Invite Flow */
                   <div className="space-y-4">
                     <p className="text-sm text-muted-foreground">
-                      Paste the session link from OneNotary (or another RON platform) below. The client will see this link in their portal.
+                      Paste the session link from SignNow (or another RON platform) below. The client will see this link in their portal.
                     </p>
                     <div className="flex gap-2">
                       <Input
-                        placeholder="https://app.onenotary.us/session/..."
+                        placeholder="https://app.signnow.com/webapp/document/..."
                         value={manualLink}
                         onChange={(e) => setManualLink(e.target.value)}
                         className="flex-1"
@@ -589,52 +565,72 @@ export default function OneNotarySession() {
                     )}
                   </div>
                 ) : (
-                  /* OneNotary Platform API Flow */
+                  /* SignNow Platform API Flow */
                   <>
-                    {!onenotarySessionId ? (
+                    {!signnowDocumentId ? (
                       <div className="space-y-4">
                         <p className="text-sm text-muted-foreground">
-                          Create a OneNotary session to begin the RON process. This will set up the session and add the client as the primary signer.
+                          Upload a document to SignNow to begin the signing process. The document will be stored in SignNow and you can then send a signing invite to the client.
                         </p>
-                        <Button onClick={handleCreateSession} disabled={creatingSession || !clientProfile} className="bg-gradient-primary text-white hover:opacity-90">
-                          {creatingSession ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
-                          Create OneNotary Session
-                        </Button>
+                        <label>
+                          <Button disabled={uploadingDoc} className="bg-gradient-primary text-white hover:opacity-90" asChild>
+                            <span>
+                              {uploadingDoc ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                              Upload Document to SignNow
+                            </span>
+                          </Button>
+                          <input type="file" className="hidden" accept=".pdf,.doc,.docx" onChange={handleDocUpload} />
+                        </label>
                       </div>
                     ) : (
                       <div className="space-y-4">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <Badge variant="secondary">Session Created</Badge>
-                          <span className="text-xs text-muted-foreground">ID: {onenotarySessionId}</span>
+                          <Badge variant="secondary">Document Uploaded</Badge>
+                          <span className="text-xs text-muted-foreground">ID: {signnowDocumentId}</span>
                         </div>
 
                         {participantLink && (
                           <div className="rounded-lg bg-muted/50 p-3">
-                            <p className="text-xs text-muted-foreground mb-1">Client Join Link:</p>
+                            <p className="text-xs text-muted-foreground mb-1">Client Signing Link:</p>
                             <a href={participantLink} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline break-all">
                               {participantLink}
                             </a>
                           </div>
                         )}
 
+                        {/* Invite form */}
+                        {sessionStatus !== "completed" && sessionStatus !== "cancelled" && sessionStatus !== "confirmed" && (
+                          <div className="space-y-3 rounded-lg border border-border/50 p-4">
+                            <h3 className="text-sm font-semibold">Send Signing Invite</h3>
+                            <div>
+                              <Label className="text-xs">Signer Email</Label>
+                              <Input className="h-8 text-xs" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="signer@email.com" />
+                            </div>
+                            <div>
+                              <Label className="text-xs">Subject</Label>
+                              <Input className="h-8 text-xs" value={inviteSubject} onChange={(e) => setInviteSubject(e.target.value)} />
+                            </div>
+                            <div>
+                              <Label className="text-xs">Message</Label>
+                              <Textarea className="text-xs" rows={2} value={inviteMessage} onChange={(e) => setInviteMessage(e.target.value)} />
+                            </div>
+                            <Button onClick={handleSendInvite} disabled={sendingInvite || !inviteEmail} size="sm" className="bg-emerald-600 text-white hover:bg-emerald-700">
+                              {sendingInvite ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <ExternalLink className="mr-1 h-3 w-3" />}
+                              Send Invite
+                            </Button>
+                          </div>
+                        )}
+
                         {/* Action buttons */}
                         <div className="flex flex-wrap gap-2">
-                          {sessionStatus !== "in_session" && sessionStatus !== "completed" && sessionStatus !== "cancelled" && (
+                          {sessionStatus !== "completed" && sessionStatus !== "cancelled" && (
                             <>
-                              <Button onClick={handleInitSession} disabled={initializingSession} size="sm" className="bg-emerald-600 text-white hover:bg-emerald-700">
-                                {initializingSession ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <ExternalLink className="mr-1 h-3 w-3" />}
-                                Initialize & Send Invites
-                              </Button>
                               <label>
                                 <Button size="sm" variant="outline" asChild>
-                                  <span><Upload className="mr-1 h-3 w-3" /> Upload Document</span>
+                                  <span><Upload className="mr-1 h-3 w-3" /> Upload Another Doc</span>
                                 </Button>
-                                <input type="file" className="hidden" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onChange={handleDocUpload} />
+                                <input type="file" className="hidden" accept=".pdf,.doc,.docx" onChange={handleDocUpload} />
                               </label>
-                              <Button size="sm" variant="outline" onClick={handleRequestWitness} disabled={requestingWitness}>
-                                {requestingWitness ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <UserPlus className="mr-1 h-3 w-3" />}
-                                Request Witness
-                              </Button>
                             </>
                           )}
                           {sessionStatus !== "completed" && sessionStatus !== "cancelled" && (
@@ -645,11 +641,14 @@ export default function OneNotarySession() {
                           )}
                         </div>
 
+                        {sessionStatus === "confirmed" && (
+                          <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">Invite Sent — Awaiting Signer</Badge>
+                        )}
                         {sessionStatus === "in_session" && (
-                          <Badge variant="secondary" className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">Session Active — Awaiting Completion</Badge>
+                          <Badge variant="secondary" className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">Document Being Signed</Badge>
                         )}
                         {sessionStatus === "completed" && (
-                          <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">Session Completed</Badge>
+                          <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">Signing Completed</Badge>
                         )}
                         {sessionStatus === "cancelled" && (
                           <Badge variant="destructive">Session Cancelled</Badge>
