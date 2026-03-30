@@ -40,7 +40,7 @@ export default function ClientPortal() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const initialTab = searchParams.get("tab") || "appointments";
+  const initialTab = searchParams.get("tab") || "overview";
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   usePageTitle("Client Portal");
