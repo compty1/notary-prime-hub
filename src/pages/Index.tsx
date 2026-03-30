@@ -383,16 +383,16 @@ export default function Index() {
       {/* Testimonials */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          <motion.h2
+          <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeUp}
             custom={0}
-            className="mb-12 text-center font-sans text-3xl font-bold text-foreground md:text-4xl">
-            
-            What Clients Say
-          </motion.h2>
+            className="mx-auto mb-12 max-w-2xl text-center">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Testimonials</p>
+            <h2 className="font-sans text-3xl font-bold text-foreground md:text-4xl">What Clients Say</h2>
+          </motion.div>
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -403,13 +403,12 @@ export default function Index() {
             <motion.div key={t.name} variants={scaleReveal} custom={i}>
                 <Card className="h-full">
                   <CardContent className="p-6">
-                    <div className="mb-4 text-4xl text-primary/20 font-sans">"</div>
                     <div className="mb-3 flex gap-0.5">
                       {Array.from({ length: t.rating }).map((_, j) =>
                     <Star key={j} className="h-4 w-4 fill-primary text-primary" />
                     )}
                     </div>
-                    <p className="mb-4 text-sm text-muted-foreground italic">{t.text}</p>
+                    <p className="mb-4 text-sm text-muted-foreground">{t.text}</p>
                     <p className="text-sm font-semibold text-foreground">{t.name}</p>
                   </CardContent>
                 </Card>
