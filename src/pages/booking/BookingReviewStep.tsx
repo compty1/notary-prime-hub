@@ -91,10 +91,15 @@ export default function BookingReviewStep(props: ReviewStepProps) {
           <p className="text-sm font-medium flex items-center gap-2"><Shield className="h-4 w-4 text-primary" /> Create your account to confirm</p>
           <div><Label>Full Name</Label><Input value={props.guestName} onChange={e => props.setGuestName(e.target.value)} placeholder="Your full name" /></div>
           <div><Label>Email</Label><Input type="email" value={props.guestEmail} onChange={e => props.setGuestEmail(e.target.value)} placeholder="your@email.com" /></div>
-          <div><Label>Password</Label><Input type="password" value={props.guestPassword} onChange={e => props.setGuestPassword(e.target.value)} placeholder="Create a password (min 6 characters)" minLength={6} /></div>
-          {props.guestPassword && props.guestPassword.length < 6 && <p className="text-xs text-destructive">Password must be at least 6 characters.</p>}
+          <div><Label>Password</Label><Input type="password" value={props.guestPassword} onChange={e => props.setGuestPassword(e.target.value)} placeholder="Create a password (min 8 characters)" minLength={8} /></div>
+          {props.guestPassword && props.guestPassword.length < 8 && <p className="text-xs text-destructive">Password must be at least 8 characters.</p>}
+          {props.guestPassword && props.guestPassword.length >= 8 && (!/[A-Z]/.test(props.guestPassword) || !/[0-9]/.test(props.guestPassword)) && <p className="text-xs text-destructive">Include at least one uppercase letter and one number.</p>}
           <p className="text-xs text-muted-foreground">Already have an account? <Link to="/login" className="text-primary hover:underline">Sign in</Link></p>
         </div>
+      )}
+
+      {!props.isNonNotarial && (
+        <OhioComplianceNotice type={notarizationType === "ron" ? "ron" : "in_person"} />
       )}
     </div>
   );
