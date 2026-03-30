@@ -22,6 +22,7 @@ const categories = [
   { value: "business", label: "Business & Volume" },
   { value: "recurring", label: "Recurring & Value-Add" },
   { value: "consulting", label: "Consulting & Training" },
+  { value: "business_services", label: "Business Services" },
   { value: "admin_support", label: "Administrative Support" },
   { value: "content_creation", label: "Content Creation" },
   { value: "research", label: "Research" },

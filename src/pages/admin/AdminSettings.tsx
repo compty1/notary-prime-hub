@@ -274,10 +274,6 @@ export default function AdminSettings() {
                 <span className="text-xs text-muted-foreground">API token configured as server secret — manage in Lovable Cloud settings</span>
               </div>
             </div>
-            <div>
-              <Label>RON Session Method</Label>
-              <p className="mt-1 text-sm text-muted-foreground">Link-paste mode — notary pastes a SignNow signing link directly into the session.</p>
-            </div>
             <div><Label>KBA Platform URL</Label><Input value={editValues.kba_platform_url || ""} onChange={(e) => updateValue("kba_platform_url", e.target.value)} placeholder="https://kba-platform.com/session" /></div>
 
             {/* SignNow Webhook URL */}
