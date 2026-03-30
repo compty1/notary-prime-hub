@@ -438,7 +438,7 @@ export default function AdminRevenue() {
                             <td className="px-4 py-3"><Badge variant="outline" className="text-xs">{entry.notarization_type === "ron" ? "RON" : "In-Person"}</Badge></td>
                             <td className="px-4 py-3 text-right">${fee.toFixed(2)}</td>
                             <td className="px-4 py-3 text-right text-muted-foreground">${platform.toFixed(2)}</td>
-                            <td className="px-4 py-3 text-right text-muted-foreground">${onenotary.toFixed(2)}</td>
+                            <td className="px-4 py-3 text-right text-muted-foreground">${signingFee.toFixed(2)}</td>
                             <td className="px-4 py-3 text-right text-muted-foreground">${travel.toFixed(2)}</td>
                             <td className="px-4 py-3 text-right text-muted-foreground">${payout.toFixed(2)}</td>
                             <td className={`px-4 py-3 text-right font-medium ${net >= 0 ? "text-emerald-600" : "text-destructive"}`}>${net.toFixed(2)}</td>

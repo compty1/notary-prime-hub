@@ -18,7 +18,7 @@ const SYSTEM_PROMPT = `You are an expert Ohio Notary Public assistant for the **
 - Witness requirements
 - Seal and signature requirements
 - Prohibited acts for notaries
-- OneNotary platform usage and session management
+- SignNow platform usage and session management
 
 ## Document Type Knowledge
 - **Real Estate**: Deeds, mortgages, HELOCs, title transfers — require acknowledgment, signer(s) must appear
