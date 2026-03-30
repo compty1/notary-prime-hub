@@ -6,7 +6,7 @@ import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ShieldCheck, FileSignature, Video, CheckCircle, Loader2, ArrowRight, Phone, Mail } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { submitLead } from "@/lib/submitLead";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 
@@ -22,14 +22,12 @@ export default function ComingSoon() {
 
     setSubmitting(true);
     try {
-      const { error } = await supabase.from("leads").insert({
+      const result = await submitLead({
         email,
         source: "coming_soon",
-        status: "new",
-        lead_type: "individual",
         notes: "Signed up for launch notifications",
       });
-      if (error) throw error;
+      if (!result.success) throw new Error(result.error);
       setSubmitted(true);
       toast({ title: "You're on the list!", description: "We'll notify you when we launch." });
     } catch {

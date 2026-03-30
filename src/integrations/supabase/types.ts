@@ -107,6 +107,7 @@ export type Database = {
           id: string
           location: string | null
           notarization_type: Database["public"]["Enums"]["notarization_type"]
+          notary_id: string | null
           notes: string | null
           rescheduled_from: string | null
           scheduled_date: string
@@ -126,6 +127,7 @@ export type Database = {
           id?: string
           location?: string | null
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
+          notary_id?: string | null
           notes?: string | null
           rescheduled_from?: string | null
           scheduled_date: string
@@ -145,6 +147,7 @@ export type Database = {
           id?: string
           location?: string | null
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
+          notary_id?: string | null
           notes?: string | null
           rescheduled_from?: string | null
           scheduled_date?: string
@@ -1714,7 +1717,38 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_reviews: {
+        Row: {
+          appointment_id: string | null
+          comment: string | null
+          created_at: string | null
+          id: string | null
+          rating: number | null
+        }
+        Insert: {
+          appointment_id?: string | null
+          comment?: string | null
+          created_at?: string | null
+          id?: string | null
+          rating?: number | null
+        }
+        Update: {
+          appointment_id?: string | null
+          comment?: string | null
+          created_at?: string | null
+          id?: string | null
+          rating?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       delete_email: {

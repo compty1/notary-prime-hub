@@ -1,7 +1,7 @@
 import { usePageTitle } from "@/lib/usePageTitle";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { submitLead } from "@/lib/submitLead";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -92,13 +92,11 @@ export default function JoinPlatform() {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.from("leads").insert({
-      name: form.name.trim().slice(0, 100),
-      email: form.email.trim().slice(0, 255),
-      phone: form.phone.trim().slice(0, 20) || null,
+    const { success, error } = await submitLead({
+      name: form.name.trim(),
+      email: form.email.trim(),
+      phone: form.phone.trim() || null,
       source: "provider_application",
-      lead_type: "notary",
-      status: "new",
       state: form.state,
       notes: [
         form.commissionNumber ? `Commission #: ${form.commissionNumber}` : "",
@@ -107,10 +105,9 @@ export default function JoinPlatform() {
         form.message ? `Message: ${form.message}` : "",
       ].filter(Boolean).join("\n"),
       service_needed: "Provider Application",
-      intent_score: "high",
     });
     setSubmitting(false);
-    if (error) {
+    if (!success) {
       toast({ title: "Submission failed", description: "Please try again or contact us directly.", variant: "destructive" });
     } else {
       setSubmitted(true);
