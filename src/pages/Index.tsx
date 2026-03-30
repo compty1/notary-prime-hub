@@ -209,7 +209,7 @@ export default function Index() {
                 onClick={() => setServiceType("in_person")}
                 className={`flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-medium transition-all duration-200 ${
                 serviceType === "in_person" ?
-                "bg-primary text-white shadow-lg glow-sm" :
+                "bg-primary text-primary-foreground shadow-sm" :
                 "text-muted-foreground hover:text-foreground"}`
                 }>
                 
