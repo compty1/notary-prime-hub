@@ -22,6 +22,7 @@ import TextAlign from "@tiptap/extension-text-align";
 import ReactMarkdown from "react-markdown";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 interface TemplateField {
   name: string;
@@ -897,6 +898,7 @@ export default function DocumentTemplates() {
     <PageShell>
 
       <div className="container mx-auto max-w-5xl px-4 py-8">
+        <Breadcrumbs />
         <div className="mb-8 text-center">
           <h1 className="font-sans text-3xl font-bold text-foreground mb-2">Document Templates Library</h1>
           <p className="text-muted-foreground mb-4">Ready-to-use templates for common notarized documents</p>
