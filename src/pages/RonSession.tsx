@@ -281,6 +281,7 @@ export default function RonSession() {
         },
       });
       if (resp.error) throw new Error(resp.error.message);
+      if (resp.data?.error) throw new Error(resp.data.error);
       setSessionStatus("confirmed");
       toast({ title: "Invite sent", description: `Signing invitation sent to ${inviteEmail} via SignNow.` });
     } catch (err: any) {
