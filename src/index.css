@@ -308,3 +308,20 @@ button, a, [role="button"] {
     display: none;
   }
 }
+
+/* Item 500: Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Item 515: Print stylesheet enhancements */
+@media print {
+  .print-only { display: block !important; }
+  img { max-width: 100% !important; }
+  a[href]::after { content: " (" attr(href) ")"; font-size: 0.8em; color: #666; }
+}
