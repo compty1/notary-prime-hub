@@ -16,6 +16,7 @@ const adminNavItems = [
   { title: "Appointments", url: "/admin/appointments", icon: Calendar, adminOnly: false },
   { title: "Clients", url: "/admin/clients", icon: Users, adminOnly: true },
   { title: "Business Clients", url: "/admin/business-clients", icon: Building2, adminOnly: true },
+  { title: "Service Requests", url: "/admin/service-requests", icon: ClipboardList, adminOnly: true },
   { title: "Services Catalog", url: "/admin/services", icon: ShoppingBag, adminOnly: true },
   { title: "Availability", url: "/admin/availability", icon: Clock, adminOnly: true },
   { title: "Documents", url: "/admin/documents", icon: FileText, adminOnly: false },
