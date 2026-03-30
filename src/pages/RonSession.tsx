@@ -218,9 +218,13 @@ export default function RonSession() {
       return;
     }
     setUploadingDoc(true);
-    try {
-      const reader = new FileReader();
-      reader.onload = async () => {
+    const reader = new FileReader();
+    reader.onerror = () => {
+      toast({ title: "Upload failed", description: "Could not read the file.", variant: "destructive" });
+      setUploadingDoc(false);
+    };
+    reader.onload = async () => {
+      try {
         const base64 = (reader.result as string).split(",")[1];
         const resp = await supabase.functions.invoke("signnow", {
           body: { action: "upload_document", appointment_id: appointmentId, file_name: file.name, file_content: base64 },
@@ -231,13 +235,13 @@ export default function RonSession() {
           setSignnowDocumentId(docId);
           toast({ title: "Document uploaded to SignNow", description: `"${file.name}" is ready for signing fields and invite.` });
         }
+      } catch (err: any) {
+        toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+      } finally {
         setUploadingDoc(false);
-      };
-      reader.readAsDataURL(file);
-    } catch (err: any) {
-      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
-      setUploadingDoc(false);
-    }
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   // SignNow: Send invite
