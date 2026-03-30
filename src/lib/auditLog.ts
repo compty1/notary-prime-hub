@@ -10,7 +10,7 @@ export async function logAuditEvent(
   opts?: {
     entityType?: string;
     entityId?: string;
-    details?: Record<string, unknown>;
+    details?: Record<string, Json | undefined>;
     userId?: string;
   }
 ) {
