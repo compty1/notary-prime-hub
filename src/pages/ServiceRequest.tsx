@@ -394,6 +394,31 @@ export default function ServiceRequest() {
                 </div>
               ))}
 
+              {/* File Upload Section */}
+              <div>
+                <Label>Attach Documents (optional)</Label>
+                <div
+                  className="mt-1 rounded-lg border-2 border-dashed border-primary/20 bg-primary/5 p-6 text-center cursor-pointer hover:border-primary/40 transition-colors"
+                  onClick={() => document.getElementById("sr-file-input")?.click()}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => { e.preventDefault(); const dropped = Array.from(e.dataTransfer.files); if (dropped.length) setUploadedFiles(prev => [...prev, ...dropped]); }}
+                >
+                  <Upload className="mx-auto mb-2 h-8 w-8 text-primary/50" />
+                  <p className="text-sm text-muted-foreground">Drag & drop or click to upload supporting documents</p>
+                  <input id="sr-file-input" type="file" multiple className="hidden" onChange={(e) => { const files = Array.from(e.target.files || []); if (files.length) setUploadedFiles(prev => [...prev, ...files]); }} />
+                </div>
+                {uploadedFiles.length > 0 && (
+                  <div className="mt-2 space-y-1">
+                    {uploadedFiles.map((f, i) => (
+                      <div key={i} className="flex items-center justify-between rounded border border-border/50 px-2 py-1 text-sm">
+                        <span className="flex items-center gap-1 truncate"><FileText className="h-3 w-3 text-primary" /> {f.name}</span>
+                        <button onClick={() => setUploadedFiles(prev => prev.filter((_, idx) => idx !== i))} className="text-muted-foreground hover:text-destructive"><X className="h-3 w-3" /></button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <div>
                 <Label>Additional Notes</Label>
                 <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Any additional information..." rows={2} />
