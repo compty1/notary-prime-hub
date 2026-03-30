@@ -258,6 +258,8 @@ export default function ServiceRequest() {
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
 
   // Guest fields
   const [guestName, setGuestName] = useState("");
