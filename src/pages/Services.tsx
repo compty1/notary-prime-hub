@@ -174,6 +174,7 @@ export default function Services() {
         .eq("is_active", true)
         .order("display_order");
 
+      console.log("[Services] primary result:", primary.error, "count:", primary.data?.length);
       if (!primary.error && primary.data && primary.data.length > 0) {
         return primary.data as Service[];
       }
