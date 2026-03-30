@@ -257,19 +257,21 @@ export default function RonSession() {
 
     setSaving(true);
     const link = sessionLink.trim();
-    const { data: existing } = await supabase.from("notarization_sessions").select("id").eq("appointment_id", appointmentId).single();
+    const { data: existing } = await supabase.from("notarization_sessions").select("id, session_unique_id").eq("appointment_id", appointmentId).single();
     if (existing) {
       await supabase.from("notarization_sessions").update({
         participant_link: link,
         status: "confirmed" as any,
       }).eq("appointment_id", appointmentId);
+      if ((existing as any).session_unique_id) setSessionUniqueId((existing as any).session_unique_id);
     } else {
-      await supabase.from("notarization_sessions").insert({
+      const { data: newSession } = await supabase.from("notarization_sessions").insert({
         appointment_id: appointmentId,
         session_type: "ron" as any,
         participant_link: link,
         status: "confirmed" as any,
-      });
+      }).select("session_unique_id").single();
+      if ((newSession as any)?.session_unique_id) setSessionUniqueId((newSession as any).session_unique_id);
     }
     setParticipantLink(link);
     setSessionStatus("confirmed");
