@@ -118,7 +118,7 @@ function AnimatedRoutes() {
         <Route path="/fee-calculator" element={<FeeCalculator />} />
         <Route path="/portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
         <Route path="/confirmation" element={<ProtectedRoute><AppointmentConfirmation /></ProtectedRoute>} />
-        <Route path="/ron-session" element={<ProtectedRoute><OneNotarySession /></ProtectedRoute>} />
+        <Route path="/ron-session" element={<ProtectedRoute><RonSession /></ProtectedRoute>} />
         <Route path="/business-portal" element={<ProtectedRoute><BusinessPortal /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>}>
           <Route index element={<ErrorBoundary fallbackMessage="Overview failed to load"><AdminOverview /></ErrorBoundary>} />

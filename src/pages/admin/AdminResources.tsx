@@ -510,7 +510,7 @@ const externalResources = [
   { category: "Other Professional Resources", links: [
     { title: "American Society of Notaries", url: "https://www.asnnotary.org/", desc: "Professional association, education, resources" },
     { title: "Notary.net — Ohio Info", url: "https://www.notary.net/states/ohio", desc: "State-specific notary requirements and resources" },
-    { title: "OneNotary RON Platform", url: "https://onenotary.us/", desc: "RON platform for remote online notarization sessions" },
+    { title: "SignNow RON Platform", url: "https://www.signnow.com/", desc: "RON platform for remote online notarization sessions" },
     { title: "Notarize.com", url: "https://www.notarize.com/", desc: "Another popular RON platform option" },
   ]},
   { category: "Multi-State RON Laws & Standards", links: [
