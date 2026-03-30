@@ -10,6 +10,8 @@ import {
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/PageShell";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { usePageTitle } from "@/lib/usePageTitle";
 import { fadeUp, scaleReveal } from "@/lib/animations";
 
 const credentials = [
