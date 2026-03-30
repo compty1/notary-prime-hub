@@ -1,95 +1,46 @@
 
 
-# Migrate from OneNotary to SignNow
+# Finish SignNow Migration — Remaining Tasks
 
-## Summary
-Replace the entire OneNotary e-signing integration with SignNow's REST API. This touches 1 new edge function, 1 updated webhook, 1 renamed/rewritten session page, admin settings, the notary assistant prompt, the integration test page, and a DB migration to rename the column.
+## What's Left
 
-## SignNow API Flow
+1. **AdminRevenue.tsx** — Still references `onenotary_fee` column name and displays "OneNotary" labels throughout the revenue dashboard
+2. **notary-assistant/index.ts** — Line 21 still says "OneNotary platform usage"
+3. **AdminSettings.tsx** — Missing SignNow webhook URL configuration field
+4. **Database column rename not applied** — The `notary_journal.onenotary_fee` column was in the migration plan but the DB types still show `onenotary_fee`, meaning the column rename may not have been applied. Need to verify and create a migration if needed.
+5. **SignNow OAuth token management** — The current edge function uses a static `SIGNNOW_API_TOKEN` bearer token. Based on the SignNow API docs provided, tokens expire (default 30 days). Should add token refresh logic or at minimum document the flow.
 
-SignNow uses a document-centric model (vs OneNotary's session-centric model):
+## Plan
 
-```text
-1. Authenticate → POST /oauth2/token (Basic auth + user credentials → Bearer token)
-2. Upload document → POST /document (multipart form with file)
-3. Add signing fields → PUT /document/{document_id} (place signature/text fields)
-4. Send invite → POST /document/{document_id}/invite (email signers with roles)
-5. Check status → GET /document/{document_id} (poll or use webhooks)
-6. Download signed → GET /document/{document_id}/download?type=collapsed
-7. Webhooks → document.update, invite.update (signer completed)
-```
+### 1. Database Migration — Rename remaining `onenotary_fee` column
+- Rename `notary_journal.onenotary_fee` → `notary_journal.platform_fee` (the prior migration may have failed or not included this)
+- Verify `notarization_sessions.onenotary_session_id` was renamed to `signnow_document_id`
 
-## Changes
+### 2. Update `AdminRevenue.tsx`
+- Replace all `onenotary_fee` references with `platform_fee`
+- Rename "OneNotary Fees" label → "Signing Platform Fees"
+- Update CSV export header from "OneNotary Fee" → "Platform Fee"
+- Update table column header from "OneNotary" → "Platform"
 
-### 1. New secret: `SIGNNOW_API_TOKEN`
-- Will need a SignNow API Bearer token (or client credentials for OAuth2 flow)
-- Remove the old `ONENOTARY_API_TOKEN` secret (user said they'll add keys later)
+### 3. Update `notary-assistant/index.ts`
+- Line 21: Change "OneNotary platform usage and session management" → "SignNow platform usage and session management"
 
-### 2. New edge function: `supabase/functions/signnow/index.ts`
-- Replaces `supabase/functions/onenotary/index.ts`
-- Same auth pattern (JWT validation, admin/notary role check)
-- SignNow-specific actions mapping:
+### 4. Add SignNow Webhook URL Config to `AdminSettings.tsx`
+- Add a read-only field in the Platform Integration card showing the webhook endpoint URL: `https://svrebvbcsxaoluafblnq.supabase.co/functions/v1/signnow-webhook`
+- Add a copy-to-clipboard button so the admin can paste it into SignNow's dashboard
+- Add helper text: "Register this URL in your SignNow account under API Settings → Webhooks. Subscribe to events: document.complete, document.update, invite.update"
 
-| Action | SignNow Endpoint | Notes |
-|--------|-----------------|-------|
-| `upload_document` | `POST /document` | Multipart upload, returns `document_id` |
-| `add_fields` | `PUT /document/{id}` | Add signature/date/text fields to doc |
-| `send_invite` | `POST /document/{id}/invite` | The curl example the user provided |
-| `get_document` | `GET /document/{id}` | Status, field data, signing progress |
-| `download_document` | `GET /document/{id}/download?type=collapsed` | Signed PDF |
-| `cancel_invite` | `PUT /document/{id}/invite/cancel` | Cancel pending invite |
-| `list_documents` | `GET /user/documentsv2` | List user's documents |
-| `create_signing_link` | `POST /link` | Generate embedded signing link |
+### 5. Enhance SignNow Edge Function with OAuth Token Refresh
+- Update `supabase/functions/signnow/index.ts` to support the `POST /oauth2/token` flow with `grant_type=password` or `grant_type=refresh_token`
+- Add a new action `refresh_token` that generates a fresh access token using stored credentials (`SIGNNOW_USERNAME`, `SIGNNOW_PASSWORD`, `SIGNNOW_BASIC_TOKEN`)
+- Add a `verify_token` action that calls `GET /oauth2/token` to check if the current token is still valid
+- This enables the admin integration test page to verify token validity and refresh when needed
 
-- Upserts to `notarization_sessions` table using new column `signnow_document_id` (renamed from `onenotary_session_id`)
+### 6. Update `AdminIntegrationTest.tsx`
+- Add a "Verify Token" sub-test that calls the `verify_token` action before `list_documents`
+- Show token expiration info in the test result
 
-### 3. Updated webhook: `supabase/functions/signnow-webhook/index.ts`
-- Replaces `onenotary-webhook/index.ts`
-- Handles SignNow events: `document.update`, `invite.update`, `document.complete`
-- Maps events to same DB status updates (in_session, completed, cancelled)
-
-### 4. DB migration
-- Rename column: `notarization_sessions.onenotary_session_id` → `signnow_document_id`
-- Rename column: `notary_journal.onenotary_fee` → `platform_fee`
-- Rename column: `notary_payouts.onenotary_fees` → `platform_fees`
-- Add index on `notarization_sessions.signnow_document_id`
-
-### 5. Rewrite `src/pages/OneNotarySession.tsx` → update in-place
-- Rename component references from "OneNotary" to "SignNow" throughout UI text
-- Replace `supabase.functions.invoke("onenotary", ...)` calls with `supabase.functions.invoke("signnow", ...)`
-- Update action names: `create_session` → `upload_document` + `send_invite`, `init_session` → removed (invite is the init), `add_document` → `upload_document`, etc.
-- Session flow changes: admin uploads doc first, then sends invite (vs creating session → adding participant → uploading doc → initializing)
-- Keep all Ohio compliance features (oath, KBA tracking, ID verification, journal entry, e-seal) untouched
-
-### 6. Update `src/pages/admin/AdminSettings.tsx`
-- Change "OneNotary API Status" → "SignNow API Status"
-- Change select options: `onenotary_platform` → `signnow_platform`
-- Update KBA provider option from `onenotary_builtin` to `signnow_builtin`
-- Update all descriptive text
-
-### 7. Update `src/pages/admin/AdminIntegrationTest.tsx`
-- Change flow step labels from "OneNotary Session Created" → "SignNow Document Uploaded & Invite Sent"
-- Update descriptions to match SignNow flow
-
-### 8. Update `supabase/functions/notary-assistant/index.ts`
-- Replace "OneNotary Platform" section with "SignNow Platform" in the system prompt
-- Update session lifecycle: uploaded → invite_sent → viewed → signed → completed
-- Note that SignNow handles document signing; KBA/credential analysis may need separate handling depending on plan
-
-### 9. Update `src/pages/admin/AdminAppointments.tsx`
-- Any references to "OneNotary" in status badges or labels → "SignNow"
-
-### 10. Update `src/pages/ServiceDetail.tsx`
-- Change RON FAQ reference from "OneNotary or Notarize" → "SignNow"
-
-### 11. Route rename consideration
-- Keep `/ron-session` route path (it's generic enough)
-- Component stays named the same file but internal branding changes
-
-### Files touched (~10 files)
-- **New**: `supabase/functions/signnow/index.ts`
-- **New**: `supabase/functions/signnow-webhook/index.ts`
-- **Delete content**: `supabase/functions/onenotary/index.ts`, `supabase/functions/onenotary-webhook/index.ts`
-- **Edit**: `src/pages/OneNotarySession.tsx`, `src/pages/admin/AdminSettings.tsx`, `src/pages/admin/AdminIntegrationTest.tsx`, `src/pages/admin/AdminAppointments.tsx`, `src/pages/ServiceDetail.tsx`, `supabase/functions/notary-assistant/index.ts`
-- **DB**: 1 migration (column renames)
+### Files Touched
+- **Migration**: 1 new SQL migration (column rename)
+- **Edit**: `AdminRevenue.tsx`, `AdminSettings.tsx`, `AdminIntegrationTest.tsx`, `notary-assistant/index.ts`, `signnow/index.ts`
 
