@@ -52,8 +52,12 @@ export default function SignUp() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password.length < 6) {
-      toast({ title: "Password too short", description: "Password must be at least 6 characters.", variant: "destructive" });
+    if (password.length < 8) {
+      toast({ title: "Password too short", description: "Password must be at least 8 characters.", variant: "destructive" });
+      return;
+    }
+    if (!/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
+      toast({ title: "Weak password", description: "Password must contain at least one uppercase letter and one number.", variant: "destructive" });
       return;
     }
     if (password !== confirmPassword) {
@@ -121,7 +125,7 @@ export default function SignUp() {
             <div>
               <Label htmlFor="password">Password</Label>
               <div className="relative">
-                <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+                <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
                 <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Hide password" : "Show password"}>
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -137,7 +141,7 @@ export default function SignUp() {
                   <p className="text-xs text-muted-foreground">Use 10+ chars with uppercase, numbers, and symbols</p>
                 </div>
               )}
-              {!password && <p className="mt-1 text-xs text-muted-foreground">Minimum 6 characters</p>}
+              {!password && <p className="mt-1 text-xs text-muted-foreground">Minimum 8 characters with uppercase and numbers</p>}
             </div>
             <div>
               <Label htmlFor="confirmPassword">Confirm Password</Label>

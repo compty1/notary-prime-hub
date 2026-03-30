@@ -105,6 +105,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signIn = async (email: string, password: string) => {
+    // Client-side rate limiting
+    const now = Date.now();
+    const key = "login_attempts";
+    const stored = sessionStorage.getItem(key);
+    const attempts: number[] = stored ? JSON.parse(stored) : [];
+    const recent = attempts.filter((t) => now - t < 60_000); // last 60s
+    if (recent.length >= 5) {
+      return { error: { message: "Too many login attempts. Please wait 60 seconds before trying again." } };
+    }
+    recent.push(now);
+    sessionStorage.setItem(key, JSON.stringify(recent));
+
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error };
   };

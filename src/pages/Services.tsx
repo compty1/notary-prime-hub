@@ -12,6 +12,8 @@ import { motion } from "framer-motion";
 import { ChevronRight, Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home, Loader2, Search, Sparkles, ArrowRight, Headphones, PenTool, BarChart3, MessageSquare, Wrench, Eye } from "lucide-react";
 import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { ServicesLoadingSkeleton } from "@/components/ServicesLoadingSkeleton";
 import { fadeUp, scaleReveal } from "@/lib/animations";
 
 const iconMap: Record<string, any> = {
@@ -186,6 +188,7 @@ export default function Services() {
 
       {/* Search + Filter */}
       <div className="container mx-auto px-4 py-8">
+        <Breadcrumbs />
         <div className="relative mb-4 max-w-md mx-auto">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -206,7 +209,7 @@ export default function Services() {
         </Tabs>
 
         {loading ? (
-          <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
+          <ServicesLoadingSkeleton />
         ) : grouped.length === 0 && searchQuery ? (
           <div className="py-20 text-center text-muted-foreground">
             <Search className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
