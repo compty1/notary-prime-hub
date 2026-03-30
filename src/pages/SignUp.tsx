@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { usePageTitle } from "@/lib/usePageTitle";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { lovable } from "@/integrations/lovable/index";
