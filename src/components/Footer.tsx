@@ -56,7 +56,7 @@ export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com
           <div className="mt-2 flex items-center justify-center gap-3">
             <Link to="/terms" className="transition-colors hover:text-primary">Terms</Link>
             <span className="text-sidebar-border">·</span>
-            <Link to="/terms" className="transition-colors hover:text-primary">Privacy</Link>
+            <Link to="/terms#privacy" className="transition-colors hover:text-primary">Privacy</Link>
           </div>
         </div>
       </div>
