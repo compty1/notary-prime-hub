@@ -89,7 +89,7 @@ export default function AdminRevenue() {
   const totalSigningPlatformFees = filtered.reduce((sum, e) => sum + (parseFloat(e.platform_fee) || 0), 0);
   const totalPlatformMarkup = filtered.reduce((sum, e) => sum + (parseFloat(e.platform_markup) || 0), 0);
   const totalNotaryPayouts = filtered.reduce((sum, e) => sum + (parseFloat(e.notary_payout) || 0), 0);
-  const totalExpenses = totalPlatformFees + totalTravelFees + totalOneNotaryFees;
+  const totalExpenses = totalPlatformFees + totalTravelFees + totalSigningPlatformFees;
   const netProfit = totalRevenue - totalExpenses;
   const avgPerSession = filtered.length > 0 ? netProfit / filtered.length : 0;
 
