@@ -603,7 +603,7 @@ export default function RonSession() {
                         )}
 
                         {/* Invite form */}
-                        {sessionStatus !== "completed" && sessionStatus !== "cancelled" && sessionStatus !== "confirmed" && (
+                        {sessionStatus !== "completed" && sessionStatus !== "cancelled" && sessionStatus !== "confirmed" && sessionStatus !== "in_session" && (
                           <div className="space-y-3 rounded-lg border border-border/50 p-4">
                             <h3 className="text-sm font-semibold">Send Signing Invite</h3>
                             <div>
