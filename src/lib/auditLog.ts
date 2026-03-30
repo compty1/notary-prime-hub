@@ -14,13 +14,13 @@ export async function logAuditEvent(
   }
 ) {
   try {
-    await supabase.from("audit_log").insert({
+    await supabase.from("audit_log").insert([{
       action,
       entity_type: opts?.entityType ?? null,
       entity_id: opts?.entityId ?? null,
-      details: opts?.details ?? null,
+      details: (opts?.details as Record<string, unknown>) ?? null,
       user_id: opts?.userId ?? null,
-    });
+    }]);
   } catch {
     // Never throw from audit logging
   }
