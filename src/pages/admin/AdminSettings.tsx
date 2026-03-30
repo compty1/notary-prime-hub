@@ -77,8 +77,13 @@ export default function AdminSettings() {
   }, [loading, editValues.id_expiration_reminder_days]);
 
   const handleSave = async () => {
+    if (saving) return; // Debounce: prevent double-click
     setSaving(true);
     const updates = Object.entries(editValues).map(([key, value]) => {
+      // Never store sensitive keys in platform_settings — they should be edge function secrets
+      if (key === "kba_api_key" && value) {
+        console.warn("KBA API keys should be stored as edge function secrets, not in platform_settings");
+      }
       if (settings[key]) {
         if (settings[key].setting_value === value) return null;
         return supabase.from("platform_settings").update({ setting_value: value, updated_at: new Date().toISOString(), updated_by: user?.id }).eq("setting_key", key);

@@ -27,12 +27,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [rolesLoading, setRolesLoading] = useState(false);
   const { toast } = useToast();
 
+  const abortRef = React.useRef<AbortController | null>(null);
+
   const fetchRoles = async (userId: string) => {
+    // Abort any in-flight role fetch
+    if (abortRef.current) abortRef.current.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     setRolesLoading(true);
     const { data } = await supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", userId);
+    // If this request was aborted, skip state updates
+    if (controller.signal.aborted) return;
     if (data) {
       setRoles(data.map((r) => r.role as UserRole));
     }

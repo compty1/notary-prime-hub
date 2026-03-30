@@ -63,7 +63,7 @@ export default function RonSession() {
   const recognitionRef = useRef<any>(null);
   const finalTranscriptRef = useRef("");
 
-  const [sessionStatus, setSessionStatus] = useState<string>("waiting");
+  const [sessionStatus, setSessionStatus] = useState<string>("scheduled");
 
   // Invite form
   const [inviteEmail, setInviteEmail] = useState("");
@@ -159,6 +159,13 @@ export default function RonSession() {
       recognition.onend = () => setIsListening(false);
       recognitionRef.current = recognition;
     }
+    return () => {
+      // Clean up: stop recognition on unmount
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch {}
+        recognitionRef.current = null;
+      }
+    };
   }, [isAdminOrNotary]);
 
   const toggleVoice = () => {

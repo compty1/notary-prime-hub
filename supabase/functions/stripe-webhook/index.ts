@@ -16,8 +16,31 @@ Deno.serve(async (req) => {
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
     const body = await req.text();
 
-    // For production, verify webhook signature with STRIPE_WEBHOOK_SECRET
-    const event = JSON.parse(body) as Stripe.Event;
+    // Verify webhook signature if secret is configured
+    const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
+    let event: Stripe.Event;
+
+    if (webhookSecret) {
+      const sig = req.headers.get("stripe-signature");
+      if (!sig) {
+        return new Response(JSON.stringify({ error: "Missing stripe-signature header" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      try {
+        event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
+      } catch (err: any) {
+        console.error("Webhook signature verification failed:", err.message);
+        return new Response(JSON.stringify({ error: `Webhook signature verification failed: ${err.message}` }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    } else {
+      console.warn("STRIPE_WEBHOOK_SECRET not configured — skipping signature verification");
+      event = JSON.parse(body) as Stripe.Event;
+    }
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -28,20 +51,40 @@ Deno.serve(async (req) => {
       case "payment_intent.succeeded": {
         const pi = event.data.object as Stripe.PaymentIntent;
         const appointmentId = pi.metadata?.appointment_id;
-        if (appointmentId) {
+        const paymentId = pi.metadata?.payment_id;
+
+        // Prefer exact match via payment_id metadata, fall back to appointment_id
+        if (paymentId) {
           await supabase
             .from("payments")
             .update({ status: "paid", paid_at: new Date().toISOString(), method: "stripe" })
-            .like("notes", `%${pi.id}%`);
+            .eq("id", paymentId);
+        } else if (appointmentId) {
+          await supabase
+            .from("payments")
+            .update({ status: "paid", paid_at: new Date().toISOString(), method: "stripe" })
+            .eq("appointment_id", appointmentId)
+            .eq("status", "pending");
         }
         break;
       }
       case "payment_intent.payment_failed": {
         const pi = event.data.object as Stripe.PaymentIntent;
-        await supabase
-          .from("payments")
-          .update({ status: "failed" })
-          .like("notes", `%${pi.id}%`);
+        const paymentId = pi.metadata?.payment_id;
+        const appointmentId = pi.metadata?.appointment_id;
+
+        if (paymentId) {
+          await supabase
+            .from("payments")
+            .update({ status: "failed" })
+            .eq("id", paymentId);
+        } else if (appointmentId) {
+          await supabase
+            .from("payments")
+            .update({ status: "failed" })
+            .eq("appointment_id", appointmentId)
+            .eq("status", "pending");
+        }
         break;
       }
     }
