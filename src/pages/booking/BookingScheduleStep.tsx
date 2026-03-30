@@ -110,7 +110,12 @@ export default function BookingScheduleStep(props: ScheduleStepProps) {
         </div>
       )}
 
-      {!isDigitalOnly(serviceType, serviceCategories) && notarizationType === "in_person" && (
+      {advanceWarning && (
+        <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4 flex-shrink-0" /> {advanceWarning}
+        </div>
+      )}
+
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <Label>Meeting Location</Label>
