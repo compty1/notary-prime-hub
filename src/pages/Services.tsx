@@ -10,12 +10,36 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
-import { ChevronRight, Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home, Loader2, Search, Sparkles, ArrowRight, Headphones, PenTool, BarChart3, MessageSquare, Wrench, Eye } from "lucide-react";
+import { ChevronRight, Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home, Loader2, Search, Sparkles, ArrowRight, Headphones, PenTool, BarChart3, MessageSquare, Wrench, Eye, Mail, Scan, FileEdit } from "lucide-react";
 import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ServicesLoadingSkeleton } from "@/components/ServicesLoadingSkeleton";
 import { fadeUp, scaleReveal } from "@/lib/animations";
+
+const aiTools = [
+  {
+    icon: Mail,
+    title: "AI Writing Tools",
+    description: "Generate professional emails, social media posts, and documents in seconds with AI.",
+    link: "/ai-writer",
+    cta: "Start Writing",
+  },
+  {
+    icon: FileEdit,
+    title: "Document Generator",
+    description: "Build resumes, invoices, and contracts with beautiful templates and PDF export.",
+    link: "/builder",
+    cta: "Create Document",
+  },
+  {
+    icon: Scan,
+    title: "Document Digitization",
+    description: "AI-powered OCR to convert paper documents and scans into editable, searchable text.",
+    link: "/digitize",
+    cta: "Digitize Now",
+  },
+];
 
 const iconMap: Record<string, any> = {
   Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home,
