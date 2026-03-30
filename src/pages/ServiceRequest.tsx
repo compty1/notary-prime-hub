@@ -264,10 +264,7 @@ export default function ServiceRequest() {
   const [guestEmail, setGuestEmail] = useState("");
   const [guestPassword, setGuestPassword] = useState("");
 
-  useEffect(() => {
-    document.title = `${config.label} — Notar`;
-    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
-  }, [config.label]);
+  usePageTitle(config.label);
 
   const updateField = (name: string, value: string) => {
     setFormData(prev => ({ ...prev, [name]: value }));

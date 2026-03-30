@@ -17,10 +17,7 @@ import { PageShell } from "@/components/PageShell";
 export default function NotaryProcessGuide() {
   const { user } = useAuth();
 
-  useEffect(() => {
-    document.title = `Notary Process Guide — ${BRAND.name}`;
-    return () => { document.title = BRAND.fullTitle; };
-  }, []);
+  usePageTitle("Notary Process Guide");
 
   return (
     <PageShell>
