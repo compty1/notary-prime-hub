@@ -199,7 +199,7 @@ export default function Index() {
               </motion.p>
               <motion.div variants={fadeUp} custom={3}>
                 <Link to="/book">
-                  <Button size="lg" className="rounded-full px-8 shadow-sm">
+                  <Button variant="accent" size="lg" className="rounded-full px-8 shadow-sm">
                     Get started free <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
