@@ -30,10 +30,7 @@ export default function FeeCalculator() {
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [settingsLoading, setSettingsLoading] = useState(true);
 
-  useEffect(() => {
-    document.title = "Fee Calculator — Notar";
-    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
-  }, []);
+  usePageTitle("Fee Calculator");
   const [notarizationType, setNotarizationType] = useState<"in_person" | "ron">("in_person");
   const [documentCount, setDocumentCount] = useState(1);
   const [travelMiles, setTravelMiles] = useState(0);

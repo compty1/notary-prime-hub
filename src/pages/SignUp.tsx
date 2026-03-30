@@ -39,10 +39,7 @@ export default function SignUp() {
 
   const strength = useMemo(() => getPasswordStrength(password), [password]);
 
-  useEffect(() => {
-    document.title = "Sign Up — Notar";
-    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
-  }, []);
+  usePageTitle("Sign Up");
 
   // Redirect already-authenticated users based on role
   if (!loading && user) {

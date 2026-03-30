@@ -107,11 +107,7 @@ export default function BookAppointment() {
       navigator.geolocation.getCurrentPosition(pos => { setUserLat(pos.coords.latitude); setUserLon(pos.coords.longitude); }, () => {}, { timeout: 5000 });
     }
   }, []);
-
-  useEffect(() => {
-    document.title = "Book Appointment — Notar";
-    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
-  }, []);
+  usePageTitle("Book Appointment");
 
   // Expire stale bookings in localStorage (24h)
   useEffect(() => {

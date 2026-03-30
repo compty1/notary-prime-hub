@@ -40,10 +40,7 @@ export default function LoanSigningServices() {
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    document.title = "Loan Signing Services — Notar";
-    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
-  }, []);
+  usePageTitle("Loan Signing Services");
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({
     companyName: "",

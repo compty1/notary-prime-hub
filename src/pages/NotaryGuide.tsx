@@ -200,10 +200,7 @@ const ronSteps = [
 export default function NotaryGuide() {
   const [searchTerm, setSearchTerm] = useState("");
   const { user } = useAuth();
-  useEffect(() => {
-    document.title = "What Can Be Notarized? — Notar";
-    return () => { document.title = "Notar — Ohio Notary Public | In-Person & RON"; };
-  }, []);
+  usePageTitle("What Can Be Notarized?");
 
   const filteredCategories = documentCategories.map((cat) => ({
     ...cat,
