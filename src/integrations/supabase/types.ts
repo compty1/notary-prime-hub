@@ -108,6 +108,7 @@ export type Database = {
           location: string | null
           notarization_type: Database["public"]["Enums"]["notarization_type"]
           notes: string | null
+          rescheduled_from: string | null
           scheduled_date: string
           scheduled_time: string
           service_type: string
@@ -126,6 +127,7 @@ export type Database = {
           location?: string | null
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
           notes?: string | null
+          rescheduled_from?: string | null
           scheduled_date: string
           scheduled_time: string
           service_type: string
@@ -144,6 +146,7 @@ export type Database = {
           location?: string | null
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
           notes?: string | null
+          rescheduled_from?: string | null
           scheduled_date?: string
           scheduled_time?: string
           service_type?: string
@@ -151,7 +154,15 @@ export type Database = {
           travel_distance_miles?: number | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "appointments_rescheduled_from_fkey"
+            columns: ["rescheduled_from"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       audit_log: {
         Row: {

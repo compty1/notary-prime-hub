@@ -60,8 +60,12 @@ export default function ResetPassword() {
       toast({ title: "Passwords don't match", variant: "destructive" });
       return;
     }
-    if (password.length < 6) {
-      toast({ title: "Password too short", description: "Minimum 6 characters.", variant: "destructive" });
+    if (password.length < 8) {
+      toast({ title: "Password too short", description: "Minimum 8 characters.", variant: "destructive" });
+      return;
+    }
+    if (!/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
+      toast({ title: "Weak password", description: "Must contain at least one uppercase letter and one number.", variant: "destructive" });
       return;
     }
     setSubmitting(true);

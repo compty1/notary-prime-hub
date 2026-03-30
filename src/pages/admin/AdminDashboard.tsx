@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { AdminNotificationCenter } from "@/components/AdminNotificationCenter";
 
@@ -16,6 +16,7 @@ const adminNavItems = [
   { title: "Appointments", url: "/admin/appointments", icon: Calendar, adminOnly: false },
   { title: "Clients", url: "/admin/clients", icon: Users, adminOnly: true },
   { title: "Business Clients", url: "/admin/business-clients", icon: Building2, adminOnly: true },
+  { title: "Service Requests", url: "/admin/service-requests", icon: ClipboardList, adminOnly: true },
   { title: "Services Catalog", url: "/admin/services", icon: ShoppingBag, adminOnly: true },
   { title: "Availability", url: "/admin/availability", icon: Clock, adminOnly: true },
   { title: "Documents", url: "/admin/documents", icon: FileText, adminOnly: false },
