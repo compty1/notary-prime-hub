@@ -36,8 +36,39 @@ serve(async (req) => {
 
     let emailSent = false;
 
-    // Send email via Resend if configured
-    if (RESEND_API_KEY) {
+    // Try IONOS SMTP first, fallback to Resend
+    const IONOS_EMAIL = Deno.env.get("IONOS_EMAIL_ADDRESS");
+    const IONOS_PASSWORD = Deno.env.get("IONOS_EMAIL_PASSWORD");
+    const IONOS_SMTP = Deno.env.get("IONOS_SMTP_HOST") || "smtp.ionos.com";
+
+    if (IONOS_EMAIL && IONOS_PASSWORD) {
+      try {
+        const { SMTPClient } = await import("https://deno.land/x/denomailer@1.6.0/mod.ts");
+        const client = new SMTPClient({
+          connection: {
+            hostname: IONOS_SMTP,
+            port: 587,
+            tls: true,
+            auth: { username: IONOS_EMAIL, password: IONOS_PASSWORD },
+          },
+        });
+        await client.send({
+          from: IONOS_EMAIL,
+          to: to_address,
+          subject,
+          content: "auto",
+          html: body,
+        });
+        await client.close();
+        emailSent = true;
+        console.log("Email sent via IONOS SMTP");
+      } catch (ionosErr) {
+        console.error("IONOS SMTP failed, falling back to Resend:", ionosErr);
+      }
+    }
+
+    // Fallback to Resend if IONOS failed or not configured
+    if (!emailSent && RESEND_API_KEY) {
       const emailRes = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {

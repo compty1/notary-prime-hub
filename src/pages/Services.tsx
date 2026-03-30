@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
-import { ChevronRight, Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home, Loader2, Search, Sparkles, ArrowRight } from "lucide-react";
+import { ChevronRight, Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home, Loader2, Search, Sparkles, ArrowRight, Headphones, PenTool, BarChart3, MessageSquare, Wrench, Eye } from "lucide-react";
 import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
 import { fadeUp, scaleReveal } from "@/lib/animations";
@@ -22,6 +22,8 @@ const iconMap: Record<string, any> = {
   Layers: FileText, CreditCard: Briefcase, Code: FileText, Award: Shield,
   Building2: Briefcase, Inbox: FileText, Bell: FileText, Layout: FileText,
   GraduationCap: Briefcase, ClipboardList: FileText, Workflow: FileText, Plane: Globe,
+  Headphones, PenTool, BarChart3, MessageSquare, Wrench, Eye,
+  Mail: MessageSquare,
 };
 
 const categoryLabels: Record<string, { label: string; description: string }> = {
@@ -33,15 +35,26 @@ const categoryLabels: Record<string, { label: string; description: string }> = {
   recurring: { label: "Recurring & Value-Add", description: "Storage, virtual mailroom, reminders, and compliance packages" },
   consulting: { label: "Consulting & Training", description: "RON onboarding, workflow audits, and custom automation" },
   business_services: { label: "Business Services", description: "Email management, correspondence handling, and administrative support" },
+  admin_support: { label: "Administrative Support", description: "Data entry, travel planning, and general admin tasks" },
+  content_creation: { label: "Content Creation", description: "Blog posts, social media, newsletters, and copywriting" },
+  research: { label: "Research", description: "Market analysis, lead generation, and competitive intelligence" },
+  customer_service: { label: "Customer Service", description: "Email support, live chat, and customer communication" },
+  technical_support: { label: "Technical Support", description: "Website updates, content management, and tech tasks" },
+  ux_testing: { label: "User Experience", description: "UX audits, usability testing, workflow analysis, and research" },
 };
 
-const categoryOrder = ["notarization", "verification", "document_services", "authentication", "business", "recurring", "consulting", "business_services"];
+const categoryOrder = ["notarization", "verification", "document_services", "authentication", "business", "recurring", "consulting", "business_services", "admin_support", "content_creation", "research", "customer_service", "technical_support", "ux_testing"];
 
 const INTAKE_ONLY_SERVICES = new Set([
   "Apostille Facilitation", "Consular Legalization Prep", "Background Check Coordination",
   "Clerical Document Preparation", "Document Cleanup & Formatting", "Form Filling Assistance",
   "Certified Document Prep for Agencies", "Registered Agent Coordination",
   "Email Management & Correspondence", "Notarized Translation Coordination",
+  "Data Entry", "Travel Arrangements", "Blog Post Writing", "Social Media Content",
+  "Newsletter Design", "Market Research Report", "Lead Generation",
+  "Email Support Handling", "Live Chat Support", "Website Content Updates",
+  "UX Audit & Heuristic Review", "User Flow & Workflow Testing",
+  "Usability Testing & Report", "UX Research & Persona Development",
 ]);
 const SAAS_LINKS: Record<string, string> = {
   "Document Storage Vault": "/portal",

@@ -22,6 +22,12 @@ const categories = [
   { value: "business", label: "Business & Volume" },
   { value: "recurring", label: "Recurring & Value-Add" },
   { value: "consulting", label: "Consulting & Training" },
+  { value: "admin_support", label: "Administrative Support" },
+  { value: "content_creation", label: "Content Creation" },
+  { value: "research", label: "Research" },
+  { value: "customer_service", label: "Customer Service" },
+  { value: "technical_support", label: "Technical Support" },
+  { value: "ux_testing", label: "User Experience" },
 ];
 
 const pricingModels = [

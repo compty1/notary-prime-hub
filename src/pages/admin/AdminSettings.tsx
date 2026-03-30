@@ -276,18 +276,7 @@ export default function AdminSettings() {
             </div>
             <div>
               <Label>RON Session Method</Label>
-              <Select value={editValues.ron_session_method || "signnow_platform"} onValueChange={(v) => updateValue("ron_session_method", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="signnow_platform">SignNow Platform (Full API Integration)</SelectItem>
-                  <SelectItem value="email_invite">Email Invite (Manual Session Link)</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {editValues.ron_session_method === "email_invite"
-                  ? "Sends an email invite to the signer with a session link instead of using the SignNow API flow."
-                  : "Uploads documents, adds signing fields, and sends invites via SignNow REST API."}
-              </p>
+              <p className="mt-1 text-sm text-muted-foreground">Link-paste mode — notary pastes a SignNow signing link directly into the session.</p>
             </div>
             <div><Label>KBA Platform URL</Label><Input value={editValues.kba_platform_url || ""} onChange={(e) => updateValue("kba_platform_url", e.target.value)} placeholder="https://kba-platform.com/session" /></div>
 

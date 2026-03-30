@@ -10,7 +10,7 @@ export const fallbackServiceTypes = [
   "Other",
 ];
 
-export const DIGITAL_ONLY_CATEGORIES = new Set(["recurring", "consulting", "document_services", "business_services"]);
+export const DIGITAL_ONLY_CATEGORIES = new Set(["recurring", "consulting", "document_services", "business_services", "admin_support", "content_creation", "research", "customer_service", "technical_support", "ux_testing"]);
 export const LOCATION_REQUIRED_SERVICES = new Set(["Closing Coordination", "Bulk Notarization"]);
 export const DIGITAL_ONLY_SERVICES = new Set([
   "Document Storage Vault", "Cloud Document Storage", "Virtual Mailroom",

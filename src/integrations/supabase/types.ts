@@ -502,6 +502,141 @@ export type Database = {
           },
         ]
       }
+      email_cache: {
+        Row: {
+          attachments: Json | null
+          bcc_addresses: Json | null
+          body_html: string | null
+          body_text: string | null
+          cc_addresses: Json | null
+          date: string | null
+          folder: string
+          from_address: string | null
+          from_name: string | null
+          has_attachments: boolean | null
+          id: string
+          in_reply_to: string | null
+          is_read: boolean | null
+          is_starred: boolean | null
+          labels: string[] | null
+          message_id: string
+          references: string | null
+          subject: string | null
+          synced_at: string | null
+          to_addresses: Json | null
+        }
+        Insert: {
+          attachments?: Json | null
+          bcc_addresses?: Json | null
+          body_html?: string | null
+          body_text?: string | null
+          cc_addresses?: Json | null
+          date?: string | null
+          folder?: string
+          from_address?: string | null
+          from_name?: string | null
+          has_attachments?: boolean | null
+          id?: string
+          in_reply_to?: string | null
+          is_read?: boolean | null
+          is_starred?: boolean | null
+          labels?: string[] | null
+          message_id: string
+          references?: string | null
+          subject?: string | null
+          synced_at?: string | null
+          to_addresses?: Json | null
+        }
+        Update: {
+          attachments?: Json | null
+          bcc_addresses?: Json | null
+          body_html?: string | null
+          body_text?: string | null
+          cc_addresses?: Json | null
+          date?: string | null
+          folder?: string
+          from_address?: string | null
+          from_name?: string | null
+          has_attachments?: boolean | null
+          id?: string
+          in_reply_to?: string | null
+          is_read?: boolean | null
+          is_starred?: boolean | null
+          labels?: string[] | null
+          message_id?: string
+          references?: string | null
+          subject?: string | null
+          synced_at?: string | null
+          to_addresses?: Json | null
+        }
+        Relationships: []
+      }
+      email_drafts: {
+        Row: {
+          attachments: Json | null
+          body_html: string | null
+          cc_addresses: Json | null
+          created_at: string | null
+          id: string
+          in_reply_to: string | null
+          subject: string | null
+          to_addresses: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          attachments?: Json | null
+          body_html?: string | null
+          cc_addresses?: Json | null
+          created_at?: string | null
+          id?: string
+          in_reply_to?: string | null
+          subject?: string | null
+          to_addresses?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          attachments?: Json | null
+          body_html?: string | null
+          cc_addresses?: Json | null
+          created_at?: string | null
+          id?: string
+          in_reply_to?: string | null
+          subject?: string | null
+          to_addresses?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      email_signatures: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          signature_html: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          signature_html?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          signature_html?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       form_library: {
         Row: {
           category: string

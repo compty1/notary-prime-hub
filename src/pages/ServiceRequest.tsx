@@ -106,6 +106,134 @@ const SERVICE_FIELDS: Record<string, { label: string; fields: { name: string; la
       { name: "include_notarization", label: "Include Notarization?", type: "select", options: ["Yes — Notarize the translation certificate", "No — Translation only"] },
     ],
   },
+  "Data Entry": {
+    label: "Data Entry Request",
+    fields: [
+      { name: "data_source", label: "Data Source", type: "select", options: ["Spreadsheet / CSV", "CRM System", "Database", "Paper Documents", "Other"], required: true },
+      { name: "description", label: "Describe the Work", type: "textarea", placeholder: "What data needs to be entered and where...", required: true },
+      { name: "volume", label: "Estimated Volume", type: "select", options: ["Small (< 100 records)", "Medium (100-500 records)", "Large (500+ records)"] },
+      { name: "turnaround", label: "Turnaround", type: "select", options: ["Standard (3-5 days)", "Rush (1-2 days)", "Same Day"] },
+    ],
+  },
+  "Travel Arrangements": {
+    label: "Travel Arrangements Request",
+    fields: [
+      { name: "travel_type", label: "Travel Type", type: "select", options: ["Domestic Flight + Hotel", "International Travel", "Ground Transportation", "Full Itinerary Planning"], required: true },
+      { name: "travelers", label: "Number of Travelers", type: "number", placeholder: "1" },
+      { name: "dates", label: "Travel Dates", type: "text", placeholder: "e.g., March 15-20, 2026", required: true },
+      { name: "destination", label: "Destination", type: "text", placeholder: "e.g., New York, NY", required: true },
+      { name: "budget", label: "Budget Range", type: "select", options: ["Economy", "Mid-Range", "Premium", "No Budget Limit"] },
+      { name: "special_requests", label: "Special Requests", type: "textarea", placeholder: "Preferences, requirements..." },
+    ],
+  },
+  "Blog Post Writing": {
+    label: "Blog Post Writing Request",
+    fields: [
+      { name: "topic", label: "Blog Topic", type: "text", placeholder: "e.g., Ohio Notary Requirements for 2026", required: true },
+      { name: "word_count", label: "Target Word Count", type: "select", options: ["500 words", "1000 words", "1500 words", "2000+ words"], required: true },
+      { name: "target_audience", label: "Target Audience", type: "text", placeholder: "e.g., Small business owners in Ohio" },
+      { name: "keywords", label: "SEO Keywords", type: "text", placeholder: "Comma-separated keywords..." },
+      { name: "tone", label: "Tone", type: "select", options: ["Professional", "Conversational", "Technical", "Friendly"] },
+    ],
+  },
+  "Social Media Content": {
+    label: "Social Media Content Request",
+    fields: [
+      { name: "platforms", label: "Platforms", type: "select", options: ["Facebook", "Instagram", "LinkedIn", "Twitter/X", "All Platforms"], required: true },
+      { name: "post_count", label: "Number of Posts", type: "number", placeholder: "10" },
+      { name: "theme", label: "Content Theme", type: "text", placeholder: "e.g., Notary tips, service promotions...", required: true },
+      { name: "include_graphics", label: "Include Graphics?", type: "select", options: ["Yes — Custom graphics", "Yes — Stock images", "Text only"] },
+    ],
+  },
+  "Newsletter Design": {
+    label: "Newsletter Design Request",
+    fields: [
+      { name: "purpose", label: "Newsletter Purpose", type: "select", options: ["Monthly Update", "Product Launch", "Event Promotion", "Educational Content", "Other"], required: true },
+      { name: "audience_size", label: "Audience Size", type: "select", options: ["Under 500", "500-2,000", "2,000-10,000", "10,000+"] },
+      { name: "content_notes", label: "Content Notes", type: "textarea", placeholder: "Key topics, promotions, or articles to include...", required: true },
+      { name: "brand_guidelines", label: "Brand Guidelines URL", type: "text", placeholder: "Link to brand guide (optional)" },
+    ],
+  },
+  "Market Research Report": {
+    label: "Market Research Request",
+    fields: [
+      { name: "research_topic", label: "Research Topic", type: "text", placeholder: "e.g., Mobile notary demand in central Ohio", required: true },
+      { name: "scope", label: "Research Scope", type: "select", options: ["Local Market", "State-Wide", "National", "Industry Specific"], required: true },
+      { name: "competitors", label: "Key Competitors to Analyze", type: "textarea", placeholder: "List competitor names or URLs..." },
+      { name: "deliverable", label: "Preferred Deliverable", type: "select", options: ["PDF Report", "Slide Deck", "Executive Summary", "Full Report + Data"] },
+    ],
+  },
+  "Lead Generation": {
+    label: "Lead Generation Request",
+    fields: [
+      { name: "target_industry", label: "Target Industry", type: "text", placeholder: "e.g., Real estate, legal, healthcare", required: true },
+      { name: "geographic_area", label: "Geographic Area", type: "text", placeholder: "e.g., Columbus OH metro area", required: true },
+      { name: "lead_count", label: "Number of Leads Needed", type: "select", options: ["25 leads", "50 leads", "100 leads", "Custom amount"] },
+      { name: "data_points", label: "Required Data Points", type: "select", options: ["Name + Email", "Name + Email + Phone", "Full Contact + Company Info"] },
+    ],
+  },
+  "Email Support Handling": {
+    label: "Email Support Request",
+    fields: [
+      { name: "volume", label: "Monthly Email Volume", type: "select", options: ["1-25 emails", "26-50 emails", "51-100 emails", "100+ emails"], required: true },
+      { name: "response_time", label: "Target Response Time", type: "select", options: ["Within 1 hour", "Within 4 hours", "Same business day", "Next business day"] },
+      { name: "email_account", label: "Email Account Details", type: "text", placeholder: "e.g., support@yourcompany.com", required: true },
+      { name: "guidelines", label: "Response Guidelines", type: "textarea", placeholder: "Tone, common questions, escalation rules..." },
+    ],
+  },
+  "Live Chat Support": {
+    label: "Live Chat Support Request",
+    fields: [
+      { name: "hours_needed", label: "Hours of Coverage Needed", type: "select", options: ["4 hours/day", "8 hours/day", "12 hours/day", "24/7"], required: true },
+      { name: "platform", label: "Chat Platform", type: "select", options: ["Website Live Chat", "Facebook Messenger", "WhatsApp", "Other"], required: true },
+      { name: "training_notes", label: "Training / FAQ Notes", type: "textarea", placeholder: "Common questions, product info, escalation procedures..." },
+    ],
+  },
+  "Website Content Updates": {
+    label: "Website Content Update Request",
+    fields: [
+      { name: "website_url", label: "Website URL", type: "text", placeholder: "https://yourwebsite.com", required: true },
+      { name: "pages_to_update", label: "Pages to Update", type: "textarea", placeholder: "List specific pages and what changes are needed...", required: true },
+      { name: "access_method", label: "CMS / Access Method", type: "select", options: ["WordPress", "Squarespace", "Wix", "Shopify", "Custom CMS", "Other"] },
+      { name: "turnaround", label: "Turnaround", type: "select", options: ["Standard (3-5 days)", "Rush (1-2 days)", "Same Day"] },
+    ],
+  },
+  "UX Audit & Heuristic Review": {
+    label: "UX Audit Request",
+    fields: [
+      { name: "app_url", label: "Application / Website URL", type: "text", placeholder: "https://yourapp.com", required: true },
+      { name: "scope", label: "Audit Scope", type: "select", options: ["Full Application", "Specific User Flows", "Mobile Experience", "Accessibility Only"], required: true },
+      { name: "target_users", label: "Target User Description", type: "text", placeholder: "e.g., Small business owners aged 30-55" },
+      { name: "known_issues", label: "Known Issues / Pain Points", type: "textarea", placeholder: "Any issues you're already aware of..." },
+    ],
+  },
+  "User Flow & Workflow Testing": {
+    label: "Workflow Testing Request",
+    fields: [
+      { name: "app_url", label: "Application URL", type: "text", placeholder: "https://yourapp.com", required: true },
+      { name: "flows_to_test", label: "User Flows to Test", type: "textarea", placeholder: "e.g., Signup → onboarding → first purchase", required: true },
+      { name: "devices", label: "Devices to Test On", type: "select", options: ["Desktop Only", "Mobile Only", "Desktop + Mobile", "All Devices"] },
+      { name: "success_criteria", label: "Success Criteria", type: "textarea", placeholder: "What defines a successful flow completion..." },
+    ],
+  },
+  "Usability Testing & Report": {
+    label: "Usability Testing Request",
+    fields: [
+      { name: "app_url", label: "Application URL", type: "text", placeholder: "https://yourapp.com", required: true },
+      { name: "participant_count", label: "Number of Test Participants", type: "select", options: ["3 participants", "5 participants", "8 participants", "10+ participants"], required: true },
+      { name: "tasks", label: "Tasks for Participants", type: "textarea", placeholder: "List the tasks participants should attempt...", required: true },
+      { name: "deliverable", label: "Report Format", type: "select", options: ["Written Report", "Video Highlights + Report", "Full Session Recordings + Report"] },
+    ],
+  },
+  "UX Research & Persona Development": {
+    label: "UX Research Request",
+    fields: [
+      { name: "research_goal", label: "Research Goal", type: "textarea", placeholder: "What do you want to learn about your users?", required: true },
+      { name: "existing_data", label: "Existing User Data Available?", type: "select", options: ["Analytics data available", "Some survey results", "Customer interviews done", "No existing data"], required: true },
+      { name: "user_segments", label: "User Segments to Research", type: "text", placeholder: "e.g., New users, power users, churned users" },
+      { name: "deliverable", label: "Deliverables Needed", type: "select", options: ["User Personas Only", "Personas + Journey Maps", "Full Research Report + Personas + Recommendations"] },
+    ],
+  },
 };
 
 // Fallback fields for unknown services
