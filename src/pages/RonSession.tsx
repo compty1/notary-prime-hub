@@ -81,6 +81,11 @@ export default function RonSession() {
   // Session link
   const [participantLink, setParticipantLink] = useState<string | null>(null);
   const [sessionLink, setSessionLink] = useState("");
+  const [sessionUniqueId, setSessionUniqueId] = useState<string | null>(null);
+
+  // Recording consent (Ohio two-party consent, item 334-335)
+  const [recordingConsent, setRecordingConsent] = useState(false);
+  const [recordingConsentAt, setRecordingConsentAt] = useState<string | null>(null);
 
   // ID Verification fields
   const [idVerified, setIdVerified] = useState(false);
