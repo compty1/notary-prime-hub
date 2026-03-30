@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
-import { ChevronRight, Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home, Loader2, Search, Sparkles, ArrowRight } from "lucide-react";
+import { ChevronRight, Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home, Loader2, Search, Sparkles, ArrowRight, Headphones, PenTool, BarChart3, MessageSquare, Wrench, Eye } from "lucide-react";
 import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
 import { fadeUp, scaleReveal } from "@/lib/animations";
