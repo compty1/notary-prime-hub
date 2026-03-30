@@ -93,6 +93,7 @@ export type Database = {
           admin_notes: string | null
           client_address: string | null
           client_id: string
+          confirmation_number: string | null
           created_at: string
           estimated_price: number | null
           id: string
@@ -110,6 +111,7 @@ export type Database = {
           admin_notes?: string | null
           client_address?: string | null
           client_id: string
+          confirmation_number?: string | null
           created_at?: string
           estimated_price?: number | null
           id?: string
@@ -127,6 +129,7 @@ export type Database = {
           admin_notes?: string | null
           client_address?: string | null
           client_id?: string
+          confirmation_number?: string | null
           created_at?: string
           estimated_price?: number | null
           id?: string
@@ -405,6 +408,7 @@ export type Database = {
           file_name: string
           file_path: string
           id: string
+          rejection_reason: string | null
           status: Database["public"]["Enums"]["document_status"]
           updated_at: string
           uploaded_by: string
@@ -415,6 +419,7 @@ export type Database = {
           file_name: string
           file_path: string
           id?: string
+          rejection_reason?: string | null
           status?: Database["public"]["Enums"]["document_status"]
           updated_at?: string
           uploaded_by: string
@@ -425,6 +430,7 @@ export type Database = {
           file_name?: string
           file_path?: string
           id?: string
+          rejection_reason?: string | null
           status?: Database["public"]["Enums"]["document_status"]
           updated_at?: string
           uploaded_by?: string
@@ -905,10 +911,12 @@ export type Database = {
           id_verified: boolean | null
           kba_attempts: number | null
           kba_completed: boolean | null
+          last_activity_at: string | null
           participant_link: string | null
           recording_consent: boolean | null
           recording_consent_at: string | null
           recording_url: string | null
+          session_timeout_minutes: number | null
           session_type: Database["public"]["Enums"]["notarization_type"]
           session_unique_id: string | null
           signer_ip: string | null
@@ -929,10 +937,12 @@ export type Database = {
           id_verified?: boolean | null
           kba_attempts?: number | null
           kba_completed?: boolean | null
+          last_activity_at?: string | null
           participant_link?: string | null
           recording_consent?: boolean | null
           recording_consent_at?: string | null
           recording_url?: string | null
+          session_timeout_minutes?: number | null
           session_type?: Database["public"]["Enums"]["notarization_type"]
           session_unique_id?: string | null
           signer_ip?: string | null
@@ -953,10 +963,12 @@ export type Database = {
           id_verified?: boolean | null
           kba_attempts?: number | null
           kba_completed?: boolean | null
+          last_activity_at?: string | null
           participant_link?: string | null
           recording_consent?: boolean | null
           recording_consent_at?: string | null
           recording_url?: string | null
+          session_timeout_minutes?: number | null
           session_type?: Database["public"]["Enums"]["notarization_type"]
           session_unique_id?: string | null
           signer_ip?: string | null
@@ -1019,6 +1031,7 @@ export type Database = {
           accepted_at: string | null
           created_at: string
           email: string
+          expires_at: string | null
           id: string
           invited_by: string
           status: string
@@ -1027,6 +1040,7 @@ export type Database = {
           accepted_at?: string | null
           created_at?: string
           email: string
+          expires_at?: string | null
           id?: string
           invited_by: string
           status?: string
@@ -1035,6 +1049,7 @@ export type Database = {
           accepted_at?: string | null
           created_at?: string
           email?: string
+          expires_at?: string | null
           id?: string
           invited_by?: string
           status?: string
@@ -1195,7 +1210,10 @@ export type Database = {
           method: string | null
           notes: string | null
           paid_at: string | null
+          refund_amount: number | null
+          refunded_at: string | null
           status: string
+          stripe_payment_intent_id: string | null
           updated_at: string
         }
         Insert: {
@@ -1208,7 +1226,10 @@ export type Database = {
           method?: string | null
           notes?: string | null
           paid_at?: string | null
+          refund_amount?: number | null
+          refunded_at?: string | null
           status?: string
+          stripe_payment_intent_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -1221,7 +1242,10 @@ export type Database = {
           method?: string | null
           notes?: string | null
           paid_at?: string | null
+          refund_amount?: number | null
+          refunded_at?: string | null
           status?: string
+          stripe_payment_intent_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -1464,10 +1488,12 @@ export type Database = {
       }
       services: {
         Row: {
+          cancellation_hours: number | null
           category: string
           created_at: string
           description: string | null
           display_order: number
+          duration_minutes: number | null
           icon: string | null
           id: string
           is_active: boolean
@@ -1479,10 +1505,12 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          cancellation_hours?: number | null
           category?: string
           created_at?: string
           description?: string | null
           display_order?: number
+          duration_minutes?: number | null
           icon?: string | null
           id?: string
           is_active?: boolean
@@ -1494,10 +1522,12 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          cancellation_hours?: number | null
           category?: string
           created_at?: string
           description?: string | null
           display_order?: number
+          duration_minutes?: number | null
           icon?: string | null
           id?: string
           is_active?: boolean
