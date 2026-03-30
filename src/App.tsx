@@ -72,6 +72,10 @@ const NotaryProcessGuide = lazy(() => import("./pages/NotaryProcessGuide"));
 const AdminIntegrationTest = lazy(() => import("./pages/admin/AdminIntegrationTest"));
 const AdminServiceRequests = lazy(() => import("./pages/admin/AdminServiceRequests"));
 const AccountSettings = lazy(() => import("./pages/AccountSettings"));
+const AdminContentWorkspace = lazy(() => import("./pages/admin/AdminContentWorkspace"));
+const AdminTaskQueue = lazy(() => import("./pages/admin/AdminTaskQueue"));
+const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
+const Maintenance = lazy(() => import("./pages/Maintenance"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -116,6 +120,8 @@ function AnimatedRoutes() {
         <Route path="/about" element={<About />} />
         <Route path="/join" element={<JoinPlatform />} />
         <Route path="/notary-guide-process" element={<NotaryProcessGuide />} />
+        <Route path="/unsubscribe" element={<Unsubscribe />} />
+        <Route path="/maintenance" element={<Maintenance />} />
         <Route path="/digitize" element={<ProtectedRoute><DocumentDigitize /></ProtectedRoute>} />
         <Route path="/request" element={<ProtectedRoute><ServiceRequest /></ProtectedRoute>} />
         <Route path="/mailroom" element={<ProtectedRoute><VirtualMailroom /></ProtectedRoute>} />
@@ -151,6 +157,8 @@ function AnimatedRoutes() {
           <Route path="leads" element={<ErrorBoundary fallbackMessage="Lead portal failed to load"><AdminLeadPortal /></ErrorBoundary>} />
           <Route path="users" element={<ErrorBoundary fallbackMessage="User management failed to load"><AdminUsers /></ErrorBoundary>} />
           <Route path="service-requests" element={<ErrorBoundary fallbackMessage="Service requests failed to load"><AdminServiceRequests /></ErrorBoundary>} />
+          <Route path="content-workspace" element={<ErrorBoundary fallbackMessage="Content workspace failed to load"><AdminContentWorkspace /></ErrorBoundary>} />
+          <Route path="task-queue" element={<ErrorBoundary fallbackMessage="Task queue failed to load"><AdminTaskQueue /></ErrorBoundary>} />
           <Route path="settings" element={<ErrorBoundary fallbackMessage="Settings failed to load"><AdminSettings /></ErrorBoundary>} />
           <Route path="integrations" element={<ErrorBoundary fallbackMessage="Integration testing failed to load"><AdminIntegrationTest /></ErrorBoundary>} />
         </Route>

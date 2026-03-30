@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AILeadChatbot } from "@/components/AILeadChatbot";
 import { Link } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
@@ -151,6 +152,7 @@ export default function ComingSoon() {
         </div>
         <p className="mt-3">© {new Date().getFullYear()} Notar. Ohio Notary & Document Services.</p>
       </footer>
+      <AILeadChatbot />
     </div>
   );
 }
