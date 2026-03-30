@@ -153,8 +153,11 @@ export default function Login() {
                     </button>
                   </div>
                 </div>
-                <Button type="submit" className="w-full" disabled={submitting}>
-                  {submitting ? "Signing in..." : "Continue"}
+                {rateLimitSeconds > 0 && (
+                  <p className="text-sm text-destructive text-center">Too many attempts. Try again in {rateLimitSeconds}s</p>
+                )}
+                <Button type="submit" className="w-full" disabled={submitting || rateLimitSeconds > 0}>
+                  {submitting ? "Signing in..." : rateLimitSeconds > 0 ? `Wait ${rateLimitSeconds}s` : "Continue"}
                 </Button>
                 <button
                   type="button"
