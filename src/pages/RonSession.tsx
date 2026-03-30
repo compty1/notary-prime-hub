@@ -107,6 +107,17 @@ export default function RonSession() {
       // Load RON session method preference
       const { data: setting } = await supabase.from("platform_settings").select("setting_value").eq("setting_key", "ron_session_method").single();
       if (setting?.setting_value) setRonMethod(setting.setting_value);
+
+      // Check commission expiry (Ohio ORC §147.03)
+      if (isAdminOrNotary) {
+        const { data: expirySetting } = await supabase.from("platform_settings").select("setting_value").eq("setting_key", "commission_expiry_date").single();
+        if (expirySetting?.setting_value) {
+          const expiryDate = new Date(expirySetting.setting_value);
+          if (expiryDate < new Date()) {
+            setCommissionExpired(true);
+          }
+        }
+      }
     };
     loadData();
   }, [appointmentId]);
