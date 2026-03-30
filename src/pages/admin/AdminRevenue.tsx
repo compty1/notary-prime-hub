@@ -54,6 +54,11 @@ export default function AdminRevenue() {
   const [recordForm, setRecordForm] = useState({ client_id: "", amount: "", method: "cash", notes: "" });
   const [recordingPayment, setRecordingPayment] = useState(false);
 
+  // Pagination
+  const PAYMENTS_PER_PAGE = 25;
+  const [paymentPage, setPaymentPage] = useState(1);
+  const totalPaymentPages = Math.max(1, Math.ceil(payments.length / PAYMENTS_PER_PAGE));
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
