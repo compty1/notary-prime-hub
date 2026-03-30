@@ -23,10 +23,10 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
         <div
           className={cn(
             s.box,
-            "relative flex items-center justify-center rounded-lg bg-primary overflow-hidden"
+            "relative flex items-center justify-center rounded-xl bg-foreground overflow-hidden"
           )}
         >
-          <span className={cn(s.letter, "font-bold text-primary-foreground select-none")}>
+          <span className={cn(s.letter, "font-bold text-background select-none")}>
             N
           </span>
         </div>
