@@ -89,11 +89,10 @@ export default function ClientPortal() {
   const [reminderForm, setReminderForm] = useState({ document_id: "", expiry_date: "", remind_days_before: "30" });
   const [savingReminder, setSavingReminder] = useState(false);
 
-  // Shared constants from single source of truth
-  const { INTAKE_ONLY_SERVICES: INTAKE_ONLY, SAAS_LINKS: SAAS_TOOLS, SUBSCRIPTION_SERVICES, PORTAL_SERVICES } = await import("@/lib/serviceConstants").then(m => m).catch(() => ({
-    INTAKE_ONLY_SERVICES: new Set<string>(), SAAS_LINKS: {} as Record<string, string>,
-    SUBSCRIPTION_SERVICES: new Set<string>(), PORTAL_SERVICES: new Set<string>(),
-  }));
+  const INTAKE_ONLY = INTAKE_ONLY_SERVICES;
+  const SAAS_TOOLS = SAAS_LINKS;
+  const SUBSCRIPTION_SERVICES = SUBSCRIPTION_SVC_SET;
+  const PORTAL_SERVICES = PORTAL_SVC_SET;
 
   const getServiceUrl = (svc: any) => {
     if (SAAS_TOOLS[svc.name]) return SAAS_TOOLS[svc.name];
