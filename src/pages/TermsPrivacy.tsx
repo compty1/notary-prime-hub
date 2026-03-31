@@ -43,6 +43,18 @@ export default function TermsPrivacy() {
 
             <h2 className="font-sans text-lg font-semibold text-foreground">8. Governing Law</h2>
             <p>These terms are governed by the laws of the State of Ohio, Franklin County.</p>
+
+            <h2 className="font-sans text-lg font-semibold text-foreground">9. Cancellation & Rescheduling</h2>
+            <p>We request at least <strong>2 hours' notice</strong> for cancellations. Appointments may be rescheduled through the client portal at no charge with 2+ hours' notice. No-show fees of $25 may apply. For mobile appointments, travel fees are non-refundable once the notary has departed.</p>
+
+            <h2 className="font-sans text-lg font-semibold text-foreground">10. After-Hours & Emergency Services</h2>
+            <p>After-hours service (before 9 AM or after 7 PM Mon–Fri, Sundays) incurs a $25 surcharge. Rush/same-day appointments incur a $35 priority fee. All surcharges are disclosed before booking.</p>
+
+            <h2 className="font-sans text-lg font-semibold text-foreground">11. Witness Services</h2>
+            <p>We provide witnesses at $10 per witness per session. Some documents (wills, healthcare directives) have specific witness requirements under Ohio law. See our <a href="/notary-guide" className="text-primary hover:underline">Notary Guide</a> for details.</p>
+
+            <h2 className="font-sans text-lg font-semibold text-foreground">12. Conflict of Interest</h2>
+            <p>Per ORC §147.141, our notaries will decline to notarize any document in which they have a direct financial or beneficial interest, or in which a close family member is a party. Notaries will not notarize documents for transactions in which they are acting as an agent, broker, or representative.</p>
           </div>
         </section>
 
