@@ -482,11 +482,12 @@ export default function Index() {
                       <Input
                         id="contact-phone"
                         type="tel"
+                        inputMode="tel"
                         placeholder="(614) 000-0000"
                         value={contactForm.phone}
                         onChange={(e) => setContactForm((prev) => ({ ...prev, phone: e.target.value }))}
                         maxLength={20} />
-                      
+                      <p className="text-xs text-muted-foreground">Used only for appointment coordination.</p>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="contact-service">Service Needed</Label>
