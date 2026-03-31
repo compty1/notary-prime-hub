@@ -123,6 +123,11 @@ function AnimatedRoutes() {
         <Route path="/notary-guide-process" element={<NotaryProcessGuide />} />
         <Route path="/unsubscribe" element={<Unsubscribe />} />
         <Route path="/maintenance" element={<Maintenance />} />
+        <Route path="/solutions/notaries" element={<ForNotaries />} />
+        <Route path="/solutions/real-estate" element={<ComingSoon />} />
+        <Route path="/solutions/law-firms" element={<ComingSoon />} />
+        <Route path="/solutions/small-business" element={<ComingSoon />} />
+        <Route path="/solutions/individuals" element={<ComingSoon />} />
         <Route path="/digitize" element={<ProtectedRoute><DocumentDigitize /></ProtectedRoute>} />
         <Route path="/request" element={<ProtectedRoute><ServiceRequest /></ProtectedRoute>} />
         <Route path="/mailroom" element={<ProtectedRoute><VirtualMailroom /></ProtectedRoute>} />
