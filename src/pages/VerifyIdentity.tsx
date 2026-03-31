@@ -107,13 +107,41 @@ export default function VerifyIdentity() {
 
           <Card className="border-border/50">
             <CardContent className="p-6 space-y-6">
-              {/* Upload Section */}
+              {/* AI ID Scan Assistant */}
+              {showAssistant && !idData && !scanning && (
+                <IDScanAssistant
+                  onCapture={async (base64) => {
+                    setShowAssistant(false);
+                    setScanning(true);
+                    setError(null);
+                    try {
+                      const { data, error: fnError } = await supabase.functions.invoke("scan-id", {
+                        body: { imageBase64: base64 },
+                      });
+                      if (fnError) throw fnError;
+                      if (data?.error) setError(data.error);
+                      else {
+                        setIdData(data);
+                        if (data.is_expired) toast({ title: "Expired ID", description: "This ID appears to be expired.", variant: "destructive" });
+                      }
+                    } catch (e: any) {
+                      setError(e.message || "Could not process the ID image.");
+                    }
+                    setScanning(false);
+                  }}
+                  onSkip={() => setShowAssistant(false)}
+                />
+              )}
+
+              {/* Manual Upload Section (shown after skipping assistant or on fallback) */}
+              {!showAssistant && !idData && (
               <div className="rounded-lg border-2 border-dashed border-primary/20 bg-primary/5 p-8 text-center">
                 <Camera className="mx-auto mb-3 h-10 w-10 text-primary/60" />
                 <p className="mb-3 text-sm font-medium">Upload ID Photo</p>
                 <p className="mb-4 text-xs text-muted-foreground">Driver's license, state ID, or passport — front side</p>
                 <Input type="file" accept="image/*" onChange={handleIdScan} disabled={scanning} className="max-w-xs mx-auto" />
               </div>
+              )
 
               {scanning && (
                 <div className="flex items-center justify-center gap-3 py-6">
