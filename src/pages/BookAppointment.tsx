@@ -569,7 +569,7 @@ export default function BookAppointment() {
     travelDistance, afterHoursFee, signerCapacity, facilityName, signerCount,
   };
 
-  const stepLabels = isNonNotarial ? ["Service", "Schedule", "Confirm"] : ["Type", "Service", "Schedule", "Confirm"];
+  const stepLabels = isSkipTypeStep ? ["Service", "Schedule", "Confirm"] : ["Type", "Service", "Schedule", "Confirm"];
 
   return (
     <PageShell>
