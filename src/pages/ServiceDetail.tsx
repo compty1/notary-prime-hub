@@ -417,7 +417,12 @@ export default function ServiceDetail() {
     for (const [key, faqs] of Object.entries(serviceFaqs)) {
       if (nameLower.includes(key)) return faqs;
     }
-    return categoryFaqs[service.category] || categoryFaqs.notarization;
+    return categoryFaqs[service.category] || [
+      { q: "How do I get started?", a: "Submit a service request through our portal or contact us to discuss your needs." },
+      { q: "What is the turnaround time?", a: "Turnaround varies by service complexity. Most requests are completed within 3-7 business days." },
+      { q: "How much does this cost?", a: "Pricing depends on the scope of work. Use our fee calculator or contact us for a custom quote." },
+      { q: "Is my information kept confidential?", a: "Yes. All client data and documents are handled under strict confidentiality protocols." },
+    ];
   };
   const faqs = getServiceFaqs();
   const timeline = categoryTimelines[service.category] || "Contact Us";
