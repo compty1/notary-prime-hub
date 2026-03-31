@@ -31,6 +31,7 @@ interface ReviewStepProps {
 }
 
 export default function BookingReviewStep(props: ReviewStepProps) {
+  const [showGuestPassword, setShowGuestPassword] = useState(false);
   const { notarizationType, serviceType, serviceCategories, date, time, estimatedPrice, pricingSettings, urgencyLevel, documentCount } = props;
 
   return (
