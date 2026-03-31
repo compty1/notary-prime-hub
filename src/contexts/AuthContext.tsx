@@ -82,27 +82,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    // IMPORTANT: getSession must be set up BEFORE onAuthStateChange
+    // to avoid race conditions on the published site.
+    let initialSessionHandled = false;
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      (_event, session) => {
+        // Skip if this is the initial session (already handled by getSession)
+        if (!initialSessionHandled) return;
+
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
-          await fetchRoles(session.user.id);
+          // Fire-and-forget: do NOT await inside onAuthStateChange
+          fetchRoles(session.user.id);
         } else {
           setRoles([]);
           setRolesLoading(false);
         }
-        setLoading(false);
       }
     );
 
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        await fetchRoles(session.user.id);
+        fetchRoles(session.user.id).finally(() => {
+          setLoading(false);
+          initialSessionHandled = true;
+        });
+      } else {
+        setLoading(false);
+        initialSessionHandled = true;
       }
-      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
