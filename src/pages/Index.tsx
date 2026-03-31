@@ -517,7 +517,8 @@ export default function Index() {
                         placeholder="(614) 000-0000"
                         value={contactForm.phone}
                         onChange={(e) => setContactForm((prev) => ({ ...prev, phone: e.target.value }))}
-                        maxLength={20} />
+                        maxLength={20}
+                        autoComplete="tel" />
                       <p className="text-xs text-muted-foreground">Used only for appointment coordination.</p>
                     </div>
                     <div className="space-y-2">
