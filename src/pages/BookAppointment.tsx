@@ -124,8 +124,8 @@ export default function BookAppointment() {
   }, []);
 
   useEffect(() => {
-    const hasData = serviceType || date || time || notes;
-    const handler = (e: BeforeUnloadEvent) => { if (hasData && step > 1) e.preventDefault(); };
+    const hasData = serviceType || date || time || notes || clientAddress;
+    const handler = (e: BeforeUnloadEvent) => { if (hasData) e.preventDefault(); };
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
   }, [serviceType, date, time, notes, step]);
