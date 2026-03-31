@@ -57,6 +57,7 @@ export default {
         surface: {
           elevated: "hsl(var(--surface-elevated))",
         },
+        mint: "hsl(var(--mint))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

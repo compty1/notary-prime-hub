@@ -13,7 +13,7 @@ export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com
       <div className="container mx-auto px-4 py-12">
         <div className="grid gap-8 md:grid-cols-5">
           <div className="md:col-span-1">
-            <Logo size="sm" showText subtitle="Notary & Document Services" />
+            <Logo size="sm" showText subtitle="Notary & Document Services" theme="dark" />
             <p className="mt-3 text-sm text-sidebar-foreground/60">
               Professional notary team serving Franklin County and the greater Columbus area.
             </p>
