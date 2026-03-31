@@ -19,11 +19,35 @@ import { PageShell } from "@/components/PageShell";
 import { fadeUp, blurIn, scaleReveal } from "@/lib/animations";
 import HeroPhoneAnimation from "@/components/HeroPhoneAnimation";
 
-const fallbackServices = [
-{ icon: FileText, title: "Real Estate Documents", desc: "Deeds, mortgages, refinancing, title transfers" },
-{ icon: Shield, title: "Legal Documents", desc: "Power of attorney, affidavits, sworn statements" },
-{ icon: Scale, title: "Estate Planning", desc: "Wills, trusts, healthcare directives" },
-{ icon: FileText, title: "Business Documents", desc: "Contracts, agreements, corporate filings" }];
+const primaryServices = [
+  {
+    icon: Globe,
+    title: "Remote Online Notarization",
+    badge: "Most Popular",
+    desc: "Get documents notarized from anywhere via secure video call. Ohio-authorized under ORC §147.65-.66 with full identity verification, KBA, and tamper-evident seals.",
+    cta: "/book?type=ron",
+    ctaLabel: "Start RON Session",
+    features: ["Available 24/7", "All 50 states accepted", "10-year recording retention"],
+  },
+  {
+    icon: Car,
+    title: "Mobile Notarization",
+    badge: "Central Ohio",
+    desc: "We come to you — home, office, hospital, or any location within the greater Columbus area. Same-day appointments available for Franklin County.",
+    cta: "/book?type=in_person",
+    ctaLabel: "Book Mobile Notary",
+    features: ["Same-day available", "30-mile radius", "After-hours options"],
+  },
+];
+
+const otherServices = [
+  { icon: Copy, title: "Certified Copy Services", desc: "Certified true copies of original documents", to: "/services?category=notarization" },
+  { icon: Briefcase, title: "Loan Signing Agent", desc: "Professional loan document signing services", to: "/loan-signing" },
+  { icon: UserCheck, title: "I-9 / Employment Verification", desc: "Authorized agent for Form I-9 completion", to: "/services?category=verification" },
+  { icon: Stamp, title: "Apostille Facilitation", desc: "Document authentication for international use", to: "/services?category=authentication" },
+  { icon: Scale, title: "Power of Attorney", desc: "POA notarization with proper witnessing", to: "/services?category=notarization" },
+  { icon: BookOpen, title: "Oaths & Affirmations", desc: "Sworn statements, jurats, and affidavits", to: "/services?category=notarization" },
+];
 
 
 const fallbackTestimonials = [
