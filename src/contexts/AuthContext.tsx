@@ -178,6 +178,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }}
     >
       {children}
+      {/* Session timeout warning modal */}
+      {showTimeoutWarning && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50">
+          <div className="mx-4 max-w-sm rounded-lg bg-background p-6 shadow-xl border border-border">
+            <h3 className="text-lg font-bold text-foreground mb-2">Session Expiring</h3>
+            <p className="text-sm text-muted-foreground mb-4">Your session will expire in less than 30 seconds. Would you like to stay signed in?</p>
+            <div className="flex gap-2">
+              <button onClick={extendSession} className="flex-1 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">Stay Signed In</button>
+              <button onClick={signOut} className="flex-1 rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted">Sign Out</button>
+            </div>
+          </div>
+        </div>
+      )}
     </AuthContext.Provider>
   );
 };

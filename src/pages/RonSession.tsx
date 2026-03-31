@@ -169,6 +169,20 @@ export default function RonSession() {
         if ((session as any).signing_platform) setSigningPlatform((session as any).signing_platform);
         if ((session as any).document_name) setDocumentName((session as any).document_name);
         if ((session as any).signer_email) setSignerEmail((session as any).signer_email);
+      } else {
+        // Capture signer IP on first session load (Ohio RON compliance)
+        try {
+          const ipRes = await fetch("https://api.ipify.org?format=json");
+          const ipData = await ipRes.json();
+          if (ipData?.ip) {
+            const { data: newSession } = await supabase.from("notarization_sessions").insert({
+              appointment_id: appointmentId,
+              session_type: "ron" as any,
+              signer_ip: ipData.ip,
+            } as any).select("session_unique_id, signer_ip").single();
+            if ((newSession as any)?.session_unique_id) setSessionUniqueId((newSession as any).session_unique_id);
+          }
+        } catch {}
       }
 
       // Check commission expiry (Ohio ORC §147.03)
