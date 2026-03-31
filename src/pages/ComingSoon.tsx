@@ -138,7 +138,7 @@ export default function ComingSoon() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-border/40 py-6 text-center text-xs text-muted-foreground">
+      <footer className="relative z-10 border-t border-primary-foreground/10 py-6 text-center text-xs text-primary-foreground/50">
         <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-6">
           <a href="tel:6143006890" className="flex items-center gap-1.5 transition-colors hover:text-primary">
             <Phone className="h-3.5 w-3.5" /> (614) 300-6890
