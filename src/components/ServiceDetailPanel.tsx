@@ -10,7 +10,7 @@ interface ServiceDetailPanelProps {
   category?: string;
 }
 
-export default function ServiceDetailPanel({ serviceId, serviceName }: ServiceDetailPanelProps) {
+export default function ServiceDetailPanel({ serviceId, serviceName, category }: ServiceDetailPanelProps) {
   const [requirements, setRequirements] = useState<any[]>([]);
   const [workflows, setWorkflows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
