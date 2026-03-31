@@ -117,6 +117,7 @@ export default function BookAppointment() {
   const [signerCount, setSignerCount] = useState(1);
   const [travelDistance, setTravelDistance] = useState<number | null>(null);
   const [afterHoursFee, setAfterHoursFee] = useState(0);
+  const [needsApostille, setNeedsApostille] = useState(false);
   const [outsideServiceArea, setOutsideServiceArea] = useState(false);
 
   useEffect(() => {
