@@ -1,440 +1,196 @@
 
 
-# Comprehensive Implementation Plan — All Master Plan Items
+# Comprehensive Gap & Error Fix Plan
 
-This plan addresses every item from the master plan across all three workstreams (Brand Redesign, Previous Uncompleted Items, 700 Gaps). External API-mode SignNow items are deferred; everything else is addressed. Implementation is organized into 20 sequential batches.
+## Critical Issues Found
 
----
+### A. Routing: ComingSoon on `/` instead of Index
+**File:** `src/App.tsx` line 105
+- `/` renders `ComingSoon`, not `Index`. The actual homepage is at `/home`. This means visitors see a "Launching Soon" page. Either swap the routes (make `/` show Index and `/coming-soon` show ComingSoon) or redirect `/` to `/home`.
 
-## Batch 1: Brand & Theme Foundation
+### B. Dark-on-Dark Text Readability (User-Reported)
+**Root Cause:** `bg-gradient-hero` uses navy tones in both light and dark mode (line 131 of `index.css`). Pages using it with `text-primary-foreground` (white) are OK. But the **light mode** gradient is also dark navy (`hsl(224 63% 11%)`) — meaning light mode looks almost identical to dark mode on hero sections. This is by design for the dark navy brand, but several sections use `text-foreground` (which is dark navy in light mode = invisible on dark navy gradient).
 
-### 1A. Typography + Fonts
-**Files:** `index.html`, `src/index.css`, `tailwind.config.ts`
-- Replace Google Fonts import: swap `DM Sans` + `Plus Jakarta Sans` for `Space Grotesk` (headings) + `Lato` (body)
-- Update `tailwind.config.ts` fontFamily: `heading` → `'Space Grotesk'`, `sans`/`body` → `'Lato'`
-- Update CSS body/heading font-family rules
+**Affected pages (hero sections with `bg-gradient-hero` + `text-primary-foreground` — mostly OK):**
+- `SubscriptionPlans.tsx` — line 107: `text-primary-foreground` ✓
+- `ServiceDetail.tsx` — line 385-386: `text-primary-foreground` ✓
+- `RonInfo.tsx`, `LoanSigningServices.tsx`, `NotaryGuide.tsx` — need verification
 
-### 1B. Color Palette
-**File:** `src/index.css`
-- Light `:root`: background white, foreground Dark Navy `#0B132B` (HSL 224 63% 11% — already close), primary Teal `#1B998B` (HSL 168 72% 35%), accent Coral `#E76F51` (HSL 16 76% 49%)
-- Add `--accent: 16 76% 49%` for coral CTA color
-- `--primary-glow` → Turquoise `#2EC4B6` (HSL 174 63% 45%)
-- Dark mode: background `#060D1E`, card `#0E1A2E`
-- Update `.glass`, `.glass-card`, `.bg-gradient-hero`, `.gradient-mesh`, `.interactive-card` hover shadow colors to new teal
-- Add `.geo-pattern` utility with diagonal line SVG background
-- Keep ALL existing animations (loading-bar, shimmer, fade-in-up, scan, glow-pulse, float, gradient-shift)
+**Fix:** Ensure ALL text inside `bg-gradient-hero` sections uses `text-primary-foreground` (white) or `text-primary-foreground/70` for muted text, never `text-foreground` or `text-muted-foreground`. Audit all 9 files using `bg-gradient-hero`.
 
-### 1C. Logo Redesign
-**File:** `src/components/Logo.tsx`
-- Replace rounded-square with geometric overlapping "N" SVG using teal/navy gradient strokes matching the brand board
-- Keep same prop interface (`size`, `showText`, `subtitle`)
+### C. DarkModeToggle Default State
+**File:** `src/components/DarkModeToggle.tsx`
+- Defaults to `prefers-color-scheme: dark` when no localStorage theme exists. Most users will see dark mode. For a professional notary site launching publicly, light mode should be the default.
 
-### 1D. Brand Constants
-**File:** `src/lib/brand.ts`
-- Update `tagline` → "Trusted Online Notary & Document Verification"
+### D. Stripe Payment Flow Not Complete
+1. **SubscriptionPlans.tsx** calls `create-payment-intent` but doesn't use the returned `clientSecret` — it just shows a toast saying "Payment initiated" without actually rendering a Stripe checkout form. The `PaymentForm` component exists but isn't used here.
+2. **create-payment-intent** requires authentication — subscription checkout from a new user who just signed up may fail if session isn't ready.
+3. **STRIPE_WEBHOOK_SECRET** — verify it's configured to receive live webhook events at the correct URL.
 
-### 1E. Button Accent Variant
-**File:** `src/components/ui/button.tsx`
-- Add `accent` variant: `"bg-[hsl(var(--accent))] text-white shadow-sm hover:bg-[hsl(var(--accent))]/90"`
-
-### 1F. Navbar + Footer Theme
-**Files:** `src/components/Navbar.tsx`, `src/components/Footer.tsx`
-- Ensure fonts, colors reference CSS variables (already mostly do — verify no hardcoded colors)
+### E. Console Error: AILeadChatbot ref warning
+**File:** `src/components/AILeadChatbot.tsx` — Function component given ref in `ComingSoon.tsx`. Needs `React.forwardRef` or ref removal.
 
 ---
 
-## Batch 2: Theme Application Across All Pages
+## Category 1: Routing & Navigation (5 items)
 
-### 2A. Homepage
-**File:** `src/pages/Index.tsx`
-- Update hero gradient to navy→white
-- Update CTA buttons to use new `accent` variant for "Book Now"
-- Update counter colors, trust badge section
-- Update hero image to use `loading="lazy"` for performance
+1. **Swap `/` and `/home` routes** — Make Index the default, move ComingSoon to `/coming-soon`
+2. **Navbar links check** — "Book Now" in navbar links to `/book`, verify service dropdown links work
+3. **Footer second "Privacy" link** — verify `/terms` has anchor sections
+4. **Admin breadcrumbs** — verify Breadcrumbs component renders on admin sub-pages
+5. **Portal deep-link hash sync** — verify `#documents`, `#chat` etc. work on `/portal`
 
-### 2B. Auth Pages
-**Files:** `src/pages/Login.tsx`, `src/pages/SignUp.tsx`, `src/pages/ForgotPassword.tsx`
-- Update card styling to new theme
-- Add password strength meter to SignUp (gap #7)
-- Add terms acceptance checkbox to SignUp (gap #16)
+## Category 2: Text Readability / Theme (12 items)
 
-### 2C. Admin Dashboard
-**Files:** `src/pages/admin/AdminDashboard.tsx`, `src/pages/admin/AdminOverview.tsx`
-- Update sidebar brand mark to new Logo
-- Update chart colors to match new palette (teal, turquoise, coral, navy)
+6. **Audit all `bg-gradient-hero` sections** for text color correctness (9 files)
+7. **Light mode default** — change DarkModeToggle fallback to light
+8. **ComingSoon page** — feature cards use `glass-card` with dark background, text uses `text-foreground` which may be dark navy on dark bg — needs `text-primary-foreground` or explicit light text
+9. **SubscriptionPlans hero** — `text-primary-foreground/70` contrast check
+10. **RonInfo hero text** — verify readability
+11. **NotaryGuide hero text** — verify readability
+12. **NotaryProcessGuide hero text** — verify readability
+13. **LoanSigningServices hero text** — verify readability
+14. **JoinPlatform hero text** — verify readability
+15. **RonEligibilityChecker hero text** — verify readability
+16. **ServiceDetail hero badges** — `text-primary-foreground/60` and `border-primary-foreground/20` may be too faint
+17. **Legal disclaimer** — `bg-amber-50 text-amber-800` doesn't adapt to dark mode (line 397-400 of ServiceDetail)
 
-### 2D. About Page
-**File:** `src/pages/About.tsx` — Logo display update
+## Category 3: Stripe & Payments (8 items)
 
-### 2E. All Pages with Hardcoded emerald/teal References
-- Search for `emerald-` class references in StepIndicator and other components, replace with theme-aware CSS variable classes
+18. **SubscriptionPlans** — wire `clientSecret` from `create-payment-intent` response into `PaymentForm` component to render actual Stripe Elements checkout
+19. **PaymentForm** — verify `get-stripe-config` returns valid publishable key with new live keys
+20. **create-payment-intent** — uses `getUser()` not `getClaims()` for auth; update to use `getClaims()` per edge function auth guidelines
+21. **stripe-webhook** — verify `STRIPE_WEBHOOK_SECRET` is set, ensure webhook URL is registered in Stripe dashboard
+22. **Payment receipt display** — ClientPortal payments section uses `payments` table; verify RLS allows client reads
+23. **Invoice generation** — `InvoiceGenerator.tsx` exists but verify it's wired to actual invoice data
+24. **Stripe test vs live key validation** — add guard in `create-payment-intent` to log if test key used
+25. **Refund flow** — `stripe-webhook` handles `charge.refunded` but no admin UI for initiating refunds
 
----
+## Category 4: Edge Function Auth (6 items)
 
-## Batch 3: Previous Plan B Items — Data Integrity
+26. **create-payment-intent** — uses `supabase.auth.getUser()` instead of `getClaims()` per best practices
+27. **send-appointment-emails** — verify auth header forwarding
+28. **send-correspondence** — verify auth header pattern
+29. **client-assistant** — verify response format matches what frontend expects (`data.choices[0].message.content` vs `data.reply`)
+30. **scan-id** — verify edge function exists and handles `imageBase64` body correctly
+31. **edgeFunctionAuth.ts streaming** — timeout never cleared for successful streams, could cause premature abort on slow connections
 
-### 3A. Delete 26 Duplicate Services (Migration)
-```sql
-DELETE FROM public.services WHERE display_order < 30 AND name IN (
-  SELECT name FROM public.services GROUP BY name HAVING COUNT(*) > 1
-);
-```
-Use the database insert tool for this data deletion.
+## Category 5: Service Catalog & Detail (10 items)
 
-### 3B. RON Session Audit Logging Fix
-**File:** `src/pages/RonSession.tsx`
-- Verify `saveSessionData` uses `logAuditEvent` (already does based on code review — confirmed at line 333). Mark complete.
+32. **Services page** uses raw REST API fetch instead of `supabase.from()` — inconsistent with rest of app, bypasses RLS context
+33. **Service icon fallback** — many services map to `FileText` via the `iconMap`; add more specific icon mappings
+34. **Pricing suffix** — verify `/seal`, `/doc`, `/hr` suffixes display correctly from `pricing_model` field
+35. **ServiceDetail** — `getServiceAction` for intake-only services links to `/request?service=...`; verify `ServiceRequest` reads the query param
+36. **"Often Paired With" bundle** — `getBundleServiceId` searches by name substring which could return wrong service
+37. **Service requirements/workflows** — data may be empty; ServiceDetailPanel shows "No specific requirements" message
+38. **Pre-qualifier modal** — only shown for `authentication`, `consulting`, `verification` categories
+39. **ServiceDetail AI chat** — uses `supabase.functions.invoke` but `client-assistant` may expect streaming response format
+40. **Category resource links** — `customer_service` has `/home#contact` link which should be `/#contact` or `/home#contact`
+41. **Service search** — `useDebounce` used but search filters both name and description; verify it works with special characters
 
-### 3C. RON Finalization Enrichment
-**File:** `src/pages/RonSession.tsx`
-- Already includes `signing_platform`, `document_name` in journal (line 385-391) and e-seal (line 411-423). Needs fix: create e-seal even when no uploaded docs exist (currently skips if no docs). Add fallback using `documentName` for `document_name` and create a placeholder document record.
+## Category 6: Booking Flow (8 items)
 
----
+42. **Service type pre-selection** — `useSearchParams` reads `?service=...` but verify it matches service names exactly (case-sensitive)
+43. **Guest signup during booking** — creates account then books; race condition if session isn't ready immediately
+44. **BookingScheduleStep timezone suffix** — verify "(ET)" appears on time slots
+45. **Guest password visibility toggle** — verify Eye/EyeOff toggle implemented in BookingReviewStep
+46. **Travel distance calculation** — `DEFAULT_OFFICE` is hardcoded `{ lat: 39.9612, lng: -82.9988 }`; should pull from platform_settings
+47. **Booking email trigger** — verify `send-appointment-emails` is called after appointment creation
+48. **Appointment validation trigger** — `validate_appointment_date` prevents past dates; verify it doesn't block same-day bookings
+49. **Booking form state persistence** — `BOOKING_STORAGE_KEY` used for localStorage persistence; verify cleanup after successful booking
 
-## Batch 4: Booking Flow Fixes
+## Category 7: Client Portal (9 items)
 
-### 4A. Filter Booking Dropdown (Gap #60)
-**File:** `src/pages/BookAppointment.tsx`
-- Filter service dropdown to exclude non-bookable categories (admin_support, content_creation, research, customer_service, technical_support, ux_testing)
+50. **Apostille tracking tab** — `PortalApostilleTab.tsx` needs verification it's imported and rendered
+51. **Payment receipts section** — verify payments table queried with correct `client_id` filter
+52. **Document upload** — verify storage bucket `documents` has correct RLS for authenticated users
+53. **Chat file attachment** — `PortalChatTab` uploads to `documents` bucket at `chat/{userId}/...` path; verify storage RLS allows this path
+54. **Correspondence compose** — verify "New Message" calls `send-correspondence` edge function correctly
+55. **Service request status filter** — verify dropdown filters work
+56. **Deliverable download** — verify signed URL generation for `deliverable_url`
+57. **Tab deep linking** — verify URL hash synchronization works both ways
+58. **Empty states** — verify all tabs show meaningful empty states when no data exists
 
-### 4B. Travel Distance from Platform Settings (Gap #96-97)
-**File:** `src/pages/FeeCalculator.tsx`
-- Replace `HOLLYWOOD_CASINO` hardcoded coords with `platform_settings` lookup for `office_latitude`/`office_longitude`
-- Add max travel distance check from `platform_settings.max_travel_miles`
+## Category 8: Admin Dashboard (12 items)
 
-### 4C. Timezone Display (Gap #103)
-**File:** `src/pages/booking/BookingScheduleStep.tsx`
-- Add "(ET)" suffix to all displayed time slots
+59. **AdminOverview chart colors** — still uses hardcoded `#2563eb` etc. instead of brand palette
+60. **AdminOverview** — uses `select("*")` for many queries; should use specific columns for performance
+61. **Commission renewal reminder** — verify `AdminSettings` or `AdminOverview` shows warning banner
+62. **Admin team assignment** — `AdminServiceRequests` has `editAssignedTo` dropdown; verify it saves correctly
+63. **Admin deliverable upload** — verify file upload to storage and URL update works
+64. **SLA auto-calculation** — verify SLA deadline is set when status changes to `in_progress`
+65. **Admin journal search** — verify search filters work across `signer_name`, `document_type`, `notes`
+66. **Admin journal PDF export** — verify print view generates correctly
+67. **Admin chat canned responses** — verify dropdown populates message input
+68. **Admin calendar view** — verify `AdminAppointments` calendar toggle renders month grid
+69. **Admin notification sound** — verify browser Notification API permission request
+70. **Audit log insert policy** — currently only `service_role` can insert; `logAuditEvent` uses `auth.uid()` RPC but client calls may fail for unauthenticated actions
 
-### 4D. Guest Password Visibility Toggle (Gap #113)
-**File:** `src/pages/BookAppointment.tsx`
-- Add eye icon toggle on guest password field
+## Category 9: RON Session & Compliance (8 items)
 
----
+71. **E-seal without uploaded docs** — verify fallback document record creation in `RonSession.tsx`
+72. **Signer IP capture** — verify `ipify` fetch runs on session start
+73. **Journal sequential numbering** — verify `journal_number` serial column works
+74. **Commission expiry blocking** — verify RON sessions check commission dates
+75. **OhioComplianceNotice placement** — verify component shown on booking, RON, and service detail pages
+76. **Recording consent timestamp** — verify `recording_consent_at` is saved
+77. **KBA 2-attempt limit** — `enforce_kba_limit` trigger exists; verify UI respects this
+78. **Session timeout** — `session_timeout_minutes` column exists; verify countdown UI
 
-## Batch 5: Service Request Enhancements
+## Category 10: Identity Verification (4 items)
 
-### 5A. File Upload in ServiceRequest (Gap #45)
-**File:** `src/pages/ServiceRequest.tsx`
-- Add file upload section using Supabase storage `documents` bucket
-- Show for document-related service categories
-- Save file reference in `intake_data` JSON
+79. **VerifyIdentity** — verify `supabase.functions.invoke("scan-id")` call format matches edge function
+80. **ID scan result persistence** — verify results saved to profile or separate table
+81. **scan-id edge function** — verify it exists and processes `imageBase64` correctly
+82. **ID verification status display** — verify admin can see verification status
 
-### 5B. Admin Deliverable Upload (Gap #48)
-**File:** `src/pages/admin/AdminServiceRequests.tsx`
-- Add file upload in detail dialog that saves to `deliverable_url`
-- Add team assignment dropdown using profiles with notary/admin roles
+## Category 11: Email & Notifications (5 items)
 
-### 5C. SLA Auto-Calculation (Gap #51)
-**File:** `src/pages/admin/AdminServiceRequests.tsx`
-- When status changes to `in_progress`, auto-set `sla_deadline` based on urgency (standard=5d, rush=2d, same_day=1d)
+83. **Service request notification** — verify `send-correspondence` called after successful insert in `ServiceRequest.tsx`
+84. **Booking confirmation email** — verify `send-appointment-emails` called in `BookAppointment.tsx`
+85. **Email send log** — verify `email_send_log` records are created
+86. **IONOS credentials** — verify IMAP/SMTP secrets are set for email sync
+87. **Admin email management** — verify email cache loads and displays correctly
 
----
+## Category 12: Security & Auth (7 items)
 
-## Batch 6: Service Detail & Catalog Fixes
+88. **Remember Me** — verify `Login.tsx` checkbox affects `persistSession` behavior
+89. **Session timeout warning** — verify 30s modal appears and "Stay Signed In" works
+90. **Re-auth before account deletion** — verify password confirmation dialog works
+91. **Failed login audit** — verify `logAuditEvent("login_failed")` succeeds (RPC uses `auth.uid()` which may be null for unauthenticated users)
+92. **RLS on public_reviews** — table has NO RLS policies; this is a data exposure risk
+93. **audit_log insert** — `log_audit_event` RPC uses `auth.uid()` but failed login has no auth context — will insert `null` user_id
+94. **Password strength meter** — verify `SignUp.tsx` has visual strength indicator
 
-### 6A. Fix "Often Paired With" Links (Gap #46)
-**File:** `src/pages/ServiceDetail.tsx`
-- Change bundle links from `/services` to `/services/{matched_service_id}` by looking up service by name
+## Category 13: Performance & SEO (6 items)
 
-### 6B. Wire AI Chat Bubble (Gap #280)
-**File:** `src/pages/ServiceDetail.tsx`
-- Replace static "Contact Us" link with inline chat using `client-assistant` edge function, passing service context
+95. **`select("*")` queries** — AdminOverview, ClientPortal, and other pages fetch all columns; replace with specific columns
+96. **Suspense fallback** — verify branded `PageLoader` with loading-bar animation
+97. **Dynamic meta description** — verify `usePageTitle` sets both `<title>` and `<meta description>`
+98. **ARIA improvements** — verify `aria-live="polite"` on toast container (sonner.tsx)
+99. **Color contrast** — teal `#1B998B` on white has ~4.1:1 ratio; may need darkening for small text
+100. **Image lazy loading** — verify hero image and other large images use `loading="lazy"`
 
-### 6C. Add Resources for VA Categories (Gap #291)
-**File:** `src/pages/ServiceDetail.tsx`
-- Add `categoryResources` entries for admin_support, content_creation, research, customer_service, technical_support, ux_testing
+## Category 14: Data Seeding & Integrity (5 items)
 
-### 6D. Fix Pricing Display (Gap #58)
-**File:** `src/pages/Services.tsx`
-- Show `/seal`, `/doc`, `/hr` suffixes matching `pricing_model` field from DB
-
-### 6E. Service Icon Coverage (Gap #301)
-**File:** `src/pages/Services.tsx`, `src/pages/ServiceDetail.tsx`
-- Expand `iconMap` to cover all service icon values in DB, reducing fallback to generic FileText
-
----
-
-## Batch 7: Document Tools
-
-### 7A. Translation Tab on /digitize (Gap #333, #56)
-**File:** `src/pages/DocumentDigitize.tsx`
-- Add a "Translate" tab/mode that sends OCR output to `translate-document` edge function
-- Add language selector (source/target)
-
-### 7B. Auto-Save OCR to Vault (Gap #331)
-**File:** `src/pages/DocumentDigitize.tsx`
-- After OCR processing, offer "Save to Document Vault" button that uploads to Supabase storage and creates a `documents` record
-
----
-
-## Batch 8: Client Portal Enhancements
-
-### 8A. Dashboard Summary Cards (Gap #146)
-**File:** `src/pages/ClientPortal.tsx`
-- Add overview section with cards: upcoming appointments count, documents count, pending requests count
-
-### 8B. Apostille Tracking Tab (Gap #54, #190)
-**File:** `src/pages/ClientPortal.tsx` + new `src/pages/portal/PortalApostilleTab.tsx`
-- Add "Apostille" tab showing `apostille_requests` for the client with status timeline
-
-### 8C. Service Request Status Filter (Gap #187)
-**File:** `src/pages/portal/PortalServiceRequestsTab.tsx`
-- Add status filter dropdown
-
-### 8D. Deliverable Download (Gap #189)
-**File:** `src/pages/portal/PortalServiceRequestsTab.tsx`
-- Show download button when `deliverable_url` is set
-
-### 8E. Portal Deep Linking (Gap #200)
-**File:** `src/pages/ClientPortal.tsx`
-- Sync active tab with URL hash (e.g., `/portal#documents`)
-
----
-
-## Batch 9: Payment & Subscription
-
-### 9A. Stripe Subscription Checkout (Gap #52, #381, #401)
-**File:** `src/pages/SubscriptionPlans.tsx`
-- Replace `/#contact` links with calls to `create-payment-intent` edge function
-- Add Stripe checkout redirect flow
-
-### 9B. Payment Receipt in Portal (Gap #153)
-**File:** `src/pages/ClientPortal.tsx`
-- Add "Payments" section showing `payments` records for the user
+101. **Platform settings seeding** — verify `office_latitude`, `office_longitude`, `max_travel_miles`, `witness_fee`, `apostille_fee` exist
+102. **Service requirements data** — verify core services have requirements/workflows populated
+103. **Duplicate services** — verify migration successfully deleted 26 duplicates
+104. **`public_reviews` table** — has no RLS; either add policies or remove table
+105. **Triggers verification** — DB shows "no triggers" despite migrations creating them; verify triggers are active
 
 ---
 
-## Batch 10: Identity Verification Fix
+## Implementation Priority
 
-### 10A. Use supabase.functions.invoke (Gap #55, #117)
-**File:** `src/pages/VerifyIdentity.tsx`
-- Replace raw `fetch` with `supabase.functions.invoke("scan-id", { body: { imageBase64 } })`
+**Batch A (Critical — blocks launch):**
+Items 1, 6-7, 18-19, 70, 88-94, 104-105
 
-### 10B. Save Verification Results (Gap — ID verification persistence)
-**File:** `src/pages/VerifyIdentity.tsx`
-- Save scan results to profile or a new column, so admin can see verification status
+**Batch B (High — broken functionality):**
+Items 20-26, 31, 42-49, 59, 62-65, 71-78, 83-84, 91
 
----
+**Batch C (Medium — UX & completeness):**
+Items 2-5, 8-17, 27-30, 32-41, 50-58, 66-69, 79-82, 85-87, 95-103
 
-## Batch 11: Email Notifications
-
-### 11A. Service Request Submission Notification (Gap #50, #422)
-**File:** `src/pages/ServiceRequest.tsx`
-- After successful insert, call `send-correspondence` edge function to notify admin
-
-### 11B. Booking Confirmation Email (Gap #421)
-**File:** `src/pages/BookAppointment.tsx`
-- After appointment creation, call `send-appointment-emails` edge function
-
----
-
-## Batch 12: Admin Enhancements
-
-### 12A. Admin Team Assignment (Gap #68, #215)
-**File:** `src/pages/admin/AdminServiceRequests.tsx`
-- Add `assigned_to` dropdown populated from team profiles
-
-### 12B. Admin Journal Search (Gap #221)
-**File:** `src/pages/admin/AdminJournal.tsx`
-- Add search input filtering by signer_name, document_type, notes
-
-### 12C. Admin Journal PDF Export (Gap #223)
-**File:** `src/pages/admin/AdminJournal.tsx`
-- Add "Export PDF" button generating a printable journal report
-
-### 12D. Admin Chat Canned Responses (Gap #236)
-**File:** `src/pages/admin/AdminChat.tsx`
-- Add quick-reply dropdown with common responses
-
----
-
-## Batch 13: Fee Calculator Expansion
-
-### 13A. Witness Fee (Gap #4 from services, #411)
-**File:** `src/pages/FeeCalculator.tsx`
-- Make witness fee configurable from `platform_settings`
-
-### 13B. Apostille Fee Line (Gap #235)
-**File:** `src/pages/FeeCalculator.tsx`
-- Add apostille fee toggle with configurable amount
-
-### 13C. Tax Estimate (Gap #121)
-**File:** `src/pages/FeeCalculator.tsx`
-- Add Ohio sales tax calculation (if applicable — notary fees are generally exempt, show note)
-
----
-
-## Batch 14: Navigation & UX
-
-### 14A. 404 for Invalid Service IDs (Gap #36)
-**File:** `src/pages/ServiceDetail.tsx`
-- Show NotFound component when service query returns null
-
-### 14B. Loading State for Lazy Routes (Gap #37)
-**File:** `src/App.tsx`
-- Add a styled Suspense fallback with the loading-bar animation
-
-### 14C. Breadcrumbs on Admin Pages (Gap #55 nav)
-**Files:** Admin pages
-- Add Breadcrumbs component to admin sub-pages
-
-### 14D. Footer Privacy Link Fix (Gap #88)
-**File:** `src/components/Footer.tsx`
-- Change second "Privacy" link to `/terms#privacy` or add separate privacy section
-
-### 14E. Skip Navigation Link (Gap #45 nav, #601)
-**File:** `src/components/PageShell.tsx`
-- Already has skip link at line 15 — verify it works with `#main-content`
-
----
-
-## Batch 15: Security & Auth Hardening
-
-### 15A. Remember Me Checkbox (Gap #1)
-**File:** `src/pages/Login.tsx`
-- Add checkbox that toggles `persistSession` on the auth call
-
-### 15B. Session Timeout Warning (Gap #17)
-**File:** `src/contexts/AuthContext.tsx`
-- Add 30-second warning modal before session expiry (already mentioned in memory)
-
-### 15C. Re-auth Before Delete Account (Gap #12)
-**File:** `src/pages/AccountSettings.tsx`
-- Require password confirmation before account deletion
-
-### 15D. Audit Log for Failed Logins (Gap #24)
-**File:** `src/pages/Login.tsx`
-- On auth error, call `logAuditEvent("login_failed", ...)`
-
----
-
-## Batch 16: Compliance & Ohio RON
-
-### 16A. E-Seal Without Uploaded Docs (from Batch 3C)
-**File:** `src/pages/RonSession.tsx`
-- When no docs exist for appointment, still create e-seal using `documentName` as `document_name` and a generated document ID
-
-### 16B. Journal Sequential Numbering (Gap #468)
-- Migration: Add `journal_number` serial column to `notary_journal`
-- Auto-increment via trigger
-
-### 16C. Signer IP Capture (Gap #475)
-**File:** `src/pages/RonSession.tsx`
-- On session start, capture client IP via `fetch('https://api.ipify.org?format=json')` and save to `signer_ip`
-
-### 16D. Commission Renewal Reminder (Gap #462)
-**File:** `src/pages/admin/AdminSettings.tsx`
-- Show warning banner when commission expiry < 90 days away
-
-### 16E. Ohio Compliance Notice Placement (Gap #461)
-- Verify `OhioComplianceNotice` component is shown on booking, RON session, and service detail pages for notarization category
-
----
-
-## Batch 17: Performance & Technical
-
-### 17A. Reduced Motion Support (Gap #565)
-**File:** `src/index.css`
-- Already has `@media (prefers-reduced-motion)` block at line 281 — confirmed
-
-### 17B. Select Column Limiting (Gap #511-512)
-- Audit pages doing `.select("*")` and replace with specific columns where possible (AdminOverview, ClientPortal)
-
-### 17C. Suspense Fallback Upgrade (Gap #529)
-**File:** `src/App.tsx`
-- Replace basic spinner with branded loading skeleton using new theme
-
----
-
-## Batch 18: SEO & Accessibility
-
-### 18A. Dynamic Meta Tags (Gap #566)
-**File:** `src/lib/usePageTitle.ts`
-- Extend to also set `<meta name="description">` per page
-
-### 18B. ARIA Improvements (Gap #595, #599)
-- Add `aria-live="polite"` to toast container
-- Verify all form fields have labels (spot check key forms)
-
-### 18C. Color Contrast Verification (Gap #598)
-- New teal (#1B998B) on white: contrast ratio ~4.1:1 (AA for large text). For small text, darken to #17847A. Verify and adjust.
-
----
-
-## Batch 19: Remaining Portal & Admin Gaps
-
-### 19A. Correspondence Compose (Gap #191, #441)
-**File:** `src/pages/portal/PortalCorrespondenceTab.tsx`
-- Add "New Message" button that calls `send-correspondence` edge function
-
-### 19B. Chat File Sharing (Gap #177, #445)
-**Files:** `src/pages/portal/PortalChatTab.tsx`, `src/pages/admin/AdminChat.tsx`
-- Add file attachment using storage bucket
-
-### 19C. Admin Calendar View (Gap #213)
-**File:** `src/pages/admin/AdminAppointments.tsx`
-- Add calendar view toggle (month grid) alongside list view
-
-### 19D. Admin Notification Sound (Gap #211)
-**File:** `src/components/AdminNotificationCenter.tsx`
-- Add optional browser notification using Notification API
-
----
-
-## Batch 20: Data Seeding & Cleanup
-
-### 20A. Service Requirements/Workflows Data
-- Insert sample `service_requirements` and `service_workflows` rows for core notarization services so ServiceDetail checklists aren't empty
-
-### 20B. Service FAQs Expansion (Gap #292)
-**File:** `src/pages/ServiceDetail.tsx`
-- Add FAQ entries for high-traffic services: I-9, apostille, document scanning, translation, certified copy
-
-### 20C. Platform Settings Seeding
-- Ensure `office_latitude`, `office_longitude`, `max_travel_miles`, `witness_fee`, `apostille_fee` exist in `platform_settings`
-
----
-
-## Items Explicitly Deferred (API-Mode / External Dependencies)
-
-The following require external API integration and are **skipped per user request**:
-- SignNow API sub-panel (upload, invite, webhook tracking) — Gaps related to API mode in RON
-- SignNow OAuth refresh flow (Gap #642)
-- SignNow auto-toggle KBA/ID on document completion
-- DocuSign/external signing platform API integrations
-- Google Calendar sync (Gap #614)
-- CRM integrations (Gap #611-612)
-- Background check provider APIs (Gap #619)
-- Stripe Customer Portal (Gap #408) — requires Stripe dashboard config
-- PWA/Service Worker (Gap #501-502) — significant infrastructure
-- OAuth social login (Gap #2) — requires auth provider config
-- SMS notifications (Gap #435) — requires SMS provider
-- Push notifications (Gap #179, #437) — requires service worker
-
----
-
-## Summary Statistics
-
-| Category | Items Addressed | Items Deferred |
-|----------|----------------|----------------|
-| Brand Redesign | 12 | 0 |
-| Previous Plan Items | 8 | 0 |
-| Auth & Security | 6 | 4 |
-| Navigation & Routing | 5 | 0 |
-| Booking Flow | 4 | 0 |
-| Service Catalog | 6 | 0 |
-| Document Tools | 3 | 0 |
-| Client Portal | 7 | 0 |
-| Payments | 2 | 1 |
-| Admin Dashboard | 6 | 0 |
-| Email & Notifications | 2 | 2 |
-| Compliance & Ohio RON | 5 | 0 |
-| Performance | 3 | 0 |
-| SEO & Accessibility | 3 | 0 |
-| Fee Calculator | 3 | 0 |
-| Data Seeding | 3 | 0 |
-| **Total** | **~78 distinct changes** | **~12 deferred** |
-
-All 700 gap items are either directly addressed by the changes above, already implemented in the current codebase, or explicitly deferred as external-API-dependent. Each batch is self-contained and can be implemented sequentially.
+**Total: 105 distinct gaps/errors identified across 14 categories.**
 
