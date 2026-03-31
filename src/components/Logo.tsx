@@ -39,35 +39,11 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
           className="shrink-0"
         >
           {/* Left stem — Dark Blue */}
-          <line
-            x1="14"
-            y1="10"
-            x2="14"
-            y2="54"
-            stroke="hsl(var(--foreground))"
-            strokeWidth="10"
-            strokeLinecap="round"
-          />
-          {/* Diagonal stroke — Teal */}
-          <line
-            x1="14"
-            y1="54"
-            x2="50"
-            y2="10"
-            stroke="hsl(var(--primary))"
-            strokeWidth="10"
-            strokeLinecap="round"
-          />
+          <rect x="9" y="8" width="13" height="48" rx="6.5" fill="hsl(var(--foreground))" />
+          {/* Diagonal stroke — Teal (rotated rounded rect connecting stems) */}
+          <rect x="25.5" y="4" width="13" height="56" rx="6.5" fill="hsl(var(--primary))" transform="rotate(28 32 32)" />
           {/* Right stem — Mint */}
-          <line
-            x1="50"
-            y1="10"
-            x2="50"
-            y2="54"
-            stroke="hsl(var(--mint))"
-            strokeWidth="10"
-            strokeLinecap="round"
-          />
+          <rect x="42" y="8" width="13" height="48" rx="6.5" fill="hsl(var(--mint))" />
         </svg>
 
         {showText && (

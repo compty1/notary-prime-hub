@@ -43,15 +43,15 @@ function DropdownNav({ label, linkTo, children }: { label: string; linkTo?: stri
         {linkTo ? (
           <Link
             to={linkTo}
-            className="relative px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            className="relative px-3 py-2 text-sm font-medium text-white/70 transition-colors hover:text-white"
           >
             {label}
           </Link>
         ) : (
-          <span className="px-3 py-2 text-sm font-medium text-muted-foreground cursor-default">{label}</span>
+          <span className="px-3 py-2 text-sm font-medium text-white/70 cursor-default">{label}</span>
         )}
         <PopoverTrigger asChild>
-          <button className="-ml-2 p-1 text-muted-foreground hover:text-foreground transition-colors" aria-label={`${label} menu`}>
+          <button className="-ml-2 p-1 text-white/70 hover:text-white transition-colors" aria-label={`${label} menu`}>
             <ChevronDown className="h-3 w-3" />
           </button>
         </PopoverTrigger>
@@ -84,10 +84,10 @@ export function Navbar() {
   const portalLabel = isAdmin || isNotary ? "Dashboard" : "Portal";
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border/60 glass" aria-label="Main navigation">
+    <nav className="sticky top-0 z-50 border-b border-white/10 bg-[hsl(216_79%_15%)]" aria-label="Main navigation">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
         <Link to="/" className="flex items-center">
-          <Logo size="sm" showText />
+          <Logo size="sm" showText theme="dark" />
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">
@@ -134,7 +134,7 @@ export function Navbar() {
             <Link
               key={link.to}
               to={link.to}
-              className="relative px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:scale-x-0 after:bg-primary after:transition-transform after:duration-200 hover:after:scale-x-100"
+              className="relative px-3 py-2 text-sm font-medium text-white/70 transition-colors hover:text-white after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:scale-x-0 after:bg-primary after:transition-transform after:duration-200 hover:after:scale-x-100"
             >
               {link.label}
             </Link>
@@ -143,7 +143,7 @@ export function Navbar() {
             <DarkModeToggle />
             {user ? (
               <Link to={portalLink}>
-                <Button variant="ghost" size="sm" className="text-sm">{portalLabel}</Button>
+                <Button variant="ghost" size="sm" className="text-sm text-white/80 hover:text-white hover:bg-white/10">{portalLabel}</Button>
               </Link>
             ) : (
               <Link to="/login">
