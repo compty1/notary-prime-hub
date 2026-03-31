@@ -273,17 +273,17 @@ ALTER TABLE appointments
 - 11D. Pre-signing warning in BookingReviewStep ✅
 - 15Q. AILeadChatbot activated in PageShell ✅
 
-## Phase 12: Booking Business Logic (DB Ready)
+## Phase 12: Booking Business Logic ✅ DONE
 
 - DB migration completed: signing_capacity, entity_name, signer_title, facility_name, facility_contact, facility_room, after_hours_fee, travel_fee_estimate, signer_count, refusal_reason, refused_at ✅
-- 12A. Out-of-service area rejection — TODO (code logic)
-- 12B. Dynamic travel fee display — TODO (Haversine calc)
-- 12C. After-hours surcharge engine — TODO
-- 12D. Facility signing workflow fields — TODO
-- 12E. Signer capacity dropdown — TODO
-- 12F. Multi-party coordination — TODO
-- 12G. Notarial refusal workflow — TODO
-- 12H. Witness requirement logic gate — TODO
+- 12A. Out-of-service area rejection — outsideServiceArea warning in BookingScheduleStep ✅
+- 12B. Dynamic travel fee display — Haversine calc in BookAppointment, distance-based pricing in ReviewStep ✅
+- 12C. After-hours surcharge engine — getAfterHoursFee in geoUtils, displayed in ReviewStep ✅
+- 12D. Facility signing workflow fields — Hospital/Jail/Care facility fields in BookingIntakeFields ✅
+- 12E. Signer capacity dropdown — Individual/Representative/POA/Corporate/Trustee in IntakeFields ✅
+- 12F. Multi-party coordination — signerCount selector (1-5+) with ID requirement notice ✅
+- 12G. Notarial refusal workflow — Refuse button + reason dialog + audit log in AdminAppointments ✅
+- 12H. Witness requirement logic gate — Auto-prompt for Will/Estate/Trust/Deed documents ✅
 
 ## Phase 13: Content & SEO ✅ DONE
 
