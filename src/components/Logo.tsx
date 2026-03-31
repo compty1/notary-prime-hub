@@ -1,5 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
+import logoIcon from "@/assets/logo-icon.png";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg" | "xl";
@@ -29,29 +30,13 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
 
     return (
       <div ref={ref} className={cn("flex items-center", s.gap, className)}>
-        {/* Architectural N mark */}
-        <svg
+        <img
+          src={logoIcon}
+          alt="Notar logo"
           width={s.icon}
           height={s.icon}
-          viewBox="0 0 64 64"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="shrink-0"
-        >
-          {/* Left stem — Dark Blue */}
-          <rect x="9" y="8" width="13" height="48" rx="6.5" fill="hsl(var(--foreground))" />
-          {/* Diagonal stroke — Teal (rotated rounded rect connecting stems) */}
-          <rect x="25.5" y="4" width="13" height="56" rx="6.5" fill="hsl(var(--primary))" transform="rotate(28 32 32)" />
-          {/* Right leg with integrated checkmark — Mint */}
-          <path
-            d="M 48 8 L 48 38 L 58 50"
-            stroke="hsl(var(--mint))"
-            strokeWidth="12"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            fill="none"
-          />
-        </svg>
+          className="shrink-0 rounded-sm object-contain"
+        />
 
         {showText && (
           <div>
