@@ -2,7 +2,7 @@
 
 # Comprehensive Gap & Error Fix Plan — Items 1–646
 
-## Progress: ~200/646 items completed
+## Progress: ~400/646 items completed
 
 This plan consolidates all previously identified items (1-146) with 500 newly found items (147-646), organized into 30 implementation batches. Every item references a specific file, line, or functional area.
 
