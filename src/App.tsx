@@ -78,6 +78,7 @@ const AdminTaskQueue = lazy(() => import("./pages/admin/AdminTaskQueue"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const Maintenance = lazy(() => import("./pages/Maintenance"));
 const ForNotaries = lazy(() => import("./pages/solutions/ForNotaries"));
+const Resources = lazy(() => import("./pages/Resources"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
