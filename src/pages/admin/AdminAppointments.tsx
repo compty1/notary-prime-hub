@@ -1055,6 +1055,22 @@ export default function AdminAppointments() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Refusal Dialog */}
+      <Dialog open={!!refuseAppt} onOpenChange={() => { setRefuseAppt(null); setRefusalReason(""); }}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Refuse Notarization</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">Document the reason for refusing this notarization. This will cancel the appointment and notify the client.</p>
+          <div><Label>Reason for Refusal *</Label><Textarea value={refusalReason} onChange={e => setRefusalReason(e.target.value)} placeholder="e.g. Signer appeared to be under duress, expired ID, suspected fraud..." rows={3} /></div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setRefuseAppt(null); setRefusalReason(""); }}>Cancel</Button>
+            <Button variant="destructive" onClick={refuseNotarization} disabled={refusingAppt || !refusalReason.trim()}>
+              {refusingAppt ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Ban className="mr-1 h-4 w-4" />}
+              Refuse & Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
