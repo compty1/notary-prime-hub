@@ -118,9 +118,18 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
             {past.map(appt => (
               <Card key={appt.id} className="border-border/50 opacity-75">
                 <CardContent className="flex items-center justify-between p-4">
-                  <div><p className="font-medium">{appt.service_type}</p><p className="text-sm text-muted-foreground">{formatDate(appt.scheduled_date)}</p></div>
+                  <div>
+                    <p className="font-medium">{appt.service_type}</p>
+                    <p className="text-sm text-muted-foreground">{formatDate(appt.scheduled_date)}</p>
+                    {appt.confirmation_number && <p className="text-xs text-muted-foreground flex items-center gap-1"><Hash className="h-3 w-3" /> {appt.confirmation_number}</p>}
+                  </div>
                   <div className="flex items-center gap-2">
-                    {appt.status === "completed" && <Link to={`/book?rebook=${appt.id}`}><Button size="sm" variant="outline" className="text-xs"><RefreshCw className="mr-1 h-3 w-3" /> Rebook</Button></Link>}
+                    {appt.status === "completed" && (
+                      <>
+                        <Link to={`/portal?tab=reviews&appointmentId=${appt.id}`}><Button size="sm" variant="outline" className="text-xs"><Star className="mr-1 h-3 w-3" /> Review</Button></Link>
+                        <Link to={`/book?rebook=${appt.id}`}><Button size="sm" variant="outline" className="text-xs"><RefreshCw className="mr-1 h-3 w-3" /> Rebook</Button></Link>
+                      </>
+                    )}
                     <Badge className={statusColors[appt.status]}>{appt.status.replace(/_/g, " ")}</Badge>
                   </div>
                 </CardContent>

@@ -126,6 +126,7 @@ function AnimatedRoutes() {
         <Route path="/unsubscribe" element={<Unsubscribe />} />
         <Route path="/maintenance" element={<Maintenance />} />
         <Route path="/solutions/notaries" element={<ForNotaries />} />
+        <Route path="/resources" element={<Resources />} />
         <Route path="/solutions/real-estate" element={<ComingSoon />} />
         <Route path="/solutions/law-firms" element={<ComingSoon />} />
         <Route path="/solutions/small-business" element={<ComingSoon />} />

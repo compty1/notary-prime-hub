@@ -111,6 +111,28 @@ export default function BookingReviewStep(props: ReviewStepProps) {
       {!props.isNonNotarial && (
         <OhioComplianceNotice type={notarizationType === "ron" ? "ron" : "in_person"} />
       )}
+
+      {/* Pre-signing warning */}
+      <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 flex items-start gap-3">
+        <AlertTriangle className="h-5 w-5 flex-shrink-0 text-destructive mt-0.5" />
+        <div className="text-sm">
+          <p className="font-medium text-foreground">Do NOT sign your documents before the notary session.</p>
+          <p className="text-muted-foreground">Signing in advance voids the notarization. The notary must witness your signature.</p>
+        </div>
+      </div>
+
+      {/* No-show / travel fee warning for mobile in-person */}
+      {notarizationType === "in_person" && !props.isNonNotarial && (
+        <div className="rounded-lg border border-border bg-muted/50 p-3 text-xs text-muted-foreground">
+          <p><strong>Travel Fee Policy:</strong> Travel fees are non-refundable once the notary departs. No-show after arrival: full travel fee + $25. <a href="/terms" className="text-primary hover:underline">See full policy</a>.</p>
+        </div>
+      )}
+
+      {/* Payment methods */}
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <CreditCard className="h-3.5 w-3.5" />
+        <span>We accept: Credit/Debit • Venmo • Zelle • CashApp • Cash (in-person only)</span>
+      </div>
     </div>
   );
 }
