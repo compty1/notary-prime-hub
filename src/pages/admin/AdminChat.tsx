@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
-import { MessageSquare, Send, User, Shield, Loader2, Paperclip, FileText } from "lucide-react";
+import { MessageSquare, Send, User, Shield, Loader2, Paperclip, FileText, Search } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Zap } from "lucide-react";
