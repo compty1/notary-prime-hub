@@ -548,6 +548,65 @@ export default function RonSession() {
 
   // Client view
   if (!isAdminOrNotary) {
+    // Completed state for client
+    if (sessionStatus === "completed" || appointment?.status === "completed") {
+      return (
+        <div className="min-h-screen bg-background">
+          <nav className="border-b border-border/50 bg-background px-4 py-3">
+            <div className="flex items-center justify-between">
+              <Link to="/portal" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+                <ArrowLeft className="h-4 w-4" /> Back to Portal
+              </Link>
+              <div className="flex items-center gap-3">
+                <Shield className="h-4 w-4 text-primary" />
+                <span className="text-sm font-medium">RON Session Complete</span>
+              </div>
+            </div>
+          </nav>
+          <div className="container mx-auto max-w-3xl px-4 py-8">
+            <Card className="mb-6 border-2 border-primary/20 bg-primary/5">
+              <CardContent className="flex flex-col items-center py-12 text-center">
+                <CheckCircle className="mb-4 h-16 w-16 text-primary" />
+                <h2 className="mb-2 font-sans text-2xl font-bold text-foreground">Notarization Complete</h2>
+                <p className="mb-1 text-muted-foreground">
+                  Your document has been successfully notarized on{" "}
+                  {appointment ? new Date(appointment.scheduled_date + "T00:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : ""}
+                </p>
+                {sessionUniqueId && <p className="text-xs text-muted-foreground font-mono">Session ID: {sessionUniqueId}</p>}
+              </CardContent>
+            </Card>
+
+            <div className="space-y-4">
+              <Card className="border-border/50">
+                <CardContent className="p-6">
+                  <h3 className="mb-3 font-semibold text-foreground">What's Next</h3>
+                  <div className="space-y-3 text-sm text-muted-foreground">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle className="mt-0.5 h-4 w-4 text-primary flex-shrink-0" />
+                      <p>Your notarized documents are available for download in your <Link to="/portal#documents" className="text-primary hover:underline">Client Portal</Link>.</p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Shield className="mt-0.5 h-4 w-4 text-primary flex-shrink-0" />
+                      <p>An electronic notary seal and verification link have been generated for your document.</p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <FileCheck className="mt-0.5 h-4 w-4 text-primary flex-shrink-0" />
+                      <p>A Certificate of Notarization is available for download from the Documents tab in your portal.</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="flex gap-3 justify-center">
+                <Link to="/portal#documents"><Button>View My Documents</Button></Link>
+                <Link to="/portal"><Button variant="outline">Back to Portal</Button></Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen bg-background">
         <nav className="border-b border-border/50 bg-background px-4 py-3">
@@ -595,7 +654,7 @@ export default function RonSession() {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="mt-0.5 h-5 w-5 text-amber-500" />
+                  <AlertCircle className="mt-0.5 h-5 w-5 text-destructive" />
                   <div>
                     <p className="font-medium">Knowledge-Based Authentication (KBA)</p>
                     <p className="text-sm text-muted-foreground">
