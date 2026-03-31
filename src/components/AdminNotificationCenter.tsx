@@ -121,6 +121,8 @@ export function AdminNotificationCenter() {
     };
   }, [fetchNotifications]);
 
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
   // Fire browser notification when new items arrive
   useEffect(() => {
     if (browserNotifs && unreadCount > 0 && document.visibilityState === "hidden") {
@@ -131,9 +133,7 @@ export function AdminNotificationCenter() {
         });
       } catch {}
     }
-  }, [unreadCount, browserNotifs]);
-
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  }, [unreadCount, browserNotifs, notifications]);
 
   const iconMap = {
     appointment: Calendar,
