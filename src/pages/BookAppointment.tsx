@@ -171,12 +171,46 @@ export default function BookAppointment() {
     const baseFee = parseFloat(pricingSettings.base_fee_per_signature || "5") * documentCount;
     let total = baseFee;
     if (notarizationType === "ron") { total += parseFloat(pricingSettings.ron_platform_fee || "25") + parseFloat(pricingSettings.kba_fee || "15"); }
-    else { total += parseFloat(pricingSettings.travel_fee_minimum || "25"); }
-    // Add witness fees (item 376)
+    else {
+      // Dynamic travel fee based on distance
+      if (travelDistance !== null && travelDistance >= 5) {
+        const perMile = parseFloat(pricingSettings.travel_fee_per_mile || "0.655");
+        const minimum = parseFloat(pricingSettings.travel_fee_minimum || "25");
+        total += Math.max(minimum, travelDistance * perMile);
+      } else if (travelDistance === null) {
+        total += parseFloat(pricingSettings.travel_fee_minimum || "25");
+      }
+      // else < 5 miles = free
+    }
+    // Add witness fees
     const wCount = parseInt(witnessCount || "0");
     if (wCount > 0) { total += wCount * parseFloat(pricingSettings.witness_fee || "10"); }
+    // Add after-hours fee
+    total += afterHoursFee;
     setEstimatedPrice(total);
-  }, [notarizationType, documentCount, pricingSettings, witnessCount]);
+  }, [notarizationType, documentCount, pricingSettings, witnessCount, travelDistance, afterHoursFee]);
+
+  // Service area validation + travel distance calculation
+  useEffect(() => {
+    if (notarizationType !== "in_person" || !userLat || !userLon) {
+      setTravelDistance(null);
+      setOutsideServiceArea(false);
+      return;
+    }
+    const officeLat = parseFloat(pricingSettings.office_latitude || String(DEFAULT_OFFICE_LAT));
+    const officeLon = parseFloat(pricingSettings.office_longitude || String(DEFAULT_OFFICE_LON));
+    const radiusMiles = parseFloat(pricingSettings.travel_radius_miles || "50");
+    const dist = haversineDistance(officeLat, officeLon, userLat, userLon);
+    setTravelDistance(Math.round(dist * 10) / 10);
+    setOutsideServiceArea(dist > radiusMiles);
+  }, [userLat, userLon, notarizationType, pricingSettings]);
+
+  // After-hours fee calculation
+  useEffect(() => {
+    if (!time) { setAfterHoursFee(0); return; }
+    const baseFee = parseFloat(pricingSettings.after_hours_fee || "25");
+    setAfterHoursFee(getAfterHoursFee(time, baseFee));
+  }, [time, pricingSettings]);
 
   useEffect(() => {
     if (user) {
