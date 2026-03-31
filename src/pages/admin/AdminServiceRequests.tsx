@@ -228,6 +228,16 @@ export default function AdminServiceRequests() {
             {PRIORITY_OPTIONS.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
           </SelectContent>
         </Select>
+        <Select value={assignedFilter} onValueChange={setAssignedFilter}>
+          <SelectTrigger className="w-[150px]"><SelectValue placeholder="Assigned To" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Team</SelectItem>
+            <SelectItem value="">Unassigned</SelectItem>
+            {teamProfiles.map(p => (
+              <SelectItem key={p.user_id} value={p.user_id}>{p.full_name || p.email}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Table */}
