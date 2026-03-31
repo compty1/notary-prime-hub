@@ -116,7 +116,7 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
       {notarizedDocs.length > 0 && (
         <div className="space-y-3">
           <h3 className="flex items-center gap-2 font-sans text-lg font-semibold text-foreground">
-            <Shield className="h-5 w-5 text-primary" /> Notarized Documents
+            <ShieldCheck className="h-5 w-5 text-primary" /> Notarized Documents
           </h3>
           {notarizedDocs.map(doc => (
             <Card key={doc.id} className="border-2 border-primary/20 bg-primary/5">
