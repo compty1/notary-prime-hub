@@ -66,10 +66,14 @@ export default function AdminChat() {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [allMessages, selectedUser]);
 
-  // Group conversations by CLIENT id (non-admin sender_id)
+  // Group conversations by CLIENT id (non-admin sender_id), filtered by search
   const clientIds = [...new Set(
     allMessages.filter((m) => !m.is_admin).map((m) => m.sender_id)
-  )];
+  )].filter((uid) => {
+    if (!conversationSearch) return true;
+    const name = profiles[uid] || uid;
+    return name.toLowerCase().includes(conversationSearch.toLowerCase());
+  });
 
   // Get messages for selected client using recipient_id for admin messages
   const getConversation = (clientId: string) => {
