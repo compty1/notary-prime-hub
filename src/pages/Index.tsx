@@ -123,9 +123,7 @@ export default function Index() {
     });
   }, []);
 
-  const services = dbServices.length > 0 ?
-  dbServices.map((s) => ({ icon: FileText, title: s.name, desc: s.short_description || s.category })) :
-  fallbackServices;
+  // dbServices used for dynamic loading but primary/other services are hardcoded for hierarchy
 
   const testimonials = dbReviews.length > 0 ? dbReviews : fallbackTestimonials;
 
