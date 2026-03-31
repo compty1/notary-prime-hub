@@ -61,12 +61,30 @@ export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com
             </div>
           </div>
         </div>
-        <div className="mt-10 border-t border-sidebar-border pt-6 text-center text-xs text-sidebar-foreground/50">
+        {/* Business Hours */}
+        <div className="mt-8 border-t border-sidebar-border pt-6 text-center text-sm text-sidebar-foreground/60">
+          <p className="mb-1 font-semibold text-sidebar-foreground text-xs uppercase tracking-wider">Hours of Operation</p>
+          <p>Mon–Fri 9am–7pm ET &nbsp;|&nbsp; Sat 10am–4pm ET &nbsp;|&nbsp; Sun by appointment</p>
+        </div>
+
+        {/* Payment Methods */}
+        <div className="mt-4 text-center text-xs text-sidebar-foreground/50">
+          <p>We accept: Credit/Debit &nbsp;•&nbsp; Venmo &nbsp;•&nbsp; Zelle &nbsp;•&nbsp; CashApp &nbsp;•&nbsp; Cash (in-person only)</p>
+        </div>
+
+        {/* UPL Disclaimer */}
+        <div className="mt-4 text-center text-xs text-sidebar-foreground/40 max-w-2xl mx-auto">
+          <p>Notar is not a law firm. Our notaries are not attorneys and cannot provide legal advice, draft legal documents, or advise on the content of any document. (ORC §147.01)</p>
+        </div>
+
+        <div className="mt-4 border-t border-sidebar-border pt-4 text-center text-xs text-sidebar-foreground/50">
           <p>© {new Date().getFullYear()} Notar. All rights reserved. Ohio Notary & Document Services — Franklin County</p>
           <div className="mt-2 flex items-center justify-center gap-3">
             <Link to="/terms" className="transition-colors hover:text-primary">Terms</Link>
             <span className="text-sidebar-border">·</span>
             <Link to="/terms#privacy" className="transition-colors hover:text-primary">Privacy</Link>
+            <span className="text-sidebar-border">·</span>
+            <Link to="/resources" className="transition-colors hover:text-primary">Resources</Link>
           </div>
         </div>
       </div>

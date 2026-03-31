@@ -57,6 +57,8 @@ export function PageShell({ children, hideNav = false, hideFooter = false }: Pag
       </motion.main>
       {!hideFooter && <Footer phone={contactInfo.phone} email={contactInfo.email} />}
       <BackToTop />
+      <MobileFAB />
+      <AILeadChatbot />
       <CookieConsent />
       <OfflineIndicator />
     </div>

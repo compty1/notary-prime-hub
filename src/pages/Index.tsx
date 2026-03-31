@@ -468,6 +468,7 @@ export default function Index() {
                       <Input
                         id="contact-email"
                         type="email"
+                        inputMode="email"
                         placeholder="you@example.com"
                         value={contactForm.email}
                         onChange={(e) => setContactForm((prev) => ({ ...prev, email: e.target.value }))}
