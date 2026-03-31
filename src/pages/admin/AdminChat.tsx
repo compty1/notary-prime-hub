@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
-import { MessageSquare, Send, User, Shield, Loader2 } from "lucide-react";
+import { MessageSquare, Send, User, Shield, Loader2, Paperclip, FileText } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Zap } from "lucide-react";
@@ -32,6 +32,7 @@ export default function AdminChat() {
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -98,6 +99,24 @@ export default function AdminChat() {
     setAllMessages(prev => prev.map(m => 
       m.sender_id === clientId && !m.is_admin ? { ...m, read: true } : m
     ));
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user || !selectedUser) return;
+    const path = `chat/admin/${Date.now()}_${file.name}`;
+    const { error } = await supabase.storage.from("documents").upload(path, file);
+    if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); return; }
+    const { data: urlData } = await supabase.storage.from("documents").createSignedUrl(path, 86400);
+    const attachmentUrl = urlData?.signedUrl || path;
+    await supabase.from("chat_messages").insert({
+      sender_id: user.id,
+      message: `📎 [${file.name}](${attachmentUrl})`,
+      is_admin: true,
+      recipient_id: selectedUser,
+      attachment_url: attachmentUrl,
+    } as any);
+    toast({ title: "File sent" });
   };
 
   const sendMessage = async () => {
@@ -168,16 +187,25 @@ export default function AdminChat() {
               <div key={msg.id} className={`flex ${msg.is_admin ? "justify-end" : "justify-start"}`}>
                 <div className={`max-w-[70%] rounded-lg px-3 py-2 text-sm ${msg.is_admin ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}>
                   <div className="flex items-center gap-1 mb-1">
-                    {msg.is_admin ? <Shield className="h-3 w-3" /> : <User className="h-3 w-3" />}
-                    <span className="text-xs opacity-70">{new Date(msg.created_at).toLocaleTimeString()}</span>
-                  </div>
-                  <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:m-0"><ReactMarkdown>{msg.message}</ReactMarkdown></div>
+                     {msg.is_admin ? <Shield className="h-3 w-3" /> : <User className="h-3 w-3" />}
+                     <span className="text-xs opacity-70">{new Date(msg.created_at).toLocaleTimeString()}</span>
+                   </div>
+                   {msg.attachment_url && (
+                     <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs underline mb-1">
+                       <FileText className="h-3 w-3" /> Attachment
+                     </a>
+                   )}
+                   <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:m-0"><ReactMarkdown>{msg.message}</ReactMarkdown></div>
                 </div>
               </div>
             ))}
           </div>
           {selectedUser && (
             <div className="border-t p-3 flex gap-2">
+              <input type="file" ref={fileRef} className="hidden" onChange={handleFileUpload} />
+              <Button size="sm" variant="ghost" onClick={() => fileRef.current?.click()} title="Attach file">
+                <Paperclip className="h-4 w-4" />
+              </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button size="sm" variant="outline" title="Canned responses"><Zap className="h-4 w-4" /></Button>

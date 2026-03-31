@@ -49,22 +49,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setRolesLoading(false);
   };
 
-  // Session timeout: periodically check if session is still valid
-  useEffect(() => {
-    if (!session) return;
-    const CHECK_INTERVAL = 5 * 60 * 1000; // 5 minutes
+  // Session timeout: warn 30s before expiry, then sign out
+  const [showTimeoutWarning, setShowTimeoutWarning] = useState(false);
 
-    const interval = setInterval(async () => {
-      const { data: { user: currentUser }, error } = await supabase.auth.getUser();
-      if (error || !currentUser) {
-        toast({ title: "Session expired", description: "You have been signed out for security.", variant: "destructive" });
-        setSession(null);
-        setUser(null);
-        setRoles([]);
-      }
-    }, CHECK_INTERVAL);
-    return () => { clearInterval(interval); };
+  useEffect(() => {
+    if (!session) { setShowTimeoutWarning(false); return; }
+    const expiresAt = session.expires_at;
+    if (!expiresAt) return;
+
+    const expiryMs = expiresAt * 1000;
+    const warnMs = expiryMs - Date.now() - 30_000; // 30s before
+    const expireMs = expiryMs - Date.now();
+
+    const warnTimer = warnMs > 0 ? setTimeout(() => setShowTimeoutWarning(true), warnMs) : undefined;
+    const expireTimer = expireMs > 0 ? setTimeout(async () => {
+      setShowTimeoutWarning(false);
+      toast({ title: "Session expired", description: "You have been signed out for security.", variant: "destructive" });
+      setSession(null);
+      setUser(null);
+      setRoles([]);
+    }, expireMs) : undefined;
+
+    return () => {
+      if (warnTimer) clearTimeout(warnTimer);
+      if (expireTimer) clearTimeout(expireTimer);
+    };
   }, [session, toast]);
+
+  const extendSession = async () => {
+    setShowTimeoutWarning(false);
+    await supabase.auth.refreshSession();
+  };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -163,6 +178,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }}
     >
       {children}
+      {/* Session timeout warning modal */}
+      {showTimeoutWarning && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50">
+          <div className="mx-4 max-w-sm rounded-lg bg-background p-6 shadow-xl border border-border">
+            <h3 className="text-lg font-bold text-foreground mb-2">Session Expiring</h3>
+            <p className="text-sm text-muted-foreground mb-4">Your session will expire in less than 30 seconds. Would you like to stay signed in?</p>
+            <div className="flex gap-2">
+              <button onClick={extendSession} className="flex-1 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">Stay Signed In</button>
+              <button onClick={signOut} className="flex-1 rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted">Sign Out</button>
+            </div>
+          </div>
+        </div>
+      )}
     </AuthContext.Provider>
   );
 };

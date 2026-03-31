@@ -169,6 +169,20 @@ export default function RonSession() {
         if ((session as any).signing_platform) setSigningPlatform((session as any).signing_platform);
         if ((session as any).document_name) setDocumentName((session as any).document_name);
         if ((session as any).signer_email) setSignerEmail((session as any).signer_email);
+      } else {
+        // Capture signer IP on first session load (Ohio RON compliance)
+        try {
+          const ipRes = await fetch("https://api.ipify.org?format=json");
+          const ipData = await ipRes.json();
+          if (ipData?.ip) {
+            const { data: newSession } = await supabase.from("notarization_sessions").insert({
+              appointment_id: appointmentId,
+              session_type: "ron" as any,
+              signer_ip: ipData.ip,
+            } as any).select("session_unique_id, signer_ip").single();
+            if ((newSession as any)?.session_unique_id) setSessionUniqueId((newSession as any).session_unique_id);
+          }
+        } catch {}
       }
 
       // Check commission expiry (Ohio ORC §147.03)
@@ -409,18 +423,34 @@ export default function RonSession() {
 
     // e-seal: prefer uploaded doc, fall back to manual document_name
     const { data: docs } = await supabase.from("documents").select("id, file_name").eq("appointment_id", appointmentId).limit(1);
+    let eSealDocId: string;
+    let eSealDocName: string;
     if (docs && docs.length > 0) {
-      await supabase.from("e_seal_verifications").insert({
-        document_id: docs[0].id,
-        document_name: docs[0].file_name,
+      eSealDocId = docs[0].id;
+      eSealDocName = docs[0].file_name;
+    } else {
+      // Create placeholder document for e-seal when no docs uploaded
+      const placeholderName = documentName || `${appointment.service_type} — ${clientProfile?.full_name || "Unknown"}`;
+      const { data: newDoc } = await supabase.from("documents").insert({
+        file_name: placeholderName,
+        file_path: `placeholder/${appointmentId}`,
+        uploaded_by: user.id,
         appointment_id: appointmentId,
-        created_by: user.id,
-        signer_name: clientProfile?.full_name || null,
-        notary_name: "Notar",
-        commissioned_state: "OH",
-        status: "valid",
-      });
+        status: "notarized" as any,
+      }).select("id").single();
+      eSealDocId = newDoc?.id || crypto.randomUUID();
+      eSealDocName = placeholderName;
     }
+    await supabase.from("e_seal_verifications").insert({
+      document_id: eSealDocId,
+      document_name: eSealDocName,
+      appointment_id: appointmentId,
+      created_by: user.id,
+      signer_name: clientProfile?.full_name || null,
+      notary_name: "Notar",
+      commissioned_state: "OH",
+      status: "valid",
+    });
 
     await logAuditEvent("ron_session_completed", {
       entityType: "appointment",
