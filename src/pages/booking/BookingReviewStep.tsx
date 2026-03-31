@@ -28,6 +28,12 @@ interface ReviewStepProps {
   guestName: string; setGuestName: (v: string) => void;
   guestEmail: string; setGuestEmail: (v: string) => void;
   guestPassword: string; setGuestPassword: (v: string) => void;
+  // Phase 12 fields
+  travelDistance?: number | null;
+  afterHoursFee?: number;
+  signerCapacity?: string;
+  facilityName?: string;
+  signerCount?: number;
 }
 
 export default function BookingReviewStep(props: ReviewStepProps) {
