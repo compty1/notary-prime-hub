@@ -260,6 +260,9 @@ export default function ServiceRequest() {
   const [submitted, setSubmitted] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [tosAccepted, setTosAccepted] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   // Guest fields
   const [guestName, setGuestName] = useState("");
@@ -267,6 +270,29 @@ export default function ServiceRequest() {
   const [guestPassword, setGuestPassword] = useState("");
 
   usePageTitle(config.label);
+
+  // Auto-save to localStorage every 5 seconds
+  const AUTOSAVE_KEY = `sr-draft-${serviceName}`;
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(AUTOSAVE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.formData) setFormData(parsed.formData);
+        if (parsed.notes) setNotes(parsed.notes);
+      }
+    } catch { /* ignore */ }
+  }, [AUTOSAVE_KEY]);
+
+  useEffect(() => {
+    if (submitted) return;
+    const timer = setTimeout(() => {
+      if (Object.keys(formData).length > 0 || notes) {
+        localStorage.setItem(AUTOSAVE_KEY, JSON.stringify({ formData, notes, _at: Date.now() }));
+      }
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [formData, notes, submitted, AUTOSAVE_KEY]);
 
   const updateField = (name: string, value: string) => {
     setFormData(prev => ({ ...prev, [name]: value }));
