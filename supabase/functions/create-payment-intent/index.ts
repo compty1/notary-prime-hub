@@ -68,6 +68,7 @@ Deno.serve(async (req) => {
       metadata: {
         supabase_user_id: userId,
         appointment_id: appointmentId || "",
+        description: (description || "").slice(0, 500),
       },
       description: description || "Notary service payment",
       automatic_payment_methods: { enabled: true },
