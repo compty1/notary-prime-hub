@@ -544,6 +544,10 @@ export default function BookAppointment() {
     currentTools, setCurrentTools, teamSize, setTeamSize, budgetRange, setBudgetRange,
     monthlyVolume, setMonthlyVolume, bulkDocTypes, setBulkDocTypes, schedulePreference, setSchedulePreference,
     scanningMode, setScanningMode,
+    // Phase 12 fields
+    signerCapacity, setSignerCapacity, entityName, setEntityName, signerTitle, setSignerTitle,
+    facilityName, setFacilityName, facilityContact, setFacilityContact, facilityRoom, setFacilityRoom,
+    signerCount, setSignerCount,
   };
 
   const scheduleStepProps = {
@@ -551,6 +555,7 @@ export default function BookAppointment() {
     availableSlots, suggestedSlots, loadingSlots, leadTimeWarning,
     clientAddress, setClientAddress, clientCity, setClientCity, clientState, setClientState, clientZip, setClientZip,
     location, setLocation, locatingUser, userLat, userLon, onUseLocation: handleUseLocation,
+    outsideServiceArea, travelDistance,
   };
 
   const reviewProps = {
@@ -559,6 +564,7 @@ export default function BookAppointment() {
     destinationCountry, uscisForm, sourceLanguage, targetLanguage, translationDocType, translationPageCount, employerName,
     idData, docAnalysis, documentCount, notes, estimatedPrice, pricingSettings, urgencyLevel,
     user, guestName, setGuestName, guestEmail, setGuestEmail, guestPassword, setGuestPassword,
+    travelDistance, afterHoursFee, signerCapacity, facilityName, signerCount,
   };
 
   const stepLabels = isNonNotarial ? ["Service", "Schedule", "Confirm"] : ["Type", "Service", "Schedule", "Confirm"];
