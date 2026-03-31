@@ -177,6 +177,9 @@ export default function RonSession() {
         if ((session as any).signing_platform) setSigningPlatform((session as any).signing_platform);
         if ((session as any).document_name) setDocumentName((session as any).document_name);
         if ((session as any).signer_email) setSignerEmail((session as any).signer_email);
+        if ((session as any).kba_attempts) setKbaAttempts((session as any).kba_attempts);
+        if ((session as any).session_timeout_minutes) setSessionTimeoutMinutes((session as any).session_timeout_minutes);
+        if ((session as any).started_at) setSessionStartedAt((session as any).started_at);
       } else {
         // Capture signer IP on first session load (Ohio RON compliance)
         try {
