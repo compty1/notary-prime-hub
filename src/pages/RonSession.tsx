@@ -927,6 +927,48 @@ export default function RonSession() {
               </CardContent>
             </Card>
 
+            {/* Ohio Compliance Checklist — Item 427 */}
+            <Card className="border-border/50">
+              <CardContent className="p-4">
+                <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
+                  <Shield className="h-4 w-4 text-primary" /> Ohio RON Compliance
+                </h3>
+                <ul className="space-y-1.5 text-[11px] text-muted-foreground">
+                  <li className="flex items-start gap-1.5">
+                    {recordingConsent ? <CheckCircle className="h-3 w-3 text-primary mt-0.5 shrink-0" /> : <AlertCircle className="h-3 w-3 text-amber-500 mt-0.5 shrink-0" />}
+                    <span>Audio/video recording consent obtained (ORC §147.66)</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    {idVerified ? <CheckCircle className="h-3 w-3 text-primary mt-0.5 shrink-0" /> : <AlertCircle className="h-3 w-3 text-amber-500 mt-0.5 shrink-0" />}
+                    <span>Government-issued photo ID verified</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    {kbaCompleted ? <CheckCircle className="h-3 w-3 text-primary mt-0.5 shrink-0" /> : <AlertCircle className="h-3 w-3 text-amber-500 mt-0.5 shrink-0" />}
+                    <span>MISMO-compliant KBA completed (ORC §147.66)</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    {oathAdministered ? <CheckCircle className="h-3 w-3 text-primary mt-0.5 shrink-0" /> : <AlertCircle className="h-3 w-3 text-amber-500 mt-0.5 shrink-0" />}
+                    <span>Oath/affirmation administered where required</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <CheckCircle className="h-3 w-3 text-primary mt-0.5 shrink-0" />
+                    <span>Session conducted via approved technology platform</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <CheckCircle className="h-3 w-3 text-primary mt-0.5 shrink-0" />
+                    <span>Notary commissioned in Ohio (ORC §147.03)</span>
+                  </li>
+                </ul>
+                {kbaAttempts > 0 && (
+                  <div className="mt-2 text-[10px]">
+                    <span className={kbaAttempts >= 2 ? "text-destructive font-medium" : "text-muted-foreground"}>
+                      KBA Attempts: {kbaAttempts}/2 {kbaAttempts >= 2 && "— Maximum reached per ORC §147.66"}
+                    </span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
 
             <Card className="border-border/50">
               <CardContent className="p-4">
