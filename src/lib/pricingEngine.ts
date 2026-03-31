@@ -117,7 +117,7 @@ export function calculatePrice(input: PricingInput, settings: PricingSettings): 
   const deposit = Math.round(total * 0.25 * 100) / 100; // 25% deposit
 
   const lineItems: { label: string; amount: number }[] = [
-    { label: `Notarization (${cappedDocs} doc${cappedDocs > 1 ? "s" : ""} × $${volumeRate.toFixed(2)}${cappedDocs >= 10 ? " — volume rate" : ""})`, amount: notarizationFees },
+    { label: `Notarization (${signers > 1 ? `${signers} signers × ` : ""}${cappedDocs} doc${cappedDocs > 1 ? "s" : ""} × $${volumeRate.toFixed(2)}${totalActs >= 10 ? " — volume rate" : ""})`, amount: notarizationFees },
   ];
 
   if (input.notarizationType === "in_person" && travelFee > 0) {
