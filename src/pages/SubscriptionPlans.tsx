@@ -92,6 +92,34 @@ export default function SubscriptionPlans() {
     setSelectedPlan(plan);
   };
 
+  if (selectedPlan) {
+    const amount = parseInt(selectedPlan.price.replace("$", ""));
+    return (
+      <PageShell>
+        <section className="bg-gradient-hero py-16">
+          <div className="container mx-auto px-4 text-center">
+            <h1 className="mb-4 font-sans text-4xl font-bold text-primary-foreground">{selectedPlan.name} Plan</h1>
+            <p className="mx-auto max-w-2xl text-lg text-primary-foreground/70">
+              Complete your subscription payment below.
+            </p>
+          </div>
+        </section>
+        <div className="container mx-auto max-w-lg px-4 py-16">
+          <PaymentForm
+            defaultAmount={amount}
+            description={`${selectedPlan.name} Plan Subscription`}
+            onSuccess={() => {
+              toast({ title: "Subscription activated!", description: `Your ${selectedPlan.name} plan is now active.` });
+              setSelectedPlan(null);
+              navTo("/portal");
+            }}
+            onCancel={() => setSelectedPlan(null)}
+          />
+        </div>
+      </PageShell>
+    );
+  }
+
   return (
     <PageShell>
 

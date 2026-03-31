@@ -161,8 +161,8 @@ function FeatureCard({ icon, title, desc }: { icon: React.ReactNode; title: stri
       <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
         {icon}
       </div>
-      <h3 className="font-heading text-sm font-semibold text-foreground">{title}</h3>
-      <p className="mt-1 text-xs text-muted-foreground">{desc}</p>
+      <h3 className="font-heading text-sm font-semibold text-primary-foreground">{title}</h3>
+      <p className="mt-1 text-xs text-primary-foreground/60">{desc}</p>
     </div>
   );
 }

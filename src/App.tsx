@@ -102,8 +102,8 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={routeKey}>
-        <Route path="/" element={<ComingSoon />} />
-        <Route path="/home" element={<Index />} />
+        <Route path="/" element={<Index />} />
+        <Route path="/coming-soon" element={<ComingSoon />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
