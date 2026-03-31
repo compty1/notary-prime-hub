@@ -10,17 +10,22 @@ import { Loader2, CreditCard, CheckCircle, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 let stripePromise: Promise<Stripe | null> | null = null;
+let stripeLoadFailed = false;
 
 const getStripePromise = async () => {
+  if (stripeLoadFailed) stripePromise = null; // retry on failure
   if (!stripePromise) {
     stripePromise = (async () => {
       try {
         const { data } = await supabase.functions.invoke("get-stripe-config");
         if (data?.publishableKey) {
+          stripeLoadFailed = false;
           return loadStripe(data.publishableKey);
         }
+        stripeLoadFailed = true;
       } catch (e) {
         console.error("Failed to load Stripe config:", e);
+        stripeLoadFailed = true;
       }
       return null;
     })();
