@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin, Monitor, Plus, Video, RefreshCw, Wifi } from "lucide-react";
+import { Calendar, Clock, MapPin, Monitor, Plus, Video, RefreshCw, Wifi, Star, Hash } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
 
 const statusColors: Record<string, string> = {
