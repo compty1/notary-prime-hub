@@ -75,16 +75,19 @@ export function parseSettings(raw: Record<string, string>): PricingSettings {
 }
 
 export function calculatePrice(input: PricingInput, settings: PricingSettings): PricingBreakdown {
+  const signers = Math.max(1, input.signerCount || 1);
   const cappedWitnesses = Math.min(input.witnessCount || 0, settings.max_witnesses);
   const cappedDocs = Math.max(1, Math.min(input.documentCount, 50));
   const apostilleCount = input.apostilleCount || (input.needsApostille ? 1 : 0);
 
-  // Volume discount tiers
+  // Volume discount tiers (based on total notarial acts = docs × signers)
+  const totalActs = cappedDocs * signers;
   let volumeRate = settings.base_fee_per_signature;
-  if (cappedDocs >= 20) volumeRate = settings.base_fee_per_signature * 0.8;
-  else if (cappedDocs >= 10) volumeRate = settings.base_fee_per_signature * 0.9;
+  if (totalActs >= 20) volumeRate = settings.base_fee_per_signature * 0.8;
+  else if (totalActs >= 10) volumeRate = settings.base_fee_per_signature * 0.9;
 
-  const notarizationFees = volumeRate * cappedDocs;
+  // Each signer × each document = one notarial act (Ohio ORC §147.04)
+  const notarizationFees = volumeRate * totalActs;
 
   // Travel: waive if < 5 miles, otherwise max(minimum, miles * rate)
   const miles = input.travelMiles || 0;
@@ -97,7 +100,7 @@ export function calculatePrice(input: PricingInput, settings: PricingSettings): 
     : 0;
 
   const rushFee = input.isRush ? settings.rush_fee : 0;
-  const afterHoursFee = input.isAfterHours ? settings.after_hours_fee : 0;
+  const afterHoursFee = input.afterHoursAmount ?? (input.isAfterHours ? settings.after_hours_fee : 0);
   const witnessFee = cappedWitnesses * settings.witness_fee;
   const apostilleFee = apostilleCount * settings.apostille_fee;
 
