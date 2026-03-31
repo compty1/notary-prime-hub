@@ -7,11 +7,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { FileText, Download, Loader2, ShieldCheck, ShieldX, ExternalLink, Eye, Search, ChevronLeft, ChevronRight, ArrowUpDown, Trash2, Send } from "lucide-react";
+import { FileText, Download, Loader2, ShieldCheck, ShieldX, ExternalLink, Eye, Search, ChevronLeft, ChevronRight, ArrowUpDown, Trash2, Send, Upload, Image } from "lucide-react";
 import { TableSkeleton } from "@/components/AdminLoadingSkeleton";
 
 const docStatuses = ["uploaded", "pending_review", "approved", "notarized", "rejected"];
@@ -19,6 +20,9 @@ const docStatuses = ["uploaded", "pending_review", "approved", "notarized", "rej
 import { documentStatusColors as docStatusColors } from "@/lib/statusColors";
 
 const PAGE_SIZE = 20;
+
+const isImageFile = (fileName: string) => /\.(jpg|jpeg|png|gif|webp)$/i.test(fileName);
+const isPdfFile = (fileName: string) => /\.pdf$/i.test(fileName);
 
 const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(_, ref) {
   const { user } = useAuth();
@@ -33,6 +37,13 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [sendingId, setSendingId] = useState<string | null>(null);
+  const [thumbnailUrls, setThumbnailUrls] = useState<Record<string, string>>({});
+
+  // Upload dialog
+  const [showUpload, setShowUpload] = useState(false);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadClientId, setUploadClientId] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   // Search, filter, sort, pagination
   const [search, setSearch] = useState("");
@@ -47,7 +58,19 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
       supabase.from("profiles").select("user_id, full_name, email"),
     ]);
 
-    if (docsRes.data) setDocs(docsRes.data);
+    if (docsRes.data) {
+      setDocs(docsRes.data);
+      // Load thumbnails for image files
+      const imageFiles = docsRes.data.filter((d: any) => isImageFile(d.file_name));
+      if (imageFiles.length > 0) {
+        const urls: Record<string, string> = {};
+        await Promise.all(imageFiles.slice(0, 50).map(async (d: any) => {
+          const { data } = await supabase.storage.from("documents").createSignedUrl(d.file_path, 3600);
+          if (data?.signedUrl) urls[d.id] = data.signedUrl;
+        }));
+        setThumbnailUrls(urls);
+      }
+    }
     if (profilesRes.data) setProfiles(profilesRes.data);
     if (verificationsRes.data) {
       const mapped: Record<string, any> = {};
@@ -95,6 +118,40 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
       fetchDocs();
     }
     setUpdatingId(null);
+  };
+
+  const handleUpload = async () => {
+    if (!uploadFile || !user) return;
+    setUploading(true);
+    try {
+      const clientId = uploadClientId || user.id;
+      const ext = uploadFile.name.split(".").pop();
+      const path = `${clientId}/${Date.now()}-${uploadFile.name}`;
+      const { error: uploadError } = await supabase.storage.from("documents").upload(path, uploadFile);
+      if (uploadError) throw uploadError;
+
+      const { error: insertError } = await supabase.from("documents").insert({
+        file_name: uploadFile.name,
+        file_path: path,
+        uploaded_by: clientId,
+        status: "uploaded" as any,
+      });
+      if (insertError) throw insertError;
+
+      await supabase.from("audit_log").insert({
+        user_id: user.id, action: "admin_document_upload", entity_type: "document",
+        details: { file_name: uploadFile.name, client_id: clientId },
+      });
+
+      toast({ title: "Document uploaded successfully" });
+      setShowUpload(false);
+      setUploadFile(null);
+      setUploadClientId("");
+      fetchDocs();
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    }
+    setUploading(false);
   };
 
   const generateVerification = async (doc: any) => {
@@ -201,7 +258,6 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
     setPreviewDoc(doc);
     const { data } = await supabase.storage.from("documents").createSignedUrl(doc.file_path, 300);
     setPreviewUrl(data?.signedUrl || null);
-    // Log admin document access
     if (user) {
       supabase.from("audit_log").insert({
         user_id: user.id, action: "admin_document_view", entity_type: "document",
@@ -214,7 +270,12 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
 
   return (
     <div ref={ref}>
-      <h1 className="mb-4 font-sans text-2xl font-bold text-foreground">Document Management</h1>
+      <div className="mb-4 flex items-center justify-between flex-wrap gap-3">
+        <h1 className="font-sans text-2xl font-bold text-foreground">Document Management</h1>
+        <Button onClick={() => setShowUpload(true)}>
+          <Upload className="mr-2 h-4 w-4" /> Upload Document
+        </Button>
+      </div>
 
       {/* Search, Filter, Sort */}
       <div className="mb-4 flex items-center gap-3 flex-wrap">
@@ -253,11 +314,20 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
           {paginated.map((doc) => {
             const verification = verificationByDoc[doc.id];
             const hasActiveVerification = verification && verification.status === "valid";
+            const thumb = thumbnailUrls[doc.id];
             return (
               <Card key={doc.id} className="border-border/50">
                 <CardContent className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-3 min-w-0">
-                    <FileText className="h-5 w-5 text-primary flex-shrink-0" />
+                    {thumb ? (
+                      <img src={thumb} alt={doc.file_name} className="h-10 w-10 rounded object-cover flex-shrink-0 border border-border" />
+                    ) : isPdfFile(doc.file_name) ? (
+                      <div className="flex h-10 w-10 items-center justify-center rounded bg-destructive/10 flex-shrink-0">
+                        <FileText className="h-5 w-5 text-destructive" />
+                      </div>
+                    ) : (
+                      <FileText className="h-5 w-5 text-primary flex-shrink-0" />
+                    )}
                     <div className="min-w-0">
                       <p className="font-medium text-foreground truncate" title={doc.file_name}>{doc.file_name}</p>
                       <p className="text-xs text-muted-foreground">
@@ -337,6 +407,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
         </div>
       )}
 
+      {/* Preview Dialog */}
       <Dialog open={!!previewDoc} onOpenChange={() => { setPreviewDoc(null); setPreviewUrl(null); }}>
         <DialogContent className="max-w-3xl max-h-[85vh]">
           <DialogHeader><DialogTitle className="font-sans">{previewDoc?.file_name}</DialogTitle></DialogHeader>
@@ -349,6 +420,38 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
           ) : (
             <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Upload Dialog */}
+      <Dialog open={showUpload} onOpenChange={setShowUpload}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader><DialogTitle className="font-sans">Upload Document</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>File</Label>
+              <Input type="file" onChange={(e) => setUploadFile(e.target.files?.[0] || null)} />
+            </div>
+            <div>
+              <Label>Assign to Client (optional)</Label>
+              <Select value={uploadClientId} onValueChange={setUploadClientId}>
+                <SelectTrigger><SelectValue placeholder="Admin (self)" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Admin (self)</SelectItem>
+                  {profiles.map((p) => (
+                    <SelectItem key={p.user_id} value={p.user_id}>{p.full_name || p.email || p.user_id.slice(0, 8)}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowUpload(false)}>Cancel</Button>
+            <Button onClick={handleUpload} disabled={!uploadFile || uploading}>
+              {uploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+              Upload
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
