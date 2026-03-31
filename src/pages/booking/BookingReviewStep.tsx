@@ -79,18 +79,25 @@ export default function BookingReviewStep(props: ReviewStepProps) {
           <p className="text-sm font-medium flex items-center gap-2"><DollarSign className="h-4 w-4 text-primary" /> Estimated Pricing</p>
           <div className="space-y-1 text-sm">
             <div className="flex justify-between"><span className="text-muted-foreground">Notary fee ({documentCount} signature{documentCount > 1 ? "s" : ""})</span><span>${(parseFloat(pricingSettings.base_fee_per_signature || "5") * documentCount).toFixed(2)}</span></div>
-            {notarizationType === "in_person" && !isDigitalOnly(serviceType, serviceCategories) && <div className="flex justify-between"><span className="text-muted-foreground">Travel fee (est.)</span><span>${parseFloat(pricingSettings.travel_fee_minimum || "25").toFixed(2)}</span></div>}
+            {notarizationType === "in_person" && !isDigitalOnly(serviceType, serviceCategories) && (
+              props.travelDistance !== null && props.travelDistance !== undefined ? (
+                props.travelDistance < 5
+                  ? <div className="flex justify-between"><span className="text-muted-foreground">Travel fee (~{props.travelDistance.toFixed(1)} mi)</span><span className="text-primary">FREE</span></div>
+                  : <div className="flex justify-between"><span className="text-muted-foreground">Travel fee (~{props.travelDistance.toFixed(1)} mi)</span><span>${Math.max(parseFloat(pricingSettings.travel_fee_minimum || "25"), props.travelDistance * parseFloat(pricingSettings.travel_fee_per_mile || "0.655")).toFixed(2)}</span></div>
+              ) : <div className="flex justify-between"><span className="text-muted-foreground">Travel fee (est.)</span><span>${parseFloat(pricingSettings.travel_fee_minimum || "25").toFixed(2)}</span></div>
+            )}
             {notarizationType === "ron" && (
               <>
                 <div className="flex justify-between"><span className="text-muted-foreground">RON platform fee</span><span>${parseFloat(pricingSettings.ron_platform_fee || "25").toFixed(2)}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">KBA verification</span><span>${parseFloat(pricingSettings.kba_fee || "15").toFixed(2)}</span></div>
               </>
             )}
+            {(props.afterHoursFee ?? 0) > 0 && <div className="flex justify-between"><span className="text-muted-foreground">After-hours surcharge</span><span>${(props.afterHoursFee ?? 0).toFixed(2)}</span></div>}
             {urgencyLevel === "rush" && <div className="flex justify-between"><span className="text-muted-foreground">Rush processing</span><span>$50.00</span></div>}
             {urgencyLevel === "same_day" && <div className="flex justify-between"><span className="text-muted-foreground">Same-day processing</span><span>$100.00</span></div>}
             <div className="flex justify-between border-t border-border pt-1 font-semibold">
               <span>Estimated Total</span>
-              <span className="text-primary">${(estimatedPrice + (urgencyLevel === "rush" ? 50 : urgencyLevel === "same_day" ? 100 : 0)).toFixed(2)}</span>
+              <span className="text-primary">${(estimatedPrice! + (urgencyLevel === "rush" ? 50 : urgencyLevel === "same_day" ? 100 : 0)).toFixed(2)}</span>
             </div>
           </div>
           <p className="text-xs text-muted-foreground">Final price may vary based on actual travel distance and document complexity.</p>
