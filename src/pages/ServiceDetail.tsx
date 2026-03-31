@@ -373,10 +373,14 @@ export default function ServiceDetail() {
       setCheckedItems(new Set());
 
       try {
-        const services = await fetchPublicJson<ServiceData[]>(
-          `/services?select=*&id=eq.${encodeURIComponent(serviceId)}&is_active=eq.true&limit=1`
-        );
-        const nextService = services[0] ?? null;
+        const { data: svcData, error: svcErr } = await supabase
+          .from("services")
+          .select("*")
+          .eq("id", serviceId)
+          .eq("is_active", true)
+          .limit(1);
+        if (svcErr) throw svcErr;
+        const nextService = (svcData as unknown as ServiceData[])?.[0] ?? null;
 
         if (!nextService) {
           setService(null);
@@ -390,18 +394,10 @@ export default function ServiceDetail() {
         setService(nextService);
 
         const [reqRes, wfRes, relRes, allSvcRes] = await Promise.allSettled([
-          fetchPublicJson<Requirement[]>(
-            `/service_requirements?select=*&service_id=eq.${encodeURIComponent(serviceId)}&order=display_order.asc`
-          ),
-          fetchPublicJson<WorkflowStep[]>(
-            `/service_workflows?select=*&service_id=eq.${encodeURIComponent(serviceId)}&order=step_number.asc`
-          ),
-          fetchPublicJson<ServiceData[]>(
-            `/services?select=*&is_active=eq.true&category=eq.${encodeURIComponent(nextService.category)}&id=neq.${encodeURIComponent(serviceId)}&order=display_order.asc,name.asc&limit=3`
-          ),
-          fetchPublicJson<ServiceData[]>(
-            `/services?select=id,name,category&is_active=eq.true&order=display_order.asc,name.asc`
-          ),
+          supabase.from("service_requirements").select("*").eq("service_id", serviceId).order("display_order", { ascending: true }),
+          supabase.from("service_workflows").select("*").eq("service_id", serviceId).order("step_number", { ascending: true }),
+          supabase.from("services").select("*").eq("is_active", true).eq("category", nextService.category).neq("id", serviceId).order("display_order", { ascending: true }).order("name", { ascending: true }).limit(3),
+          supabase.from("services").select("id,name,category").eq("is_active", true).order("display_order", { ascending: true }).order("name", { ascending: true }),
         ]);
 
         if (reqRes.status === "fulfilled") {
