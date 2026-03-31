@@ -32,6 +32,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
   const [previewDoc, setPreviewDoc] = useState<any>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [sendingId, setSendingId] = useState<string | null>(null);
 
   // Search, filter, sort, pagination
   const [search, setSearch] = useState("");
