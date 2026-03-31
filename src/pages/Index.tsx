@@ -213,51 +213,14 @@ export default function Index() {
               </motion.div>
             </motion.div>
 
-            {/* Right — Image with floating cards */}
+            {/* Right — Phone Animation */}
             <motion.div
               initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7, delay: 0.3 }}
-              className="relative"
+              className="relative flex items-center justify-center"
             >
-              {/* Floating metric card — top left */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8, duration: 0.5 }}
-                className="absolute -left-4 top-4 z-10 rounded-xl border border-border bg-card p-4 shadow-lg md:-left-8 md:top-8"
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <TrendingUp className="h-4 w-4 text-primary" />
-                  <span className="text-xs text-muted-foreground">Documents notarized</span>
-                </div>
-                <p className="text-2xl font-bold text-foreground"><AnimatedCounter value={2847} /></p>
-              </motion.div>
-
-              {/* Main image */}
-              <div className="overflow-hidden rounded-2xl">
-                <img
-                  src={heroImage}
-                  alt="Professional notary signing documents with a client"
-                  className="h-full w-full object-cover"
-                  width={960}
-                  height={1024}
-                  loading="lazy"
-                />
-              </div>
-
-              {/* Floating notification card — bottom right */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.1, duration: 0.5 }}
-                className="absolute -bottom-4 -right-4 z-10 rounded-xl border border-border bg-card px-5 py-3 shadow-lg md:-bottom-6 md:-right-8"
-              >
-                <p className="text-[10px] text-muted-foreground">
-                  <span className="text-primary font-medium">Completed</span> · Notarized · 2m ago
-                </p>
-                <p className="text-sm font-semibold text-foreground">Power of Attorney — $25.00</p>
-              </motion.div>
+              <HeroPhoneAnimation />
             </motion.div>
           </div>
         </div>
