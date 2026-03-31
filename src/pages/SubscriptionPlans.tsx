@@ -125,11 +125,16 @@ export default function SubscriptionPlans() {
                       </li>
                     ))}
                   </ul>
-                  <Link to={plan.price === "Custom" ? "/#contact" : "/signup"}>
-                    <Button className={`w-full ${plan.highlight ? "" : ""}`} variant={plan.highlight ? "default" : "outline"} size="lg">
-                      {plan.cta}
-                    </Button>
-                  </Link>
+                  <Button
+                    className="w-full"
+                    variant={plan.highlight ? "default" : "outline"}
+                    size="lg"
+                    disabled={loadingPlan === plan.name}
+                    onClick={() => handleSubscribe(plan)}
+                  >
+                    {loadingPlan === plan.name ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    {plan.cta}
+                  </Button>
                 </CardContent>
               </Card>
             </motion.div>
