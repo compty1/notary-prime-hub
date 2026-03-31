@@ -374,6 +374,10 @@ export default function RonSession() {
     }
     setCompleting(true);
 
+    // Fetch notary name from settings (Item 353, 422)
+    const { data: notaryNameData } = await supabase.from("platform_settings").select("setting_value").eq("setting_key", "notary_name").single();
+    const notaryNameSetting = notaryNameData?.setting_value || "Notar";
+
     await supabase.from("appointments").update({ status: "completed" as any, admin_notes: notes }).eq("id", appointmentId);
     await supabase.from("notarization_sessions").update({
       id_verified: true,
