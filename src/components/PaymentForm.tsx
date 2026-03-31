@@ -180,7 +180,7 @@ export default function PaymentForm({ appointmentId, defaultAmount, description,
           <CardDescription>Amount: ${amount.toFixed(2)}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Elements stripe={stripeInstance} options={{ clientSecret, appearance: { theme: document.documentElement.classList.contains('dark') ? 'night' : 'stripe' } }}>
+          <Elements stripe={stripeInstance} options={{ clientSecret, appearance: { theme: document.documentElement.classList.contains('dark') ? 'night' : 'stripe', variables: { colorPrimary: '#1B998B' } } }}>
             <CheckoutForm amount={amount} onSuccess={() => onSuccess?.()} onCancel={() => { setClientSecret(null); onCancel?.(); }} />
           </Elements>
         </CardContent>
