@@ -2,25 +2,80 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Menu, ChevronDown } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/AuthContext";
+import { cn } from "@/lib/utils";
 
-const navLinks = [
-  { to: "/services", label: "Services" },
+const serviceCategories = [
+  { key: "notarization", label: "Core Notarization", desc: "RON, in-person, witness services" },
+  { key: "document_services", label: "Document Services", desc: "Preparation, scanning, formatting" },
+  { key: "verification", label: "Identity & Verification", desc: "ID checks, I-9, KYC" },
+  { key: "business", label: "Business & Volume", desc: "Bulk packages, API, subscriptions" },
+  { key: "authentication", label: "Authentication & Intl.", desc: "Apostille, translation" },
+  { key: "admin_support", label: "Administrative Support", desc: "Data entry, travel, admin tasks" },
+  { key: "content_creation", label: "Content Creation", desc: "Blog posts, social media" },
+  { key: "customer_service", label: "Customer Service", desc: "Email & chat support" },
+];
+
+const solutionLinks = [
+  { to: "/solutions/notaries", label: "For Notaries", desc: "Tools for notary professionals" },
+  { to: "/solutions/real-estate", label: "For Real Estate", desc: "Closings & title services" },
+  { to: "/solutions/law-firms", label: "For Law Firms", desc: "Legal document notarization" },
+  { to: "/solutions/small-business", label: "For Small Business", desc: "Affordable business packages" },
+  { to: "/solutions/individuals", label: "For Individuals", desc: "Personal document services" },
+];
+
+const plainLinks = [
   { to: "/ai-writer", label: "AI Tools" },
   { to: "/about", label: "About" },
   { to: "/templates", label: "Templates" },
   { to: "/fee-calculator", label: "Pricing" },
 ];
 
+function DropdownNav({ label, linkTo, children }: { label: string; linkTo?: string; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <div className="flex items-center" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
+        {linkTo ? (
+          <Link
+            to={linkTo}
+            className="relative px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {label}
+          </Link>
+        ) : (
+          <span className="px-3 py-2 text-sm font-medium text-muted-foreground cursor-default">{label}</span>
+        )}
+        <PopoverTrigger asChild>
+          <button className="-ml-2 p-1 text-muted-foreground hover:text-foreground transition-colors" aria-label={`${label} menu`}>
+            <ChevronDown className="h-3 w-3" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          align="start"
+          sideOffset={4}
+          className="w-[420px] p-4"
+          onMouseEnter={() => setOpen(true)}
+          onMouseLeave={() => setOpen(false)}
+        >
+          {children}
+        </PopoverContent>
+      </div>
+    </Popover>
+  );
+}
+
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const [servicesExpanded, setServicesExpanded] = useState(false);
+  const [solutionsExpanded, setSolutionsExpanded] = useState(false);
   const { user, isAdmin, isNotary } = useAuth();
   const location = useLocation();
 
-  // Close mobile menu on route change
   useEffect(() => {
     setOpen(false);
   }, [location.pathname]);
@@ -37,7 +92,46 @@ export function Navbar() {
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">
-          {navLinks.map((link) => (
+          {/* Services Dropdown */}
+          <DropdownNav label="Services" linkTo="/services">
+            <div className="grid grid-cols-2 gap-2">
+              {serviceCategories.map((cat) => (
+                <Link
+                  key={cat.key}
+                  to={`/services?category=${cat.key}`}
+                  className="rounded-lg p-2 hover:bg-muted transition-colors"
+                >
+                  <p className="text-sm font-medium text-foreground">{cat.label}</p>
+                  <p className="text-xs text-muted-foreground">{cat.desc}</p>
+                </Link>
+              ))}
+            </div>
+            <div className="mt-3 border-t border-border pt-3">
+              <Link to="/services" className="text-sm font-medium text-primary hover:underline">
+                View All Services →
+              </Link>
+            </div>
+          </DropdownNav>
+
+          {/* Solutions Dropdown */}
+          <DropdownNav label="Solutions">
+            <div className="space-y-1">
+              {solutionLinks.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className="flex items-start gap-3 rounded-lg p-2 hover:bg-muted transition-colors"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{link.label}</p>
+                    <p className="text-xs text-muted-foreground">{link.desc}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </DropdownNav>
+
+          {plainLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
@@ -59,7 +153,7 @@ export function Navbar() {
             )}
             <Link to="/book">
               <Button variant="accent" size="sm">
-                Book Now
+                Notarize Now
               </Button>
             </Link>
           </div>
@@ -73,7 +167,44 @@ export function Navbar() {
           </SheetTrigger>
           <SheetContent side="right" className="w-72 bg-background">
             <div className="mt-8 flex flex-col gap-1">
-              {navLinks.map((link) => (
+              {/* Services collapsible */}
+              <button
+                onClick={() => setServicesExpanded(!servicesExpanded)}
+                className="flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+              >
+                Services
+                <ChevronDown className={cn("h-4 w-4 transition-transform", servicesExpanded && "rotate-180")} />
+              </button>
+              {servicesExpanded && (
+                <div className="ml-4 space-y-1">
+                  <Link to="/services" className="block rounded-lg px-4 py-2 text-sm text-primary font-medium hover:bg-muted">All Services</Link>
+                  {serviceCategories.map((cat) => (
+                    <Link key={cat.key} to={`/services?category=${cat.key}`} className="block rounded-lg px-4 py-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground">
+                      {cat.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {/* Solutions collapsible */}
+              <button
+                onClick={() => setSolutionsExpanded(!solutionsExpanded)}
+                className="flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+              >
+                Solutions
+                <ChevronDown className={cn("h-4 w-4 transition-transform", solutionsExpanded && "rotate-180")} />
+              </button>
+              {solutionsExpanded && (
+                <div className="ml-4 space-y-1">
+                  {solutionLinks.map((link) => (
+                    <Link key={link.to} to={link.to} className="block rounded-lg px-4 py-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground">
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {plainLinks.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
@@ -96,7 +227,7 @@ export function Navbar() {
                 </Link>
               )}
               <Link to="/book">
-                <Button variant="accent" className="w-full">Book Now</Button>
+                <Button variant="accent" className="w-full">Notarize Now</Button>
               </Link>
             </div>
           </SheetContent>

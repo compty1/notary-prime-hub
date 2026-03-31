@@ -19,14 +19,23 @@ export function ESealEmbed({
 
   return (
     <div className="inline-flex flex-col items-center gap-2 rounded-xl border-2 border-primary/30 bg-primary/5 p-4 text-center">
-      <div className="flex items-center gap-2">
-        <Shield className="h-6 w-6 text-primary" />
-        <span className="font-sans text-sm font-bold tracking-wide uppercase text-primary">Electronic Notary Seal</span>
+      <div className="flex items-center gap-3">
+        <img
+          src="/images/notary-seal.png"
+          alt={`${notaryName} — Notary Seal`}
+          className="h-16 w-16 rounded-full object-contain border border-primary/20 bg-background p-1"
+        />
+        <div className="text-left">
+          <div className="flex items-center gap-1.5">
+            <Shield className="h-4 w-4 text-primary" />
+            <span className="font-sans text-xs font-bold tracking-wide uppercase text-primary">Electronic Notary Seal</span>
+          </div>
+          <p className="text-sm font-semibold text-foreground">{notaryName}</p>
+          <p className="text-xs text-muted-foreground">Notary Public — State of {commissionState}</p>
+        </div>
       </div>
 
       <div className="w-full border-t border-primary/20 pt-2 space-y-1">
-        <p className="text-sm font-semibold text-foreground">{notaryName}</p>
-        <p className="text-xs text-muted-foreground">Notary Public — State of {commissionState}</p>
         {commissionNumber && <p className="text-xs text-muted-foreground">Commission #{commissionNumber}</p>}
         {commissionExpiry && <p className="text-xs text-muted-foreground">Expires: {commissionExpiry}</p>}
       </div>
