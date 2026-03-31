@@ -115,6 +115,7 @@ export default function AppointmentConfirmation() {
   const [loading, setLoading] = useState(true);
   const [zoomLink, setZoomLink] = useState<string>("");
   const [notaryProfile, setNotaryProfile] = useState<any>(null);
+  const [showPayment, setShowPayment] = useState(false);
 
   useEffect(() => {
     if (!appointmentId || !user) { setLoading(false); return; }
