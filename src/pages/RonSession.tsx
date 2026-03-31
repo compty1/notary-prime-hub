@@ -406,6 +406,7 @@ export default function RonSession() {
       document_name: documentName || null,
       signer_email: signerEmail || null,
       signer_location_state: signerLocationState,
+      recording_url: recordingUrl || null,
     } as any).eq("appointment_id", appointmentId);
     await supabase.from("documents").update({ status: "notarized" as any }).eq("appointment_id", appointmentId);
 
