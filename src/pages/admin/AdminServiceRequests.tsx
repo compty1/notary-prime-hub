@@ -57,6 +57,19 @@ export default function AdminServiceRequests() {
   useEffect(() => {
     fetchRequests();
     fetchTeam();
+    // Realtime subscription (Item 232)
+    const channel = supabase.channel("admin-service-requests")
+      .on("postgres_changes", { event: "*", schema: "public", table: "service_requests" }, (payload) => {
+        if (payload.eventType === "INSERT") {
+          setRequests(prev => [payload.new as any, ...prev]);
+          toast({ title: "New service request", description: (payload.new as any).service_name });
+        } else if (payload.eventType === "UPDATE") {
+          setRequests(prev => prev.map(r => r.id === (payload.new as any).id ? payload.new as any : r));
+        } else if (payload.eventType === "DELETE") {
+          setRequests(prev => prev.filter(r => r.id !== (payload.old as any).id));
+        }
+      }).subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   const fetchTeam = async () => {
