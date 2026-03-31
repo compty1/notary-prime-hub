@@ -99,62 +99,95 @@ export type Database = {
       appointments: {
         Row: {
           admin_notes: string | null
+          after_hours_fee: number | null
           client_address: string | null
           client_id: string
           confirmation_number: string | null
           created_at: string
+          entity_name: string | null
           estimated_price: number | null
+          facility_contact: string | null
+          facility_name: string | null
+          facility_room: string | null
           id: string
           location: string | null
           notarization_type: Database["public"]["Enums"]["notarization_type"]
           notary_id: string | null
           notes: string | null
+          refusal_reason: string | null
+          refused_at: string | null
           rescheduled_from: string | null
           scheduled_date: string
           scheduled_time: string
           service_type: string
+          signer_count: number | null
+          signer_title: string | null
+          signing_capacity: string | null
           status: Database["public"]["Enums"]["appointment_status"]
           travel_distance_miles: number | null
+          travel_fee_estimate: number | null
           updated_at: string
         }
         Insert: {
           admin_notes?: string | null
+          after_hours_fee?: number | null
           client_address?: string | null
           client_id: string
           confirmation_number?: string | null
           created_at?: string
+          entity_name?: string | null
           estimated_price?: number | null
+          facility_contact?: string | null
+          facility_name?: string | null
+          facility_room?: string | null
           id?: string
           location?: string | null
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
           notary_id?: string | null
           notes?: string | null
+          refusal_reason?: string | null
+          refused_at?: string | null
           rescheduled_from?: string | null
           scheduled_date: string
           scheduled_time: string
           service_type: string
+          signer_count?: number | null
+          signer_title?: string | null
+          signing_capacity?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
           travel_distance_miles?: number | null
+          travel_fee_estimate?: number | null
           updated_at?: string
         }
         Update: {
           admin_notes?: string | null
+          after_hours_fee?: number | null
           client_address?: string | null
           client_id?: string
           confirmation_number?: string | null
           created_at?: string
+          entity_name?: string | null
           estimated_price?: number | null
+          facility_contact?: string | null
+          facility_name?: string | null
+          facility_room?: string | null
           id?: string
           location?: string | null
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
           notary_id?: string | null
           notes?: string | null
+          refusal_reason?: string | null
+          refused_at?: string | null
           rescheduled_from?: string | null
           scheduled_date?: string
           scheduled_time?: string
           service_type?: string
+          signer_count?: number | null
+          signer_title?: string | null
+          signing_capacity?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
           travel_distance_miles?: number | null
+          travel_fee_estimate?: number | null
           updated_at?: string
         }
         Relationships: [
