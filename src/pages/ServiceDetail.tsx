@@ -209,12 +209,22 @@ const categoryComplexity: Record<string, { level: string; duration: string }> = 
   business_services: { level: "Simple", duration: "Ongoing" },
 };
 
-// Phase 3.8: Bundle suggestions
+// Phase 3.8: Bundle suggestions (items 161-170)
 const bundleSuggestions: Record<string, string[]> = {
   authentication: ["Translation Coordination", "Certified Copy", "Document Preparation"],
   notarization: ["Witness Service", "Certified Copy", "Document Storage Vault"],
   verification: ["Document Preparation", "Certified Copy"],
   consulting: ["Translation Coordination", "Apostille Facilitation", "Document Preparation"],
+  document_services: ["Document Storage Vault", "PDF Services", "Template Library"],
+  business: ["Email Management", "Data Entry", "Document Preparation"],
+  recurring: ["Document Storage Vault", "Automated Reminders", "Compliance Package"],
+  admin_support: ["Email Management", "Document Cleanup & Formatting", "Data Entry"],
+  content_creation: ["Social Media Content", "Newsletter Design", "Blog Post Writing"],
+  research: ["Lead Generation", "Market Research Report", "Data Entry"],
+  customer_service: ["Email Support Handling", "Live Chat Support", "Email Management"],
+  technical_support: ["Website Content Updates", "UX Audit & Heuristic Review"],
+  ux_testing: ["Usability Testing & Report", "UX Research & Persona Development"],
+  business_services: ["Email Management", "Data Entry", "Registered Agent Coordination"],
 };
 
 // Phase 3.3: Legal disclaimers
