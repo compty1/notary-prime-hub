@@ -326,39 +326,15 @@ export default function AdminSettings() {
               </p>
             </div>
 
-            {/* KBA Integration Setup */}
-            <Collapsible>
-              <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors">
-                <Shield className="h-4 w-4" /> KBA Provider Configuration
-              </CollapsibleTrigger>
-              <CollapsibleContent className="mt-3 space-y-3 rounded-lg border border-border/50 p-4">
-                <p className="text-xs text-muted-foreground">Ohio ORC §147.66 requires Knowledge-Based Authentication for all RON sessions. SignNow handles KBA natively — configure an external provider only if needed.</p>
-                <div>
-                  <Label>KBA Provider</Label>
-                  <Select value={editValues.kba_provider || "signnow_builtin"} onValueChange={(v) => updateValue("kba_provider", v)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="signnow_builtin">SignNow Built-in</SelectItem>
-                      <SelectItem value="idology">IDology</SelectItem>
-                      <SelectItem value="evident">Evident</SelectItem>
-                      <SelectItem value="lexisnexis">LexisNexis</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                {editValues.kba_provider && editValues.kba_provider !== "signnow_builtin" && (
-                  <>
-                    <div>
-                      <Label>KBA API Key</Label>
-                      <Input type="password" value={editValues.kba_api_key || ""} onChange={(e) => updateValue("kba_api_key", e.target.value)} placeholder="Enter API key" />
-                    </div>
-                    <div>
-                      <Label>KBA API Endpoint</Label>
-                      <Input value={editValues.kba_api_endpoint || ""} onChange={(e) => updateValue("kba_api_endpoint", e.target.value)} placeholder="https://api.provider.com/v1/kba" />
-                    </div>
-                  </>
-                )}
-              </CollapsibleContent>
-            </Collapsible>
+            {/* KBA — handled natively by SignNow */}
+            <div className="rounded-lg border border-border/50 p-4 flex items-start gap-3">
+              <Shield className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-sm font-medium">Knowledge-Based Authentication (KBA)</p>
+                <p className="text-xs text-muted-foreground mt-1">KBA is handled natively within SignNow during RON sessions — no additional provider configuration required. SignNow's built-in KBA is MISMO-compliant and satisfies Ohio ORC §147.66 requirements.</p>
+              </div>
+              <Badge className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary text-xs ml-auto flex-shrink-0">Built-in</Badge>
+            </div>
           </CardContent>
         </Card>
 
@@ -393,7 +369,7 @@ export default function AdminSettings() {
                 { label: "E&O Insurance Current", ok: !!editValues.eo_expiration_date && new Date(editValues.eo_expiration_date) > new Date(), detail: editValues.eo_expiration_date ? `Expires ${new Date(editValues.eo_expiration_date).toLocaleDateString()}` : "Not configured" },
                 { label: "Surety Bond Current", ok: !!editValues.bond_expiration_date && new Date(editValues.bond_expiration_date) > new Date(), detail: editValues.bond_expiration_date ? `Expires ${new Date(editValues.bond_expiration_date).toLocaleDateString()}` : "Not configured" },
                 { label: "SignNow API", ok: true, detail: "Connected (server secret)" },
-                { label: "KBA Integration", ok: true, detail: editValues.kba_provider === "signnow_builtin" || !editValues.kba_provider ? "SignNow built-in" : editValues.kba_provider },
+                { label: "KBA Integration", ok: true, detail: "SignNow built-in (MISMO-compliant)" },
               ].map((item) => (
                 <div key={item.label} className="flex items-start gap-2 rounded-lg border border-border/50 p-3">
                   {item.ok ? <CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> : <XCircle className="h-4 w-4 mt-0.5 text-destructive flex-shrink-0" />}
