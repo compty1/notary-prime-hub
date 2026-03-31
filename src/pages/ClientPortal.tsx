@@ -106,7 +106,7 @@ export default function ClientPortal() {
     if (INTAKE_ONLY.has(svc.name)) return "Get Started";
     if (SUBSCRIPTION_SERVICES.has(svc.name)) return "View Plans";
     if (PORTAL_SERVICES.has(svc.name)) return "Open Portal";
-    return "Book Now";
+    return "Notarize Now";
   };
 
   const formatDate = (dateStr: string) => new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });

@@ -11,7 +11,7 @@ export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com
   return (
     <footer className="border-t border-border bg-sidebar-background text-sidebar-foreground">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid gap-8 md:grid-cols-4">
+        <div className="grid gap-8 md:grid-cols-5">
           <div className="md:col-span-1">
             <Logo size="sm" showText subtitle="Notary & Document Services" />
             <p className="mt-3 text-sm text-sidebar-foreground/60">
@@ -25,6 +25,16 @@ export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com
               <Link to="/services" className="block transition-colors hover:text-primary">All Services</Link>
               <Link to="/loan-signing" className="block transition-colors hover:text-primary">Loan Signing</Link>
               <Link to="/templates" className="block transition-colors hover:text-primary">Templates</Link>
+            </div>
+          </div>
+          <div>
+            <h4 className="mb-3 font-heading text-sm font-semibold text-sidebar-foreground">Solutions</h4>
+            <div className="space-y-2 text-sm text-sidebar-foreground/60">
+              <Link to="/solutions/notaries" className="block transition-colors hover:text-primary">For Notaries</Link>
+              <Link to="/solutions/real-estate" className="block transition-colors hover:text-primary">For Real Estate</Link>
+              <Link to="/solutions/law-firms" className="block transition-colors hover:text-primary">For Law Firms</Link>
+              <Link to="/solutions/small-business" className="block transition-colors hover:text-primary">For Small Business</Link>
+              <Link to="/solutions/individuals" className="block transition-colors hover:text-primary">For Individuals</Link>
             </div>
           </div>
           <div>

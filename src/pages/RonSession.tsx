@@ -129,6 +129,7 @@ export default function RonSession() {
   const finalTranscriptRef = useRef("");
 
   const [sessionStatus, setSessionStatus] = useState<string>("scheduled");
+  const [recordingUrl, setRecordingUrl] = useState("");
 
   const hasNativeKba = PLATFORMS_WITH_NATIVE_KBA.includes(signingPlatform);
 
@@ -405,6 +406,7 @@ export default function RonSession() {
       document_name: documentName || null,
       signer_email: signerEmail || null,
       signer_location_state: signerLocationState,
+      recording_url: recordingUrl || null,
     } as any).eq("appointment_id", appointmentId);
     await supabase.from("documents").update({ status: "notarized" as any }).eq("appointment_id", appointmentId);
 
@@ -490,8 +492,15 @@ export default function RonSession() {
       } as Record<string, Json | undefined>,
     });
 
+    // Trigger completion email
+    try {
+      await supabase.functions.invoke("send-appointment-emails", {
+        body: { appointment_id: appointmentId, status_change: "completed" },
+      });
+    } catch {}
+
     setCompleting(false);
-    toast({ title: "Session finalized", description: "Appointment completed, journal entry & e-seal created, documents marked as notarized." });
+    toast({ title: "Session finalized", description: "Appointment completed, journal entry & e-seal created, documents marked as notarized. Completion email sent to client." });
     navigate("/admin/appointments");
   };
 
@@ -539,6 +548,65 @@ export default function RonSession() {
 
   // Client view
   if (!isAdminOrNotary) {
+    // Completed state for client
+    if (sessionStatus === "completed" || appointment?.status === "completed") {
+      return (
+        <div className="min-h-screen bg-background">
+          <nav className="border-b border-border/50 bg-background px-4 py-3">
+            <div className="flex items-center justify-between">
+              <Link to="/portal" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+                <ArrowLeft className="h-4 w-4" /> Back to Portal
+              </Link>
+              <div className="flex items-center gap-3">
+                <Shield className="h-4 w-4 text-primary" />
+                <span className="text-sm font-medium">RON Session Complete</span>
+              </div>
+            </div>
+          </nav>
+          <div className="container mx-auto max-w-3xl px-4 py-8">
+            <Card className="mb-6 border-2 border-primary/20 bg-primary/5">
+              <CardContent className="flex flex-col items-center py-12 text-center">
+                <CheckCircle className="mb-4 h-16 w-16 text-primary" />
+                <h2 className="mb-2 font-sans text-2xl font-bold text-foreground">Notarization Complete</h2>
+                <p className="mb-1 text-muted-foreground">
+                  Your document has been successfully notarized on{" "}
+                  {appointment ? new Date(appointment.scheduled_date + "T00:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : ""}
+                </p>
+                {sessionUniqueId && <p className="text-xs text-muted-foreground font-mono">Session ID: {sessionUniqueId}</p>}
+              </CardContent>
+            </Card>
+
+            <div className="space-y-4">
+              <Card className="border-border/50">
+                <CardContent className="p-6">
+                  <h3 className="mb-3 font-semibold text-foreground">What's Next</h3>
+                  <div className="space-y-3 text-sm text-muted-foreground">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle className="mt-0.5 h-4 w-4 text-primary flex-shrink-0" />
+                      <p>Your notarized documents are available for download in your <Link to="/portal#documents" className="text-primary hover:underline">Client Portal</Link>.</p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Shield className="mt-0.5 h-4 w-4 text-primary flex-shrink-0" />
+                      <p>An electronic notary seal and verification link have been generated for your document.</p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <FileCheck className="mt-0.5 h-4 w-4 text-primary flex-shrink-0" />
+                      <p>A Certificate of Notarization is available for download from the Documents tab in your portal.</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="flex gap-3 justify-center">
+                <Link to="/portal#documents"><Button>View My Documents</Button></Link>
+                <Link to="/portal"><Button variant="outline">Back to Portal</Button></Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen bg-background">
         <nav className="border-b border-border/50 bg-background px-4 py-3">
@@ -586,7 +654,7 @@ export default function RonSession() {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="mt-0.5 h-5 w-5 text-amber-500" />
+                  <AlertCircle className="mt-0.5 h-5 w-5 text-destructive" />
                   <div>
                     <p className="font-medium">Knowledge-Based Authentication (KBA)</p>
                     <p className="text-sm text-muted-foreground">
@@ -1018,19 +1086,34 @@ export default function RonSession() {
             </Card>
 
             {/* Complete & Finalize */}
-            <Card className="border-border/50 border-primary/20 dark:border-primary/20 bg-primary/5/30 dark:bg-primary/5">
+            <Card className="border-border/50 border-primary/20 dark:border-primary/20 bg-primary/5">
               <CardContent className="p-4">
                 <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
                   <FileCheck className="h-4 w-4 text-primary dark:text-primary" /> Complete & Finalize
                 </h3>
                 <p className="mb-3 text-xs text-muted-foreground">Marks appointment as completed, creates journal entry, e-seal verification, and payment record.</p>
+                
+                {/* Recording URL — Ohio ORC §147.66 */}
+                <div className="mb-3">
+                  <Label className="text-xs">Recording URL <span className="text-muted-foreground">(ORC §147.66 — 10yr retention)</span></Label>
+                  <Input
+                    value={recordingUrl}
+                    onChange={(e) => setRecordingUrl(e.target.value)}
+                    placeholder="https://platform.com/recording/..."
+                    className="mt-1 text-sm"
+                  />
+                  {!recordingUrl && (
+                    <p className="mt-1 text-[10px] text-destructive">⚠ Ohio law requires session recordings to be retained for 10 years.</p>
+                  )}
+                </div>
+
                 <ul className="mb-3 space-y-1 text-xs">
                   <li className="flex items-center gap-1">{participantLink ? <CheckCircle className="h-3 w-3 text-primary" /> : <XCircle className="h-3 w-3 text-destructive" />} Session Link</li>
                   <li className="flex items-center gap-1">{idVerified ? <CheckCircle className="h-3 w-3 text-primary" /> : <XCircle className="h-3 w-3 text-destructive" />} ID Verification</li>
                   <li className="flex items-center gap-1">{kbaCompleted ? <CheckCircle className="h-3 w-3 text-primary" /> : <XCircle className="h-3 w-3 text-destructive" />} KBA Completed</li>
                   <li className="flex items-center gap-1">{oathAdministered ? <CheckCircle className="h-3 w-3 text-primary" /> : <XCircle className="h-3 w-3 text-destructive" />} Oath Administered</li>
                 </ul>
-                <Button className="w-full bg-primary text-white hover:bg-primary/90" disabled={!idVerified || !kbaCompleted || completing} onClick={completeAndFinalize}>
+                <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={!idVerified || !kbaCompleted || completing} onClick={completeAndFinalize}>
                   {completing ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <FileCheck className="mr-1 h-4 w-4" />} Complete Session
                 </Button>
               </CardContent>
