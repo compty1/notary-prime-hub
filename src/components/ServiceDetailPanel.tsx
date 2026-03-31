@@ -7,6 +7,7 @@ import { CheckCircle, Circle, FileText, Scale, Loader2 } from "lucide-react";
 interface ServiceDetailPanelProps {
   serviceId: string;
   serviceName?: string;
+  category?: string;
 }
 
 export default function ServiceDetailPanel({ serviceId, serviceName }: ServiceDetailPanelProps) {
