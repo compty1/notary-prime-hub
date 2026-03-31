@@ -73,7 +73,7 @@ export default function ServiceDetailPanel({ serviceId, serviceName, category }:
                     {step.step_description && <p className="text-xs text-muted-foreground">{step.step_description}</p>}
                     <div className="flex gap-1 mt-1">
                       {step.requires_client_action && <Badge variant="outline" className="text-[10px]">Client Action</Badge>}
-                      {step.requires_admin_action && <Badge variant="outline" className="text-[10px]">Admin Action</Badge>}
+                      {step.requires_admin_action && <Badge variant="outline" className="text-[10px]">{category && ["notarization", "authentication"].includes(category) ? "Notary Action" : "Provider Action"}</Badge>}
                     </div>
                   </div>
                 </div>
