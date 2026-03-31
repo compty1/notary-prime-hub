@@ -147,6 +147,12 @@ export default function AdminServiceRequests() {
     }).eq("id", selectedRequest.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else {
+      // Audit log (Item 247)
+      await logAuditEvent("service_request_updated", {
+        entityType: "service_request",
+        entityId: selectedRequest.id,
+        details: { status: editStatus, priority: editPriority, assigned_to: editAssignedTo || null },
+      });
       toast({ title: "Request updated" });
       setRequests(prev => prev.map(r => r.id === selectedRequest.id ? { ...r, status: editStatus, priority: editPriority, notes: editNotes, client_visible_status: editClientStatus, assigned_to: editAssignedTo || null, deliverable_url: deliverableUrl, sla_deadline: slaDeadline } : r));
       setDetailOpen(false);
