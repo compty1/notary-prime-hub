@@ -450,7 +450,7 @@ export default function RonSession() {
       appointment_id: appointmentId,
       created_by: user.id,
       signer_name: clientProfile?.full_name || null,
-      notary_name: "Notar",
+      notary_name: notaryNameSetting || "Notar",
       commissioned_state: "OH",
       status: "valid",
     });
