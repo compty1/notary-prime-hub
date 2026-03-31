@@ -425,10 +425,34 @@ export default function ServiceDetail() {
     void load();
   }, [serviceId]);
 
-  // AI Chat handler
+  /** Gap #42: Restore readiness checklist from localStorage */
+  useEffect(() => {
+    if (serviceId) {
+      const saved = localStorage.getItem(`readiness-${serviceId}`);
+      if (saved) {
+        try { setCheckedItems(new Set(JSON.parse(saved))); } catch {}
+      }
+    }
+  }, [serviceId]);
+
+  /** Persist readiness checklist to localStorage */
+  const toggleChecked = (id: string) => {
+    setCheckedItems(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      if (serviceId) localStorage.setItem(`readiness-${serviceId}`, JSON.stringify([...next]));
+      return next;
+    });
+  };
+
+  /** Gap #85: Rate-limited AI Chat handler */
   const sendChatMessage = async () => {
     if (!chatInput.trim() || chatLoading) return;
-    const userMsg = { role: "user", content: chatInput };
+    // Gap #85: Rate limit — max 1 message per 2 seconds
+    if (Date.now() - lastChatSent < 2000) return;
+    setLastChatSent(Date.now());
+
+    const userMsg = { role: "user", content: chatInput, timestamp: Date.now() };
     setChatMessages(prev => [...prev, userMsg]);
     setChatInput("");
     setChatLoading(true);
@@ -441,11 +465,21 @@ export default function ServiceDetail() {
       });
       if (error) throw error;
       const reply = data?.choices?.[0]?.message?.content || data?.reply || "I'm sorry, I couldn't process that request.";
-      setChatMessages(prev => [...prev, { role: "assistant", content: reply }]);
+      setChatMessages(prev => [...prev, { role: "assistant", content: reply, timestamp: Date.now() }]);
     } catch {
-      setChatMessages(prev => [...prev, { role: "assistant", content: "AI assistant is temporarily unavailable. Please contact us directly." }]);
+      setChatMessages(prev => [...prev, { role: "assistant", content: "AI assistant is temporarily unavailable. Please contact us directly.", timestamp: Date.now() }]);
     }
     setChatLoading(false);
+  };
+
+  /** Gap #44: Share service */
+  const handleShare = async () => {
+    const shareData = { title: service?.name || "Service", url: window.location.href };
+    if (navigator.share) {
+      try { await navigator.share(shareData); } catch {}
+    } else {
+      await navigator.clipboard.writeText(window.location.href);
+    }
   };
 
   // Bundle link lookup helper — exact match first, then substring (item 198)
