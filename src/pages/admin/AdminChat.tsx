@@ -202,6 +202,10 @@ export default function AdminChat() {
           </div>
           {selectedUser && (
             <div className="border-t p-3 flex gap-2">
+              <input type="file" ref={fileRef} className="hidden" onChange={handleFileUpload} />
+              <Button size="sm" variant="ghost" onClick={() => fileRef.current?.click()} title="Attach file">
+                <Paperclip className="h-4 w-4" />
+              </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button size="sm" variant="outline" title="Canned responses"><Zap className="h-4 w-4" /></Button>
