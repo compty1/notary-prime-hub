@@ -171,9 +171,51 @@ const categoryFaqs: Record<string, { q: string; a: string }[]> = {
     { q: "Can I access my vault anytime?", a: "Yes. Your portal is available 24/7 for viewing, downloading, and sharing documents." },
     { q: "How are compliance reminders configured?", a: "Set custom reminders for document renewals, filing deadlines, and notary commission expiration." },
   ],
+  admin_support: [
+    { q: "What admin tasks can you handle?", a: "Data entry, travel arrangements, email management, scheduling, document formatting, and general administrative tasks." },
+    { q: "How quickly are admin tasks completed?", a: "Most tasks are completed within 3-5 business days. Rush turnaround is available." },
+    { q: "How do I submit work?", a: "Submit a service request through our portal with your task details and any supporting files." },
+    { q: "Is my data kept confidential?", a: "Yes. All work is handled under strict confidentiality agreements with secure file handling." },
+  ],
+  content_creation: [
+    { q: "What types of content can you create?", a: "Blog posts, social media content, newsletters, email campaigns, and website copy." },
+    { q: "How many revision rounds are included?", a: "Each project includes up to 2 revision rounds. Additional revisions available at an hourly rate." },
+    { q: "Do you optimize content for SEO?", a: "Yes. All written content includes basic SEO optimization including keyword research and meta descriptions." },
+    { q: "Can you match our brand voice?", a: "Absolutely. We review your existing content and brand guidelines to maintain consistency." },
+  ],
+  research: [
+    { q: "What research services do you offer?", a: "Market research, competitive analysis, lead generation, data collection, and industry reports." },
+    { q: "What deliverable format do you use?", a: "Research is delivered as structured reports with executive summaries, data tables, and actionable insights." },
+    { q: "How do you source data?", a: "We use public databases, industry publications, government records, and verified online sources." },
+    { q: "Can you do ongoing research?", a: "Yes. We offer recurring research packages for continuous market monitoring and lead generation." },
+  ],
+  customer_service: [
+    { q: "What customer service tasks can you handle?", a: "Email inbox management, live chat support, customer inquiry responses, and follow-up communications." },
+    { q: "What are the response time SLAs?", a: "Standard SLA is 4-hour response for email, real-time for live chat during business hours." },
+    { q: "How is escalation handled?", a: "Complex issues are flagged and escalated to your team with detailed context and suggested resolutions." },
+    { q: "Do you provide training?", a: "We follow your existing processes and scripts. Initial onboarding includes reviewing your SOPs." },
+  ],
+  technical_support: [
+    { q: "What platforms do you support?", a: "WordPress, Squarespace, Wix, Shopify, and most popular CMS platforms." },
+    { q: "How often can you update content?", a: "Updates can be scheduled daily, weekly, or as-needed based on your service plan." },
+    { q: "Can you make design changes?", a: "We handle content updates, minor layout adjustments, and page creation. Major redesigns require a separate scope." },
+    { q: "Do you handle security updates?", a: "We can apply CMS and plugin updates as part of a maintenance plan." },
+  ],
+  ux_testing: [
+    { q: "What does a UX audit include?", a: "Heuristic evaluation, accessibility review, user flow analysis, and a prioritized recommendations report." },
+    { q: "How are usability tests conducted?", a: "Remote moderated or unmoderated sessions with real users, including task completion analysis and feedback synthesis." },
+    { q: "What deliverables do I receive?", a: "A detailed report with findings, severity ratings, annotated screenshots, and actionable recommendations." },
+    { q: "How do you recruit test participants?", a: "We can use your existing user base or recruit participants matching your target demographic." },
+  ],
+  business_services: [
+    { q: "What business support do you offer?", a: "Email management, correspondence handling, registered agent coordination, and general administrative support." },
+    { q: "Can you handle confidential documents?", a: "Yes. All documents and correspondence are handled under strict NDA and security protocols." },
+    { q: "How do you manage email correspondence?", a: "We triage, respond to, and organize your inbox based on your priorities and response templates." },
+    { q: "Is there a minimum commitment?", a: "No long-term contracts required. Services are available on a per-project or monthly basis." },
+  ],
 };
 
-// Phase 3.4: Timeline estimates
+// Phase 3.4: Timeline estimates (items 147-153)
 const categoryTimelines: Record<string, string> = {
   notarization: "Same day",
   authentication: "5-10 business days",
@@ -182,9 +224,16 @@ const categoryTimelines: Record<string, string> = {
   document_services: "1-3 business days",
   business: "Custom timeline",
   recurring: "Ongoing",
+  admin_support: "3-5 business days",
+  content_creation: "3-7 business days",
+  research: "5-10 business days",
+  customer_service: "1-3 business days setup",
+  technical_support: "1-3 business days",
+  ux_testing: "5-14 business days",
+  business_services: "2-5 business days",
 };
 
-// Phase 3.6: Complexity indicators
+// Phase 3.6: Complexity indicators (items 154-160)
 const categoryComplexity: Record<string, { level: string; duration: string }> = {
   notarization: { level: "Simple", duration: "10-30 min" },
   authentication: { level: "Complex", duration: "5-10 business days" },
@@ -193,14 +242,31 @@ const categoryComplexity: Record<string, { level: string; duration: string }> = 
   document_services: { level: "Simple", duration: "1-3 days" },
   business: { level: "Moderate", duration: "Custom" },
   recurring: { level: "Simple", duration: "Ongoing" },
+  admin_support: { level: "Simple", duration: "1-5 days" },
+  content_creation: { level: "Moderate", duration: "3-7 days" },
+  research: { level: "Complex", duration: "5-10 days" },
+  customer_service: { level: "Moderate", duration: "Ongoing" },
+  technical_support: { level: "Moderate", duration: "1-5 days" },
+  ux_testing: { level: "Complex", duration: "1-2 weeks" },
+  business_services: { level: "Simple", duration: "Ongoing" },
 };
 
-// Phase 3.8: Bundle suggestions
+// Phase 3.8: Bundle suggestions (items 161-170)
 const bundleSuggestions: Record<string, string[]> = {
   authentication: ["Translation Coordination", "Certified Copy", "Document Preparation"],
   notarization: ["Witness Service", "Certified Copy", "Document Storage Vault"],
   verification: ["Document Preparation", "Certified Copy"],
   consulting: ["Translation Coordination", "Apostille Facilitation", "Document Preparation"],
+  document_services: ["Document Storage Vault", "PDF Services", "Template Library"],
+  business: ["Email Management", "Data Entry", "Document Preparation"],
+  recurring: ["Document Storage Vault", "Automated Reminders", "Compliance Package"],
+  admin_support: ["Email Management", "Document Cleanup & Formatting", "Data Entry"],
+  content_creation: ["Social Media Content", "Newsletter Design", "Blog Post Writing"],
+  research: ["Lead Generation", "Market Research Report", "Data Entry"],
+  customer_service: ["Email Support Handling", "Live Chat Support", "Email Management"],
+  technical_support: ["Website Content Updates", "UX Audit & Heuristic Review"],
+  ux_testing: ["Usability Testing & Report", "UX Research & Persona Development"],
+  business_services: ["Email Management", "Data Entry", "Registered Agent Coordination"],
 };
 
 // Phase 3.3: Legal disclaimers
@@ -294,10 +360,12 @@ export default function ServiceDetail() {
     setChatLoading(false);
   };
 
-  // Bundle link lookup helper
+  // Bundle link lookup helper — exact match first, then substring (item 198)
   const getBundleServiceId = (name: string) => {
-    const match = allServices.find(s => s.name.toLowerCase().includes(name.toLowerCase()));
-    return match ? `/services/${match.id}` : `/services`;
+    const exact = allServices.find(s => s.name.toLowerCase() === name.toLowerCase());
+    if (exact) return `/services/${exact.id}`;
+    const partial = allServices.find(s => s.name.toLowerCase().includes(name.toLowerCase()));
+    return partial ? `/services/${partial.id}` : `/services`;
   };
 
 
@@ -306,7 +374,11 @@ export default function ServiceDetail() {
     const from = Number(s.price_from || 0);
     const to = Number(s.price_to || 0);
     if (from === 0 && to === 0) return "Contact Us";
-    const suffix = s.pricing_model === "monthly" ? "/mo" : "";
+    const suffixMap: Record<string, string> = {
+      per_seal: "/seal", per_document: "/doc", per_page: "/page",
+      hourly: "/hr", per_session: "/session", monthly: "/mo", flat: "", custom: "",
+    };
+    const suffix = suffixMap[s.pricing_model] || "";
     return to > from ? `$${from}–$${to}${suffix}` : `$${from}${suffix}`;
   };
 
@@ -337,7 +409,11 @@ export default function ServiceDetail() {
         { label: "Common USCIS Forms", url: "https://www.uscis.gov/forms", icon: FileText },
       ];
     }
-    return categoryResources[service.category] || categoryResources.notarization;
+    return categoryResources[service.category] || [
+      { label: "Service Request Form", url: "/request", icon: FileText },
+      { label: "Fee Calculator", url: "/fee-calculator", icon: Shield },
+      { label: "Contact Us", url: "/#contact", icon: ExternalLink },
+    ];
   };
   const resources = getResources();
 
@@ -347,7 +423,12 @@ export default function ServiceDetail() {
     for (const [key, faqs] of Object.entries(serviceFaqs)) {
       if (nameLower.includes(key)) return faqs;
     }
-    return categoryFaqs[service.category] || categoryFaqs.notarization;
+    return categoryFaqs[service.category] || [
+      { q: "How do I get started?", a: "Submit a service request through our portal or contact us to discuss your needs." },
+      { q: "What is the turnaround time?", a: "Turnaround varies by service complexity. Most requests are completed within 3-7 business days." },
+      { q: "How much does this cost?", a: "Pricing depends on the scope of work. Use our fee calculator or contact us for a custom quote." },
+      { q: "Is my information kept confidential?", a: "Yes. All client data and documents are handled under strict confidentiality protocols." },
+    ];
   };
   const faqs = getServiceFaqs();
   const timeline = categoryTimelines[service.category] || "Contact Us";
@@ -638,6 +719,11 @@ export default function ServiceDetail() {
                       "Clerical Document Preparation","Document Cleanup & Formatting","Form Filling Assistance",
                       "Certified Document Prep for Agencies","Registered Agent Coordination",
                       "Email Management & Correspondence","Notarized Translation Coordination",
+                      "Data Entry","Travel Arrangements","Blog Post Writing","Social Media Content",
+                      "Newsletter Design","Market Research Report","Lead Generation",
+                      "Email Support Handling","Live Chat Support","Website Content Updates",
+                      "UX Audit & Heuristic Review","User Flow & Workflow Testing",
+                      "Usability Testing & Report","UX Research & Persona Development",
                     ]);
                     const SUBSCRIPTION = new Set(["Business Subscription Plans","API & Integration Services","White-Label Partner Programs"]);
 
