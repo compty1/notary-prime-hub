@@ -492,8 +492,15 @@ export default function RonSession() {
       } as Record<string, Json | undefined>,
     });
 
+    // Trigger completion email
+    try {
+      await supabase.functions.invoke("send-appointment-emails", {
+        body: { appointment_id: appointmentId, status_change: "completed" },
+      });
+    } catch {}
+
     setCompleting(false);
-    toast({ title: "Session finalized", description: "Appointment completed, journal entry & e-seal created, documents marked as notarized." });
+    toast({ title: "Session finalized", description: "Appointment completed, journal entry & e-seal created, documents marked as notarized. Completion email sent to client." });
     navigate("/admin/appointments");
   };
 
