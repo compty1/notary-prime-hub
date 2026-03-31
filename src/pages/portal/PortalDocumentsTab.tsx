@@ -112,6 +112,35 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
           </div>
         </div>
       )}
+      {/* Notarized Documents Section */}
+      {notarizedDocs.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="flex items-center gap-2 font-sans text-lg font-semibold text-foreground">
+            <Shield className="h-5 w-5 text-primary" /> Notarized Documents
+          </h3>
+          {notarizedDocs.map(doc => (
+            <Card key={doc.id} className="border-2 border-primary/20 bg-primary/5">
+              <CardContent className="flex items-center justify-between p-4">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <img src="/images/notary-seal.png" alt="Notary Seal" className="h-10 w-10 rounded-full object-contain border border-primary/20 bg-background p-0.5" />
+                  <div className="min-w-0">
+                    <p className="font-medium text-sm truncate">{doc.file_name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Notarized {new Date(doc.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button size="sm" variant="ghost" onClick={async () => { const { data } = await supabase.storage.from("documents").createSignedUrl(doc.file_path, 300); if (data?.signedUrl) window.open(data.signedUrl, "_blank"); }} title="Preview"><Eye className="h-3 w-3" /></Button>
+                  <Button size="sm" variant="outline" onClick={() => downloadDocument(doc)}><Download className="h-3 w-3 mr-1" /> Download</Button>
+                  <Badge className="bg-primary/10 text-primary text-xs"><Shield className="mr-1 h-3 w-3" /> Notarized</Badge>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <h2 className="font-sans text-xl font-semibold">My Documents</h2>
         <div>
@@ -121,7 +150,7 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
           </Button>
         </div>
       </div>
-      {documents.length === 0 ? (
+      {otherDocs.length === 0 && notarizedDocs.length === 0 ? (
         <Card className="border-border/50"><CardContent className="p-0">
           <EmptyState
             icon="documents"
@@ -131,7 +160,7 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
             onAction={() => fileInputRef.current?.click()}
           />
         </CardContent></Card>
-      ) : (
+      ) : otherDocs.length === 0 ? null : (
         <div className="space-y-3">
           {documents.map(doc => (
             <Card key={doc.id} className="border-border/50">

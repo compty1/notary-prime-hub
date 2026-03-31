@@ -1086,19 +1086,34 @@ export default function RonSession() {
             </Card>
 
             {/* Complete & Finalize */}
-            <Card className="border-border/50 border-primary/20 dark:border-primary/20 bg-primary/5/30 dark:bg-primary/5">
+            <Card className="border-border/50 border-primary/20 dark:border-primary/20 bg-primary/5">
               <CardContent className="p-4">
                 <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
                   <FileCheck className="h-4 w-4 text-primary dark:text-primary" /> Complete & Finalize
                 </h3>
                 <p className="mb-3 text-xs text-muted-foreground">Marks appointment as completed, creates journal entry, e-seal verification, and payment record.</p>
+                
+                {/* Recording URL — Ohio ORC §147.66 */}
+                <div className="mb-3">
+                  <Label className="text-xs">Recording URL <span className="text-muted-foreground">(ORC §147.66 — 10yr retention)</span></Label>
+                  <Input
+                    value={recordingUrl}
+                    onChange={(e) => setRecordingUrl(e.target.value)}
+                    placeholder="https://platform.com/recording/..."
+                    className="mt-1 text-sm"
+                  />
+                  {!recordingUrl && (
+                    <p className="mt-1 text-[10px] text-destructive">⚠ Ohio law requires session recordings to be retained for 10 years.</p>
+                  )}
+                </div>
+
                 <ul className="mb-3 space-y-1 text-xs">
                   <li className="flex items-center gap-1">{participantLink ? <CheckCircle className="h-3 w-3 text-primary" /> : <XCircle className="h-3 w-3 text-destructive" />} Session Link</li>
                   <li className="flex items-center gap-1">{idVerified ? <CheckCircle className="h-3 w-3 text-primary" /> : <XCircle className="h-3 w-3 text-destructive" />} ID Verification</li>
                   <li className="flex items-center gap-1">{kbaCompleted ? <CheckCircle className="h-3 w-3 text-primary" /> : <XCircle className="h-3 w-3 text-destructive" />} KBA Completed</li>
                   <li className="flex items-center gap-1">{oathAdministered ? <CheckCircle className="h-3 w-3 text-primary" /> : <XCircle className="h-3 w-3 text-destructive" />} Oath Administered</li>
                 </ul>
-                <Button className="w-full bg-primary text-white hover:bg-primary/90" disabled={!idVerified || !kbaCompleted || completing} onClick={completeAndFinalize}>
+                <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={!idVerified || !kbaCompleted || completing} onClick={completeAndFinalize}>
                   {completing ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <FileCheck className="mr-1 h-4 w-4" />} Complete Session
                 </Button>
               </CardContent>
