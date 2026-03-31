@@ -13,17 +13,41 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { MapPin, Monitor, FileText, Shield, Clock, CheckCircle, Star, ChevronRight, Phone, Mail, Scale, Send, Loader2, Sparkles, ArrowRight, TrendingUp } from "lucide-react";
+import { MapPin, Monitor, FileText, Shield, Clock, CheckCircle, Star, ChevronRight, Phone, Mail, Scale, Send, Loader2, Sparkles, ArrowRight, TrendingUp, Globe, Car, Copy, Briefcase, UserCheck, Stamp, BookOpen } from "lucide-react";
 import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
 import { fadeUp, blurIn, scaleReveal } from "@/lib/animations";
 import HeroPhoneAnimation from "@/components/HeroPhoneAnimation";
 
-const fallbackServices = [
-{ icon: FileText, title: "Real Estate Documents", desc: "Deeds, mortgages, refinancing, title transfers" },
-{ icon: Shield, title: "Legal Documents", desc: "Power of attorney, affidavits, sworn statements" },
-{ icon: Scale, title: "Estate Planning", desc: "Wills, trusts, healthcare directives" },
-{ icon: FileText, title: "Business Documents", desc: "Contracts, agreements, corporate filings" }];
+const primaryServices = [
+  {
+    icon: Globe,
+    title: "Remote Online Notarization",
+    badge: "Most Popular",
+    desc: "Get documents notarized from anywhere via secure video call. Ohio-authorized under ORC §147.65-.66 with full identity verification, KBA, and tamper-evident seals.",
+    cta: "/book?type=ron",
+    ctaLabel: "Start RON Session",
+    features: ["Available 24/7", "All 50 states accepted", "10-year recording retention"],
+  },
+  {
+    icon: Car,
+    title: "Mobile Notarization",
+    badge: "Central Ohio",
+    desc: "We come to you — home, office, hospital, or any location within the greater Columbus area. Same-day appointments available for Franklin County.",
+    cta: "/book?type=in_person",
+    ctaLabel: "Book Mobile Notary",
+    features: ["Same-day available", "30-mile radius", "After-hours options"],
+  },
+];
+
+const otherServices = [
+  { icon: Copy, title: "Certified Copy Services", desc: "Certified true copies of original documents", to: "/services?category=notarization" },
+  { icon: Briefcase, title: "Loan Signing Agent", desc: "Professional loan document signing services", to: "/loan-signing" },
+  { icon: UserCheck, title: "I-9 / Employment Verification", desc: "Authorized agent for Form I-9 completion", to: "/services?category=verification" },
+  { icon: Stamp, title: "Apostille Facilitation", desc: "Document authentication for international use", to: "/services?category=authentication" },
+  { icon: Scale, title: "Power of Attorney", desc: "POA notarization with proper witnessing", to: "/services?category=notarization" },
+  { icon: BookOpen, title: "Oaths & Affirmations", desc: "Sworn statements, jurats, and affidavits", to: "/services?category=notarization" },
+];
 
 
 const fallbackTestimonials = [
@@ -99,9 +123,7 @@ export default function Index() {
     });
   }, []);
 
-  const services = dbServices.length > 0 ?
-  dbServices.map((s) => ({ icon: FileText, title: s.name, desc: s.short_description || s.category })) :
-  fallbackServices;
+  // dbServices used for dynamic loading but primary/other services are hardcoded for hierarchy
 
   const testimonials = dbReviews.length > 0 ? dbReviews : fallbackTestimonials;
 
@@ -227,14 +249,14 @@ export default function Index() {
                 Notar is a full-service notary platform you'll actually enjoy using. Book appointments, verify identities, and sign documents — not chase paperwork.
               </motion.p>
               <motion.div variants={fadeUp} custom={3} className="flex flex-wrap gap-3">
-                <Link to="/book">
+                <Link to="/book?type=ron">
                   <Button variant="accent" size="lg" className="rounded-full px-8 shadow-sm">
-                    Online Notarization <ArrowRight className="ml-2 h-4 w-4" />
+                    Remote Notarization <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
-                <Link to="/services">
+                <Link to="/book?type=in_person">
                   <Button variant="outline" size="lg" className="rounded-full px-8">
-                    Other Services
+                    Mobile Notary
                   </Button>
                 </Link>
               </motion.div>
@@ -291,7 +313,7 @@ export default function Index() {
       {/* AI Helper */}
       <WhatDoINeed />
 
-      {/* Services */}
+      {/* Primary Services — Two Featured */}
       <section id="services" className="py-20">
         <div className="container mx-auto px-4">
           <motion.div
@@ -299,34 +321,77 @@ export default function Index() {
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
             className="mx-auto mb-12 max-w-2xl text-center">
-            
             <motion.h2 variants={fadeUp} custom={0} className="mb-4 font-sans text-3xl font-bold text-foreground md:text-4xl">
-              Notary Services
+              Our Core Services
             </motion.h2>
             <motion.p variants={fadeUp} custom={1} className="text-muted-foreground">
-              Professional notarization for all your important documents
+              Two ways to get your documents notarized — choose what works for you
             </motion.p>
           </motion.div>
+
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
-            className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            
-            {services.map((s, i) =>
-            <motion.div key={s.title} variants={scaleReveal} custom={i}>
-                <Card className="group h-full hover:border-primary/20">
-                  <CardContent className="p-6">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/15">
-                      <s.icon className="h-6 w-6 text-primary" />
+            className="mx-auto grid max-w-5xl gap-8 md:grid-cols-2">
+            {primaryServices.map((s, i) => (
+              <motion.div key={s.title} variants={scaleReveal} custom={i}>
+                <Card className="group h-full border-2 hover:border-primary/30 transition-all">
+                  <CardContent className="p-8">
+                    <div className="mb-4 flex items-center gap-3">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 transition-colors group-hover:bg-primary/15">
+                        <s.icon className="h-7 w-7 text-primary" />
+                      </div>
+                      <Badge variant="secondary" className="text-xs">{s.badge}</Badge>
                     </div>
-                    <h3 className="mb-2 font-sans text-lg font-semibold text-foreground">{s.title}</h3>
-                    <p className="text-sm text-muted-foreground">{s.desc}</p>
+                    <h3 className="mb-3 font-sans text-xl font-bold text-foreground">{s.title}</h3>
+                    <p className="mb-5 text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
+                    <ul className="mb-6 space-y-2">
+                      {s.features.map((f) => (
+                        <li key={f} className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <CheckCircle className="h-4 w-4 shrink-0 text-primary" />
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                    <Link to={s.cta}>
+                      <Button variant="accent" className="w-full">
+                        {s.ctaLabel} <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
                   </CardContent>
                 </Card>
               </motion.div>
-            )}
+            ))}
           </motion.div>
+
+          {/* Other Notary Services */}
+          <div className="mx-auto mt-16 max-w-5xl">
+            <h3 className="mb-6 text-center font-sans text-xl font-semibold text-foreground">Other Notary Services</h3>
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-50px" }}
+              className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {otherServices.map((s, i) => (
+                <motion.div key={s.title} variants={scaleReveal} custom={i}>
+                  <Link to={s.to}>
+                    <Card className="group h-full hover:border-primary/20 transition-all cursor-pointer">
+                      <CardContent className="flex items-start gap-4 p-5">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/15">
+                          <s.icon className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-sans text-sm font-semibold text-foreground">{s.title}</h4>
+                          <p className="text-xs text-muted-foreground">{s.desc}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
         </div>
       </section>
 
