@@ -157,26 +157,52 @@ export default function Index() {
     }
   };
 
+  const [agreeTerms, setAgreeTerms] = useState(false);
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "Notar — Ohio Notary Public",
     "description": "Professional notary services in Columbus, Ohio. In-person and Remote Online Notarization (RON).",
-    "url": window.location.origin,
+    "url": "https://notardex.com",
     "telephone": contactInfo.phone,
     "email": contactInfo.email,
     "address": { "@type": "PostalAddress", "addressLocality": "Columbus", "addressRegion": "OH", "addressCountry": "US" },
     "areaServed": { "@type": "State", "name": "Ohio" },
+    "geo": { "@type": "GeoCoordinates", "latitude": 39.9612, "longitude": -82.9988 },
     "priceRange": "$$",
+    "sameAs": [],
     "openingHoursSpecification": [
       { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], "opens": "09:00", "closes": "19:00" },
       { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Saturday"], "opens": "10:00", "closes": "16:00" }
     ],
   };
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map(f => ({
+      "@type": "Question",
+      "name": f.q,
+      "acceptedAnswer": { "@type": "Answer", "text": f.a },
+    })),
+  };
+
+  // Inject JSON-LD via useEffect to avoid React 18 removeChild error
+  useEffect(() => {
+    const scripts: HTMLScriptElement[] = [];
+    [jsonLd, faqSchema].forEach(data => {
+      const script = document.createElement("script");
+      script.type = "application/ld+json";
+      script.textContent = JSON.stringify(data);
+      document.head.appendChild(script);
+      scripts.push(script);
+    });
+    return () => scripts.forEach(s => s.remove());
+  }, [contactInfo.phone, contactInfo.email]);
+
   return (
     <PageShell>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* Hero — Dealflow-style split layout */}
       <section className="relative overflow-hidden bg-background py-16 md:py-24">
         <div className="container relative mx-auto px-4">
