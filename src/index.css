@@ -23,7 +23,7 @@
     --secondary-foreground: 216 79% 30%;
 
     --muted: 210 20% 96%;
-    --muted-foreground: 220 9% 46%;
+    --muted-foreground: 220 12% 40%;
 
     --accent: 0 100% 71%;
     --accent-foreground: 0 0% 100%;
@@ -41,6 +41,7 @@
     --primary-light: 160 36% 94%;
     --mint: 160 36% 76%;
     --surface-elevated: 0 0% 100%;
+    --light-gray: 0 0% 93%;
 
     --sidebar-background: 216 79% 15%;
     --sidebar-foreground: 210 20% 90%;

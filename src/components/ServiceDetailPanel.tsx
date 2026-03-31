@@ -7,9 +7,10 @@ import { CheckCircle, Circle, FileText, Scale, Loader2 } from "lucide-react";
 interface ServiceDetailPanelProps {
   serviceId: string;
   serviceName?: string;
+  category?: string;
 }
 
-export default function ServiceDetailPanel({ serviceId, serviceName }: ServiceDetailPanelProps) {
+export default function ServiceDetailPanel({ serviceId, serviceName, category }: ServiceDetailPanelProps) {
   const [requirements, setRequirements] = useState<any[]>([]);
   const [workflows, setWorkflows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,7 +73,7 @@ export default function ServiceDetailPanel({ serviceId, serviceName }: ServiceDe
                     {step.step_description && <p className="text-xs text-muted-foreground">{step.step_description}</p>}
                     <div className="flex gap-1 mt-1">
                       {step.requires_client_action && <Badge variant="outline" className="text-[10px]">Client Action</Badge>}
-                      {step.requires_admin_action && <Badge variant="outline" className="text-[10px]">Admin Action</Badge>}
+                      {step.requires_admin_action && <Badge variant="outline" className="text-[10px]">{category && ["notarization", "authentication"].includes(category) ? "Notary Action" : "Provider Action"}</Badge>}
                     </div>
                   </div>
                 </div>

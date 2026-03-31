@@ -38,34 +38,34 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
           xmlns="http://www.w3.org/2000/svg"
           className="shrink-0"
         >
-          {/* Diagonal stroke — Teal */}
-          <line
-            x1="16"
-            y1="52"
-            x2="48"
-            y2="12"
-            stroke="hsl(var(--primary))"
-            strokeWidth="8"
-            strokeLinecap="round"
-          />
           {/* Left stem — Dark Blue */}
           <line
-            x1="16"
-            y1="12"
-            x2="16"
-            y2="52"
+            x1="14"
+            y1="10"
+            x2="14"
+            y2="54"
             stroke="hsl(var(--foreground))"
-            strokeWidth="8"
+            strokeWidth="10"
+            strokeLinecap="round"
+          />
+          {/* Diagonal stroke — Teal */}
+          <line
+            x1="14"
+            y1="54"
+            x2="50"
+            y2="10"
+            stroke="hsl(var(--primary))"
+            strokeWidth="10"
             strokeLinecap="round"
           />
           {/* Right stem — Mint */}
           <line
-            x1="48"
-            y1="12"
-            x2="48"
-            y2="52"
+            x1="50"
+            y1="10"
+            x2="50"
+            y2="54"
             stroke="hsl(var(--mint))"
-            strokeWidth="8"
+            strokeWidth="10"
             strokeLinecap="round"
           />
         </svg>

@@ -674,7 +674,7 @@ export default function ServiceDetail() {
                               <Badge variant="secondary" className="text-xs gap-1"><User className="h-3 w-3" /> Your action</Badge>
                             )}
                             {wfStep.requires_admin_action && (
-                              <Badge variant="secondary" className="text-xs gap-1"><Shield className="h-3 w-3" /> Notary action</Badge>
+                              <Badge variant="secondary" className="text-xs gap-1"><Shield className="h-3 w-3" /> {["notarization", "authentication"].includes(service.category) ? "Notary action" : "Provider action"}</Badge>
                             )}
                           </div>
                         </div>

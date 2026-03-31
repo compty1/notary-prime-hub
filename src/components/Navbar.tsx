@@ -147,7 +147,7 @@ export function Navbar() {
               </Link>
             ) : (
               <Link to="/login">
-                <Button variant="ghost" size="sm" className="text-sm">Sign In</Button>
+                <Button size="sm" className="rounded-full bg-accent text-accent-foreground hover:bg-accent/90 text-sm">Sign In</Button>
               </Link>
             )}
             <Link to="/book">
