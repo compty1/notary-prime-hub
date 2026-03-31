@@ -229,6 +229,7 @@ export default function FeeCalculator() {
                       <span className="text-primary">${total.toFixed(2)}</span>
                     </div>
                     <p className="mt-3 text-xs text-muted-foreground">* Estimates only. Final pricing may vary based on document complexity and specific requirements.</p>
+                    <p className="mt-1 text-xs text-muted-foreground italic">Ohio notary fees are generally exempt from state sales tax per ORC §5739.02. No tax is applied to this estimate.</p>
                     <Link to={bookingUrl} className="mt-4 block">
                       <Button className="w-full ">Book Appointment <ChevronRight className="ml-1 h-4 w-4" /></Button>
                     </Link>

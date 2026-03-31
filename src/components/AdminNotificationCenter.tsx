@@ -160,11 +160,18 @@ export function AdminNotificationCenter() {
       <PopoverContent align="end" className="w-80 p-0">
         <div className="flex items-center justify-between border-b border-border/50 px-4 py-3">
           <h3 className="font-sans text-sm font-semibold">Notifications</h3>
-          {unreadCount > 0 && (
-            <Button variant="ghost" size="sm" className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground" onClick={markAllRead}>
-              <CheckCheck className="mr-1 h-3 w-3" /> Mark all read
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {!browserNotifs && "Notification" in window && (
+              <Button variant="ghost" size="sm" className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground" onClick={requestBrowserNotifs}>
+                🔔 Enable
+              </Button>
+            )}
+            {unreadCount > 0 && (
+              <Button variant="ghost" size="sm" className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground" onClick={markAllRead}>
+                <CheckCheck className="mr-1 h-3 w-3" /> Mark all read
+              </Button>
+            )}
+          </div>
         </div>
         <ScrollArea className="max-h-80">
           {notifications.length === 0 ? (

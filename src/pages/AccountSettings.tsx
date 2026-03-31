@@ -171,6 +171,11 @@ export default function AccountSettings() {
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription>This will permanently delete your profile, appointments, documents, payments, and all associated data. This action cannot be undone.</AlertDialogDescription>
                 </AlertDialogHeader>
+                <div className="px-6 pb-2">
+                  <Label htmlFor="deletePassword">Enter your password to confirm</Label>
+                  <Input id="deletePassword" type="password" value={deletePassword} onChange={e => { setDeletePassword(e.target.value); setDeletePasswordError(""); }} placeholder="Your current password" className="mt-1" />
+                  {deletePasswordError && <p className="mt-1 text-xs text-destructive">{deletePasswordError}</p>}
+                </div>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction onClick={handleDeleteAccount} disabled={deleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">

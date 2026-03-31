@@ -409,18 +409,34 @@ export default function RonSession() {
 
     // e-seal: prefer uploaded doc, fall back to manual document_name
     const { data: docs } = await supabase.from("documents").select("id, file_name").eq("appointment_id", appointmentId).limit(1);
+    let eSealDocId: string;
+    let eSealDocName: string;
     if (docs && docs.length > 0) {
-      await supabase.from("e_seal_verifications").insert({
-        document_id: docs[0].id,
-        document_name: docs[0].file_name,
+      eSealDocId = docs[0].id;
+      eSealDocName = docs[0].file_name;
+    } else {
+      // Create placeholder document for e-seal when no docs uploaded
+      const placeholderName = documentName || `${appointment.service_type} — ${clientProfile?.full_name || "Unknown"}`;
+      const { data: newDoc } = await supabase.from("documents").insert({
+        file_name: placeholderName,
+        file_path: `placeholder/${appointmentId}`,
+        uploaded_by: user.id,
         appointment_id: appointmentId,
-        created_by: user.id,
-        signer_name: clientProfile?.full_name || null,
-        notary_name: "Notar",
-        commissioned_state: "OH",
-        status: "valid",
-      });
+        status: "notarized" as any,
+      }).select("id").single();
+      eSealDocId = newDoc?.id || crypto.randomUUID();
+      eSealDocName = placeholderName;
     }
+    await supabase.from("e_seal_verifications").insert({
+      document_id: eSealDocId,
+      document_name: eSealDocName,
+      appointment_id: appointmentId,
+      created_by: user.id,
+      signer_name: clientProfile?.full_name || null,
+      notary_name: "Notar",
+      commissioned_state: "OH",
+      status: "valid",
+    });
 
     await logAuditEvent("ron_session_completed", {
       entityType: "appointment",
