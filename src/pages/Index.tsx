@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { MapPin, Monitor, FileText, Shield, Clock, CheckCircle, Star, ChevronRight, Phone, Mail, Scale, Send, Loader2, Sparkles, ArrowRight, TrendingUp } from "lucide-react";
+import { MapPin, Monitor, FileText, Shield, Clock, CheckCircle, Star, ChevronRight, Phone, Mail, Scale, Send, Loader2, Sparkles, ArrowRight, TrendingUp, Globe, Car, Copy, Briefcase, UserCheck, Stamp, BookOpen } from "lucide-react";
 import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
 import { fadeUp, blurIn, scaleReveal } from "@/lib/animations";
