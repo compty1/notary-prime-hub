@@ -65,6 +65,8 @@ interface IntakeFieldsProps {
   facilityContact: string; setFacilityContact: (v: string) => void;
   facilityRoom: string; setFacilityRoom: (v: string) => void;
   signerCount: number; setSignerCount: (v: number) => void;
+  // Apostille toggle for notarization categories
+  needsApostille?: boolean; setNeedsApostille?: (v: boolean) => void;
 }
 
 export default function BookingIntakeFields(props: IntakeFieldsProps) {
