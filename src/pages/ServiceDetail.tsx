@@ -173,7 +173,7 @@ const categoryFaqs: Record<string, { q: string; a: string }[]> = {
   ],
 };
 
-// Phase 3.4: Timeline estimates
+// Phase 3.4: Timeline estimates (items 147-153)
 const categoryTimelines: Record<string, string> = {
   notarization: "Same day",
   authentication: "5-10 business days",
@@ -182,6 +182,13 @@ const categoryTimelines: Record<string, string> = {
   document_services: "1-3 business days",
   business: "Custom timeline",
   recurring: "Ongoing",
+  admin_support: "3-5 business days",
+  content_creation: "3-7 business days",
+  research: "5-10 business days",
+  customer_service: "1-3 business days setup",
+  technical_support: "1-3 business days",
+  ux_testing: "5-14 business days",
+  business_services: "2-5 business days",
 };
 
 // Phase 3.6: Complexity indicators
