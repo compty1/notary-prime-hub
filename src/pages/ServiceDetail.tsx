@@ -632,13 +632,7 @@ export default function ServiceDetail() {
                       <div key={req.id} className="flex items-start gap-3">
                         <Checkbox
                           checked={checkedItems.has(req.id)}
-                          onCheckedChange={(checked) => {
-                            setCheckedItems(prev => {
-                              const next = new Set(prev);
-                              if (checked) next.add(req.id); else next.delete(req.id);
-                              return next;
-                            });
-                          }}
+                          onCheckedChange={() => toggleChecked(req.id)}
                           className="mt-0.5"
                         />
                         <div>
