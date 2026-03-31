@@ -399,7 +399,7 @@ export default function AdminJournal() {
         </Card>
       ) : (
         <div className="space-y-3">
-          {filtered.map((entry) => (
+          {paginatedFiltered.map((entry) => (
             <Card key={entry.id} className="border-border/50 transition-shadow hover:shadow-md">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
