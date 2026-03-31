@@ -279,8 +279,9 @@ export default function AppointmentConfirmation() {
                     <CreditCard className="h-4 w-4 text-primary" /> Secure Payment
                   </p>
                   <PaymentForm
-                    amount={parseFloat(appointment.estimated_price)}
+                    defaultAmount={parseFloat(appointment.estimated_price)}
                     appointmentId={appointment.id}
+                    description={`Notarization — ${appointment.service_type}`}
                     onSuccess={() => {
                       setShowPayment(false);
                     }}
