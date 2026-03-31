@@ -323,30 +323,24 @@ interface WorkflowStep {
 }
 
 const PRE_QUALIFY_CATEGORIES = ["authentication", "consulting", "verification"];
-const PUBLIC_API_URL = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1`;
-const PUBLIC_API_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-async function fetchPublicJson<T>(path: string): Promise<T> {
-  const controller = new AbortController();
-  const timeoutId = window.setTimeout(() => controller.abort(), 10000);
-
-  try {
-    const response = await fetch(`${PUBLIC_API_URL}${path}`, {
-      headers: {
-        apikey: PUBLIC_API_KEY,
-        Authorization: `Bearer ${PUBLIC_API_KEY}`,
-      },
-      signal: controller.signal,
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    return await response.json() as T;
-  } finally {
-    window.clearTimeout(timeoutId);
+/** Gap #14/#487: Use Supabase client with retry instead of raw fetch */
+async function fetchSupabaseData<T>(table: string, query: Record<string, any>, selectCols = "*"): Promise<T[]> {
+  let q = supabase.from(table).select(selectCols);
+  for (const [key, value] of Object.entries(query)) {
+    if (key === 'order') continue;
+    if (key === 'limit') { q = q.limit(value); continue; }
+    if (key === 'neq') { q = q.neq(value[0], value[1]); continue; }
+    q = q.eq(key, value);
   }
+  if (query.order) {
+    for (const o of query.order) {
+      q = q.order(o.column, { ascending: o.ascending ?? true });
+    }
+  }
+  const { data, error } = await q;
+  if (error) throw new Error(error.message);
+  return (data as T[]) || [];
 }
 
 export default function ServiceDetail() {
