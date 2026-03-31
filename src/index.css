@@ -337,3 +337,15 @@ button, a, [role="button"] {
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: hsl(var(--muted-foreground) / 0.3); border-radius: 10px; }
 }
+
+/* Print stylesheet (item 580) */
+@media print {
+  nav, footer, .fixed, .sticky, [role="dialog"], .sr-only,
+  button:not([type="submit"]), .no-print { display: none !important; }
+  body { background: white !important; color: black !important; font-size: 12pt; }
+  .container { max-width: 100% !important; padding: 0 !important; }
+  a { text-decoration: underline; color: black !important; }
+  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 9pt; }
+  .shadow, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl { box-shadow: none !important; }
+  .border { border-color: #ccc !important; }
+}
