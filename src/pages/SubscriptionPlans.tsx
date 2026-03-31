@@ -11,6 +11,7 @@ import { Check, ChevronLeft, Briefcase, Code, Award, Zap, Loader2 } from "lucide
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
 import { useToast } from "@/hooks/use-toast";
+import PaymentForm from "@/components/PaymentForm";
 
 const plans = [
   {
@@ -83,20 +84,41 @@ export default function SubscriptionPlans() {
   const navTo = useNavigate();
   const { toast } = useToast();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<typeof plans[0] | null>(null);
 
   const handleSubscribe = async (plan: typeof plans[0]) => {
     if (plan.price === "Custom") { navTo("/#contact"); return; }
     if (!user) { toast({ title: "Sign in required", description: "Please create an account first.", variant: "destructive" }); navTo("/signup"); return; }
-    setLoadingPlan(plan.name);
-    try {
-      const amount = parseInt(plan.price.replace("$", ""));
-      const { data, error } = await supabase.functions.invoke("create-payment-intent", { body: { amount, description: `${plan.name} Plan Subscription` } });
-      if (error) throw error;
-      toast({ title: "Payment initiated", description: `Your ${plan.name} plan setup is being processed.` });
-    } catch (err: any) {
-      toast({ title: "Payment setup failed", description: err.message || "Please try again.", variant: "destructive" });
-    } finally { setLoadingPlan(null); }
+    setSelectedPlan(plan);
   };
+
+  if (selectedPlan) {
+    const amount = parseInt(selectedPlan.price.replace("$", ""));
+    return (
+      <PageShell>
+        <section className="bg-gradient-hero py-16">
+          <div className="container mx-auto px-4 text-center">
+            <h1 className="mb-4 font-sans text-4xl font-bold text-primary-foreground">{selectedPlan.name} Plan</h1>
+            <p className="mx-auto max-w-2xl text-lg text-primary-foreground/70">
+              Complete your subscription payment below.
+            </p>
+          </div>
+        </section>
+        <div className="container mx-auto max-w-lg px-4 py-16">
+          <PaymentForm
+            defaultAmount={amount}
+            description={`${selectedPlan.name} Plan Subscription`}
+            onSuccess={() => {
+              toast({ title: "Subscription activated!", description: `Your ${selectedPlan.name} plan is now active.` });
+              setSelectedPlan(null);
+              navTo("/portal");
+            }}
+            onCancel={() => setSelectedPlan(null)}
+          />
+        </div>
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell>

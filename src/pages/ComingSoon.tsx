@@ -51,7 +51,7 @@ export default function ComingSoon() {
       <nav className="relative z-10 flex items-center justify-between px-6 py-4 md:px-12">
         <div className="flex items-center gap-2.5">
           <Logo size="sm" />
-          <span className="font-heading text-lg font-bold tracking-tight text-foreground">Notar</span>
+          <span className="font-heading text-lg font-bold tracking-tight text-primary-foreground">Notar</span>
         </div>
         <div className="flex items-center gap-3">
           <DarkModeToggle />
@@ -76,12 +76,12 @@ export default function ComingSoon() {
           </div>
 
           {/* Headline */}
-          <h1 className="font-heading text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
+          <h1 className="font-heading text-4xl font-extrabold tracking-tight text-primary-foreground sm:text-5xl md:text-6xl">
             Professional Notary.{" "}
             <span className="text-gradient-primary">Launching Soon.</span>
           </h1>
 
-          <p className="mx-auto mt-5 max-w-lg text-lg text-muted-foreground">
+          <p className="mx-auto mt-5 max-w-lg text-lg text-primary-foreground/70">
             Ohio's modern notary & document services platform. In-person, mobile, and Remote Online Notarization — all in one place.
           </p>
 
@@ -138,7 +138,7 @@ export default function ComingSoon() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-border/40 py-6 text-center text-xs text-muted-foreground">
+      <footer className="relative z-10 border-t border-primary-foreground/10 py-6 text-center text-xs text-primary-foreground/50">
         <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-6">
           <a href="tel:6143006890" className="flex items-center gap-1.5 transition-colors hover:text-primary">
             <Phone className="h-3.5 w-3.5" /> (614) 300-6890
@@ -161,8 +161,8 @@ function FeatureCard({ icon, title, desc }: { icon: React.ReactNode; title: stri
       <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
         {icon}
       </div>
-      <h3 className="font-heading text-sm font-semibold text-foreground">{title}</h3>
-      <p className="mt-1 text-xs text-muted-foreground">{desc}</p>
+      <h3 className="font-heading text-sm font-semibold text-primary-foreground">{title}</h3>
+      <p className="mt-1 text-xs text-primary-foreground/60">{desc}</p>
     </div>
   );
 }

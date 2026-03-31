@@ -19,7 +19,7 @@ const formatTime = (timeStr: string) => {
   return `${hour > 12 ? hour - 12 : hour === 0 ? 12 : hour}:${m} ${hour >= 12 ? "PM" : "AM"}`;
 };
 
-const CHART_COLORS = ["#2563eb", "#d4a853", "#22c55e", "#eab308", "#ef4444", "#8b5cf6", "#06b6d4", "#f97316"];
+const CHART_COLORS = ["hsl(224, 63%, 28%)", "hsl(168, 75%, 36%)", "hsl(42, 78%, 55%)", "hsl(0, 85%, 55%)", "hsl(261, 50%, 51%)", "hsl(190, 95%, 39%)", "hsl(30, 95%, 53%)", "hsl(140, 60%, 40%)"];
 
 export default function AdminOverview() {
   usePageTitle("Overview");
@@ -46,11 +46,11 @@ export default function AdminOverview() {
       { data: profileData },
       { data: allApptData },
     ] = await Promise.all([
-      supabase.from("appointments").select("*", { count: "exact", head: true }),
-      supabase.from("appointments").select("*", { count: "exact", head: true }).in("status", ["scheduled", "confirmed"]),
-      supabase.from("appointments").select("*", { count: "exact", head: true }).eq("status", "completed"),
-      supabase.from("profiles").select("*", { count: "exact", head: true }),
-      supabase.from("appointments").select("*").order("scheduled_date", { ascending: false }).limit(10),
+      supabase.from("appointments").select("id", { count: "exact", head: true }),
+      supabase.from("appointments").select("id", { count: "exact", head: true }).in("status", ["scheduled", "confirmed"]),
+      supabase.from("appointments").select("id", { count: "exact", head: true }).eq("status", "completed"),
+      supabase.from("profiles").select("id", { count: "exact", head: true }),
+      supabase.from("appointments").select("id, client_id, scheduled_date, scheduled_time, status, service_type, notarization_type, confirmation_number").order("scheduled_date", { ascending: false }).limit(10),
       supabase.from("notary_journal").select("fees_charged, created_at, notarization_type"),
       supabase.from("platform_settings").select("setting_key, setting_value"),
       supabase.from("profiles").select("user_id, full_name, email"),
@@ -87,7 +87,7 @@ export default function AdminOverview() {
         return null;
       };
       const commResult = checkExpiry(s.commission_expiration_date, parseInt(s.commission_renewal_reminder_days || "90"));
-      if (commResult) setCommissionAlert({ tone: commResult.tone === "destructive" ? "border-destructive bg-destructive/10 text-destructive" : "border-amber-500 bg-amber-50 text-amber-800", text: `Commission: ${commResult.text}` });
+      if (commResult) setCommissionAlert({ tone: commResult.tone === "destructive" ? "border-destructive bg-destructive/10 text-destructive" : "border-amber-500 bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-300", text: `Commission: ${commResult.text}` });
       const eoResult = checkExpiry(s.eo_expiration_date, 60);
       if (eoResult) setEoAlert(`E&O Insurance: ${eoResult.text}`);
       const bondResult = checkExpiry(s.bond_expiration_date, 60);

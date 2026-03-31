@@ -6,8 +6,7 @@ import { cn } from "@/lib/utils";
 export function DarkModeToggle({ className = "" }: { className?: string }) {
   const [dark, setDark] = useState(() => {
     if (typeof window === "undefined") return false;
-    return localStorage.getItem("theme") === "dark" ||
-      (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    return localStorage.getItem("theme") === "dark";
   });
 
   useEffect(() => {

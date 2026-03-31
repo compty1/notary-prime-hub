@@ -265,7 +265,7 @@ export default function NotaryGuide() {
               </Card>
             ))}
           </div>
-          <div className="mt-4 flex items-start gap-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
+          <div className="mt-4 flex items-start gap-2 rounded-lg bg-amber-50 dark:bg-amber-900/30 p-3 text-sm text-amber-800 dark:text-amber-200">
             <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0" />
             <span>ID must be <strong>current and unexpired</strong>. Expired IDs are not acceptable for notarization.</span>
           </div>
