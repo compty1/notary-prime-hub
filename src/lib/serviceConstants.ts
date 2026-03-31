@@ -1,7 +1,27 @@
+import {
+  Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home,
+  Headphones, PenTool, BarChart3, MessageSquare, Wrench, Eye,
+} from "lucide-react";
+
 /**
  * Shared service routing constants used across Services.tsx, ServiceDetail.tsx, and ClientPortal.tsx.
  * Single source of truth to prevent drift (Plan items 111, 115, 178-191, 211-224).
  */
+
+/** Shared icon map for service catalog and detail pages (Gap #17) */
+export const SERVICE_ICON_MAP: Record<string, any> = {
+  Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home,
+  Copy: FileText, ScanFace: Shield, ClipboardCheck: FileText, Search: FileText,
+  FileEdit: FileText, FileType: FileText, Scan: FileText, Paintbrush: FileText,
+  FormInput: FileText, Building: Briefcase, Flag: Globe, Languages: Globe,
+  Layers: FileText, CreditCard: Briefcase, Code: FileText, Award: Shield,
+  Building2: Briefcase, Inbox: FileText, Bell: FileText, Layout: FileText,
+  GraduationCap: Briefcase, ClipboardList: FileText, Workflow: FileText, Plane: Globe,
+  Headphones, PenTool, BarChart3, MessageSquare, Wrench, Eye, Mail: MessageSquare,
+};
+
+/** Categories where a commissioned notary performs the action */
+export const NOTARY_CATEGORIES = new Set(["notarization", "authentication"]);
 
 export const INTAKE_ONLY_SERVICES = new Set([
   "Apostille Facilitation", "Consular Legalization Prep", "Background Check Coordination",
