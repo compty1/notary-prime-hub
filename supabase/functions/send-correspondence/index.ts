@@ -35,8 +35,17 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    const rawBody = await req.json();
+
+    // Dry-run mode for integration testing
+    if (rawBody.dry_run === true) {
+      return new Response(JSON.stringify({ success: true, dry_run: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Validate input
-    const parsed = BodySchema.safeParse(await req.json());
+    const parsed = BodySchema.safeParse(rawBody);
     if (!parsed.success) {
       return new Response(JSON.stringify({ error: parsed.error.flatten().fieldErrors }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }

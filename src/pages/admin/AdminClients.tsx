@@ -62,7 +62,8 @@ export default function AdminClients() {
       });
       setMessageClient(null);
     } catch (err: any) {
-      toast({ title: "Send failed", description: err.message, variant: "destructive" });
+      const errMsg = typeof err === "object" && err !== null && typeof err.message !== "string" ? JSON.stringify(err) : (err?.message || "Unknown error");
+      toast({ title: "Send failed", description: errMsg, variant: "destructive" });
     }
     setSendingMessage(false);
   };

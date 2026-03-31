@@ -200,7 +200,8 @@ export default function AdminIntegrationTest() {
         setEmailTest({ status: "success", message: "Email function reachable and responding.", responseTime: elapsed });
       } else {
         const data = await resp.json().catch(() => ({}));
-        setEmailTest({ status: "error", message: data.error || `HTTP ${resp.status}`, responseTime: elapsed });
+        const errMsg = typeof data.error === "object" ? JSON.stringify(data.error) : (data.error || `HTTP ${resp.status}`);
+        setEmailTest({ status: "error", message: errMsg, responseTime: elapsed });
       }
     } catch (e: any) {
       setEmailTest({ status: "error", message: e.message, responseTime: Date.now() - start });

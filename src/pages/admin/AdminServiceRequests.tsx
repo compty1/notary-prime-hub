@@ -167,7 +167,7 @@ export default function AdminServiceRequests() {
     if (search) {
       const s = search.toLowerCase();
       const clientName = profiles[r.client_id]?.full_name?.toLowerCase() || "";
-      return r.service_name.toLowerCase().includes(s) || clientName.includes(s) || r.id.includes(s);
+      return (r.service_name || "").toLowerCase().includes(s) || clientName.includes(s) || (r.reference_number || "").toLowerCase().includes(s) || r.id.includes(s);
     }
     return true;
   });
