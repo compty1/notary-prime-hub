@@ -27,6 +27,7 @@ const statusFlow: Record<string, string> = {
   id_verification: "kba_pending",
   kba_pending: "in_session",
   in_session: "completed",
+  no_show: "scheduled", // Allow rescheduling from no_show
 };
 
 import { appointmentStatusColors as statusColors, serviceRequestStatusColors } from "@/lib/statusColors";
@@ -45,6 +46,8 @@ export default function AdminAppointments() {
   const [services, setServices] = useState<any[]>([]);
   const [filter, setFilter] = useState("all");
   const [dateRange, setDateRange] = useState("all");
+  const [serviceTypeFilter, setServiceTypeFilter] = useState("all");
+  const [notarizationTypeFilter, setNotarizationTypeFilter] = useState("all");
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
   const [calendarMonth, setCalendarMonth] = useState(new Date());
   const [page, setPage] = useState(0);
@@ -149,11 +152,13 @@ export default function AdminAppointments() {
   const fetchData = async () => {
     let query = supabase.from("appointments").select("*").order("scheduled_date", { ascending: false }).range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
     if (filter !== "all") query = query.eq("status", filter as any);
+    if (serviceTypeFilter !== "all") query = query.eq("service_type", serviceTypeFilter);
+    if (notarizationTypeFilter !== "all") query = query.eq("notarization_type", notarizationTypeFilter as any);
     const df = getDateFilter();
     if (df) query = query.gte("scheduled_date", df.from).lte("scheduled_date", df.to);
     const [{ data: appts }, { data: profs }, { data: svcs }] = await Promise.all([
       query,
-      supabase.from("profiles").select("*"),
+      supabase.from("profiles").select("user_id, full_name, email, phone, address, city, state, zip"),
       supabase.from("services").select("name").eq("is_active", true),
     ]);
     if (appts) { setAppointments(appts); setHasMore(appts.length === PAGE_SIZE); }
@@ -162,8 +167,8 @@ export default function AdminAppointments() {
     setLoading(false);
   };
 
-  useEffect(() => { setPage(0); }, [filter, dateRange]);
-  useEffect(() => { fetchData(); }, [filter, dateRange, page]);
+  useEffect(() => { setPage(0); }, [filter, dateRange, serviceTypeFilter, notarizationTypeFilter]);
+  useEffect(() => { fetchData(); }, [filter, dateRange, serviceTypeFilter, notarizationTypeFilter, page]);
 
   // Fetch service requests when toggled
   useEffect(() => {
@@ -403,6 +408,23 @@ export default function AdminAppointments() {
               ))}
             </SelectContent>
           </Select>
+          <Select value={notarizationTypeFilter} onValueChange={setNotarizationTypeFilter}>
+            <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="in_person">In-Person</SelectItem>
+              <SelectItem value="ron">RON</SelectItem>
+            </SelectContent>
+          </Select>
+          {services.length > 0 && (
+            <Select value={serviceTypeFilter} onValueChange={setServiceTypeFilter}>
+              <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Services</SelectItem>
+                {services.map(s => <SelectItem key={s.name} value={s.name}>{s.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          )}
           <div className="flex rounded-md border border-border">
             <Button size="sm" variant={viewMode === "list" ? "default" : "ghost"} className="rounded-r-none" onClick={() => setViewMode("list")}>
               <List className="h-4 w-4" />
@@ -413,6 +435,49 @@ export default function AdminAppointments() {
           </div>
         </div>
       </div>
+
+      {/* Calendar View */}
+      {viewMode === "calendar" && !loading && (
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <Button variant="outline" size="sm" onClick={() => setCalendarMonth(prev => { const d = new Date(prev); d.setMonth(d.getMonth() - 1); return d; })}>
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <h2 className="font-sans font-semibold">{calendarMonth.toLocaleDateString("en-US", { month: "long", year: "numeric" })}</h2>
+            <Button variant="outline" size="sm" onClick={() => setCalendarMonth(prev => { const d = new Date(prev); d.setMonth(d.getMonth() + 1); return d; })}>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="grid grid-cols-7 gap-1 text-xs">
+            {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d => <div key={d} className="text-center font-medium text-muted-foreground py-1">{d}</div>)}
+            {(() => {
+              const year = calendarMonth.getFullYear();
+              const month = calendarMonth.getMonth();
+              const firstDay = new Date(year, month, 1).getDay();
+              const daysInMonth = new Date(year, month + 1, 0).getDate();
+              const cells = [];
+              for (let i = 0; i < firstDay; i++) cells.push(<div key={`e-${i}`} />);
+              for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                const dayAppts = appointments.filter(a => a.scheduled_date === dateStr);
+                const isToday = dateStr === new Date().toISOString().split("T")[0];
+                cells.push(
+                  <div key={day} className={`min-h-[60px] rounded border p-1 ${isToday ? "border-primary bg-primary/5" : "border-border/30"}`}>
+                    <div className="text-xs font-medium">{day}</div>
+                    {dayAppts.slice(0, 2).map(a => (
+                      <div key={a.id} className="text-[10px] truncate rounded bg-primary/10 px-1 mt-0.5 cursor-pointer" onClick={() => openDetail(a)}>
+                        {formatTime(a.scheduled_time)} {getClientName(a.client_id).split(" ")[0]}
+                      </div>
+                    ))}
+                    {dayAppts.length > 2 && <div className="text-[10px] text-muted-foreground">+{dayAppts.length - 2} more</div>}
+                  </div>
+                );
+              }
+              return cells;
+            })()}
+          </div>
+        </div>
+      )}
 
       {/* Service Requests Section */}
       {showRequests && (

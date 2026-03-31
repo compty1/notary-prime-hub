@@ -18,7 +18,7 @@ import { logAuditEvent } from "@/lib/auditLog";
 import type { Json } from "@/integrations/supabase/types";
 
 const oathScripts = {
-  acknowledgment: null,
+  acknowledgment: "The signer personally appeared before me and acknowledged that they signed this document voluntarily for the purposes stated therein. (No verbal oath required for acknowledgments per ORC §147.55)",
   jurat: "Do you solemnly swear (or affirm) that the statements contained in this document are true and correct to the best of your knowledge and belief?",
   oath: "Do you solemnly swear (or affirm) that the testimony you are about to give is the truth, the whole truth, and nothing but the truth?",
   affirmation: "Do you solemnly affirm, under penalty of perjury, that the statements in this document are true and correct?",
@@ -380,11 +380,18 @@ export default function RonSession() {
       toast({ title: "Cannot complete", description: "ID verification and KBA must both be completed before finalizing.", variant: "destructive" });
       return;
     }
+    // Item 405: Confirmation dialog
+    if (!window.confirm("Are you sure you want to finalize this session? This will mark the appointment as completed, create a journal entry, e-seal verification, and payment record. This action cannot be undone.")) {
+      return;
+    }
     setCompleting(true);
 
     // Fetch notary name from settings (Item 353, 422)
     const { data: notaryNameData } = await supabase.from("platform_settings").select("setting_value").eq("setting_key", "notary_name").single();
     const notaryNameSetting = notaryNameData?.setting_value || "Notar";
+
+    // Item 406: Capture signer location state
+    const signerLocationState = clientProfile?.state || null;
 
     await supabase.from("appointments").update({ status: "completed" as any, admin_notes: notes }).eq("id", appointmentId);
     await supabase.from("notarization_sessions").update({
@@ -392,10 +399,12 @@ export default function RonSession() {
       kba_completed: true,
       status: "completed" as any,
       completed_at: new Date().toISOString(),
+      last_activity_at: new Date().toISOString(),
       session_mode: sessionMode,
       signing_platform: signingPlatform,
       document_name: documentName || null,
       signer_email: signerEmail || null,
+      signer_location_state: signerLocationState,
     } as any).eq("appointment_id", appointmentId);
     await supabase.from("documents").update({ status: "notarized" as any }).eq("appointment_id", appointmentId);
 
@@ -835,6 +844,9 @@ export default function RonSession() {
                   <div>
                     <Label className="text-xs">Expiration Date</Label>
                     <Input type="date" className="h-8 text-xs" value={idExpiration} onChange={(e) => setIdExpiration(e.target.value)} />
+                    {idExpiration && new Date(idExpiration) < new Date() && (
+                      <p className="mt-1 text-[10px] text-destructive font-medium">⚠ This ID has expired — cannot be accepted for notarization</p>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
                     <Switch checked={idVerified} onCheckedChange={setIdVerified} />
@@ -910,6 +922,48 @@ export default function RonSession() {
                 {sessionUniqueId && (
                   <div className="mt-2 text-[10px] text-muted-foreground">
                     Session ID: <span className="font-mono text-foreground">{sessionUniqueId}</span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Ohio Compliance Checklist — Item 427 */}
+            <Card className="border-border/50">
+              <CardContent className="p-4">
+                <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
+                  <Shield className="h-4 w-4 text-primary" /> Ohio RON Compliance
+                </h3>
+                <ul className="space-y-1.5 text-[11px] text-muted-foreground">
+                  <li className="flex items-start gap-1.5">
+                    {recordingConsent ? <CheckCircle className="h-3 w-3 text-primary mt-0.5 shrink-0" /> : <AlertCircle className="h-3 w-3 text-amber-500 mt-0.5 shrink-0" />}
+                    <span>Audio/video recording consent obtained (ORC §147.66)</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    {idVerified ? <CheckCircle className="h-3 w-3 text-primary mt-0.5 shrink-0" /> : <AlertCircle className="h-3 w-3 text-amber-500 mt-0.5 shrink-0" />}
+                    <span>Government-issued photo ID verified</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    {kbaCompleted ? <CheckCircle className="h-3 w-3 text-primary mt-0.5 shrink-0" /> : <AlertCircle className="h-3 w-3 text-amber-500 mt-0.5 shrink-0" />}
+                    <span>MISMO-compliant KBA completed (ORC §147.66)</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    {oathAdministered ? <CheckCircle className="h-3 w-3 text-primary mt-0.5 shrink-0" /> : <AlertCircle className="h-3 w-3 text-amber-500 mt-0.5 shrink-0" />}
+                    <span>Oath/affirmation administered where required</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <CheckCircle className="h-3 w-3 text-primary mt-0.5 shrink-0" />
+                    <span>Session conducted via approved technology platform</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <CheckCircle className="h-3 w-3 text-primary mt-0.5 shrink-0" />
+                    <span>Notary commissioned in Ohio (ORC §147.03)</span>
+                  </li>
+                </ul>
+                {kbaAttempts > 0 && (
+                  <div className="mt-2 text-[10px]">
+                    <span className={kbaAttempts >= 2 ? "text-destructive font-medium" : "text-muted-foreground"}>
+                      KBA Attempts: {kbaAttempts}/2 {kbaAttempts >= 2 && "— Maximum reached per ORC §147.66"}
+                    </span>
                   </div>
                 )}
               </CardContent>
