@@ -402,6 +402,14 @@ export default function BookAppointment() {
     if (svcLower.includes("custom workflow")) { if (currentTools) parts.push(`[Current Tools: ${currentTools}]`); if (teamSize) parts.push(`[Team Size: ${teamSize}]`); if (budgetRange) parts.push(`[Budget: ${budgetRange}]`); }
     if (svcLower.includes("bulk")) { if (monthlyVolume) parts.push(`[Monthly Volume: ${monthlyVolume}]`); if (bulkDocTypes) parts.push(`[Doc Types: ${bulkDocTypes}]`); if (schedulePreference) parts.push(`[Schedule: ${schedulePreference}]`); }
     if (svcLower.includes("scanning") || svcLower.includes("digitization")) parts.push(`[Scanning Mode: ${scanningMode}]`);
+    // Phase 12 fields
+    if (signerCapacity !== "individual") parts.push(`[Signer Capacity: ${signerCapacity}]`);
+    if (entityName) parts.push(`[Entity: ${entityName}]`);
+    if (signerTitle) parts.push(`[Signer Title: ${signerTitle}]`);
+    if (facilityName) parts.push(`[Facility: ${facilityName}]`);
+    if (facilityContact) parts.push(`[Facility Contact: ${facilityContact}]`);
+    if (facilityRoom) parts.push(`[Room: ${facilityRoom}]`);
+    if (signerCount > 1) parts.push(`[Signers: ${signerCount}]`);
     return parts.join("\n");
   };
 
