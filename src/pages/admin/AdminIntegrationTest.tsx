@@ -311,12 +311,11 @@ export default function AdminIntegrationTest() {
     },
     {
       id: "signnow", name: "SignNow", icon: Monitor,
-      description: "E-signing platform for document uploads, signing invites, KBA verification, and webhook event tracking.",
+      description: "E-signing platform for document uploads, signing invites, webhook event tracking, and built-in KBA verification (MISMO-compliant).",
       secrets: ["SIGNNOW_API_TOKEN", "SIGNNOW_WEBHOOK_SECRET"],
       testFn: testSignNow,
       settings: [
         { key: "signnow_webhook_url", label: "Webhook Callback URL", placeholder: "https://…/functions/v1/signnow-webhook" },
-        { key: "signnow_kba_provider", label: "KBA Provider", type: "select", options: ["idology", "lexisnexis", "manual"] },
       ],
       troubleshootMap: [
         { pattern: "401", title: "Token Expired or Invalid", fix: "The SIGNNOW_API_TOKEN secret is expired or incorrect. Generate a new token in your SignNow account and update the secret in Lovable Cloud." },
