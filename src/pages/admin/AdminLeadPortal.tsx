@@ -336,6 +336,9 @@ export default function AdminLeadPortal() {
                       <Link to={`/admin/appointments?newLead=${lead.name || lead.business_name}`}>
                         <Button size="sm" variant="outline" className="text-xs"><Calendar className="mr-1 h-3 w-3" /> Schedule</Button>
                       </Link>
+                      <Link to={`/ai-writer?tab=proposal&leadId=${lead.id}`}>
+                        <Button size="sm" variant="outline" className="text-xs"><Sparkles className="mr-1 h-3 w-3" /> Proposal</Button>
+                      </Link>
                       <Badge className={intentColors[lead.intent_score]}>{lead.intent_score}</Badge>
                       <Select value={lead.status} onValueChange={(v) => updateStatus(lead.id, v)}>
                         <SelectTrigger className="w-28 h-7 text-xs">

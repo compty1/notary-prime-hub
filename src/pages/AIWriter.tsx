@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePageTitle } from "@/lib/usePageTitle";
 import { useAuth } from "@/contexts/AuthContext";
 import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Button } from "@/components/ui/button";
@@ -15,17 +16,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { fadeUp } from "@/lib/animations";
-import { Mail, MessageSquare, FileText, Copy, Download, Loader2, Sparkles, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Mail, MessageSquare, FileText, Copy, Download, Loader2, Sparkles, ArrowRight, FileSignature, Printer } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
 
-type WritingMode = "email" | "social" | "document";
+type WritingMode = "email" | "social" | "document" | "proposal";
 
 export default function AIWriter() {
   usePageTitle("AI Writing Tools");
   const { user } = useAuth();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
 
-  const [mode, setMode] = useState<WritingMode>("email");
+  const initialTab = (searchParams.get("tab") as WritingMode) || "email";
+  const [mode, setMode] = useState<WritingMode>(initialTab);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
 
@@ -42,6 +45,57 @@ export default function AIWriter() {
   const [docType, setDocType] = useState("letter");
   const [docContext, setDocContext] = useState("");
 
+  // Proposal fields
+  const [proposalTone, setProposalTone] = useState("professional");
+  const [leads, setLeads] = useState<any[]>([]);
+  const [selectedLeadId, setSelectedLeadId] = useState("");
+  const [proposalForm, setProposalForm] = useState({
+    name: "", business_name: "", service_needed: "", city: "", state: "OH",
+    phone: "", email: "", lead_type: "individual", notes: "",
+  });
+
+  // Load leads for proposal tab
+  useEffect(() => {
+    if (mode === "proposal" && user) {
+      supabase.from("leads").select("*").order("created_at", { ascending: false }).limit(100)
+        .then(({ data }) => { if (data) setLeads(data); });
+    }
+  }, [mode, user]);
+
+  // Pre-fill from URL params
+  useEffect(() => {
+    const leadId = searchParams.get("leadId");
+    if (leadId && leads.length > 0) {
+      const lead = leads.find((l) => l.id === leadId);
+      if (lead) {
+        setSelectedLeadId(leadId);
+        setProposalForm({
+          name: lead.name || "", business_name: lead.business_name || "",
+          service_needed: lead.service_needed || "", city: lead.city || "",
+          state: lead.state || "OH", phone: lead.phone || "", email: lead.email || "",
+          lead_type: lead.lead_type || "individual", notes: lead.notes || "",
+        });
+      }
+    }
+  }, [searchParams, leads]);
+
+  const handleLeadSelect = (leadId: string) => {
+    setSelectedLeadId(leadId);
+    if (leadId === "manual") {
+      setProposalForm({ name: "", business_name: "", service_needed: "", city: "", state: "OH", phone: "", email: "", lead_type: "individual", notes: "" });
+      return;
+    }
+    const lead = leads.find((l) => l.id === leadId);
+    if (lead) {
+      setProposalForm({
+        name: lead.name || "", business_name: lead.business_name || "",
+        service_needed: lead.service_needed || "", city: lead.city || "",
+        state: lead.state || "OH", phone: lead.phone || "", email: lead.email || "",
+        lead_type: lead.lead_type || "individual", notes: lead.notes || "",
+      });
+    }
+  };
+
   const buildPrompt = (): string => {
     if (mode === "email") {
       return `Write a ${emailTone} email for the following purpose: ${emailPurpose}\n\nKey points to include:\n${emailKeyPoints}\n\nProvide just the email with subject line, greeting, body, and sign-off. Do not include any explanations.`;
@@ -50,12 +104,69 @@ export default function AIWriter() {
       const platformNames: Record<string, string> = { linkedin: "LinkedIn", twitter: "Twitter/X", facebook: "Facebook", instagram: "Instagram" };
       return `Write a ${platformNames[socialPlatform]} post about: ${socialTopic}\n\nInclude relevant hashtags. Keep it engaging and platform-appropriate. Provide just the post text.`;
     }
-    const docTypes: Record<string, string> = { letter: "formal letter", memo: "business memo", proposal: "project proposal", report: "summary report" };
-    return `Write a ${docTypes[docType]} based on this context: ${docContext}\n\nProvide the complete document with proper formatting, headers, and structure. Do not include explanations.`;
+    if (mode === "document") {
+      const docTypes: Record<string, string> = { letter: "formal letter", memo: "business memo", proposal: "project proposal", report: "summary report" };
+      return `Write a ${docTypes[docType]} based on this context: ${docContext}\n\nProvide the complete document with proper formatting, headers, and structure. Do not include explanations.`;
+    }
+    return ""; // proposal uses its own edge function
+  };
+
+  const streamSSE = async (resp: Response) => {
+    let soFar = "";
+    const reader = resp.body?.getReader();
+    if (!reader) throw new Error("No stream");
+    const decoder = new TextDecoder();
+    let buffer = "";
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      let idx;
+      while ((idx = buffer.indexOf("\n")) !== -1) {
+        let line = buffer.slice(0, idx);
+        buffer = buffer.slice(idx + 1);
+        if (line.endsWith("\r")) line = line.slice(0, -1);
+        if (!line.startsWith("data: ")) continue;
+        const jsonStr = line.slice(6).trim();
+        if (jsonStr === "[DONE]") break;
+        try {
+          const parsed = JSON.parse(jsonStr);
+          const content = parsed.choices?.[0]?.delta?.content;
+          if (content) { soFar += content; setResult(soFar); }
+        } catch { /* partial */ }
+      }
+    }
   };
 
   const generate = async () => {
     if (loading) return;
+
+    if (mode === "proposal") {
+      if (!proposalForm.name && !proposalForm.business_name) {
+        toast({ title: "Please provide a name or business name", variant: "destructive" });
+        return;
+      }
+      setLoading(true);
+      setResult("");
+      try {
+        const resp = await callEdgeFunctionStream("generate-lead-proposal", {
+          leadData: proposalForm,
+          tone: proposalTone,
+        }, 60000);
+        if (!resp.ok) {
+          const err = await resp.json().catch(() => ({ error: "AI unavailable" }));
+          toast({ title: err.error || "Generation failed", variant: "destructive" });
+          setLoading(false);
+          return;
+        }
+        await streamSSE(resp);
+      } catch {
+        setResult("AI assistant is temporarily unavailable. Please try again later.");
+      }
+      setLoading(false);
+      return;
+    }
+
     const prompt = buildPrompt();
     if (!prompt || prompt.length < 20) {
       toast({ title: "Please fill in the required fields", variant: "destructive" });
@@ -63,35 +174,12 @@ export default function AIWriter() {
     }
     setLoading(true);
     setResult("");
-    let soFar = "";
     try {
       const resp = await callEdgeFunctionStream("client-assistant", {
         messages: [{ role: "user", content: prompt }],
       }, 60000);
       if (!resp.ok) throw new Error("AI unavailable");
-      const reader = resp.body?.getReader();
-      if (!reader) throw new Error("No stream");
-      const decoder = new TextDecoder();
-      let buffer = "";
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        let idx;
-        while ((idx = buffer.indexOf("\n")) !== -1) {
-          let line = buffer.slice(0, idx);
-          buffer = buffer.slice(idx + 1);
-          if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (!line.startsWith("data: ")) continue;
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === "[DONE]") break;
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content;
-            if (content) { soFar += content; setResult(soFar); }
-          } catch { /* partial */ }
-        }
-      }
+      await streamSSE(resp);
     } catch {
       setResult("AI assistant is temporarily unavailable. Please try again later.");
     }
@@ -111,6 +199,15 @@ export default function AIWriter() {
     a.download = `${mode}-draft.txt`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const printResult = () => {
+    const win = window.open("", "_blank");
+    if (win) {
+      win.document.write(`<html><head><title>Notar Proposal</title><style>body{font-family:Georgia,serif;max-width:700px;margin:40px auto;padding:20px;line-height:1.6;white-space:pre-wrap;}</style></head><body>${result}</body></html>`);
+      win.document.close();
+      win.print();
+    }
   };
 
   if (!user) {
@@ -133,7 +230,7 @@ export default function AIWriter() {
           <Badge variant="secondary" className="mb-3"><Sparkles className="mr-1 h-3 w-3" /> AI-Powered</Badge>
           <h1 className="mb-3 text-3xl font-bold text-foreground md:text-4xl">AI Writing Tools</h1>
           <p className="mx-auto max-w-xl text-muted-foreground">
-            Generate professional emails, social media posts, and documents in seconds.
+            Generate professional emails, social media posts, documents, and lead proposals in seconds.
           </p>
         </div>
       </section>
@@ -146,6 +243,7 @@ export default function AIWriter() {
               <TabsTrigger value="email" className="flex-1 gap-2"><Mail className="h-4 w-4" /> Email</TabsTrigger>
               <TabsTrigger value="social" className="flex-1 gap-2"><MessageSquare className="h-4 w-4" /> Social Post</TabsTrigger>
               <TabsTrigger value="document" className="flex-1 gap-2"><FileText className="h-4 w-4" /> Document</TabsTrigger>
+              <TabsTrigger value="proposal" className="flex-1 gap-2"><FileSignature className="h-4 w-4" /> Lead Proposal</TabsTrigger>
             </TabsList>
 
             <TabsContent value="email">
@@ -223,6 +321,89 @@ export default function AIWriter() {
                 </CardContent>
               </Card>
             </TabsContent>
+
+            <TabsContent value="proposal">
+              <Card>
+                <CardHeader><CardTitle>Lead Proposal Generator</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label>Select Lead</Label>
+                    <Select value={selectedLeadId} onValueChange={handleLeadSelect}>
+                      <SelectTrigger><SelectValue placeholder="Choose a lead or enter manually..." /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="manual">✏️ Enter Manually</SelectItem>
+                        {leads.map((l) => (
+                          <SelectItem key={l.id} value={l.id}>
+                            {l.name || l.business_name || "Unknown"} {l.city ? `— ${l.city}` : ""} {l.service_needed ? `(${l.service_needed})` : ""}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Name *</Label>
+                      <Input value={proposalForm.name} onChange={(e) => setProposalForm({ ...proposalForm, name: e.target.value })} placeholder="Lead name" />
+                    </div>
+                    <div>
+                      <Label>Business Name</Label>
+                      <Input value={proposalForm.business_name} onChange={(e) => setProposalForm({ ...proposalForm, business_name: e.target.value })} />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Service Needed</Label>
+                      <Input value={proposalForm.service_needed} onChange={(e) => setProposalForm({ ...proposalForm, service_needed: e.target.value })} placeholder="Notarization, RON, Loan Signing..." />
+                    </div>
+                    <div>
+                      <Label>Tone</Label>
+                      <Select value={proposalTone} onValueChange={setProposalTone}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="professional">Professional</SelectItem>
+                          <SelectItem value="friendly">Friendly</SelectItem>
+                          <SelectItem value="persuasive">Persuasive</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <Label>City</Label>
+                      <Input value={proposalForm.city} onChange={(e) => setProposalForm({ ...proposalForm, city: e.target.value })} />
+                    </div>
+                    <div>
+                      <Label>State</Label>
+                      <Input value={proposalForm.state} onChange={(e) => setProposalForm({ ...proposalForm, state: e.target.value })} maxLength={2} />
+                    </div>
+                    <div>
+                      <Label>Lead Type</Label>
+                      <Select value={proposalForm.lead_type} onValueChange={(v) => setProposalForm({ ...proposalForm, lead_type: v })}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="individual">Individual</SelectItem>
+                          <SelectItem value="business">Business</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Phone</Label>
+                      <Input value={proposalForm.phone} onChange={(e) => setProposalForm({ ...proposalForm, phone: e.target.value })} placeholder="(614) 555-1234" />
+                    </div>
+                    <div>
+                      <Label>Email</Label>
+                      <Input value={proposalForm.email} onChange={(e) => setProposalForm({ ...proposalForm, email: e.target.value })} type="email" />
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Additional Notes</Label>
+                    <Textarea value={proposalForm.notes} onChange={(e) => setProposalForm({ ...proposalForm, notes: e.target.value })} rows={2} placeholder="Any context, special requirements, or details for the proposal..." />
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
           </Tabs>
 
           <div className="mt-4 flex justify-end">
@@ -240,6 +421,9 @@ export default function AIWriter() {
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm" onClick={copyToClipboard}><Copy className="mr-1 h-3 w-3" /> Copy</Button>
                       <Button variant="outline" size="sm" onClick={downloadAsText}><Download className="mr-1 h-3 w-3" /> Download</Button>
+                      {mode === "proposal" && (
+                        <Button variant="outline" size="sm" onClick={printResult}><Printer className="mr-1 h-3 w-3" /> Print</Button>
+                      )}
                     </div>
                   </div>
                 </CardHeader>
