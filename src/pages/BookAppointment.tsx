@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { usePageTitle } from "@/lib/usePageTitle";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,6 +14,8 @@ import { motion } from "framer-motion";
 import { MapPin, Monitor, CheckCircle, ChevronLeft, ChevronRight, Camera, Loader2, Sparkles, AlertTriangle, DollarSign, Info } from "lucide-react";
 import { haversineDistance, getAfterHoursFee, DEFAULT_OFFICE_LAT, DEFAULT_OFFICE_LON } from "@/lib/geoUtils";
 import { NOTARIAL_ACT_MAP } from "@/lib/serviceConstants";
+import { calculatePrice, parseSettings, type PricingBreakdown } from "@/lib/pricingEngine";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PageShell } from "@/components/PageShell";
 import {
