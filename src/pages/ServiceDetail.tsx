@@ -372,7 +372,11 @@ export default function ServiceDetail() {
     const from = Number(s.price_from || 0);
     const to = Number(s.price_to || 0);
     if (from === 0 && to === 0) return "Contact Us";
-    const suffix = s.pricing_model === "monthly" ? "/mo" : "";
+    const suffixMap: Record<string, string> = {
+      per_seal: "/seal", per_document: "/doc", per_page: "/page",
+      hourly: "/hr", per_session: "/session", monthly: "/mo", flat: "", custom: "",
+    };
+    const suffix = suffixMap[s.pricing_model] || "";
     return to > from ? `$${from}–$${to}${suffix}` : `$${from}${suffix}`;
   };
 
