@@ -1,46 +1,29 @@
 
 
-# Visual Rebrand — Match New Brand Identity + Hero Button Updates
+# Visual Rebrand + Service Badge Fix
 
 ## Summary
-Update the logo, color theme, and visual accents across the entire app to match the new brand identity, plus update hero section CTAs.
+All previous plan items remain unchanged. This adds one fix: the "Notary action" badge on service detail workflow steps should only appear for notary-related services. Non-notary services should show "Provider action" instead.
 
-## Color Palette Change
+## Existing Plan (unchanged)
+1. **Logo.tsx** — bolder SVG strokes, better overlap geometry
+2. **Navbar.tsx** — coral "Sign In" pill button
+3. **index.css** — muted-foreground contrast, light-gray token
+4. **Index.tsx** — hero contrast verification
 
-| Token | New Value | Source |
-|-------|-----------|--------|
-| `--primary` | `181 71% 41%` | #1eaeb2 teal |
-| `--foreground` | `216 79% 30%` | #103b87 dark blue |
-| `--accent` | `0 100% 71%` | #ff6b6b coral |
+## Added Change
 
-Dark mode values adjusted proportionally.
+### 5. `src/pages/ServiceDetail.tsx` — Conditional admin action badge text
+- Line 677: Change the hardcoded `"Notary action"` badge to be conditional on the service category
+- If `category` is `"notarization"` or `"authentication"`, keep **"Notary action"**
+- For all other categories, display **"Provider action"**
+- The service's `category` field is already fetched and available in the component state
 
-## Changes
+### 6. `src/components/ServiceDetailPanel.tsx` — Same fix for panel badges
+- Line 75: Change `"Admin Action"` to the same conditional logic
+- This component receives `serviceId` but not category — will need to either pass `category` as a prop or keep as "Provider action" (since this panel is a secondary detail view)
+- Simplest approach: add an optional `category` prop and default to "Provider action"
 
-### 1. `src/components/Logo.tsx` — New SVG mark + "Notar." wordmark
-- Three overlapping rounded strokes forming an architectural "N": teal diagonal, dark blue left stem, mint right stem
-- "Notar." text with coral period
-- Support `size`, `showText`, `theme` props
-
-### 2. `src/index.css` — Updated CSS custom properties
-- Update `:root` and `.dark` with new palette
-- Update gradient classes to use new colors
-
-### 3. `src/components/Navbar.tsx` — Logo integration
-- Use `<Logo showText />` instead of separate icon + text span
-
-### 4. `src/components/Footer.tsx` — Logo integration
-- Same pattern as Navbar
-
-### 5. `src/pages/Index.tsx` — Hero button changes
-- Rename "Get Started Free" button to **"Online Notarization"**
-- Add a second button next to "Notarize Now" labeled **"Other Services"** linking to `/services`
-
-### 6. `src/pages/ComingSoon.tsx` — Logo integration
-- Use updated `<Logo showText />` component
-
-## What Does NOT Change
-- Page content, routing, functionality, database, edge functions
-- Typography (Space Grotesk + Lato)
-- Layout structure, spacing, animations
+## Technical Detail
+Notary-related categories: `"notarization"`, `"authentication"` — these are the two categories where a commissioned notary performs the action. All others (document_services, business, consulting, etc.) use third-party providers or internal staff.
 
