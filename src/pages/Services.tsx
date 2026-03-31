@@ -167,18 +167,13 @@ export default function Services() {
     setIsError(false);
     setError(null);
     try {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const apiKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
-      const restUrl = `${supabaseUrl}/rest/v1/services?select=*&is_active=eq.true&order=display_order.asc`;
-      const response = await fetch(restUrl, {
-        headers: {
-          apikey: apiKey,
-          Authorization: `Bearer ${apiKey}`,
-        },
-      });
-      if (!response.ok) throw new Error(`Failed to load services (${response.status})`);
-      const data = (await response.json()) as Service[];
-      setServices(data);
+      const { data, error: fetchErr } = await supabase
+        .from("services")
+        .select("id, name, category, description, short_description, price_from, price_to, pricing_model, icon")
+        .eq("is_active", true)
+        .order("display_order", { ascending: true });
+      if (fetchErr) throw new Error(fetchErr.message);
+      setServices((data || []) as Service[]);
     } catch (err) {
       setIsError(true);
       setError(err instanceof Error ? err : new Error(String(err)));
