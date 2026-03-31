@@ -116,6 +116,11 @@ export default function RonSession() {
   const [idExpiration, setIdExpiration] = useState("");
 
   const [kbaCompleted, setKbaCompleted] = useState(false);
+  const [kbaAttempts, setKbaAttempts] = useState(0);
+
+  // Session timeout
+  const [sessionTimeoutMinutes, setSessionTimeoutMinutes] = useState(60);
+  const [sessionStartedAt, setSessionStartedAt] = useState<string | null>(null);
 
   // Voice-to-notes
   const [notes, setNotes] = useState("");
