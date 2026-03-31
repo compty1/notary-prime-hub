@@ -844,6 +844,9 @@ export default function RonSession() {
                   <div>
                     <Label className="text-xs">Expiration Date</Label>
                     <Input type="date" className="h-8 text-xs" value={idExpiration} onChange={(e) => setIdExpiration(e.target.value)} />
+                    {idExpiration && new Date(idExpiration) < new Date() && (
+                      <p className="mt-1 text-[10px] text-destructive font-medium">⚠ This ID has expired — cannot be accepted for notarization</p>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
                     <Switch checked={idVerified} onCheckedChange={setIdVerified} />
