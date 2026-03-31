@@ -130,11 +130,11 @@
   }
 
   .bg-gradient-hero {
-    background: linear-gradient(160deg, hsl(224 63% 11%) 0%, hsl(224 50% 14%) 40%, hsl(var(--background)) 100%);
+    background: linear-gradient(160deg, hsl(216 79% 15%) 0%, hsl(216 60% 20%) 40%, hsl(var(--background)) 100%);
   }
 
   .dark .bg-gradient-hero {
-    background: linear-gradient(160deg, hsl(225 75% 5%) 0%, hsl(224 55% 11%) 50%, hsl(225 75% 7%) 100%);
+    background: linear-gradient(160deg, hsl(216 79% 5%) 0%, hsl(216 60% 11%) 50%, hsl(216 79% 7%) 100%);
   }
 
   .bg-gradient-primary {
