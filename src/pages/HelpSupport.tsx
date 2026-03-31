@@ -23,18 +23,131 @@ import {
   Clock,
   MapPin,
   Scale,
-  Users,
-  AlertTriangle,
-  Stamp,
   BookOpen,
+  Stamp,
+  Users,
+  Pen,
+  Copy,
+  Eye,
+  Globe,
+  CheckCircle2,
 } from "lucide-react";
 import { BRAND } from "@/lib/brand";
+
+/* ─── Service Use-Case Data ──────────────────────────────────── */
+
+const serviceUseCases = [
+  {
+    title: "Acknowledgments",
+    icon: Pen,
+    description: "The signer acknowledges to the notary that they signed the document voluntarily. The notary verifies identity but does not need to witness the actual signing.",
+    examples: [
+      "Signing a deed to transfer ownership of your home to a family member or buyer at closing",
+      "Executing a durable power of attorney so a trusted person can manage your finances if you become incapacitated",
+      "Signing a revocable living trust to transfer assets and avoid probate for your heirs",
+      "Recording a mortgage or deed of trust when refinancing your home loan",
+      "Signing a prenuptial or postnuptial agreement before or during marriage",
+      "Executing a quitclaim deed to add or remove a spouse from property title after marriage or divorce",
+    ],
+  },
+  {
+    title: "Jurats (Sworn Statements)",
+    icon: Scale,
+    description: "The signer must sign in the notary's presence and swear or affirm under oath that the contents of the document are true. Required for documents where truthfulness is legally critical.",
+    examples: [
+      "Filing a sworn affidavit for a court case — such as an affidavit of heirship, small estate affidavit, or affidavit of service",
+      "Completing a financial affidavit for divorce proceedings or child custody disputes",
+      "Signing a sworn statement for an insurance claim after a car accident, theft, or property damage",
+      "Submitting a sworn declaration to U.S. Citizenship and Immigration Services (USCIS) for a visa or green card application",
+      "Providing a sworn witness statement for a workers' compensation claim or workplace investigation",
+      "Executing a sworn contractor's affidavit for a construction lien waiver",
+    ],
+  },
+  {
+    title: "Oaths & Affirmations",
+    icon: Shield,
+    description: "The notary administers a verbal oath (religious) or affirmation (secular) binding the person to tell the truth. Often used in conjunction with jurats but can be standalone.",
+    examples: [
+      "Swearing in a witness before a deposition transcript is signed in a civil or criminal litigation",
+      "Administering an oath to a newly elected officer of a homeowners association (HOA) or nonprofit board",
+      "Swearing in a court-appointed guardian ad litem or conservator before they assume duties",
+      "Administering an oath for a public official taking office at municipal or county level in Ohio",
+      "Providing an affirmation for a signer whose religious beliefs prohibit swearing oaths (e.g., Quaker affirmation)",
+      "Swearing in a corporate officer or board member during annual organizational meetings",
+    ],
+  },
+  {
+    title: "Remote Online Notarization (RON)",
+    icon: Monitor,
+    description: "A fully digital notarization session conducted via secure audio-video link. Identity is verified through KBA and credential analysis. Authorized under Ohio ORC §147.65–.66.",
+    examples: [
+      "You're an Ohio resident traveling abroad and need to notarize a power of attorney for a real estate closing happening while you're away",
+      "A deployed military service member needs to execute legal documents but cannot access a notary on base",
+      "A hospital patient or homebound individual who cannot travel to a notary office needs healthcare directive documents notarized",
+      "A multi-state real estate transaction where buyers and sellers are in different states and need to close remotely",
+      "An out-of-state college student needs to sign and notarize financial aid or parental consent documents",
+      "A business owner with partners in different cities needs operating agreements or amendments notarized simultaneously",
+    ],
+  },
+  {
+    title: "Copy Certification",
+    icon: Copy,
+    description: "The notary certifies that a photocopy is a true, complete, and accurate reproduction of an original document. Note: notaries cannot certify copies of vital records (birth/death certificates).",
+    examples: [
+      "Certifying a copy of a college diploma or professional license for a job application or employer verification",
+      "Creating a certified copy of a passport for a rental application, bank account opening, or background check",
+      "Certifying copies of corporate bylaws or articles of incorporation for a bank or government filing",
+      "Providing a certified copy of a marriage certificate (non-vital record copy) for insurance enrollment or name change",
+      "Certifying a copy of a professional certification (CPA, nursing license, etc.) for continuing education or reciprocity in another state",
+      "Creating certified copies of military discharge papers (DD-214) for veteran benefits applications",
+    ],
+  },
+  {
+    title: "Signature Witnessing",
+    icon: Eye,
+    description: "The notary serves as an impartial witness to the signing of a document. The signer's identity is verified, and the notary confirms they observed the signature being applied.",
+    examples: [
+      "Witnessing the signing of an I-9 Employment Eligibility Verification form for a new hire at a small business without an HR department",
+      "Witnessing the execution of a last will and testament that requires independent, disinterested witnesses under Ohio law",
+      "Serving as a witness for a vehicle title transfer or bill of sale between private parties",
+      "Witnessing a medical consent form for a clinical trial or surgical procedure that requires an independent observer",
+      "Witnessing the signing of adoption papers or consent-to-adoption documents",
+      "Observing the execution of a living will or advance healthcare directive alongside required witnesses",
+    ],
+  },
+  {
+    title: "Loan Signing (NSA Services)",
+    icon: FileText,
+    description: "A Notary Signing Agent (NSA) guides borrowers through mortgage and loan document packages, ensuring all signatures, initials, and dates are correctly placed, then notarizes the required documents.",
+    examples: [
+      "Closing on a home purchase — the NSA walks you through the deed of trust, promissory note, closing disclosure, and all rider documents",
+      "Refinancing your mortgage to secure a lower interest rate — the full refinance package typically includes 100–150 pages",
+      "Home equity line of credit (HELOC) signing at your kitchen table with a mobile NSA for convenience",
+      "Reverse mortgage closing for a senior homeowner, where the NSA ensures all HUD-required counseling acknowledgments are signed",
+      "Commercial real estate loan closing for a small business purchasing office or retail space",
+      "Construction loan draw signing where periodic notarized documents release funds at each build milestone",
+    ],
+  },
+  {
+    title: "Apostille & International Authentication",
+    icon: Globe,
+    description: "An apostille (issued by the Ohio Secretary of State) authenticates a notarized document for use in countries that are members of the Hague Apostille Convention. Non-Hague countries require consular legalization.",
+    examples: [
+      "Authenticating a notarized power of attorney for use in Germany, France, or another Hague Convention country for property transactions",
+      "Apostilling a certified diploma or transcript for a student enrolling in a foreign university",
+      "Authenticating corporate documents (articles of incorporation, board resolutions) for establishing a subsidiary abroad",
+      "Apostilling a birth certificate or marriage certificate copy for a dual-citizenship or immigration application",
+      "Preparing documents for consular legalization for countries like China, Saudi Arabia, or UAE that are not Hague members",
+      "Authenticating an FBI background check for a work visa or teaching position in South Korea, Japan, or the Middle East",
+    ],
+  },
+];
 
 /* ─── FAQ Data ────────────────────────────────────────────────── */
 
 const faqCategories = [
   {
-    label: "General Questions",
+    label: "General",
     icon: HelpCircle,
     faqs: [
       {
@@ -72,7 +185,7 @@ const faqCategories = [
         a: "Most legal documents can be notarized, including: powers of attorney, affidavits, deeds, contracts, loan documents, medical directives, wills (with witness requirements), business formation docs, and more. A notary cannot notarize vital records (birth/death certificates) or documents without a signer present.",
       },
       {
-        q: "What documents CANNOT be notarized?",
+        q: "What documents cannot be notarized?",
         a: "A notary cannot notarize: documents the signer has not read or does not understand, documents without a signer physically or virtually present, vital records issued by government agencies, incomplete documents with blank fields, or any document where the notary suspects fraud or coercion.",
       },
       {
@@ -265,17 +378,59 @@ export default function HelpSupport() {
           </div>
         </section>
 
+        {/* When You Need Each Service */}
+        <section className="mb-14">
+          <h2 className="mb-2 text-xl font-bold text-foreground">When Do You Need Each Notary Service?</h2>
+          <p className="mb-6 text-sm text-muted-foreground">
+            Not sure which service applies to your situation? Here are real-life circumstances for each type of notarial act and service we offer.
+          </p>
+
+          <div className="space-y-6">
+            {serviceUseCases.map((svc) => (
+              <Card key={svc.title} className="border-border/50 overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="flex items-center gap-3 border-b border-border/40 bg-muted/30 px-5 py-4">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                      <svc.icon className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-semibold text-foreground">{svc.title}</h3>
+                      <p className="text-xs text-muted-foreground">{svc.description}</p>
+                    </div>
+                  </div>
+                  <div className="px-5 py-4">
+                    <p className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">Common Situations</p>
+                    <ul className="space-y-2.5">
+                      {svc.examples.map((ex, idx) => (
+                        <li key={idx} className="flex items-start gap-2.5 text-sm text-muted-foreground">
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary/70" />
+                          <span>{ex}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
         {/* FAQ Sections */}
         <section>
-          <h2 className="mb-6 text-xl font-bold text-foreground">Frequently Asked Questions</h2>
+          <div className="mb-8">
+            <h2 className="text-xl font-bold text-foreground">Frequently Asked Questions</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Browse by category or expand any question to see the answer.</p>
+          </div>
 
           <div className="space-y-8">
             {faqCategories.map((cat) => (
-              <div key={cat.label}>
+              <div key={cat.label} id={`faq-${cat.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}>
                 <div className="mb-3 flex items-center gap-2">
                   <cat.icon className="h-5 w-5 text-primary" />
                   <h3 className="text-base font-semibold text-foreground">{cat.label}</h3>
-                  <Badge variant="outline" className="ml-auto text-xs">{cat.faqs.length} questions</Badge>
+                  <Badge variant="outline" className="ml-auto text-xs">
+                    {cat.faqs.length} {cat.faqs.length === 1 ? "question" : "questions"}
+                  </Badge>
                 </div>
 
                 <Card className="border-border/50">
@@ -283,7 +438,7 @@ export default function HelpSupport() {
                     <Accordion type="single" collapsible className="w-full">
                       {cat.faqs.map((faq, idx) => (
                         <AccordionItem key={idx} value={`${cat.label}-${idx}`} className="border-border/40 px-5">
-                          <AccordionTrigger className="text-left text-sm font-medium text-foreground hover:no-underline">
+                          <AccordionTrigger className="gap-3 text-left text-sm font-medium text-foreground hover:no-underline">
                             {faq.q}
                           </AccordionTrigger>
                           <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
@@ -301,7 +456,7 @@ export default function HelpSupport() {
 
         {/* CTA */}
         <section className="mt-14 rounded-xl border border-primary/20 bg-primary/5 p-8 text-center">
-          <h2 className="mb-2 text-lg font-semibold text-foreground">Still have questions?</h2>
+          <h2 className="mb-2 text-lg font-semibold text-foreground">Still Have Questions?</h2>
           <p className="mb-5 text-sm text-muted-foreground">
             Our team is here to help. Reach out by phone, email, or book an appointment and we'll walk you through the process.
           </p>
