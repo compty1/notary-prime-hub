@@ -23,7 +23,7 @@ export default function TermsPrivacy() {
             <p>Notar Services ("we," "us") provides in-person and remote online notarization (RON) services in compliance with Ohio Revised Code §147 and all applicable Ohio laws. We are commissioned as a Notary Public in the State of Ohio, Franklin County.</p>
 
             <h2 className="font-sans text-lg font-semibold text-foreground">2. Eligibility</h2>
-            <p>You must be at least 18 years old and possess a valid government-issued photo ID to use our notarization services. For RON sessions, you must also successfully complete Knowledge-Based Authentication (KBA) as required by ORC §147.65-.66.</p>
+            <p>You must be at least 18 years old and possess a valid government-issued photo ID to use our notarization services. For RON sessions, you must also successfully complete Knowledge-Based Authentication (KBA) as required by ORC §147.65-.66. The signer must be of sound mind, acting voluntarily, and aware of the nature and consequences of the document being signed.</p>
 
             <h2 className="font-sans text-lg font-semibold text-foreground">3. Fees</h2>
             <p>Notary fees are governed by Ohio law. The statutory maximum per notarial act is $5.00 per signature (ORC §147.08). Additional fees for travel, technology platforms (RON), and KBA verification may apply and will be disclosed before your appointment.</p>
