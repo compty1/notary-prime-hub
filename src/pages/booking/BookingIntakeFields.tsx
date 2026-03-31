@@ -87,8 +87,15 @@ export default function BookingIntakeFields(props: IntakeFieldsProps) {
   const showCustomWorkflow = svcLower.includes("custom workflow");
   const showBulk = svcLower.includes("bulk");
   const showScanning = svcLower.includes("scanning") || svcLower.includes("digitization");
+  // Phase 12: facility signings
+  const showFacility = svcLower.includes("hospital") || svcLower.includes("jail") || svcLower.includes("facility") || svcLower.includes("care");
+  // Phase 12: witness logic gate — show for docs that typically need witnesses
+  const showWitnessGate = !showWitness && (svcLower.includes("will") || svcLower.includes("estate") || svcLower.includes("trust") || svcLower.includes("deed"));
 
-  if (!showApostille && !showImmigration && !showRealEstate && !showI9 && !showBusiness && !showRonOnboarding && !showWorkflow && !showTranslation && !showWitness && !showCertifiedCopy && !showOnboarding && !showCustomWorkflow && !showBulk && !showScanning) return null;
+  // Always show signer capacity for notarization category
+  const showSignerCapacity = cat === "notarization" || cat === "authentication";
+
+  if (!showApostille && !showImmigration && !showRealEstate && !showI9 && !showBusiness && !showRonOnboarding && !showWorkflow && !showTranslation && !showWitness && !showCertifiedCopy && !showOnboarding && !showCustomWorkflow && !showBulk && !showScanning && !showFacility && !showSignerCapacity && !showWitnessGate) return null;
 
   return (
     <div className="space-y-3 rounded-lg border border-border/50 bg-muted/30 p-4">
