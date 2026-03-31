@@ -36,6 +36,9 @@ const SIGNING_PLATFORMS = [
   { value: "docusign", label: "DocuSign" },
   { value: "notarize", label: "Notarize" },
   { value: "bluenotary", label: "BlueNotary" },
+  { value: "pavaso", label: "Pavaso" },
+  { value: "onespan", label: "OneSpan" },
+  { value: "nexsys", label: "Nexsys" },
   { value: "other", label: "Other" },
 ];
 
