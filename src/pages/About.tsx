@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -54,9 +55,7 @@ export default function About() {
         <div className="container relative mx-auto max-w-4xl px-4">
           <motion.div initial="hidden" animate="visible" className="flex flex-col md:flex-row items-center gap-8">
             <motion.div variants={fadeUp} custom={0} className="flex-shrink-0">
-              <div className="flex h-40 w-40 items-center justify-center rounded-2xl bg-foreground">
-                <span className="font-sans text-5xl font-bold text-background">N</span>
-              </div>
+              <Logo size="xl" />
             </motion.div>
             <motion.div variants={fadeUp} custom={1}>
               <Badge className="mb-3 border-primary/20 bg-primary/10 text-primary">
