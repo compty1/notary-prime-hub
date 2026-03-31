@@ -324,24 +324,7 @@ interface WorkflowStep {
 
 const PRE_QUALIFY_CATEGORIES = ["authentication", "consulting", "verification"];
 
-/** Gap #14/#487: Use Supabase client with retry instead of raw fetch */
-async function fetchSupabaseData<T>(table: string, query: Record<string, any>, selectCols = "*"): Promise<T[]> {
-  let q = supabase.from(table).select(selectCols);
-  for (const [key, value] of Object.entries(query)) {
-    if (key === 'order') continue;
-    if (key === 'limit') { q = q.limit(value); continue; }
-    if (key === 'neq') { q = q.neq(value[0], value[1]); continue; }
-    q = q.eq(key, value);
-  }
-  if (query.order) {
-    for (const o of query.order) {
-      q = q.order(o.column, { ascending: o.ascending ?? true });
-    }
-  }
-  const { data, error } = await q;
-  if (error) throw new Error(error.message);
-  return (data as T[]) || [];
-}
+// Removed fetchSupabaseData — using supabase client directly in load()
 
 export default function ServiceDetail() {
   const { serviceId } = useParams();
