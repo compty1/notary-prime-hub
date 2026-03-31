@@ -382,8 +382,12 @@ export default function ServiceRequest() {
           </div>
           <h1 className="font-sans text-2xl font-bold">Request Submitted!</h1>
           <p className="text-muted-foreground">Your {config.label.toLowerCase()} has been received. We'll review it and contact you within 1-2 business days.</p>
+          <div className="flex items-center gap-2 justify-center text-sm text-muted-foreground">
+            <Clock className="h-4 w-4" />
+            <span>Typical response time: 1-2 business days</span>
+          </div>
           <div className="flex gap-3 justify-center">
-            <Link to="/portal"><Button className="">Go to Portal</Button></Link>
+            <Link to="/portal"><Button>Go to Portal</Button></Link>
             <Link to="/services"><Button variant="outline">Browse Services</Button></Link>
           </div>
         </motion.div>
