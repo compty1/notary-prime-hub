@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
     }
     const { to_address, subject, body, client_id, reply_to_id } = parsed.data;
 
-    const FROM_EMAIL = Deno.env.get("FROM_EMAIL") || "noreply@shanegoble.com";
+    const FROM_EMAIL = Deno.env.get("FROM_EMAIL") || Deno.env.get("IONOS_EMAIL_ADDRESS") || "contact@notardex.com";
 
     // Use service role for DB operations
     const supabase = createClient(

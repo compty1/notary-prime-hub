@@ -60,6 +60,9 @@ function wrapInEmailLayout(heading: string, bodyContent: string): string {
             Notar Notary Services · Franklin County, Ohio<br>
             Commissioned per Ohio Revised Code Chapter 147
           </p>
+          <p style="color:#9ca3af;font-size:11px;text-align:center;margin:8px 0 0;">
+            <a href="https://notary-prime-hub.lovable.app/unsubscribe" style="color:#9ca3af;text-decoration:underline;">Unsubscribe</a> from future emails
+          </p>
         </div>
       </div>
     </body>
