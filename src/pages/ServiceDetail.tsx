@@ -901,7 +901,7 @@ export default function ServiceDetail() {
             </span>
             <button onClick={() => setShowChat(false)} className="text-muted-foreground hover:text-foreground text-xs">✕</button>
           </div>
-          <div className="flex-1 overflow-y-auto p-3 space-y-2 min-h-[150px]">
+          <div className="flex-1 overflow-y-auto p-3 space-y-2 min-h-[150px]" aria-live="polite" aria-label="AI chat messages">
             {chatMessages.length === 0 && (
               <p className="text-xs text-muted-foreground text-center py-4">Ask any question about {service.name} and our AI will help you.</p>
             )}
@@ -910,7 +910,7 @@ export default function ServiceDetail() {
                 {msg.content}
               </div>
             ))}
-            {chatLoading && <div className="text-xs text-muted-foreground animate-pulse">Thinking...</div>}
+            {chatLoading && <div className="text-xs text-muted-foreground animate-pulse" role="status">Thinking...</div>}
           </div>
           <div className="border-t border-border p-2 flex gap-2">
             <input
