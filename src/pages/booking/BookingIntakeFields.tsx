@@ -56,6 +56,14 @@ interface IntakeFieldsProps {
   schedulePreference: string; setSchedulePreference: (v: string) => void;
   // Scanning
   scanningMode: "digital" | "physical"; setScanningMode: (v: "digital" | "physical") => void;
+  // Phase 12: Signer capacity & facility
+  signerCapacity: string; setSignerCapacity: (v: string) => void;
+  entityName: string; setEntityName: (v: string) => void;
+  signerTitle: string; setSignerTitle: (v: string) => void;
+  facilityName: string; setFacilityName: (v: string) => void;
+  facilityContact: string; setFacilityContact: (v: string) => void;
+  facilityRoom: string; setFacilityRoom: (v: string) => void;
+  signerCount: number; setSignerCount: (v: number) => void;
 }
 
 export default function BookingIntakeFields(props: IntakeFieldsProps) {
