@@ -430,6 +430,7 @@ export default function RonSession() {
       id_type: idType || null,
       id_number: idNumber || null,
       id_expiration: idExpiration || null,
+      signer_address: clientProfile?.address ? `${clientProfile.address}, ${clientProfile.city || ""} ${clientProfile.state || ""} ${clientProfile.zip || ""}`.trim() : null,
       notes: journalNotes,
     });
 
