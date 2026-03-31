@@ -19,6 +19,7 @@ import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { QRCodeSVG } from "qrcode.react";
 import DocumentWizard from "@/components/DocumentWizard";
+import ClientProgressTracker from "@/components/ClientProgressTracker";
 import PaymentForm from "@/components/PaymentForm";
 import TechCheck from "@/components/TechCheck";
 import { Logo } from "@/components/Logo";
