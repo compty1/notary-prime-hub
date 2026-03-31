@@ -451,31 +451,77 @@ export default function ServiceRequest() {
               {/* File Upload Section */}
               <div>
                 <Label>Attach Documents (optional)</Label>
+                <p className="text-xs text-muted-foreground mb-1">Max 10 files, 10MB each. Accepted: PDF, JPEG, PNG, WebP, DOC, DOCX.</p>
                 <div
-                  className="mt-1 rounded-lg border-2 border-dashed border-primary/20 bg-primary/5 p-6 text-center cursor-pointer hover:border-primary/40 transition-colors"
+                  className={`mt-1 rounded-lg border-2 border-dashed p-6 text-center cursor-pointer transition-colors ${isDragging ? "border-primary bg-primary/10" : "border-primary/20 bg-primary/5 hover:border-primary/40"}`}
                   onClick={() => document.getElementById("sr-file-input")?.click()}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={(e) => { e.preventDefault(); const dropped = Array.from(e.dataTransfer.files); if (dropped.length) setUploadedFiles(prev => [...prev, ...dropped]); }}
+                  onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                  onDragLeave={() => setIsDragging(false)}
+                  onDrop={(e) => { e.preventDefault(); setIsDragging(false); addFiles(Array.from(e.dataTransfer.files)); }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Upload documents"
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); document.getElementById("sr-file-input")?.click(); } }}
                 >
                   <Upload className="mx-auto mb-2 h-8 w-8 text-primary/50" />
-                  <p className="text-sm text-muted-foreground">Drag & drop or click to upload supporting documents</p>
-                  <input id="sr-file-input" type="file" multiple className="hidden" onChange={(e) => { const files = Array.from(e.target.files || []); if (files.length) setUploadedFiles(prev => [...prev, ...files]); }} />
+                  <p className="text-sm text-muted-foreground">
+                    {isDragging ? "Drop files here" : "Drag & drop or click to upload supporting documents"}
+                  </p>
+                  <input
+                    id="sr-file-input"
+                    type="file"
+                    multiple
+                    accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
+                    className="hidden"
+                    onChange={(e) => { addFiles(Array.from(e.target.files || [])); e.target.value = ""; }}
+                  />
                 </div>
                 {uploadedFiles.length > 0 && (
                   <div className="mt-2 space-y-1">
                     {uploadedFiles.map((f, i) => (
                       <div key={i} className="flex items-center justify-between rounded border border-border/50 px-2 py-1 text-sm">
-                        <span className="flex items-center gap-1 truncate"><FileText className="h-3 w-3 text-primary" /> {f.name}</span>
-                        <button onClick={() => setUploadedFiles(prev => prev.filter((_, idx) => idx !== i))} className="text-muted-foreground hover:text-destructive"><X className="h-3 w-3" /></button>
+                        <span className="flex items-center gap-1 truncate">
+                          <FileText className="h-3 w-3 text-primary" />
+                          {f.name}
+                          <span className="text-xs text-muted-foreground">({(f.size / 1024 / 1024).toFixed(1)}MB)</span>
+                        </span>
+                        <button onClick={() => setUploadedFiles(prev => prev.filter((_, idx) => idx !== i))} className="text-muted-foreground hover:text-destructive" aria-label={`Remove ${f.name}`}>
+                          <X className="h-3 w-3" />
+                        </button>
                       </div>
                     ))}
+                    <p className="text-xs text-muted-foreground">{uploadedFiles.length}/{MAX_FILES} files</p>
                   </div>
                 )}
+                <p className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
+                  <Shield className="h-3 w-3" /> Files are encrypted and stored securely.
+                </p>
               </div>
 
               <div>
                 <Label>Additional Notes</Label>
                 <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Any additional information..." rows={2} />
+              </div>
+
+              {/* Terms of Service */}
+              <div className="flex items-start gap-2">
+                <Checkbox
+                  id="tos"
+                  checked={tosAccepted}
+                  onCheckedChange={(checked) => setTosAccepted(checked === true)}
+                />
+                <label htmlFor="tos" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
+                  I agree to the{" "}
+                  <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link>{" "}
+                  and{" "}
+                  <Link to="/terms" className="text-primary hover:underline">Privacy Policy</Link>.
+                  I understand my data will be processed to fulfill this request.
+                </label>
+              </div>
+
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Clock className="h-3 w-3" />
+                <span>Typical response time: 1-2 business days</span>
               </div>
 
               {!user && (
@@ -489,11 +535,38 @@ export default function ServiceRequest() {
                 </div>
               )}
 
-              <Button onClick={handleSubmit} disabled={submitting || !user} className="w-full " size="lg">
+              <Button onClick={handlePreSubmit} disabled={submitting || !user || !tosAccepted} className="w-full" size="lg">
                 {submitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : "Submit Request"}
               </Button>
             </CardContent>
           </Card>
+
+          {/* Confirmation Dialog */}
+          <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Confirm Submission</AlertDialogTitle>
+                <AlertDialogDescription>
+                  You're about to submit a <strong>{config.label}</strong> request for <strong>{serviceName}</strong>.
+                  {uploadedFiles.length > 0 && ` ${uploadedFiles.length} file(s) will be uploaded.`}
+                  {" "}This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              {Object.keys(formData).length > 0 && (
+                <div className="rounded-lg bg-muted/50 p-3 max-h-32 overflow-y-auto">
+                  {Object.entries(formData).map(([key, val]) => (
+                    <p key={key} className="text-xs text-muted-foreground">
+                      <span className="capitalize font-medium">{key.replace(/_/g, " ")}:</span> {val}
+                    </p>
+                  ))}
+                </div>
+              )}
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleSubmit}>Submit Request</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </motion.div>
       </div>
 
