@@ -79,24 +79,47 @@ export default function AdminSettings() {
   }, [loading, editValues.id_expiration_reminder_days]);
 
   const handleSave = async () => {
-    if (saving) return; // Debounce: prevent double-click
+    if (saving) return;
+
+    // Item 351/367: Validate numeric settings
+    const numericKeys = ["base_fee_per_signature", "travel_fee_per_mile", "travel_fee_minimum", "ron_platform_fee", "kba_fee", "travel_radius_miles", "max_appointments_per_day", "min_booking_lead_hours"];
+    for (const key of numericKeys) {
+      const val = editValues[key];
+      if (val && (isNaN(Number(val)) || Number(val) < 0)) {
+        toast({ title: "Invalid value", description: `${key.replace(/_/g, " ")} must be a non-negative number.`, variant: "destructive" });
+        return;
+      }
+    }
+
     setSaving(true);
+    const changedKeys: string[] = [];
     const updates = Object.entries(editValues).map(([key, value]) => {
-      // Never store sensitive keys in platform_settings — they should be edge function secrets
       if (key === "kba_api_key" && value) {
         console.warn("KBA API keys should be stored as edge function secrets, not in platform_settings");
       }
       if (settings[key]) {
         if (settings[key].setting_value === value) return null;
+        changedKeys.push(key);
         return supabase.from("platform_settings").update({ setting_value: value, updated_at: new Date().toISOString(), updated_by: user?.id }).eq("setting_key", key);
       }
+      changedKeys.push(key);
       return supabase.from("platform_settings").insert({ setting_key: key, setting_value: value, updated_by: user?.id });
     }).filter(Boolean);
 
     const results = await Promise.all(updates as any[]);
     const hasError = results.some((r: any) => r?.error);
     if (hasError) toast({ title: "Error saving some settings", variant: "destructive" });
-    else { toast({ title: "Settings saved", description: "All changes have been applied." }); await fetchSettings(); }
+    else {
+      toast({ title: "Settings saved", description: "All changes have been applied." });
+      // Item 352: Audit log for settings changes
+      if (changedKeys.length > 0) {
+        try {
+          const { logAuditEvent } = await import("@/lib/auditLog");
+          logAuditEvent("settings_updated", { entityType: "platform_settings", details: { changed_keys: changedKeys } });
+        } catch {}
+      }
+      await fetchSettings();
+    }
     setSaving(false);
   };
 

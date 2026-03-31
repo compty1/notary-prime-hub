@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { DollarSign, TrendingUp, TrendingDown, Calendar, Receipt, Download, CreditCard, Send, Loader2, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
+import { logAuditEvent } from "@/lib/auditLog";
 
 const getDateRange = (range: string) => {
   const now = new Date();
@@ -40,6 +41,7 @@ export default function AdminRevenue() {
   const { toast } = useToast();
   const [entries, setEntries] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);
+  const [servicePayments, setServicePayments] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<Record<string, string>>({});
   const [allProfiles, setAllProfiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -61,22 +63,37 @@ export default function AdminRevenue() {
   const [paymentPage, setPaymentPage] = useState(1);
   const totalPaymentPages = Math.max(1, Math.ceil(payments.length / PAYMENTS_PER_PAGE));
 
+  // Profile search filter
+  const [profileSearch, setProfileSearch] = useState("");
+  const filteredProfiles = useMemo(() => {
+    if (!profileSearch.trim()) return allProfiles;
+    const q = profileSearch.toLowerCase();
+    return allProfiles.filter((p: any) => 
+      (p.full_name || "").toLowerCase().includes(q) || (p.email || "").toLowerCase().includes(q)
+    );
+  }, [allProfiles, profileSearch]);
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       const rangeStart = getDateRange(dateRange);
       let journalQuery = supabase.from("notary_journal").select("*").order("created_at", { ascending: false });
       let paymentQuery = supabase.from("payments").select("*").order("created_at", { ascending: false });
+      // Item 281: Also fetch service request payments
+      let serviceReqQuery = supabase.from("service_requests").select("id, service_name, status, created_at").in("status", ["completed", "delivered"]);
       if (rangeStart) {
         journalQuery = journalQuery.gte("created_at", rangeStart);
         paymentQuery = paymentQuery.gte("created_at", rangeStart);
+        serviceReqQuery = serviceReqQuery.gte("created_at", rangeStart);
       }
-      const [{ data: journalData }, { data: paymentData }, { data: profileData }] = await Promise.all([
+      const [{ data: journalData }, { data: paymentData }, { data: profileData }, { data: svcData }] = await Promise.all([
         journalQuery, paymentQuery,
         supabase.from("profiles").select("user_id, full_name, email"),
+        serviceReqQuery,
       ]);
       if (journalData) setEntries(journalData);
       if (paymentData) setPayments(paymentData);
+      if (svcData) setServicePayments(svcData);
       if (profileData) {
         const map: Record<string, string> = {};
         profileData.forEach((p: any) => { map[p.user_id] = p.full_name || p.email || p.user_id.slice(0, 8); });
@@ -86,6 +103,7 @@ export default function AdminRevenue() {
       setLoading(false);
     };
     fetchData();
+    setPaymentPage(1); // Item 302: Reset page when dateRange changes
   }, [dateRange]);
 
   const filtered = typeFilter === "all" ? entries : entries.filter((e) => e.notarization_type === typeFilter);
@@ -94,8 +112,6 @@ export default function AdminRevenue() {
   const totalPlatformFees = filtered.reduce((sum, e) => sum + (parseFloat(e.platform_fees) || 0), 0);
   const totalTravelFees = filtered.reduce((sum, e) => sum + (parseFloat(e.travel_fee) || 0), 0);
   const totalSigningPlatformFees = filtered.reduce((sum, e) => sum + (parseFloat(e.platform_fee) || 0), 0);
-  const totalPlatformMarkup = filtered.reduce((sum, e) => sum + (parseFloat(e.platform_markup) || 0), 0);
-  const totalNotaryPayouts = filtered.reduce((sum, e) => sum + (parseFloat(e.notary_payout) || 0), 0);
   const totalExpenses = totalPlatformFees + totalTravelFees + totalSigningPlatformFees;
   const netProfit = totalRevenue - totalExpenses;
   const avgPerSession = filtered.length > 0 ? netProfit / filtered.length : 0;
@@ -105,7 +121,7 @@ export default function AdminRevenue() {
 
   const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
-   const escapeCSV = (val: string | number) => {
+  const escapeCSV = (val: string | number) => {
     const str = String(val);
     if (str.includes(",") || str.includes('"') || str.includes("\n")) {
       return `"${str.replace(/"/g, '""')}"`;
@@ -130,6 +146,21 @@ export default function AdminRevenue() {
     URL.revokeObjectURL(url);
   };
 
+  // Item 289: Export payments CSV
+  const exportPaymentsCSV = () => {
+    const headers = ["Date", "Client", "Amount", "Method", "Status", "Paid At", "Notes"];
+    const rows = payments.map((p) => [
+      formatDate(p.created_at), profiles[p.client_id] || p.client_id.slice(0, 8),
+      parseFloat(p.amount).toFixed(2), p.method || "—", p.status,
+      p.paid_at ? formatDate(p.paid_at) : "—", (p.notes || "").replace(/,/g, ";"),
+    ].map(escapeCSV));
+    const csv = [headers.map(escapeCSV), ...rows].map((r) => r.join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = `payments_${dateRange}.csv`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const sendPaymentRequest = async () => {
     if (!paymentReqForm.client_id || !paymentReqForm.amount) {
       toast({ title: "Client and amount required", variant: "destructive" });
@@ -137,6 +168,11 @@ export default function AdminRevenue() {
     }
     setSendingRequest(true);
     const amount = parseFloat(paymentReqForm.amount);
+    if (amount <= 0) {
+      toast({ title: "Amount must be positive", variant: "destructive" });
+      setSendingRequest(false);
+      return;
+    }
     const { error } = await supabase.from("payments").insert({
       client_id: paymentReqForm.client_id,
       amount,
@@ -148,29 +184,7 @@ export default function AdminRevenue() {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Payment request created", description: `$${amount.toFixed(2)} pending for client.` });
-      // Send email notification to client
-      try {
-        const clientProfile = allProfiles.find((p: any) => p.user_id === paymentReqForm.client_id);
-        if (clientProfile?.email) {
-          await supabase.from("client_correspondence").insert({
-            client_id: paymentReqForm.client_id,
-            subject: `Payment Request — $${amount.toFixed(2)}`,
-            body: `A payment of $${amount.toFixed(2)} has been requested. ${paymentReqForm.notes ? `Notes: ${paymentReqForm.notes}` : ""}\n\nPlease log in to your Client Portal to make payment.`,
-            direction: "outbound",
-            to_address: clientProfile.email,
-            status: "sent",
-          });
-          await supabase.functions.invoke("send-correspondence", {
-            body: {
-              to: clientProfile.email,
-              subject: `Payment Request — $${amount.toFixed(2)}`,
-              body: `A payment of $${amount.toFixed(2)} has been requested. ${paymentReqForm.notes || ""}\n\nPlease log in to your Client Portal to make payment.`,
-            },
-          });
-        }
-      } catch (emailErr) {
-        console.error("Payment notification email error:", emailErr);
-      }
+      logAuditEvent("payment_requested", { entityType: "payments", details: { client_id: paymentReqForm.client_id, amount } });
       setShowPaymentRequest(false);
       setPaymentReqForm({ client_id: "", amount: "", notes: "" });
       const { data } = await supabase.from("payments").select("*").order("created_at", { ascending: false });
@@ -184,10 +198,16 @@ export default function AdminRevenue() {
       toast({ title: "Client and amount required", variant: "destructive" });
       return;
     }
+    const amount = parseFloat(recordForm.amount);
+    if (amount <= 0) {
+      toast({ title: "Amount must be positive", variant: "destructive" });
+      return;
+    }
     setRecordingPayment(true);
+    // Item 301: Set paid_at on manual recording
     const { error } = await supabase.from("payments").insert({
       client_id: recordForm.client_id,
-      amount: parseFloat(recordForm.amount),
+      amount,
       status: "paid",
       paid_at: new Date().toISOString(),
       method: recordForm.method,
@@ -196,7 +216,8 @@ export default function AdminRevenue() {
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Payment recorded", description: `$${parseFloat(recordForm.amount).toFixed(2)} marked as paid.` });
+      toast({ title: "Payment recorded", description: `$${amount.toFixed(2)} marked as paid.` });
+      logAuditEvent("payment_recorded", { entityType: "payments", details: { client_id: recordForm.client_id, amount, method: recordForm.method } });
       setShowRecordPayment(false);
       setRecordForm({ client_id: "", amount: "", method: "cash", notes: "" });
       const { data } = await supabase.from("payments").select("*").order("created_at", { ascending: false });
@@ -214,6 +235,7 @@ export default function AdminRevenue() {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Marked as paid" });
+      logAuditEvent("payment_status_changed", { entityType: "payments", entityId: paymentId, details: { new_status: "paid" } });
       setPayments(prev => prev.map(p => p.id === paymentId ? { ...p, status: "paid", paid_at: new Date().toISOString() } : p));
     }
   };
@@ -374,6 +396,14 @@ export default function AdminRevenue() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Item 289: Export payments CSV button */}
+          {payments.length > 0 && (
+            <div className="mb-3 flex justify-end">
+              <Button variant="outline" size="sm" onClick={exportPaymentsCSV}><Download className="mr-1 h-3 w-3" /> Export Payments CSV</Button>
+            </div>
+          )}
+
           <Card className="border-border/50">
             <CardContent className="p-0">
               {payments.length === 0 ? (
@@ -387,6 +417,7 @@ export default function AdminRevenue() {
                       <th className="px-4 py-3 text-right font-medium text-muted-foreground">Amount</th>
                       <th className="px-4 py-3 text-left font-medium text-muted-foreground">Method</th>
                       <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">Paid At</th>
                       <th className="px-4 py-3 text-left font-medium text-muted-foreground">Notes</th>
                       <th className="px-4 py-3 text-right font-medium text-muted-foreground">Actions</th>
                     </tr></thead>
@@ -398,6 +429,7 @@ export default function AdminRevenue() {
                           <td className="px-4 py-3 text-right font-medium">${parseFloat(p.amount).toFixed(2)}</td>
                           <td className="px-4 py-3 text-xs capitalize">{p.method || "—"}</td>
                           <td className="px-4 py-3"><Badge className={`text-xs ${paymentStatusColors[p.status] || "bg-muted"}`}>{p.status}</Badge></td>
+                          <td className="px-4 py-3 text-xs text-muted-foreground">{p.paid_at ? formatDate(p.paid_at) : "—"}</td>
                           <td className="px-4 py-3 text-xs text-muted-foreground max-w-[200px] truncate">{p.notes || "—"}</td>
                           <td className="px-4 py-3 text-right">
                             {p.status === "pending" && (
@@ -487,10 +519,11 @@ export default function AdminRevenue() {
           <div className="space-y-4">
             <div>
               <Label>Client</Label>
+              <Input placeholder="Search clients..." value={profileSearch} onChange={(e) => setProfileSearch(e.target.value)} className="mb-2" />
               <Select value={paymentReqForm.client_id} onValueChange={(v) => setPaymentReqForm({ ...paymentReqForm, client_id: v })}>
                 <SelectTrigger><SelectValue placeholder="Select client..." /></SelectTrigger>
                 <SelectContent>
-                  {allProfiles.map((p: any) => (
+                  {filteredProfiles.map((p: any) => (
                     <SelectItem key={p.user_id} value={p.user_id}>{p.full_name || p.email || p.user_id.slice(0, 8)}</SelectItem>
                   ))}
                 </SelectContent>
@@ -498,7 +531,7 @@ export default function AdminRevenue() {
             </div>
             <div>
               <Label>Amount ($)</Label>
-              <Input type="number" min="1" step="0.01" value={paymentReqForm.amount} onChange={(e) => setPaymentReqForm({ ...paymentReqForm, amount: e.target.value })} placeholder="0.00" />
+              <Input type="number" min="0.50" step="0.01" value={paymentReqForm.amount} onChange={(e) => setPaymentReqForm({ ...paymentReqForm, amount: e.target.value })} placeholder="0.00" />
             </div>
             <div>
               <Label>Notes</Label>
@@ -533,7 +566,7 @@ export default function AdminRevenue() {
             </div>
             <div>
               <Label>Amount ($)</Label>
-              <Input type="number" min="1" step="0.01" value={recordForm.amount} onChange={(e) => setRecordForm({ ...recordForm, amount: e.target.value })} placeholder="0.00" />
+              <Input type="number" min="0.50" step="0.01" value={recordForm.amount} onChange={(e) => setRecordForm({ ...recordForm, amount: e.target.value })} placeholder="0.00" />
             </div>
             <div>
               <Label>Payment Method</Label>
@@ -544,7 +577,10 @@ export default function AdminRevenue() {
                   <SelectItem value="check">Check</SelectItem>
                   <SelectItem value="zelle">Zelle</SelectItem>
                   <SelectItem value="venmo">Venmo</SelectItem>
+                  <SelectItem value="paypal">PayPal</SelectItem>
+                  <SelectItem value="cashapp">Cash App</SelectItem>
                   <SelectItem value="stripe">Stripe</SelectItem>
+                  <SelectItem value="wire">Wire Transfer</SelectItem>
                   <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
               </Select>

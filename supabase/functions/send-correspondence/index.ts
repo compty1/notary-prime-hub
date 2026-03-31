@@ -85,6 +85,7 @@ Deno.serve(async (req) => {
     // Fallback to Resend
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     if (!emailSent && RESEND_API_KEY) {
+      // Item 483: Send as HTML instead of text for Resend fallback
       const emailRes = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
@@ -95,7 +96,7 @@ Deno.serve(async (req) => {
           from: FROM_EMAIL,
           to: [to_address],
           subject,
-          text: body,
+          html: body,
         }),
       });
       if (emailRes.ok) emailSent = true;

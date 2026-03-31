@@ -128,9 +128,18 @@ export default function AdminJournal() {
 
   const deleteEntry = async (id: string) => {
     setDeletingId(id);
+    const entry = entries.find(e => e.id === id);
     const { error } = await supabase.from("notary_journal").delete().eq("id", id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else { toast({ title: "Entry deleted" }); fetchEntries(); }
+    else {
+      toast({ title: "Entry deleted" });
+      // Item 317: Audit log on journal delete
+      try {
+        const { logAuditEvent } = await import("@/lib/auditLog");
+        logAuditEvent("journal_entry_deleted", { entityType: "notary_journal", entityId: id, details: { signer_name: entry?.signer_name, document_type: entry?.document_type } });
+      } catch {}
+      fetchEntries();
+    }
     setDeletingId(null);
   };
 
@@ -185,13 +194,37 @@ export default function AdminJournal() {
     toast({ title: "Print preview opened" });
   };
 
+  // Item 321: Add notarization type filter and date range filter
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("all");
+
   const filtered = entries.filter((e) => {
     const term = searchTerm.toLowerCase();
-    return e.signer_name.toLowerCase().includes(term) ||
+    const matchSearch = e.signer_name.toLowerCase().includes(term) ||
       e.document_type.toLowerCase().includes(term) ||
       (e.notes || "").toLowerCase().includes(term) ||
       (e.service_performed || "").toLowerCase().includes(term);
+    const matchType = typeFilter === "all" || e.notarization_type === typeFilter;
+    let matchDate = true;
+    if (dateFilter !== "all") {
+      const now = new Date();
+      const created = new Date(e.created_at);
+      if (dateFilter === "week") matchDate = (now.getTime() - created.getTime()) < 7 * 86400000;
+      else if (dateFilter === "month") matchDate = (now.getTime() - created.getTime()) < 30 * 86400000;
+      else if (dateFilter === "year") matchDate = (now.getTime() - created.getTime()) < 365 * 86400000;
+    }
+    return matchSearch && matchType && matchDate;
   });
+
+  // Item 323: Summary statistics
+  const totalFees = filtered.reduce((sum, e) => sum + (parseFloat(e.fees_charged) || 0), 0);
+  const totalNet = filtered.reduce((sum, e) => sum + (parseFloat(e.net_profit) || 0), 0);
+
+  // Item 325: Pagination
+  const JOURNAL_PAGE_SIZE = 25;
+  const [journalPage, setJournalPage] = useState(1);
+  const totalJournalPages = Math.max(1, Math.ceil(filtered.length / JOURNAL_PAGE_SIZE));
+  const paginatedFiltered = filtered.slice((journalPage - 1) * JOURNAL_PAGE_SIZE, journalPage * JOURNAL_PAGE_SIZE);
 
   return (
     <div>
@@ -321,9 +354,37 @@ export default function AdminJournal() {
         </div>
       </div>
 
-      <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input placeholder="Search by signer name or document type..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
+      {/* Item 323: Summary stats bar */}
+      {entries.length > 0 && (
+        <div className="mb-4 flex flex-wrap items-center gap-4 text-sm">
+          <span className="text-muted-foreground">{filtered.length} entries</span>
+          <span className="font-medium text-foreground">Total Fees: ${totalFees.toFixed(2)}</span>
+          <span className={`font-medium ${totalNet >= 0 ? "text-primary" : "text-destructive"}`}>Net: ${totalNet.toFixed(2)}</span>
+        </div>
+      )}
+
+      <div className="relative mb-6 flex flex-wrap gap-2">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input placeholder="Search by signer, document type, notes..." value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); setJournalPage(1); }} className="pl-10" />
+        </div>
+        <Select value={typeFilter} onValueChange={(v) => { setTypeFilter(v); setJournalPage(1); }}>
+          <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Types</SelectItem>
+            <SelectItem value="in_person">In-Person</SelectItem>
+            <SelectItem value="ron">RON</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={dateFilter} onValueChange={(v) => { setDateFilter(v); setJournalPage(1); }}>
+          <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Time</SelectItem>
+            <SelectItem value="week">This Week</SelectItem>
+            <SelectItem value="month">This Month</SelectItem>
+            <SelectItem value="year">This Year</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {loading ? (
@@ -338,7 +399,7 @@ export default function AdminJournal() {
         </Card>
       ) : (
         <div className="space-y-3">
-          {filtered.map((entry) => (
+          {paginatedFiltered.map((entry) => (
             <Card key={entry.id} className="border-border/50 transition-shadow hover:shadow-md">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
@@ -348,8 +409,10 @@ export default function AdminJournal() {
                     </div>
                     <div>
                       <p className="font-medium text-foreground">{entry.signer_name}</p>
-                      <p className="text-sm text-muted-foreground">{entry.document_type}</p>
+                       <p className="text-sm text-muted-foreground">{entry.document_type}</p>
                       <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                        {/* Item 319: Show journal_number */}
+                        {entry.journal_number && <Badge variant="secondary" className="text-xs">#{entry.journal_number}</Badge>}
                         <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{new Date(entry.created_at).toLocaleDateString()}</span>
                         <Badge variant="outline" className="text-xs">{entry.service_performed?.replace(/_/g, " ")}</Badge>
                         <Badge variant="outline" className="text-xs">{entry.notarization_type === "ron" ? "RON" : "In-Person"}</Badge>
@@ -384,6 +447,18 @@ export default function AdminJournal() {
               </CardContent>
             </Card>
           ))}
+          {/* Item 325: Pagination controls */}
+          {filtered.length > JOURNAL_PAGE_SIZE && (
+            <div className="flex items-center justify-between border-t border-border/50 pt-3 mt-3">
+              <p className="text-xs text-muted-foreground">
+                Showing {(journalPage - 1) * JOURNAL_PAGE_SIZE + 1}–{Math.min(journalPage * JOURNAL_PAGE_SIZE, filtered.length)} of {filtered.length}
+              </p>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" disabled={journalPage <= 1} onClick={() => setJournalPage(p => p - 1)}>Previous</Button>
+                <Button size="sm" variant="outline" disabled={journalPage >= totalJournalPages} onClick={() => setJournalPage(p => p + 1)}>Next</Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
