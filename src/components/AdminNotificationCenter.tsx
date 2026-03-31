@@ -91,9 +91,23 @@ export function AdminNotificationCenter() {
     setNotifications(items);
   }, []);
 
+  // Browser notification permission
+  const [browserNotifs, setBrowserNotifs] = useState(false);
+  useEffect(() => {
+    if ("Notification" in window && Notification.permission === "granted") setBrowserNotifs(true);
+  }, []);
+
+  const requestBrowserNotifs = async () => {
+    if (!("Notification" in window)) return;
+    const perm = await Notification.requestPermission();
+    setBrowserNotifs(perm === "granted");
+  };
+
+  // Send browser notification for new unread items
+  const prevCountRef = useCallback(() => { /* tracked via effect */ }, []);
+
   useEffect(() => {
     fetchNotifications();
-    // Use visibility API to avoid polling when tab is not active
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") fetchNotifications();
     };
@@ -106,6 +120,18 @@ export function AdminNotificationCenter() {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [fetchNotifications]);
+
+  // Fire browser notification when new items arrive
+  useEffect(() => {
+    if (browserNotifs && unreadCount > 0 && document.visibilityState === "hidden") {
+      try {
+        new Notification("Notar — New Notification", {
+          body: notifications.find(n => !n.read)?.title || "You have new notifications",
+          icon: "/placeholder.svg",
+        });
+      } catch {}
+    }
+  }, [unreadCount, browserNotifs]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
