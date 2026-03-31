@@ -30,6 +30,8 @@ interface ScheduleStepProps {
   userLat: number | null;
   userLon: number | null;
   onUseLocation: () => void;
+  outsideServiceArea?: boolean;
+  travelDistance?: number | null;
 }
 
 export default function BookingScheduleStep(props: ScheduleStepProps) {

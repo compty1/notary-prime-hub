@@ -75,6 +75,9 @@ export default function AdminAppointments() {
   const [sendingMessage, setSendingMessage] = useState(false);
   const [showKBA, setShowKBA] = useState(false);
   const [showTranslation, setShowTranslation] = useState(false);
+  const [refuseAppt, setRefuseAppt] = useState<any>(null);
+  const [refusalReason, setRefusalReason] = useState("");
+  const [refusingAppt, setRefusingAppt] = useState(false);
   const [newAppt, setNewAppt] = useState({
     client_id: "",
     service_type: "",
