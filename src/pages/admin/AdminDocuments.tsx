@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { FileText, Download, Loader2, ShieldCheck, ShieldX, ExternalLink, Eye, Search, ChevronLeft, ChevronRight, ArrowUpDown, Trash2 } from "lucide-react";
+import { FileText, Download, Loader2, ShieldCheck, ShieldX, ExternalLink, Eye, Search, ChevronLeft, ChevronRight, ArrowUpDown, Trash2, Send } from "lucide-react";
 import { TableSkeleton } from "@/components/AdminLoadingSkeleton";
 
 const docStatuses = ["uploaded", "pending_review", "approved", "notarized", "rejected"];
@@ -32,6 +32,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
   const [previewDoc, setPreviewDoc] = useState<any>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [sendingId, setSendingId] = useState<string | null>(null);
 
   // Search, filter, sort, pagination
   const [search, setSearch] = useState("");
@@ -146,13 +147,54 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
     if (error) { toast({ title: "Download failed", description: error.message, variant: "destructive" }); return; }
     const url = URL.createObjectURL(data);
     const a = document.createElement("a"); a.href = url; a.download = doc.file_name; a.click(); URL.revokeObjectURL(url);
-    // Log admin document download
     if (user) {
       supabase.from("audit_log").insert({
         user_id: user.id, action: "admin_document_download", entity_type: "document",
         entity_id: doc.id, details: { file_name: doc.file_name, uploader: doc.uploaded_by },
       }).then(() => {});
     }
+  };
+
+  const sendToClient = async (doc: any) => {
+    if (!user) return;
+    setSendingId(doc.id);
+    try {
+      const profile = profiles.find((p: any) => p.user_id === doc.uploaded_by);
+      const clientEmail = profile?.email;
+      if (!clientEmail) { toast({ title: "No email found", description: "Client profile has no email address.", variant: "destructive" }); setSendingId(null); return; }
+
+      const { data: signedData } = await supabase.storage.from("documents").createSignedUrl(doc.file_path, 604800);
+      const downloadLink = signedData?.signedUrl || "#";
+      const verification = verificationByDoc[doc.id];
+      const verifyLink = verification ? `${window.location.origin}/verify/${verification.id}` : null;
+
+      const htmlBody = `
+        <div style="font-family:Arial,sans-serif;max-width:600px;">
+          <h2 style="color:#1a2744;">Your Notarized Document is Ready</h2>
+          <p>Hello ${profile?.full_name || "Client"},</p>
+          <p>Your notarized document <strong>${doc.file_name}</strong> is ready for download.</p>
+          <p><a href="${downloadLink}" style="display:inline-block;padding:12px 24px;background:#1a2744;color:#e8d5a3;text-decoration:none;border-radius:6px;font-weight:600;">Download Document</a></p>
+          ${verifyLink ? `<p style="margin-top:16px;font-size:13px;">Verify authenticity: <a href="${verifyLink}">${verifyLink}</a></p>` : ""}
+          <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;" />
+          <p style="font-size:12px;color:#9ca3af;">Notar Notary Services · Franklin County, Ohio</p>
+        </div>`;
+
+      const { data: session } = await supabase.auth.getSession();
+      const { error } = await supabase.functions.invoke("send-correspondence", {
+        headers: { Authorization: `Bearer ${session?.session?.access_token}` },
+        body: {
+          to_address: clientEmail,
+          subject: `Your Notarized Document: ${doc.file_name}`,
+          body: htmlBody,
+          client_id: doc.uploaded_by,
+        },
+      });
+      if (error) throw error;
+      toast({ title: "Document sent to client", description: `Email sent to ${clientEmail}` });
+    } catch (err: any) {
+      toast({ title: "Send failed", description: err.message, variant: "destructive" });
+    }
+    setSendingId(null);
   };
 
   const openPreview = async (doc: any) => {
@@ -228,6 +270,11 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
                   <div className="flex items-center gap-2 flex-wrap justify-end">
                     <Button size="sm" variant="ghost" className="text-xs" onClick={() => openPreview(doc)}><Eye className="mr-1 h-3 w-3" /> Preview</Button>
                     <Button size="sm" variant="ghost" className="text-xs" onClick={() => downloadDocument(doc)}><Download className="mr-1 h-3 w-3" /> Download</Button>
+                    {doc.status === "notarized" && (
+                      <Button size="sm" variant="outline" className="text-xs" onClick={() => sendToClient(doc)} disabled={sendingId === doc.id}>
+                        {sendingId === doc.id ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Send className="mr-1 h-3 w-3" />} Send to Client
+                      </Button>
+                    )}
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button size="sm" variant="ghost" className="text-xs text-destructive hover:text-destructive"><Trash2 className="mr-1 h-3 w-3" /> Delete</Button>

@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Upload, Download, Eye, Sparkles, RefreshCw, Loader2, Shield } from "lucide-react";
+import { FileText, Upload, Download, Eye, Sparkles, RefreshCw, Loader2, ShieldCheck } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -116,7 +116,7 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
       {notarizedDocs.length > 0 && (
         <div className="space-y-3">
           <h3 className="flex items-center gap-2 font-sans text-lg font-semibold text-foreground">
-            <Shield className="h-5 w-5 text-primary" /> Notarized Documents
+            <ShieldCheck className="h-5 w-5 text-primary" /> Notarized Documents
           </h3>
           {notarizedDocs.map(doc => (
             <Card key={doc.id} className="border-2 border-primary/20 bg-primary/5">
@@ -133,7 +133,7 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
                 <div className="flex items-center gap-2">
                   <Button size="sm" variant="ghost" onClick={async () => { const { data } = await supabase.storage.from("documents").createSignedUrl(doc.file_path, 300); if (data?.signedUrl) window.open(data.signedUrl, "_blank"); }} title="Preview"><Eye className="h-3 w-3" /></Button>
                   <Button size="sm" variant="outline" onClick={() => downloadDocument(doc)}><Download className="h-3 w-3 mr-1" /> Download</Button>
-                  <Badge className="bg-primary/10 text-primary text-xs"><Shield className="mr-1 h-3 w-3" /> Notarized</Badge>
+                  <Badge className="bg-primary/10 text-primary text-xs"><ShieldCheck className="mr-1 h-3 w-3" /> Notarized</Badge>
                 </div>
               </CardContent>
             </Card>
