@@ -77,7 +77,12 @@ export function calculatePrice(input: PricingInput, settings: PricingSettings): 
   const cappedDocs = Math.max(1, Math.min(input.documentCount, 50));
   const apostilleCount = input.apostilleCount || (input.needsApostille ? 1 : 0);
 
-  const notarizationFees = settings.base_fee_per_signature * cappedDocs;
+  // Volume discount tiers
+  let volumeRate = settings.base_fee_per_signature;
+  if (cappedDocs >= 20) volumeRate = settings.base_fee_per_signature * 0.8;
+  else if (cappedDocs >= 10) volumeRate = settings.base_fee_per_signature * 0.9;
+
+  const notarizationFees = volumeRate * cappedDocs;
 
   // Travel: waive if < 5 miles, otherwise max(minimum, miles * rate)
   const miles = input.travelMiles || 0;
@@ -107,7 +112,7 @@ export function calculatePrice(input: PricingInput, settings: PricingSettings): 
   const deposit = Math.round(total * 0.25 * 100) / 100; // 25% deposit
 
   const lineItems: { label: string; amount: number }[] = [
-    { label: `Notarization (${cappedDocs} doc${cappedDocs > 1 ? "s" : ""} × $${settings.base_fee_per_signature.toFixed(2)})`, amount: notarizationFees },
+    { label: `Notarization (${cappedDocs} doc${cappedDocs > 1 ? "s" : ""} × $${volumeRate.toFixed(2)}${cappedDocs >= 10 ? " — volume rate" : ""})`, amount: notarizationFees },
   ];
 
   if (input.notarizationType === "in_person" && travelFee > 0) {

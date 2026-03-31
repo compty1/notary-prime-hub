@@ -347,6 +347,117 @@ export default function NotaryGuide() {
         </div>
       </section>
 
+      {/* What We Cannot Notarize */}
+      <section className="border-b border-border/50 py-12">
+        <div className="container mx-auto max-w-4xl px-4">
+          <h2 className="mb-6 font-sans text-2xl font-bold text-foreground flex items-center gap-2">
+            <AlertTriangle className="h-6 w-6 text-destructive" /> What We Cannot Notarize
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {[
+              "Documents the signer does not understand",
+              "Documents in a language the notary cannot communicate in (unless an interpreter is present)",
+              "Documents where the signer appears coerced or not of sound mind",
+              "Documents where the notary has a direct financial interest",
+              "Vital records (birth certificates, death certificates) — these require certified copies from the issuing agency",
+              "Photocopies of vital records presented as originals",
+              "Documents with blank spaces intended to be filled after notarization",
+              "I-9 forms (as a notarial act — we can act as Authorized Representative instead)",
+            ].map((item, i) => (
+              <div key={i} className="flex items-start gap-2 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-sm">
+                <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-destructive" />
+                <span className="text-muted-foreground">{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Notarial Act Education */}
+      <section className="border-b border-border/50 py-12">
+        <div className="container mx-auto max-w-4xl px-4">
+          <h2 className="mb-6 font-sans text-2xl font-bold text-foreground">Understanding Notarial Acts</h2>
+          <p className="mb-6 text-sm text-muted-foreground">Ohio law authorizes several types of notarial acts. Understanding the difference helps you prepare correctly.</p>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card className="border-border/50">
+              <CardContent className="p-5">
+                <h3 className="mb-2 font-sans text-base font-semibold text-foreground">Acknowledgment</h3>
+                <p className="text-sm text-muted-foreground mb-2">The signer acknowledges that they signed the document voluntarily and for its intended purpose. The notary verifies identity but does <strong>not</strong> administer an oath.</p>
+                <p className="text-xs text-muted-foreground"><strong>Common uses:</strong> Deeds, mortgages, power of attorney, trusts</p>
+              </CardContent>
+            </Card>
+            <Card className="border-border/50">
+              <CardContent className="p-5">
+                <h3 className="mb-2 font-sans text-base font-semibold text-foreground">Jurat (Oath/Affirmation)</h3>
+                <p className="text-sm text-muted-foreground mb-2">The signer swears or affirms under penalty of perjury that the document's contents are true. The notary <strong>must</strong> administer an oath per ORC §147.53.</p>
+                <p className="text-xs text-muted-foreground"><strong>Common uses:</strong> Affidavits, sworn statements, depositions</p>
+              </CardContent>
+            </Card>
+            <Card className="border-border/50">
+              <CardContent className="p-5">
+                <h3 className="mb-2 font-sans text-base font-semibold text-foreground">Copy Certification</h3>
+                <p className="text-sm text-muted-foreground mb-2">The notary certifies that a copy of a document is a true and accurate reproduction of the original. <strong>Cannot</strong> certify copies of vital records.</p>
+                <p className="text-xs text-muted-foreground"><strong>Common uses:</strong> Diplomas, corporate records, licenses</p>
+              </CardContent>
+            </Card>
+            <Card className="border-border/50">
+              <CardContent className="p-5">
+                <h3 className="mb-2 font-sans text-base font-semibold text-foreground">Signature Witnessing</h3>
+                <p className="text-sm text-muted-foreground mb-2">The notary observes the signing of a document without an oath. Often used for I-9 verification and employment forms.</p>
+                <p className="text-xs text-muted-foreground"><strong>Common uses:</strong> I-9 forms (as Authorized Representative), general witnessing</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Witness Policy */}
+      <section className="border-b border-border/50 py-12">
+        <div className="container mx-auto max-w-4xl px-4">
+          <h2 className="mb-4 font-sans text-2xl font-bold text-foreground">Witness Requirements</h2>
+          <div className="prose prose-sm text-muted-foreground max-w-none space-y-3">
+            <p>Some Ohio documents legally require witnesses in addition to notarization:</p>
+            <ul className="list-disc pl-6 space-y-1">
+              <li><strong>Wills (ORC §2107.03):</strong> 2 disinterested witnesses required — cannot be beneficiaries</li>
+              <li><strong>Healthcare Directives (ORC §1337.12):</strong> 2 witnesses required — specific disqualifications apply</li>
+              <li><strong>Living Wills (ORC §2133.02):</strong> 2 witnesses required — cannot be attending physician or healthcare agent</li>
+            </ul>
+            <p>Notar provides witness services at <strong>$10 per witness</strong> per session. It is the signer's responsibility to arrange their own witnesses if preferred. If you need witnesses provided, please request them when booking.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Signer Preparation Checklist */}
+      <section className="border-b border-border/50 py-12">
+        <div className="container mx-auto max-w-4xl px-4">
+          <div className="grid gap-6 md:grid-cols-2">
+            <div>
+              <h2 className="mb-4 font-sans text-2xl font-bold text-foreground">Signer Preparation</h2>
+              <div className="space-y-3 text-sm text-muted-foreground">
+                <p className="flex items-start gap-2"><CheckCircle className="mt-0.5 h-4 w-4 text-primary flex-shrink-0" /> Bring valid, unexpired government-issued photo ID</p>
+                <p className="flex items-start gap-2"><CheckCircle className="mt-0.5 h-4 w-4 text-primary flex-shrink-0" /> Do NOT sign your document before the appointment</p>
+                <p className="flex items-start gap-2"><CheckCircle className="mt-0.5 h-4 w-4 text-primary flex-shrink-0" /> All signers must be present (no representatives unless POA is established)</p>
+                <p className="flex items-start gap-2"><CheckCircle className="mt-0.5 h-4 w-4 text-primary flex-shrink-0" /> Ensure you understand the document before signing</p>
+                <p className="flex items-start gap-2"><CheckCircle className="mt-0.5 h-4 w-4 text-primary flex-shrink-0" /> Bring payment method (card, Venmo, Zelle, CashApp, or cash)</p>
+              </div>
+            </div>
+            <div>
+              <h2 className="mb-4 font-sans text-2xl font-bold text-foreground">Signature by Mark</h2>
+              <p className="text-sm text-muted-foreground mb-3">
+                If a signer is unable to write their name, Ohio law allows "signature by mark" (typically an "X"). 
+                Two witnesses must be present and sign the document attesting to the mark. The notary records the mark 
+                in their journal and notes the witnesses.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                <strong>Minors:</strong> Ohio law does not prohibit notarizing a minor's signature, but the notary must 
+                assess the minor's understanding and willingness. Parental consent is recommended but not legally mandated 
+                for the notarial act itself.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Workflow Steps */}
       <section className="bg-muted/30 py-16">
         <div className="container mx-auto max-w-5xl px-4">

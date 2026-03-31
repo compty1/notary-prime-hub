@@ -230,6 +230,15 @@ export default function FeeCalculator() {
                     </div>
                     <p className="mt-3 text-xs text-muted-foreground">* Estimates only. Final pricing may vary based on document complexity and specific requirements.</p>
                     <p className="mt-1 text-xs text-muted-foreground italic">Ohio notary fees are generally exempt from state sales tax per ORC §5739.02. No tax is applied to this estimate.</p>
+                    {documentCount >= 10 && (
+                      <p className="mt-1 text-xs text-primary font-medium">🎉 Volume discount applied: {documentCount >= 20 ? "20%" : "10%"} off per-document rate</p>
+                    )}
+                    <div className="mt-3 rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground space-y-1">
+                      <p><strong>After-Hours:</strong> +${parseFloat(settings.after_hours_fee || "25").toFixed(2)} (before 9 AM / after 7 PM Mon–Fri, Sundays)</p>
+                      <p><strong>Rush/Same-Day:</strong> +${parseFloat(settings.rush_fee || "35").toFixed(2)} priority fee</p>
+                      <p><strong>Witnesses:</strong> ${parseFloat(settings.witness_fee || "10").toFixed(2)} per witness</p>
+                      <p><strong>Payment:</strong> Credit/Debit, Venmo, Zelle, CashApp, Cash (in-person only)</p>
+                    </div>
                     <Link to={bookingUrl} className="mt-4 block">
                       <Button className="w-full ">Book Appointment <ChevronRight className="ml-1 h-4 w-4" /></Button>
                     </Link>

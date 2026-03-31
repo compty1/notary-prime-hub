@@ -31,6 +31,7 @@ export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com
             <h4 className="mb-3 font-heading text-sm font-semibold text-sidebar-foreground">Solutions</h4>
             <div className="space-y-2 text-sm text-sidebar-foreground/60">
               <Link to="/solutions/notaries" className="block transition-colors hover:text-primary">For Notaries</Link>
+              <Link to="/solutions/hospitals" className="block transition-colors hover:text-primary">For Hospitals</Link>
               <Link to="/solutions/real-estate" className="block transition-colors hover:text-primary">For Real Estate</Link>
               <Link to="/solutions/law-firms" className="block transition-colors hover:text-primary">For Law Firms</Link>
               <Link to="/solutions/small-business" className="block transition-colors hover:text-primary">For Small Business</Link>
@@ -75,6 +76,9 @@ export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com
         {/* UPL Disclaimer */}
         <div className="mt-4 text-center text-xs text-sidebar-foreground/40 max-w-2xl mx-auto">
           <p>Notar is not a law firm. Our notaries are not attorneys and cannot provide legal advice, draft legal documents, or advise on the content of any document. (ORC §147.01)</p>
+        </div>
+        <div className="mt-2 text-center text-xs text-sidebar-foreground/40 max-w-2xl mx-auto">
+          <p>$25,000 surety bond &amp; E&amp;O insurance maintained. All notaries are background-checked and Ohio-commissioned.</p>
         </div>
 
         <div className="mt-4 border-t border-sidebar-border pt-4 text-center text-xs text-sidebar-foreground/50">

@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { ChevronRight, Home } from "lucide-react";
+import { useEffect } from "react";
 
 const labelMap: Record<string, string> = {
   services: "Services",
@@ -50,13 +51,36 @@ export function Breadcrumbs() {
   const { pathname } = useLocation();
   const segments = pathname.split("/").filter(Boolean);
 
-  if (segments.length === 0) return null;
-
   const crumbs = segments.map((seg, i) => ({
     label: labelMap[seg] || seg.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()),
     path: "/" + segments.slice(0, i + 1).join("/"),
     isLast: i === segments.length - 1,
   }));
+
+  // Emit BreadcrumbList JSON-LD
+  useEffect(() => {
+    if (segments.length === 0) return;
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://notardex.com" },
+        ...crumbs.map((c, i) => ({
+          "@type": "ListItem",
+          "position": i + 2,
+          "name": c.label,
+          "item": `https://notardex.com${c.path}`,
+        })),
+      ],
+    };
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.textContent = JSON.stringify(schema);
+    document.head.appendChild(script);
+    return () => { script.remove(); };
+  }, [pathname]);
+
+  if (segments.length === 0) return null;
 
   return (
     <nav aria-label="Breadcrumb" className="mb-4">
