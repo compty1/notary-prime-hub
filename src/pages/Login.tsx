@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, Eye, EyeOff, Shield } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { logAuditEvent } from "@/lib/auditLog";
 
 export default function Login() {
   const { user, signIn, isAdmin, isNotary, loading } = useAuth();
@@ -24,6 +25,7 @@ export default function Login() {
   const [forgotMode, setForgotMode] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [rateLimitEnd, setRateLimitEnd] = useState<number | null>(null);
 
   usePageTitle(forgotMode ? "Reset Password" : "Sign In");
 
@@ -37,10 +39,6 @@ export default function Login() {
     }
   }, [user, isAdmin, isNotary, loading, navigate]);
 
-  if (!loading && user) return null;
-
-  const [rateLimitEnd, setRateLimitEnd] = useState<number | null>(null);
-
   // Countdown for rate limit
   useEffect(() => {
     if (!rateLimitEnd) return;
@@ -49,6 +47,8 @@ export default function Login() {
     }, 1000);
     return () => clearInterval(interval);
   }, [rateLimitEnd]);
+
+  if (!loading && user) return null;
 
   const rateLimitSeconds = rateLimitEnd ? Math.max(0, Math.ceil((rateLimitEnd - Date.now()) / 1000)) : 0;
 
@@ -62,6 +62,7 @@ export default function Login() {
         setRateLimitEnd(Date.now() + 60_000);
       }
       toast({ title: "Sign in failed", description: error.message, variant: "destructive" });
+      logAuditEvent("login_failed", { entityType: "auth", details: { email, reason: error.message } });
     }
     setSubmitting(false);
   };

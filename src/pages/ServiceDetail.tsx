@@ -252,16 +252,16 @@ export default function ServiceDetail() {
       ]);
       if (svcRes.data) {
         setService(svcRes.data as ServiceData);
-      } else {
-        setService(null);
-        setLoading(false);
-        return;
         const [relRes, allSvcRes] = await Promise.all([
           supabase.from("services").select("*").eq("is_active", true).eq("category", svcRes.data.category).neq("id", serviceId).limit(3),
           supabase.from("services").select("id, name, category").eq("is_active", true),
         ]);
         setRelatedServices((relRes.data || []) as ServiceData[]);
         setAllServices((allSvcRes.data || []) as ServiceData[]);
+      } else {
+        setService(null);
+        setLoading(false);
+        return;
       }
       setRequirements((reqRes.data || []) as Requirement[]);
       setWorkflow((wfRes.data || []) as WorkflowStep[]);

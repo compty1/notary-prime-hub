@@ -1,12 +1,16 @@
+import { useState } from "react";
 import { usePageTitle } from "@/lib/usePageTitle";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { Check, ChevronLeft, Briefcase, Code, Award, Zap } from "lucide-react";
+import { Check, ChevronLeft, Briefcase, Code, Award, Zap, Loader2 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
+import { useToast } from "@/hooks/use-toast";
 
 const plans = [
   {
@@ -75,6 +79,25 @@ const partnerBenefits = [
 
 export default function SubscriptionPlans() {
   usePageTitle("Subscription Plans");
+  const { user } = useAuth();
+  const navTo = useNavigate();
+  const { toast } = useToast();
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  const handleSubscribe = async (plan: typeof plans[0]) => {
+    if (plan.price === "Custom") { navTo("/#contact"); return; }
+    if (!user) { toast({ title: "Sign in required", description: "Please create an account first.", variant: "destructive" }); navTo("/signup"); return; }
+    setLoadingPlan(plan.name);
+    try {
+      const amount = parseInt(plan.price.replace("$", ""));
+      const { data, error } = await supabase.functions.invoke("create-payment-intent", { body: { amount, description: `${plan.name} Plan Subscription` } });
+      if (error) throw error;
+      toast({ title: "Payment initiated", description: `Your ${plan.name} plan setup is being processed.` });
+    } catch (err: any) {
+      toast({ title: "Payment setup failed", description: err.message || "Please try again.", variant: "destructive" });
+    } finally { setLoadingPlan(null); }
+  };
+
   return (
     <PageShell>
 
@@ -121,11 +144,16 @@ export default function SubscriptionPlans() {
                       </li>
                     ))}
                   </ul>
-                  <Link to={plan.price === "Custom" ? "/#contact" : "/signup"}>
-                    <Button className={`w-full ${plan.highlight ? "" : ""}`} variant={plan.highlight ? "default" : "outline"} size="lg">
-                      {plan.cta}
-                    </Button>
-                  </Link>
+                  <Button
+                    className="w-full"
+                    variant={plan.highlight ? "default" : "outline"}
+                    size="lg"
+                    disabled={loadingPlan === plan.name}
+                    onClick={() => handleSubscribe(plan)}
+                  >
+                    {loadingPlan === plan.name ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    {plan.cta}
+                  </Button>
                 </CardContent>
               </Card>
             </motion.div>
