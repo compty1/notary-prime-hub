@@ -97,8 +97,10 @@ export default function BookingIntakeFields(props: IntakeFieldsProps) {
 
   // Always show signer capacity for notarization category
   const showSignerCapacity = cat === "notarization" || cat === "authentication";
+  // Show apostille toggle for notarization & authentication categories (not already apostille-specific)
+  const showApostilleToggle = !showApostille && (cat === "notarization" || cat === "authentication") && props.setNeedsApostille;
 
-  if (!showApostille && !showImmigration && !showRealEstate && !showI9 && !showBusiness && !showRonOnboarding && !showWorkflow && !showTranslation && !showWitness && !showCertifiedCopy && !showOnboarding && !showCustomWorkflow && !showBulk && !showScanning && !showFacility && !showSignerCapacity && !showWitnessGate) return null;
+  if (!showApostille && !showImmigration && !showRealEstate && !showI9 && !showBusiness && !showRonOnboarding && !showWorkflow && !showTranslation && !showWitness && !showCertifiedCopy && !showOnboarding && !showCustomWorkflow && !showBulk && !showScanning && !showFacility && !showSignerCapacity && !showWitnessGate && !showApostilleToggle) return null;
 
   return (
     <div className="space-y-3 rounded-lg border border-border/50 bg-muted/30 p-4">
