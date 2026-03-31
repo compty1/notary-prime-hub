@@ -383,31 +383,31 @@ export default function ServiceDetail() {
           supabase.from("services").select("id,name,category").eq("is_active", true).order("display_order", { ascending: true }).order("name", { ascending: true }),
         ]);
 
-        if (reqRes.status === "fulfilled") {
-          setRequirements(reqRes.value);
+        if (reqRes.status === "fulfilled" && !reqRes.value.error) {
+          setRequirements((reqRes.value.data as Requirement[]) || []);
         } else {
-          console.error("Failed to load service requirements:", reqRes.reason);
+          console.error("Failed to load service requirements:", reqRes.status === "rejected" ? reqRes.reason : reqRes.value.error);
           setRequirements([]);
         }
 
-        if (wfRes.status === "fulfilled") {
-          setWorkflow(wfRes.value);
+        if (wfRes.status === "fulfilled" && !wfRes.value.error) {
+          setWorkflow((wfRes.value.data as WorkflowStep[]) || []);
         } else {
-          console.error("Failed to load service workflow:", wfRes.reason);
+          console.error("Failed to load service workflow:", wfRes.status === "rejected" ? wfRes.reason : wfRes.value.error);
           setWorkflow([]);
         }
 
-        if (relRes.status === "fulfilled") {
-          setRelatedServices(relRes.value);
+        if (relRes.status === "fulfilled" && !relRes.value.error) {
+          setRelatedServices((relRes.value.data as unknown as ServiceData[]) || []);
         } else {
-          console.error("Failed to load related services:", relRes.reason);
+          console.error("Failed to load related services:", relRes.status === "rejected" ? relRes.reason : relRes.value.error);
           setRelatedServices([]);
         }
 
-        if (allSvcRes.status === "fulfilled") {
-          setAllServices(allSvcRes.value);
+        if (allSvcRes.status === "fulfilled" && !allSvcRes.value.error) {
+          setAllServices((allSvcRes.value.data as unknown as ServiceData[]) || []);
         } else {
-          console.error("Failed to load service index:", allSvcRes.reason);
+          console.error("Failed to load service index:", allSvcRes.status === "rejected" ? allSvcRes.reason : allSvcRes.value.error);
           setAllServices([]);
         }
       } catch (error) {
