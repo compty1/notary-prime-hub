@@ -158,8 +158,11 @@ export default function BookAppointment() {
     let total = baseFee;
     if (notarizationType === "ron") { total += parseFloat(pricingSettings.ron_platform_fee || "25") + parseFloat(pricingSettings.kba_fee || "15"); }
     else { total += parseFloat(pricingSettings.travel_fee_minimum || "25"); }
+    // Add witness fees (item 376)
+    const wCount = parseInt(witnessCount || "0");
+    if (wCount > 0) { total += wCount * parseFloat(pricingSettings.witness_fee || "10"); }
     setEstimatedPrice(total);
-  }, [notarizationType, documentCount, pricingSettings]);
+  }, [notarizationType, documentCount, pricingSettings, witnessCount]);
 
   useEffect(() => {
     if (user) {
