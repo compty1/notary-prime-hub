@@ -62,7 +62,7 @@ export default function PortalChatTab({ userId, chatMessages, chatInput, setChat
               </Select>
             </div>
           )}
-          <div className="h-80 overflow-y-auto space-y-3 mb-4">
+          <div className="h-80 overflow-y-auto space-y-3 mb-4" aria-live="polite" aria-label="Chat messages">
             {filteredMessages.length === 0 && <p className="text-center text-sm text-muted-foreground py-8">No messages yet. Send a message to get started!</p>}
             {filteredMessages.map(msg => (
               <div key={msg.id} className={`flex ${msg.is_admin ? "justify-start" : "justify-end"}`}>

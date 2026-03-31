@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
-import { MessageSquare, Send, User, Shield, Loader2, Paperclip, FileText } from "lucide-react";
+import { MessageSquare, Send, User, Shield, Loader2, Paperclip, FileText, Search } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Zap } from "lucide-react";
@@ -31,6 +31,8 @@ export default function AdminChat() {
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
+  const [conversationSearch, setConversationSearch] = useState("");
+  const [messageSearch, setMessageSearch] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -64,10 +66,14 @@ export default function AdminChat() {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [allMessages, selectedUser]);
 
-  // Group conversations by CLIENT id (non-admin sender_id)
+  // Group conversations by CLIENT id (non-admin sender_id), filtered by search
   const clientIds = [...new Set(
     allMessages.filter((m) => !m.is_admin).map((m) => m.sender_id)
-  )];
+  )].filter((uid) => {
+    if (!conversationSearch) return true;
+    const name = profiles[uid] || uid;
+    return name.toLowerCase().includes(conversationSearch.toLowerCase());
+  });
 
   // Get messages for selected client using recipient_id for admin messages
   const getConversation = (clientId: string) => {
@@ -133,7 +139,10 @@ export default function AdminChat() {
     setSending(false);
   };
 
-  const currentMessages = selectedUser ? getConversation(selectedUser) : [];
+  const currentMessages = selectedUser ? getConversation(selectedUser).filter(m => {
+    if (!messageSearch) return true;
+    return m.message.toLowerCase().includes(messageSearch.toLowerCase());
+  }) : [];
 
   return (
     <div>
@@ -146,7 +155,11 @@ export default function AdminChat() {
         {/* Conversation list */}
         <Card className="border-border/50">
           <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Conversations</CardTitle></CardHeader>
-          <CardContent className="p-2">
+          <CardContent className="p-2 space-y-2">
+            <div className="relative px-1">
+              <Search className="absolute left-3 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
+              <Input placeholder="Search clients..." value={conversationSearch} onChange={e => setConversationSearch(e.target.value)} className="pl-8 h-8 text-xs" />
+            </div>
             <ScrollArea className="h-[500px]">
               {clientIds.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-8">No conversations yet</p>
@@ -177,10 +190,18 @@ export default function AdminChat() {
         {/* Chat area */}
         <Card className="border-border/50 md:col-span-2 flex flex-col">
           <CardHeader className="pb-2 border-b">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <MessageSquare className="h-4 w-4 text-primary" />
-              {selectedUser ? `Chat with ${profiles[selectedUser] || selectedUser.slice(0, 8)}` : "Select a conversation"}
-            </CardTitle>
+            <div className="flex items-center justify-between gap-2">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <MessageSquare className="h-4 w-4 text-primary" />
+                {selectedUser ? `Chat with ${profiles[selectedUser] || selectedUser.slice(0, 8)}` : "Select a conversation"}
+              </CardTitle>
+              {selectedUser && (
+                <div className="relative">
+                  <Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
+                  <Input placeholder="Search messages..." value={messageSearch} onChange={e => setMessageSearch(e.target.value)} className="pl-7 h-7 w-40 text-xs" />
+                </div>
+              )}
+            </div>
           </CardHeader>
           <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3" style={{ maxHeight: "450px" }}>
             {currentMessages.map((msg) => (
@@ -201,25 +222,28 @@ export default function AdminChat() {
             ))}
           </div>
           {selectedUser && (
-            <div className="border-t p-3 flex gap-2">
-              <input type="file" ref={fileRef} className="hidden" onChange={handleFileUpload} />
-              <Button size="sm" variant="ghost" onClick={() => fileRef.current?.click()} title="Attach file">
-                <Paperclip className="h-4 w-4" />
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button size="sm" variant="outline" title="Canned responses"><Zap className="h-4 w-4" /></Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56">
-                  {CANNED_RESPONSES.map(r => (
-                    <DropdownMenuItem key={r.label} onClick={() => setMessage(r.text)}>{r.label}</DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <Input value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Type a reply..." maxLength={2000} onKeyDown={(e) => e.key === "Enter" && sendMessage()} className="flex-1" />
-              <Button size="sm" onClick={sendMessage} disabled={sending}>
-                {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-              </Button>
+            <div className="border-t p-3 space-y-1">
+              <div className="flex gap-2">
+                <input type="file" ref={fileRef} className="hidden" onChange={handleFileUpload} />
+                <Button size="sm" variant="ghost" onClick={() => fileRef.current?.click()} title="Attach file" aria-label="Attach file">
+                  <Paperclip className="h-4 w-4" />
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button size="sm" variant="outline" title="Canned responses" aria-label="Canned responses"><Zap className="h-4 w-4" /></Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-56">
+                    {CANNED_RESPONSES.map(r => (
+                      <DropdownMenuItem key={r.label} onClick={() => setMessage(r.text)}>{r.label}</DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Input value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Type a reply..." maxLength={2000} onKeyDown={(e) => e.key === "Enter" && sendMessage()} className="flex-1" aria-label="Message input" />
+                <Button size="sm" onClick={sendMessage} disabled={sending} aria-label="Send message">
+                  {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                </Button>
+              </div>
+              <p className={`text-xs text-right ${message.length > 1800 ? "text-destructive" : "text-muted-foreground"}`}>{message.length}/2000</p>
             </div>
           )}
         </Card>
