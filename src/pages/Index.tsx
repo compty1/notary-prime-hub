@@ -501,7 +501,9 @@ export default function Index() {
                         value={contactForm.email}
                         onChange={(e) => setContactForm((prev) => ({ ...prev, email: e.target.value }))}
                         maxLength={255}
-                        required />
+                        required
+                        aria-required="true"
+                        autoComplete="email" />
                       
                     </div>
                   </div>
