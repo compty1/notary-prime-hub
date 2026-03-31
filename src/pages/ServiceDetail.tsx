@@ -171,6 +171,48 @@ const categoryFaqs: Record<string, { q: string; a: string }[]> = {
     { q: "Can I access my vault anytime?", a: "Yes. Your portal is available 24/7 for viewing, downloading, and sharing documents." },
     { q: "How are compliance reminders configured?", a: "Set custom reminders for document renewals, filing deadlines, and notary commission expiration." },
   ],
+  admin_support: [
+    { q: "What admin tasks can you handle?", a: "Data entry, travel arrangements, email management, scheduling, document formatting, and general administrative tasks." },
+    { q: "How quickly are admin tasks completed?", a: "Most tasks are completed within 3-5 business days. Rush turnaround is available." },
+    { q: "How do I submit work?", a: "Submit a service request through our portal with your task details and any supporting files." },
+    { q: "Is my data kept confidential?", a: "Yes. All work is handled under strict confidentiality agreements with secure file handling." },
+  ],
+  content_creation: [
+    { q: "What types of content can you create?", a: "Blog posts, social media content, newsletters, email campaigns, and website copy." },
+    { q: "How many revision rounds are included?", a: "Each project includes up to 2 revision rounds. Additional revisions available at an hourly rate." },
+    { q: "Do you optimize content for SEO?", a: "Yes. All written content includes basic SEO optimization including keyword research and meta descriptions." },
+    { q: "Can you match our brand voice?", a: "Absolutely. We review your existing content and brand guidelines to maintain consistency." },
+  ],
+  research: [
+    { q: "What research services do you offer?", a: "Market research, competitive analysis, lead generation, data collection, and industry reports." },
+    { q: "What deliverable format do you use?", a: "Research is delivered as structured reports with executive summaries, data tables, and actionable insights." },
+    { q: "How do you source data?", a: "We use public databases, industry publications, government records, and verified online sources." },
+    { q: "Can you do ongoing research?", a: "Yes. We offer recurring research packages for continuous market monitoring and lead generation." },
+  ],
+  customer_service: [
+    { q: "What customer service tasks can you handle?", a: "Email inbox management, live chat support, customer inquiry responses, and follow-up communications." },
+    { q: "What are the response time SLAs?", a: "Standard SLA is 4-hour response for email, real-time for live chat during business hours." },
+    { q: "How is escalation handled?", a: "Complex issues are flagged and escalated to your team with detailed context and suggested resolutions." },
+    { q: "Do you provide training?", a: "We follow your existing processes and scripts. Initial onboarding includes reviewing your SOPs." },
+  ],
+  technical_support: [
+    { q: "What platforms do you support?", a: "WordPress, Squarespace, Wix, Shopify, and most popular CMS platforms." },
+    { q: "How often can you update content?", a: "Updates can be scheduled daily, weekly, or as-needed based on your service plan." },
+    { q: "Can you make design changes?", a: "We handle content updates, minor layout adjustments, and page creation. Major redesigns require a separate scope." },
+    { q: "Do you handle security updates?", a: "We can apply CMS and plugin updates as part of a maintenance plan." },
+  ],
+  ux_testing: [
+    { q: "What does a UX audit include?", a: "Heuristic evaluation, accessibility review, user flow analysis, and a prioritized recommendations report." },
+    { q: "How are usability tests conducted?", a: "Remote moderated or unmoderated sessions with real users, including task completion analysis and feedback synthesis." },
+    { q: "What deliverables do I receive?", a: "A detailed report with findings, severity ratings, annotated screenshots, and actionable recommendations." },
+    { q: "How do you recruit test participants?", a: "We can use your existing user base or recruit participants matching your target demographic." },
+  ],
+  business_services: [
+    { q: "What business support do you offer?", a: "Email management, correspondence handling, registered agent coordination, and general administrative support." },
+    { q: "Can you handle confidential documents?", a: "Yes. All documents and correspondence are handled under strict NDA and security protocols." },
+    { q: "How do you manage email correspondence?", a: "We triage, respond to, and organize your inbox based on your priorities and response templates." },
+    { q: "Is there a minimum commitment?", a: "No long-term contracts required. Services are available on a per-project or monthly basis." },
+  ],
 };
 
 // Phase 3.4: Timeline estimates (items 147-153)
