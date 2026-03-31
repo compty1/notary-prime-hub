@@ -119,6 +119,16 @@ export default function BookingScheduleStep(props: ScheduleStepProps) {
         </div>
       )}
 
+      {props.outsideServiceArea && (
+        <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm flex items-start gap-2">
+          <AlertTriangle className="h-4 w-4 flex-shrink-0 text-destructive mt-0.5" />
+          <div>
+            <p className="font-medium text-foreground">Outside service area (~{props.travelDistance?.toFixed(0)} miles)</p>
+            <p className="text-muted-foreground">Your location appears to be outside our standard travel radius. Consider switching to <strong>Remote Online Notarization (RON)</strong> for a seamless experience from anywhere.</p>
+          </div>
+        </div>
+      )}
+
       {!isDigitalOnly(serviceType, serviceCategories) && notarizationType === "in_person" && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
