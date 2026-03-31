@@ -390,16 +390,21 @@ export default function RonSession() {
     const { data: notaryNameData } = await supabase.from("platform_settings").select("setting_value").eq("setting_key", "notary_name").single();
     const notaryNameSetting = notaryNameData?.setting_value || "Notar";
 
+    // Item 406: Capture signer location state
+    const signerLocationState = clientProfile?.state || null;
+
     await supabase.from("appointments").update({ status: "completed" as any, admin_notes: notes }).eq("id", appointmentId);
     await supabase.from("notarization_sessions").update({
       id_verified: true,
       kba_completed: true,
       status: "completed" as any,
       completed_at: new Date().toISOString(),
+      last_activity_at: new Date().toISOString(),
       session_mode: sessionMode,
       signing_platform: signingPlatform,
       document_name: documentName || null,
       signer_email: signerEmail || null,
+      signer_location_state: signerLocationState,
     } as any).eq("appointment_id", appointmentId);
     await supabase.from("documents").update({ status: "notarized" as any }).eq("appointment_id", appointmentId);
 
