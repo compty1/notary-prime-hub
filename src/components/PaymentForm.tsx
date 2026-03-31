@@ -203,9 +203,13 @@ export default function PaymentForm({ appointmentId, defaultAmount, description,
             id="payment-amount"
             type="number"
             min="0.50"
+            max="99999"
             step="0.01"
             value={amount || ""}
-            onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
+            onChange={(e) => {
+              const val = parseFloat(e.target.value);
+              setAmount(val > 0 ? val : 0);
+            }}
             placeholder="0.00"
           />
         </div>
