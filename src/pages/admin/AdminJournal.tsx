@@ -194,13 +194,37 @@ export default function AdminJournal() {
     toast({ title: "Print preview opened" });
   };
 
+  // Item 321: Add notarization type filter and date range filter
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("all");
+
   const filtered = entries.filter((e) => {
     const term = searchTerm.toLowerCase();
-    return e.signer_name.toLowerCase().includes(term) ||
+    const matchSearch = e.signer_name.toLowerCase().includes(term) ||
       e.document_type.toLowerCase().includes(term) ||
       (e.notes || "").toLowerCase().includes(term) ||
       (e.service_performed || "").toLowerCase().includes(term);
+    const matchType = typeFilter === "all" || e.notarization_type === typeFilter;
+    let matchDate = true;
+    if (dateFilter !== "all") {
+      const now = new Date();
+      const created = new Date(e.created_at);
+      if (dateFilter === "week") matchDate = (now.getTime() - created.getTime()) < 7 * 86400000;
+      else if (dateFilter === "month") matchDate = (now.getTime() - created.getTime()) < 30 * 86400000;
+      else if (dateFilter === "year") matchDate = (now.getTime() - created.getTime()) < 365 * 86400000;
+    }
+    return matchSearch && matchType && matchDate;
   });
+
+  // Item 323: Summary statistics
+  const totalFees = filtered.reduce((sum, e) => sum + (parseFloat(e.fees_charged) || 0), 0);
+  const totalNet = filtered.reduce((sum, e) => sum + (parseFloat(e.net_profit) || 0), 0);
+
+  // Item 325: Pagination
+  const JOURNAL_PAGE_SIZE = 25;
+  const [journalPage, setJournalPage] = useState(1);
+  const totalJournalPages = Math.max(1, Math.ceil(filtered.length / JOURNAL_PAGE_SIZE));
+  const paginatedFiltered = filtered.slice((journalPage - 1) * JOURNAL_PAGE_SIZE, journalPage * JOURNAL_PAGE_SIZE);
 
   return (
     <div>
