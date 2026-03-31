@@ -34,6 +34,7 @@ const plainLinks = [
   { to: "/about", label: "About" },
   { to: "/templates", label: "Templates" },
   { to: "/fee-calculator", label: "Pricing" },
+  { to: "/help", label: "Help" },
 ];
 
 function DropdownNav({ label, linkTo, children }: { label: string; linkTo?: string; children: React.ReactNode }) {
