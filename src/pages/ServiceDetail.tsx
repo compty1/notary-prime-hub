@@ -19,7 +19,7 @@ import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { usePageTitle } from "@/lib/usePageTitle";
 
-import { SERVICE_ICON_MAP as iconMap } from "@/lib/serviceConstants";
+import { SERVICE_ICON_MAP as iconMap, PRICING_SUFFIXES, NOTARY_CATEGORIES } from "@/lib/serviceConstants";
 
 // Phase 3.1: Category-specific resource links
 const categoryResources: Record<string, { label: string; url: string; icon: any }[]> = {
@@ -304,7 +304,7 @@ const bundleSuggestions: Record<string, string[]> = {
 };
 
 // Phase 3.3: Legal disclaimers
-const LEGAL_DISCLAIMER_CATEGORIES = ["consulting", "authentication"];
+const LEGAL_DISCLAIMER_CATEGORIES = ["consulting", "authentication", "verification"];
 
 interface ServiceData {
   id: string; name: string; category: string; description: string | null;
@@ -323,31 +323,8 @@ interface WorkflowStep {
 }
 
 const PRE_QUALIFY_CATEGORIES = ["authentication", "consulting", "verification"];
-const PUBLIC_API_URL = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1`;
-const PUBLIC_API_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-async function fetchPublicJson<T>(path: string): Promise<T> {
-  const controller = new AbortController();
-  const timeoutId = window.setTimeout(() => controller.abort(), 10000);
-
-  try {
-    const response = await fetch(`${PUBLIC_API_URL}${path}`, {
-      headers: {
-        apikey: PUBLIC_API_KEY,
-        Authorization: `Bearer ${PUBLIC_API_KEY}`,
-      },
-      signal: controller.signal,
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    return await response.json() as T;
-  } finally {
-    window.clearTimeout(timeoutId);
-  }
-}
+// Removed fetchSupabaseData — using supabase client directly in load()
 
 export default function ServiceDetail() {
   const { serviceId } = useParams();
@@ -360,9 +337,10 @@ export default function ServiceDetail() {
   const [loading, setLoading] = useState(true);
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
   const [showChat, setShowChat] = useState(false);
-  const [chatMessages, setChatMessages] = useState<{ role: string; content: string }[]>([]);
+  const [chatMessages, setChatMessages] = useState<{ role: string; content: string; timestamp?: number }[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+  const [lastChatSent, setLastChatSent] = useState(0);
   const [showPreQualifier, setShowPreQualifier] = useState(false);
   usePageTitle(service?.name || "Service Details");
 
@@ -378,10 +356,14 @@ export default function ServiceDetail() {
       setCheckedItems(new Set());
 
       try {
-        const services = await fetchPublicJson<ServiceData[]>(
-          `/services?select=*&id=eq.${encodeURIComponent(serviceId)}&is_active=eq.true&limit=1`
-        );
-        const nextService = services[0] ?? null;
+        const { data: svcData, error: svcErr } = await supabase
+          .from("services")
+          .select("*")
+          .eq("id", serviceId)
+          .eq("is_active", true)
+          .limit(1);
+        if (svcErr) throw svcErr;
+        const nextService = (svcData as unknown as ServiceData[])?.[0] ?? null;
 
         if (!nextService) {
           setService(null);
@@ -395,45 +377,37 @@ export default function ServiceDetail() {
         setService(nextService);
 
         const [reqRes, wfRes, relRes, allSvcRes] = await Promise.allSettled([
-          fetchPublicJson<Requirement[]>(
-            `/service_requirements?select=*&service_id=eq.${encodeURIComponent(serviceId)}&order=display_order.asc`
-          ),
-          fetchPublicJson<WorkflowStep[]>(
-            `/service_workflows?select=*&service_id=eq.${encodeURIComponent(serviceId)}&order=step_number.asc`
-          ),
-          fetchPublicJson<ServiceData[]>(
-            `/services?select=*&is_active=eq.true&category=eq.${encodeURIComponent(nextService.category)}&id=neq.${encodeURIComponent(serviceId)}&order=display_order.asc,name.asc&limit=3`
-          ),
-          fetchPublicJson<ServiceData[]>(
-            `/services?select=id,name,category&is_active=eq.true&order=display_order.asc,name.asc`
-          ),
+          supabase.from("service_requirements").select("*").eq("service_id", serviceId).order("display_order", { ascending: true }),
+          supabase.from("service_workflows").select("*").eq("service_id", serviceId).order("step_number", { ascending: true }),
+          supabase.from("services").select("*").eq("is_active", true).eq("category", nextService.category).neq("id", serviceId).order("display_order", { ascending: true }).order("name", { ascending: true }).limit(3),
+          supabase.from("services").select("id,name,category").eq("is_active", true).order("display_order", { ascending: true }).order("name", { ascending: true }),
         ]);
 
-        if (reqRes.status === "fulfilled") {
-          setRequirements(reqRes.value);
+        if (reqRes.status === "fulfilled" && !reqRes.value.error) {
+          setRequirements((reqRes.value.data as Requirement[]) || []);
         } else {
-          console.error("Failed to load service requirements:", reqRes.reason);
+          console.error("Failed to load service requirements:", reqRes.status === "rejected" ? reqRes.reason : reqRes.value.error);
           setRequirements([]);
         }
 
-        if (wfRes.status === "fulfilled") {
-          setWorkflow(wfRes.value);
+        if (wfRes.status === "fulfilled" && !wfRes.value.error) {
+          setWorkflow((wfRes.value.data as WorkflowStep[]) || []);
         } else {
-          console.error("Failed to load service workflow:", wfRes.reason);
+          console.error("Failed to load service workflow:", wfRes.status === "rejected" ? wfRes.reason : wfRes.value.error);
           setWorkflow([]);
         }
 
-        if (relRes.status === "fulfilled") {
-          setRelatedServices(relRes.value);
+        if (relRes.status === "fulfilled" && !relRes.value.error) {
+          setRelatedServices((relRes.value.data as unknown as ServiceData[]) || []);
         } else {
-          console.error("Failed to load related services:", relRes.reason);
+          console.error("Failed to load related services:", relRes.status === "rejected" ? relRes.reason : relRes.value.error);
           setRelatedServices([]);
         }
 
-        if (allSvcRes.status === "fulfilled") {
-          setAllServices(allSvcRes.value);
+        if (allSvcRes.status === "fulfilled" && !allSvcRes.value.error) {
+          setAllServices((allSvcRes.value.data as unknown as ServiceData[]) || []);
         } else {
-          console.error("Failed to load service index:", allSvcRes.reason);
+          console.error("Failed to load service index:", allSvcRes.status === "rejected" ? allSvcRes.reason : allSvcRes.value.error);
           setAllServices([]);
         }
       } catch (error) {
@@ -451,10 +425,34 @@ export default function ServiceDetail() {
     void load();
   }, [serviceId]);
 
-  // AI Chat handler
+  /** Gap #42: Restore readiness checklist from localStorage */
+  useEffect(() => {
+    if (serviceId) {
+      const saved = localStorage.getItem(`readiness-${serviceId}`);
+      if (saved) {
+        try { setCheckedItems(new Set(JSON.parse(saved))); } catch {}
+      }
+    }
+  }, [serviceId]);
+
+  /** Persist readiness checklist to localStorage */
+  const toggleChecked = (id: string) => {
+    setCheckedItems(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      if (serviceId) localStorage.setItem(`readiness-${serviceId}`, JSON.stringify([...next]));
+      return next;
+    });
+  };
+
+  /** Gap #85: Rate-limited AI Chat handler */
   const sendChatMessage = async () => {
     if (!chatInput.trim() || chatLoading) return;
-    const userMsg = { role: "user", content: chatInput };
+    // Gap #85: Rate limit — max 1 message per 2 seconds
+    if (Date.now() - lastChatSent < 2000) return;
+    setLastChatSent(Date.now());
+
+    const userMsg = { role: "user", content: chatInput, timestamp: Date.now() };
     setChatMessages(prev => [...prev, userMsg]);
     setChatInput("");
     setChatLoading(true);
@@ -467,11 +465,21 @@ export default function ServiceDetail() {
       });
       if (error) throw error;
       const reply = data?.choices?.[0]?.message?.content || data?.reply || "I'm sorry, I couldn't process that request.";
-      setChatMessages(prev => [...prev, { role: "assistant", content: reply }]);
+      setChatMessages(prev => [...prev, { role: "assistant", content: reply, timestamp: Date.now() }]);
     } catch {
-      setChatMessages(prev => [...prev, { role: "assistant", content: "AI assistant is temporarily unavailable. Please contact us directly." }]);
+      setChatMessages(prev => [...prev, { role: "assistant", content: "AI assistant is temporarily unavailable. Please contact us directly.", timestamp: Date.now() }]);
     }
     setChatLoading(false);
+  };
+
+  /** Gap #44: Share service */
+  const handleShare = async () => {
+    const shareData = { title: service?.name || "Service", url: window.location.href };
+    if (navigator.share) {
+      try { await navigator.share(shareData); } catch {}
+    } else {
+      await navigator.clipboard.writeText(window.location.href);
+    }
   };
 
   // Bundle link lookup helper — exact match first, then substring (item 198)
@@ -488,11 +496,7 @@ export default function ServiceDetail() {
     const from = Number(s.price_from || 0);
     const to = Number(s.price_to || 0);
     if (from === 0 && to === 0) return "Contact Us";
-    const suffixMap: Record<string, string> = {
-      per_seal: "/seal", per_document: "/doc", per_page: "/page",
-      hourly: "/hr", per_session: "/session", monthly: "/mo", flat: "", custom: "",
-    };
-    const suffix = suffixMap[s.pricing_model] || "";
+    const suffix = PRICING_SUFFIXES[s.pricing_model] || "";
     return to > from ? `$${from}–$${to}${suffix}` : `$${from}${suffix}`;
   };
 
@@ -549,7 +553,7 @@ export default function ServiceDetail() {
   const complexity = categoryComplexity[service.category] || { level: "Moderate", duration: "Varies" };
   const bundles = bundleSuggestions[service.category] || [];
   const showDisclaimer = LEGAL_DISCLAIMER_CATEGORIES.includes(service.category);
-  const bookUrl = `/book?service=${encodeURIComponent(service.name)}${!["notarization", "authentication"].includes(service.category) ? "&type=in_person" : ""}`;
+  const bookUrl = `/book?service=${encodeURIComponent(service.name)}${!NOTARY_CATEGORIES.has(service.category) ? "&type=in_person" : ""}`;
 
   const readinessPercent = requirements.length > 0 
     ? Math.round((checkedItems.size / requirements.filter(r => r.is_required).length) * 100)
@@ -581,6 +585,10 @@ export default function ServiceDetail() {
               <p className="text-primary-foreground/70">{service.description || service.short_description}</p>
               <div className="mt-4 flex items-center gap-3">
                 <Badge variant="outline" className="text-primary-foreground/80 border-primary-foreground/20 text-base px-3 py-1">{formatPrice(service)}</Badge>
+                {/* Gap #44: Share button */}
+                <Button size="sm" variant="outline" className="border-primary-foreground/20 text-primary-foreground/80 hover:bg-primary-foreground/10" onClick={handleShare}>
+                  <ExternalLink className="mr-1 h-3 w-3" /> Share
+                </Button>
               </div>
             </div>
           </motion.div>
@@ -620,13 +628,7 @@ export default function ServiceDetail() {
                       <div key={req.id} className="flex items-start gap-3">
                         <Checkbox
                           checked={checkedItems.has(req.id)}
-                          onCheckedChange={(checked) => {
-                            setCheckedItems(prev => {
-                              const next = new Set(prev);
-                              if (checked) next.add(req.id); else next.delete(req.id);
-                              return next;
-                            });
-                          }}
+                          onCheckedChange={() => toggleChecked(req.id)}
                           className="mt-0.5"
                         />
                         <div>
@@ -956,47 +958,87 @@ export default function ServiceDetail() {
         )}
       </div>
 
-      {/* AI Chat Bubble */}
+      {/* AI Chat Bubble — Gap #47: positioned above mobile nav */}
       <button
         onClick={() => setShowChat(!showChat)}
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg hover:opacity-90 transition-colors"
-        aria-label="Ask a question about this service"
+        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg hover:opacity-90 transition-colors sm:bottom-6 bottom-20"
+        aria-label={showChat ? "Close chat" : "Ask a question about this service"}
       >
         <MessageSquare className="h-6 w-6" />
       </button>
 
       {showChat && (
-        <div className="fixed bottom-24 right-6 z-50 w-80 rounded-lg border border-border bg-card shadow-2xl flex flex-col max-h-[400px]">
+        <div
+          className="fixed bottom-36 sm:bottom-24 right-6 z-50 w-80 rounded-lg border border-border bg-card shadow-2xl flex flex-col max-h-[400px]"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Chat about ${service.name}`}
+        >
           <div className="flex items-center justify-between border-b border-border p-3">
             <span className="text-sm font-medium flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-primary" /> Ask About {service.name}
             </span>
-            <button onClick={() => setShowChat(false)} className="text-muted-foreground hover:text-foreground text-xs">✕</button>
+            <button onClick={() => setShowChat(false)} className="text-muted-foreground hover:text-foreground text-xs" aria-label="Close chat">✕</button>
           </div>
-          <div className="flex-1 overflow-y-auto p-3 space-y-2 min-h-[150px]" aria-live="polite" aria-label="AI chat messages">
+          <div className="flex-1 overflow-y-auto p-3 space-y-2 min-h-[150px]" role="log" aria-live="polite" aria-label="AI chat messages">
             {chatMessages.length === 0 && (
-              <p className="text-xs text-muted-foreground text-center py-4">Ask any question about {service.name} and our AI will help you.</p>
+              <div className="text-center py-4 space-y-3">
+                <p className="text-xs text-muted-foreground">Ask any question about {service.name}</p>
+                {/* Gap #50: Suggested question chips */}
+                <div className="flex flex-wrap gap-1 justify-center">
+                  {["What do I need?", "How long does it take?", "What does it cost?"].map(q => (
+                    <button
+                      key={q}
+                      onClick={() => { setChatInput(q); }}
+                      className="text-[10px] px-2 py-1 rounded-full border border-primary/20 text-primary hover:bg-primary/10 transition-colors"
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
             {chatMessages.map((msg, i) => (
               <div key={i} className={`text-xs rounded-lg p-2 ${msg.role === "user" ? "bg-primary/10 text-foreground ml-6" : "bg-muted text-foreground mr-6"}`}>
                 {msg.content}
+                {/* Gap #83: Timestamps */}
+                {msg.timestamp && (
+                  <span className="block text-[9px] text-muted-foreground/60 mt-1">
+                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  </span>
+                )}
               </div>
             ))}
-            {chatLoading && <div className="text-xs text-muted-foreground animate-pulse" role="status">Thinking...</div>}
+            {/* Gap #84: Typing indicator */}
+            {chatLoading && (
+              <div className="text-xs text-muted-foreground animate-pulse mr-6 bg-muted rounded-lg p-2" role="status">
+                <span className="inline-flex gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "300ms" }} />
+                </span>
+              </div>
+            )}
           </div>
           <div className="border-t border-border p-2 flex gap-2">
+            {/* Gap #49: Character limit */}
             <input
               type="text"
               value={chatInput}
-              onChange={e => setChatInput(e.target.value)}
+              onChange={e => setChatInput(e.target.value.slice(0, 500))}
               onKeyDown={e => e.key === "Enter" && sendChatMessage()}
               placeholder="Type a question..."
               className="flex-1 bg-transparent text-sm outline-none px-2"
+              maxLength={500}
+              aria-label="Chat message input"
             />
-            <Button size="sm" onClick={sendChatMessage} disabled={chatLoading || !chatInput.trim()}>
+            <Button size="sm" onClick={sendChatMessage} disabled={chatLoading || !chatInput.trim()} aria-label="Send message">
               <ArrowRight className="h-3 w-3" />
             </Button>
           </div>
+          {chatInput.length > 400 && (
+            <p className="text-[9px] text-muted-foreground px-3 pb-1">{chatInput.length}/500</p>
+          )}
         </div>
       )}
 
