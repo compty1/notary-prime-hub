@@ -270,7 +270,12 @@ export default function AdminServiceRequests() {
                   </TableCell>
                   <TableCell><Badge className={statusColors[req.status] || ""}>{req.status.replace(/_/g, " ")}</Badge></TableCell>
                   <TableCell><Badge variant="outline" className={priorityColors[req.priority] || ""}>{req.priority}</Badge></TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{new Date(req.created_at).toLocaleDateString()}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {new Date(req.created_at).toLocaleDateString()}
+                    {req.sla_deadline && new Date(req.sla_deadline) < new Date() && req.status !== "completed" && req.status !== "cancelled" && (
+                      <Badge className="ml-2 bg-destructive/10 text-destructive text-[10px]">Overdue</Badge>
+                    )}
+                  </TableCell>
                   <TableCell className="text-right"><Button size="sm" variant="ghost">View</Button></TableCell>
                 </TableRow>
               ))}
