@@ -17,7 +17,7 @@ import { MapPin, Monitor, FileText, Shield, Clock, CheckCircle, Star, ChevronRig
 import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
 import { fadeUp, blurIn, scaleReveal } from "@/lib/animations";
-import heroImage from "@/assets/hero-notary.jpg";
+import HeroPhoneAnimation from "@/components/HeroPhoneAnimation";
 
 const fallbackServices = [
 { icon: FileText, title: "Real Estate Documents", desc: "Deeds, mortgages, refinancing, title transfers" },
