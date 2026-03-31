@@ -21,6 +21,7 @@ export default function VerifyIdentity() {
   const [idData, setIdData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [showAssistant, setShowAssistant] = useState(true);
 
   usePageTitle("ID Verification");
 
