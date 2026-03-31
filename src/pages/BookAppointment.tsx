@@ -105,6 +105,18 @@ export default function BookAppointment() {
   const [translationDocType, setTranslationDocType] = useState("");
   const [translationPageCount, setTranslationPageCount] = useState("1");
 
+  // Phase 12: New business logic state
+  const [signerCapacity, setSignerCapacity] = useState("individual");
+  const [entityName, setEntityName] = useState("");
+  const [signerTitle, setSignerTitle] = useState("");
+  const [facilityName, setFacilityName] = useState("");
+  const [facilityContact, setFacilityContact] = useState("");
+  const [facilityRoom, setFacilityRoom] = useState("");
+  const [signerCount, setSignerCount] = useState(1);
+  const [travelDistance, setTravelDistance] = useState<number | null>(null);
+  const [afterHoursFee, setAfterHoursFee] = useState(0);
+  const [outsideServiceArea, setOutsideServiceArea] = useState(false);
+
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(pos => { setUserLat(pos.coords.latitude); setUserLon(pos.coords.longitude); }, () => {}, { timeout: 5000 });
