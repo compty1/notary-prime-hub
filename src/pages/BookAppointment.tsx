@@ -548,6 +548,7 @@ export default function BookAppointment() {
     signerCapacity, setSignerCapacity, entityName, setEntityName, signerTitle, setSignerTitle,
     facilityName, setFacilityName, facilityContact, setFacilityContact, facilityRoom, setFacilityRoom,
     signerCount, setSignerCount,
+    needsApostille, setNeedsApostille,
   };
 
   const scheduleStepProps = {
