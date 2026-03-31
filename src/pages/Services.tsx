@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { usePageTitle } from "@/lib/usePageTitle";
 import { Link, useSearchParams } from "react-router-dom";
 import { useDebounce } from "@/lib/useDebounce";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
-import { ChevronRight, Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home, Search, Sparkles, ArrowRight, Headphones, PenTool, BarChart3, MessageSquare, Wrench, Eye, Mail, Scan, FileEdit } from "lucide-react";
+import { ChevronRight, FileText, Search, Sparkles, ArrowRight, Mail, Scan, FileEdit } from "lucide-react";
 import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -16,10 +17,8 @@ import { ServicesLoadingSkeleton } from "@/components/ServicesLoadingSkeleton";
 import {
   INTAKE_ONLY_SERVICES, SAAS_LINKS, SUBSCRIPTION_SERVICES,
   PRICING_SUFFIXES, CATEGORY_LABELS, CATEGORY_ORDER,
+  SERVICE_ICON_MAP, NOTARY_CATEGORIES,
 } from "@/lib/serviceConstants";
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 const aiTools = [
   { icon: Mail, title: "AI Writing Tools", description: "Generate professional emails, social media posts, and documents in seconds with AI.", link: "/ai-writer", cta: "Start Writing" },
@@ -27,29 +26,24 @@ const aiTools = [
   { icon: Scan, title: "Document Digitization", description: "AI-powered OCR to convert paper documents and scans into editable, searchable text.", link: "/digitize", cta: "Digitize Now" },
 ];
 
-const iconMap: Record<string, any> = {
-  Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home,
-  Copy: FileText, ScanFace: Shield, ClipboardCheck: FileText, Search: FileText,
-  FileEdit: FileText, FileType: FileText, Scan: FileText, Paintbrush: FileText,
-  FormInput: FileText, Building: Briefcase, Flag: Globe, Languages: Globe,
-  Layers: FileText, CreditCard: Briefcase, Code: FileText, Award: Shield,
-  Building2: Briefcase, Inbox: FileText, Bell: FileText, Layout: FileText,
-  GraduationCap: Briefcase, ClipboardList: FileText, Workflow: FileText, Plane: Globe,
-  Headphones, PenTool, BarChart3, MessageSquare, Wrench, Eye, Mail: MessageSquare,
-};
-
 type Service = {
   id: string; name: string; category: string; description: string | null;
   short_description: string | null; price_from: number | null; price_to: number | null;
-  pricing_model: string; icon: string | null;
+  pricing_model: string; icon: string | null; is_popular: boolean;
+  estimated_turnaround: string | null;
 };
 
+/** Gap #21/#20: Use "Notarize Now" only for notary categories */
 function getServiceAction(s: Service): { url: string; label: string } {
   if (SAAS_LINKS[s.name]) return { url: SAAS_LINKS[s.name], label: "Use Tool" };
   if (INTAKE_ONLY_SERVICES.has(s.name)) return { url: `/request?service=${encodeURIComponent(s.name)}`, label: "Get Started" };
   if (SUBSCRIPTION_SERVICES.has(s.name)) return { url: "/subscribe", label: "View Plans" };
   if (s.name === "White-Label Partner Programs") return { url: "/join", label: "Apply" };
-  return { url: `/book?service=${encodeURIComponent(s.name)}${!["notarization", "authentication"].includes(s.category) ? "&type=in_person" : ""}`, label: "Notarize Now" };
+  const isNotary = NOTARY_CATEGORIES.has(s.category);
+  return {
+    url: `/book?service=${encodeURIComponent(s.name)}${!isNotary ? "&type=in_person" : ""}`,
+    label: isNotary ? "Notarize Now" : "Book Now",
+  };
 }
 
 function formatPrice(s: Service) {
@@ -62,12 +56,13 @@ function formatPrice(s: Service) {
 }
 
 export default function Services() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const categoryParam = searchParams.get("category");
+  const queryParam = searchParams.get("q") || "";
   const [activeCategory, setActiveCategory] = useState(
     categoryParam && CATEGORY_ORDER.includes(categoryParam) ? categoryParam : "all"
   );
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(queryParam);
   usePageTitle("Services");
 
   useEffect(() => {
@@ -78,54 +73,58 @@ export default function Services() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  /** Gap #14: Use Supabase client instead of raw fetch */
   useEffect(() => {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    let cancelled = false;
+    const timeout = setTimeout(() => {
+      if (!cancelled) setError("Request timed out. Please try again.");
+      setLoading(false);
+    }, 10000);
 
-    const url = `${SUPABASE_URL}/rest/v1/services?select=id,name,category,description,short_description,price_from,price_to,pricing_model,icon&is_active=eq.true&order=display_order.asc,name.asc`;
-
-    fetch(url, {
-      headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`,
-      },
-      signal: controller.signal,
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((data: Service[]) => {
-        setServices(data);
-        setError(null);
-      })
-      .catch((err) => {
-        if (err.name !== "AbortError") {
-          console.error("Services fetch failed:", err);
-          setError(err.message || "Failed to load services");
+    supabase
+      .from("services")
+      .select("id,name,category,description,short_description,price_from,price_to,pricing_model,icon,is_popular,estimated_turnaround")
+      .eq("is_active", true)
+      .order("display_order", { ascending: true })
+      .order("name", { ascending: true })
+      .then(({ data, error: fetchError }) => {
+        if (cancelled) return;
+        clearTimeout(timeout);
+        if (fetchError) {
+          console.error("Services fetch failed:", fetchError);
+          setError(fetchError.message || "Failed to load services");
         } else {
-          setError("Request timed out. Please try again.");
+          setServices((data as Service[]) || []);
+          setError(null);
         }
-      })
-      .finally(() => {
-        clearTimeout(timeoutId);
         setLoading(false);
       });
 
-    return () => { clearTimeout(timeoutId); controller.abort(); };
+    return () => { cancelled = true; clearTimeout(timeout); };
   }, []);
 
   const debouncedSearch = useDebounce(searchQuery, 300);
 
+  /** Gap #9: Deep-link search via ?q= URL param */
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    if (debouncedSearch) {
+      params.set("q", debouncedSearch);
+    } else {
+      params.delete("q");
+    }
+    setSearchParams(params, { replace: true });
+  }, [debouncedSearch]);
+
   const filteredServices = debouncedSearch
-    ? services.filter(s =>
-        s.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-        (s.description || "").toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-        (s.short_description || "").toLowerCase().includes(debouncedSearch.toLowerCase())
-      )
+    ? services.filter(s => {
+        const q = debouncedSearch.toLowerCase();
+        return s.name.toLowerCase().includes(q) ||
+          (s.description || "").toLowerCase().includes(q) ||
+          (s.short_description || "").toLowerCase().includes(q);
+      })
     : services;
 
-  // Build groups — include a fallback "Other" for unexpected categories
   const knownCats = new Set(CATEGORY_ORDER);
   const grouped = [
     ...CATEGORY_ORDER
@@ -145,7 +144,8 @@ export default function Services() {
       : []),
   ].filter(g => g.items.length > 0);
 
-  const retry = () => { setLoading(true); setError(null); window.location.reload(); };
+  /** Gap #35: Retry preserves filter/search state */
+  const retry = () => { setLoading(true); setError(null); window.location.search = searchParams.toString(); };
 
   return (
     <PageShell>
@@ -202,11 +202,12 @@ export default function Services() {
           <Input placeholder="Search services..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" />
         </div>
 
+        {/* Gap #8: scrollable tabs with scroll-snap */}
         <Tabs value={activeCategory} onValueChange={setActiveCategory}>
-          <TabsList className="mb-8 overflow-x-auto flex-nowrap h-auto gap-1 w-full justify-start sm:flex-wrap sm:justify-center">
-            <TabsTrigger value="all">All Services</TabsTrigger>
+          <TabsList className="mb-8 overflow-x-auto flex-nowrap h-auto gap-1 w-full justify-start sm:flex-wrap sm:justify-center scroll-smooth snap-x">
+            <TabsTrigger value="all" className="snap-start">All Services</TabsTrigger>
             {CATEGORY_ORDER.map(cat => (
-              <TabsTrigger key={cat} value={cat} className="text-xs whitespace-nowrap">{CATEGORY_LABELS[cat]?.label || cat}</TabsTrigger>
+              <TabsTrigger key={cat} value={cat} className="text-xs whitespace-nowrap snap-start">{CATEGORY_LABELS[cat]?.label || cat}</TabsTrigger>
             ))}
           </TabsList>
         </Tabs>
@@ -238,17 +239,23 @@ export default function Services() {
                 </motion.div>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {group.items.map((s, i) => {
-                    const IconComp = iconMap[s.icon || "FileText"] || FileText;
+                    const IconComp = SERVICE_ICON_MAP[s.icon || "FileText"] || FileText;
                     const { url: actionUrl, label: actionLabel } = getServiceAction(s);
                     return (
                       <motion.div key={s.id} initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.25, delay: i * 0.03 }}>
-                        <Card className="group h-full hover:border-primary/20">
+                        <Card className="group h-full hover:border-primary/20" role="article">
                           <CardContent className="flex h-full flex-col p-6">
                             <div className="mb-3 flex items-start justify-between">
                               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/15 transition-colors">
                                 <IconComp className="h-5 w-5 text-primary" />
                               </div>
-                              <Badge variant="outline" className="text-xs font-mono">{formatPrice(s)}</Badge>
+                              <div className="flex items-center gap-1.5">
+                                {/* Gap #2: Popular badge */}
+                                {s.is_popular && (
+                                  <Badge variant="default" className="text-[10px] px-1.5 py-0">Popular</Badge>
+                                )}
+                                <Badge variant="outline" className="text-xs font-mono">{formatPrice(s)}</Badge>
+                              </div>
                             </div>
                             <h3 className="mb-1 font-sans text-base font-semibold text-foreground">{s.name}</h3>
                             <p className="mb-4 flex-1 text-sm text-muted-foreground">{s.description || s.short_description}</p>

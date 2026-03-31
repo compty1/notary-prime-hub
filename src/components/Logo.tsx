@@ -42,8 +42,15 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
           <rect x="9" y="8" width="13" height="48" rx="6.5" fill="hsl(var(--foreground))" />
           {/* Diagonal stroke — Teal (rotated rounded rect connecting stems) */}
           <rect x="25.5" y="4" width="13" height="56" rx="6.5" fill="hsl(var(--primary))" transform="rotate(28 32 32)" />
-          {/* Right stem — Mint */}
-          <rect x="42" y="8" width="13" height="48" rx="6.5" fill="hsl(var(--mint))" />
+          {/* Right leg with integrated checkmark — Mint */}
+          <path
+            d="M 48 8 L 48 38 L 58 50"
+            stroke="hsl(var(--mint))"
+            strokeWidth="12"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
         </svg>
 
         {showText && (

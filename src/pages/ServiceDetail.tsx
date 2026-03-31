@@ -19,15 +19,7 @@ import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { usePageTitle } from "@/lib/usePageTitle";
 
-const iconMap: Record<string, any> = {
-  Monitor, MapPin, Users, FileText, Globe, Shield, Lock, Briefcase, Home,
-  Copy: FileText, ScanFace: Shield, ClipboardCheck: FileText, Search: FileText,
-  FileEdit: FileText, FileType: FileText, Scan: FileText, Paintbrush: FileText,
-  FormInput: FileText, Building: Briefcase, Flag: Globe, Languages: Globe,
-  Layers: FileText, CreditCard: Briefcase, Code: FileText, Award: Shield,
-  Building2: Briefcase, Inbox: FileText, Bell: FileText, Layout: FileText,
-  GraduationCap: Briefcase, ClipboardList: FileText, Workflow: FileText, Plane: Globe,
-};
+import { SERVICE_ICON_MAP as iconMap } from "@/lib/serviceConstants";
 
 // Phase 3.1: Category-specific resource links
 const categoryResources: Record<string, { label: string; url: string; icon: any }[]> = {
