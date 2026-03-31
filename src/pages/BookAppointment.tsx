@@ -16,7 +16,6 @@ import { haversineDistance, getAfterHoursFee, DEFAULT_OFFICE_LAT, DEFAULT_OFFICE
 import { NOTARIAL_ACT_MAP } from "@/lib/serviceConstants";
 import { calculatePrice, parseSettings, type PricingBreakdown } from "@/lib/pricingEngine";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PageShell } from "@/components/PageShell";
 import {
   BookingStep, NotarizationType, BOOKING_STORAGE_KEY, fallbackServiceTypes,
