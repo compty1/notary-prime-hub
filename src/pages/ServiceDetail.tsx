@@ -403,7 +403,11 @@ export default function ServiceDetail() {
         { label: "Common USCIS Forms", url: "https://www.uscis.gov/forms", icon: FileText },
       ];
     }
-    return categoryResources[service.category] || categoryResources.notarization;
+    return categoryResources[service.category] || [
+      { label: "Service Request Form", url: "/request", icon: FileText },
+      { label: "Fee Calculator", url: "/fee-calculator", icon: Shield },
+      { label: "Contact Us", url: "/#contact", icon: ExternalLink },
+    ];
   };
   const resources = getResources();
 
