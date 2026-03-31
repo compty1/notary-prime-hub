@@ -152,7 +152,7 @@ export default function Index() {
       toast({ title: "Something went wrong", description: "Please try again or call us directly.", variant: "destructive" });
     } else {
       setLastSubmitTime(now);
-      toast({ title: "Message sent!", description: "We'll get back to you within 24 hours." });
+      toast({ title: "Message sent!", description: "We'll get back to you within 2 hours during business hours." });
       setContactForm({ name: "", email: "", phone: "", service: "", message: "" });
     }
   };
