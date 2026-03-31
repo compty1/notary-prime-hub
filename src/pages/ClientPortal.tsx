@@ -88,10 +88,11 @@ export default function ClientPortal() {
   const [reminderForm, setReminderForm] = useState({ document_id: "", expiry_date: "", remind_days_before: "30" });
   const [savingReminder, setSavingReminder] = useState(false);
 
-  const INTAKE_ONLY = new Set(["Apostille Facilitation", "Consular Legalization Prep", "Background Check Coordination", "Clerical Document Preparation", "Document Cleanup & Formatting", "Form Filling Assistance", "Certified Document Prep for Agencies", "Registered Agent Coordination", "Email Management & Correspondence", "Notarized Translation Coordination", "Data Entry", "Travel Arrangements", "Blog Post Writing", "Social Media Content", "Newsletter Design", "Market Research Report", "Lead Generation", "Email Support Handling", "Live Chat Support", "Website Content Updates", "UX Audit & Heuristic Review", "User Flow & Workflow Testing", "Usability Testing & Report", "UX Research & Persona Development"]);
-  const SAAS_TOOLS: Record<string, string> = { "PDF Services": "/digitize", "Document Scanning & Digitization": "/digitize", "Template Library & Form Builder": "/templates", "Virtual Mailroom": "/mailroom", "ID Verification / KYC Checks": "/verify-id" };
-  const SUBSCRIPTION_SERVICES = new Set(["Business Subscription Plans", "API & Integration Services", "White-Label Partner Programs"]);
-  const PORTAL_SERVICES = new Set(["Secure Document Vault & Storage", "Cloud Document Storage", "Document Retention & Compliance", "Automated Reminders & Renewals"]);
+  // Shared constants from single source of truth
+  const { INTAKE_ONLY_SERVICES: INTAKE_ONLY, SAAS_LINKS: SAAS_TOOLS, SUBSCRIPTION_SERVICES, PORTAL_SERVICES } = await import("@/lib/serviceConstants").then(m => m).catch(() => ({
+    INTAKE_ONLY_SERVICES: new Set<string>(), SAAS_LINKS: {} as Record<string, string>,
+    SUBSCRIPTION_SERVICES: new Set<string>(), PORTAL_SERVICES: new Set<string>(),
+  }));
 
   const getServiceUrl = (svc: any) => {
     if (SAAS_TOOLS[svc.name]) return SAAS_TOOLS[svc.name];
