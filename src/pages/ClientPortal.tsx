@@ -523,7 +523,7 @@ export default function ClientPortal() {
                         <div>
                           <p className="font-medium text-sm">${parseFloat(p.amount).toFixed(2)}</p>
                           {linkedAppt && <p className="text-xs text-primary font-medium">{linkedAppt.service_type}</p>}
-                          <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString()} · {p.method || "N/A"}</p>
+                          <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString()} · {p.method || "N/A"}{p.paid_at ? ` · Paid ${new Date(p.paid_at).toLocaleDateString()}` : ""}</p>
                         </div>
                         <div className="flex items-center gap-2">
                           {p.status === "pending" && <Button size="sm" className="text-xs " onClick={() => setPayingPaymentId(p.id)}><CreditCard className="mr-1 h-3 w-3" /> Pay Now</Button>}

@@ -202,7 +202,7 @@ export default function PaymentForm({ appointmentId, defaultAmount, description,
           <Input
             id="payment-amount"
             type="number"
-            min="1"
+            min="0.50"
             step="0.01"
             value={amount || ""}
             onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
