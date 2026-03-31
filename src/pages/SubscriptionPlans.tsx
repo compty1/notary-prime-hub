@@ -1,12 +1,16 @@
+import { useState } from "react";
 import { usePageTitle } from "@/lib/usePageTitle";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { Check, ChevronLeft, Briefcase, Code, Award, Zap } from "lucide-react";
+import { Check, ChevronLeft, Briefcase, Code, Award, Zap, Loader2 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
+import { useToast } from "@/hooks/use-toast";
 
 const plans = [
   {
