@@ -190,10 +190,18 @@ export default function AdminChat() {
         {/* Chat area */}
         <Card className="border-border/50 md:col-span-2 flex flex-col">
           <CardHeader className="pb-2 border-b">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <MessageSquare className="h-4 w-4 text-primary" />
-              {selectedUser ? `Chat with ${profiles[selectedUser] || selectedUser.slice(0, 8)}` : "Select a conversation"}
-            </CardTitle>
+            <div className="flex items-center justify-between gap-2">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <MessageSquare className="h-4 w-4 text-primary" />
+                {selectedUser ? `Chat with ${profiles[selectedUser] || selectedUser.slice(0, 8)}` : "Select a conversation"}
+              </CardTitle>
+              {selectedUser && (
+                <div className="relative">
+                  <Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
+                  <Input placeholder="Search messages..." value={messageSearch} onChange={e => setMessageSearch(e.target.value)} className="pl-7 h-7 w-40 text-xs" />
+                </div>
+              )}
+            </div>
           </CardHeader>
           <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3" style={{ maxHeight: "450px" }}>
             {currentMessages.map((msg) => (
