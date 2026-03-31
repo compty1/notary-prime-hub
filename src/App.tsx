@@ -78,6 +78,11 @@ const AdminTaskQueue = lazy(() => import("./pages/admin/AdminTaskQueue"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const Maintenance = lazy(() => import("./pages/Maintenance"));
 const ForNotaries = lazy(() => import("./pages/solutions/ForNotaries"));
+const ForHospitals = lazy(() => import("./pages/solutions/ForHospitals"));
+const ForRealEstate = lazy(() => import("./pages/solutions/ForRealEstate"));
+const ForLawFirms = lazy(() => import("./pages/solutions/ForLawFirms"));
+const ForSmallBusiness = lazy(() => import("./pages/solutions/ForSmallBusiness"));
+const ForIndividuals = lazy(() => import("./pages/solutions/ForIndividuals"));
 const Resources = lazy(() => import("./pages/Resources"));
 
 const queryClient = new QueryClient({
@@ -127,10 +132,11 @@ function AnimatedRoutes() {
         <Route path="/maintenance" element={<Maintenance />} />
         <Route path="/solutions/notaries" element={<ForNotaries />} />
         <Route path="/resources" element={<Resources />} />
-        <Route path="/solutions/real-estate" element={<ComingSoon />} />
-        <Route path="/solutions/law-firms" element={<ComingSoon />} />
-        <Route path="/solutions/small-business" element={<ComingSoon />} />
-        <Route path="/solutions/individuals" element={<ComingSoon />} />
+        <Route path="/solutions/hospitals" element={<ForHospitals />} />
+        <Route path="/solutions/real-estate" element={<ForRealEstate />} />
+        <Route path="/solutions/law-firms" element={<ForLawFirms />} />
+        <Route path="/solutions/small-business" element={<ForSmallBusiness />} />
+        <Route path="/solutions/individuals" element={<ForIndividuals />} />
         <Route path="/digitize" element={<ProtectedRoute><DocumentDigitize /></ProtectedRoute>} />
         <Route path="/request" element={<ProtectedRoute><ServiceRequest /></ProtectedRoute>} />
         <Route path="/mailroom" element={<ProtectedRoute><VirtualMailroom /></ProtectedRoute>} />

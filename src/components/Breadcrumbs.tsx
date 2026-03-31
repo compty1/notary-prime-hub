@@ -37,6 +37,13 @@ const labelMap: Record<string, string> = {
   "business-clients": "Business Clients",
   resources: "Resources",
   apostille: "Apostille",
+  solutions: "Solutions",
+  notaries: "Notaries",
+  hospitals: "Hospitals",
+  "real-estate": "Real Estate",
+  "law-firms": "Law Firms",
+  "small-business": "Small Business",
+  individuals: "Individuals",
 };
 
 export function Breadcrumbs() {
