@@ -358,14 +358,15 @@ export default function ServiceRequest() {
     });
 
     if (error) {
-      toast({ title: "Submission failed", description: error.message, variant: "destructive" });
+      toast({ title: "Submission failed", description: error.message, variant: "destructive", duration: 8000 });
     } else {
+      localStorage.removeItem(AUTOSAVE_KEY);
       // Send notification email
       try {
         await supabase.functions.invoke("send-correspondence", {
           body: { type: "service_request_submitted", serviceName, clientId: user.id },
         });
-      } catch {}
+      } catch (e) { console.error("Notification error:", e); }
       toast({ title: "Request submitted!", description: "We'll review your request and get back to you shortly." });
       setSubmitted(true);
     }
