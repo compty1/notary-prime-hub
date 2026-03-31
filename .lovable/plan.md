@@ -1,83 +1,124 @@
 
 
-# Plan: Logo/Favicon Standardization, Navbar Branding, Theme Uniformity & Homepage Service Hierarchy
+# Plan: Zoom Booking Fix, IONOS Email Reconnect, Integration Tests, Document Upload, and Admin Notary Management
 
-## 1. Logo SVG: N with coral period (favicon + component)
+This is a large multi-part request. Here is the breakdown:
 
-**Current state:** `Logo.tsx` renders an SVG with a white "N" on navy rect + coral circle. The `showText` prop appends "Notar." text beside it. The Navbar uses `<Logo size="sm" showText theme="dark" />` which shows the icon + "Notar." text.
+---
 
-**Changes to `src/components/Logo.tsx`:**
-- Keep the SVG `LogoIcon` as-is (navy rounded square, white "N", coral period) — this IS the logo mark
-- When `showText` is true, change the text from "Notar." (with coral period) to just "Notar" in full — the coral period is already in the icon, no need to duplicate it in text
-- Actually per user request: "replace with the current Notar. full text instead" — so the header should show the icon + "Notar." text. The current code already does this. The user wants to confirm the N. icon IS used everywhere and the header text says "Notar." — this is already correct. Let me re-read the request.
+## 1. Fix "Schedule Zoom" routing for consultations
 
-User says: "remove the N. from the header and replace with the current Notar. full text instead" — meaning in the Navbar header, instead of showing the icon + "Notar." text (which currently shows "N." icon + "Notar." text making it look like "N. Notar."), they want just the icon + "Notar." text properly. Looking at the code, this is already what happens. But the user may be seeing the SVG "N." as redundant with the "Notar." text.
+**Problem:** Clicking "Schedule Zoom" links to `/book?service=Consultation`, which loads the full notary booking intake (notarization type selector, location, etc.). Consultations are Zoom calls — they should skip notarization type selection and location fields, and instead show a simplified scheduling flow (pick date/time, add notes, confirm).
 
-**Resolution:** The `showText` already shows "Notar." beside the icon. The issue is the icon itself contains an "N" + period which looks redundant. For the header specifically, we should show the full "Notar." as text only (no icon), or show icon without text. User wants "Notar. full text" — so in the Navbar, we show icon + "Notar." text, which is current behavior. The key fix is ensuring the favicon uses this same N. icon.
+**Changes:**
+- **`src/pages/BookAppointment.tsx`** — Detect when `serviceType` is "Consultation" (or category is "consulting"). Auto-set `notarizationType` to a neutral value, skip the notarization type selector (Step 1), hide location/address fields, and streamline to: Service confirmed → Schedule date/time → Review & confirm. Show a note that "This consultation will take place via Zoom."
+- **`src/pages/booking/bookingConstants.ts`** — Add "Consultation" to `DIGITAL_ONLY_SERVICES` set so `isDigitalOnly()` returns true, which prevents location fields from appearing.
 
-**Favicon:** Generate an inline SVG data URI or ensure `public/favicon.png` matches the LogoIcon SVG. Since we can't generate PNG programmatically, we'll create an SVG favicon that browsers support via `<link rel="icon" type="image/svg+xml">`.
+---
 
-### Files:
-- **`index.html`** — Add SVG favicon: `<link rel="icon" type="image/svg+xml" href="/favicon.svg">`, keep PNG fallback
-- **`public/favicon.svg`** — Create matching the LogoIcon SVG (navy rect, white N, coral dot)
-- **`src/components/Logo.tsx`** — No structural changes needed; the icon + "Notar." text pattern is correct
+## 2. IONOS Email credential update and mailbox functionality
 
-## 2. Logo usage audit (32 files import Logo)
+**Credential update:** The IONOS secrets (IONOS_EMAIL_ADDRESS, IONOS_EMAIL_PASSWORD, IONOS_IMAP_HOST, IONOS_SMTP_HOST) need refreshing.
 
-All files use `<Logo />` component. Key usages:
-- **Navbar** (`showText theme="dark"`) — shows icon + "Notar." ✓
-- **Footer** (`showText subtitle="..." theme="dark"`) — shows icon + "Notar." + subtitle ✓
-- **Login, SignUp, ForgotPassword** — icon only (no text) ✓
-- **ClientPortal, BusinessPortal** — icon only + "Client Portal" / "Business Portal" text ✓
+**What I need from you to update credentials:**
+- **IONOS_EMAIL_PASSWORD** — The current password for shane@notardex.com. You can find this in your IONOS email account settings or the IONOS control panel (login.ionos.com → Email → Email Accounts).
+- **IONOS_IMAP_HOST** — Typically `imap.ionos.com` (already set, confirm if changed).
+- **IONOS_SMTP_HOST** — Typically `smtp.ionos.com` (already set, confirm if changed).
+- **IONOS_EMAIL_ADDRESS** — Should be `shane@notardex.com` (already set, confirm if changed).
 
-All are using the component, so the SVG fix propagates everywhere. No per-file changes needed.
+I will use the `add_secret` tool to prompt you for the updated password once you confirm.
 
-## 3. Theme uniformity & readability audit
+**Mailbox functionality:** The current `ionos-email-sync` edge function is a stub — it has commented-out IMAP code and only does email-to-client matching. The admin mailbox UI (`AdminMailbox.tsx`) needs a working IMAP/SMTP backend.
 
-**Issues to fix in `src/index.css`:**
-- Footer uses `text-sidebar-foreground/60` which is light text on dark bg — acceptable
-- Check for any white-on-white or dark-on-dark problems
-- Ensure `--muted-foreground` has sufficient contrast against `--background` in both modes
-- Standardize border-radius: ensure cards, buttons, inputs all use the same `--radius` variable
+**Changes:**
+- **`supabase/functions/ionos-email/index.ts`** — Enhance to support send, reply, and folder listing via IONOS SMTP (using fetch to IONOS SMTP API or Deno-compatible SMTP library). For reading/syncing, implement polling via the existing email_cache table pattern.
+- **`supabase/functions/ionos-email-sync/index.ts`** — Enhance sync to actually connect to IONOS IMAP and fetch new messages into `email_cache`. Use `npm:imapflow` (available in Deno edge functions via npm: specifier).
+- Deploy both edge functions after updates.
 
-**Files:**
-- **`src/index.css`** — Audit and fix any contrast issues; ensure `muted-foreground` is readable
-- **`src/components/Footer.tsx`** — Verify `sidebar-foreground/60` contrast on `sidebar-background`
+---
 
-## 4. Homepage service hierarchy restructure
+## 3. Fix integration testing page accuracy
 
-**Current:** Hero has "Online Notarization" + "Other Services" CTAs. Services section shows 4 generic cards from DB or fallback (Real Estate Docs, Legal Docs, Estate Planning, Business Docs).
+**Problem:** The integration test page may show stale or inaccurate results.
 
-**New structure per user request:**
-- **Two hero-level service cards** prominently featuring:
-  1. **Remote Online Notarization (RON)** — Badge, description, CTA to `/book?type=ron`
-  2. **Mobile Notarization (Central Ohio)** — Badge, description, CTA to `/book?type=in_person`
-- **Below:** "Other Notary Services" grid with cards for:
-  - Certified Copy Services
-  - Loan Signing Agent
-  - I-9 / Employment Verification
-  - Apostille Facilitation
-  - Power of Attorney
-  - Oaths & Affirmations
+**Changes:**
+- **`src/pages/admin/AdminIntegrationTest.tsx`** — Review and fix each test function:
+  - **Database test** — Verify it actually queries a table and reports success/failure accurately.
+  - **Storage test** — Test bucket access with a real list/upload operation.
+  - **Email test** — Test the send-correspondence or ionos-email edge function with a real invocation.
+  - **SignNow test** — Ensure error handling reports actual connection status.
+  - **Stripe test** — Verify the get-stripe-config function responds correctly.
+  - Add response time tracking and clearer pass/fail messaging.
 
-**Changes to `src/pages/Index.tsx`:**
-- Replace current services section with a two-tier layout
-- Top tier: 2-column grid with large featured cards for RON and Mobile Notary
-- Bottom tier: Smaller grid (3-col) for additional notary services
-- Keep the fallback/DB service loading logic but restructure the display
-- Update hero CTAs: "Remote Notarization" → `/book?type=ron`, "Mobile Notary" → `/book?type=in_person`
+---
+
+## 4. Admin document upload with thumbnail previews
+
+**Problem:** Admin cannot upload documents directly; only clients can. No thumbnail previews shown in the document list.
+
+**Changes:**
+- **`src/pages/admin/AdminDocuments.tsx`**:
+  - Add an "Upload Document" button + dialog at the top. Allow admin to select a file, optionally link to a client (dropdown of profiles), and upload to `documents` storage bucket.
+  - Insert a record in the `documents` table with `uploaded_by` set to the admin user or selected client.
+  - Add thumbnail previews: For image files (jpg/png/gif/webp), show a small thumbnail (signed URL) in the document list instead of just the FileText icon. For PDFs, show a PDF icon badge.
+
+---
+
+## 5. Full admin notary management (add, edit, profile, availability, permissions)
+
+**Problem:** Currently, notaries can only be added via email invite (they must sign up themselves). Admin wants to manually create notary accounts with full profile data.
+
+**Changes:**
+- **`src/pages/admin/AdminTeam.tsx`** — Major expansion:
+  - **"Add Notary Manually" dialog**: Create a new user account via admin (using `supabase.auth.admin` is not available client-side, so we create an edge function). Collects: full name, email, phone, address, city/state/zip, commission number, commission expiration, E&O insurance info, bond details, profile image upload.
+  - **Enhanced profile editing**: Add commission number, commission expiration, E&O policy number, E&O expiration, bond company, bond amount, digital seal upload fields to the edit dialog.
+  - **Availability management**: Per-notary availability settings (link to `time_slots` table filtered by notary_id, or add notary_id to time_slots).
+  - **Permissions panel**: Toggle which admin sections the notary can access.
+  - **Contact button**: Quick-send email to notary via the correspondence system.
+  - **Profile image**: Already supported via avatar upload — ensure it works.
+
+- **New edge function `supabase/functions/admin-create-user/index.ts`**: Uses service role key to create a user in auth, insert profile, and assign the notary role. Validates admin caller.
+
+- **Database migration**: Add notary-specific fields to `profiles` table (or create a `notary_profiles` table):
+  - `commission_number` (text)
+  - `commission_expiration` (date)
+  - `eo_policy_number` (text)
+  - `eo_expiration` (date)
+  - `bond_company` (text)
+  - `bond_amount` (numeric)
+  - `seal_file_path` (text)
+
+---
+
+## 6. Admin user is also a notary — self-management
+
+**Problem:** The admin (ShaneGoble@gmail.com) already has the admin role. They also need the notary role and their own notary profile management without creating a separate account.
+
+**Changes:**
+- **Database**: Assign the `notary` role to the admin user (INSERT into `user_roles` for existing admin user_id with role='notary').
+- **`src/pages/admin/AdminTeam.tsx`**: Ensure the admin's own profile appears in the "Active Notaries" list (it will automatically once they have the notary role). The admin can click their own card to edit their notary profile, commission details, certifications, etc.
 
 ---
 
 ## Files to Create
 | File | Purpose |
 |------|---------|
-| `public/favicon.svg` | SVG favicon matching the N. logo icon |
+| `supabase/functions/admin-create-user/index.ts` | Edge function to create users with service role |
 
 ## Files to Modify
 | File | Changes |
 |------|---------|
-| `index.html` | Add SVG favicon link |
-| `src/pages/Index.tsx` | Restructure services into 2-tier hierarchy (RON + Mobile featured, others below) |
-| `src/index.css` | Fix any contrast issues found in audit |
+| `src/pages/BookAppointment.tsx` | Skip notarization type for consultations, show Zoom note |
+| `src/pages/booking/bookingConstants.ts` | Add "Consultation" to DIGITAL_ONLY_SERVICES |
+| `supabase/functions/ionos-email-sync/index.ts` | Implement real IMAP sync |
+| `supabase/functions/ionos-email/index.ts` | Enhance SMTP send functionality |
+| `src/pages/admin/AdminIntegrationTest.tsx` | Fix test accuracy |
+| `src/pages/admin/AdminDocuments.tsx` | Add upload button + thumbnail previews |
+| `src/pages/admin/AdminTeam.tsx` | Add manual notary creation, enhanced profile fields, availability, permissions, contact |
+
+## Database Migrations
+| Migration | Purpose |
+|-----------|---------|
+| Add notary-specific columns to profiles | commission_number, commission_expiration, eo_policy_number, eo_expiration, bond_company, bond_amount, seal_file_path |
+| Add notary role for admin user | INSERT user_roles for admin with role='notary' |
 
