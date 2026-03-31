@@ -222,25 +222,28 @@ export default function AdminChat() {
             ))}
           </div>
           {selectedUser && (
-            <div className="border-t p-3 flex gap-2">
-              <input type="file" ref={fileRef} className="hidden" onChange={handleFileUpload} />
-              <Button size="sm" variant="ghost" onClick={() => fileRef.current?.click()} title="Attach file">
-                <Paperclip className="h-4 w-4" />
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button size="sm" variant="outline" title="Canned responses"><Zap className="h-4 w-4" /></Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56">
-                  {CANNED_RESPONSES.map(r => (
-                    <DropdownMenuItem key={r.label} onClick={() => setMessage(r.text)}>{r.label}</DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <Input value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Type a reply..." maxLength={2000} onKeyDown={(e) => e.key === "Enter" && sendMessage()} className="flex-1" />
-              <Button size="sm" onClick={sendMessage} disabled={sending}>
-                {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-              </Button>
+            <div className="border-t p-3 space-y-1">
+              <div className="flex gap-2">
+                <input type="file" ref={fileRef} className="hidden" onChange={handleFileUpload} />
+                <Button size="sm" variant="ghost" onClick={() => fileRef.current?.click()} title="Attach file" aria-label="Attach file">
+                  <Paperclip className="h-4 w-4" />
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button size="sm" variant="outline" title="Canned responses" aria-label="Canned responses"><Zap className="h-4 w-4" /></Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-56">
+                    {CANNED_RESPONSES.map(r => (
+                      <DropdownMenuItem key={r.label} onClick={() => setMessage(r.text)}>{r.label}</DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Input value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Type a reply..." maxLength={2000} onKeyDown={(e) => e.key === "Enter" && sendMessage()} className="flex-1" aria-label="Message input" />
+                <Button size="sm" onClick={sendMessage} disabled={sending} aria-label="Send message">
+                  {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                </Button>
+              </div>
+              <p className={`text-xs text-right ${message.length > 1800 ? "text-destructive" : "text-muted-foreground"}`}>{message.length}/2000</p>
             </div>
           )}
         </Card>
