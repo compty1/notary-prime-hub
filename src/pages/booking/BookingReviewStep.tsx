@@ -67,6 +67,9 @@ export default function BookingReviewStep(props: ReviewStepProps) {
         {props.employerName && <div className="flex justify-between text-sm"><span className="text-muted-foreground">Employer</span><span className="font-medium">{props.employerName}</span></div>}
         {props.idData && !props.idData.error && <div className="flex justify-between text-sm"><span className="text-muted-foreground">ID Verified</span><span className="font-medium flex items-center gap-1"><Shield className="h-3 w-3 text-primary" /> {props.idData.id_type}</span></div>}
         {documentCount > 1 && <div className="flex justify-between text-sm"><span className="text-muted-foreground">Documents</span><span className="font-medium">{documentCount} documents (batch session)</span></div>}
+        {props.signerCapacity && props.signerCapacity !== "individual" && <div className="flex justify-between text-sm"><span className="text-muted-foreground">Signing As</span><span className="font-medium capitalize">{props.signerCapacity.replace(/_/g, " ")}</span></div>}
+        {props.facilityName && <div className="flex justify-between text-sm"><span className="text-muted-foreground">Facility</span><span className="font-medium">{props.facilityName}</span></div>}
+        {(props.signerCount ?? 1) > 1 && <div className="flex justify-between text-sm"><span className="text-muted-foreground">Signers</span><span className="font-medium">{props.signerCount} signers</span></div>}
         {props.docAnalysis && !props.docAnalysis.error && <div className="flex justify-between text-sm"><span className="text-muted-foreground">Detected</span><span className="font-medium">{props.docAnalysis.document_name} ({props.docAnalysis.notarization_method})</span></div>}
         {props.notes && <div className="text-sm"><span className="text-muted-foreground">Notes: </span><span>{props.notes}</span></div>}
       </div>
