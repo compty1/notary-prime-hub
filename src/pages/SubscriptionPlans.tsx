@@ -11,6 +11,7 @@ import { Check, ChevronLeft, Briefcase, Code, Award, Zap, Loader2 } from "lucide
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
 import { useToast } from "@/hooks/use-toast";
+import PaymentForm from "@/components/PaymentForm";
 
 const plans = [
   {
@@ -83,19 +84,12 @@ export default function SubscriptionPlans() {
   const navTo = useNavigate();
   const { toast } = useToast();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<typeof plans[0] | null>(null);
 
   const handleSubscribe = async (plan: typeof plans[0]) => {
     if (plan.price === "Custom") { navTo("/#contact"); return; }
     if (!user) { toast({ title: "Sign in required", description: "Please create an account first.", variant: "destructive" }); navTo("/signup"); return; }
-    setLoadingPlan(plan.name);
-    try {
-      const amount = parseInt(plan.price.replace("$", ""));
-      const { data, error } = await supabase.functions.invoke("create-payment-intent", { body: { amount, description: `${plan.name} Plan Subscription` } });
-      if (error) throw error;
-      toast({ title: "Payment initiated", description: `Your ${plan.name} plan setup is being processed.` });
-    } catch (err: any) {
-      toast({ title: "Payment setup failed", description: err.message || "Please try again.", variant: "destructive" });
-    } finally { setLoadingPlan(null); }
+    setSelectedPlan(plan);
   };
 
   return (
