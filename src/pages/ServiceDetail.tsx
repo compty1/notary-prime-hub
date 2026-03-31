@@ -553,7 +553,7 @@ export default function ServiceDetail() {
   const complexity = categoryComplexity[service.category] || { level: "Moderate", duration: "Varies" };
   const bundles = bundleSuggestions[service.category] || [];
   const showDisclaimer = LEGAL_DISCLAIMER_CATEGORIES.includes(service.category);
-  const bookUrl = `/book?service=${encodeURIComponent(service.name)}${!["notarization", "authentication"].includes(service.category) ? "&type=in_person" : ""}`;
+  const bookUrl = `/book?service=${encodeURIComponent(service.name)}${!NOTARY_CATEGORIES.has(service.category) ? "&type=in_person" : ""}`;
 
   const readinessPercent = requirements.length > 0 
     ? Math.round((checkedItems.size / requirements.filter(r => r.is_required).length) * 100)
