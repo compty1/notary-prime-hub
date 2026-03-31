@@ -105,8 +105,8 @@ export default function AdminServiceRequests() {
       const filePath = `deliverables/${selectedRequest.id}/${Date.now()}_${deliverableFile.name}`;
       const { error: uploadErr } = await supabase.storage.from("documents").upload(filePath, deliverableFile);
       if (!uploadErr) {
-        const { data: urlData } = supabase.storage.from("documents").getPublicUrl(filePath);
-        deliverableUrl = urlData.publicUrl;
+        const { data: urlData } = await supabase.storage.from("documents").createSignedUrl(filePath, 60 * 60 * 24 * 365);
+        deliverableUrl = urlData?.signedUrl || null;
       }
       setUploadingDeliverable(false);
     }

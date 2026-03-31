@@ -360,10 +360,12 @@ export default function ServiceDetail() {
     setChatLoading(false);
   };
 
-  // Bundle link lookup helper
+  // Bundle link lookup helper — exact match first, then substring (item 198)
   const getBundleServiceId = (name: string) => {
-    const match = allServices.find(s => s.name.toLowerCase().includes(name.toLowerCase()));
-    return match ? `/services/${match.id}` : `/services`;
+    const exact = allServices.find(s => s.name.toLowerCase() === name.toLowerCase());
+    if (exact) return `/services/${exact.id}`;
+    const partial = allServices.find(s => s.name.toLowerCase().includes(name.toLowerCase()));
+    return partial ? `/services/${partial.id}` : `/services`;
   };
 
 
