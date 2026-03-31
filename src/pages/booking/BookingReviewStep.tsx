@@ -34,6 +34,7 @@ interface ReviewStepProps {
   signerCapacity?: string;
   facilityName?: string;
   signerCount?: number;
+  pricingBreakdown?: { lineItems: { label: string; amount: number }[]; total: number; deposit: number } | null;
 }
 
 export default function BookingReviewStep(props: ReviewStepProps) {
