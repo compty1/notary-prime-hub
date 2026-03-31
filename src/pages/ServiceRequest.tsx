@@ -298,19 +298,42 @@ export default function ServiceRequest() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async () => {
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+  const MAX_FILES = 10;
+  const ACCEPTED_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/webp", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+
+  const addFiles = (files: File[]) => {
+    const remaining = MAX_FILES - uploadedFiles.length;
+    if (remaining <= 0) { toast({ title: "File limit reached", description: `Maximum ${MAX_FILES} files allowed.`, variant: "destructive" }); return; }
+    const valid = files.slice(0, remaining).filter(f => {
+      if (f.size > MAX_FILE_SIZE) { toast({ title: `${f.name} is too large`, description: "Maximum file size is 10MB.", variant: "destructive" }); return false; }
+      if (!ACCEPTED_TYPES.includes(f.type)) { toast({ title: `${f.name} is not supported`, description: "Accepted: PDF, JPEG, PNG, WebP, DOC, DOCX.", variant: "destructive" }); return false; }
+      return true;
+    });
+    setUploadedFiles(prev => [...prev, ...valid]);
+  };
+
+  const handlePreSubmit = () => {
     if (!user) {
       toast({ title: "Please sign in", description: "You need an account to submit a service request.", variant: "destructive" });
       navigate(`/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`);
       return;
     }
-
     const missingRequired = config.fields.filter(f => f.required && !formData[f.name]?.trim());
     if (missingRequired.length > 0) {
       toast({ title: "Missing required fields", description: `Please fill in: ${missingRequired.map(f => f.label).join(", ")}`, variant: "destructive" });
       return;
     }
+    if (!tosAccepted) {
+      toast({ title: "Terms required", description: "Please accept the terms of service.", variant: "destructive" });
+      return;
+    }
+    setConfirmOpen(true);
+  };
 
+  const handleSubmit = async () => {
+    if (!user) return;
+    setConfirmOpen(false);
     setSubmitting(true);
 
     // Upload files if any
