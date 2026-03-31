@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, Eye, EyeOff, Shield } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { logAuditEvent } from "@/lib/auditLog";
 
 export default function Login() {
   const { user, signIn, isAdmin, isNotary, loading } = useAuth();
