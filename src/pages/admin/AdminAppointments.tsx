@@ -13,7 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, ChevronRight, Eye, Loader2, DollarSign, Plus, Video, ChevronLeft, Filter, Mail, Send, Languages, Shield, LayoutGrid, List } from "lucide-react";
+import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, ChevronRight, Eye, Loader2, DollarSign, Plus, Video, ChevronLeft, Filter, Mail, Send, Languages, Shield, LayoutGrid, List, Ban } from "lucide-react";
 import { Link } from "react-router-dom";
 import TranslationPanel from "@/components/TranslationPanel";
 import KBAVerification from "@/components/KBAVerification";
@@ -75,6 +75,9 @@ export default function AdminAppointments() {
   const [sendingMessage, setSendingMessage] = useState(false);
   const [showKBA, setShowKBA] = useState(false);
   const [showTranslation, setShowTranslation] = useState(false);
+  const [refuseAppt, setRefuseAppt] = useState<any>(null);
+  const [refusalReason, setRefusalReason] = useState("");
+  const [refusingAppt, setRefusingAppt] = useState(false);
   const [newAppt, setNewAppt] = useState({
     client_id: "",
     service_type: "",
@@ -257,6 +260,32 @@ export default function AdminAppointments() {
   const advanceStatus = (appt: any) => {
     const next = statusFlow[appt.status];
     if (next) updateStatus(appt.id, next);
+  };
+
+  const refuseNotarization = async () => {
+    if (!refuseAppt || !refusalReason.trim()) return;
+    setRefusingAppt(true);
+    const { error } = await supabase.from("appointments").update({
+      status: "cancelled" as any,
+      refusal_reason: refusalReason,
+      refused_at: new Date().toISOString(),
+    }).eq("id", refuseAppt.id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Notarization refused", description: "Appointment cancelled with reason logged." });
+      await supabase.from("audit_log").insert({
+        user_id: user?.id,
+        action: "notarization_refused",
+        entity_type: "appointment",
+        entity_id: refuseAppt.id,
+        details: { reason: refusalReason },
+      });
+      setRefuseAppt(null);
+      setRefusalReason("");
+      fetchData();
+    }
+    setRefusingAppt(false);
   };
 
   const openDetail = async (appt: any) => {
@@ -603,6 +632,11 @@ export default function AdminAppointments() {
                   {appt.status === "completed" && (
                     <Button size="sm" variant="ghost" className="text-xs" onClick={() => setReceiptAppt(appt)}>
                       <Printer className="mr-1 h-3 w-3" /> Receipt
+                    </Button>
+                  )}
+                  {!["cancelled", "completed", "no_show"].includes(appt.status) && (
+                    <Button size="sm" variant="ghost" className="text-xs text-destructive hover:text-destructive" onClick={() => setRefuseAppt(appt)}>
+                      <Ban className="mr-1 h-3 w-3" /> Refuse
                     </Button>
                   )}
                   <Select value={appt.status} onValueChange={(v) => updateStatus(appt.id, v)}>
@@ -1017,6 +1051,22 @@ export default function AdminAppointments() {
             <Button onClick={sendMessage} disabled={sendingMessage || !messageBody.trim()} className="">
               {sendingMessage ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Send className="mr-1 h-4 w-4" />}
               Send
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Refusal Dialog */}
+      <Dialog open={!!refuseAppt} onOpenChange={() => { setRefuseAppt(null); setRefusalReason(""); }}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Refuse Notarization</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">Document the reason for refusing this notarization. This will cancel the appointment and notify the client.</p>
+          <div><Label>Reason for Refusal *</Label><Textarea value={refusalReason} onChange={e => setRefusalReason(e.target.value)} placeholder="e.g. Signer appeared to be under duress, expired ID, suspected fraud..." rows={3} /></div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setRefuseAppt(null); setRefusalReason(""); }}>Cancel</Button>
+            <Button variant="destructive" onClick={refuseNotarization} disabled={refusingAppt || !refusalReason.trim()}>
+              {refusingAppt ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Ban className="mr-1 h-4 w-4" />}
+              Refuse & Cancel
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -12,6 +12,8 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { MapPin, Monitor, CheckCircle, ChevronLeft, ChevronRight, Camera, Loader2, Sparkles, AlertTriangle, DollarSign, Info } from "lucide-react";
+import { haversineDistance, getAfterHoursFee, DEFAULT_OFFICE_LAT, DEFAULT_OFFICE_LON } from "@/lib/geoUtils";
+import { NOTARIAL_ACT_MAP } from "@/lib/serviceConstants";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PageShell } from "@/components/PageShell";
 import {
@@ -103,6 +105,18 @@ export default function BookAppointment() {
   const [translationDocType, setTranslationDocType] = useState("");
   const [translationPageCount, setTranslationPageCount] = useState("1");
 
+  // Phase 12: New business logic state
+  const [signerCapacity, setSignerCapacity] = useState("individual");
+  const [entityName, setEntityName] = useState("");
+  const [signerTitle, setSignerTitle] = useState("");
+  const [facilityName, setFacilityName] = useState("");
+  const [facilityContact, setFacilityContact] = useState("");
+  const [facilityRoom, setFacilityRoom] = useState("");
+  const [signerCount, setSignerCount] = useState(1);
+  const [travelDistance, setTravelDistance] = useState<number | null>(null);
+  const [afterHoursFee, setAfterHoursFee] = useState(0);
+  const [outsideServiceArea, setOutsideServiceArea] = useState(false);
+
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(pos => { setUserLat(pos.coords.latitude); setUserLon(pos.coords.longitude); }, () => {}, { timeout: 5000 });
@@ -157,12 +171,46 @@ export default function BookAppointment() {
     const baseFee = parseFloat(pricingSettings.base_fee_per_signature || "5") * documentCount;
     let total = baseFee;
     if (notarizationType === "ron") { total += parseFloat(pricingSettings.ron_platform_fee || "25") + parseFloat(pricingSettings.kba_fee || "15"); }
-    else { total += parseFloat(pricingSettings.travel_fee_minimum || "25"); }
-    // Add witness fees (item 376)
+    else {
+      // Dynamic travel fee based on distance
+      if (travelDistance !== null && travelDistance >= 5) {
+        const perMile = parseFloat(pricingSettings.travel_fee_per_mile || "0.655");
+        const minimum = parseFloat(pricingSettings.travel_fee_minimum || "25");
+        total += Math.max(minimum, travelDistance * perMile);
+      } else if (travelDistance === null) {
+        total += parseFloat(pricingSettings.travel_fee_minimum || "25");
+      }
+      // else < 5 miles = free
+    }
+    // Add witness fees
     const wCount = parseInt(witnessCount || "0");
     if (wCount > 0) { total += wCount * parseFloat(pricingSettings.witness_fee || "10"); }
+    // Add after-hours fee
+    total += afterHoursFee;
     setEstimatedPrice(total);
-  }, [notarizationType, documentCount, pricingSettings, witnessCount]);
+  }, [notarizationType, documentCount, pricingSettings, witnessCount, travelDistance, afterHoursFee]);
+
+  // Service area validation + travel distance calculation
+  useEffect(() => {
+    if (notarizationType !== "in_person" || !userLat || !userLon) {
+      setTravelDistance(null);
+      setOutsideServiceArea(false);
+      return;
+    }
+    const officeLat = parseFloat(pricingSettings.office_latitude || String(DEFAULT_OFFICE_LAT));
+    const officeLon = parseFloat(pricingSettings.office_longitude || String(DEFAULT_OFFICE_LON));
+    const radiusMiles = parseFloat(pricingSettings.travel_radius_miles || "50");
+    const dist = haversineDistance(officeLat, officeLon, userLat, userLon);
+    setTravelDistance(Math.round(dist * 10) / 10);
+    setOutsideServiceArea(dist > radiusMiles);
+  }, [userLat, userLon, notarizationType, pricingSettings]);
+
+  // After-hours fee calculation
+  useEffect(() => {
+    if (!time) { setAfterHoursFee(0); return; }
+    const baseFee = parseFloat(pricingSettings.after_hours_fee || "25");
+    setAfterHoursFee(getAfterHoursFee(time, baseFee));
+  }, [time, pricingSettings]);
 
   useEffect(() => {
     if (user) {
@@ -354,6 +402,14 @@ export default function BookAppointment() {
     if (svcLower.includes("custom workflow")) { if (currentTools) parts.push(`[Current Tools: ${currentTools}]`); if (teamSize) parts.push(`[Team Size: ${teamSize}]`); if (budgetRange) parts.push(`[Budget: ${budgetRange}]`); }
     if (svcLower.includes("bulk")) { if (monthlyVolume) parts.push(`[Monthly Volume: ${monthlyVolume}]`); if (bulkDocTypes) parts.push(`[Doc Types: ${bulkDocTypes}]`); if (schedulePreference) parts.push(`[Schedule: ${schedulePreference}]`); }
     if (svcLower.includes("scanning") || svcLower.includes("digitization")) parts.push(`[Scanning Mode: ${scanningMode}]`);
+    // Phase 12 fields
+    if (signerCapacity !== "individual") parts.push(`[Signer Capacity: ${signerCapacity}]`);
+    if (entityName) parts.push(`[Entity: ${entityName}]`);
+    if (signerTitle) parts.push(`[Signer Title: ${signerTitle}]`);
+    if (facilityName) parts.push(`[Facility: ${facilityName}]`);
+    if (facilityContact) parts.push(`[Facility Contact: ${facilityContact}]`);
+    if (facilityRoom) parts.push(`[Room: ${facilityRoom}]`);
+    if (signerCount > 1) parts.push(`[Signers: ${signerCount}]`);
     return parts.join("\n");
   };
 
@@ -368,7 +424,36 @@ export default function BookAppointment() {
       const { count } = await supabase.from("appointments").select("*", { count: "exact", head: true }).eq("scheduled_date", data.date || date).neq("status", "cancelled" as any).neq("status", "no_show" as any);
       if (count && count >= maxPerDay) { toast({ title: "Day is fully booked", variant: "destructive" }); setSubmitting(false); return; }
     }
-    const payload = { client_id: userId, service_type: data.serviceType || serviceType, notarization_type: data.notarizationType || notarizationType, scheduled_date: data.date || date, scheduled_time: data.time || time, location: (data.notarizationType || notarizationType) === "in_person" ? fullAddress : "Remote", client_address: (data.notarizationType || notarizationType) === "in_person" ? fullAddress : null, estimated_price: estimatedPrice, notes: fullNotes || null };
+    // Detect notarial act type from service name
+    const svcLower = (data.serviceType || serviceType).toLowerCase();
+    let notarialActType: string | null = null;
+    for (const [keyword, actType] of Object.entries(NOTARIAL_ACT_MAP)) {
+      if (svcLower.includes(keyword)) { notarialActType = actType; break; }
+    }
+    const payload = {
+      client_id: userId,
+      service_type: data.serviceType || serviceType,
+      notarization_type: data.notarizationType || notarizationType,
+      scheduled_date: data.date || date,
+      scheduled_time: data.time || time,
+      location: (data.notarizationType || notarizationType) === "in_person" ? fullAddress : "Remote",
+      client_address: (data.notarizationType || notarizationType) === "in_person" ? fullAddress : null,
+      estimated_price: estimatedPrice,
+      notes: fullNotes || null,
+      // Phase 12 fields
+      signing_capacity: signerCapacity !== "individual" ? signerCapacity : "individual",
+      entity_name: entityName || null,
+      signer_title: signerTitle || null,
+      facility_name: facilityName || null,
+      facility_contact: facilityContact || null,
+      facility_room: facilityRoom || null,
+      signer_count: signerCount,
+      after_hours_fee: afterHoursFee > 0 ? afterHoursFee : 0,
+      travel_fee_estimate: travelDistance !== null && travelDistance >= 5
+        ? Math.max(parseFloat(pricingSettings.travel_fee_minimum || "25"), travelDistance * parseFloat(pricingSettings.travel_fee_per_mile || "0.655"))
+        : 0,
+      travel_distance_miles: travelDistance,
+    };
     let appointmentResultId: string;
     if (rebookingId) {
       const { error } = await supabase.from("appointments").update({ ...payload, status: "scheduled" as any }).eq("id", rebookingId);
@@ -459,6 +544,10 @@ export default function BookAppointment() {
     currentTools, setCurrentTools, teamSize, setTeamSize, budgetRange, setBudgetRange,
     monthlyVolume, setMonthlyVolume, bulkDocTypes, setBulkDocTypes, schedulePreference, setSchedulePreference,
     scanningMode, setScanningMode,
+    // Phase 12 fields
+    signerCapacity, setSignerCapacity, entityName, setEntityName, signerTitle, setSignerTitle,
+    facilityName, setFacilityName, facilityContact, setFacilityContact, facilityRoom, setFacilityRoom,
+    signerCount, setSignerCount,
   };
 
   const scheduleStepProps = {
@@ -466,6 +555,7 @@ export default function BookAppointment() {
     availableSlots, suggestedSlots, loadingSlots, leadTimeWarning,
     clientAddress, setClientAddress, clientCity, setClientCity, clientState, setClientState, clientZip, setClientZip,
     location, setLocation, locatingUser, userLat, userLon, onUseLocation: handleUseLocation,
+    outsideServiceArea, travelDistance,
   };
 
   const reviewProps = {
@@ -474,6 +564,7 @@ export default function BookAppointment() {
     destinationCountry, uscisForm, sourceLanguage, targetLanguage, translationDocType, translationPageCount, employerName,
     idData, docAnalysis, documentCount, notes, estimatedPrice, pricingSettings, urgencyLevel,
     user, guestName, setGuestName, guestEmail, setGuestEmail, guestPassword, setGuestPassword,
+    travelDistance, afterHoursFee, signerCapacity, facilityName, signerCount,
   };
 
   const stepLabels = isNonNotarial ? ["Service", "Schedule", "Confirm"] : ["Type", "Service", "Schedule", "Confirm"];

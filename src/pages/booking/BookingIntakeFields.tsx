@@ -56,6 +56,14 @@ interface IntakeFieldsProps {
   schedulePreference: string; setSchedulePreference: (v: string) => void;
   // Scanning
   scanningMode: "digital" | "physical"; setScanningMode: (v: "digital" | "physical") => void;
+  // Phase 12: Signer capacity & facility
+  signerCapacity: string; setSignerCapacity: (v: string) => void;
+  entityName: string; setEntityName: (v: string) => void;
+  signerTitle: string; setSignerTitle: (v: string) => void;
+  facilityName: string; setFacilityName: (v: string) => void;
+  facilityContact: string; setFacilityContact: (v: string) => void;
+  facilityRoom: string; setFacilityRoom: (v: string) => void;
+  signerCount: number; setSignerCount: (v: number) => void;
 }
 
 export default function BookingIntakeFields(props: IntakeFieldsProps) {
@@ -79,8 +87,15 @@ export default function BookingIntakeFields(props: IntakeFieldsProps) {
   const showCustomWorkflow = svcLower.includes("custom workflow");
   const showBulk = svcLower.includes("bulk");
   const showScanning = svcLower.includes("scanning") || svcLower.includes("digitization");
+  // Phase 12: facility signings
+  const showFacility = svcLower.includes("hospital") || svcLower.includes("jail") || svcLower.includes("facility") || svcLower.includes("care");
+  // Phase 12: witness logic gate — show for docs that typically need witnesses
+  const showWitnessGate = !showWitness && (svcLower.includes("will") || svcLower.includes("estate") || svcLower.includes("trust") || svcLower.includes("deed"));
 
-  if (!showApostille && !showImmigration && !showRealEstate && !showI9 && !showBusiness && !showRonOnboarding && !showWorkflow && !showTranslation && !showWitness && !showCertifiedCopy && !showOnboarding && !showCustomWorkflow && !showBulk && !showScanning) return null;
+  // Always show signer capacity for notarization category
+  const showSignerCapacity = cat === "notarization" || cat === "authentication";
+
+  if (!showApostille && !showImmigration && !showRealEstate && !showI9 && !showBusiness && !showRonOnboarding && !showWorkflow && !showTranslation && !showWitness && !showCertifiedCopy && !showOnboarding && !showCustomWorkflow && !showBulk && !showScanning && !showFacility && !showSignerCapacity && !showWitnessGate) return null;
 
   return (
     <div className="space-y-3 rounded-lg border border-border/50 bg-muted/30 p-4">
@@ -286,6 +301,91 @@ export default function BookingIntakeFields(props: IntakeFieldsProps) {
           {props.scanningMode === "digital" && (
             <p className="text-xs text-muted-foreground mt-2">💡 For digital files, you can use our <a href="/digitize" className="text-primary underline">Digitize tool</a> directly — no appointment needed!</p>
           )}
+        </div>
+      )}
+
+      {/* Phase 12: Signer Capacity */}
+      {showSignerCapacity && (
+        <>
+          <div>
+            <Label>Signing Capacity</Label>
+            <Select value={props.signerCapacity} onValueChange={v => { props.setSignerCapacity(v); if (v === "individual") { props.setEntityName(""); props.setSignerTitle(""); } }}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="individual">Individual</SelectItem>
+                <SelectItem value="representative">Authorized Representative</SelectItem>
+                <SelectItem value="attorney_in_fact">Attorney-in-Fact (POA)</SelectItem>
+                <SelectItem value="corporate_officer">Corporate Officer</SelectItem>
+                <SelectItem value="trustee">Trustee</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {props.signerCapacity !== "individual" && (
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Entity / Organization Name</Label><Input value={props.entityName} onChange={e => props.setEntityName(e.target.value)} placeholder="e.g. ABC Corporation" /></div>
+              <div><Label>Your Title</Label><Input value={props.signerTitle} onChange={e => props.setSignerTitle(e.target.value)} placeholder="e.g. President, Trustee" /></div>
+            </div>
+          )}
+          <div>
+            <Label>Number of Signers</Label>
+            <div className="flex items-center gap-2 mt-1">
+              {[1, 2, 3, 4].map(n => (
+                <button key={n} type="button" className={`h-9 w-9 rounded-md border text-sm font-medium transition-all ${props.signerCount === n ? "border-accent bg-primary/10 ring-2 ring-accent" : "border-border hover:border-primary/50"}`} onClick={() => props.setSignerCount(n)}>{n}</button>
+              ))}
+              <button type="button" className={`h-9 px-3 rounded-md border text-sm font-medium transition-all ${props.signerCount > 4 ? "border-accent bg-primary/10 ring-2 ring-accent" : "border-border hover:border-primary/50"}`} onClick={() => props.setSignerCount(5)}>5+</button>
+            </div>
+            {props.signerCount > 1 && <p className="text-xs text-muted-foreground mt-1">All signers must be present with valid photo ID.</p>}
+          </div>
+        </>
+      )}
+
+      {/* Phase 12: Facility Signing */}
+      {showFacility && (
+        <>
+          <div><Label>Facility Name *</Label><Input value={props.facilityName} onChange={e => props.setFacilityName(e.target.value)} placeholder="e.g. OhioHealth Riverside Methodist" /></div>
+          <div className="grid grid-cols-2 gap-3">
+            <div><Label>Room / Cell Number</Label><Input value={props.facilityRoom} onChange={e => props.setFacilityRoom(e.target.value)} placeholder="e.g. Room 412, Cell B-7" /></div>
+            <div><Label>Facility Contact Person</Label><Input value={props.facilityContact} onChange={e => props.setFacilityContact(e.target.value)} placeholder="Nurse/guard name or ext." /></div>
+          </div>
+          <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs text-muted-foreground">
+            <p className="font-medium text-foreground mb-1">📋 Facility Signing Notes:</p>
+            <ul className="list-disc ml-4 space-y-0.5">
+              <li>Confirm visitor policy and hours before booking</li>
+              <li>A facility surcharge may apply</li>
+              <li>The signer must be alert, aware, and willing to sign</li>
+            </ul>
+          </div>
+        </>
+      )}
+
+      {/* Phase 12: Witness Logic Gate */}
+      {showWitnessGate && (
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 space-y-2">
+          <p className="text-sm font-medium flex items-center gap-2"><Info className="h-4 w-4 text-primary" /> Witness Requirements</p>
+          <p className="text-xs text-muted-foreground">This type of document typically requires witnesses. Ohio law may require 1-2 disinterested witnesses for Wills and certain estate documents.</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Number of Witnesses</Label>
+              <Select value={props.witnessCount} onValueChange={props.setWitnessCount}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">None needed</SelectItem>
+                  <SelectItem value="1">1 Witness</SelectItem>
+                  <SelectItem value="2">2 Witnesses</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Witness Source</Label>
+              <Select value={props.witnessMode} onValueChange={v => props.setWitnessMode(v as any)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="in_person">I'll bring my own</SelectItem>
+                  <SelectItem value="virtual">Notary provides ($10/witness)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
       )}
     </div>
