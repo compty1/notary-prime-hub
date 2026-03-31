@@ -87,7 +87,7 @@ export default function AdminOverview() {
         return null;
       };
       const commResult = checkExpiry(s.commission_expiration_date, parseInt(s.commission_renewal_reminder_days || "90"));
-      if (commResult) setCommissionAlert({ tone: commResult.tone === "destructive" ? "border-destructive bg-destructive/10 text-destructive" : "border-amber-500 bg-amber-50 text-amber-800", text: `Commission: ${commResult.text}` });
+      if (commResult) setCommissionAlert({ tone: commResult.tone === "destructive" ? "border-destructive bg-destructive/10 text-destructive" : "border-amber-500 bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-300", text: `Commission: ${commResult.text}` });
       const eoResult = checkExpiry(s.eo_expiration_date, 60);
       if (eoResult) setEoAlert(`E&O Insurance: ${eoResult.text}`);
       const bondResult = checkExpiry(s.bond_expiration_date, 60);
