@@ -249,11 +249,47 @@ export default function AppointmentConfirmation() {
             </Button>
           </Link>
           <Link to="/portal">
-            <Button className="w-full  sm:w-auto">
+            <Button className="w-full sm:w-auto">
               Go to Portal
             </Button>
           </Link>
         </div>
+
+        {/* Pay Now Section */}
+        {appointment.estimated_price && parseFloat(appointment.estimated_price) > 0 && (
+          <div className="mt-6">
+            {!showPayment ? (
+              <Card className="border-primary/20 bg-primary/5">
+                <CardContent className="p-4 text-center space-y-3">
+                  <p className="text-sm font-medium flex items-center justify-center gap-2">
+                    <CreditCard className="h-4 w-4 text-primary" /> Pay Now (Optional)
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Pay your estimated total of <strong>${parseFloat(appointment.estimated_price).toFixed(2)}</strong> now to secure your appointment. Payment can also be made at the time of service.
+                  </p>
+                  <Button onClick={() => setShowPayment(true)} className="w-full sm:w-auto">
+                    <CreditCard className="mr-2 h-4 w-4" /> Pay ${parseFloat(appointment.estimated_price).toFixed(2)}
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="border-primary/20">
+                <CardContent className="p-4">
+                  <p className="text-sm font-medium mb-3 flex items-center gap-2">
+                    <CreditCard className="h-4 w-4 text-primary" /> Secure Payment
+                  </p>
+                  <PaymentForm
+                    amount={parseFloat(appointment.estimated_price)}
+                    appointmentId={appointment.id}
+                    onSuccess={() => {
+                      setShowPayment(false);
+                    }}
+                  />
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
 
         {/* Phase 5.1: Service-specific checklist */}
         <div className="mt-8 rounded-lg border border-primary/20 bg-primary/5 p-4 text-left text-sm text-muted-foreground">
