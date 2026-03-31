@@ -498,8 +498,10 @@ export default function BookAppointment() {
     await submitBooking(user.id);
   };
 
+  const isConsultation = serviceType?.toLowerCase() === "consultation" || serviceCategories[serviceType] === "consulting";
   const isNonNotarial = serviceType && !requiresNotarizationType(serviceType, serviceCategories);
-  const totalSteps = isNonNotarial ? 3 : 4;
+  const isSkipTypeStep = isNonNotarial || isConsultation;
+  const totalSteps = isSkipTypeStep ? 3 : 4;
   const lastStep = totalSteps as BookingStep;
 
   const getLeadTimeWarning = () => {
