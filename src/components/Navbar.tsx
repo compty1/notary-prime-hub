@@ -88,7 +88,7 @@ export function Navbar() {
     <nav className="sticky top-0 z-50 border-b border-white/10 bg-[hsl(216_79%_15%)]" aria-label="Main navigation">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
         <Link to="/" className="flex items-center">
-          <span className="font-heading text-lg font-bold tracking-tight text-foreground">
+          <span className="font-heading text-lg font-bold tracking-tight text-white">
             Notar<span className="text-accent">.</span>
           </span>
         </Link>
