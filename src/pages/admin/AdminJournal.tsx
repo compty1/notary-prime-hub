@@ -354,9 +354,37 @@ export default function AdminJournal() {
         </div>
       </div>
 
-      <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input placeholder="Search by signer name or document type..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
+      {/* Item 323: Summary stats bar */}
+      {entries.length > 0 && (
+        <div className="mb-4 flex flex-wrap items-center gap-4 text-sm">
+          <span className="text-muted-foreground">{filtered.length} entries</span>
+          <span className="font-medium text-foreground">Total Fees: ${totalFees.toFixed(2)}</span>
+          <span className={`font-medium ${totalNet >= 0 ? "text-primary" : "text-destructive"}`}>Net: ${totalNet.toFixed(2)}</span>
+        </div>
+      )}
+
+      <div className="relative mb-6 flex flex-wrap gap-2">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input placeholder="Search by signer, document type, notes..." value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); setJournalPage(1); }} className="pl-10" />
+        </div>
+        <Select value={typeFilter} onValueChange={(v) => { setTypeFilter(v); setJournalPage(1); }}>
+          <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Types</SelectItem>
+            <SelectItem value="in_person">In-Person</SelectItem>
+            <SelectItem value="ron">RON</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={dateFilter} onValueChange={(v) => { setDateFilter(v); setJournalPage(1); }}>
+          <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Time</SelectItem>
+            <SelectItem value="week">This Week</SelectItem>
+            <SelectItem value="month">This Month</SelectItem>
+            <SelectItem value="year">This Year</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {loading ? (
