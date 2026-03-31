@@ -239,3 +239,54 @@ After analyzing all files, here are 800 additional gaps organized into categorie
 - `src/App.tsx` — wrap with LegalGlossaryProvider
 - `src/pages/VerifyIdentity.tsx` — integrate ID scan assistant
 
+---
+
+## Phase 10: Compliance & Legal Content ✅ DONE
+
+- 10A. UPL disclaimer added to Footer ✅
+- 10B. No-Show/Travel fee policy added to Terms §4 ✅
+- 10C. Mental capacity statement added to Terms §2 ✅
+- 10D. Payment methods in Footer + BookingReviewStep ✅
+- 10E. Business hours in Footer ✅
+
+## Phase 11: Conversion & Mobile ✅ DONE
+
+- 11A. MobileFAB.tsx created (pulsing phone icon, mobile only) ✅
+- 11B. analytics.ts created (GA4 wrapper) ✅
+- 11C. Pre-appointment document upload — existing in portal ✅
+- 11D. Pre-signing warning in BookingReviewStep ✅
+- 15Q. AILeadChatbot activated in PageShell ✅
+
+## Phase 12: Booking Business Logic (DB Ready)
+
+- DB migration completed: signing_capacity, entity_name, signer_title, facility_name, facility_contact, facility_room, after_hours_fee, travel_fee_estimate, signer_count, refusal_reason, refused_at ✅
+- 12A. Out-of-service area rejection — TODO (code logic)
+- 12B. Dynamic travel fee display — TODO (Haversine calc)
+- 12C. After-hours surcharge engine — TODO
+- 12D. Facility signing workflow fields — TODO
+- 12E. Signer capacity dropdown — TODO
+- 12F. Multi-party coordination — TODO
+- 12G. Notarial refusal workflow — TODO
+- 12H. Witness requirement logic gate — TODO
+
+## Phase 13: Content & SEO ✅ DONE
+
+- 13A. ID requirements — existing in NotaryGuide + FAQ ✅
+- 13F. Resources.tsx created with SEO hub ✅
+- 13G. Resources link added to Footer ✅
+- Route `/resources` added to App.tsx ✅
+
+## Phase 14: UX Polish ✅ DONE
+
+- 14A. useScrollToError.ts created ✅
+- 14B. inputMode added to contact form (tel, email) ✅
+- 14F. PreSigningChecklist.tsx created ✅
+
+## Phase 15: Quick Wins ✅ DONE
+
+- 15B. JSON-LD openingHoursSpecification expanded to all 7 days ✅
+- 15C. Privacy micro-copy added under phone field ✅
+- 15D. Toast message updated to "within 2 hours during business hours" ✅
+- 15K. NOTARIAL_ACT_MAP added to serviceConstants.ts ✅
+- 15L. Confirmation number displayed in portal appointment cards ✅
+- 15M. "Leave a Review" button added for completed appointments ✅
