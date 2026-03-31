@@ -262,6 +262,32 @@ export default function AdminAppointments() {
     if (next) updateStatus(appt.id, next);
   };
 
+  const refuseNotarization = async () => {
+    if (!refuseAppt || !refusalReason.trim()) return;
+    setRefusingAppt(true);
+    const { error } = await supabase.from("appointments").update({
+      status: "cancelled" as any,
+      refusal_reason: refusalReason,
+      refused_at: new Date().toISOString(),
+    }).eq("id", refuseAppt.id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Notarization refused", description: "Appointment cancelled with reason logged." });
+      await supabase.from("audit_log").insert({
+        user_id: user?.id,
+        action: "notarization_refused",
+        entity_type: "appointment",
+        entity_id: refuseAppt.id,
+        details: { reason: refusalReason },
+      });
+      setRefuseAppt(null);
+      setRefusalReason("");
+      fetchData();
+    }
+    setRefusingAppt(false);
+  };
+
   const openDetail = async (appt: any) => {
     setDetailAppt(appt);
     setEditNotes(appt.notes || "");
