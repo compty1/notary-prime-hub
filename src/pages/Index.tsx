@@ -545,10 +545,30 @@ export default function Index() {
                       onChange={(e) => setContactForm((prev) => ({ ...prev, message: e.target.value }))}
                       maxLength={1000}
                       rows={4}
-                      required />
-                    
+                      required
+                      aria-required="true" />
                   </div>
-                  <Button type="submit" className="w-full" disabled={submitting}>
+                  {/* Honeypot — hidden from real users */}
+                  <div className="sr-only" aria-hidden="true">
+                    <label htmlFor="website">Website</label>
+                    <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" value={honeypot} onChange={e => setHoneypot(e.target.value)} />
+                  </div>
+                  {/* Legal consent */}
+                  <div className="flex items-start gap-2">
+                    <input
+                      type="checkbox"
+                      id="agree-terms"
+                      checked={agreeTerms}
+                      onChange={e => setAgreeTerms(e.target.checked)}
+                      className="mt-1 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                      required
+                    />
+                    <Label htmlFor="agree-terms" className="text-xs text-muted-foreground leading-tight">
+                      I agree to the <Link to="/terms" className="text-primary hover:underline" target="_blank">Terms of Service</Link> and <Link to="/terms#privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>.
+                    </Label>
+                  </div>
+                  <div aria-live="polite" className="text-sm text-destructive" />
+                  <Button type="submit" className="w-full" disabled={submitting || !agreeTerms}>
                     {submitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending...</> : <><Send className="mr-2 h-4 w-4" /> Send Message</>}
                   </Button>
                 </form>
