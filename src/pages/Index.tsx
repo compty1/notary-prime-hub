@@ -249,14 +249,14 @@ export default function Index() {
                 Notar is a full-service notary platform you'll actually enjoy using. Book appointments, verify identities, and sign documents — not chase paperwork.
               </motion.p>
               <motion.div variants={fadeUp} custom={3} className="flex flex-wrap gap-3">
-                <Link to="/book">
+                <Link to="/book?type=ron">
                   <Button variant="accent" size="lg" className="rounded-full px-8 shadow-sm">
-                    Online Notarization <ArrowRight className="ml-2 h-4 w-4" />
+                    Remote Notarization <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
-                <Link to="/services">
+                <Link to="/book?type=in_person">
                   <Button variant="outline" size="lg" className="rounded-full px-8">
-                    Other Services
+                    Mobile Notary
                   </Button>
                 </Link>
               </motion.div>
