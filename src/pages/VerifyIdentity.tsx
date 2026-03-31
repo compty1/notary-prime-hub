@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { Camera, ChevronLeft, CheckCircle, XCircle, Loader2, Shield, Upload, AlertTriangle, User } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import IDScanAssistant from "@/components/IDScanAssistant";
 
 export default function VerifyIdentity() {
   const { user } = useAuth();
