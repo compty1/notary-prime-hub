@@ -619,8 +619,8 @@ export default function BookAppointment() {
           <Card className="border-border/50">
             <CardHeader>
               <CardTitle className="font-sans text-xl">
-                {isNonNotarial
-                  ? (step === 1 ? "Choose Service" : step === 2 ? "Pick Date & Time" : "Review & Confirm")
+                {isSkipTypeStep
+                  ? (step === 1 ? (isConsultation ? "Schedule Consultation" : "Choose Service") : step === 2 ? "Pick Date & Time" : "Review & Confirm")
                   : (step === 1 ? "Select Notarization Type" : step === 2 ? "Choose Service" : step === 3 ? "Pick Date & Time" : "Review & Confirm")}
               </CardTitle>
             </CardHeader>
