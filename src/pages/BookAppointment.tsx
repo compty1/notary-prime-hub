@@ -144,7 +144,10 @@ export default function BookAppointment() {
         setServiceDescriptions(descs);
         setServiceCategories(cats);
         const preService = new URLSearchParams(window.location.search).get("service");
-        if (preService && data.some((s: any) => s.name === preService)) setServiceType(preService);
+        if (preService) {
+          const match = data.find((s: any) => s.name.toLowerCase() === preService.toLowerCase());
+          if (match) setServiceType(match.name);
+        }
       }
     });
   }, []);
