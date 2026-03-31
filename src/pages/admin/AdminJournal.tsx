@@ -409,8 +409,10 @@ export default function AdminJournal() {
                     </div>
                     <div>
                       <p className="font-medium text-foreground">{entry.signer_name}</p>
-                      <p className="text-sm text-muted-foreground">{entry.document_type}</p>
+                       <p className="text-sm text-muted-foreground">{entry.document_type}</p>
                       <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                        {/* Item 319: Show journal_number */}
+                        {entry.journal_number && <Badge variant="secondary" className="text-xs">#{entry.journal_number}</Badge>}
                         <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{new Date(entry.created_at).toLocaleDateString()}</span>
                         <Badge variant="outline" className="text-xs">{entry.service_performed?.replace(/_/g, " ")}</Badge>
                         <Badge variant="outline" className="text-xs">{entry.notarization_type === "ron" ? "RON" : "In-Person"}</Badge>
