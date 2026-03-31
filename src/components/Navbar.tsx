@@ -48,7 +48,7 @@ function DropdownNav({ label, linkTo, children }: { label: string; linkTo?: stri
             {label}
           </Link>
         ) : (
-          <span className="px-3 py-2 text-sm font-medium text-muted-foreground cursor-default">{label}</span>
+          <span className="px-3 py-2 text-sm font-medium text-white/70 cursor-default">{label}</span>
         )}
         <PopoverTrigger asChild>
           <button className="-ml-2 p-1 text-muted-foreground hover:text-foreground transition-colors" aria-label={`${label} menu`}>
