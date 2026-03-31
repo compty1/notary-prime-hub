@@ -128,9 +128,18 @@ export default function AdminJournal() {
 
   const deleteEntry = async (id: string) => {
     setDeletingId(id);
+    const entry = entries.find(e => e.id === id);
     const { error } = await supabase.from("notary_journal").delete().eq("id", id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else { toast({ title: "Entry deleted" }); fetchEntries(); }
+    else {
+      toast({ title: "Entry deleted" });
+      // Item 317: Audit log on journal delete
+      try {
+        const { logAuditEvent } = await import("@/lib/auditLog");
+        logAuditEvent("journal_entry_deleted", { entityType: "notary_journal", entityId: id, details: { signer_name: entry?.signer_name, document_type: entry?.document_type } });
+      } catch {}
+      fetchEntries();
+    }
     setDeletingId(null);
   };
 
