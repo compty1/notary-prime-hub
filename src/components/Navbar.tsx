@@ -84,10 +84,10 @@ export function Navbar() {
   const portalLabel = isAdmin || isNotary ? "Dashboard" : "Portal";
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border/60 glass" aria-label="Main navigation">
+    <nav className="sticky top-0 z-50 border-b border-white/10 bg-[hsl(216_79%_15%)]" aria-label="Main navigation">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
         <Link to="/" className="flex items-center">
-          <Logo size="sm" showText />
+          <Logo size="sm" showText theme="dark" />
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">
