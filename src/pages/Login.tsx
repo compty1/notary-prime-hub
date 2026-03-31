@@ -25,6 +25,7 @@ export default function Login() {
   const [forgotMode, setForgotMode] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [rateLimitEnd, setRateLimitEnd] = useState<number | null>(null);
 
   usePageTitle(forgotMode ? "Reset Password" : "Sign In");
 
@@ -38,10 +39,6 @@ export default function Login() {
     }
   }, [user, isAdmin, isNotary, loading, navigate]);
 
-  if (!loading && user) return null;
-
-  const [rateLimitEnd, setRateLimitEnd] = useState<number | null>(null);
-
   // Countdown for rate limit
   useEffect(() => {
     if (!rateLimitEnd) return;
@@ -50,6 +47,8 @@ export default function Login() {
     }, 1000);
     return () => clearInterval(interval);
   }, [rateLimitEnd]);
+
+  if (!loading && user) return null;
 
   const rateLimitSeconds = rateLimitEnd ? Math.max(0, Math.ceil((rateLimitEnd - Date.now()) / 1000)) : 0;
 
