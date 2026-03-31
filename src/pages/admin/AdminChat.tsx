@@ -187,10 +187,15 @@ export default function AdminChat() {
               <div key={msg.id} className={`flex ${msg.is_admin ? "justify-end" : "justify-start"}`}>
                 <div className={`max-w-[70%] rounded-lg px-3 py-2 text-sm ${msg.is_admin ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}>
                   <div className="flex items-center gap-1 mb-1">
-                    {msg.is_admin ? <Shield className="h-3 w-3" /> : <User className="h-3 w-3" />}
-                    <span className="text-xs opacity-70">{new Date(msg.created_at).toLocaleTimeString()}</span>
-                  </div>
-                  <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:m-0"><ReactMarkdown>{msg.message}</ReactMarkdown></div>
+                     {msg.is_admin ? <Shield className="h-3 w-3" /> : <User className="h-3 w-3" />}
+                     <span className="text-xs opacity-70">{new Date(msg.created_at).toLocaleTimeString()}</span>
+                   </div>
+                   {msg.attachment_url && (
+                     <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs underline mb-1">
+                       <FileText className="h-3 w-3" /> Attachment
+                     </a>
+                   )}
+                   <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:m-0"><ReactMarkdown>{msg.message}</ReactMarkdown></div>
                 </div>
               </div>
             ))}
