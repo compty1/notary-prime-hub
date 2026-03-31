@@ -313,7 +313,7 @@ export default function Index() {
       {/* AI Helper */}
       <WhatDoINeed />
 
-      {/* Services */}
+      {/* Primary Services — Two Featured */}
       <section id="services" className="py-20">
         <div className="container mx-auto px-4">
           <motion.div
@@ -321,34 +321,77 @@ export default function Index() {
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
             className="mx-auto mb-12 max-w-2xl text-center">
-            
             <motion.h2 variants={fadeUp} custom={0} className="mb-4 font-sans text-3xl font-bold text-foreground md:text-4xl">
-              Notary Services
+              Our Core Services
             </motion.h2>
             <motion.p variants={fadeUp} custom={1} className="text-muted-foreground">
-              Professional notarization for all your important documents
+              Two ways to get your documents notarized — choose what works for you
             </motion.p>
           </motion.div>
+
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
-            className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            
-            {services.map((s, i) =>
-            <motion.div key={s.title} variants={scaleReveal} custom={i}>
-                <Card className="group h-full hover:border-primary/20">
-                  <CardContent className="p-6">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/15">
-                      <s.icon className="h-6 w-6 text-primary" />
+            className="mx-auto grid max-w-5xl gap-8 md:grid-cols-2">
+            {primaryServices.map((s, i) => (
+              <motion.div key={s.title} variants={scaleReveal} custom={i}>
+                <Card className="group h-full border-2 hover:border-primary/30 transition-all">
+                  <CardContent className="p-8">
+                    <div className="mb-4 flex items-center gap-3">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 transition-colors group-hover:bg-primary/15">
+                        <s.icon className="h-7 w-7 text-primary" />
+                      </div>
+                      <Badge variant="secondary" className="text-xs">{s.badge}</Badge>
                     </div>
-                    <h3 className="mb-2 font-sans text-lg font-semibold text-foreground">{s.title}</h3>
-                    <p className="text-sm text-muted-foreground">{s.desc}</p>
+                    <h3 className="mb-3 font-sans text-xl font-bold text-foreground">{s.title}</h3>
+                    <p className="mb-5 text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
+                    <ul className="mb-6 space-y-2">
+                      {s.features.map((f) => (
+                        <li key={f} className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <CheckCircle className="h-4 w-4 shrink-0 text-primary" />
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                    <Link to={s.cta}>
+                      <Button variant="accent" className="w-full">
+                        {s.ctaLabel} <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
                   </CardContent>
                 </Card>
               </motion.div>
-            )}
+            ))}
           </motion.div>
+
+          {/* Other Notary Services */}
+          <div className="mx-auto mt-16 max-w-5xl">
+            <h3 className="mb-6 text-center font-sans text-xl font-semibold text-foreground">Other Notary Services</h3>
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-50px" }}
+              className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {otherServices.map((s, i) => (
+                <motion.div key={s.title} variants={scaleReveal} custom={i}>
+                  <Link to={s.to}>
+                    <Card className="group h-full hover:border-primary/20 transition-all cursor-pointer">
+                      <CardContent className="flex items-start gap-4 p-5">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/15">
+                          <s.icon className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-sans text-sm font-semibold text-foreground">{s.title}</h4>
+                          <p className="text-xs text-muted-foreground">{s.desc}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
         </div>
       </section>
 
