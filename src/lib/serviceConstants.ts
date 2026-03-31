@@ -47,3 +47,27 @@ export const PRICING_SUFFIXES: Record<string, string> = {
   flat: "",
   custom: "",
 };
+
+export const CATEGORY_LABELS: Record<string, { label: string; description: string }> = {
+  notarization: { label: "Core Notarization", description: "RON, in-person, witness, and certified copy services" },
+  verification: { label: "Identity & Verification", description: "ID checks, I-9 verification, employment onboarding" },
+  document_services: { label: "Document Services", description: "Preparation, PDF processing, scanning, and formatting" },
+  authentication: { label: "Authentication & International", description: "Apostille, consular legalization, and translation services" },
+  business: { label: "Business & Volume", description: "Bulk packages, subscriptions, API access, and partner programs" },
+  recurring: { label: "Recurring & Value-Add", description: "Storage, virtual mailroom, reminders, and compliance packages" },
+  consulting: { label: "Consulting & Training", description: "RON onboarding, workflow audits, and custom automation" },
+  business_services: { label: "Business Services", description: "Email management, correspondence handling, and administrative support" },
+  admin_support: { label: "Administrative Support", description: "Data entry, travel planning, and general admin tasks" },
+  content_creation: { label: "Content Creation", description: "Blog posts, social media, newsletters, and copywriting" },
+  research: { label: "Research", description: "Market analysis, lead generation, and competitive intelligence" },
+  customer_service: { label: "Customer Service", description: "Email support, live chat, and customer communication" },
+  technical_support: { label: "Technical Support", description: "Website updates, content management, and tech tasks" },
+  ux_testing: { label: "User Experience", description: "UX audits, usability testing, workflow analysis, and research" },
+};
+
+export const CATEGORY_ORDER = [
+  "notarization", "verification", "document_services", "authentication",
+  "business", "recurring", "consulting", "business_services",
+  "admin_support", "content_creation", "research", "customer_service",
+  "technical_support", "ux_testing",
+];
