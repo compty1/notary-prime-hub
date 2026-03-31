@@ -43,7 +43,7 @@ function DropdownNav({ label, linkTo, children }: { label: string; linkTo?: stri
         {linkTo ? (
           <Link
             to={linkTo}
-            className="relative px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            className="relative px-3 py-2 text-sm font-medium text-white/70 transition-colors hover:text-white"
           >
             {label}
           </Link>
