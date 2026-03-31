@@ -90,6 +90,7 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
                         <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {formatDate(appt.scheduled_date)}</span>
                         <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {formatTime(appt.scheduled_time)}</span>
                       </div>
+                      {appt.confirmation_number && <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><Hash className="h-3 w-3" /> {appt.confirmation_number}</p>}
                       {appt.location && appt.location !== "Remote" && <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="h-3 w-3" /> {appt.location}</p>}
                       {appt.estimated_price && <p className="mt-1 text-xs text-muted-foreground">Est. ${parseFloat(appt.estimated_price).toFixed(2)}</p>}
                     </div>
