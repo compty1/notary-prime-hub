@@ -344,6 +344,17 @@ export default function BookingIntakeFields(props: IntakeFieldsProps) {
         </>
       )}
 
+      {/* Apostille toggle for notarization categories */}
+      {showApostilleToggle && (
+        <div className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/20 p-3">
+          <div>
+            <Label className="text-sm">Need Apostille / Authentication?</Label>
+            <p className="text-xs text-muted-foreground">For documents being sent internationally (+$75 per document)</p>
+          </div>
+          <Switch checked={props.needsApostille ?? false} onCheckedChange={props.setNeedsApostille} />
+        </div>
+      )}
+
       {/* Phase 12: Facility Signing */}
       {showFacility && (
         <>
