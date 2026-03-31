@@ -78,6 +78,11 @@ const AdminTaskQueue = lazy(() => import("./pages/admin/AdminTaskQueue"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const Maintenance = lazy(() => import("./pages/Maintenance"));
 const ForNotaries = lazy(() => import("./pages/solutions/ForNotaries"));
+const ForHospitals = lazy(() => import("./pages/solutions/ForHospitals"));
+const ForRealEstate = lazy(() => import("./pages/solutions/ForRealEstate"));
+const ForLawFirms = lazy(() => import("./pages/solutions/ForLawFirms"));
+const ForSmallBusiness = lazy(() => import("./pages/solutions/ForSmallBusiness"));
+const ForIndividuals = lazy(() => import("./pages/solutions/ForIndividuals"));
 const Resources = lazy(() => import("./pages/Resources"));
 
 const queryClient = new QueryClient({
