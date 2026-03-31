@@ -354,8 +354,11 @@ export default function ServiceDetail() {
   const [loading, setLoading] = useState(true);
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
   const [showChat, setShowChat] = useState(false);
-  const [chatMessages, setChatMessages] = useState<{ role: string; content: string }[]>([]);
+  const [chatMessages, setChatMessages] = useState<{ role: string; content: string; timestamp?: number }[]>([]);
   const [chatInput, setChatInput] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
+  const [lastChatSent, setLastChatSent] = useState(0);
+  const [showPreQualifier, setShowPreQualifier] = useState(false);
   const [chatLoading, setChatLoading] = useState(false);
   const [showPreQualifier, setShowPreQualifier] = useState(false);
   usePageTitle(service?.name || "Service Details");
