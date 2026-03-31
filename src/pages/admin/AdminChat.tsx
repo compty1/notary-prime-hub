@@ -155,7 +155,11 @@ export default function AdminChat() {
         {/* Conversation list */}
         <Card className="border-border/50">
           <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Conversations</CardTitle></CardHeader>
-          <CardContent className="p-2">
+          <CardContent className="p-2 space-y-2">
+            <div className="relative px-1">
+              <Search className="absolute left-3 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
+              <Input placeholder="Search clients..." value={conversationSearch} onChange={e => setConversationSearch(e.target.value)} className="pl-8 h-8 text-xs" />
+            </div>
             <ScrollArea className="h-[500px]">
               {clientIds.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-8">No conversations yet</p>
