@@ -191,7 +191,7 @@ const categoryTimelines: Record<string, string> = {
   business_services: "2-5 business days",
 };
 
-// Phase 3.6: Complexity indicators
+// Phase 3.6: Complexity indicators (items 154-160)
 const categoryComplexity: Record<string, { level: string; duration: string }> = {
   notarization: { level: "Simple", duration: "10-30 min" },
   authentication: { level: "Complex", duration: "5-10 business days" },
@@ -200,6 +200,13 @@ const categoryComplexity: Record<string, { level: string; duration: string }> = 
   document_services: { level: "Simple", duration: "1-3 days" },
   business: { level: "Moderate", duration: "Custom" },
   recurring: { level: "Simple", duration: "Ongoing" },
+  admin_support: { level: "Simple", duration: "1-5 days" },
+  content_creation: { level: "Moderate", duration: "3-7 days" },
+  research: { level: "Complex", duration: "5-10 days" },
+  customer_service: { level: "Moderate", duration: "Ongoing" },
+  technical_support: { level: "Moderate", duration: "1-5 days" },
+  ux_testing: { level: "Complex", duration: "1-2 weeks" },
+  business_services: { level: "Simple", duration: "Ongoing" },
 };
 
 // Phase 3.8: Bundle suggestions
