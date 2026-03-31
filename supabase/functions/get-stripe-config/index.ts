@@ -8,8 +8,15 @@ Deno.serve(async (req) => {
 
   const publishableKey = Deno.env.get("STRIPE_PUBLISHABLE_KEY");
 
+  if (!publishableKey) {
+    return new Response(
+      JSON.stringify({ error: "stripe_not_configured", publishableKey: "" }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
   return new Response(
-    JSON.stringify({ publishableKey: publishableKey || "" }),
+    JSON.stringify({ publishableKey }),
     { headers: { ...corsHeaders, "Content-Type": "application/json" } }
   );
 });

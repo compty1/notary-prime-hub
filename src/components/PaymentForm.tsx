@@ -180,7 +180,7 @@ export default function PaymentForm({ appointmentId, defaultAmount, description,
           <CardDescription>Amount: ${amount.toFixed(2)}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Elements stripe={stripeInstance} options={{ clientSecret, appearance: { theme: document.documentElement.classList.contains('dark') ? 'night' : 'stripe' } }}>
+          <Elements stripe={stripeInstance} options={{ clientSecret, appearance: { theme: document.documentElement.classList.contains('dark') ? 'night' : 'stripe', variables: { colorPrimary: '#1B998B' } } }}>
             <CheckoutForm amount={amount} onSuccess={() => onSuccess?.()} onCancel={() => { setClientSecret(null); onCancel?.(); }} />
           </Elements>
         </CardContent>
@@ -203,9 +203,13 @@ export default function PaymentForm({ appointmentId, defaultAmount, description,
             id="payment-amount"
             type="number"
             min="0.50"
+            max="99999"
             step="0.01"
             value={amount || ""}
-            onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
+            onChange={(e) => {
+              const val = parseFloat(e.target.value);
+              setAmount(val > 0 ? val : 0);
+            }}
             placeholder="0.00"
           />
         </div>

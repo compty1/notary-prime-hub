@@ -326,7 +326,14 @@ export default function AdminServiceRequests() {
 
               <div>
                 <Label>Client-Visible Status</Label>
-                <Input value={editClientStatus} onChange={e => setEditClientStatus(e.target.value)} placeholder="e.g. In Review, Ready for Pickup" />
+                <Select value={editClientStatus} onValueChange={setEditClientStatus}>
+                  <SelectTrigger><SelectValue placeholder="Select status..." /></SelectTrigger>
+                  <SelectContent>
+                    {["Submitted", "In Review", "In Progress", "Awaiting Your Input", "Ready for Pickup", "Completed", "On Hold", "Cancelled"].map(s => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>

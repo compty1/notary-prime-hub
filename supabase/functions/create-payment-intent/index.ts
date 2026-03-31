@@ -31,8 +31,11 @@ Deno.serve(async (req) => {
     const userId = user.id;
     const userEmail = user.email || "";
 
-    const { amount, appointmentId, description } = await req.json();
-    if (!amount || amount <= 0) throw new Error("Invalid amount");
+    const body = await req.json();
+    const amount = Number(body.amount);
+    const appointmentId = body.appointmentId || "";
+    const description = body.description || "Notary service payment";
+    if (!amount || amount <= 0 || amount > 99999) throw new Error("Invalid amount");
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
 
@@ -65,6 +68,7 @@ Deno.serve(async (req) => {
       metadata: {
         supabase_user_id: userId,
         appointment_id: appointmentId || "",
+        description: (description || "").slice(0, 500),
       },
       description: description || "Notary service payment",
       automatic_payment_methods: { enabled: true },

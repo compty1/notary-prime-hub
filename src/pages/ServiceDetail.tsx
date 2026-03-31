@@ -495,11 +495,11 @@ export default function ServiceDetail() {
             </div>
             <div>
               <div className="mb-2 flex flex-wrap items-center gap-2">
-                <Badge className="border-primary/20 bg-primary/10 text-primary">{service.category.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}</Badge>
-                <Badge variant="outline" className="text-primary-foreground/60 border-primary-foreground/20 text-xs">
-                  <Clock className="mr-1 h-3 w-3" /> {timeline}
-                </Badge>
-                <Badge variant="outline" className={`text-xs border-primary-foreground/20 ${
+                <Badge className="border-primary/30 bg-primary/10 text-primary">{service.category.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}</Badge>
+                <Badge variant="outline" className="text-primary-foreground/90 border-primary-foreground/40 text-xs">
+                   <Clock className="mr-1 h-3 w-3" /> {timeline}
+                 </Badge>
+                 <Badge variant="outline" className={`text-xs border-primary-foreground/40 ${
                   complexity.level === "Simple" ? "text-primary" : complexity.level === "Complex" ? "text-amber-300" : "text-blue-300"
                 }`}>
                   {complexity.level} · {complexity.duration}
