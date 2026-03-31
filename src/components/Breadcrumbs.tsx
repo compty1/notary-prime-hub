@@ -51,8 +51,6 @@ export function Breadcrumbs() {
   const { pathname } = useLocation();
   const segments = pathname.split("/").filter(Boolean);
 
-  if (segments.length === 0) return null;
-
   const crumbs = segments.map((seg, i) => ({
     label: labelMap[seg] || seg.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()),
     path: "/" + segments.slice(0, i + 1).join("/"),
@@ -61,6 +59,7 @@ export function Breadcrumbs() {
 
   // Emit BreadcrumbList JSON-LD
   useEffect(() => {
+    if (segments.length === 0) return;
     const schema = {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
@@ -80,6 +79,8 @@ export function Breadcrumbs() {
     document.head.appendChild(script);
     return () => { script.remove(); };
   }, [pathname]);
+
+  if (segments.length === 0) return null;
 
   return (
     <nav aria-label="Breadcrumb" className="mb-4">
