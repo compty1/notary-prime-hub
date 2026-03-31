@@ -31,6 +31,8 @@ export default function AdminChat() {
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
+  const [conversationSearch, setConversationSearch] = useState("");
+  const [messageSearch, setMessageSearch] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 

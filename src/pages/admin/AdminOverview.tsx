@@ -58,7 +58,7 @@ export default function AdminOverview() {
     ]);
 
     // Fetch recent audit activity
-    const { data: activityData } = await supabase.from("audit_log").select("*").order("created_at", { ascending: false }).limit(10);
+    const { data: activityData } = await supabase.from("audit_log").select("id, action, entity_type, entity_id, created_at, user_id").order("created_at", { ascending: false }).limit(10);
     if (activityData) setRecentActivity(activityData);
 
     // Build profiles map

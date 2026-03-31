@@ -124,6 +124,48 @@ const serviceFaqs: Record<string, { q: string; a: string }[]> = {
     { q: "Do you provide certified translations?", a: "Yes. Every translation includes a Certificate of Translation Accuracy that can be notarized for official submissions." },
     { q: "How long does translation take?", a: "Most documents are translated within 1-2 business days. Simple documents can be same-day." },
   ],
+  "email management": [
+    { q: "What does email management include?", a: "We handle inbox triage, response drafting, follow-ups, and organization based on your priorities and templates." },
+    { q: "How do you access my email?", a: "We use delegated access or a shared inbox — never your personal password. Access is revoked upon service completion." },
+    { q: "What's the response time SLA?", a: "Standard emails are triaged within 2 hours during business hours. Urgent emails are flagged immediately." },
+    { q: "Can you handle multiple email accounts?", a: "Yes. We can manage multiple accounts and consolidate communications into a single workflow." },
+  ],
+  "data entry": [
+    { q: "What types of data entry do you handle?", a: "Spreadsheet population, CRM updates, form data extraction, document indexing, and database management." },
+    { q: "How do you ensure accuracy?", a: "All data entry includes a verification pass. Error rates are tracked and maintained below 0.5%." },
+    { q: "What file formats do you accept?", a: "Excel, CSV, Google Sheets, PDF forms, scanned documents, and most database export formats." },
+    { q: "Is my data kept confidential?", a: "Yes. All work is performed under strict NDA with encrypted file transfer and secure handling protocols." },
+  ],
+  "blog": [
+    { q: "What's included in a blog post?", a: "Research, writing, SEO optimization (keywords, meta description, headers), and one round of revisions." },
+    { q: "How long are typical blog posts?", a: "Standard posts are 800-1,200 words. Long-form content (2,000+ words) is available at adjusted pricing." },
+    { q: "Can you match our brand voice?", a: "Yes. We review your existing content and style guide to ensure consistency across all posts." },
+    { q: "Do you provide images?", a: "We can source royalty-free images and create basic graphics. Custom photography requires a separate arrangement." },
+  ],
+  "social media": [
+    { q: "Which platforms do you support?", a: "Facebook, Instagram, LinkedIn, Twitter/X, and TikTok. Custom platform support available on request." },
+    { q: "Do you handle posting and scheduling?", a: "Yes. We can draft content, schedule posts, and manage your content calendar across all platforms." },
+    { q: "How many posts per month?", a: "Plans range from 8-30 posts per month depending on your package. Custom volumes available." },
+    { q: "Do you track engagement metrics?", a: "Yes. Monthly reports include reach, engagement, follower growth, and content performance analysis." },
+  ],
+  "newsletter": [
+    { q: "What newsletter platforms do you support?", a: "Mailchimp, Constant Contact, Sendinblue, ConvertKit, and most major email marketing platforms." },
+    { q: "What's included in newsletter design?", a: "Template design, content writing, image sourcing, and send-ready HTML — including A/B subject line testing." },
+    { q: "How often can you send newsletters?", a: "Weekly, bi-weekly, or monthly — based on your preference and subscriber engagement data." },
+    { q: "Do you handle subscriber list management?", a: "Yes. We manage list hygiene, segmentation, and unsubscribe compliance." },
+  ],
+  "lead generation": [
+    { q: "How do you find leads?", a: "We use public databases, industry directories, social media research, and targeted web scraping of business listings." },
+    { q: "What information do you provide per lead?", a: "Name, email, phone, company, title, address, and any relevant notes about their potential needs." },
+    { q: "What's the typical delivery volume?", a: "50-200 qualified leads per week depending on your target market and criteria specificity." },
+    { q: "How do you verify lead quality?", a: "Each lead is validated for contact accuracy and matched against your ideal customer profile criteria." },
+  ],
+  "ux audit": [
+    { q: "What does a UX audit cover?", a: "Heuristic evaluation, accessibility compliance (WCAG 2.1), user flow analysis, mobile responsiveness, and performance review." },
+    { q: "What deliverables do I receive?", a: "A prioritized report with severity ratings, annotated screenshots, and specific recommendations for each finding." },
+    { q: "How long does an audit take?", a: "Standard audits take 5-7 business days. Comprehensive audits with user testing take 10-14 business days." },
+    { q: "Do you implement the recommended changes?", a: "Implementation is available as a separate engagement. We can also work with your development team to guide fixes." },
+  ],
 };
 
 // Phase 3.2: Category-specific FAQs
