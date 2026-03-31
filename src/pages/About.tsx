@@ -30,7 +30,7 @@ const serviceAreas = [
 
 export default function About() {
   const [contactInfo, setContactInfo] = useState({ phone: "(614) 300-6890", email: "contact@notardex.com" });
-  usePageTitle("About");
+  usePageTitle("About", "Learn about Notar — Ohio-commissioned notary team providing in-person and RON services in Franklin County, Columbus, Ohio.");
 
   useEffect(() => {
     supabase.from("platform_settings").select("setting_key, setting_value")
