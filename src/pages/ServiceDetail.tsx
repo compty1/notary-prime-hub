@@ -331,6 +331,31 @@ interface WorkflowStep {
 }
 
 const PRE_QUALIFY_CATEGORIES = ["authentication", "consulting", "verification"];
+const PUBLIC_API_URL = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1`;
+const PUBLIC_API_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+async function fetchPublicJson<T>(path: string): Promise<T> {
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), 10000);
+
+  try {
+    const response = await fetch(`${PUBLIC_API_URL}${path}`, {
+      headers: {
+        apikey: PUBLIC_API_KEY,
+        Authorization: `Bearer ${PUBLIC_API_KEY}`,
+      },
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    return await response.json() as T;
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
+}
 
 export default function ServiceDetail() {
   const { serviceId } = useParams();
@@ -350,33 +375,88 @@ export default function ServiceDetail() {
   usePageTitle(service?.name || "Service Details");
 
   useEffect(() => {
-    if (!serviceId) return;
+    if (!serviceId) {
+      setService(null);
+      setLoading(false);
+      return;
+    }
+
     const load = async () => {
       setLoading(true);
-      const [svcRes, reqRes, wfRes] = await Promise.all([
-        supabase.from("services").select("*").eq("id", serviceId).eq("is_active", true).single(),
-        supabase.from("service_requirements").select("*").eq("service_id", serviceId).order("display_order"),
-        supabase.from("service_workflows").select("*").eq("service_id", serviceId).order("step_number"),
-      ]);
-      if (svcRes.data) {
-        setService(svcRes.data as ServiceData);
-        const [relRes, allSvcRes] = await Promise.all([
-          supabase.from("services").select("*").eq("is_active", true).eq("category", svcRes.data.category).neq("id", serviceId).limit(3),
-          supabase.from("services").select("id, name, category").eq("is_active", true),
-        ]);
-        setRelatedServices((relRes.data || []) as ServiceData[]);
-        setAllServices((allSvcRes.data || []) as ServiceData[]);
-      } else {
-        setService(null);
-        setLoading(false);
-        return;
-      }
-      setRequirements((reqRes.data || []) as Requirement[]);
-      setWorkflow((wfRes.data || []) as WorkflowStep[]);
       setCheckedItems(new Set());
-      setLoading(false);
+
+      try {
+        const services = await fetchPublicJson<ServiceData[]>(
+          `/services?select=*&id=eq.${encodeURIComponent(serviceId)}&is_active=eq.true&limit=1`
+        );
+        const nextService = services[0] ?? null;
+
+        if (!nextService) {
+          setService(null);
+          setRequirements([]);
+          setWorkflow([]);
+          setRelatedServices([]);
+          setAllServices([]);
+          return;
+        }
+
+        setService(nextService);
+
+        const [reqRes, wfRes, relRes, allSvcRes] = await Promise.allSettled([
+          fetchPublicJson<Requirement[]>(
+            `/service_requirements?select=*&service_id=eq.${encodeURIComponent(serviceId)}&order=display_order.asc`
+          ),
+          fetchPublicJson<WorkflowStep[]>(
+            `/service_workflows?select=*&service_id=eq.${encodeURIComponent(serviceId)}&order=step_number.asc`
+          ),
+          fetchPublicJson<ServiceData[]>(
+            `/services?select=*&is_active=eq.true&category=eq.${encodeURIComponent(nextService.category)}&id=neq.${encodeURIComponent(serviceId)}&order=display_order.asc,name.asc&limit=3`
+          ),
+          fetchPublicJson<ServiceData[]>(
+            `/services?select=id,name,category&is_active=eq.true&order=display_order.asc,name.asc`
+          ),
+        ]);
+
+        if (reqRes.status === "fulfilled") {
+          setRequirements(reqRes.value);
+        } else {
+          console.error("Failed to load service requirements:", reqRes.reason);
+          setRequirements([]);
+        }
+
+        if (wfRes.status === "fulfilled") {
+          setWorkflow(wfRes.value);
+        } else {
+          console.error("Failed to load service workflow:", wfRes.reason);
+          setWorkflow([]);
+        }
+
+        if (relRes.status === "fulfilled") {
+          setRelatedServices(relRes.value);
+        } else {
+          console.error("Failed to load related services:", relRes.reason);
+          setRelatedServices([]);
+        }
+
+        if (allSvcRes.status === "fulfilled") {
+          setAllServices(allSvcRes.value);
+        } else {
+          console.error("Failed to load service index:", allSvcRes.reason);
+          setAllServices([]);
+        }
+      } catch (error) {
+        console.error("Failed to load service detail:", error);
+        setService(null);
+        setRequirements([]);
+        setWorkflow([]);
+        setRelatedServices([]);
+        setAllServices([]);
+      } finally {
+        setLoading(false);
+      }
     };
-    load();
+
+    void load();
   }, [serviceId]);
 
   // AI Chat handler
