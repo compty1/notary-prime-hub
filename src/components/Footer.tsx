@@ -77,6 +77,9 @@ export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com
         <div className="mt-4 text-center text-xs text-sidebar-foreground/40 max-w-2xl mx-auto">
           <p>Notar is not a law firm. Our notaries are not attorneys and cannot provide legal advice, draft legal documents, or advise on the content of any document. (ORC §147.01)</p>
         </div>
+        <div className="mt-2 text-center text-xs text-sidebar-foreground/40 max-w-2xl mx-auto">
+          <p>$25,000 surety bond &amp; E&amp;O insurance maintained. All notaries are background-checked and Ohio-commissioned.</p>
+        </div>
 
         <div className="mt-4 border-t border-sidebar-border pt-4 text-center text-xs text-sidebar-foreground/50">
           <p>© {new Date().getFullYear()} Notar. All rights reserved. Ohio Notary & Document Services — Franklin County</p>

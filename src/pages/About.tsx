@@ -184,6 +184,23 @@ export default function About() {
         </div>
       </section>
 
+      {/* Commission Verification */}
+      <section className="border-t border-border py-8">
+        <div className="container mx-auto max-w-4xl px-4 text-center">
+          <p className="text-sm text-muted-foreground">
+            Verify our notary commission status on the{" "}
+            <a
+              href="https://www.ohiosos.gov/businesses/notary-public/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              Ohio Secretary of State Notary Lookup →
+            </a>
+          </p>
+        </div>
+      </section>
+
       {/* Response time + CTA */}
       <section className="border-t border-border bg-card py-16">
         <div className="container mx-auto max-w-2xl px-4 text-center">
@@ -191,10 +208,10 @@ export default function About() {
           <p className="mb-2 text-muted-foreground">
             Message us for a response within 24 hours — we typically respond within 2 hours during business hours.
           </p>
-          <p className="mb-6 text-xs text-muted-foreground">Mon–Wed 10 AM – 7 PM EST</p>
+          <p className="mb-6 text-xs text-muted-foreground">Mon–Fri 9 AM – 7 PM ET &nbsp;|&nbsp; Sat 10 AM – 4 PM ET</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link to="/book">
-              <Button size="lg" className="">
+              <Button size="lg">
                 Book Appointment <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             </Link>
