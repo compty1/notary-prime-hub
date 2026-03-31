@@ -169,29 +169,25 @@ export default function BookAppointment() {
     });
   }, []);
 
+  // Centralized pricing via pricingEngine
+  const pricingBreakdown = useMemo<PricingBreakdown | null>(() => {
+    if (!pricingSettings.base_fee_per_signature) return null;
+    const settings = parseSettings(pricingSettings);
+    return calculatePrice({
+      notarizationType,
+      documentCount,
+      signerCount,
+      travelMiles: notarizationType === "in_person" ? (travelDistance ?? undefined) : undefined,
+      isRush: urgencyLevel === "rush" || urgencyLevel === "same_day",
+      afterHoursAmount: afterHoursFee,
+      witnessCount: parseInt(witnessCount || "0"),
+      needsApostille,
+    }, settings);
+  }, [notarizationType, documentCount, signerCount, pricingSettings, witnessCount, travelDistance, afterHoursFee, urgencyLevel, needsApostille]);
+
   useEffect(() => {
-    if (!pricingSettings.base_fee_per_signature) return;
-    const baseFee = parseFloat(pricingSettings.base_fee_per_signature || "5") * documentCount;
-    let total = baseFee;
-    if (notarizationType === "ron") { total += parseFloat(pricingSettings.ron_platform_fee || "25") + parseFloat(pricingSettings.kba_fee || "15"); }
-    else {
-      // Dynamic travel fee based on distance
-      if (travelDistance !== null && travelDistance >= 5) {
-        const perMile = parseFloat(pricingSettings.travel_fee_per_mile || "0.655");
-        const minimum = parseFloat(pricingSettings.travel_fee_minimum || "25");
-        total += Math.max(minimum, travelDistance * perMile);
-      } else if (travelDistance === null) {
-        total += parseFloat(pricingSettings.travel_fee_minimum || "25");
-      }
-      // else < 5 miles = free
-    }
-    // Add witness fees
-    const wCount = parseInt(witnessCount || "0");
-    if (wCount > 0) { total += wCount * parseFloat(pricingSettings.witness_fee || "10"); }
-    // Add after-hours fee
-    total += afterHoursFee;
-    setEstimatedPrice(total);
-  }, [notarizationType, documentCount, pricingSettings, witnessCount, travelDistance, afterHoursFee]);
+    if (pricingBreakdown) setEstimatedPrice(pricingBreakdown.total);
+  }, [pricingBreakdown]);
 
   // Service area validation + travel distance calculation
   useEffect(() => {
