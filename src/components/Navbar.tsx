@@ -86,9 +86,8 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 z-50 border-b border-border/60 glass" aria-label="Main navigation">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
-        <Link to="/" className="flex items-center gap-2.5">
-          <Logo size="sm" />
-          <span className="font-heading text-lg font-bold tracking-tight text-foreground">Notar</span>
+        <Link to="/" className="flex items-center">
+          <Logo size="sm" showText />
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">

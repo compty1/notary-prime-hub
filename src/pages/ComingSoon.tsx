@@ -49,10 +49,7 @@ export default function ComingSoon() {
 
       {/* Nav */}
       <nav className="relative z-10 flex items-center justify-between px-6 py-4 md:px-12">
-        <div className="flex items-center gap-2.5">
-          <Logo size="sm" />
-          <span className="font-heading text-lg font-bold tracking-tight text-primary-foreground">Notar</span>
-        </div>
+        <Logo size="sm" showText theme="dark" />
         <div className="flex items-center gap-3">
           <DarkModeToggle />
           <Link to="/login">
