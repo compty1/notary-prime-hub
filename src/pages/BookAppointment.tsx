@@ -424,7 +424,36 @@ export default function BookAppointment() {
       const { count } = await supabase.from("appointments").select("*", { count: "exact", head: true }).eq("scheduled_date", data.date || date).neq("status", "cancelled" as any).neq("status", "no_show" as any);
       if (count && count >= maxPerDay) { toast({ title: "Day is fully booked", variant: "destructive" }); setSubmitting(false); return; }
     }
-    const payload = { client_id: userId, service_type: data.serviceType || serviceType, notarization_type: data.notarizationType || notarizationType, scheduled_date: data.date || date, scheduled_time: data.time || time, location: (data.notarizationType || notarizationType) === "in_person" ? fullAddress : "Remote", client_address: (data.notarizationType || notarizationType) === "in_person" ? fullAddress : null, estimated_price: estimatedPrice, notes: fullNotes || null };
+    // Detect notarial act type from service name
+    const svcLower = (data.serviceType || serviceType).toLowerCase();
+    let notarialActType: string | null = null;
+    for (const [keyword, actType] of Object.entries(NOTARIAL_ACT_MAP)) {
+      if (svcLower.includes(keyword)) { notarialActType = actType; break; }
+    }
+    const payload = {
+      client_id: userId,
+      service_type: data.serviceType || serviceType,
+      notarization_type: data.notarizationType || notarizationType,
+      scheduled_date: data.date || date,
+      scheduled_time: data.time || time,
+      location: (data.notarizationType || notarizationType) === "in_person" ? fullAddress : "Remote",
+      client_address: (data.notarizationType || notarizationType) === "in_person" ? fullAddress : null,
+      estimated_price: estimatedPrice,
+      notes: fullNotes || null,
+      // Phase 12 fields
+      signing_capacity: signerCapacity !== "individual" ? signerCapacity : "individual",
+      entity_name: entityName || null,
+      signer_title: signerTitle || null,
+      facility_name: facilityName || null,
+      facility_contact: facilityContact || null,
+      facility_room: facilityRoom || null,
+      signer_count: signerCount,
+      after_hours_fee: afterHoursFee > 0 ? afterHoursFee : 0,
+      travel_fee_estimate: travelDistance !== null && travelDistance >= 5
+        ? Math.max(parseFloat(pricingSettings.travel_fee_minimum || "25"), travelDistance * parseFloat(pricingSettings.travel_fee_per_mile || "0.655"))
+        : 0,
+      travel_distance_miles: travelDistance,
+    };
     let appointmentResultId: string;
     if (rebookingId) {
       const { error } = await supabase.from("appointments").update({ ...payload, status: "scheduled" as any }).eq("id", rebookingId);
