@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { usePageTitle } from "@/lib/usePageTitle";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,6 +14,7 @@ import { motion } from "framer-motion";
 import { MapPin, Monitor, CheckCircle, ChevronLeft, ChevronRight, Camera, Loader2, Sparkles, AlertTriangle, DollarSign, Info } from "lucide-react";
 import { haversineDistance, getAfterHoursFee, DEFAULT_OFFICE_LAT, DEFAULT_OFFICE_LON } from "@/lib/geoUtils";
 import { NOTARIAL_ACT_MAP } from "@/lib/serviceConstants";
+import { calculatePrice, parseSettings, type PricingBreakdown } from "@/lib/pricingEngine";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PageShell } from "@/components/PageShell";
 import {
@@ -115,6 +116,7 @@ export default function BookAppointment() {
   const [signerCount, setSignerCount] = useState(1);
   const [travelDistance, setTravelDistance] = useState<number | null>(null);
   const [afterHoursFee, setAfterHoursFee] = useState(0);
+  const [needsApostille, setNeedsApostille] = useState(false);
   const [outsideServiceArea, setOutsideServiceArea] = useState(false);
 
   useEffect(() => {
@@ -166,29 +168,25 @@ export default function BookAppointment() {
     });
   }, []);
 
+  // Centralized pricing via pricingEngine
+  const pricingBreakdown = useMemo<PricingBreakdown | null>(() => {
+    if (!pricingSettings.base_fee_per_signature) return null;
+    const settings = parseSettings(pricingSettings);
+    return calculatePrice({
+      notarizationType,
+      documentCount,
+      signerCount,
+      travelMiles: notarizationType === "in_person" ? (travelDistance ?? undefined) : undefined,
+      isRush: urgencyLevel === "rush" || urgencyLevel === "same_day",
+      afterHoursAmount: afterHoursFee,
+      witnessCount: parseInt(witnessCount || "0"),
+      needsApostille,
+    }, settings);
+  }, [notarizationType, documentCount, signerCount, pricingSettings, witnessCount, travelDistance, afterHoursFee, urgencyLevel, needsApostille]);
+
   useEffect(() => {
-    if (!pricingSettings.base_fee_per_signature) return;
-    const baseFee = parseFloat(pricingSettings.base_fee_per_signature || "5") * documentCount;
-    let total = baseFee;
-    if (notarizationType === "ron") { total += parseFloat(pricingSettings.ron_platform_fee || "25") + parseFloat(pricingSettings.kba_fee || "15"); }
-    else {
-      // Dynamic travel fee based on distance
-      if (travelDistance !== null && travelDistance >= 5) {
-        const perMile = parseFloat(pricingSettings.travel_fee_per_mile || "0.655");
-        const minimum = parseFloat(pricingSettings.travel_fee_minimum || "25");
-        total += Math.max(minimum, travelDistance * perMile);
-      } else if (travelDistance === null) {
-        total += parseFloat(pricingSettings.travel_fee_minimum || "25");
-      }
-      // else < 5 miles = free
-    }
-    // Add witness fees
-    const wCount = parseInt(witnessCount || "0");
-    if (wCount > 0) { total += wCount * parseFloat(pricingSettings.witness_fee || "10"); }
-    // Add after-hours fee
-    total += afterHoursFee;
-    setEstimatedPrice(total);
-  }, [notarizationType, documentCount, pricingSettings, witnessCount, travelDistance, afterHoursFee]);
+    if (pricingBreakdown) setEstimatedPrice(pricingBreakdown.total);
+  }, [pricingBreakdown]);
 
   // Service area validation + travel distance calculation
   useEffect(() => {
@@ -550,6 +548,7 @@ export default function BookAppointment() {
     signerCapacity, setSignerCapacity, entityName, setEntityName, signerTitle, setSignerTitle,
     facilityName, setFacilityName, facilityContact, setFacilityContact, facilityRoom, setFacilityRoom,
     signerCount, setSignerCount,
+    needsApostille, setNeedsApostille,
   };
 
   const scheduleStepProps = {
@@ -567,6 +566,7 @@ export default function BookAppointment() {
     idData, docAnalysis, documentCount, notes, estimatedPrice, pricingSettings, urgencyLevel,
     user, guestName, setGuestName, guestEmail, setGuestEmail, guestPassword, setGuestPassword,
     travelDistance, afterHoursFee, signerCapacity, facilityName, signerCount,
+    pricingBreakdown,
   };
 
   const stepLabels = isSkipTypeStep ? ["Service", "Schedule", "Confirm"] : ["Type", "Service", "Schedule", "Confirm"];

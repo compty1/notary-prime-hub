@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { usePageTitle } from "@/lib/usePageTitle";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,18 +10,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronLeft, Calculator, DollarSign, ChevronRight, MapPin, Info } from "lucide-react";
-import { DarkModeToggle } from "@/components/DarkModeToggle";
+import { ChevronRight, Calculator, DollarSign, MapPin, Info } from "lucide-react";
 import { motion } from "framer-motion";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
-import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { calculatePrice, parseSettings } from "@/lib/pricingEngine";
 
 const DEFAULT_OFFICE = { lat: 39.9612, lng: -82.9988 };
 
 const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
-  const R = 3959; // Earth radius in miles
+  const R = 3959;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
@@ -35,13 +34,13 @@ export default function FeeCalculator() {
   usePageTitle("Fee Calculator");
   const [notarizationType, setNotarizationType] = useState<"in_person" | "ron">("in_person");
   const [documentCount, setDocumentCount] = useState(1);
+  const [signerCount, setSignerCount] = useState(1);
   const [travelMiles, setTravelMiles] = useState(0);
   const [isRush, setIsRush] = useState(false);
   const [isAfterHours, setIsAfterHours] = useState(false);
   const [witnessCount, setWitnessCount] = useState(0);
   const [needsApostille, setNeedsApostille] = useState(false);
 
-  // Meeting location state
   const [meetingAddress, setMeetingAddress] = useState("");
   const [calculatedDistance, setCalculatedDistance] = useState<number | null>(null);
   const [manualOverride, setManualOverride] = useState(false);
@@ -57,42 +56,27 @@ export default function FeeCalculator() {
     });
   }, []);
 
-  const baseFee = parseFloat(settings.base_fee_per_signature || "5");
-  const travelFeeMin = parseFloat(settings.travel_fee_minimum || "25");
-  const travelFeePerMile = parseFloat(settings.travel_fee_per_mile || "0.655");
-  const ronPlatformFee = parseFloat(settings.ron_platform_fee || "25");
-  const kbaFee = parseFloat(settings.kba_fee || "15");
-  const rushFee = parseFloat(settings.rush_fee || "35");
-  const afterHoursFee = parseFloat(settings.after_hours_fee || "25");
-  const witnessFee = parseFloat(settings.witness_fee || "10");
-  const apostilleFee = parseFloat(settings.apostille_fee || "75");
-
   const effectiveMiles = manualOverride ? travelMiles : (calculatedDistance ?? travelMiles);
-  const notarizationFees = baseFee * documentCount;
-  const travelCalc = notarizationType === "in_person" ? Math.max(travelFeeMin, effectiveMiles * travelFeePerMile) : 0;
-  const ronFees = notarizationType === "ron" ? ronPlatformFee + kbaFee : 0;
-  const rushCalc = isRush ? rushFee : 0;
-  const afterHoursCalc = isAfterHours ? afterHoursFee : 0;
-  const witnessCalc = witnessCount * witnessFee;
-  const apostilleCalc = needsApostille ? apostilleFee : 0;
-  const total = notarizationFees + travelCalc + ronFees + rushCalc + afterHoursCalc + witnessCalc + apostilleCalc;
 
-  const lineItems = [
-    { label: `Notarization (${documentCount} doc${documentCount > 1 ? "s" : ""} × $${baseFee.toFixed(2)})`, amount: notarizationFees },
-    ...(notarizationType === "in_person" ? [{ label: `Travel Fee (${Math.round(effectiveMiles)} mi)`, amount: travelCalc }] : []),
-    ...(notarizationType === "ron" ? [{ label: "RON Platform Fee", amount: ronPlatformFee }, { label: "KBA Fee", amount: kbaFee }] : []),
-    ...(isRush ? [{ label: "Rush Priority", amount: rushCalc }] : []),
-    ...(isAfterHours ? [{ label: "After-Hours", amount: afterHoursCalc }] : []),
-    ...(witnessCount > 0 ? [{ label: `Witnesses (${witnessCount})`, amount: witnessCalc }] : []),
-    ...(needsApostille ? [{ label: "Apostille Processing", amount: apostilleCalc }] : []),
-  ];
+  const breakdown = useMemo(() => {
+    if (!settings.base_fee_per_signature && Object.keys(settings).length === 0) return null;
+    const parsed = parseSettings(settings);
+    return calculatePrice({
+      notarizationType,
+      documentCount,
+      signerCount,
+      travelMiles: notarizationType === "in_person" ? effectiveMiles : undefined,
+      isRush,
+      isAfterHours,
+      witnessCount,
+      needsApostille,
+    }, parsed);
+  }, [notarizationType, documentCount, signerCount, effectiveMiles, isRush, isAfterHours, witnessCount, needsApostille, settings]);
 
-  const bookingUrl = `/book?type=${notarizationType}&estimate=${total.toFixed(2)}&docs=${documentCount}${needsApostille ? "&apostille=true" : ""}`;
+  const bookingUrl = `/book?type=${notarizationType}&estimate=${breakdown?.total.toFixed(2) || "0"}&docs=${documentCount}${needsApostille ? "&apostille=true" : ""}`;
 
   const handleAddressSelect = (suggestion: { address: string; city: string; state: string; zip: string; fullAddress: string }) => {
     setMeetingAddress(suggestion.fullAddress);
-    // Geocode is already done by AddressAutocomplete; we need lat/lon from the Nominatim data
-    // The AddressAutocomplete doesn't directly expose lat/lon, so we'll do a quick lookup
     fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(suggestion.fullAddress)}&format=json&limit=1&countrycodes=us`, {
       headers: { "User-Agent": "Notar/1.0" },
     })
@@ -109,7 +93,6 @@ export default function FeeCalculator() {
 
   return (
     <PageShell>
-
       <div className="container mx-auto max-w-4xl px-4 py-8">
         <Breadcrumbs />
         <div className="mb-8 text-center">
@@ -141,15 +124,17 @@ export default function FeeCalculator() {
                     <Label>Number of Documents</Label>
                     <Input type="number" min={1} max={50} value={documentCount} onChange={(e) => setDocumentCount(Math.max(1, parseInt(e.target.value) || 1))} />
                   </div>
+                  <div>
+                    <Label>Number of Signers</Label>
+                    <Input type="number" min={1} max={10} value={signerCount} onChange={(e) => setSignerCount(Math.max(1, parseInt(e.target.value) || 1))} />
+                    {signerCount > 1 && <p className="text-xs text-muted-foreground mt-1">Each signer requires a separate notarial act per Ohio law (ORC §147.04)</p>}
+                  </div>
                   {notarizationType === "in_person" && (
                     <div className="space-y-3">
                       <div className="rounded-lg border border-accent/20 bg-primary/5 p-3">
                         <p className="text-xs text-muted-foreground flex items-start gap-2">
                           <Info className="h-4 w-4 flex-shrink-0 text-primary mt-0.5" />
-                          <span>
-                            Travel distance is calculated from our central Columbus office location — 
-                            ensuring fair and efficient travel fees for both notary and client.
-                          </span>
+                          <span>Travel under 5 miles is free. Distance is calculated from our central Columbus office.</span>
                         </p>
                       </div>
                       <div>
@@ -179,7 +164,6 @@ export default function FeeCalculator() {
                           <Input type="number" min={0} value={travelMiles} onChange={(e) => setTravelMiles(Math.max(0, parseInt(e.target.value) || 0))} />
                         </div>
                       )}
-                      <p className="text-xs text-muted-foreground">Minimum travel fee: ${travelFeeMin.toFixed(2)}</p>
                     </div>
                   )}
                   <div>
@@ -208,7 +192,7 @@ export default function FeeCalculator() {
             <Card className="border-primary/20 bg-primary/5">
               <CardHeader><CardTitle className="font-sans flex items-center gap-2"><DollarSign className="h-5 w-5 text-primary" /> Estimated Total</CardTitle></CardHeader>
               <CardContent>
-                {settingsLoading ? (
+                {settingsLoading || !breakdown ? (
                   <div className="space-y-3">
                     {[1,2,3].map(i => <Skeleton key={i} className="h-5 w-full" />)}
                     <Skeleton className="h-8 w-1/2 ml-auto" />
@@ -216,22 +200,30 @@ export default function FeeCalculator() {
                 ) : (
                   <>
                     <div className="space-y-3 mb-4">
-                      {lineItems.map((item, i) => (
+                      {breakdown.lineItems.map((item, i) => (
                         <div key={i} className="flex justify-between text-sm">
                           <span className="text-muted-foreground">{item.label}</span>
-                          <span className="font-medium">${item.amount.toFixed(2)}</span>
+                          <span className={`font-medium ${item.amount < 0 ? "text-primary" : ""}`}>
+                            {item.amount < 0 ? `-$${Math.abs(item.amount).toFixed(2)}` : `$${item.amount.toFixed(2)}`}
+                          </span>
                         </div>
                       ))}
                     </div>
                     <Separator className="my-3" />
                     <div className="flex justify-between text-lg font-bold">
                       <span>Total</span>
-                      <span className="text-primary">${total.toFixed(2)}</span>
+                      <span className="text-primary">${breakdown.total.toFixed(2)}</span>
                     </div>
+                    {breakdown.deposit > 0 && (
+                      <div className="flex justify-between text-sm text-muted-foreground mt-1">
+                        <span>25% deposit due at booking</span>
+                        <span>${breakdown.deposit.toFixed(2)}</span>
+                      </div>
+                    )}
                     <p className="mt-3 text-xs text-muted-foreground">* Estimates only. Final pricing may vary based on document complexity and specific requirements.</p>
                     <p className="mt-1 text-xs text-muted-foreground italic">Ohio notary fees are generally exempt from state sales tax per ORC §5739.02. No tax is applied to this estimate.</p>
-                    {documentCount >= 10 && (
-                      <p className="mt-1 text-xs text-primary font-medium">🎉 Volume discount applied: {documentCount >= 20 ? "20%" : "10%"} off per-document rate</p>
+                    {(breakdown.notarizationFees < breakdown.subtotal * 0.5) && documentCount * signerCount >= 10 && (
+                      <p className="mt-1 text-xs text-primary font-medium">🎉 Volume discount applied: {documentCount * signerCount >= 20 ? "20%" : "10%"} off per-notarization rate</p>
                     )}
                     <div className="mt-3 rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground space-y-1">
                       <p><strong>After-Hours:</strong> +${parseFloat(settings.after_hours_fee || "25").toFixed(2)} (before 9 AM / after 7 PM Mon–Fri, Sundays)</p>
@@ -240,7 +232,7 @@ export default function FeeCalculator() {
                       <p><strong>Payment:</strong> Credit/Debit, Venmo, Zelle, CashApp, Cash (in-person only)</p>
                     </div>
                     <Link to={bookingUrl} className="mt-4 block">
-                      <Button className="w-full ">Book Appointment <ChevronRight className="ml-1 h-4 w-4" /></Button>
+                      <Button className="w-full">Book Appointment <ChevronRight className="ml-1 h-4 w-4" /></Button>
                     </Link>
                   </>
                 )}
@@ -249,7 +241,6 @@ export default function FeeCalculator() {
           </motion.div>
         </div>
       </div>
-
     </PageShell>
   );
 }
