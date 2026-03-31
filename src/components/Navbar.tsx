@@ -143,7 +143,7 @@ export function Navbar() {
             <DarkModeToggle />
             {user ? (
               <Link to={portalLink}>
-                <Button variant="ghost" size="sm" className="text-sm">{portalLabel}</Button>
+                <Button variant="ghost" size="sm" className="text-sm text-white/80 hover:text-white hover:bg-white/10">{portalLabel}</Button>
               </Link>
             ) : (
               <Link to="/login">
