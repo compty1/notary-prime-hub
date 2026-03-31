@@ -304,7 +304,7 @@ const bundleSuggestions: Record<string, string[]> = {
 };
 
 // Phase 3.3: Legal disclaimers
-const LEGAL_DISCLAIMER_CATEGORIES = ["consulting", "authentication"];
+const LEGAL_DISCLAIMER_CATEGORIES = ["consulting", "authentication", "verification"];
 
 interface ServiceData {
   id: string; name: string; category: string; description: string | null;
