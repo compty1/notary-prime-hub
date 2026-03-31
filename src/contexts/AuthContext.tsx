@@ -49,22 +49,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setRolesLoading(false);
   };
 
-  // Session timeout: periodically check if session is still valid
-  useEffect(() => {
-    if (!session) return;
-    const CHECK_INTERVAL = 5 * 60 * 1000; // 5 minutes
+  // Session timeout: warn 30s before expiry, then sign out
+  const [showTimeoutWarning, setShowTimeoutWarning] = useState(false);
 
-    const interval = setInterval(async () => {
-      const { data: { user: currentUser }, error } = await supabase.auth.getUser();
-      if (error || !currentUser) {
-        toast({ title: "Session expired", description: "You have been signed out for security.", variant: "destructive" });
-        setSession(null);
-        setUser(null);
-        setRoles([]);
-      }
-    }, CHECK_INTERVAL);
-    return () => { clearInterval(interval); };
+  useEffect(() => {
+    if (!session) { setShowTimeoutWarning(false); return; }
+    const expiresAt = session.expires_at;
+    if (!expiresAt) return;
+
+    const expiryMs = expiresAt * 1000;
+    const warnMs = expiryMs - Date.now() - 30_000; // 30s before
+    const expireMs = expiryMs - Date.now();
+
+    const warnTimer = warnMs > 0 ? setTimeout(() => setShowTimeoutWarning(true), warnMs) : undefined;
+    const expireTimer = expireMs > 0 ? setTimeout(async () => {
+      setShowTimeoutWarning(false);
+      toast({ title: "Session expired", description: "You have been signed out for security.", variant: "destructive" });
+      setSession(null);
+      setUser(null);
+      setRoles([]);
+    }, expireMs) : undefined;
+
+    return () => {
+      if (warnTimer) clearTimeout(warnTimer);
+      if (expireTimer) clearTimeout(expireTimer);
+    };
   }, [session, toast]);
+
+  const extendSession = async () => {
+    setShowTimeoutWarning(false);
+    await supabase.auth.refreshSession();
+  };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
