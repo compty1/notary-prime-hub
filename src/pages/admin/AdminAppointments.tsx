@@ -152,11 +152,13 @@ export default function AdminAppointments() {
   const fetchData = async () => {
     let query = supabase.from("appointments").select("*").order("scheduled_date", { ascending: false }).range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
     if (filter !== "all") query = query.eq("status", filter as any);
+    if (serviceTypeFilter !== "all") query = query.eq("service_type", serviceTypeFilter);
+    if (notarizationTypeFilter !== "all") query = query.eq("notarization_type", notarizationTypeFilter as any);
     const df = getDateFilter();
     if (df) query = query.gte("scheduled_date", df.from).lte("scheduled_date", df.to);
     const [{ data: appts }, { data: profs }, { data: svcs }] = await Promise.all([
       query,
-      supabase.from("profiles").select("*"),
+      supabase.from("profiles").select("user_id, full_name, email, phone, address, city, state, zip"),
       supabase.from("services").select("name").eq("is_active", true),
     ]);
     if (appts) { setAppointments(appts); setHasMore(appts.length === PAGE_SIZE); }
