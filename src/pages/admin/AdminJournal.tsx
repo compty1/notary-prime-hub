@@ -447,6 +447,18 @@ export default function AdminJournal() {
               </CardContent>
             </Card>
           ))}
+          {/* Item 325: Pagination controls */}
+          {filtered.length > JOURNAL_PAGE_SIZE && (
+            <div className="flex items-center justify-between border-t border-border/50 pt-3 mt-3">
+              <p className="text-xs text-muted-foreground">
+                Showing {(journalPage - 1) * JOURNAL_PAGE_SIZE + 1}–{Math.min(journalPage * JOURNAL_PAGE_SIZE, filtered.length)} of {filtered.length}
+              </p>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" disabled={journalPage <= 1} onClick={() => setJournalPage(p => p - 1)}>Previous</Button>
+                <Button size="sm" variant="outline" disabled={journalPage >= totalJournalPages} onClick={() => setJournalPage(p => p + 1)}>Next</Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

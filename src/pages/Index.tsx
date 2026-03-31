@@ -168,7 +168,9 @@ export default function Index() {
     "address": { "@type": "PostalAddress", "addressLocality": "Columbus", "addressRegion": "OH", "addressCountry": "US" },
     "areaServed": { "@type": "State", "name": "Ohio" },
     "priceRange": "$$",
-    "openingHours": "Mo-Fr 09:00-18:00",
+    "openingHoursSpecification": [
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday"], "opens": "10:00", "closes": "19:00" }
+    ],
   };
 
   return (

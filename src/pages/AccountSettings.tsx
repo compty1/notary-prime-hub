@@ -52,12 +52,14 @@ export default function AccountSettings() {
     if (!user) return;
     setExporting(true);
     try {
-      const [profile, appointments, documents, payments, reviews] = await Promise.all([
-        supabase.from("profiles").select("*").eq("user_id", user.id).single(),
-        supabase.from("appointments").select("*").eq("client_id", user.id),
+      // Item 493: Select specific non-sensitive columns
+      const [profile, appointments, documents, payments, reviews, serviceReqs] = await Promise.all([
+        supabase.from("profiles").select("full_name, email, phone, address, city, state, zip, created_at").eq("user_id", user.id).single(),
+        supabase.from("appointments").select("scheduled_date, scheduled_time, service_type, notarization_type, status, created_at").eq("client_id", user.id),
         supabase.from("documents").select("id, file_name, status, created_at").eq("uploaded_by", user.id),
-        supabase.from("payments").select("*").eq("client_id", user.id),
-        supabase.from("reviews").select("*").eq("client_id", user.id),
+        supabase.from("payments").select("amount, status, method, created_at, paid_at").eq("client_id", user.id),
+        supabase.from("reviews").select("rating, comment, created_at").eq("client_id", user.id),
+        supabase.from("service_requests").select("service_name, status, created_at").eq("client_id", user.id),
       ]);
       const exportData = {
         exported_at: new Date().toISOString(),
@@ -66,6 +68,7 @@ export default function AccountSettings() {
         documents: documents.data,
         payments: payments.data,
         reviews: reviews.data,
+        service_requests: serviceReqs.data,
       };
       const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
