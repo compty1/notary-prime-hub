@@ -514,7 +514,7 @@ export default function BookAppointment() {
   const leadTimeWarning = getLeadTimeWarning();
 
   const canProceed = () => {
-    if (isNonNotarial) {
+    if (isSkipTypeStep) {
       if (step === 1) return !!serviceType;
       if (step === 2) { if (!date || !time) return false; if (!isDigitalOnly(serviceType, serviceCategories) && notarizationType === "in_person" && !clientZip && !location) return false; if (leadTimeWarning) return false; return true; }
       if (!user) return !!(guestName.trim() && guestEmail.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail) && guestPassword.length >= 8 && /[A-Z]/.test(guestPassword) && /[0-9]/.test(guestPassword));
