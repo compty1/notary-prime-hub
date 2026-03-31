@@ -59,6 +59,28 @@ export function Breadcrumbs() {
     isLast: i === segments.length - 1,
   }));
 
+  // Emit BreadcrumbList JSON-LD
+  useEffect(() => {
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://notardex.com" },
+        ...crumbs.map((c, i) => ({
+          "@type": "ListItem",
+          "position": i + 2,
+          "name": c.label,
+          "item": `https://notardex.com${c.path}`,
+        })),
+      ],
+    };
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.textContent = JSON.stringify(schema);
+    document.head.appendChild(script);
+    return () => { script.remove(); };
+  }, [pathname]);
+
   return (
     <nav aria-label="Breadcrumb" className="mb-4">
       <ol className="flex items-center gap-1 text-sm text-muted-foreground">
