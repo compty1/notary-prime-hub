@@ -101,6 +101,24 @@ export default function AdminChat() {
     ));
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user || !selectedUser) return;
+    const path = `chat/admin/${Date.now()}_${file.name}`;
+    const { error } = await supabase.storage.from("documents").upload(path, file);
+    if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); return; }
+    const { data: urlData } = await supabase.storage.from("documents").createSignedUrl(path, 86400);
+    const attachmentUrl = urlData?.signedUrl || path;
+    await supabase.from("chat_messages").insert({
+      sender_id: user.id,
+      message: `📎 [${file.name}](${attachmentUrl})`,
+      is_admin: true,
+      recipient_id: selectedUser,
+      attachment_url: attachmentUrl,
+    } as any);
+    toast({ title: "File sent" });
+  };
+
   const sendMessage = async () => {
     if (!message.trim() || !user || !selectedUser) return;
     setSending(true);
