@@ -486,7 +486,9 @@ export default function Index() {
                         value={contactForm.name}
                         onChange={(e) => setContactForm((prev) => ({ ...prev, name: e.target.value }))}
                         maxLength={100}
-                        required />
+                        required
+                        aria-required="true"
+                        autoComplete="name" />
                       
                     </div>
                     <div className="space-y-2">
