@@ -167,8 +167,8 @@ export default function AdminAppointments() {
     setLoading(false);
   };
 
-  useEffect(() => { setPage(0); }, [filter, dateRange]);
-  useEffect(() => { fetchData(); }, [filter, dateRange, page]);
+  useEffect(() => { setPage(0); }, [filter, dateRange, serviceTypeFilter, notarizationTypeFilter]);
+  useEffect(() => { fetchData(); }, [filter, dateRange, serviceTypeFilter, notarizationTypeFilter, page]);
 
   // Fetch service requests when toggled
   useEffect(() => {
