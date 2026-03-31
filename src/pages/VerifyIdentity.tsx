@@ -141,7 +141,7 @@ export default function VerifyIdentity() {
                 <p className="mb-4 text-xs text-muted-foreground">Driver's license, state ID, or passport — front side</p>
                 <Input type="file" accept="image/*" onChange={handleIdScan} disabled={scanning} className="max-w-xs mx-auto" />
               </div>
-              )
+              )}
 
               {scanning && (
                 <div className="flex items-center justify-center gap-3 py-6">
