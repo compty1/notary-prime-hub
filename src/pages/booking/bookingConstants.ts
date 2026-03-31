@@ -59,7 +59,7 @@ export const fallbackServiceTypes = [
 export const DIGITAL_ONLY_CATEGORIES = new Set(["recurring", "consulting", "document_services", "business_services", "admin_support", "content_creation", "research", "customer_service", "technical_support", "ux_testing"]);
 export const LOCATION_REQUIRED_SERVICES = new Set(["Closing Coordination", "Bulk Notarization"]);
 export const DIGITAL_ONLY_SERVICES = new Set([
-  "Document Storage Vault", "Cloud Document Storage", "Virtual Mailroom",
+  "Consultation", "Document Storage Vault", "Cloud Document Storage", "Virtual Mailroom",
   "Compliance Reminders", "Document Retention", "Notary API Access",
   "White-Label Notarization", "Registered Agent Service", "Subscription Plans",
   "ID / KYC Verification", "Background Check Coordination", "Document Translation",

@@ -1445,12 +1445,19 @@ export type Database = {
           address: string | null
           admin_notes: string | null
           avatar_path: string | null
+          bond_amount: number | null
+          bond_company: string | null
           city: string | null
+          commission_expiration: string | null
+          commission_number: string | null
           created_at: string
           email: string | null
+          eo_expiration: string | null
+          eo_policy_number: string | null
           full_name: string | null
           id: string
           phone: string | null
+          seal_file_path: string | null
           state: string | null
           stripe_customer_id: string | null
           updated_at: string
@@ -1461,12 +1468,19 @@ export type Database = {
           address?: string | null
           admin_notes?: string | null
           avatar_path?: string | null
+          bond_amount?: number | null
+          bond_company?: string | null
           city?: string | null
+          commission_expiration?: string | null
+          commission_number?: string | null
           created_at?: string
           email?: string | null
+          eo_expiration?: string | null
+          eo_policy_number?: string | null
           full_name?: string | null
           id?: string
           phone?: string | null
+          seal_file_path?: string | null
           state?: string | null
           stripe_customer_id?: string | null
           updated_at?: string
@@ -1477,12 +1491,19 @@ export type Database = {
           address?: string | null
           admin_notes?: string | null
           avatar_path?: string | null
+          bond_amount?: number | null
+          bond_company?: string | null
           city?: string | null
+          commission_expiration?: string | null
+          commission_number?: string | null
           created_at?: string
           email?: string | null
+          eo_expiration?: string | null
+          eo_policy_number?: string | null
           full_name?: string | null
           id?: string
           phone?: string | null
+          seal_file_path?: string | null
           state?: string | null
           stripe_customer_id?: string | null
           updated_at?: string

@@ -498,8 +498,10 @@ export default function BookAppointment() {
     await submitBooking(user.id);
   };
 
+  const isConsultation = serviceType?.toLowerCase() === "consultation" || serviceCategories[serviceType] === "consulting";
   const isNonNotarial = serviceType && !requiresNotarizationType(serviceType, serviceCategories);
-  const totalSteps = isNonNotarial ? 3 : 4;
+  const isSkipTypeStep = isNonNotarial || isConsultation;
+  const totalSteps = isSkipTypeStep ? 3 : 4;
   const lastStep = totalSteps as BookingStep;
 
   const getLeadTimeWarning = () => {
@@ -512,7 +514,7 @@ export default function BookAppointment() {
   const leadTimeWarning = getLeadTimeWarning();
 
   const canProceed = () => {
-    if (isNonNotarial) {
+    if (isSkipTypeStep) {
       if (step === 1) return !!serviceType;
       if (step === 2) { if (!date || !time) return false; if (!isDigitalOnly(serviceType, serviceCategories) && notarizationType === "in_person" && !clientZip && !location) return false; if (leadTimeWarning) return false; return true; }
       if (!user) return !!(guestName.trim() && guestEmail.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail) && guestPassword.length >= 8 && /[A-Z]/.test(guestPassword) && /[0-9]/.test(guestPassword));
@@ -567,7 +569,7 @@ export default function BookAppointment() {
     travelDistance, afterHoursFee, signerCapacity, facilityName, signerCount,
   };
 
-  const stepLabels = isNonNotarial ? ["Service", "Schedule", "Confirm"] : ["Type", "Service", "Schedule", "Confirm"];
+  const stepLabels = isSkipTypeStep ? ["Service", "Schedule", "Confirm"] : ["Type", "Service", "Schedule", "Confirm"];
 
   return (
     <PageShell>
@@ -617,22 +619,36 @@ export default function BookAppointment() {
           <Card className="border-border/50">
             <CardHeader>
               <CardTitle className="font-sans text-xl">
-                {isNonNotarial
-                  ? (step === 1 ? "Choose Service" : step === 2 ? "Pick Date & Time" : "Review & Confirm")
+                {isSkipTypeStep
+                  ? (step === 1 ? (isConsultation ? "Schedule Consultation" : "Choose Service") : step === 2 ? "Pick Date & Time" : "Review & Confirm")
                   : (step === 1 ? "Select Notarization Type" : step === 2 ? "Choose Service" : step === 3 ? "Pick Date & Time" : "Review & Confirm")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Step 1: Type selection or Service selection for non-notarial */}
-              {step === 1 && (isNonNotarial ? (
+              {/* Step 1: Type selection or Service selection for non-notarial/consultation */}
+              {step === 1 && (isSkipTypeStep ? (
                 <div className="space-y-4">
-                  <div>
-                    <Label>Service Type</Label>
-                    <Select value={serviceType} onValueChange={val => { setServiceType(val); if (!requiresNotarizationType(val, serviceCategories)) setNotarizationType("in_person"); }}>
-                      <SelectTrigger><SelectValue placeholder="Select service" /></SelectTrigger>
-                      <SelectContent>{serviceTypes.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-                    </Select>
-                  </div>
+                  {isConsultation && (
+                    <div className="rounded-lg bg-primary/5 border border-accent/20 p-4 flex items-center gap-3">
+                      <Monitor className="h-5 w-5 text-primary flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">This consultation will take place via Zoom</p>
+                        <p className="text-xs text-muted-foreground">You'll receive a Zoom meeting link in your confirmation email.</p>
+                      </div>
+                    </div>
+                  )}
+                  {!isConsultation && (
+                    <div>
+                      <Label>Service Type</Label>
+                      <Select value={serviceType} onValueChange={val => { setServiceType(val); if (!requiresNotarizationType(val, serviceCategories)) setNotarizationType("in_person"); }}>
+                        <SelectTrigger><SelectValue placeholder="Select service" /></SelectTrigger>
+                        <SelectContent>{serviceTypes.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                  {isConsultation && serviceType && serviceDescriptions[serviceType] && (
+                    <p className="text-xs text-muted-foreground bg-muted/50 rounded p-2">{serviceDescriptions[serviceType]}</p>
+                  )}
                   <BookingIntakeFields {...intakeFieldsProps} />
                 </div>
               ) : (
@@ -646,9 +662,9 @@ export default function BookAppointment() {
                 </div>
               ))}
 
-              {/* Non-notarial step 2 = schedule, step 3 = review */}
-              {isNonNotarial && step === 2 && <BookingScheduleStep {...scheduleStepProps} />}
-              {isNonNotarial && step === 3 && <BookingReviewStep {...reviewProps} />}
+              {/* Non-notarial/consultation step 2 = schedule, step 3 = review */}
+              {isSkipTypeStep && step === 2 && <BookingScheduleStep {...scheduleStepProps} />}
+              {isSkipTypeStep && step === 3 && <BookingReviewStep {...reviewProps} />}
 
               {/* Notarial step 2 = service selection */}
               {!isNonNotarial && step === 2 && (
