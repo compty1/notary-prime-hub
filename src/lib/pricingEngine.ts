@@ -19,9 +19,11 @@ export interface PricingSettings {
 export interface PricingInput {
   notarizationType: "in_person" | "ron";
   documentCount: number;
+  signerCount?: number; // each signer = separate notarial act per Ohio law
   travelMiles?: number;
   isRush?: boolean;
   isAfterHours?: boolean;
+  afterHoursAmount?: number; // pre-calculated after-hours fee amount
   witnessCount?: number;
   needsApostille?: boolean;
   apostilleCount?: number;
