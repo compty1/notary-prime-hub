@@ -112,11 +112,20 @@ type Service = {
 };
 
 export default function Services() {
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [searchParams] = useSearchParams();
+  const categoryParam = searchParams.get("category");
+  const [activeCategory, setActiveCategory] = useState(categoryParam && categoryOrder.includes(categoryParam) ? categoryParam : "all");
   const [searchQuery, setSearchQuery] = useState("");
   const [helpQuery, setHelpQuery] = useState("");
   const [helpResult, setHelpResult] = useState("");
   const [helpLoading, setHelpLoading] = useState(false);
+
+  // Sync URL param changes
+  useEffect(() => {
+    if (categoryParam && categoryOrder.includes(categoryParam)) {
+      setActiveCategory(categoryParam);
+    }
+  }, [categoryParam]);
 
   const submitHelp = async () => {
     if (!helpQuery.trim() || helpLoading) return;
