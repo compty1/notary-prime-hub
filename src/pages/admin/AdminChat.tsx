@@ -139,7 +139,10 @@ export default function AdminChat() {
     setSending(false);
   };
 
-  const currentMessages = selectedUser ? getConversation(selectedUser) : [];
+  const currentMessages = selectedUser ? getConversation(selectedUser).filter(m => {
+    if (!messageSearch) return true;
+    return m.message.toLowerCase().includes(messageSearch.toLowerCase());
+  }) : [];
 
   return (
     <div>
