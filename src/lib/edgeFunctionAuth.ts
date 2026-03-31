@@ -58,10 +58,8 @@ export async function callEdgeFunctionStream(
       body: JSON.stringify(body),
       signal: controller.signal,
     });
-    // Don't clear timeout for streams - it'll be cleared when the stream ends
-    if (!response.ok) {
-      clearTimeout(timer);
-    }
+    // Always clear timeout — caller manages stream lifetime
+    clearTimeout(timer);
     return response;
   } catch (err) {
     clearTimeout(timer);

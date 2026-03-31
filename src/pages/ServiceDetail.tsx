@@ -394,9 +394,9 @@ export default function ServiceDetail() {
 
       {/* Phase 3.3: Legal disclaimer */}
       {showDisclaimer && (
-        <div className="bg-amber-50 border-b border-amber-200">
+        <div className="border-b border-amber-200 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/30">
           <div className="container mx-auto max-w-4xl px-4 py-3">
-            <p className="text-xs text-amber-800 flex items-center gap-2">
+            <p className="text-xs text-amber-800 dark:text-amber-200 flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 flex-shrink-0" />
               <strong>Disclaimer:</strong> This service does not constitute legal advice. A notary can administer oaths, witness signatures, and certify copies but cannot provide legal counsel. Consult an attorney for specific legal questions.
             </p>
