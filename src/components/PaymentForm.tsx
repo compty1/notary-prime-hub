@@ -10,17 +10,22 @@ import { Loader2, CreditCard, CheckCircle, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 let stripePromise: Promise<Stripe | null> | null = null;
+let stripeLoadFailed = false;
 
 const getStripePromise = async () => {
+  if (stripeLoadFailed) stripePromise = null; // retry on failure
   if (!stripePromise) {
     stripePromise = (async () => {
       try {
         const { data } = await supabase.functions.invoke("get-stripe-config");
         if (data?.publishableKey) {
+          stripeLoadFailed = false;
           return loadStripe(data.publishableKey);
         }
+        stripeLoadFailed = true;
       } catch (e) {
         console.error("Failed to load Stripe config:", e);
+        stripeLoadFailed = true;
       }
       return null;
     })();
@@ -175,7 +180,7 @@ export default function PaymentForm({ appointmentId, defaultAmount, description,
           <CardDescription>Amount: ${amount.toFixed(2)}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Elements stripe={stripeInstance} options={{ clientSecret, appearance: { theme: "stripe" } }}>
+          <Elements stripe={stripeInstance} options={{ clientSecret, appearance: { theme: document.documentElement.classList.contains('dark') ? 'night' : 'stripe' } }}>
             <CheckoutForm amount={amount} onSuccess={() => onSuccess?.()} onCancel={() => { setClientSecret(null); onCancel?.(); }} />
           </Elements>
         </CardContent>
@@ -197,7 +202,7 @@ export default function PaymentForm({ appointmentId, defaultAmount, description,
           <Input
             id="payment-amount"
             type="number"
-            min="1"
+            min="0.50"
             step="0.01"
             value={amount || ""}
             onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}

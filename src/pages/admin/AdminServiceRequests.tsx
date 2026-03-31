@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Search, Filter, Clock, CheckCircle, AlertTriangle, Loader2, User, FileText, Upload, Download } from "lucide-react";
+import { logAuditEvent } from "@/lib/auditLog";
 
 const STATUS_OPTIONS = ["submitted", "in_progress", "awaiting_client", "completed", "cancelled"];
 const PRIORITY_OPTIONS = ["low", "normal", "high", "urgent"];
@@ -40,6 +41,7 @@ export default function AdminServiceRequests() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
+  const [assignedFilter, setAssignedFilter] = useState("all");
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
@@ -55,6 +57,19 @@ export default function AdminServiceRequests() {
   useEffect(() => {
     fetchRequests();
     fetchTeam();
+    // Realtime subscription (Item 232)
+    const channel = supabase.channel("admin-service-requests")
+      .on("postgres_changes", { event: "*", schema: "public", table: "service_requests" }, (payload) => {
+        if (payload.eventType === "INSERT") {
+          setRequests(prev => [payload.new as any, ...prev]);
+          toast({ title: "New service request", description: (payload.new as any).service_name });
+        } else if (payload.eventType === "UPDATE") {
+          setRequests(prev => prev.map(r => r.id === (payload.new as any).id ? payload.new as any : r));
+        } else if (payload.eventType === "DELETE") {
+          setRequests(prev => prev.filter(r => r.id !== (payload.old as any).id));
+        }
+      }).subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   const fetchTeam = async () => {
@@ -132,6 +147,12 @@ export default function AdminServiceRequests() {
     }).eq("id", selectedRequest.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else {
+      // Audit log (Item 247)
+      await logAuditEvent("service_request_updated", {
+        entityType: "service_request",
+        entityId: selectedRequest.id,
+        details: { status: editStatus, priority: editPriority, assigned_to: editAssignedTo || null },
+      });
       toast({ title: "Request updated" });
       setRequests(prev => prev.map(r => r.id === selectedRequest.id ? { ...r, status: editStatus, priority: editPriority, notes: editNotes, client_visible_status: editClientStatus, assigned_to: editAssignedTo || null, deliverable_url: deliverableUrl, sla_deadline: slaDeadline } : r));
       setDetailOpen(false);
@@ -142,6 +163,7 @@ export default function AdminServiceRequests() {
   const filtered = requests.filter(r => {
     if (statusFilter !== "all" && r.status !== statusFilter) return false;
     if (priorityFilter !== "all" && r.priority !== priorityFilter) return false;
+    if (assignedFilter !== "all" && (r.assigned_to || "") !== assignedFilter) return false;
     if (search) {
       const s = search.toLowerCase();
       const clientName = profiles[r.client_id]?.full_name?.toLowerCase() || "";
@@ -206,6 +228,16 @@ export default function AdminServiceRequests() {
             {PRIORITY_OPTIONS.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
           </SelectContent>
         </Select>
+        <Select value={assignedFilter} onValueChange={setAssignedFilter}>
+          <SelectTrigger className="w-[150px]"><SelectValue placeholder="Assigned To" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Team</SelectItem>
+            <SelectItem value="">Unassigned</SelectItem>
+            {teamProfiles.map(p => (
+              <SelectItem key={p.user_id} value={p.user_id}>{p.full_name || p.email}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Table */}
@@ -238,7 +270,12 @@ export default function AdminServiceRequests() {
                   </TableCell>
                   <TableCell><Badge className={statusColors[req.status] || ""}>{req.status.replace(/_/g, " ")}</Badge></TableCell>
                   <TableCell><Badge variant="outline" className={priorityColors[req.priority] || ""}>{req.priority}</Badge></TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{new Date(req.created_at).toLocaleDateString()}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {new Date(req.created_at).toLocaleDateString()}
+                    {req.sla_deadline && new Date(req.sla_deadline) < new Date() && req.status !== "completed" && req.status !== "cancelled" && (
+                      <Badge className="ml-2 bg-destructive/10 text-destructive text-[10px]">Overdue</Badge>
+                    )}
+                  </TableCell>
                   <TableCell className="text-right"><Button size="sm" variant="ghost">View</Button></TableCell>
                 </TableRow>
               ))}

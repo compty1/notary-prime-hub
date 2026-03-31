@@ -36,6 +36,9 @@ const SIGNING_PLATFORMS = [
   { value: "docusign", label: "DocuSign" },
   { value: "notarize", label: "Notarize" },
   { value: "bluenotary", label: "BlueNotary" },
+  { value: "pavaso", label: "Pavaso" },
+  { value: "onespan", label: "OneSpan" },
+  { value: "nexsys", label: "Nexsys" },
   { value: "other", label: "Other" },
 ];
 
@@ -113,6 +116,11 @@ export default function RonSession() {
   const [idExpiration, setIdExpiration] = useState("");
 
   const [kbaCompleted, setKbaCompleted] = useState(false);
+  const [kbaAttempts, setKbaAttempts] = useState(0);
+
+  // Session timeout
+  const [sessionTimeoutMinutes, setSessionTimeoutMinutes] = useState(60);
+  const [sessionStartedAt, setSessionStartedAt] = useState<string | null>(null);
 
   // Voice-to-notes
   const [notes, setNotes] = useState("");
@@ -169,6 +177,9 @@ export default function RonSession() {
         if ((session as any).signing_platform) setSigningPlatform((session as any).signing_platform);
         if ((session as any).document_name) setDocumentName((session as any).document_name);
         if ((session as any).signer_email) setSignerEmail((session as any).signer_email);
+        if ((session as any).kba_attempts) setKbaAttempts((session as any).kba_attempts);
+        if ((session as any).session_timeout_minutes) setSessionTimeoutMinutes((session as any).session_timeout_minutes);
+        if ((session as any).started_at) setSessionStartedAt((session as any).started_at);
       } else {
         // Capture signer IP on first session load (Ohio RON compliance)
         try {
@@ -371,6 +382,10 @@ export default function RonSession() {
     }
     setCompleting(true);
 
+    // Fetch notary name from settings (Item 353, 422)
+    const { data: notaryNameData } = await supabase.from("platform_settings").select("setting_value").eq("setting_key", "notary_name").single();
+    const notaryNameSetting = notaryNameData?.setting_value || "Notar";
+
     await supabase.from("appointments").update({ status: "completed" as any, admin_notes: notes }).eq("id", appointmentId);
     await supabase.from("notarization_sessions").update({
       id_verified: true,
@@ -418,6 +433,7 @@ export default function RonSession() {
       id_type: idType || null,
       id_number: idNumber || null,
       id_expiration: idExpiration || null,
+      signer_address: clientProfile?.address ? `${clientProfile.address}, ${clientProfile.city || ""} ${clientProfile.state || ""} ${clientProfile.zip || ""}`.trim() : null,
       notes: journalNotes,
     });
 
@@ -447,7 +463,7 @@ export default function RonSession() {
       appointment_id: appointmentId,
       created_by: user.id,
       signer_name: clientProfile?.full_name || null,
-      notary_name: "Notar",
+      notary_name: notaryNameSetting || "Notar",
       commissioned_state: "OH",
       status: "valid",
     });

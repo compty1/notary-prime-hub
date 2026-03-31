@@ -144,7 +144,10 @@ export default function BookAppointment() {
         setServiceDescriptions(descs);
         setServiceCategories(cats);
         const preService = new URLSearchParams(window.location.search).get("service");
-        if (preService && data.some((s: any) => s.name === preService)) setServiceType(preService);
+        if (preService) {
+          const match = data.find((s: any) => s.name.toLowerCase() === preService.toLowerCase());
+          if (match) setServiceType(match.name);
+        }
       }
     });
   }, []);
@@ -173,7 +176,16 @@ export default function BookAppointment() {
           setDate(booking.date); setTime(booking.time); setLocation(booking.location || ""); setNotes(booking.notes || "");
           setDocumentCount(booking.documentCount || 1); setClientAddress(booking.clientAddress || "");
           setClientCity(booking.clientCity || ""); setClientState(booking.clientState || "OH"); setClientZip(booking.clientZip || "");
-          setTimeout(() => submitBooking(user.id, booking), 500);
+          // Wait for session to be fully ready before submitting
+          const waitForSession = async () => {
+            for (let i = 0; i < 10; i++) {
+              const { data: { session } } = await supabase.auth.getSession();
+              if (session) { await submitBooking(session.user.id, booking); return; }
+              await new Promise(r => setTimeout(r, 500));
+            }
+            toast({ title: "Session not ready", description: "Please try again.", variant: "destructive" });
+          };
+          waitForSession();
         } catch { localStorage.removeItem(BOOKING_STORAGE_KEY); }
       }
     }

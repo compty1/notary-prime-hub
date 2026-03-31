@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { INTAKE_ONLY_SERVICES, SAAS_LINKS, SUBSCRIPTION_SERVICES as SUBSCRIPTION_SVC_SET, PORTAL_SERVICES as PORTAL_SVC_SET } from "@/lib/serviceConstants";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -88,10 +89,10 @@ export default function ClientPortal() {
   const [reminderForm, setReminderForm] = useState({ document_id: "", expiry_date: "", remind_days_before: "30" });
   const [savingReminder, setSavingReminder] = useState(false);
 
-  const INTAKE_ONLY = new Set(["Apostille Facilitation", "Consular Legalization Prep", "Background Check Coordination", "Clerical Document Preparation", "Document Cleanup & Formatting", "Form Filling Assistance", "Certified Document Prep for Agencies", "Registered Agent Coordination", "Email Management & Correspondence", "Notarized Translation Coordination", "Data Entry", "Travel Arrangements", "Blog Post Writing", "Social Media Content", "Newsletter Design", "Market Research Report", "Lead Generation", "Email Support Handling", "Live Chat Support", "Website Content Updates", "UX Audit & Heuristic Review", "User Flow & Workflow Testing", "Usability Testing & Report", "UX Research & Persona Development"]);
-  const SAAS_TOOLS: Record<string, string> = { "PDF Services": "/digitize", "Document Scanning & Digitization": "/digitize", "Template Library & Form Builder": "/templates", "Virtual Mailroom": "/mailroom", "ID Verification / KYC Checks": "/verify-id" };
-  const SUBSCRIPTION_SERVICES = new Set(["Business Subscription Plans", "API & Integration Services", "White-Label Partner Programs"]);
-  const PORTAL_SERVICES = new Set(["Secure Document Vault & Storage", "Cloud Document Storage", "Document Retention & Compliance", "Automated Reminders & Renewals"]);
+  const INTAKE_ONLY = INTAKE_ONLY_SERVICES;
+  const SAAS_TOOLS = SAAS_LINKS;
+  const SUBSCRIPTION_SERVICES = SUBSCRIPTION_SVC_SET;
+  const PORTAL_SERVICES = PORTAL_SVC_SET;
 
   const getServiceUrl = (svc: any) => {
     if (SAAS_TOOLS[svc.name]) return SAAS_TOOLS[svc.name];
@@ -522,7 +523,7 @@ export default function ClientPortal() {
                         <div>
                           <p className="font-medium text-sm">${parseFloat(p.amount).toFixed(2)}</p>
                           {linkedAppt && <p className="text-xs text-primary font-medium">{linkedAppt.service_type}</p>}
-                          <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString()} · {p.method || "N/A"}</p>
+                          <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString()} · {p.method || "N/A"}{p.paid_at ? ` · Paid ${new Date(p.paid_at).toLocaleDateString()}` : ""}</p>
                         </div>
                         <div className="flex items-center gap-2">
                           {p.status === "pending" && <Button size="sm" className="text-xs " onClick={() => setPayingPaymentId(p.id)}><CreditCard className="mr-1 h-3 w-3" /> Pay Now</Button>}
@@ -567,9 +568,11 @@ export default function ClientPortal() {
             ) : (
               <div className="space-y-3">{serviceRequests.map(req => {
                 const intakeData = typeof req.intake_data === 'object' ? req.intake_data : {};
-                return (<Card key={req.id} className="border-border/50"><CardContent className="p-4"><div className="flex items-center justify-between mb-2"><div><p className="font-medium text-sm">{req.service_name}</p><p className="text-xs text-muted-foreground">{new Date(req.created_at).toLocaleDateString()}</p></div><Badge className={req.status === "completed" ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" : req.status === "in_progress" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" : "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"}>{req.status.replace(/_/g, " ")}</Badge></div>
+                return (<Card key={req.id} className="border-border/50"><CardContent className="p-4"><div className="flex items-center justify-between mb-2"><div><p className="font-medium text-sm">{req.service_name}</p><p className="text-xs text-muted-foreground">{new Date(req.created_at).toLocaleDateString()}</p></div><Badge className={req.status === "completed" ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" : req.status === "in_progress" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" : "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"}>{req.client_visible_status || req.status.replace(/_/g, " ")}</Badge></div>
                 {Object.entries(intakeData).length > 0 && <div className="mt-2 text-xs text-muted-foreground space-y-1">{Object.entries(intakeData).slice(0, 4).map(([key, value]) => <p key={key}><span className="font-medium capitalize">{key.replace(/_/g, " ")}:</span> {String(value)}</p>)}</div>}
-                {req.notes && <p className="text-xs text-muted-foreground mt-2 italic">{req.notes}</p>}</CardContent></Card>);
+                {req.notes && <p className="text-xs text-muted-foreground mt-2 italic">{req.notes}</p>}
+                {req.deliverable_url && <a href={req.deliverable_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 mt-2 text-xs text-primary hover:underline"><ArrowRight className="h-3 w-3" /> Download Deliverable</a>}
+                </CardContent></Card>);
               })}</div>
             )}
           </TabsContent>
