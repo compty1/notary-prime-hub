@@ -634,6 +634,11 @@ export default function AdminAppointments() {
                       <Printer className="mr-1 h-3 w-3" /> Receipt
                     </Button>
                   )}
+                  {!["cancelled", "completed", "no_show"].includes(appt.status) && (
+                    <Button size="sm" variant="ghost" className="text-xs text-destructive hover:text-destructive" onClick={() => setRefuseAppt(appt)}>
+                      <Ban className="mr-1 h-3 w-3" /> Refuse
+                    </Button>
+                  )}
                   <Select value={appt.status} onValueChange={(v) => updateStatus(appt.id, v)}>
                     <SelectTrigger className="w-40">
                       <Badge className={statusColors[appt.status] || "bg-muted"}>{appt.status.replace(/_/g, " ")}</Badge>
