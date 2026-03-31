@@ -184,9 +184,11 @@ const App = () => (
         <BrowserRouter>
           <ScrollToTop />
           <CommandPalette />
-          <Suspense fallback={<PageLoader />}>
-            <AnimatedRoutes />
-          </Suspense>
+          <LegalGlossaryProvider>
+            <Suspense fallback={<PageLoader />}>
+              <AnimatedRoutes />
+            </Suspense>
+          </LegalGlossaryProvider>
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>
