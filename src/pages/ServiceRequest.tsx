@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { usePageTitle } from "@/lib/usePageTitle";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,15 +10,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Checkbox } from "@/components/ui/checkbox";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { ChevronLeft, CheckCircle, FileText, Globe, Upload, Loader2, Shield, Briefcase, ClipboardList, X } from "lucide-react";
+import { ChevronLeft, CheckCircle, FileText, Globe, Upload, Loader2, Shield, Briefcase, ClipboardList, X, Info, Clock } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
-
-const HAGUE_COUNTRIES = [
-  "Albania","Andorra","Argentina","Armenia","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Barbados","Belarus","Belgium","Belize","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burundi","Canada","Cape Verde","Chile","China (Hong Kong)","China (Macao)","Colombia","Cook Islands","Costa Rica","Croatia","Cyprus","Czech Republic","Denmark","Dominica","Dominican Republic","Ecuador","El Salvador","Estonia","Eswatini","Fiji","Finland","France","Georgia","Germany","Greece","Grenada","Guatemala","Guyana","Honduras","Hungary","Iceland","India","Indonesia","Ireland","Israel","Italy","Jamaica","Japan","Jordan","Kazakhstan","Kosovo","Kyrgyzstan","Latvia","Lesotho","Liberia","Liechtenstein","Lithuania","Luxembourg","Malawi","Malta","Marshall Islands","Mauritius","Mexico","Moldova","Monaco","Mongolia","Montenegro","Morocco","Namibia","Netherlands","New Zealand","Nicaragua","Niue","North Macedonia","Norway","Oman","Pakistan","Palau","Panama","Paraguay","Peru","Philippines","Poland","Portugal","Republic of Korea","Romania","Russia","Rwanda","Saint Kitts and Nevis","Saint Lucia","Saint Vincent and the Grenadines","Samoa","San Marino","São Tomé and Príncipe","Saudi Arabia","Serbia","Seychelles","Singapore","Slovakia","Slovenia","South Africa","Spain","Suriname","Sweden","Switzerland","Tajikistan","Tonga","Trinidad and Tobago","Tunisia","Turkey","Ukraine","United Kingdom","United States","Uruguay","Uzbekistan","Vanuatu","Venezuela",
-];
+import { HAGUE_COUNTRIES } from "./booking/bookingConstants";
 
 // Service-specific field configs
 const SERVICE_FIELDS: Record<string, { label: string; fields: { name: string; label: string; type: string; options?: string[]; placeholder?: string; required?: boolean }[] }> = {
@@ -260,6 +260,9 @@ export default function ServiceRequest() {
   const [submitted, setSubmitted] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [tosAccepted, setTosAccepted] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   // Guest fields
   const [guestName, setGuestName] = useState("");
@@ -268,23 +271,69 @@ export default function ServiceRequest() {
 
   usePageTitle(config.label);
 
+  // Auto-save to localStorage every 5 seconds
+  const AUTOSAVE_KEY = `sr-draft-${serviceName}`;
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(AUTOSAVE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.formData) setFormData(parsed.formData);
+        if (parsed.notes) setNotes(parsed.notes);
+      }
+    } catch { /* ignore */ }
+  }, [AUTOSAVE_KEY]);
+
+  useEffect(() => {
+    if (submitted) return;
+    const timer = setTimeout(() => {
+      if (Object.keys(formData).length > 0 || notes) {
+        localStorage.setItem(AUTOSAVE_KEY, JSON.stringify({ formData, notes, _at: Date.now() }));
+      }
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [formData, notes, submitted, AUTOSAVE_KEY]);
+
   const updateField = (name: string, value: string) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async () => {
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+  const MAX_FILES = 10;
+  const ACCEPTED_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/webp", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+
+  const addFiles = (files: File[]) => {
+    const remaining = MAX_FILES - uploadedFiles.length;
+    if (remaining <= 0) { toast({ title: "File limit reached", description: `Maximum ${MAX_FILES} files allowed.`, variant: "destructive" }); return; }
+    const valid = files.slice(0, remaining).filter(f => {
+      if (f.size > MAX_FILE_SIZE) { toast({ title: `${f.name} is too large`, description: "Maximum file size is 10MB.", variant: "destructive" }); return false; }
+      if (!ACCEPTED_TYPES.includes(f.type)) { toast({ title: `${f.name} is not supported`, description: "Accepted: PDF, JPEG, PNG, WebP, DOC, DOCX.", variant: "destructive" }); return false; }
+      return true;
+    });
+    setUploadedFiles(prev => [...prev, ...valid]);
+  };
+
+  const handlePreSubmit = () => {
     if (!user) {
       toast({ title: "Please sign in", description: "You need an account to submit a service request.", variant: "destructive" });
       navigate(`/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`);
       return;
     }
-
     const missingRequired = config.fields.filter(f => f.required && !formData[f.name]?.trim());
     if (missingRequired.length > 0) {
       toast({ title: "Missing required fields", description: `Please fill in: ${missingRequired.map(f => f.label).join(", ")}`, variant: "destructive" });
       return;
     }
+    if (!tosAccepted) {
+      toast({ title: "Terms required", description: "Please accept the terms of service.", variant: "destructive" });
+      return;
+    }
+    setConfirmOpen(true);
+  };
 
+  const handleSubmit = async () => {
+    if (!user) return;
+    setConfirmOpen(false);
     setSubmitting(true);
 
     // Upload files if any
@@ -309,14 +358,15 @@ export default function ServiceRequest() {
     });
 
     if (error) {
-      toast({ title: "Submission failed", description: error.message, variant: "destructive" });
+      toast({ title: "Submission failed", description: error.message, variant: "destructive", duration: 8000 });
     } else {
+      localStorage.removeItem(AUTOSAVE_KEY);
       // Send notification email
       try {
         await supabase.functions.invoke("send-correspondence", {
           body: { type: "service_request_submitted", serviceName, clientId: user.id },
         });
-      } catch {}
+      } catch (e) { console.error("Notification error:", e); }
       toast({ title: "Request submitted!", description: "We'll review your request and get back to you shortly." });
       setSubmitted(true);
     }
@@ -332,8 +382,12 @@ export default function ServiceRequest() {
           </div>
           <h1 className="font-sans text-2xl font-bold">Request Submitted!</h1>
           <p className="text-muted-foreground">Your {config.label.toLowerCase()} has been received. We'll review it and contact you within 1-2 business days.</p>
+          <div className="flex items-center gap-2 justify-center text-sm text-muted-foreground">
+            <Clock className="h-4 w-4" />
+            <span>Typical response time: 1-2 business days</span>
+          </div>
           <div className="flex gap-3 justify-center">
-            <Link to="/portal"><Button className="">Go to Portal</Button></Link>
+            <Link to="/portal"><Button>Go to Portal</Button></Link>
             <Link to="/services"><Button variant="outline">Browse Services</Button></Link>
           </div>
         </motion.div>
@@ -397,31 +451,77 @@ export default function ServiceRequest() {
               {/* File Upload Section */}
               <div>
                 <Label>Attach Documents (optional)</Label>
+                <p className="text-xs text-muted-foreground mb-1">Max 10 files, 10MB each. Accepted: PDF, JPEG, PNG, WebP, DOC, DOCX.</p>
                 <div
-                  className="mt-1 rounded-lg border-2 border-dashed border-primary/20 bg-primary/5 p-6 text-center cursor-pointer hover:border-primary/40 transition-colors"
+                  className={`mt-1 rounded-lg border-2 border-dashed p-6 text-center cursor-pointer transition-colors ${isDragging ? "border-primary bg-primary/10" : "border-primary/20 bg-primary/5 hover:border-primary/40"}`}
                   onClick={() => document.getElementById("sr-file-input")?.click()}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={(e) => { e.preventDefault(); const dropped = Array.from(e.dataTransfer.files); if (dropped.length) setUploadedFiles(prev => [...prev, ...dropped]); }}
+                  onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                  onDragLeave={() => setIsDragging(false)}
+                  onDrop={(e) => { e.preventDefault(); setIsDragging(false); addFiles(Array.from(e.dataTransfer.files)); }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Upload documents"
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); document.getElementById("sr-file-input")?.click(); } }}
                 >
                   <Upload className="mx-auto mb-2 h-8 w-8 text-primary/50" />
-                  <p className="text-sm text-muted-foreground">Drag & drop or click to upload supporting documents</p>
-                  <input id="sr-file-input" type="file" multiple className="hidden" onChange={(e) => { const files = Array.from(e.target.files || []); if (files.length) setUploadedFiles(prev => [...prev, ...files]); }} />
+                  <p className="text-sm text-muted-foreground">
+                    {isDragging ? "Drop files here" : "Drag & drop or click to upload supporting documents"}
+                  </p>
+                  <input
+                    id="sr-file-input"
+                    type="file"
+                    multiple
+                    accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
+                    className="hidden"
+                    onChange={(e) => { addFiles(Array.from(e.target.files || [])); e.target.value = ""; }}
+                  />
                 </div>
                 {uploadedFiles.length > 0 && (
                   <div className="mt-2 space-y-1">
                     {uploadedFiles.map((f, i) => (
                       <div key={i} className="flex items-center justify-between rounded border border-border/50 px-2 py-1 text-sm">
-                        <span className="flex items-center gap-1 truncate"><FileText className="h-3 w-3 text-primary" /> {f.name}</span>
-                        <button onClick={() => setUploadedFiles(prev => prev.filter((_, idx) => idx !== i))} className="text-muted-foreground hover:text-destructive"><X className="h-3 w-3" /></button>
+                        <span className="flex items-center gap-1 truncate">
+                          <FileText className="h-3 w-3 text-primary" />
+                          {f.name}
+                          <span className="text-xs text-muted-foreground">({(f.size / 1024 / 1024).toFixed(1)}MB)</span>
+                        </span>
+                        <button onClick={() => setUploadedFiles(prev => prev.filter((_, idx) => idx !== i))} className="text-muted-foreground hover:text-destructive" aria-label={`Remove ${f.name}`}>
+                          <X className="h-3 w-3" />
+                        </button>
                       </div>
                     ))}
+                    <p className="text-xs text-muted-foreground">{uploadedFiles.length}/{MAX_FILES} files</p>
                   </div>
                 )}
+                <p className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
+                  <Shield className="h-3 w-3" /> Files are encrypted and stored securely.
+                </p>
               </div>
 
               <div>
                 <Label>Additional Notes</Label>
                 <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Any additional information..." rows={2} />
+              </div>
+
+              {/* Terms of Service */}
+              <div className="flex items-start gap-2">
+                <Checkbox
+                  id="tos"
+                  checked={tosAccepted}
+                  onCheckedChange={(checked) => setTosAccepted(checked === true)}
+                />
+                <label htmlFor="tos" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
+                  I agree to the{" "}
+                  <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link>{" "}
+                  and{" "}
+                  <Link to="/terms" className="text-primary hover:underline">Privacy Policy</Link>.
+                  I understand my data will be processed to fulfill this request.
+                </label>
+              </div>
+
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Clock className="h-3 w-3" />
+                <span>Typical response time: 1-2 business days</span>
               </div>
 
               {!user && (
@@ -435,11 +535,38 @@ export default function ServiceRequest() {
                 </div>
               )}
 
-              <Button onClick={handleSubmit} disabled={submitting || !user} className="w-full " size="lg">
+              <Button onClick={handlePreSubmit} disabled={submitting || !user || !tosAccepted} className="w-full" size="lg">
                 {submitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : "Submit Request"}
               </Button>
             </CardContent>
           </Card>
+
+          {/* Confirmation Dialog */}
+          <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Confirm Submission</AlertDialogTitle>
+                <AlertDialogDescription>
+                  You're about to submit a <strong>{config.label}</strong> request for <strong>{serviceName}</strong>.
+                  {uploadedFiles.length > 0 && ` ${uploadedFiles.length} file(s) will be uploaded.`}
+                  {" "}This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              {Object.keys(formData).length > 0 && (
+                <div className="rounded-lg bg-muted/50 p-3 max-h-32 overflow-y-auto">
+                  {Object.entries(formData).map(([key, val]) => (
+                    <p key={key} className="text-xs text-muted-foreground">
+                      <span className="capitalize font-medium">{key.replace(/_/g, " ")}:</span> {val}
+                    </p>
+                  ))}
+                </div>
+              )}
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleSubmit}>Submit Request</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </motion.div>
       </div>
 
