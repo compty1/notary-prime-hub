@@ -4,6 +4,8 @@ import { Footer } from "@/components/Footer";
 import { BackToTop } from "@/components/BackToTop";
 import { CookieConsent } from "@/components/CookieConsent";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
+import { MobileFAB } from "@/components/MobileFAB";
+import { AILeadChatbot } from "@/components/AILeadChatbot";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { pageTransition } from "@/lib/animations";
@@ -55,6 +57,8 @@ export function PageShell({ children, hideNav = false, hideFooter = false }: Pag
       </motion.main>
       {!hideFooter && <Footer phone={contactInfo.phone} email={contactInfo.email} />}
       <BackToTop />
+      <MobileFAB />
+      <AILeadChatbot />
       <CookieConsent />
       <OfflineIndicator />
     </div>

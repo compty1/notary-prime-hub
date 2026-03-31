@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin, Monitor, Plus, Video, RefreshCw, Wifi } from "lucide-react";
+import { Calendar, Clock, MapPin, Monitor, Plus, Video, RefreshCw, Wifi, Star, Hash } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
 
 const statusColors: Record<string, string> = {
@@ -90,6 +90,7 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
                         <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {formatDate(appt.scheduled_date)}</span>
                         <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {formatTime(appt.scheduled_time)}</span>
                       </div>
+                      {appt.confirmation_number && <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><Hash className="h-3 w-3" /> {appt.confirmation_number}</p>}
                       {appt.location && appt.location !== "Remote" && <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="h-3 w-3" /> {appt.location}</p>}
                       {appt.estimated_price && <p className="mt-1 text-xs text-muted-foreground">Est. ${parseFloat(appt.estimated_price).toFixed(2)}</p>}
                     </div>
@@ -117,9 +118,18 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
             {past.map(appt => (
               <Card key={appt.id} className="border-border/50 opacity-75">
                 <CardContent className="flex items-center justify-between p-4">
-                  <div><p className="font-medium">{appt.service_type}</p><p className="text-sm text-muted-foreground">{formatDate(appt.scheduled_date)}</p></div>
+                  <div>
+                    <p className="font-medium">{appt.service_type}</p>
+                    <p className="text-sm text-muted-foreground">{formatDate(appt.scheduled_date)}</p>
+                    {appt.confirmation_number && <p className="text-xs text-muted-foreground flex items-center gap-1"><Hash className="h-3 w-3" /> {appt.confirmation_number}</p>}
+                  </div>
                   <div className="flex items-center gap-2">
-                    {appt.status === "completed" && <Link to={`/book?rebook=${appt.id}`}><Button size="sm" variant="outline" className="text-xs"><RefreshCw className="mr-1 h-3 w-3" /> Rebook</Button></Link>}
+                    {appt.status === "completed" && (
+                      <>
+                        <Link to={`/portal?tab=reviews&appointmentId=${appt.id}`}><Button size="sm" variant="outline" className="text-xs"><Star className="mr-1 h-3 w-3" /> Review</Button></Link>
+                        <Link to={`/book?rebook=${appt.id}`}><Button size="sm" variant="outline" className="text-xs"><RefreshCw className="mr-1 h-3 w-3" /> Rebook</Button></Link>
+                      </>
+                    )}
                     <Badge className={statusColors[appt.status]}>{appt.status.replace(/_/g, " ")}</Badge>
                   </div>
                 </CardContent>

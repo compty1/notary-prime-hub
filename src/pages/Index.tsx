@@ -152,7 +152,7 @@ export default function Index() {
       toast({ title: "Something went wrong", description: "Please try again or call us directly.", variant: "destructive" });
     } else {
       setLastSubmitTime(now);
-      toast({ title: "Message sent!", description: "We'll get back to you within 24 hours." });
+      toast({ title: "Message sent!", description: "We'll get back to you within 2 hours during business hours." });
       setContactForm({ name: "", email: "", phone: "", service: "", message: "" });
     }
   };
@@ -169,7 +169,8 @@ export default function Index() {
     "areaServed": { "@type": "State", "name": "Ohio" },
     "priceRange": "$$",
     "openingHoursSpecification": [
-      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday"], "opens": "10:00", "closes": "19:00" }
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], "opens": "09:00", "closes": "19:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Saturday"], "opens": "10:00", "closes": "16:00" }
     ],
   };
 
@@ -467,6 +468,7 @@ export default function Index() {
                       <Input
                         id="contact-email"
                         type="email"
+                        inputMode="email"
                         placeholder="you@example.com"
                         value={contactForm.email}
                         onChange={(e) => setContactForm((prev) => ({ ...prev, email: e.target.value }))}
@@ -481,11 +483,12 @@ export default function Index() {
                       <Input
                         id="contact-phone"
                         type="tel"
+                        inputMode="tel"
                         placeholder="(614) 000-0000"
                         value={contactForm.phone}
                         onChange={(e) => setContactForm((prev) => ({ ...prev, phone: e.target.value }))}
                         maxLength={20} />
-                      
+                      <p className="text-xs text-muted-foreground">Used only for appointment coordination.</p>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="contact-service">Service Needed</Label>

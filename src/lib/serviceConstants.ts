@@ -68,6 +68,25 @@ export const PRICING_SUFFIXES: Record<string, string> = {
   custom: "",
 };
 
+/** Maps service keywords to their notarial act type (Phase 15K) */
+export const NOTARIAL_ACT_MAP: Record<string, string> = {
+  acknowledgment: "acknowledgment",
+  deed: "acknowledgment",
+  "power of attorney": "acknowledgment",
+  mortgage: "acknowledgment",
+  trust: "acknowledgment",
+  affidavit: "jurat",
+  jurat: "jurat",
+  "sworn statement": "jurat",
+  deposition: "jurat",
+  oath: "oath",
+  affirmation: "affirmation",
+  "copy certification": "copy_certification",
+  "certified copy": "copy_certification",
+  "i-9": "signature_witnessing",
+  "employment verification": "signature_witnessing",
+};
+
 export const CATEGORY_LABELS: Record<string, { label: string; description: string }> = {
   notarization: { label: "Core Notarization", description: "RON, in-person, witness, and certified copy services" },
   verification: { label: "Identity & Verification", description: "ID checks, I-9 verification, employment onboarding" },

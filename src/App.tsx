@@ -78,6 +78,7 @@ const AdminTaskQueue = lazy(() => import("./pages/admin/AdminTaskQueue"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const Maintenance = lazy(() => import("./pages/Maintenance"));
 const ForNotaries = lazy(() => import("./pages/solutions/ForNotaries"));
+const Resources = lazy(() => import("./pages/Resources"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -125,6 +126,7 @@ function AnimatedRoutes() {
         <Route path="/unsubscribe" element={<Unsubscribe />} />
         <Route path="/maintenance" element={<Maintenance />} />
         <Route path="/solutions/notaries" element={<ForNotaries />} />
+        <Route path="/resources" element={<Resources />} />
         <Route path="/solutions/real-estate" element={<ComingSoon />} />
         <Route path="/solutions/law-firms" element={<ComingSoon />} />
         <Route path="/solutions/small-business" element={<ComingSoon />} />

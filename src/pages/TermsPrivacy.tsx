@@ -23,13 +23,14 @@ export default function TermsPrivacy() {
             <p>Notar Services ("we," "us") provides in-person and remote online notarization (RON) services in compliance with Ohio Revised Code §147 and all applicable Ohio laws. We are commissioned as a Notary Public in the State of Ohio, Franklin County.</p>
 
             <h2 className="font-sans text-lg font-semibold text-foreground">2. Eligibility</h2>
-            <p>You must be at least 18 years old and possess a valid government-issued photo ID to use our notarization services. For RON sessions, you must also successfully complete Knowledge-Based Authentication (KBA) as required by ORC §147.65-.66.</p>
+            <p>You must be at least 18 years old and possess a valid government-issued photo ID to use our notarization services. For RON sessions, you must also successfully complete Knowledge-Based Authentication (KBA) as required by ORC §147.65-.66. The signer must be of sound mind, acting voluntarily, and aware of the nature and consequences of the document being signed.</p>
 
             <h2 className="font-sans text-lg font-semibold text-foreground">3. Fees</h2>
             <p>Notary fees are governed by Ohio law. The statutory maximum per notarial act is $5.00 per signature (ORC §147.08). Additional fees for travel, technology platforms (RON), and KBA verification may apply and will be disclosed before your appointment.</p>
 
-            <h2 className="font-sans text-lg font-semibold text-foreground">4. Cancellation Policy</h2>
+            <h2 className="font-sans text-lg font-semibold text-foreground">4. Cancellation & No-Show Policy</h2>
             <p>Appointments may be cancelled or rescheduled through the client portal. We request at least 2 hours' notice for cancellations. Repeated no-shows may result in a required deposit for future bookings.</p>
+            <p><strong>Travel Fee Policy:</strong> For mobile notary appointments, travel fees are non-refundable once the notary has departed. If the signer fails to appear (no-show) or lacks valid identification upon arrival, the full travel fee plus a $25 service charge will apply. Payment for travel is due regardless of whether the notarization is completed.</p>
 
             <h2 className="font-sans text-lg font-semibold text-foreground">5. Notary Limitations</h2>
             <p>A notary public is not an attorney and cannot provide legal advice, draft legal documents, or counsel you on the content of documents. We notarize signatures — we do not validate the legal sufficiency of your documents.</p>
