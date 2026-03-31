@@ -95,10 +95,14 @@ export default function AccountSettings() {
       return;
     }
     try {
-      // Cascade delete: reminders, reviews, messages, documents, appointments, profile, roles
+      // Item 494: Full cascade delete including service_requests, apostille_requests, correspondence
       await supabase.from("document_reminders").delete().eq("user_id", user.id);
+      await supabase.from("service_requests").delete().eq("client_id", user.id);
+      await supabase.from("apostille_requests").delete().eq("client_id", user.id);
+      await supabase.from("client_correspondence").delete().eq("client_id", user.id);
       await supabase.from("reviews").delete().eq("client_id", user.id);
       await supabase.from("chat_messages").delete().eq("sender_id", user.id);
+      await supabase.from("payments").delete().eq("client_id", user.id);
       await supabase.from("documents").delete().eq("uploaded_by", user.id);
       await supabase.from("appointments").delete().eq("client_id", user.id);
       await supabase.from("user_roles").delete().eq("user_id", user.id);
