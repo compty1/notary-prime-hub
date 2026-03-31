@@ -132,10 +132,11 @@ function AnimatedRoutes() {
         <Route path="/maintenance" element={<Maintenance />} />
         <Route path="/solutions/notaries" element={<ForNotaries />} />
         <Route path="/resources" element={<Resources />} />
-        <Route path="/solutions/real-estate" element={<ComingSoon />} />
-        <Route path="/solutions/law-firms" element={<ComingSoon />} />
-        <Route path="/solutions/small-business" element={<ComingSoon />} />
-        <Route path="/solutions/individuals" element={<ComingSoon />} />
+        <Route path="/solutions/hospitals" element={<ForHospitals />} />
+        <Route path="/solutions/real-estate" element={<ForRealEstate />} />
+        <Route path="/solutions/law-firms" element={<ForLawFirms />} />
+        <Route path="/solutions/small-business" element={<ForSmallBusiness />} />
+        <Route path="/solutions/individuals" element={<ForIndividuals />} />
         <Route path="/digitize" element={<ProtectedRoute><DocumentDigitize /></ProtectedRoute>} />
         <Route path="/request" element={<ProtectedRoute><ServiceRequest /></ProtectedRoute>} />
         <Route path="/mailroom" element={<ProtectedRoute><VirtualMailroom /></ProtectedRoute>} />

@@ -22,6 +22,7 @@ const serviceCategories = [
 
 const solutionLinks = [
   { to: "/solutions/notaries", label: "For Notaries", desc: "Tools for notary professionals" },
+  { to: "/solutions/hospitals", label: "For Hospitals", desc: "Bedside & facility notarization" },
   { to: "/solutions/real-estate", label: "For Real Estate", desc: "Closings & title services" },
   { to: "/solutions/law-firms", label: "For Law Firms", desc: "Legal document notarization" },
   { to: "/solutions/small-business", label: "For Small Business", desc: "Affordable business packages" },
