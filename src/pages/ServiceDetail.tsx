@@ -359,8 +359,6 @@ export default function ServiceDetail() {
   const [chatLoading, setChatLoading] = useState(false);
   const [lastChatSent, setLastChatSent] = useState(0);
   const [showPreQualifier, setShowPreQualifier] = useState(false);
-  const [chatLoading, setChatLoading] = useState(false);
-  const [showPreQualifier, setShowPreQualifier] = useState(false);
   usePageTitle(service?.name || "Service Details");
 
   useEffect(() => {
