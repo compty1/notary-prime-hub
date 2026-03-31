@@ -63,7 +63,7 @@ export default function Login() {
         setRateLimitEnd(Date.now() + 60_000);
       }
       toast({ title: "Sign in failed", description: error.message, variant: "destructive" });
-      logAuditEvent("login_failed", "auth", undefined, { email, reason: error.message });
+      logAuditEvent("login_failed", { entityType: "auth", details: { email, reason: error.message } });
     }
     setSubmitting(false);
   };
