@@ -157,6 +157,23 @@ export default function AdminMailbox() {
     return () => clearInterval(interval);
   }, [fetchEmails, fetchFolderCounts]);
 
+  // Realtime subscription — auto-refresh when email_cache changes
+  useEffect(() => {
+    const channel = supabase
+      .channel("email-cache-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "email_cache" },
+        () => {
+          fetchEmails();
+          fetchFolderCounts();
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [fetchEmails, fetchFolderCounts]);
+
   const handleSync = async () => {
     setSyncing(true);
     try {
