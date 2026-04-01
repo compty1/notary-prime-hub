@@ -306,15 +306,55 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
     }
   };
 
+  const toggleDocSelection = useCallback((id: string) => {
+    setSelectedDocs(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }, []);
+
+  const toggleSelectAll = useCallback(() => {
+    if (selectedDocs.size === paginated.length) setSelectedDocs(new Set());
+    else setSelectedDocs(new Set(paginated.map(d => d.id)));
+  }, [paginated, selectedDocs.size]);
+
+  const bulkUpdateStatus = async (newStatus: string) => {
+    if (selectedDocs.size === 0) return;
+    setBulkUpdating(true);
+    const ids = Array.from(selectedDocs);
+    const { error } = await supabase.from("documents").update({ status: newStatus as any }).in("id", ids);
+    if (error) toast({ title: "Bulk update failed", description: error.message, variant: "destructive" });
+    else {
+      toast({ title: `${ids.length} document(s) updated to ${newStatus.replace(/_/g, " ")}` });
+      setSelectedDocs(new Set());
+      fetchDocs();
+    }
+    setBulkUpdating(false);
+  };
+
   if (loading) return <div className="space-y-6"><div className="mb-6"><Skeleton className="h-8 w-48" /></div><TableSkeleton rows={8} cols={5} /></div>;
 
   return (
     <div ref={ref}>
       <div className="mb-4 flex items-center justify-between flex-wrap gap-3">
         <h1 className="font-sans text-2xl font-bold text-foreground">Document Management</h1>
-        <Button onClick={() => setShowUpload(true)}>
-          <Upload className="mr-2 h-4 w-4" /> Upload Document
-        </Button>
+        <div className="flex items-center gap-2">
+          {selectedDocs.size > 0 && (
+            <Select onValueChange={bulkUpdateStatus}>
+              <SelectTrigger className="w-44" disabled={bulkUpdating}>
+                <CheckSquare className="mr-1 h-3 w-3" />
+                {bulkUpdating ? "Updating..." : `Bulk (${selectedDocs.size})`}
+              </SelectTrigger>
+              <SelectContent>
+                {docStatuses.map(s => <SelectItem key={s} value={s}>{s.replace(/_/g, " ")}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          )}
+          <Button onClick={() => setShowUpload(true)}>
+            <Upload className="mr-2 h-4 w-4" /> Upload Document
+          </Button>
+        </div>
       </div>
 
       {/* Search, Filter, Sort */}
