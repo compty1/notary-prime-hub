@@ -860,6 +860,63 @@ export default function RonSession() {
                     </a>
                   </div>
                 )}
+
+                {/* Webhook Status Indicator */}
+                {signnowDocumentId && isAdminOrNotary && (
+                  <div className={cn(
+                    "mt-4 rounded-lg border p-3",
+                    webhookStatus === "active" ? "bg-primary/5 border-primary/20" :
+                    webhookStatus === "partial" ? "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800" :
+                    webhookStatus === "failed" ? "bg-destructive/5 border-destructive/20" :
+                    "bg-muted/50 border-border"
+                  )}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {webhookStatus === "active" ? (
+                          <Wifi className="h-4 w-4 text-primary" />
+                        ) : webhookStatus === "failed" ? (
+                          <WifiOff className="h-4 w-4 text-destructive" />
+                        ) : (
+                          <Wifi className="h-4 w-4 text-muted-foreground" />
+                        )}
+                        <div>
+                          <p className="text-xs font-medium">
+                            Webhook Status: {" "}
+                            <span className={cn(
+                              webhookStatus === "active" && "text-primary",
+                              webhookStatus === "partial" && "text-amber-600 dark:text-amber-400",
+                              webhookStatus === "failed" && "text-destructive",
+                              !webhookStatus && "text-muted-foreground",
+                            )}>
+                              {webhookStatus === "active" ? `Active (${webhookEventsRegistered} events)` :
+                               webhookStatus === "partial" ? `Partial (${webhookEventsRegistered} events)` :
+                               webhookStatus === "failed" ? "Failed" :
+                               webhookStatus === "pending" ? "Pending..." :
+                               "Unknown"}
+                            </span>
+                          </p>
+                          <p className="text-[10px] text-muted-foreground">
+                            SignNow document: {signnowDocumentId.slice(0, 12)}…
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 text-xs"
+                        onClick={checkWebhookStatus}
+                        disabled={checkingWebhooks}
+                      >
+                        {checkingWebhooks ? (
+                          <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                        ) : (
+                          <RefreshCw className="h-3 w-3 mr-1" />
+                        )}
+                        Refresh
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
