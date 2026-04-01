@@ -232,7 +232,7 @@ export default function AdminServiceRequests() {
           <SelectTrigger className="w-[150px]"><SelectValue placeholder="Assigned To" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Team</SelectItem>
-            <SelectItem value="">Unassigned</SelectItem>
+            <SelectItem value="unassigned">Unassigned</SelectItem>
             {teamProfiles.map(p => (
               <SelectItem key={p.user_id} value={p.user_id}>{p.full_name || p.email}</SelectItem>
             ))}
