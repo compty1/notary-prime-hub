@@ -78,6 +78,7 @@ const AccountSettings = lazy(() => import("./pages/AccountSettings"));
 const AdminContentWorkspace = lazy(() => import("./pages/admin/AdminContentWorkspace"));
 const AdminTaskQueue = lazy(() => import("./pages/admin/AdminTaskQueue"));
 const AdminCRM = lazy(() => import("./pages/admin/AdminCRM"));
+const AdminBuildTracker = lazy(() => import("./pages/admin/AdminBuildTracker"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const Maintenance = lazy(() => import("./pages/Maintenance"));
 const ForNotaries = lazy(() => import("./pages/solutions/ForNotaries"));
@@ -184,6 +185,7 @@ function AnimatedRoutes() {
           <Route path="content-workspace" element={<ErrorBoundary fallbackMessage="Content workspace failed to load"><AdminContentWorkspace /></ErrorBoundary>} />
           <Route path="task-queue" element={<ErrorBoundary fallbackMessage="Task queue failed to load"><AdminTaskQueue /></ErrorBoundary>} />
           <Route path="crm" element={<ErrorBoundary fallbackMessage="CRM failed to load"><AdminCRM /></ErrorBoundary>} />
+          <Route path="build-tracker" element={<ErrorBoundary fallbackMessage="Build tracker failed to load"><AdminBuildTracker /></ErrorBoundary>} />
           <Route path="settings" element={<ErrorBoundary fallbackMessage="Settings failed to load"><AdminSettings /></ErrorBoundary>} />
           <Route path="integrations" element={<ErrorBoundary fallbackMessage="Integration testing failed to load"><AdminIntegrationTest /></ErrorBoundary>} />
         </Route>
