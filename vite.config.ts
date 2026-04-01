@@ -22,24 +22,24 @@ export default defineConfig(({ mode }) => ({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          "admin": [
-            "./src/pages/admin/AdminDashboard",
-            "./src/pages/admin/AdminOverview",
-            "./src/pages/admin/AdminAppointments",
-            "./src/pages/admin/AdminClients",
-            "./src/pages/admin/AdminDocuments",
-            "./src/pages/admin/AdminJournal",
-            "./src/pages/admin/AdminRevenue",
-            "./src/pages/admin/AdminSettings",
-          ],
-          "admin-tools": [
-            "./src/pages/admin/AdminBuildTracker",
-            "./src/pages/admin/AdminCRM",
-            "./src/pages/admin/AdminLeadPortal",
-            "./src/pages/admin/AdminEmailManagement",
-            "./src/pages/admin/AdminContentWorkspace",
-          ],
+        manualChunks(id: string) {
+          if (id.includes("src/pages/admin/AdminDashboard") ||
+              id.includes("src/pages/admin/AdminOverview") ||
+              id.includes("src/pages/admin/AdminAppointments") ||
+              id.includes("src/pages/admin/AdminClients") ||
+              id.includes("src/pages/admin/AdminDocuments") ||
+              id.includes("src/pages/admin/AdminJournal") ||
+              id.includes("src/pages/admin/AdminRevenue") ||
+              id.includes("src/pages/admin/AdminSettings")) {
+            return "admin";
+          }
+          if (id.includes("src/pages/admin/AdminBuildTracker") ||
+              id.includes("src/pages/admin/AdminCRM") ||
+              id.includes("src/pages/admin/AdminLeadPortal") ||
+              id.includes("src/pages/admin/AdminEmailManagement") ||
+              id.includes("src/pages/admin/AdminContentWorkspace")) {
+            return "admin-tools";
+          }
         },
       },
     },
