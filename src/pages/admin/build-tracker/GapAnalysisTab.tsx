@@ -15,10 +15,14 @@ import { toast } from "sonner";
 import {
   Search, Plus, CheckCircle2, Trash2, Download, X,
   ChevronDown, ChevronRight, ArrowUpDown, ArrowUpNarrowWide, ArrowDownNarrowWide,
+  Sparkles, Loader2, Copy, ListChecks,
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import type { TrackerItem, SortField, SortDir } from "./constants";
 import { CATEGORIES, SEVERITIES, STATUSES, severityColor, statusIcon, sortItems, relTime, exportCSV, SEV_RANK } from "./constants";
 import { useUpdateItem, useBulkUpdate, useDeleteItems } from "./hooks";
+import BulkActionBar from "./BulkActionBar";
+import VerifyFixesButton from "./VerifyFixesButton";
 
 function SortIcon({ field, current, dir }: { field: SortField; current: SortField | null; dir: SortDir }) {
   if (current !== field) return <ArrowUpDown className="h-3 w-3 opacity-30" />;
@@ -160,6 +164,7 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
         {hasActiveFilters && (
           <Button variant="ghost" size="sm" onClick={clearFilters} className="text-muted-foreground"><X className="h-3.5 w-3.5 mr-1" /> Clear</Button>
         )}
+        <VerifyFixesButton items={sorted} />
         <Button variant="outline" size="sm" onClick={() => exportCSV(sorted)}><Download className="h-3.5 w-3.5 mr-1" /> CSV</Button>
       </div>
 
@@ -259,31 +264,7 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
                     {expanded && (
                       <TableRow>
                         <TableCell colSpan={10} className="bg-muted/30 p-4">
-                          <div className="grid md:grid-cols-2 gap-4 text-sm">
-                            <div>
-                              <p className="font-medium mb-1">Description</p>
-                              <p className="text-muted-foreground">{item.description || "—"}</p>
-                              <p className="font-medium mt-3 mb-1">Suggested Fix</p>
-                              <p className="text-muted-foreground">{item.suggested_fix || "—"}</p>
-                              {item.page_route && (
-                                <>
-                                  <p className="font-medium mt-3 mb-1">Page Route</p>
-                                  <p className="text-muted-foreground">{item.page_route}</p>
-                                </>
-                              )}
-                            </div>
-                            <div>
-                              <p className="font-medium mb-1">Admin Notes</p>
-                              <Textarea className="text-sm" rows={3}
-                                value={editingNotes[item.id] ?? item.admin_notes ?? ""}
-                                onChange={(e) => setEditingNotes((p) => ({ ...p, [item.id]: e.target.value }))}
-                                placeholder="Add notes..." />
-                              <Button size="sm" className="mt-2" onClick={() => {
-                                update.mutate({ id: item.id, admin_notes: editingNotes[item.id] ?? item.admin_notes ?? "" });
-                                toast.success("Notes saved");
-                              }}>Save Notes</Button>
-                            </div>
-                          </div>
+                          <ExpandedGapRow item={item} editingNotes={editingNotes} setEditingNotes={setEditingNotes} update={update} />
                         </TableCell>
                       </TableRow>
                     )}
@@ -340,6 +321,130 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <BulkActionBar selectedIds={selectedIds} items={items} onClear={() => setSelectedIds(new Set())} />
+    </div>
+  );
+}
+
+/* ─── Expanded Gap Row with AI Enhance ─── */
+function ExpandedGapRow({
+  item, editingNotes, setEditingNotes, update,
+}: {
+  item: TrackerItem;
+  editingNotes: Record<string, string>;
+  setEditingNotes: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+  update: ReturnType<typeof useUpdateItem>;
+}) {
+  const [enhanceSpec, setEnhanceSpec] = useState("");
+  const [isEnhancing, setIsEnhancing] = useState(false);
+
+  const enhance = async () => {
+    setIsEnhancing(true);
+    setEnhanceSpec("");
+    try {
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/build-analyst`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
+          messages: [{
+            role: "user",
+            content: `Generate a detailed implementation spec for this gap item:\n\nTitle: ${item.title}\nCategory: ${item.category}\nSeverity: ${item.severity}\nDescription: ${item.description || "N/A"}\nSuggested Fix: ${item.suggested_fix || "N/A"}\nPage Route: ${item.page_route || "N/A"}\n\nProvide: 1) Specific implementation steps 2) Files to modify 3) Testing approach 4) Complexity estimate`,
+          }],
+          context: "Implementation spec mode for a single gap item.",
+        }),
+      });
+      if (!resp.ok || !resp.body) throw new Error("Failed");
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = "", full = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        let idx: number;
+        while ((idx = buf.indexOf("\n")) !== -1) {
+          let line = buf.slice(0, idx);
+          buf = buf.slice(idx + 1);
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (!line.startsWith("data: ")) continue;
+          const j = line.slice(6).trim();
+          if (j === "[DONE]") break;
+          try {
+            const p = JSON.parse(j);
+            const c = p.choices?.[0]?.delta?.content;
+            if (c) { full += c; setEnhanceSpec(full); }
+          } catch { /* partial */ }
+        }
+      }
+    } catch {
+      toast.error("Failed to enhance item");
+    } finally {
+      setIsEnhancing(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="grid md:grid-cols-2 gap-4 text-sm">
+        <div>
+          <p className="font-medium mb-1">Description</p>
+          <p className="text-muted-foreground">{item.description || "—"}</p>
+          <p className="font-medium mt-3 mb-1">Suggested Fix</p>
+          <p className="text-muted-foreground">{item.suggested_fix || "—"}</p>
+          {item.page_route && (
+            <>
+              <p className="font-medium mt-3 mb-1">Page Route</p>
+              <p className="text-muted-foreground">{item.page_route}</p>
+            </>
+          )}
+        </div>
+        <div>
+          <p className="font-medium mb-1">Admin Notes</p>
+          <Textarea className="text-sm" rows={3}
+            value={editingNotes[item.id] ?? item.admin_notes ?? ""}
+            onChange={(e) => setEditingNotes((p) => ({ ...p, [item.id]: e.target.value }))}
+            placeholder="Add notes..." />
+          <div className="flex gap-2 mt-2">
+            <Button size="sm" onClick={() => {
+              update.mutate({ id: item.id, admin_notes: editingNotes[item.id] ?? item.admin_notes ?? "" });
+              toast.success("Notes saved");
+            }}>Save Notes</Button>
+            <Button size="sm" variant="outline" onClick={enhance} disabled={isEnhancing}>
+              {isEnhancing ? <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 mr-1" />}
+              Enhance
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {(enhanceSpec || isEnhancing) && (
+        <div className="rounded-lg border bg-background p-4">
+          <div className="flex items-center justify-between mb-2">
+            <Badge variant="outline" className="text-xs">
+              <Sparkles className="h-3 w-3 mr-1" /> AI Implementation Spec
+            </Badge>
+            {enhanceSpec && (
+              <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText(enhanceSpec); toast.success("Copied"); }}>
+                <Copy className="h-3 w-3 mr-1" /> Copy
+              </Button>
+            )}
+          </div>
+          {isEnhancing && !enhanceSpec && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" /> Generating spec...
+            </div>
+          )}
+          {enhanceSpec && (
+            <div className="prose prose-sm dark:prose-invert max-w-none max-h-[300px] overflow-y-auto">
+              <ReactMarkdown>{enhanceSpec}</ReactMarkdown>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

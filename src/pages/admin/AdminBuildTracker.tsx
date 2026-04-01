@@ -9,7 +9,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import {
   Search, Plus, BarChart3, ListChecks, Upload, Loader2, RefreshCw, RotateCcw,
-  Workflow, Globe, ClipboardList, Cpu, Bot, Mail,
+  Workflow, Globe, ClipboardList, Cpu, Bot, Mail, Monitor, Palette, Sparkles, SwatchBook,
 } from "lucide-react";
 import { useTrackerItems, useInsertItem, usePlans, useRefreshAll, useReanalyze } from "./build-tracker/hooks";
 import { CATEGORIES, SEVERITIES } from "./build-tracker/constants";
@@ -23,6 +23,10 @@ import PlanHistoryTab from "./build-tracker/PlanHistoryTab";
 import PlatformFunctionsTab from "./build-tracker/PlatformFunctionsTab";
 import AIAnalystTab from "./build-tracker/AIAnalystTab";
 import EmailTemplatesTab from "./build-tracker/EmailTemplatesTab";
+import LivePreviewTab from "./build-tracker/LivePreviewTab";
+import BrandAnalysisTab from "./build-tracker/BrandAnalysisTab";
+import ThemeExplorerTab from "./build-tracker/ThemeExplorerTab";
+import DesignFeatureDialog from "./build-tracker/DesignFeatureDialog";
 
 /* ─── Quick Add Dialog ─── */
 function QuickAddDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -74,6 +78,7 @@ export default function AdminBuildTracker() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [jumpToGapId, setJumpToGapId] = useState<string | null>(null);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [featureGenOpen, setFeatureGenOpen] = useState(false);
   const [filteredGapCount, setFilteredGapCount] = useState<number | null>(null);
   const [isReanalyzing, setIsReanalyzing] = useState(false);
   const refreshAll = useRefreshAll();
@@ -125,6 +130,9 @@ export default function AdminBuildTracker() {
           <p className="text-muted-foreground">Comprehensive platform analysis, AI reasoning, flow diagnostics & email management</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          <Button variant="outline" size="sm" onClick={() => setFeatureGenOpen(true)}>
+            <Sparkles className="h-3.5 w-3.5 mr-1" /> Feature Gen
+          </Button>
           <Button variant="outline" size="sm" onClick={handleReanalyze} disabled={isReanalyzing}>
             <RotateCcw className={`h-3.5 w-3.5 mr-1 ${isReanalyzing ? "animate-spin" : ""}`} /> Re-analyze
           </Button>
@@ -146,13 +154,18 @@ export default function AdminBuildTracker() {
             <TabsTrigger value="pages" className="gap-1"><Globe className="h-4 w-4" /> Page Auditor</TabsTrigger>
             <TabsTrigger value="plans" className="gap-1"><ClipboardList className="h-4 w-4" /> Plan History</TabsTrigger>
             <TabsTrigger value="ai" className="gap-1"><Bot className="h-4 w-4" /> AI Analyst</TabsTrigger>
+            <TabsTrigger value="preview" className="gap-1"><Monitor className="h-4 w-4" /> Preview</TabsTrigger>
+            <TabsTrigger value="brand" className="gap-1"><Palette className="h-4 w-4" /> Brand</TabsTrigger>
+            <TabsTrigger value="themes" className="gap-1"><SwatchBook className="h-4 w-4" /> Themes</TabsTrigger>
             <TabsTrigger value="emails" className="gap-1"><Mail className="h-4 w-4" /> Email Templates</TabsTrigger>
             <TabsTrigger value="add" className="gap-1"><Plus className="h-4 w-4" /> Add / Import</TabsTrigger>
           </TabsList>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
 
-        <TabsContent value="dashboard"><DashboardTab items={items} plans={plans} onJumpToGap={handleJumpToGap} onTabChange={setActiveTab} /></TabsContent>
+        <TabsContent value="dashboard">
+          <DashboardTab items={items} plans={plans} onJumpToGap={handleJumpToGap} onTabChange={setActiveTab} onOpenFeatureGen={() => setFeatureGenOpen(true)} />
+        </TabsContent>
         <TabsContent value="gaps"><GapAnalysisTab items={items} jumpToId={jumpToGapId} onFilteredCountChange={handleFilteredCountChange} /></TabsContent>
         <TabsContent value="todo"><TodoTab items={items} /></TabsContent>
         <TabsContent value="flows"><ServiceFlowTab items={items} /></TabsContent>
@@ -160,11 +173,15 @@ export default function AdminBuildTracker() {
         <TabsContent value="pages"><PageAuditorTab items={items} /></TabsContent>
         <TabsContent value="plans"><PlanHistoryTab items={items} /></TabsContent>
         <TabsContent value="ai"><AIAnalystTab items={items} plans={plans} /></TabsContent>
+        <TabsContent value="preview"><LivePreviewTab /></TabsContent>
+        <TabsContent value="brand"><BrandAnalysisTab /></TabsContent>
+        <TabsContent value="themes"><ThemeExplorerTab /></TabsContent>
         <TabsContent value="emails"><EmailTemplatesTab /></TabsContent>
         <TabsContent value="add"><AddImportTab /></TabsContent>
       </Tabs>
 
       <QuickAddDialog open={quickAddOpen} onClose={() => setQuickAddOpen(false)} />
+      <DesignFeatureDialog open={featureGenOpen} onClose={() => setFeatureGenOpen(false)} />
     </div>
   );
 }

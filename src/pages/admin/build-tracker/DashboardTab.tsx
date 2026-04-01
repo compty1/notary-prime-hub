@@ -1,32 +1,39 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   BarChart3, FileText, AlertTriangle, Clock, CheckCircle2, XCircle, Shield,
-  Workflow, Globe, ClipboardList, Cpu, Bot, Mail, Activity,
+  Workflow, Globe, ClipboardList, Cpu, Bot, Mail, Activity, ChevronDown, ChevronRight,
+  Sparkles, Lock, Zap,
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import type { TrackerItem, TrackerPlan } from "./constants";
-import { SEVERITIES, severityColor, statusIcon, sevColors, relTime } from "./constants";
+import { SEVERITIES, CATEGORIES, severityColor, statusIcon, sevColors, relTime } from "./constants";
 import { SERVICE_FLOWS } from "./serviceFlows";
 import { PAGE_REGISTRY } from "./pageRegistry";
 import { PLATFORM_ENTITIES, getEntityHealth } from "./platformEntities";
+import { useBulkUpdate } from "./hooks";
+import VerifyFixesButton from "./VerifyFixesButton";
 
 type Props = {
   items: TrackerItem[];
   plans: TrackerPlan[];
   onJumpToGap: (id: string) => void;
   onTabChange?: (tab: string) => void;
+  onOpenFeatureGen?: () => void;
 };
 
-export default function DashboardTab({ items, plans, onJumpToGap, onTabChange }: Props) {
+export default function DashboardTab({ items, plans, onJumpToGap, onTabChange, onOpenFeatureGen }: Props) {
   const total = items.length;
   const open = items.filter((i) => i.status === "open").length;
   const inProgress = items.filter((i) => i.status === "in_progress").length;
   const resolved = items.filter((i) => i.status === "resolved").length;
   const deferred = items.filter((i) => i.status === "deferred" || i.status === "wont_fix").length;
   const healthScore = total > 0 ? Math.round((resolved / total) * 100) : 0;
+  const bulkUpdate = useBulkUpdate();
 
   const byCategory = useMemo(() => {
     const map: Record<string, number> = {};
@@ -56,13 +63,12 @@ export default function DashboardTab({ items, plans, onJumpToGap, onTabChange }:
     [items]
   );
 
-  // Fixed: added SERVICE_FLOWS as dependency
   const flowHealth = useMemo(() =>
     SERVICE_FLOWS.map((f) => {
       const implemented = f.steps.filter((s) => s.implemented).length;
       return { name: f.name, pct: Math.round((implemented / f.steps.length) * 100), total: f.steps.length, implemented };
     }),
-    [SERVICE_FLOWS]
+    []
   );
 
   const pagesWithIssues = useMemo(() => {
@@ -83,6 +89,42 @@ export default function DashboardTab({ items, plans, onJumpToGap, onTabChange }:
     return { pct: Math.round((healthy / allSub.length) * 100), total: allSub.length, healthy };
   }, []);
 
+  // Category Progress
+  const categoryProgress = useMemo(() => {
+    const map: Record<string, { total: number; resolved: number; openIds: string[] }> = {};
+    items.forEach(i => {
+      if (!map[i.category]) map[i.category] = { total: 0, resolved: 0, openIds: [] };
+      map[i.category].total++;
+      if (i.status === "resolved" || i.status === "wont_fix") map[i.category].resolved++;
+      else map[i.category].openIds.push(i.id);
+    });
+    return Object.entries(map)
+      .map(([cat, data]) => ({ category: cat, ...data, pct: Math.round((data.resolved / data.total) * 100) }))
+      .sort((a, b) => a.pct - b.pct);
+  }, [items]);
+
+  // Recently Fixed (last 7 days)
+  const recentlyFixed = useMemo(() => {
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    return items
+      .filter(i => i.status === "resolved" && i.resolved_at && i.resolved_at > sevenDaysAgo)
+      .sort((a, b) => new Date(b.resolved_at!).getTime() - new Date(a.resolved_at!).getTime());
+  }, [items]);
+
+  // Security & Compliance summary
+  const securityItems = useMemo(() =>
+    items.filter(i => (i.category === "security" || i.category === "compliance") && i.status !== "resolved" && i.status !== "wont_fix"),
+    [items]
+  );
+
+  // Functionality summary
+  const functionalityItems = useMemo(() =>
+    items.filter(i => (i.category === "feature" || i.category === "workflow") && i.status !== "resolved" && i.status !== "wont_fix"),
+    [items]
+  );
+
+  const [recentlyFixedOpen, setRecentlyFixedOpen] = useState(false);
+
   const goTo = (tab: string) => onTabChange?.(tab);
 
   return (
@@ -102,6 +144,16 @@ export default function DashboardTab({ items, plans, onJumpToGap, onTabChange }:
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      {/* Action Row */}
+      <div className="flex flex-wrap gap-2">
+        <VerifyFixesButton items={items} />
+        {onOpenFeatureGen && (
+          <Button variant="outline" size="sm" onClick={onOpenFeatureGen}>
+            <Sparkles className="h-3.5 w-3.5 mr-1" /> Feature Generator
+          </Button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -137,6 +189,98 @@ export default function DashboardTab({ items, plans, onJumpToGap, onTabChange }:
           </CardContent>
         </Card>
       </div>
+
+      {/* Security & Functionality Summary Cards */}
+      <div className="grid md:grid-cols-2 gap-4">
+        <Card className="cursor-pointer hover:border-primary/50 transition-colors" onClick={() => goTo("gaps")}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm flex items-center gap-2"><Lock className="h-4 w-4 text-destructive" /> Security & Compliance</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold mb-2">{securityItems.length} open</div>
+            <div className="flex flex-wrap gap-1">
+              {SEVERITIES.map(s => {
+                const count = securityItems.filter(i => i.severity === s).length;
+                return count > 0 ? <Badge key={s} className={`text-[10px] ${severityColor[s]}`}>{s}: {count}</Badge> : null;
+              })}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="cursor-pointer hover:border-primary/50 transition-colors" onClick={() => goTo("gaps")}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm flex items-center gap-2"><Zap className="h-4 w-4 text-primary" /> Functionality Gaps</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold mb-2">{functionalityItems.length} open</div>
+            <div className="flex flex-wrap gap-1">
+              {["feature", "workflow"].map(cat => {
+                const count = functionalityItems.filter(i => i.category === cat).length;
+                return count > 0 ? <Badge key={cat} variant="outline" className="text-[10px]">{cat}: {count}</Badge> : null;
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Category Progress Bars */}
+      <Card>
+        <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><BarChart3 className="h-4 w-4" /> Category Progress</CardTitle></CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {categoryProgress.map(cp => (
+              <div key={cp.category} className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium capitalize">{cp.category}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">{cp.resolved}/{cp.total}</span>
+                    <span className="text-xs font-bold">{cp.pct}%</span>
+                    {cp.openIds.length > 0 && (
+                      <Button variant="ghost" size="sm" className="h-5 px-1.5 text-[10px]"
+                        onClick={() => bulkUpdate.mutate({ ids: cp.openIds, fields: { status: "resolved", resolved_at: new Date().toISOString() } })}>
+                        Resolve All
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                <Progress value={cp.pct} className="h-1.5" />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Recently Fixed */}
+      {recentlyFixed.length > 0 && (
+        <Collapsible open={recentlyFixedOpen} onOpenChange={setRecentlyFixedOpen}>
+          <Card>
+            <CollapsibleTrigger className="w-full">
+              <CardHeader className="pb-2 cursor-pointer">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  {recentlyFixedOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                  <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  Recently Fixed ({recentlyFixed.length} in last 7 days)
+                </CardTitle>
+              </CardHeader>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <CardContent>
+                <div className="space-y-1.5">
+                  {recentlyFixed.slice(0, 20).map(item => (
+                    <div key={item.id} className="flex items-center justify-between text-sm px-2 py-1 rounded hover:bg-muted/50 cursor-pointer" onClick={() => onJumpToGap(item.id)}>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                        <span className="truncate">{item.title}</span>
+                        <Badge variant="outline" className="text-[10px] shrink-0">{item.category}</Badge>
+                      </div>
+                      <span className="text-xs text-muted-foreground shrink-0 ml-2">{relTime(item.resolved_at)}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </CollapsibleContent>
+          </Card>
+        </Collapsible>
+      )}
 
       {/* Service Flow Health */}
       <Card className="cursor-pointer hover:border-primary/50 transition-colors" onClick={() => goTo("flows")}>
