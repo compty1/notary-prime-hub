@@ -150,6 +150,8 @@ function AnimatedRoutes() {
         <Route path="/builder" element={<ProtectedRoute><DocumentBuilder /></ProtectedRoute>} />
         <Route path="/fee-calculator" element={<FeeCalculator />} />
         <Route path="/ai-writer" element={<ProtectedRoute><AIWriter /></ProtectedRoute>} />
+        <Route path="/ai-extractors" element={<ProtectedRoute><AIExtractors /></ProtectedRoute>} />
+        <Route path="/ai-knowledge" element={<ProtectedRoute><AIKnowledge /></ProtectedRoute>} />
         <Route path="/account-settings" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
         <Route path="/portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
         <Route path="/confirmation" element={<ProtectedRoute><AppointmentConfirmation /></ProtectedRoute>} />

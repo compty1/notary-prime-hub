@@ -218,7 +218,7 @@ export default function AIExtractors() {
   return (
     <PageShell>
       <div className="container max-w-6xl py-10 space-y-8">
-        <Breadcrumbs items={[{ label: "AI Tools" }, { label: "Document Intelligence" }]} />
+        <Breadcrumbs />
 
         <motion.div {...fadeUp}>
           <div className="flex items-center gap-3 mb-2">
