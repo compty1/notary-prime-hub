@@ -104,19 +104,28 @@ export default function BookingReviewStep(props: ReviewStepProps) {
       {!props.user && (
         <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
           <p className="text-sm font-medium flex items-center gap-2"><Shield className="h-4 w-4 text-primary" /> Create your account to confirm</p>
-          <div><Label>Full Name</Label><Input value={props.guestName} onChange={e => props.setGuestName(e.target.value)} placeholder="Your full name" /></div>
-          <div><Label>Email</Label><Input type="email" value={props.guestEmail} onChange={e => props.setGuestEmail(e.target.value)} placeholder="your@email.com" /></div>
+          <div>
+            <Label>Full Name</Label>
+            <Input value={props.guestName} onChange={e => props.setGuestName(e.target.value)} placeholder="Your full name" className={props.validationErrors?.guestName ? "border-destructive" : ""} />
+            {props.validationErrors?.guestName && <p className="text-xs text-destructive mt-1">{props.validationErrors.guestName}</p>}
+          </div>
+          <div>
+            <Label>Email</Label>
+            <Input type="email" value={props.guestEmail} onChange={e => props.setGuestEmail(e.target.value)} placeholder="your@email.com" className={props.validationErrors?.guestEmail ? "border-destructive" : ""} />
+            {props.validationErrors?.guestEmail && <p className="text-xs text-destructive mt-1">{props.validationErrors.guestEmail}</p>}
+          </div>
           <div>
             <Label>Password</Label>
             <div className="relative">
-              <Input type={showGuestPassword ? "text" : "password"} value={props.guestPassword} onChange={e => props.setGuestPassword(e.target.value)} placeholder="Create a password (min 8 characters)" minLength={8} className="pr-10" />
+              <Input type={showGuestPassword ? "text" : "password"} value={props.guestPassword} onChange={e => props.setGuestPassword(e.target.value)} placeholder="Create a password (min 8 characters)" minLength={8} className={`pr-10 ${props.validationErrors?.guestPassword ? "border-destructive" : ""}`} />
               <button type="button" onClick={() => setShowGuestPassword(!showGuestPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" tabIndex={-1}>
                 {showGuestPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
+            {props.validationErrors?.guestPassword && <p className="text-xs text-destructive mt-1">{props.validationErrors.guestPassword}</p>}
           </div>
-          {props.guestPassword && props.guestPassword.length < 8 && <p className="text-xs text-destructive">Password must be at least 8 characters.</p>}
-          {props.guestPassword && props.guestPassword.length >= 8 && (!/[A-Z]/.test(props.guestPassword) || !/[0-9]/.test(props.guestPassword)) && <p className="text-xs text-destructive">Include at least one uppercase letter and one number.</p>}
+          {!props.validationErrors?.guestPassword && props.guestPassword && props.guestPassword.length < 8 && <p className="text-xs text-destructive">Password must be at least 8 characters.</p>}
+          {!props.validationErrors?.guestPassword && props.guestPassword && props.guestPassword.length >= 8 && (!/[A-Z]/.test(props.guestPassword) || !/[0-9]/.test(props.guestPassword)) && <p className="text-xs text-destructive">Include at least one uppercase letter and one number.</p>}
           <p className="text-xs text-muted-foreground">Already have an account? <Link to="/login" className="text-primary hover:underline">Sign in</Link></p>
         </div>
       )}
