@@ -210,22 +210,12 @@ export default function AccountSettings() {
               <p className="text-sm text-muted-foreground">Loading...</p>
             ) : (
               <>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="apptReminders">Appointment reminders</Label>
-                  <Switch id="apptReminders" checked={notifPrefs.email_appointment_reminders} onCheckedChange={v => setNotifPrefs(p => ({ ...p, email_appointment_reminders: v }))} />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="docUpdates">Document updates</Label>
-                  <Switch id="docUpdates" checked={notifPrefs.email_document_updates} onCheckedChange={v => setNotifPrefs(p => ({ ...p, email_document_updates: v }))} />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="sessionAlerts">Session alerts</Label>
-                  <Switch id="sessionAlerts" checked={notifPrefs.email_session_alerts} onCheckedChange={v => setNotifPrefs(p => ({ ...p, email_session_alerts: v }))} />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="marketing">Marketing emails</Label>
-                  <Switch id="marketing" checked={notifPrefs.email_marketing} onCheckedChange={v => setNotifPrefs(p => ({ ...p, email_marketing: v }))} />
-                </div>
+                {NOTIF_EVENTS.map(evt => (
+                  <div key={evt.key} className="flex items-center justify-between">
+                    <Label htmlFor={evt.key}>{evt.label}</Label>
+                    <Switch id={evt.key} checked={notifPrefs[evt.key] ?? true} onCheckedChange={v => setNotifPrefs(p => ({ ...p, [evt.key]: v }))} />
+                  </div>
+                ))}
                 <Button onClick={saveNotifPrefs} disabled={savingPrefs} size="sm">{savingPrefs ? "Saving..." : "Save Preferences"}</Button>
               </>
             )}
