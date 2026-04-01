@@ -131,7 +131,7 @@ function AnimatedRoutes() {
         <Route path="/services/:serviceId" element={<ErrorBoundary fallbackMessage="Service details failed to load"><ServiceDetail /></ErrorBoundary>} />
         <Route path="/ron-check" element={<RonEligibilityChecker />} />
         <Route path="/loan-signing" element={<LoanSigningServices />} />
-        <Route path="/verify/:id" element={<VerifySeal />} />
+        <Route path="/verify/:id" element={<ErrorBoundary fallbackMessage="Verification failed to load"><VerifySeal /></ErrorBoundary>} />
         <Route path="/terms" element={<TermsPrivacy />} />
         <Route path="/templates" element={<DocumentTemplates />} />
         <Route path="/about" element={<About />} />
