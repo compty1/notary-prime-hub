@@ -478,18 +478,27 @@ export default function ServiceRequest() {
                 </div>
                 {uploadedFiles.length > 0 && (
                   <div className="mt-2 space-y-1">
-                    {uploadedFiles.map((f, i) => (
-                      <div key={i} className="flex items-center justify-between rounded border border-border/50 px-2 py-1 text-sm">
-                        <span className="flex items-center gap-1 truncate">
-                          <FileText className="h-3 w-3 text-primary" />
-                          {f.name}
-                          <span className="text-xs text-muted-foreground">({(f.size / 1024 / 1024).toFixed(1)}MB)</span>
-                        </span>
-                        <button onClick={() => setUploadedFiles(prev => prev.filter((_, idx) => idx !== i))} className="text-muted-foreground hover:text-destructive" aria-label={`Remove ${f.name}`}>
-                          <X className="h-3 w-3" />
-                        </button>
-                      </div>
-                    ))}
+                    {uploadedFiles.map((f, i) => {
+                      const isImage = f.type.startsWith("image/");
+                      return (
+                        <div key={i} className="flex items-center justify-between rounded border border-border/50 px-2 py-1.5 text-sm gap-2">
+                          {isImage ? (
+                            <img
+                              src={URL.createObjectURL(f)}
+                              alt={f.name}
+                              className="h-10 w-10 rounded object-cover flex-shrink-0"
+                            />
+                          ) : (
+                            <FileText className="h-5 w-5 text-primary flex-shrink-0" />
+                          )}
+                          <span className="flex-1 truncate text-foreground">{f.name}</span>
+                          <span className="text-xs text-muted-foreground flex-shrink-0">({(f.size / 1024 / 1024).toFixed(1)}MB)</span>
+                          <button onClick={() => setUploadedFiles(prev => prev.filter((_, idx) => idx !== i))} className="text-muted-foreground hover:text-destructive flex-shrink-0" aria-label={`Remove ${f.name}`}>
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      );
+                    })}
                     <p className="text-xs text-muted-foreground">{uploadedFiles.length}/{MAX_FILES} files</p>
                   </div>
                 )}
