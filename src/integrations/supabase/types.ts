@@ -615,6 +615,7 @@ export type Database = {
           is_read: boolean | null
           is_starred: boolean | null
           labels: string[] | null
+          lead_extracted: boolean
           message_id: string
           references: string | null
           subject: string | null
@@ -637,6 +638,7 @@ export type Database = {
           is_read?: boolean | null
           is_starred?: boolean | null
           labels?: string[] | null
+          lead_extracted?: boolean
           message_id: string
           references?: string | null
           subject?: string | null
@@ -659,6 +661,7 @@ export type Database = {
           is_read?: boolean | null
           is_starred?: boolean | null
           labels?: string[] | null
+          lead_extracted?: boolean
           message_id?: string
           references?: string | null
           subject?: string | null
@@ -894,6 +897,7 @@ export type Database = {
           contacted_at: string | null
           created_at: string
           email: string | null
+          email_cache_id: string | null
           id: string
           intent_score: string
           lead_type: string
@@ -915,6 +919,7 @@ export type Database = {
           contacted_at?: string | null
           created_at?: string
           email?: string | null
+          email_cache_id?: string | null
           id?: string
           intent_score?: string
           lead_type?: string
@@ -936,6 +941,7 @@ export type Database = {
           contacted_at?: string | null
           created_at?: string
           email?: string | null
+          email_cache_id?: string | null
           id?: string
           intent_score?: string
           lead_type?: string
