@@ -159,9 +159,9 @@ function AnimatedRoutes() {
         <Route path="/ai-extractors" element={<ProtectedRoute><AIExtractors /></ProtectedRoute>} />
         <Route path="/ai-knowledge" element={<ProtectedRoute><AIKnowledge /></ProtectedRoute>} />
         <Route path="/account-settings" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
-        <Route path="/portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
-        <Route path="/confirmation" element={<ProtectedRoute><AppointmentConfirmation /></ProtectedRoute>} />
-        <Route path="/ron-session" element={<ProtectedRoute><RonSession /></ProtectedRoute>} />
+        <Route path="/portal" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Portal failed to load"><ClientPortal /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/confirmation" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Confirmation failed to load"><AppointmentConfirmation /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/ron-session" element={<ProtectedRoute><ErrorBoundary fallbackMessage="RON session failed to load"><RonSession /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/business-portal" element={<ProtectedRoute><BusinessPortal /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>}>
           <Route index element={<ErrorBoundary fallbackMessage="Overview failed to load"><AdminOverview /></ErrorBoundary>} />
