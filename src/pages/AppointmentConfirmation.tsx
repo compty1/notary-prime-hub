@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Calendar, Clock, MapPin, Monitor, Download, ArrowLeft, Shield, Upload, ChevronRight, FileText, Wifi, Video, User, CreditCard } from "lucide-react";
 import TechCheck from "@/components/TechCheck";
 import PaymentForm from "@/components/PaymentForm";
+import { CalendarDownload } from "@/components/CalendarDownload";
 import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
