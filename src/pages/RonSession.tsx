@@ -704,6 +704,16 @@ export default function RonSession() {
             </CardContent>
           </Card>
 
+          {/* E-Sign Consent - Phase 4 */}
+          <ESignConsent
+            consented={esignConsented}
+            onConsentChange={(v) => {
+              setEsignConsented(v);
+              if (v && !esignConsentTimestamp) setEsignConsentTimestamp(new Date().toISOString());
+            }}
+            consentTimestamp={esignConsentTimestamp}
+          />
+
           <Card className="border-2 border-dashed border-primary/20">
             <CardContent className="flex flex-col items-center justify-center py-20 text-center">
               {participantLink ? (
@@ -713,9 +723,15 @@ export default function RonSession() {
                   <p className="max-w-md text-sm text-muted-foreground">
                     Click the button below to join your RON session. You'll complete ID verification and KBA within the platform.
                   </p>
-                  <a href={participantLink} target="_blank" rel="noopener noreferrer">
-                    <Button size="lg"><ExternalLink className="mr-2 h-5 w-5" /> Join RON Session</Button>
-                  </a>
+                  {esignConsented ? (
+                    <a href={participantLink} target="_blank" rel="noopener noreferrer">
+                      <Button size="lg"><ExternalLink className="mr-2 h-5 w-5" /> Join RON Session</Button>
+                    </a>
+                  ) : (
+                    <Button size="lg" disabled>
+                      <ExternalLink className="mr-2 h-5 w-5" /> Accept E-Sign Consent First
+                    </Button>
+                  )}
                   <p className="text-xs text-muted-foreground">Opens in a new tab — secure signing platform</p>
                 </div>
               ) : (
