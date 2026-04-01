@@ -64,6 +64,7 @@ type Activity = {
 };
 
 export default function AdminCRM() {
+  usePageTitle("CRM");
   const { user } = useAuth();
   const qc = useQueryClient();
   const [activeTab, setActiveTab] = useState("pipeline");

@@ -51,6 +51,7 @@ const FOLDERS = [
 ];
 
 export default function AdminMailbox() {
+  usePageTitle("Mailbox");
   const { user } = useAuth();
   const { toast } = useToast();
 

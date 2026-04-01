@@ -47,6 +47,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
 };
 
 export default function AdminClientEmails() {
+  usePageTitle("Client Emails");
   const { user } = useAuth();
   const { toast } = useToast();
 

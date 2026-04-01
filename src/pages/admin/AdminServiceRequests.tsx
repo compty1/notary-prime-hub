@@ -34,6 +34,7 @@ const priorityColors: Record<string, string> = {
 };
 
 export default function AdminServiceRequests() {
+  usePageTitle("Service Requests");
   const { user } = useAuth();
   const { toast } = useToast();
   const [requests, setRequests] = useState<any[]>([]);
