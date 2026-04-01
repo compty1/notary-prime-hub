@@ -51,6 +51,11 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
   const [sortBy, setSortBy] = useState<"date" | "name" | "status">("date");
   const [page, setPage] = useState(0);
 
+  // Document tags
+  const [tagsByDoc, setTagsByDoc] = useState<Record<string, string[]>>({});
+  const [tagInput, setTagInput] = useState<Record<string, string>>({});
+  const [tagFilter, setTagFilter] = useState("");
+
   const fetchDocs = async () => {
     const [docsRes, verificationsRes, profilesRes] = await Promise.all([
       supabase.from("documents").select("*").order("created_at", { ascending: false }),
