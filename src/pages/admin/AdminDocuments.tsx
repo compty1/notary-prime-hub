@@ -56,6 +56,8 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
   const [tagsByDoc, setTagsByDoc] = useState<Record<string, string[]>>({});
   const [tagInput, setTagInput] = useState<Record<string, string>>({});
   const [tagFilter, setTagFilter] = useState("");
+  const [selectedDocs, setSelectedDocs] = useState<Set<string>>(new Set());
+  const [bulkUpdating, setBulkUpdating] = useState(false);
 
   const fetchTags = async () => {
     const { data } = await supabase.from("document_tags").select("document_id, tag");
