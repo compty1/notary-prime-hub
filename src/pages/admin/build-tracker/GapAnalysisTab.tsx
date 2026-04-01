@@ -315,9 +315,8 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
             </div>
           </div>
         )}
+      </>
       )}
-
-
       <AlertDialog open={!!deleteIds} onOpenChange={(o) => !o && setDeleteIds(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
