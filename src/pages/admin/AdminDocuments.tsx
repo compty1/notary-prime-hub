@@ -381,6 +381,22 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
                         {" · "}{new Date(doc.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                         {doc.appointment_id && <span className="ml-2">• Linked</span>}
                       </p>
+                      <div className="flex items-center gap-1 mt-1 flex-wrap">
+                        {(tagsByDoc[doc.id] || []).map(tag => (
+                          <Badge key={tag} variant="outline" className="text-[10px] gap-0.5 px-1.5 py-0">
+                            {tag}
+                            <button onClick={(e) => { e.stopPropagation(); removeTag(doc.id, tag); }} className="ml-0.5 hover:text-destructive"><X className="h-2.5 w-2.5" /></button>
+                          </Badge>
+                        ))}
+                        <form className="inline-flex" onSubmit={(e) => { e.preventDefault(); addTag(doc.id); }}>
+                          <Input
+                            value={tagInput[doc.id] || ""}
+                            onChange={(e) => setTagInput(prev => ({ ...prev, [doc.id]: e.target.value }))}
+                            placeholder="+ tag"
+                            className="h-5 w-16 text-[10px] px-1 border-dashed"
+                          />
+                        </form>
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 flex-wrap justify-end">
