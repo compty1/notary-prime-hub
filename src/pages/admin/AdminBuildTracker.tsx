@@ -12,7 +12,7 @@ import {
   Workflow, Globe, ClipboardList, Cpu, Bot, Mail, Monitor, Palette, Sparkles, SwatchBook,
 } from "lucide-react";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { useTrackerItems, useInsertItem, usePlans, useRefreshAll, useReanalyze } from "./build-tracker/hooks";
+import PlatformScanButton from "./build-tracker/PlatformScanButton";
 import { CATEGORIES, SEVERITIES } from "./build-tracker/constants";
 import DashboardTab from "./build-tracker/DashboardTab";
 import GapAnalysisTab from "./build-tracker/GapAnalysisTab";
