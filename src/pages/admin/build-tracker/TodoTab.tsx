@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Plus, CheckCircle2, ArrowUp, ArrowDown, StickyNote, Download } from "lucide-react";
 import type { TrackerItem } from "./constants";
-import { CATEGORIES, SEVERITIES, STATUSES, severityColor, statusIcon } from "./constants";
+import { CATEGORIES, SEVERITIES, STATUSES, severityColor, statusIcon, exportCSV } from "./constants";
 import { useUpdateItem, useBulkUpdate } from "./hooks";
 
 export default function TodoTab({ items }: { items: TrackerItem[] }) {
