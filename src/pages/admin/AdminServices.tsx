@@ -468,15 +468,15 @@ export default function AdminServices() {
                 <AccordionContent className="space-y-2 pt-2">
                   <div className="grid grid-cols-3 gap-3 text-sm">
                     <Card className="p-3 text-center">
-                      <p className="text-2xl font-bold text-primary">{faqCount[editingId] || 0}</p>
+                      <p className="text-2xl font-bold">{faqCount[editingId] || 0}</p>
                       <p className="text-xs text-muted-foreground">FAQs</p>
                     </Card>
                     <Card className="p-3 text-center">
-                      <p className="text-2xl font-bold text-primary">{reqCount[editingId] || 0}</p>
+                      <p className="text-2xl font-bold">{reqCount[editingId] || 0}</p>
                       <p className="text-xs text-muted-foreground">Requirements</p>
                     </Card>
                     <Card className="p-3 text-center">
-                      <p className="text-2xl font-bold text-primary">{workflowCount[editingId] || 0}</p>
+                      <p className="text-2xl font-bold">{workflowCount[editingId] || 0}</p>
                       <p className="text-xs text-muted-foreground">Workflow Steps</p>
                     </Card>
                   </div>
