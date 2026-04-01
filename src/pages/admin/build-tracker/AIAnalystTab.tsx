@@ -237,10 +237,15 @@ ${openSummary || "None"}`;
         )}
       </div>
 
-      {messages.length > 0 && messages[messages.length - 1]?.role === "assistant" && !isLoading && (
+      {messages.length > 0 && (
         <div className="flex gap-2 mb-2">
-          <Button size="sm" variant="outline" onClick={() => savePlan(messages[messages.length - 1].content)} disabled={insertPlan.isPending}>
-            <ClipboardList className="h-3.5 w-3.5 mr-1" /> Save as Plan
+          {messages[messages.length - 1]?.role === "assistant" && !isLoading && (
+            <Button size="sm" variant="outline" onClick={() => savePlan(messages[messages.length - 1].content)} disabled={insertPlan.isPending}>
+              <ClipboardList className="h-3.5 w-3.5 mr-1" /> Save as Plan
+            </Button>
+          )}
+          <Button size="sm" variant="ghost" onClick={() => { setMessages([]); localStorage.removeItem(STORAGE_KEY); }}>
+            <RotateCcw className="h-3.5 w-3.5 mr-1" /> Clear Chat
           </Button>
         </div>
       )}
