@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { AdminNotificationCenter } from "@/components/AdminNotificationCenter";
 
@@ -26,6 +26,7 @@ const adminNavItems = [
   { title: "Apostille", url: "/admin/apostille", icon: Package, adminOnly: true },
   { title: "Email Management", url: "/admin/email-management", icon: Mail, adminOnly: true },
   { title: "Lead Portal", url: "/admin/leads", icon: Target, adminOnly: true },
+  { title: "CRM", url: "/admin/crm", icon: Handshake, adminOnly: true },
   { title: "Live Chat", url: "/admin/chat", icon: MessageSquare, adminOnly: true },
   { title: "Journal", url: "/admin/journal", icon: BookMarked, adminOnly: false },
   { title: "Revenue", url: "/admin/revenue", icon: DollarSign, adminOnly: true },

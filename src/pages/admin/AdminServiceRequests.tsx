@@ -104,7 +104,7 @@ export default function AdminServiceRequests() {
     setEditPriority(req.priority);
     setEditNotes(req.notes || "");
     setEditClientStatus(req.client_visible_status || "Submitted");
-    setEditAssignedTo(req.assigned_to || "");
+    setEditAssignedTo(req.assigned_to || "__unassigned__");
     setDeliverableFile(null);
     setDetailOpen(true);
   };
@@ -141,7 +141,7 @@ export default function AdminServiceRequests() {
       priority: editPriority,
       notes: editNotes,
       client_visible_status: editClientStatus,
-      assigned_to: editAssignedTo || null,
+      assigned_to: editAssignedTo === "__unassigned__" ? null : editAssignedTo || null,
       deliverable_url: deliverableUrl || null,
       sla_deadline: slaDeadline,
     }).eq("id", selectedRequest.id);
@@ -151,10 +151,10 @@ export default function AdminServiceRequests() {
       await logAuditEvent("service_request_updated", {
         entityType: "service_request",
         entityId: selectedRequest.id,
-        details: { status: editStatus, priority: editPriority, assigned_to: editAssignedTo || null },
+        details: { status: editStatus, priority: editPriority, assigned_to: editAssignedTo === "__unassigned__" ? null : editAssignedTo || null },
       });
       toast({ title: "Request updated" });
-      setRequests(prev => prev.map(r => r.id === selectedRequest.id ? { ...r, status: editStatus, priority: editPriority, notes: editNotes, client_visible_status: editClientStatus, assigned_to: editAssignedTo || null, deliverable_url: deliverableUrl, sla_deadline: slaDeadline } : r));
+      setRequests(prev => prev.map(r => r.id === selectedRequest.id ? { ...r, status: editStatus, priority: editPriority, notes: editNotes, client_visible_status: editClientStatus, assigned_to: editAssignedTo === "__unassigned__" ? null : editAssignedTo || null, deliverable_url: deliverableUrl, sla_deadline: slaDeadline } : r));
       setDetailOpen(false);
     }
     setUpdating(false);
@@ -163,7 +163,8 @@ export default function AdminServiceRequests() {
   const filtered = requests.filter(r => {
     if (statusFilter !== "all" && r.status !== statusFilter) return false;
     if (priorityFilter !== "all" && r.priority !== priorityFilter) return false;
-    if (assignedFilter !== "all" && (r.assigned_to || "") !== assignedFilter) return false;
+    if (assignedFilter === "unassigned" && r.assigned_to) return false;
+    if (assignedFilter !== "all" && assignedFilter !== "unassigned" && r.assigned_to !== assignedFilter) return false;
     if (search) {
       const s = search.toLowerCase();
       const clientName = profiles[r.client_id]?.full_name?.toLowerCase() || "";
@@ -232,7 +233,7 @@ export default function AdminServiceRequests() {
           <SelectTrigger className="w-[150px]"><SelectValue placeholder="Assigned To" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Team</SelectItem>
-            <SelectItem value="">Unassigned</SelectItem>
+            <SelectItem value="unassigned">Unassigned</SelectItem>
             {teamProfiles.map(p => (
               <SelectItem key={p.user_id} value={p.user_id}>{p.full_name || p.email}</SelectItem>
             ))}
@@ -346,7 +347,7 @@ export default function AdminServiceRequests() {
                 <Select value={editAssignedTo} onValueChange={setEditAssignedTo}>
                   <SelectTrigger><SelectValue placeholder="Unassigned" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Unassigned</SelectItem>
+                    <SelectItem value="__unassigned__">Unassigned</SelectItem>
                     {teamProfiles.map(p => (
                       <SelectItem key={p.user_id} value={p.user_id}>{p.full_name || p.email}</SelectItem>
                     ))}
