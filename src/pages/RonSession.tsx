@@ -366,6 +366,7 @@ export default function RonSession() {
     }
   };
 
+  const saveSessionData = async () => {
     if (!appointmentId) {
       toast({ title: "No appointment linked", description: "Open this session from an appointment to save data.", variant: "destructive" });
       return;
