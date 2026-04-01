@@ -7,15 +7,33 @@ interface TechCheckProps {
   onComplete?: () => void;
 }
 
+function getBrowserInfo(): { name: string; version: number; supported: boolean } {
+  const ua = navigator.userAgent;
+  let name = "Unknown";
+  let version = 0;
+  if (ua.includes("Edg/")) { name = "Edge"; version = parseInt(ua.split("Edg/")[1]); }
+  else if (ua.includes("Chrome/")) { name = "Chrome"; version = parseInt(ua.split("Chrome/")[1]); }
+  else if (ua.includes("Firefox/")) { name = "Firefox"; version = parseInt(ua.split("Firefox/")[1]); }
+  else if (ua.includes("Safari/") && !ua.includes("Chrome")) { name = "Safari"; version = parseInt((ua.match(/Version\/(\d+)/) || [])[1] || "0"); }
+  const minVersions: Record<string, number> = { Chrome: 90, Firefox: 90, Edge: 90, Safari: 15 };
+  const supported = name in minVersions ? version >= minVersions[name] : false;
+  return { name, version, supported };
+}
+
 export default function TechCheck({ onComplete }: TechCheckProps) {
-  const [results, setResults] = useState<{ camera: boolean | null; mic: boolean | null; connection: boolean | null; speed: string | null }>({ camera: null, mic: null, connection: null, speed: null });
+  const [results, setResults] = useState<{ camera: boolean | null; mic: boolean | null; connection: boolean | null; speed: string | null; browser: boolean | null; webrtc: boolean | null }>({ camera: null, mic: null, connection: null, speed: null, browser: null, webrtc: null });
   const [checking, setChecking] = useState(false);
   const [done, setDone] = useState(false);
+
+  const browserInfo = useMemo(() => getBrowserInfo(), []);
 
   const runCheck = async () => {
     setChecking(true);
     setDone(false);
-    setResults({ camera: null, mic: null, connection: null, speed: null });
+    setResults({ camera: null, mic: null, connection: null, speed: null, browser: null, webrtc: null });
+
+    // Browser version check
+    setResults(p => ({ ...p, browser: browserInfo.supported }));
 
     // Camera check
     try {
@@ -51,16 +69,34 @@ export default function TechCheck({ onComplete }: TechCheckProps) {
       }
     }
 
+    // WebRTC NAT traversal test
+    try {
+      const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+      const gathered = await new Promise<boolean>((resolve) => {
+        let found = false;
+        pc.onicecandidate = (e) => { if (e.candidate && !found) { found = true; resolve(true); } };
+        pc.createDataChannel("test");
+        pc.createOffer().then(o => pc.setLocalDescription(o));
+        setTimeout(() => { if (!found) resolve(false); }, 5000);
+      });
+      pc.close();
+      setResults(p => ({ ...p, webrtc: gathered }));
+    } catch {
+      setResults(p => ({ ...p, webrtc: false }));
+    }
+
     setChecking(false);
     setDone(true);
   };
 
-  const allPassed = results.camera === true && results.mic === true && results.connection === true;
+  const allPassed = results.camera === true && results.mic === true && results.connection === true && results.browser === true && results.webrtc === true;
 
   const checks = [
+    { label: "Browser", result: results.browser, icon: Monitor, detail: results.browser === true ? `${browserInfo.name} ${browserInfo.version} — supported` : results.browser === false ? `${browserInfo.name} ${browserInfo.version} — unsupported. Please update to the latest version.` : null },
     { label: "Camera", result: results.camera, icon: Camera, detail: results.camera ? "Webcam detected and accessible" : results.camera === false ? "Camera not detected or permission denied" : null },
     { label: "Microphone", result: results.mic, icon: Mic, detail: results.mic ? "Microphone detected and accessible" : results.mic === false ? "Microphone not detected or permission denied" : null },
     { label: "Internet Connection", result: results.connection, icon: Wifi, detail: results.connection ? `Connected${results.speed ? ` · Speed: ${results.speed}` : ""}` : results.connection === false ? "No internet connection detected" : null },
+    { label: "WebRTC (Video Call)", result: results.webrtc, icon: Wifi, detail: results.webrtc === true ? "NAT traversal successful" : results.webrtc === false ? "Video call connectivity may be limited — try a different network" : null },
   ];
 
   return (
