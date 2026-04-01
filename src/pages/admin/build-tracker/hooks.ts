@@ -2,6 +2,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { TrackerItem, TrackerPlan, PlanItem } from "./constants";
+import { autoCategorize } from "./constants";
+
+const ALL_KEYS = ["build-tracker-items", "build-tracker-plans"];
 
 export function useTrackerItems() {
   return useQuery({
@@ -26,7 +29,7 @@ export function useUpdateItem() {
       const { error } = await supabase.from("build_tracker_items").update(fields as any).eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["build-tracker-items"] }),
+    onSuccess: () => ALL_KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] })),
     onError: (e: Error) => toast.error(e.message),
   });
 }
@@ -40,7 +43,7 @@ export function useBulkUpdate() {
       const { error } = await supabase.from("build_tracker_items").update(fields as any).in("id", updates.ids);
       if (error) throw error;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["build-tracker-items"] }); toast.success("Bulk update applied"); },
+    onSuccess: () => { ALL_KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] })); toast.success("Bulk update applied"); },
     onError: (e: Error) => toast.error(e.message),
   });
 }
@@ -52,7 +55,7 @@ export function useDeleteItems() {
       const { error } = await supabase.from("build_tracker_items").delete().in("id", ids);
       if (error) throw error;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["build-tracker-items"] }); toast.success("Deleted"); },
+    onSuccess: () => { ALL_KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] })); toast.success("Deleted"); },
     onError: (e: Error) => toast.error(e.message),
   });
 }
@@ -64,7 +67,7 @@ export function useInsertItem() {
       const { error } = await supabase.from("build_tracker_items").insert(item as any);
       if (error) throw error;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["build-tracker-items"] }); toast.success("Item added"); },
+    onSuccess: () => { ALL_KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] })); toast.success("Item added"); },
     onError: (e: Error) => toast.error(e.message),
   });
 }
@@ -76,7 +79,7 @@ export function useBulkInsert() {
       const { error } = await supabase.from("build_tracker_items").insert(items as any[]);
       if (error) throw error;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["build-tracker-items"] }); toast.success("Bulk import complete"); },
+    onSuccess: () => { ALL_KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] })); toast.success("Bulk import complete"); },
     onError: (e: Error) => toast.error(e.message),
   });
 }
@@ -106,7 +109,7 @@ export function useInsertPlan() {
       const { error } = await supabase.from("build_tracker_plans").insert(plan as any);
       if (error) throw error;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["build-tracker-plans"] }); toast.success("Plan saved"); },
+    onSuccess: () => { ALL_KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] })); toast.success("Plan saved"); },
     onError: (e: Error) => toast.error(e.message),
   });
 }
@@ -118,7 +121,62 @@ export function useUpdatePlan() {
       const { error } = await supabase.from("build_tracker_plans").update({ plan_items: update.plan_items as any }).eq("id", update.id);
       if (error) throw error;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["build-tracker-plans"] }); },
+    onSuccess: () => { ALL_KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] })); },
     onError: (e: Error) => toast.error(e.message),
   });
+}
+
+/* ─── Refresh all build tracker data ─── */
+export function useRefreshAll() {
+  const qc = useQueryClient();
+  return () => ALL_KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] }));
+}
+
+/* ─── Deep re-analysis ─── */
+export function useReanalyze(items: TrackerItem[]) {
+  const bulkUpdate = useBulkUpdate();
+  const bulkInsert = useBulkInsert();
+
+  return async () => {
+    const findings: string[] = [];
+
+    // 1. Flag stale resolved items (resolved without timestamp)
+    const staleResolved = items.filter(i => i.status === "resolved" && !i.resolved_at);
+    if (staleResolved.length > 0) {
+      bulkUpdate.mutate({ ids: staleResolved.map(i => i.id), fields: { status: "open" } });
+      findings.push(`Re-opened ${staleResolved.length} stale resolved items`);
+    }
+
+    // 2. Auto-categorize items missing category or impact_area
+    const uncategorized = items.filter(i => i.category === "gap" && !i.impact_area);
+    if (uncategorized.length > 0) {
+      for (const item of uncategorized.slice(0, 20)) {
+        const auto = autoCategorize(item.title);
+        if (auto.category !== "gap" || auto.impact_area) {
+          bulkUpdate.mutate({ ids: [item.id], fields: { category: auto.category, impact_area: auto.impact_area } });
+        }
+      }
+      findings.push(`Auto-categorized ${Math.min(uncategorized.length, 20)} items`);
+    }
+
+    // 3. Check for potential duplicate titles
+    const titleMap = new Map<string, TrackerItem[]>();
+    items.forEach(i => {
+      const key = i.title.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 30);
+      titleMap.set(key, [...(titleMap.get(key) || []), i]);
+    });
+    const dupes = Array.from(titleMap.values()).filter(v => v.length > 1);
+    if (dupes.length > 0) findings.push(`Found ${dupes.length} potential duplicate groups`);
+
+    // 4. Flag old open items (>30 days)
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const staleOpen = items.filter(i => i.status === "open" && i.created_at && i.created_at < thirtyDaysAgo);
+    if (staleOpen.length > 0) findings.push(`${staleOpen.length} open items older than 30 days`);
+
+    if (findings.length === 0) {
+      toast.info("Analysis complete — no issues found");
+    } else {
+      toast.success(`Analysis complete: ${findings.join("; ")}`);
+    }
+  };
 }
