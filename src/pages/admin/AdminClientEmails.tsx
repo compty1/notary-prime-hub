@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { usePageTitle } from "@/lib/usePageTitle";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,6 +47,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
 };
 
 export default function AdminClientEmails() {
+  usePageTitle("Client Emails");
   const { user } = useAuth();
   const { toast } = useToast();
 

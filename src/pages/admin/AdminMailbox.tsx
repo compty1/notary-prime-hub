@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { usePageTitle } from "@/lib/usePageTitle";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { callEdgeFunction } from "@/lib/edgeFunctionAuth";
@@ -50,6 +51,7 @@ const FOLDERS = [
 ];
 
 export default function AdminMailbox() {
+  usePageTitle("Mailbox");
   const { user } = useAuth();
   const { toast } = useToast();
 
