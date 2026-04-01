@@ -107,7 +107,7 @@ export function useInsertPlan() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (plan: { plan_title: string; plan_summary?: string; plan_items: PlanItem[]; source: string; chat_context?: string }) => {
-      const { error } = await supabase.from("build_tracker_plans").insert(plan as Record<string, unknown>);
+      const { error } = await supabase.from("build_tracker_plans").insert(plan as any);
       if (error) throw error;
     },
     onSuccess: () => { ALL_KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] })); toast.success("Plan saved"); },
