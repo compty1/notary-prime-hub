@@ -24,7 +24,11 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
     ],
     content: value || "",
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      const sanitized = DOMPurify.sanitize(editor.getHTML(), {
+        ALLOWED_TAGS: ["p", "br", "strong", "em", "u", "h2", "ul", "ol", "li", "span"],
+        ALLOWED_ATTR: ["style"],
+      });
+      onChange(sanitized);
     },
     editorProps: {
       attributes: {
