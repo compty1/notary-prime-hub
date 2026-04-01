@@ -1,0 +1,14 @@
+CREATE INDEX IF NOT EXISTS idx_appointments_status_date ON public.appointments (status, scheduled_date);
+CREATE INDEX IF NOT EXISTS idx_appointments_client_id ON public.appointments (client_id);
+CREATE INDEX IF NOT EXISTS idx_documents_uploaded_by ON public.documents (uploaded_by);
+CREATE INDEX IF NOT EXISTS idx_documents_status ON public.documents (status);
+CREATE INDEX IF NOT EXISTS idx_audit_log_action_created ON public.audit_log (action, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_log_entity ON public.audit_log (entity_type, entity_id);
+CREATE INDEX IF NOT EXISTS idx_leads_status ON public.leads (status);
+CREATE INDEX IF NOT EXISTS idx_leads_source_status ON public.leads (source, status);
+CREATE INDEX IF NOT EXISTS idx_email_cache_folder_date ON public.email_cache (folder, date DESC);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_sender ON public.chat_messages (sender_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_recipient ON public.chat_messages (recipient_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_build_tracker_status ON public.build_tracker_items (status);
+CREATE INDEX IF NOT EXISTS idx_notary_journal_created_by ON public.notary_journal (created_by, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_payments_client_status ON public.payments (client_id, status);

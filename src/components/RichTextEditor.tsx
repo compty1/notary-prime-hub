@@ -2,6 +2,7 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import UnderlineExt from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
+import DOMPurify from "dompurify";
 import { Bold, Italic, Underline, List, ListOrdered, AlignLeft, AlignCenter, AlignRight, Heading2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
@@ -23,7 +24,11 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
     ],
     content: value || "",
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      const sanitized = DOMPurify.sanitize(editor.getHTML(), {
+        ALLOWED_TAGS: ["p", "br", "strong", "em", "u", "h2", "ul", "ol", "li", "span"],
+        ALLOWED_ATTR: ["style"],
+      });
+      onChange(sanitized);
     },
     editorProps: {
       attributes: {
