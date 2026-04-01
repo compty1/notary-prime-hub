@@ -141,7 +141,7 @@ export default function AdminServiceRequests() {
       priority: editPriority,
       notes: editNotes,
       client_visible_status: editClientStatus,
-      assigned_to: editAssignedTo || null,
+      assigned_to: editAssignedTo === "__unassigned__" ? null : editAssignedTo || null,
       deliverable_url: deliverableUrl || null,
       sla_deadline: slaDeadline,
     }).eq("id", selectedRequest.id);
