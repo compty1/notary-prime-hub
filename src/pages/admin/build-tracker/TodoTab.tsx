@@ -6,9 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, CheckCircle2, ArrowUp, ArrowDown, StickyNote } from "lucide-react";
+import { Plus, CheckCircle2, ArrowUp, ArrowDown, StickyNote, Download } from "lucide-react";
 import type { TrackerItem } from "./constants";
-import { CATEGORIES, SEVERITIES, STATUSES, severityColor, statusIcon } from "./constants";
+import { CATEGORIES, SEVERITIES, STATUSES, severityColor, statusIcon, exportCSV } from "./constants";
 import { useUpdateItem, useBulkUpdate } from "./hooks";
 
 export default function TodoTab({ items }: { items: TrackerItem[] }) {
@@ -69,6 +69,9 @@ export default function TodoTab({ items }: { items: TrackerItem[] }) {
         <Button size="sm" variant="outline" disabled={selected.size === 0}
           onClick={() => { bulk.mutate({ ids: [...selected], fields: { is_on_todo: false } }); setSelected(new Set()); }}>
           Remove from To-Do
+        </Button>
+        <Button size="sm" variant="outline" disabled={todoItems.length === 0} onClick={() => exportCSV(todoItems)}>
+          <Download className="h-3.5 w-3.5 mr-1" /> Download All CSV
         </Button>
       </div>
 
