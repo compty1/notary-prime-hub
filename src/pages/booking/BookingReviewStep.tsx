@@ -37,6 +37,8 @@ interface ReviewStepProps {
   signerCount?: number;
   pricingBreakdown?: { lineItems: { label: string; amount: number }[]; total: number; deposit: number } | null;
   validationErrors?: Record<string, string>;
+  termsAccepted?: boolean;
+  setTermsAccepted?: (v: boolean) => void;
 }
 
 export default function BookingReviewStep(props: ReviewStepProps) {
