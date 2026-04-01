@@ -151,7 +151,7 @@ export default function AdminServiceRequests() {
       await logAuditEvent("service_request_updated", {
         entityType: "service_request",
         entityId: selectedRequest.id,
-        details: { status: editStatus, priority: editPriority, assigned_to: editAssignedTo || null },
+        details: { status: editStatus, priority: editPriority, assigned_to: editAssignedTo === "__unassigned__" ? null : editAssignedTo || null },
       });
       toast({ title: "Request updated" });
       setRequests(prev => prev.map(r => r.id === selectedRequest.id ? { ...r, status: editStatus, priority: editPriority, notes: editNotes, client_visible_status: editClientStatus, assigned_to: editAssignedTo || null, deliverable_url: deliverableUrl, sla_deadline: slaDeadline } : r));
