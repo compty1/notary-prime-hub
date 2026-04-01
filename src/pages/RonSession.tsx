@@ -11,8 +11,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Shield, Monitor, ArrowLeft, CheckCircle, AlertCircle, Mic, MicOff, BookOpen, Save, Loader2, XCircle, FileCheck, CreditCard, ExternalLink, Video, Link2, Info } from "lucide-react";
+import { Shield, Monitor, ArrowLeft, CheckCircle, AlertCircle, Mic, MicOff, BookOpen, Save, Loader2, XCircle, FileCheck, CreditCard, ExternalLink, Video, Link2, Info, Wifi, WifiOff, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { callEdgeFunction } from "@/lib/edgeFunctionAuth";
 import { cn } from "@/lib/utils";
 import { logAuditEvent } from "@/lib/auditLog";
 import type { Json } from "@/integrations/supabase/types";
@@ -131,6 +132,12 @@ export default function RonSession() {
   const [sessionStatus, setSessionStatus] = useState<string>("scheduled");
   const [recordingUrl, setRecordingUrl] = useState("");
 
+  // Webhook status
+  const [webhookStatus, setWebhookStatus] = useState<string | null>(null);
+  const [webhookEventsRegistered, setWebhookEventsRegistered] = useState<number>(0);
+  const [signnowDocumentId, setSignnowDocumentId] = useState<string | null>(null);
+  const [checkingWebhooks, setCheckingWebhooks] = useState(false);
+
   const hasNativeKba = PLATFORMS_WITH_NATIVE_KBA.includes(signingPlatform);
 
   // Compute current step
@@ -181,6 +188,9 @@ export default function RonSession() {
         if ((session as any).kba_attempts) setKbaAttempts((session as any).kba_attempts);
         if ((session as any).session_timeout_minutes) setSessionTimeoutMinutes((session as any).session_timeout_minutes);
         if ((session as any).started_at) setSessionStartedAt((session as any).started_at);
+        if ((session as any).webhook_status) setWebhookStatus((session as any).webhook_status);
+        if ((session as any).webhook_events_registered) setWebhookEventsRegistered((session as any).webhook_events_registered);
+        if ((session as any).signnow_document_id) setSignnowDocumentId((session as any).signnow_document_id);
       } else {
         // Capture signer IP on first session load (Ohio RON compliance)
         try {
@@ -334,6 +344,26 @@ export default function RonSession() {
     setSessionStatus("confirmed");
     setSaving(false);
     toast({ title: "Session link saved", description: "The client can now access this signing link from their portal." });
+  };
+
+  const checkWebhookStatus = async () => {
+    if (!signnowDocumentId) return;
+    setCheckingWebhooks(true);
+    try {
+      const resp = await callEdgeFunction("signnow", {
+        action: "check_document_webhooks",
+        document_id: signnowDocumentId,
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        setWebhookStatus(data.total_active > 0 ? "active" : "none");
+        setWebhookEventsRegistered(data.total_active || 0);
+      }
+    } catch (e) {
+      console.error("Webhook check failed:", e);
+    } finally {
+      setCheckingWebhooks(false);
+    }
   };
 
   const saveSessionData = async () => {
@@ -828,6 +858,63 @@ export default function RonSession() {
                     <a href={participantLink} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline break-all">
                       {participantLink}
                     </a>
+                  </div>
+                )}
+
+                {/* Webhook Status Indicator */}
+                {signnowDocumentId && isAdminOrNotary && (
+                  <div className={cn(
+                    "mt-4 rounded-lg border p-3",
+                    webhookStatus === "active" ? "bg-primary/5 border-primary/20" :
+                    webhookStatus === "partial" ? "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800" :
+                    webhookStatus === "failed" ? "bg-destructive/5 border-destructive/20" :
+                    "bg-muted/50 border-border"
+                  )}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {webhookStatus === "active" ? (
+                          <Wifi className="h-4 w-4 text-primary" />
+                        ) : webhookStatus === "failed" ? (
+                          <WifiOff className="h-4 w-4 text-destructive" />
+                        ) : (
+                          <Wifi className="h-4 w-4 text-muted-foreground" />
+                        )}
+                        <div>
+                          <p className="text-xs font-medium">
+                            Webhook Status: {" "}
+                            <span className={cn(
+                              webhookStatus === "active" && "text-primary",
+                              webhookStatus === "partial" && "text-amber-600 dark:text-amber-400",
+                              webhookStatus === "failed" && "text-destructive",
+                              !webhookStatus && "text-muted-foreground",
+                            )}>
+                              {webhookStatus === "active" ? `Active (${webhookEventsRegistered} events)` :
+                               webhookStatus === "partial" ? `Partial (${webhookEventsRegistered} events)` :
+                               webhookStatus === "failed" ? "Failed" :
+                               webhookStatus === "pending" ? "Pending..." :
+                               "Unknown"}
+                            </span>
+                          </p>
+                          <p className="text-[10px] text-muted-foreground">
+                            SignNow document: {signnowDocumentId.slice(0, 12)}…
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 text-xs"
+                        onClick={checkWebhookStatus}
+                        disabled={checkingWebhooks}
+                      >
+                        {checkingWebhooks ? (
+                          <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                        ) : (
+                          <RefreshCw className="h-3 w-3 mr-1" />
+                        )}
+                        Refresh
+                      </Button>
+                    </div>
                   </div>
                 )}
               </CardContent>
