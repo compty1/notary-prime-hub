@@ -5,15 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Separator } from "@/components/ui/separator";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Loader2, GripVertical } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2, AlertTriangle, Star, Clock, Image, Video, Link2 } from "lucide-react";
 
 const categories = [
   { value: "notarization", label: "Core Notarization" },
@@ -35,10 +37,20 @@ const categories = [
 const pricingModels = [
   { value: "per_seal", label: "Per Seal" },
   { value: "per_document", label: "Per Document" },
+  { value: "per_page", label: "Per Page" },
   { value: "per_hour", label: "Per Hour" },
+  { value: "per_session", label: "Per Session" },
   { value: "flat", label: "Flat Rate" },
   { value: "monthly", label: "Monthly" },
   { value: "custom", label: "Custom Quote" },
+];
+
+const iconOptions = [
+  "FileText", "Monitor", "MapPin", "Users", "Globe", "Shield", "Lock", "Briefcase",
+  "Home", "Headphones", "PenTool", "BarChart3", "MessageSquare", "Wrench", "Eye",
+  "Copy", "ScanFace", "ClipboardCheck", "Search", "FileEdit", "Scan", "Paintbrush",
+  "Building", "Flag", "Languages", "Layers", "CreditCard", "Code", "Award",
+  "Building2", "Inbox", "Bell", "Layout", "GraduationCap", "Workflow", "Plane", "Mail",
 ];
 
 type Service = {
@@ -53,11 +65,41 @@ type Service = {
   is_active: boolean;
   display_order: number;
   icon: string | null;
+  cancellation_hours: number | null;
+  duration_minutes: number | null;
+  hero_image_url: string | null;
+  video_url: string | null;
+  estimated_turnaround: string | null;
+  is_popular: boolean;
+  avg_rating: number | null;
+  created_at: string;
+  updated_at: string;
 };
 
-const emptyForm = {
+type ServiceForm = {
+  name: string;
+  category: string;
+  description: string;
+  short_description: string;
+  price_from: number;
+  price_to: number;
+  pricing_model: string;
+  is_active: boolean;
+  display_order: number;
+  icon: string;
+  cancellation_hours: number;
+  duration_minutes: number;
+  hero_image_url: string;
+  video_url: string;
+  estimated_turnaround: string;
+  is_popular: boolean;
+};
+
+const emptyForm: ServiceForm = {
   name: "", category: "notarization", description: "", short_description: "",
   price_from: 0, price_to: 0, pricing_model: "flat", is_active: true, display_order: 0, icon: "FileText",
+  cancellation_hours: 24, duration_minutes: 30, hero_image_url: "", video_url: "",
+  estimated_turnaround: "", is_popular: false,
 };
 
 export default function AdminServices() {
@@ -67,9 +109,12 @@ export default function AdminServices() {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState(emptyForm);
+  const [form, setForm] = useState<ServiceForm>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
+  const [faqCount, setFaqCount] = useState<Record<string, number>>({});
+  const [reqCount, setReqCount] = useState<Record<string, number>>({});
+  const [workflowCount, setWorkflowCount] = useState<Record<string, number>>({});
 
   const fetchServices = async () => {
     const { data } = await supabase.from("services").select("*").order("display_order");
@@ -77,9 +122,35 @@ export default function AdminServices() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchServices(); }, []);
+  const fetchRelatedCounts = async () => {
+    const [faqRes, reqRes, wfRes] = await Promise.all([
+      supabase.from("service_faqs").select("service_id"),
+      supabase.from("service_requirements").select("service_id"),
+      supabase.from("service_workflows").select("service_id"),
+    ]);
+    const count = (rows: { service_id: string }[] | null) => {
+      const map: Record<string, number> = {};
+      rows?.forEach(r => { map[r.service_id] = (map[r.service_id] || 0) + 1; });
+      return map;
+    };
+    setFaqCount(count(faqRes.data as any));
+    setReqCount(count(reqRes.data as any));
+    setWorkflowCount(count(wfRes.data as any));
+  };
+
+  useEffect(() => { fetchServices(); fetchRelatedCounts(); }, []);
 
   const filtered = activeTab === "all" ? services : services.filter(s => s.category === activeTab);
+
+  // Detect near-duplicates
+  const duplicateWarnings = (() => {
+    const map = new Map<string, Service[]>();
+    services.forEach(s => {
+      const key = s.name.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 20);
+      map.set(key, [...(map.get(key) || []), s]);
+    });
+    return Array.from(map.values()).filter(v => v.length > 1);
+  })();
 
   const openAdd = () => {
     setEditingId(null);
@@ -94,28 +165,36 @@ export default function AdminServices() {
       short_description: s.short_description || "", price_from: s.price_from || 0,
       price_to: s.price_to || 0, pricing_model: s.pricing_model, is_active: s.is_active,
       display_order: s.display_order, icon: s.icon || "FileText",
+      cancellation_hours: s.cancellation_hours ?? 24,
+      duration_minutes: s.duration_minutes ?? 30,
+      hero_image_url: s.hero_image_url || "",
+      video_url: s.video_url || "",
+      estimated_turnaround: s.estimated_turnaround || "",
+      is_popular: s.is_popular,
     });
     setDialogOpen(true);
   };
 
   const save = async () => {
     setSaving(true);
+    const payload = {
+      name: form.name, category: form.category, description: form.description || null,
+      short_description: form.short_description || null, price_from: form.price_from,
+      price_to: form.price_to, pricing_model: form.pricing_model, is_active: form.is_active,
+      display_order: form.display_order, icon: form.icon || null,
+      cancellation_hours: form.cancellation_hours,
+      duration_minutes: form.duration_minutes,
+      hero_image_url: form.hero_image_url || null,
+      video_url: form.video_url || null,
+      estimated_turnaround: form.estimated_turnaround || null,
+      is_popular: form.is_popular,
+    };
     if (editingId) {
-      const { error } = await supabase.from("services").update({
-        name: form.name, category: form.category, description: form.description || null,
-        short_description: form.short_description || null, price_from: form.price_from,
-        price_to: form.price_to, pricing_model: form.pricing_model, is_active: form.is_active,
-        display_order: form.display_order, icon: form.icon || null,
-      }).eq("id", editingId);
+      const { error } = await supabase.from("services").update(payload).eq("id", editingId);
       if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
       else toast({ title: "Service updated" });
     } else {
-      const { error } = await supabase.from("services").insert({
-        name: form.name, category: form.category, description: form.description || null,
-        short_description: form.short_description || null, price_from: form.price_from,
-        price_to: form.price_to, pricing_model: form.pricing_model, is_active: form.is_active,
-        display_order: form.display_order, icon: form.icon || null,
-      });
+      const { error } = await supabase.from("services").insert(payload);
       if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
       else toast({ title: "Service added" });
     }
@@ -130,7 +209,7 @@ export default function AdminServices() {
   };
 
   const deleteService = async (id: string) => {
-    if (!confirm("Delete this service?")) return;
+    if (!confirm("Delete this service? Related FAQs, requirements, and workflows will also be removed.")) return;
     await supabase.from("services").delete().eq("id", id);
     setServices(prev => prev.filter(x => x.id !== id));
     toast({ title: "Service deleted" });
@@ -141,7 +220,7 @@ export default function AdminServices() {
     const from = Number(s.price_from || 0);
     const to = Number(s.price_to || 0);
     if (from === 0 && to === 0) return "Contact";
-    const suffix = s.pricing_model === "monthly" ? "/mo" : s.pricing_model === "per_seal" ? "/seal" : s.pricing_model === "per_document" ? "/doc" : "";
+    const suffix = s.pricing_model === "monthly" ? "/mo" : s.pricing_model === "per_seal" ? "/seal" : s.pricing_model === "per_document" ? "/doc" : s.pricing_model === "per_hour" ? "/hr" : s.pricing_model === "per_session" ? "/session" : s.pricing_model === "per_page" ? "/page" : "";
     return to > from ? `$${from}–$${to}${suffix}` : `$${from}${suffix}`;
   };
 
@@ -150,18 +229,31 @@ export default function AdminServices() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-sans text-2xl font-bold text-foreground">Services Catalog</h1>
-          <p className="text-sm text-muted-foreground">Manage all services, pricing, and availability</p>
+          <p className="text-sm text-muted-foreground">Manage all services, pricing, and availability • {services.length} total</p>
         </div>
-        <Button onClick={openAdd} className="">
-          <Plus className="mr-1 h-4 w-4" /> Add Service
-        </Button>
+        <Button onClick={openAdd}><Plus className="mr-1 h-4 w-4" /> Add Service</Button>
       </div>
+
+      {duplicateWarnings.length > 0 && (
+        <Card className="border-yellow-500/50 bg-yellow-500/5">
+          <CardContent className="py-3 px-4 flex items-start gap-2">
+            <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <span className="font-medium text-yellow-700">Potential duplicates detected:</span>{" "}
+              {duplicateWarnings.map((group, i) => (
+                <span key={i}>{i > 0 ? " • " : ""}{group.map(s => s.name).join(" ↔ ")}</span>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="all">All ({services.length})</TabsTrigger>
           {categories.map(c => {
             const count = services.filter(s => s.category === c.value).length;
+            if (count === 0) return null;
             return <TabsTrigger key={c.value} value={c.value}>{c.label} ({count})</TabsTrigger>;
           })}
         </TabsList>
@@ -179,6 +271,9 @@ export default function AdminServices() {
                   <TableHead>Service</TableHead>
                   <TableHead>Category</TableHead>
                   <TableHead>Price</TableHead>
+                  <TableHead>Duration</TableHead>
+                  <TableHead>Related</TableHead>
+                  <TableHead>Popular</TableHead>
                   <TableHead>Active</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -191,6 +286,11 @@ export default function AdminServices() {
                       <div>
                         <p className="font-medium text-sm">{s.name}</p>
                         <p className="text-xs text-muted-foreground line-clamp-1">{s.short_description}</p>
+                        {s.estimated_turnaround && (
+                          <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                            <Clock className="h-3 w-3" /> {s.estimated_turnaround}
+                          </p>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -199,6 +299,17 @@ export default function AdminServices() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-sm">{formatPrice(s)}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{s.duration_minutes ?? 30}m</TableCell>
+                    <TableCell>
+                      <div className="flex gap-1 text-xs text-muted-foreground">
+                        {(faqCount[s.id] || 0) > 0 && <Badge variant="secondary" className="text-[10px]">{faqCount[s.id]} FAQ</Badge>}
+                        {(reqCount[s.id] || 0) > 0 && <Badge variant="secondary" className="text-[10px]">{reqCount[s.id]} Req</Badge>}
+                        {(workflowCount[s.id] || 0) > 0 && <Badge variant="secondary" className="text-[10px]">{workflowCount[s.id]} Steps</Badge>}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {s.is_popular && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />}
+                    </TableCell>
                     <TableCell>
                       <Switch checked={s.is_active} onCheckedChange={() => toggleActive(s)} />
                     </TableCell>
@@ -208,53 +319,176 @@ export default function AdminServices() {
                     </TableCell>
                   </TableRow>
                 ))}
+                {filtered.length === 0 && (
+                  <TableRow><TableCell colSpan={9} className="text-center py-8 text-muted-foreground">No services in this category</TableCell></TableRow>
+                )}
               </TableBody>
             </Table>
           </CardContent>
         </Card>
       )}
 
+      {/* ─── Comprehensive Edit Dialog ─── */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-sans">{editingId ? "Edit Service" : "Add New Service"}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
-            <div><Label>Service Name *</Label><Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></div>
-            <div><Label>Short Description</Label><Input value={form.short_description} onChange={e => setForm({ ...form, short_description: e.target.value })} placeholder="One-liner for cards" /></div>
-            <div><Label>Full Description</Label><Textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={3} /></div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Category</Label>
-                <Select value={form.category} onValueChange={v => setForm({ ...form, category: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{categories.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Pricing Model</Label>
-                <Select value={form.pricing_model} onValueChange={v => setForm({ ...form, pricing_model: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{pricingModels.map(p => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div><Label>Price From ($)</Label><Input type="number" step="0.01" value={form.price_from} onChange={e => setForm({ ...form, price_from: parseFloat(e.target.value) || 0 })} /></div>
-              <div><Label>Price To ($)</Label><Input type="number" step="0.01" value={form.price_to} onChange={e => setForm({ ...form, price_to: parseFloat(e.target.value) || 0 })} /></div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div><Label>Display Order</Label><Input type="number" value={form.display_order} onChange={e => setForm({ ...form, display_order: parseInt(e.target.value) || 0 })} /></div>
-              <div><Label>Icon Name</Label><Input value={form.icon} onChange={e => setForm({ ...form, icon: e.target.value })} placeholder="e.g. Monitor, MapPin" /></div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Switch checked={form.is_active} onCheckedChange={v => setForm({ ...form, is_active: v })} />
-              <Label>Active (visible to clients)</Label>
-            </div>
-          </div>
-          <DialogFooter>
+
+          <Accordion type="multiple" defaultValue={["basic", "pricing", "settings", "media"]} className="space-y-2">
+            {/* Basic Info */}
+            <AccordionItem value="basic">
+              <AccordionTrigger className="text-sm font-semibold">Basic Information</AccordionTrigger>
+              <AccordionContent className="space-y-4 pt-2">
+                <div>
+                  <Label>Service Name *</Label>
+                  <Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="e.g. Remote Online Notarization" />
+                </div>
+                <div>
+                  <Label>Short Description</Label>
+                  <Input value={form.short_description} onChange={e => setForm({ ...form, short_description: e.target.value })} placeholder="One-liner for cards (max ~100 chars)" maxLength={150} />
+                  <p className="text-[11px] text-muted-foreground mt-1">{form.short_description.length}/150</p>
+                </div>
+                <div>
+                  <Label>Full Description</Label>
+                  <Textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={4} placeholder="Detailed service description shown on the detail page..." />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Category</Label>
+                    <Select value={form.category} onValueChange={v => setForm({ ...form, category: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>{categories.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Icon</Label>
+                    <Select value={form.icon} onValueChange={v => setForm({ ...form, icon: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent className="max-h-48">{iconOptions.map(i => <SelectItem key={i} value={i}>{i}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Pricing */}
+            <AccordionItem value="pricing">
+              <AccordionTrigger className="text-sm font-semibold">Pricing & Duration</AccordionTrigger>
+              <AccordionContent className="space-y-4 pt-2">
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label>Pricing Model</Label>
+                    <Select value={form.pricing_model} onValueChange={v => setForm({ ...form, pricing_model: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>{pricingModels.map(p => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Price From ($)</Label>
+                    <Input type="number" step="0.01" min="0" value={form.price_from} onChange={e => setForm({ ...form, price_from: parseFloat(e.target.value) || 0 })} />
+                  </div>
+                  <div>
+                    <Label>Price To ($)</Label>
+                    <Input type="number" step="0.01" min="0" value={form.price_to} onChange={e => setForm({ ...form, price_to: parseFloat(e.target.value) || 0 })} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Duration (minutes)</Label>
+                    <Input type="number" min="5" step="5" value={form.duration_minutes} onChange={e => setForm({ ...form, duration_minutes: parseInt(e.target.value) || 30 })} />
+                    <p className="text-[11px] text-muted-foreground mt-1">Typical session length</p>
+                  </div>
+                  <div>
+                    <Label>Estimated Turnaround</Label>
+                    <Input value={form.estimated_turnaround} onChange={e => setForm({ ...form, estimated_turnaround: e.target.value })} placeholder="e.g. Same day, 2-3 business days" />
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Settings & Controls */}
+            <AccordionItem value="settings">
+              <AccordionTrigger className="text-sm font-semibold">Settings & Controls</AccordionTrigger>
+              <AccordionContent className="space-y-4 pt-2">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Display Order</Label>
+                    <Input type="number" value={form.display_order} onChange={e => setForm({ ...form, display_order: parseInt(e.target.value) || 0 })} />
+                    <p className="text-[11px] text-muted-foreground mt-1">Lower = appears first</p>
+                  </div>
+                  <div>
+                    <Label>Cancellation Window (hours)</Label>
+                    <Input type="number" min="0" value={form.cancellation_hours} onChange={e => setForm({ ...form, cancellation_hours: parseInt(e.target.value) || 0 })} />
+                    <p className="text-[11px] text-muted-foreground mt-1">Hours before appt that cancellation is allowed</p>
+                  </div>
+                </div>
+                <Separator />
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Active (visible to clients)</Label>
+                      <p className="text-[11px] text-muted-foreground">Shows in public catalog</p>
+                    </div>
+                    <Switch checked={form.is_active} onCheckedChange={v => setForm({ ...form, is_active: v })} />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Mark as Popular</Label>
+                      <p className="text-[11px] text-muted-foreground">Shows a star badge on cards</p>
+                    </div>
+                    <Switch checked={form.is_popular} onCheckedChange={v => setForm({ ...form, is_popular: v })} />
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Media */}
+            <AccordionItem value="media">
+              <AccordionTrigger className="text-sm font-semibold">Media & Links</AccordionTrigger>
+              <AccordionContent className="space-y-4 pt-2">
+                <div>
+                  <Label className="flex items-center gap-1"><Image className="h-3.5 w-3.5" /> Hero Image URL</Label>
+                  <Input value={form.hero_image_url} onChange={e => setForm({ ...form, hero_image_url: e.target.value })} placeholder="https://..." />
+                  {form.hero_image_url && (
+                    <img src={form.hero_image_url} alt="Hero preview" className="mt-2 rounded-md max-h-32 object-cover border" onError={e => (e.currentTarget.style.display = "none")} />
+                  )}
+                </div>
+                <div>
+                  <Label className="flex items-center gap-1"><Video className="h-3.5 w-3.5" /> Video URL</Label>
+                  <Input value={form.video_url} onChange={e => setForm({ ...form, video_url: e.target.value })} placeholder="YouTube or Vimeo link" />
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Related Data (read-only counts when editing) */}
+            {editingId && (
+              <AccordionItem value="related">
+                <AccordionTrigger className="text-sm font-semibold">Related Data</AccordionTrigger>
+                <AccordionContent className="space-y-2 pt-2">
+                  <div className="grid grid-cols-3 gap-3 text-sm">
+                    <Card className="p-3 text-center">
+                      <p className="text-2xl font-bold text-primary">{faqCount[editingId] || 0}</p>
+                      <p className="text-xs text-muted-foreground">FAQs</p>
+                    </Card>
+                    <Card className="p-3 text-center">
+                      <p className="text-2xl font-bold text-primary">{reqCount[editingId] || 0}</p>
+                      <p className="text-xs text-muted-foreground">Requirements</p>
+                    </Card>
+                    <Card className="p-3 text-center">
+                      <p className="text-2xl font-bold text-primary">{workflowCount[editingId] || 0}</p>
+                      <p className="text-xs text-muted-foreground">Workflow Steps</p>
+                    </Card>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Manage FAQs, requirements, and workflow steps from the Service Detail page.</p>
+                </AccordionContent>
+              </AccordionItem>
+            )}
+          </Accordion>
+
+          <DialogFooter className="mt-4">
             <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-            <Button onClick={save} disabled={saving || !form.name} className="">
+            <Button onClick={save} disabled={saving || !form.name.trim()}>
               {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null} {editingId ? "Update" : "Create"}
             </Button>
           </DialogFooter>
