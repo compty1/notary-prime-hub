@@ -38,9 +38,9 @@ export default function BusinessPortal() {
     if (!user) return;
     Promise.all([
       supabase.from("business_profiles").select("*").eq("created_by", user.id).single(),
-      supabase.from("documents").select("*").eq("uploaded_by", user.id).order("created_at", { ascending: false }),
-      supabase.from("appointments").select("*").eq("client_id", user.id).order("scheduled_date", { ascending: false }),
-      supabase.from("payments").select("*").eq("client_id", user.id).order("created_at", { ascending: false }),
+      supabase.from("documents").select("*").eq("uploaded_by", user.id).order("created_at", { ascending: false }).limit(100),
+      supabase.from("appointments").select("*").eq("client_id", user.id).order("scheduled_date", { ascending: false }).limit(100),
+      supabase.from("payments").select("*").eq("client_id", user.id).order("created_at", { ascending: false }).limit(100),
     ]).then(([bizRes, docRes, apptRes, payRes]) => {
       if (bizRes.data) {
         setBusiness(bizRes.data);

@@ -96,6 +96,14 @@ export default function VerifySeal() {
                   </div>
                 </div>
 
+                {record.document_hash && (
+                  <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
+                    <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1"><ShieldCheck className="h-3 w-3" /> Tamper-Evident Seal (SHA-256)</p>
+                    <p className="font-mono text-xs text-foreground break-all">{record.document_hash}</p>
+                    <p className="text-xs text-muted-foreground mt-1">This hash verifies document integrity per Ohio ORC §147.63.</p>
+                  </div>
+                )}
+
                 <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
                   <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1"><Scale className="h-3 w-3" /> Ohio Compliance</p>
                   <p className="text-xs text-foreground">This notarization was performed in compliance with Ohio Revised Code §147.60-66. The notary public was duly commissioned by the State of Ohio at the time of notarization.</p>

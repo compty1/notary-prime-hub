@@ -35,7 +35,7 @@ export default function About() {
 
   useEffect(() => {
     supabase.from("platform_settings").select("setting_key, setting_value")
-      .in("setting_key", ["notary_phone", "notary_email"])
+      .in("setting_key", ["notary_phone", "notary_email"]).limit(10)
       .then(({ data }) => {
         if (data) {
           const phone = data.find(s => s.setting_key === "notary_phone")?.setting_value;

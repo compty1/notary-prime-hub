@@ -38,7 +38,7 @@ export default function ComingSoon() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background">
+    <main aria-label="Coming Soon" className="relative min-h-screen overflow-hidden bg-background">
       {/* Background effects */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-gradient-hero" />
