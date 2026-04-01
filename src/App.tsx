@@ -46,6 +46,8 @@ const SubscriptionPlans = lazy(() => import("./pages/SubscriptionPlans"));
 const VerifyIdentity = lazy(() => import("./pages/VerifyIdentity"));
 const MobileUpload = lazy(() => import("./pages/MobileUpload"));
 const AIWriter = lazy(() => import("./pages/AIWriter"));
+const AIExtractors = lazy(() => import("./pages/AIExtractors"));
+const AIKnowledge = lazy(() => import("./pages/AIKnowledge"));
 
 // Admin pages
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
