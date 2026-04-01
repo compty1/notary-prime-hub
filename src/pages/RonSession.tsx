@@ -968,6 +968,23 @@ export default function RonSession() {
 
           {/* Sidebar tools */}
           <div className="space-y-4">
+            {/* Notary Session Guide - Phase 2 */}
+            <NotarySessionGuide
+              documentType={documentName || appointment?.service_type || ""}
+              notarizationType="ron"
+              signerCount={appointment?.signer_count || 1}
+              signingCapacity={appointment?.signing_capacity}
+              hasWitnesses={(appointment?.signer_count || 1) > 1}
+              witnessCount={0}
+              completedSteps={guideCompletedSteps}
+              onToggleStep={(i) => {
+                setGuideCompletedSteps(prev => {
+                  const next = new Set(prev);
+                  if (next.has(i)) next.delete(i); else next.add(i);
+                  return next;
+                });
+              }}
+            />
             {/* ID Verification Card */}
             <Card className="border-border/50">
               <CardContent className="p-4">
