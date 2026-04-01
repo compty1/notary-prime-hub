@@ -134,7 +134,7 @@ function AnimatedRoutes() {
         <Route path="/verify/:id" element={<ErrorBoundary fallbackMessage="Verification failed to load"><VerifySeal /></ErrorBoundary>} />
         <Route path="/terms" element={<TermsPrivacy />} />
         <Route path="/templates" element={<DocumentTemplates />} />
-        <Route path="/about" element={<About />} />
+        <Route path="/about" element={<ErrorBoundary fallbackMessage="About page failed to load"><About /></ErrorBoundary>} />
         <Route path="/join" element={<JoinPlatform />} />
         <Route path="/notary-guide-process" element={<NotaryProcessGuide />} />
         <Route path="/unsubscribe" element={<Unsubscribe />} />
