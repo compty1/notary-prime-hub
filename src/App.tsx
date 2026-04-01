@@ -48,6 +48,9 @@ const MobileUpload = lazy(() => import("./pages/MobileUpload"));
 const AIWriter = lazy(() => import("./pages/AIWriter"));
 const AIExtractors = lazy(() => import("./pages/AIExtractors"));
 const AIKnowledge = lazy(() => import("./pages/AIKnowledge"));
+const SignatureGeneratorPage = lazy(() => import("./pages/SignatureGeneratorPage"));
+const GrantDashboard = lazy(() => import("./pages/GrantDashboard"));
+const ResumeBuilder = lazy(() => import("./pages/ResumeBuilder"));
 
 // Admin pages
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
