@@ -17,6 +17,7 @@ interface ESealRecord {
   commissioned_state: string;
   verification_note: string | null;
   status: string;
+  document_hash: string | null;
 }
 
 export default function VerifySeal() {
