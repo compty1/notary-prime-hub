@@ -114,6 +114,7 @@ export type Database = {
           notarization_type: Database["public"]["Enums"]["notarization_type"]
           notary_id: string | null
           notes: string | null
+          recurrence_rule: string | null
           refusal_reason: string | null
           refused_at: string | null
           rescheduled_from: string | null
@@ -145,6 +146,7 @@ export type Database = {
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
           notary_id?: string | null
           notes?: string | null
+          recurrence_rule?: string | null
           refusal_reason?: string | null
           refused_at?: string | null
           rescheduled_from?: string | null
@@ -176,6 +178,7 @@ export type Database = {
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
           notary_id?: string | null
           notes?: string | null
+          recurrence_rule?: string | null
           refusal_reason?: string | null
           refused_at?: string | null
           rescheduled_from?: string | null
@@ -521,6 +524,41 @@ export type Database = {
           },
         ]
       }
+      client_feedback: {
+        Row: {
+          appointment_id: string | null
+          client_id: string
+          comment: string | null
+          created_at: string
+          id: string
+          rating: number
+        }
+        Insert: {
+          appointment_id?: string | null
+          client_id: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating: number
+        }
+        Update: {
+          appointment_id?: string | null
+          client_id?: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_feedback_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_style_profiles: {
         Row: {
           created_at: string
@@ -581,6 +619,48 @@ export type Database = {
           name?: string
           rules?: Json
           updated_at?: string
+        }
+        Relationships: []
+      }
+      continuing_education: {
+        Row: {
+          certificate_path: string | null
+          completed_date: string
+          course_name: string
+          created_at: string
+          credits: number
+          deadline_date: string | null
+          id: string
+          notes: string | null
+          provider: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          certificate_path?: string | null
+          completed_date: string
+          course_name: string
+          created_at?: string
+          credits?: number
+          deadline_date?: string | null
+          id?: string
+          notes?: string | null
+          provider?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          certificate_path?: string | null
+          completed_date?: string
+          course_name?: string
+          created_at?: string
+          credits?: number
+          deadline_date?: string | null
+          id?: string
+          notes?: string | null
+          provider?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -800,6 +880,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "document_tags_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_versions: {
+        Row: {
+          created_at: string
+          document_id: string
+          file_name: string
+          file_path: string
+          id: string
+          notes: string | null
+          uploaded_by: string
+          version_number: number
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          file_name: string
+          file_path: string
+          id?: string
+          notes?: string | null
+          uploaded_by: string
+          version_number?: number
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          file_name?: string
+          file_path?: string
+          id?: string
+          notes?: string | null
+          uploaded_by?: string
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_versions_document_id_fkey"
             columns: ["document_id"]
             isOneToOne: false
             referencedRelation: "documents"
