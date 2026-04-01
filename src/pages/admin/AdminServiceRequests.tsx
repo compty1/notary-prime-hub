@@ -163,7 +163,8 @@ export default function AdminServiceRequests() {
   const filtered = requests.filter(r => {
     if (statusFilter !== "all" && r.status !== statusFilter) return false;
     if (priorityFilter !== "all" && r.priority !== priorityFilter) return false;
-    if (assignedFilter !== "all" && (r.assigned_to || "") !== assignedFilter) return false;
+    if (assignedFilter === "unassigned" && r.assigned_to) return false;
+    if (assignedFilter !== "all" && assignedFilter !== "unassigned" && r.assigned_to !== assignedFilter) return false;
     if (search) {
       const s = search.toLowerCase();
       const clientName = profiles[r.client_id]?.full_name?.toLowerCase() || "";

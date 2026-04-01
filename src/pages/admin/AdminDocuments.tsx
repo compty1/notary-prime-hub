@@ -161,7 +161,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
     if (!uploadFile || !user) return;
     setUploading(true);
     try {
-      const clientId = uploadClientId || user.id;
+      const clientId = (!uploadClientId || uploadClientId === "__self__") ? user.id : uploadClientId;
       const ext = uploadFile.name.split(".").pop();
       const path = `${clientId}/${Date.now()}-${uploadFile.name}`;
       const { error: uploadError } = await supabase.storage.from("documents").upload(path, uploadFile);
