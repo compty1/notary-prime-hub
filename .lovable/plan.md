@@ -1,88 +1,50 @@
 
 
-# Build Tracker Enhancement Plan
+# Build Tracker — Gap Fix Plan
 
-## Current State
-The tracker has 4 tabs (Dashboard, Gap Analysis, To-Do, Add/Import) with basic CRUD, filtering, bulk operations, and charts. It works but is missing key capabilities for effective build management.
+## Issues Found
 
-## Enhancements
+1. **Console warning**: `AlertDialogContent` ref forwarding warning from Radix
+2. **Date sorting broken**: `updated_at` sorted as string instead of timestamp
+3. **jumpToId doesn't scroll**: Expanding a row from Dashboard doesn't scroll into view
+4. **Bulk import fires N individual mutations**: Each line triggers a separate insert — slow and spammy
+5. **Todo priority reorder race condition**: `movePriority` fires 2 separate mutations that can conflict
+6. **Gap Analysis tab count shows total, not filtered**: Tab badge says "Gap Analysis (77)" even when filtering
+7. **No "Re-analyze" button**: Plan called for status re-analysis but only Refresh exists
+8. **No "Clear Filters" button**: Must manually reset each dropdown
+9. **QuickAdd doesn't reset on close**: Category/severity persist between opens
+10. **Delete dialog doesn't show item titles**: Just shows count, unhelpful for single deletes
+11. **No empty state for Gap Analysis**: Shows blank table with no guidance
+12. **`LegalGlossaryProvider` catches "Title" column header**: The word "Title" in the table header gets wrapped in a legal glossary tooltip (visible in session replay) — needs data attribute exclusion
 
-### 1. Refresh & Re-analyze Button
-- Add a prominent "Refresh" button in the header that refetches data from the database
-- Add a "Re-analyze Statuses" action that cross-references items against known resolved patterns and flags stale statuses
+## Fixes
 
-### 2. Sorting on All Columns
-- Make every column header in the Gap Analysis table clickable to sort ascending/descending
-- Support multi-field sort: Title, Category, Severity (by rank), Status, Impact Area, Updated At
-- Visual sort indicator arrows on active column
+### File: `src/pages/admin/AdminBuildTracker.tsx`
 
-### 3. Impact Area Filter
-- Add an Impact Area dropdown filter alongside Category/Severity/Status filters
-- Auto-populate options from distinct `impact_area` values in the dataset
+**Fix 1 — Date sorting**: Change `sortItems` to compare `updated_at` by timestamp, not string localeCompare.
 
-### 4. Status Summary Counts in Filters
-- Show counts next to each filter option (e.g. "Security (12)", "Critical (5)")
-- Show total filtered count prominently
+**Fix 2 — Scroll to expanded item**: Add `useEffect` + `scrollIntoView` when `jumpToId` changes in `GapAnalysisTab`.
 
-### 5. Bulk Operations in Gap Analysis Tab
-- Add Select All checkbox + per-row checkboxes to the Gap Analysis table
-- Bulk toolbar: "Add Selected to To-Do", "Change Status", "Change Category", "Delete Selected"
-- This mirrors the To-Do tab bulk ops but works across all items
+**Fix 3 — Batch bulk import**: Replace per-line `insert.mutate()` loop with single `.insert([...])` call using a new `useBulkInsert` hook.
 
-### 6. Delete Item Capability
-- Add delete mutation with confirmation dialog
-- Available in expanded row detail and via bulk selection
-- Uses `supabase.from("build_tracker_items").delete()`
+**Fix 4 — Priority reorder**: Combine both priority swaps into a single `useBulkUpdate` call to prevent race conditions.
 
-### 7. To-Do Tab: Inline Status Change
-- Add inline status dropdown on each to-do card (currently only shows status text)
-- When marking "resolved", auto-remove from to-do list
+**Fix 5 — Filtered count on tab**: Pass `filteredCount` from `GapAnalysisTab` up via callback; display on tab trigger. Use a ref or state lift.
 
-### 8. To-Do Tab: Filter by Category/Severity
-- Add quick-filter chips at top of to-do list for category and severity
-- Helps focus on e.g. only "security" to-dos or "critical" items
+**Fix 6 — Re-analyze button**: Add "Re-analyze" action next to Refresh that checks resolved items against known patterns (e.g., items marked resolved with no `resolved_at` timestamp) and flags stale ones back to `open`.
 
-### 9. Dashboard: Impact Area Breakdown Chart
-- Third chart showing items grouped by impact_area
-- Shows which parts of the build have the most open issues
+**Fix 7 — Clear Filters button**: Add a "Clear" button that resets all filter dropdowns + search to defaults.
 
-### 10. Dashboard: Recently Updated Items
-- List of 10 most recently updated items with timestamp
-- Quick-click to jump to item in Gap Analysis tab
+**Fix 8 — QuickAdd reset**: Reset `category` and `severity` to defaults in `onClose`.
 
-### 11. Gap Analysis: "Updated At" Column with Relative Time
-- Show "2h ago", "3d ago" etc. for when each item was last touched
-- Sortable column
+**Fix 9 — Delete dialog improvements**: Show first 3 item titles in the delete confirmation.
 
-### 12. Keyboard Shortcut for Quick Add
-- "N" key opens quick-add modal from any tab
-- Minimal form: title + category + severity, then Enter to save
+**Fix 10 — Empty state**: Show message when `sorted.length === 0` after filtering.
 
-### 13. Export Capability
-- "Export CSV" button that downloads all items (or filtered subset) as CSV
-- Useful for sharing status reports
+**Fix 11 — Legal glossary exclusion**: Add `data-no-glossary` attribute to the table header to prevent `LegalGlossaryProvider` from processing it.
 
-### 14. Count Badges on Tab Headers
-- Show count on each tab: "To-Do (15)", "Gap Analysis (80)"
-- To-Do shows only active to-do count; Gap Analysis shows filtered count
-
-## Technical Approach
-
-All changes are in a single file: `src/pages/admin/AdminBuildTracker.tsx`
-
-- Add `useDeleteItem` mutation hook
-- Add sorting state (`sortField`, `sortDir`) to GapAnalysisTab with clickable headers
-- Add `selectedGaps` state + bulk toolbar to GapAnalysisTab
-- Add impact_area filter derived from `useMemo` on distinct values
-- Add relative time formatter utility (inline)
-- Add CSV export function using `Blob` + `URL.createObjectURL`
-- Add `AlertDialog` for delete confirmation
-- Add category/severity filter chips to TodoTab
-- Add recently-updated section to DashboardTab
-- Add count badges to TabsTrigger components
-
-No database changes needed — all enhancements are UI-side.
+**Fix 12 — Console warning**: The Radix AlertDialog ref warning is benign and version-dependent — no code change needed.
 
 ## Files Changed
-1. **Edit:** `src/pages/admin/AdminBuildTracker.tsx` — all enhancements above
+1. **Edit:** `src/pages/admin/AdminBuildTracker.tsx` — all fixes above
 
