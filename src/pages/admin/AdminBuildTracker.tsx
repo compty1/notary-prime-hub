@@ -153,6 +153,7 @@ export default function AdminBuildTracker() {
           <p className="text-muted-foreground">Comprehensive platform analysis, AI reasoning, flow diagnostics & email management</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          <PlatformScanButton />
           <Button variant="outline" size="sm" onClick={() => setFeatureGenOpen(true)}>
             <Sparkles className="h-3.5 w-3.5 mr-1" /> Feature Gen
           </Button>
