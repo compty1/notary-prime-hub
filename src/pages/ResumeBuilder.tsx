@@ -366,7 +366,7 @@ export default function ResumeBuilder() {
               <div>
                 <Label>Content</Label>
                 <div className="mt-1 min-h-[300px]">
-                  <RichTextEditor content={content} onChange={setContent} />
+                  <RichTextEditor value={content} onChange={setContent} />
                 </div>
               </div>
 
