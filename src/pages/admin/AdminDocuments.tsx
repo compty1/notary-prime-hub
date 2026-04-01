@@ -1,5 +1,5 @@
 import { usePageTitle } from "@/lib/usePageTitle";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,7 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { FileText, Download, Loader2, ShieldCheck, ShieldX, ExternalLink, Eye, Search, ChevronLeft, ChevronRight, ArrowUpDown, Trash2, Send, Upload, Image, Tag, Plus, X } from "lucide-react";
+import { FileText, Download, Loader2, ShieldCheck, ShieldX, ExternalLink, Eye, Search, ChevronLeft, ChevronRight, ArrowUpDown, Trash2, Send, Upload, Image, Tag, Plus, X, CheckSquare } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { TableSkeleton } from "@/components/AdminLoadingSkeleton";
 
 const docStatuses = ["uploaded", "pending_review", "approved", "notarized", "rejected"];
@@ -55,6 +56,8 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
   const [tagsByDoc, setTagsByDoc] = useState<Record<string, string[]>>({});
   const [tagInput, setTagInput] = useState<Record<string, string>>({});
   const [tagFilter, setTagFilter] = useState("");
+  const [selectedDocs, setSelectedDocs] = useState<Set<string>>(new Set());
+  const [bulkUpdating, setBulkUpdating] = useState(false);
 
   const fetchTags = async () => {
     const { data } = await supabase.from("document_tags").select("document_id, tag");
@@ -303,15 +306,55 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
     }
   };
 
+  const toggleDocSelection = useCallback((id: string) => {
+    setSelectedDocs(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }, []);
+
+  const toggleSelectAll = useCallback(() => {
+    if (selectedDocs.size === paginated.length) setSelectedDocs(new Set());
+    else setSelectedDocs(new Set(paginated.map(d => d.id)));
+  }, [paginated, selectedDocs.size]);
+
+  const bulkUpdateStatus = async (newStatus: string) => {
+    if (selectedDocs.size === 0) return;
+    setBulkUpdating(true);
+    const ids = Array.from(selectedDocs);
+    const { error } = await supabase.from("documents").update({ status: newStatus as any }).in("id", ids);
+    if (error) toast({ title: "Bulk update failed", description: error.message, variant: "destructive" });
+    else {
+      toast({ title: `${ids.length} document(s) updated to ${newStatus.replace(/_/g, " ")}` });
+      setSelectedDocs(new Set());
+      fetchDocs();
+    }
+    setBulkUpdating(false);
+  };
+
   if (loading) return <div className="space-y-6"><div className="mb-6"><Skeleton className="h-8 w-48" /></div><TableSkeleton rows={8} cols={5} /></div>;
 
   return (
     <div ref={ref}>
       <div className="mb-4 flex items-center justify-between flex-wrap gap-3">
         <h1 className="font-sans text-2xl font-bold text-foreground">Document Management</h1>
-        <Button onClick={() => setShowUpload(true)}>
-          <Upload className="mr-2 h-4 w-4" /> Upload Document
-        </Button>
+        <div className="flex items-center gap-2">
+          {selectedDocs.size > 0 && (
+            <Select onValueChange={bulkUpdateStatus}>
+              <SelectTrigger className="w-44" disabled={bulkUpdating}>
+                <CheckSquare className="mr-1 h-3 w-3" />
+                {bulkUpdating ? "Updating..." : `Bulk (${selectedDocs.size})`}
+              </SelectTrigger>
+              <SelectContent>
+                {docStatuses.map(s => <SelectItem key={s} value={s}>{s.replace(/_/g, " ")}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          )}
+          <Button onClick={() => setShowUpload(true)}>
+            <Upload className="mr-2 h-4 w-4" /> Upload Document
+          </Button>
+        </div>
       </div>
 
       {/* Search, Filter, Sort */}
@@ -346,7 +389,10 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
         )}
       </div>
 
-      <p className="mb-4 text-xs text-muted-foreground">{filtered.length} document{filtered.length !== 1 ? "s" : ""}</p>
+      <div className="mb-4 flex items-center gap-2">
+        <Checkbox checked={paginated.length > 0 && selectedDocs.size === paginated.length} onCheckedChange={toggleSelectAll} aria-label="Select all" />
+        <p className="text-xs text-muted-foreground">{filtered.length} document{filtered.length !== 1 ? "s" : ""}{selectedDocs.size > 0 && ` · ${selectedDocs.size} selected`}</p>
+      </div>
 
       {paginated.length === 0 ? (
         <Card className="border-border/50">
@@ -362,9 +408,10 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
             const hasActiveVerification = verification && verification.status === "valid";
             const thumb = thumbnailUrls[doc.id];
             return (
-              <Card key={doc.id} className="border-border/50">
+              <Card key={doc.id} className={`border-border/50 ${selectedDocs.has(doc.id) ? "ring-2 ring-primary/40" : ""}`}>
                 <CardContent className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-3 min-w-0">
+                    <Checkbox checked={selectedDocs.has(doc.id)} onCheckedChange={() => toggleDocSelection(doc.id)} aria-label={`Select ${doc.file_name}`} />
                     {thumb ? (
                       <img src={thumb} alt={doc.file_name} className="h-10 w-10 rounded object-cover flex-shrink-0 border border-border" />
                     ) : isPdfFile(doc.file_name) ? (

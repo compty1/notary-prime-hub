@@ -13,7 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, ChevronRight, Eye, Loader2, DollarSign, Plus, Video, ChevronLeft, Filter, Mail, Send, Languages, Shield, LayoutGrid, List, Ban } from "lucide-react";
+import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, ChevronRight, Eye, Loader2, DollarSign, Plus, Video, ChevronLeft, Filter, Mail, Send, Languages, Shield, LayoutGrid, List, Ban, Download } from "lucide-react";
 import { Link } from "react-router-dom";
 import TranslationPanel from "@/components/TranslationPanel";
 import KBAVerification from "@/components/KBAVerification";
@@ -407,6 +407,23 @@ export default function AdminAppointments() {
     }
     setCreatingAppt(false);
   };
+  const exportAppointmentsCSV = () => {
+    const headers = ["Date", "Time", "Client", "Service", "Type", "Status", "Location", "Notes"];
+    const rows = appointments.map(a => {
+      const client = profiles.find((p: any) => p.user_id === a.client_id);
+      return [
+        a.scheduled_date, formatTime(a.scheduled_time), client?.full_name || a.client_id,
+        a.service_type, a.notarization_type, a.status, a.location || "", (a.notes || "").replace(/,/g, ";"),
+      ];
+    });
+    const csv = [headers.join(","), ...rows.map(r => r.map((v: any) => `"${String(v).replace(/"/g, '""')}"`).join(","))].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `appointments-${new Date().toISOString().split("T")[0]}.csv`; a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: "Appointments exported" });
+  };
 
   return (
     <div>
@@ -415,6 +432,9 @@ export default function AdminAppointments() {
         <div className="flex items-center gap-2 flex-wrap">
           <Button onClick={() => setShowCreateDialog(true)} className="">
             <Plus className="mr-1 h-4 w-4" /> New
+          </Button>
+          <Button variant="outline" size="sm" onClick={exportAppointmentsCSV} disabled={appointments.length === 0}>
+            <Download className="mr-1 h-3 w-3" /> Export CSV
           </Button>
           <Button variant={showRequests ? "default" : "outline"} onClick={() => setShowRequests(!showRequests)}>
             <FileText className="mr-1 h-4 w-4" /> Requests {serviceRequests.length > 0 && `(${serviceRequests.filter(r => r.status === 'submitted').length})`}
