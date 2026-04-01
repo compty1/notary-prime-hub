@@ -140,6 +140,12 @@ export default function RonSession() {
   const [signnowDocumentId, setSignnowDocumentId] = useState<string | null>(null);
   const [checkingWebhooks, setCheckingWebhooks] = useState(false);
 
+  // Notary Guide state
+  const [guideCompletedSteps, setGuideCompletedSteps] = useState<Set<number>>(new Set());
+  // E-Sign consent
+  const [esignConsented, setEsignConsented] = useState(false);
+  const [esignConsentTimestamp, setEsignConsentTimestamp] = useState<string | null>(null);
+
   const hasNativeKba = PLATFORMS_WITH_NATIVE_KBA.includes(signingPlatform);
 
   // Compute current step

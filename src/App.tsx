@@ -120,6 +120,8 @@ function AnimatedRoutes() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/book" element={<BookAppointment />} />
+        <Route path="/booking" element={<BookAppointment />} />
+        <Route path="/schedule" element={<BookAppointment />} />
         <Route path="/notary-guide" element={<NotaryGuide />} />
         <Route path="/ron-info" element={<RonInfo />} />
         <Route path="/services" element={<Services />} />
