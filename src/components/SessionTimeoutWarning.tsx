@@ -69,14 +69,14 @@ export function SessionTimeoutWarning({
         "fixed bottom-4 left-1/2 z-50 -translate-x-1/2 rounded-lg border px-6 py-3 shadow-lg backdrop-blur-sm transition-colors",
         isUrgent
           ? "border-destructive bg-destructive/10 animate-pulse"
-          : "border-yellow-500 bg-yellow-500/10"
+          : "border-accent bg-accent/10"
       )}
       role="alert"
       aria-live="assertive"
     >
       <div className="flex items-center gap-3">
-        <Clock className={cn("h-5 w-5", isUrgent ? "text-destructive" : "text-yellow-600")} />
-        <p className={cn("font-medium", isUrgent ? "text-destructive" : "text-yellow-700 dark:text-yellow-400")}>
+        <Clock className={cn("h-5 w-5", isUrgent ? "text-destructive" : "text-accent-foreground")} />
+        <p className={cn("font-medium", isUrgent ? "text-destructive" : "text-accent-foreground")}>
           Session expires in {mins}:{secs.toString().padStart(2, "0")}
         </p>
         {onExtend && (
