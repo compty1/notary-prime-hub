@@ -978,6 +978,7 @@ export type Database = {
           commissioned_state: string
           created_at: string
           created_by: string
+          document_hash: string | null
           document_id: string
           document_name: string
           id: string
@@ -993,6 +994,7 @@ export type Database = {
           commissioned_state?: string
           created_at?: string
           created_by: string
+          document_hash?: string | null
           document_id: string
           document_name: string
           id?: string
@@ -1008,6 +1010,7 @@ export type Database = {
           commissioned_state?: string
           created_at?: string
           created_by?: string
+          document_hash?: string | null
           document_id?: string
           document_name?: string
           id?: string
@@ -1454,6 +1457,7 @@ export type Database = {
           bluenotary_session_url: string | null
           completed_at: string | null
           created_at: string
+          credential_analysis_result: Json | null
           document_name: string | null
           id: string
           id_verified: boolean | null
@@ -1484,6 +1488,7 @@ export type Database = {
           bluenotary_session_url?: string | null
           completed_at?: string | null
           created_at?: string
+          credential_analysis_result?: Json | null
           document_name?: string | null
           id?: string
           id_verified?: boolean | null
@@ -1514,6 +1519,7 @@ export type Database = {
           bluenotary_session_url?: string | null
           completed_at?: string | null
           created_at?: string
+          credential_analysis_result?: Json | null
           document_name?: string | null
           id?: string
           id_verified?: boolean | null
