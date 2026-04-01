@@ -263,31 +263,7 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
                     {expanded && (
                       <TableRow>
                         <TableCell colSpan={10} className="bg-muted/30 p-4">
-                          <div className="grid md:grid-cols-2 gap-4 text-sm">
-                            <div>
-                              <p className="font-medium mb-1">Description</p>
-                              <p className="text-muted-foreground">{item.description || "—"}</p>
-                              <p className="font-medium mt-3 mb-1">Suggested Fix</p>
-                              <p className="text-muted-foreground">{item.suggested_fix || "—"}</p>
-                              {item.page_route && (
-                                <>
-                                  <p className="font-medium mt-3 mb-1">Page Route</p>
-                                  <p className="text-muted-foreground">{item.page_route}</p>
-                                </>
-                              )}
-                            </div>
-                            <div>
-                              <p className="font-medium mb-1">Admin Notes</p>
-                              <Textarea className="text-sm" rows={3}
-                                value={editingNotes[item.id] ?? item.admin_notes ?? ""}
-                                onChange={(e) => setEditingNotes((p) => ({ ...p, [item.id]: e.target.value }))}
-                                placeholder="Add notes..." />
-                              <Button size="sm" className="mt-2" onClick={() => {
-                                update.mutate({ id: item.id, admin_notes: editingNotes[item.id] ?? item.admin_notes ?? "" });
-                                toast.success("Notes saved");
-                              }}>Save Notes</Button>
-                            </div>
-                          </div>
+                          <ExpandedGapRow item={item} editingNotes={editingNotes} setEditingNotes={setEditingNotes} update={update} />
                         </TableCell>
                       </TableRow>
                     )}
