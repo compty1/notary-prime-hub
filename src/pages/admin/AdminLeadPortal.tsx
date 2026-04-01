@@ -285,7 +285,28 @@ export default function AdminLeadPortal() {
     qualified: leads.filter((l) => l.status === "qualified").length,
     converted: leads.filter((l) => l.status === "converted").length,
     highIntent: leads.filter((l) => l.intent_score === "high").length,
+    conversionRate: leads.length > 0 ? Math.round((leads.filter((l) => l.status === "converted").length / leads.length) * 100) : 0,
   };
+
+  // Duplicate detection
+  const duplicates = useMemo(() => {
+    const emailMap = new Map<string, string[]>();
+    const bizMap = new Map<string, string[]>();
+    leads.forEach((l) => {
+      if (l.email) {
+        const key = l.email.toLowerCase().trim();
+        emailMap.set(key, [...(emailMap.get(key) || []), l.id]);
+      }
+      if (l.business_name) {
+        const key = l.business_name.toLowerCase().trim();
+        bizMap.set(key, [...(bizMap.get(key) || []), l.id]);
+      }
+    });
+    const dupIds = new Set<string>();
+    emailMap.forEach((ids) => { if (ids.length > 1) ids.forEach((id) => dupIds.add(id)); });
+    bizMap.forEach((ids) => { if (ids.length > 1) ids.forEach((id) => dupIds.add(id)); });
+    return dupIds;
+  }, [leads]);
 
   const discoverLeads = async () => {
     setDiscovering(true);
