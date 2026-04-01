@@ -7,11 +7,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { ChevronDown, ChevronRight, CheckCircle2, Clock, AlertTriangle, Plus, Loader2, Upload } from "lucide-react";
+import { ChevronDown, ChevronRight, CheckCircle2, Clock, AlertTriangle, Plus, Loader2, Upload, Trash2 } from "lucide-react";
 import type { TrackerPlan, PlanItem, TrackerItem } from "./constants";
 import { autoCategorize } from "./constants";
-import { usePlans, useUpdatePlan, useBulkInsert, useInsertPlan } from "./hooks";
+import { usePlans, useUpdatePlan, useBulkInsert, useInsertPlan, useDeletePlan } from "./hooks";
 
 type Props = {
   items: TrackerItem[];
@@ -29,16 +33,28 @@ function parsePlanText(text: string): PlanItem[] {
   return planItems;
 }
 
+// Improved cross-reference: uses word-level matching instead of naive 20-char prefix
 function crossReferenceItems(planItems: PlanItem[], trackerItems: TrackerItem[]): PlanItem[] {
   return planItems.map(pi => {
-    const titleLower = pi.title.toLowerCase();
-    const match = trackerItems.find(ti =>
-      ti.title.toLowerCase().includes(titleLower.slice(0, 20)) ||
-      titleLower.includes(ti.title.toLowerCase().slice(0, 20))
-    );
-    if (match) {
-      if (match.status === "resolved") return { ...pi, status: "implemented" as const, tracker_item_id: match.id };
-      if (match.status === "in_progress") return { ...pi, status: "partial" as const, tracker_item_id: match.id };
+    const titleWords = pi.title.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+    if (titleWords.length === 0) return pi;
+
+    let bestMatch: TrackerItem | null = null;
+    let bestScore = 0;
+
+    for (const ti of trackerItems) {
+      const tiWords = ti.title.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+      const matchCount = titleWords.filter(w => tiWords.some(tw => tw.includes(w) || w.includes(tw))).length;
+      const score = matchCount / Math.max(titleWords.length, 1);
+      if (score > bestScore && score >= 0.4) {
+        bestScore = score;
+        bestMatch = ti;
+      }
+    }
+
+    if (bestMatch) {
+      if (bestMatch.status === "resolved") return { ...pi, status: "implemented" as const, tracker_item_id: bestMatch.id };
+      if (bestMatch.status === "in_progress") return { ...pi, status: "partial" as const, tracker_item_id: bestMatch.id };
     }
     return pi;
   });
@@ -49,10 +65,12 @@ export default function PlanHistoryTab({ items }: Props) {
   const updatePlan = useUpdatePlan();
   const bulkInsert = useBulkInsert();
   const insertPlan = useInsertPlan();
+  const deletePlan = useDeletePlan();
   const [expandedPlan, setExpandedPlan] = useState<string | null>(null);
   const [importOpen, setImportOpen] = useState(false);
   const [importText, setImportText] = useState("");
   const [importTitle, setImportTitle] = useState("");
+  const [deletePlanId, setDeletePlanId] = useState<string | null>(null);
 
   const planStats = useMemo(() =>
     plans.map((p) => {
@@ -116,7 +134,7 @@ export default function PlanHistoryTab({ items }: Props) {
     toast.success(`Auto-analyzed: ${changes} items updated based on tracker state`);
   };
 
-  const statusIcon = (s: string) => {
+  const statusIconFn = (s: string) => {
     if (s === "implemented") return <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />;
     if (s === "partial") return <Clock className="h-3.5 w-3.5 text-yellow-500" />;
     return <AlertTriangle className="h-3.5 w-3.5 text-muted-foreground" />;
@@ -195,7 +213,7 @@ export default function PlanHistoryTab({ items }: Props) {
                   <div className="space-y-1">
                     {plan.plan_items.map((item, idx) => (
                       <div key={idx} className="flex items-center gap-2 p-2 rounded-md hover:bg-muted/50 transition-colors">
-                        {statusIcon(item.status)}
+                        {statusIconFn(item.status)}
                         <span className={`text-sm flex-1 ${item.status === "implemented" ? "line-through text-muted-foreground" : ""}`}>
                           {item.title}
                         </span>
@@ -214,6 +232,9 @@ export default function PlanHistoryTab({ items }: Props) {
                     ))}
                   </div>
                   <div className="mt-3 pt-3 border-t flex justify-end gap-2">
+                    <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); setDeletePlanId(plan.id); }}>
+                      <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete
+                    </Button>
                     <Button size="sm" variant="ghost" onClick={() => autoAnalyzePlan(plan.id)}>
                       Auto-Analyze
                     </Button>
@@ -227,6 +248,21 @@ export default function PlanHistoryTab({ items }: Props) {
           </Card>
         ))
       )}
+
+      <AlertDialog open={!!deletePlanId} onOpenChange={(o) => !o && setDeletePlanId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this plan?</AlertDialogTitle>
+            <AlertDialogDescription>This action cannot be undone. The plan and all its items will be permanently removed.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => { if (deletePlanId) { deletePlan.mutate(deletePlanId); setDeletePlanId(null); } }}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

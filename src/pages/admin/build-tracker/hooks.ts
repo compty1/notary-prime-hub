@@ -76,6 +76,7 @@ export function useBulkInsert() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (items: Partial<TrackerItem>[]) => {
+      if (items.length > 100) throw new Error("Bulk import limited to 100 items at a time");
       const { error } = await supabase.from("build_tracker_items").insert(items as any[]);
       if (error) throw error;
     },
@@ -126,6 +127,18 @@ export function useUpdatePlan() {
   });
 }
 
+export function useDeletePlan() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("build_tracker_plans").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { ALL_KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] })); toast.success("Plan deleted"); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+}
+
 /* ─── Refresh all build tracker data ─── */
 export function useRefreshAll() {
   const qc = useQueryClient();
@@ -139,31 +152,56 @@ export function useReanalyze(items: TrackerItem[]) {
 
   return async () => {
     const findings: string[] = [];
+    const mutations: Promise<void>[] = [];
 
     // 1. Flag stale resolved items (resolved without timestamp)
     const staleResolved = items.filter(i => i.status === "resolved" && !i.resolved_at);
     if (staleResolved.length > 0) {
-      bulkUpdate.mutate({ ids: staleResolved.map(i => i.id), fields: { status: "open" } });
+      mutations.push(
+        new Promise<void>((resolve, reject) => {
+          bulkUpdate.mutateAsync({ ids: staleResolved.map(i => i.id), fields: { status: "open" } })
+            .then(() => resolve()).catch(reject);
+        })
+      );
       findings.push(`Re-opened ${staleResolved.length} stale resolved items`);
     }
 
     // 2. Auto-categorize items missing category or impact_area
     const uncategorized = items.filter(i => i.category === "gap" && !i.impact_area);
+    const toAutoUpdate: { id: string; fields: Partial<TrackerItem> }[] = [];
     if (uncategorized.length > 0) {
-      for (const item of uncategorized.slice(0, 20)) {
+      for (const item of uncategorized.slice(0, 50)) {
         const auto = autoCategorize(item.title);
         if (auto.category !== "gap" || auto.impact_area) {
-          bulkUpdate.mutate({ ids: [item.id], fields: { category: auto.category, impact_area: auto.impact_area } });
+          toAutoUpdate.push({ id: item.id, fields: { category: auto.category, impact_area: auto.impact_area } });
         }
       }
-      findings.push(`Auto-categorized ${Math.min(uncategorized.length, 20)} items`);
+      if (toAutoUpdate.length > 0) {
+        // Batch updates by shared fields
+        const byFields = new Map<string, string[]>();
+        for (const u of toAutoUpdate) {
+          const key = JSON.stringify(u.fields);
+          byFields.set(key, [...(byFields.get(key) || []), u.id]);
+        }
+        for (const [fieldsJson, ids] of byFields) {
+          mutations.push(
+            new Promise<void>((resolve, reject) => {
+              bulkUpdate.mutateAsync({ ids, fields: JSON.parse(fieldsJson) })
+                .then(() => resolve()).catch(reject);
+            })
+          );
+        }
+        findings.push(`Auto-categorized ${toAutoUpdate.length} items`);
+      }
     }
 
     // 3. Check for potential duplicate titles
     const titleMap = new Map<string, TrackerItem[]>();
     items.forEach(i => {
       const key = i.title.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 30);
-      titleMap.set(key, [...(titleMap.get(key) || []), i]);
+      if (key.length >= 5) {
+        titleMap.set(key, [...(titleMap.get(key) || []), i]);
+      }
     });
     const dupes = Array.from(titleMap.values()).filter(v => v.length > 1);
     if (dupes.length > 0) findings.push(`Found ${dupes.length} potential duplicate groups`);
@@ -173,10 +211,23 @@ export function useReanalyze(items: TrackerItem[]) {
     const staleOpen = items.filter(i => i.status === "open" && i.created_at && i.created_at < thirtyDaysAgo);
     if (staleOpen.length > 0) findings.push(`${staleOpen.length} open items older than 30 days`);
 
+    // 5. Items with no description or suggested_fix
+    const incomplete = items.filter(i => i.status !== "resolved" && i.status !== "wont_fix" && !i.description && !i.suggested_fix);
+    if (incomplete.length > 0) findings.push(`${incomplete.length} items missing description & suggested fix`);
+
+    // Wait for all mutations
+    try {
+      await Promise.all(mutations);
+    } catch (e) {
+      toast.error("Some re-analysis updates failed");
+    }
+
     if (findings.length === 0) {
       toast.info("Analysis complete — no issues found");
     } else {
       toast.success(`Analysis complete: ${findings.join("; ")}`);
     }
+
+    return findings;
   };
 }

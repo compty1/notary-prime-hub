@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Send, Bot, User, Loader2, Sparkles, ClipboardList, Search, Lightbulb } from "lucide-react";
+import { Send, Bot, User, Loader2, Sparkles, ClipboardList, Search, Lightbulb, RotateCcw } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import type { TrackerItem, TrackerPlan } from "./constants";
 import { PLATFORM_ENTITIES, getEntityHealth } from "./platformEntities";
+import { SERVICE_FLOWS } from "./serviceFlows";
 import { useInsertPlan } from "./hooks";
 
 type Message = { role: "user" | "assistant"; content: string };
@@ -43,15 +44,25 @@ export default function AIAnalystTab({ items, plans }: Props) {
       return `- ${e.name}: ${h.healthPct}% (${h.status})`;
     }).join("\n");
     const openSummary = open.slice(0, 30).map(i => `- [${i.severity}] ${i.title} (${i.category})`).join("\n");
+    const flowSummary = SERVICE_FLOWS.map(f => {
+      const impl = f.steps.filter(s => s.implemented).length;
+      const issues = f.steps.flatMap(s => s.issues || []);
+      return `- ${f.name}: ${impl}/${f.steps.length} steps${issues.length > 0 ? ` (${issues.length} issues)` : ""}`;
+    }).join("\n");
 
-    return `Items: ${items.length} total, ${open.length} open, ${inProgress.length} in-progress, ${items.filter(i => i.status === "resolved").length} resolved
+    // Truncate to prevent oversized payloads
+    const ctx = `Items: ${items.length} total, ${open.length} open, ${inProgress.length} in-progress, ${items.filter(i => i.status === "resolved").length} resolved
 Plans: ${plans.length} tracked
 
 Entity Health:
 ${entitySummary}
 
+Service Flow Health:
+${flowSummary}
+
 Top Open Items:
 ${openSummary || "None"}`;
+    return ctx.slice(0, 4000);
   }, [items, plans]);
 
   const send = async (text: string) => {
@@ -72,7 +83,7 @@ ${openSummary || "None"}`;
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
-          messages: allMessages.map(m => ({ role: m.role, content: m.content })),
+          messages: allMessages.slice(-10).map(m => ({ role: m.role, content: m.content })),
           context: buildContext,
         }),
       });
@@ -150,11 +161,23 @@ ${openSummary || "None"}`;
     });
   };
 
+  const clearChat = () => {
+    setMessages([]);
+    setInput("");
+  };
+
   return (
     <div className="flex flex-col h-[calc(100vh-280px)] min-h-[500px]">
-      <p className="text-sm text-muted-foreground mb-3">
-        AI specialist in UX, development, Ohio notary compliance, marketing, and brand psychology. Ask anything about your build.
-      </p>
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-sm text-muted-foreground">
+          AI specialist in UX, development, Ohio notary compliance, marketing, and brand psychology.
+        </p>
+        {messages.length > 0 && (
+          <Button size="sm" variant="ghost" onClick={clearChat}>
+            <RotateCcw className="h-3.5 w-3.5 mr-1" /> Clear Chat
+          </Button>
+        )}
+      </div>
 
       {messages.length === 0 && (
         <div className="grid grid-cols-2 gap-2 mb-4">

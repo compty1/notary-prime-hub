@@ -40,17 +40,46 @@ This is NotaryDex — an Ohio-based remote online notarization (RON) platform bu
 When generating plans, format them with clear numbered steps. Each step should have a title and description.
 Use markdown formatting for readability. Be specific and actionable.`;
 
+// Simple in-memory rate limiter
+const rateLimits = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT = 20; // requests per window
+const RATE_WINDOW = 60_000; // 1 minute
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimits.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateLimits.set(ip, { count: 1, resetAt: now + RATE_WINDOW });
+    return true;
+  }
+  if (entry.count >= RATE_LIMIT) return false;
+  entry.count++;
+  return true;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const clientIp = req.headers.get("x-forwarded-for") || "unknown";
+    if (!checkRateLimit(clientIp)) {
+      return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again shortly." }), {
+        status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { messages, context } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const contextMessage = context
-      ? `\n\n## Current Build State\n${context}`
+    // Truncate context to prevent oversized payloads
+    const truncatedContext = context ? context.slice(0, 4000) : "";
+    const contextMessage = truncatedContext
+      ? `\n\n## Current Build State\n${truncatedContext}`
       : "";
+
+    // Limit message history
+    const limitedMessages = (messages || []).slice(-10);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -62,7 +91,7 @@ serve(async (req) => {
         model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: SYSTEM_PROMPT + contextMessage },
-          ...messages,
+          ...limitedMessages,
         ],
         stream: true,
       }),
