@@ -395,6 +395,11 @@ export default function AdminLeadPortal() {
         ))}
       </div>
 
+      {/* Privacy & Ethics Notice */}
+      <p className="text-xs text-muted-foreground bg-muted/50 rounded-md p-2">
+        📋 All lead data is sourced from public directories and direct inquiries. Data handling complies with Ohio privacy regulations. Source attribution is tracked per lead.
+      </p>
+
       {/* Filters */}
       <div className="flex gap-3 flex-wrap">
         <div className="relative flex-1 max-w-sm">
