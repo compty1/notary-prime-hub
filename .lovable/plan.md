@@ -1,56 +1,83 @@
 
 
-# Plan: Fix Pricing Engine Integration and Booking Intake
+# Email-to-Lead Import with AI Extraction and Real-Time Lead Detail View
 
-## Problems Found
+## Overview
+Build an automated pipeline that scans synced inbox emails, uses AI to extract lead information (name, phone, email, service needed, source identification), and inserts them into the `leads` table. Enhance the Lead Portal with a clickable lead detail panel and real-time updates via Supabase Realtime.
 
-1. **BookAppointment.tsx has its own inline pricing** (lines 169-191) that duplicates and diverges from `pricingEngine.ts`. Missing: volume discounts, signer count, apostille fees.
-2. **FeeCalculator.tsx also has inline pricing** — doesn't use `pricingEngine.ts` either. Missing: volume discounts, travel waiver for < 5 miles.
-3. **Signer count collected but never priced** — more signers means more notarizations but `signerCount` isn't factored into any price calculation.
-4. **No apostille option in booking intake** — only available in the standalone Fee Calculator.
-5. **Rush pricing uses hardcoded $50/$100** in BookAppointment and ReviewStep instead of reading from `platform_settings` (rush_fee setting is $35).
-6. **Stripe payment not triggered at booking** — user completes booking but is never prompted to pay. Payment only available manually in client portal.
+---
 
-## Changes
+## 1. New Edge Function: `extract-email-leads`
 
-### 1. Add `signerCount` to pricing engine (`src/lib/pricingEngine.ts`)
-- Add `signerCount` to `PricingInput` (default 1)
-- Multiply notarization fees by signer count (each signer = separate notarial act per Ohio law)
-- Update line item label to reflect signers × docs
+Create `supabase/functions/extract-email-leads/index.ts` that:
+- Queries `email_cache` for unprocessed inbox emails (not yet linked to a lead)
+- Uses AI (Gemini Flash via Lovable AI) to analyze each email's subject + body and extract structured lead data: name, phone, email, business name, city, state, service needed, and identified source (e.g., "google_search", "referral", "zillow", "realtor.com", "facebook", "direct_inquiry")
+- Deduplicates against existing leads by email/phone before inserting
+- Tags each lead with `source: "email_inbox"` and stores the originating `email_cache.id` in notes for traceability
+- Adds a `processed_for_leads` flag tracking via a new column on `email_cache` or a separate tracking approach (using notes/labels)
 
-### 2. Replace inline pricing in BookAppointment with `calculatePrice()` (`src/pages/BookAppointment.tsx`)
-- Import `calculatePrice`, `parseSettings` from pricingEngine
-- Replace the `useEffect` on lines 169-191 with a call to `calculatePrice()` using all collected inputs
-- Pass `urgencyLevel` through as `isRush` flag
-- Add apostille toggle to intake (new state `needsApostille`)
-- Pass `signerCount` into the pricing input
+**AI prompt design:** Instruct the model to identify the sender's intent (notarization request, loan signing inquiry, apostille need, etc.) and map it to `service_needed` and `intent_score` (high if they mention urgency/dates, medium otherwise).
 
-### 3. Replace inline pricing in FeeCalculator with `calculatePrice()` (`src/pages/FeeCalculator.tsx`)
-- Import and use `calculatePrice`, `parseSettings`
-- Add signer count input
-- Remove duplicate math; use returned `lineItems` and `total`
+---
 
-### 4. Add missing intake fields to booking step 2 (`src/pages/BookAppointment.tsx` + `BookingIntakeFields.tsx`)
-- Add "Needs Apostille?" toggle for authentication/notarization categories
-- Already has document count and signer count — just ensure they feed into pricing
+## 2. Database Changes
 
-### 5. Fix rush pricing in ReviewStep (`src/pages/booking/BookingReviewStep.tsx`)
-- Remove hardcoded $50/$100 for rush/same-day
-- Use `pricingSettings.rush_fee` value and display correctly
-- The rush fee should already be included in `estimatedPrice` from the engine
+**Migration:**
+- Add `lead_extracted` boolean column (default false) to `email_cache` table to track which emails have been processed for lead extraction
+- Add `email_cache_id` uuid column (nullable) to `leads` table to link leads back to their source email
+- Enable Realtime on the `leads` table: `ALTER PUBLICATION supabase_realtime ADD TABLE public.leads;`
 
-### 6. Stripe payment prompt after booking confirmation
-- On the confirmation page (`AppointmentConfirmation.tsx`), show the PaymentForm component with the estimated price pre-filled and appointmentId linked
-- This gives users the option to pay immediately after booking
+---
+
+## 3. Lead Portal Enhancements (`AdminLeadPortal.tsx`)
+
+### 3a. Real-Time Updates
+- Subscribe to `postgres_changes` on the `leads` table so new leads appear instantly without manual refresh
+- Show a subtle "New lead" animation/badge when a lead arrives in real-time
+
+### 3b. Clickable Lead Detail Panel
+- Replace the current "click to edit" behavior with a full detail slide-out panel (Sheet component)
+- Detail panel shows ALL available info in organized sections:
+  - **Contact Info:** name, phone (clickable), email (clickable), business name
+  - **Location:** full address, city, state, zip
+  - **Lead Intelligence:** source, source URL, intent score, service needed, lead type
+  - **Timeline:** created date, contacted date, last updated
+  - **Notes:** full notes with the original email excerpt if sourced from email
+  - **Source Email:** if `email_cache_id` exists, show a preview of the original email
+  - **Actions:** Edit, Schedule Appointment, Generate Proposal, Change Status, Delete
+
+### 3c. "Import from Inbox" Button
+- Add a button in the Lead Portal toolbar that invokes the `extract-email-leads` edge function
+- Shows progress and results (e.g., "Scanned 47 emails, extracted 12 new leads")
+
+---
+
+## 4. Auto-Source Identification Logic
+
+The AI extraction prompt will identify sources based on email content patterns:
+- Emails from `@gmail.com` with notarization keywords = "direct_inquiry"
+- Emails forwarded from Zillow/Realtor = "zillow" / "realtor"
+- Emails mentioning "referred by" = "referral"
+- Form submission notifications = "website_contact_form"
+- Loan signing requests from title companies = "title_company"
+- The source is stored in the `source` column; the original email address in `source_url`
+
+---
 
 ## Files Modified
 
 | File | Changes |
 |------|---------|
-| `src/lib/pricingEngine.ts` | Add `signerCount` to input, multiply notarization fees by signers |
-| `src/pages/BookAppointment.tsx` | Use `calculatePrice()`, add apostille toggle, pass all inputs |
-| `src/pages/FeeCalculator.tsx` | Use `calculatePrice()`, add signer count field |
-| `src/pages/booking/BookingReviewStep.tsx` | Remove hardcoded rush amounts, use engine output |
-| `src/pages/booking/BookingIntakeFields.tsx` | Add apostille toggle for notarization categories |
-| `src/pages/AppointmentConfirmation.tsx` | Add optional Stripe payment section |
+| `supabase/functions/extract-email-leads/index.ts` | New edge function for AI email-to-lead extraction |
+| `src/pages/admin/AdminLeadPortal.tsx` | Real-time subscription, detail panel, "Import from Inbox" button |
+| Database migration | Add `lead_extracted` to `email_cache`, `email_cache_id` to `leads`, enable Realtime on leads |
+
+---
+
+## Technical Notes
+- Uses Gemini 2.5 Flash for fast, cost-effective email parsing
+- Deduplication by email address and phone number prevents duplicate leads
+- Real-time subscription uses Supabase channel on `public.leads` with `INSERT` and `UPDATE` events
+- The detail panel uses the existing Sheet UI component for a slide-out experience
+- Edge function processes emails in batches of 20 to avoid timeouts
 
