@@ -389,7 +389,10 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
         )}
       </div>
 
-      <p className="mb-4 text-xs text-muted-foreground">{filtered.length} document{filtered.length !== 1 ? "s" : ""}</p>
+      <div className="mb-4 flex items-center gap-2">
+        <Checkbox checked={paginated.length > 0 && selectedDocs.size === paginated.length} onCheckedChange={toggleSelectAll} aria-label="Select all" />
+        <p className="text-xs text-muted-foreground">{filtered.length} document{filtered.length !== 1 ? "s" : ""}{selectedDocs.size > 0 && ` · ${selectedDocs.size} selected`}</p>
+      </div>
 
       {paginated.length === 0 ? (
         <Card className="border-border/50">
@@ -405,9 +408,10 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
             const hasActiveVerification = verification && verification.status === "valid";
             const thumb = thumbnailUrls[doc.id];
             return (
-              <Card key={doc.id} className="border-border/50">
+              <Card key={doc.id} className={`border-border/50 ${selectedDocs.has(doc.id) ? "ring-2 ring-primary/40" : ""}`}>
                 <CardContent className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-3 min-w-0">
+                    <Checkbox checked={selectedDocs.has(doc.id)} onCheckedChange={() => toggleDocSelection(doc.id)} aria-label={`Select ${doc.file_name}`} />
                     {thumb ? (
                       <img src={thumb} alt={doc.file_name} className="h-10 w-10 rounded object-cover flex-shrink-0 border border-border" />
                     ) : isPdfFile(doc.file_name) ? (
