@@ -35,6 +35,7 @@ const adminNavItems = [
   { title: "Process Guide", url: "/notary-guide-process", icon: GraduationCap, adminOnly: false },
   { title: "AI Assistant", url: "/admin/ai-assistant", icon: Bot, adminOnly: false },
   { title: "Audit Log", url: "/admin/audit-log", icon: ScrollText, adminOnly: true },
+  { title: "Build Tracker", url: "/admin/build-tracker", icon: Bug, adminOnly: true },
   { title: "Integration Testing", url: "/admin/integrations", icon: Plug, adminOnly: true },
   { title: "Settings", url: "/admin/settings", icon: Settings, adminOnly: true },
 ];
