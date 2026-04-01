@@ -94,6 +94,15 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
 
   const sorted = useMemo(() => sortField ? sortItems(filtered, sortField, sortDir) : filtered, [filtered, sortField, sortDir]);
 
+  // Pagination
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(50);
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
+  const paginated = useMemo(() => sorted.slice((page - 1) * pageSize, page * pageSize), [sorted, page, pageSize]);
+
+  // Reset page when filters change
+  useEffect(() => { setPage(1); }, [search, catFilter, sevFilter, statusFilter, impactFilter, pageFilter]);
+
   useEffect(() => { onFilteredCountChange(sorted.length); }, [sorted.length, onFilteredCountChange]);
 
   const toggleSort = (field: SortField) => {
