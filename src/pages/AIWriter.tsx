@@ -16,10 +16,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { fadeUp } from "@/lib/animations";
-import { Mail, MessageSquare, FileText, Copy, Download, Loader2, Sparkles, ArrowRight, FileSignature, Printer } from "lucide-react";
+import { Mail, MessageSquare, FileText, Copy, Download, Loader2, Sparkles, ArrowRight, FileSignature, Printer, Palette } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
+import { StyleMatchPanel } from "@/components/StyleMatchPanel";
+import ReactMarkdown from "react-markdown";
 
-type WritingMode = "email" | "social" | "document" | "proposal";
+type WritingMode = "email" | "social" | "document" | "proposal" | "style-match";
 
 export default function AIWriter() {
   usePageTitle("AI Writing Tools");
@@ -31,6 +33,7 @@ export default function AIWriter() {
   const [mode, setMode] = useState<WritingMode>(initialTab);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
+  const [showRendered, setShowRendered] = useState(false);
 
   // Email fields
   const [emailTone, setEmailTone] = useState("professional");
@@ -98,7 +101,7 @@ export default function AIWriter() {
 
   const buildPrompt = (): string => {
     if (mode === "email") {
-      return `Write a ${emailTone} email for the following purpose: ${emailPurpose}\n\nKey points to include:\n${emailKeyPoints}\n\nProvide just the email with subject line, greeting, body, and sign-off. Do not include any explanations.`;
+      return `Write a ${emailTone} email for the following purpose: ${emailPurpose}\n\nKey points to include:\n${emailKeyPoints}\n\nProvide just the email with subject line, greeting, body, and sign-off. Use markdown formatting. Do not include any explanations.`;
     }
     if (mode === "social") {
       const platformNames: Record<string, string> = { linkedin: "LinkedIn", twitter: "Twitter/X", facebook: "Facebook", instagram: "Instagram" };
@@ -106,9 +109,9 @@ export default function AIWriter() {
     }
     if (mode === "document") {
       const docTypes: Record<string, string> = { letter: "formal letter", memo: "business memo", proposal: "project proposal", report: "summary report" };
-      return `Write a ${docTypes[docType]} based on this context: ${docContext}\n\nProvide the complete document with proper formatting, headers, and structure. Do not include explanations.`;
+      return `Write a ${docTypes[docType]} based on this context: ${docContext}\n\nProvide the complete document with proper markdown formatting, headers, and structure. Do not include explanations.`;
     }
-    return ""; // proposal uses its own edge function
+    return "";
   };
 
   const streamSSE = async (resp: Response) => {
@@ -192,11 +195,11 @@ export default function AIWriter() {
   };
 
   const downloadAsText = () => {
-    const blob = new Blob([result], { type: "text/plain" });
+    const blob = new Blob([result], { type: "text/markdown" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${mode}-draft.txt`;
+    a.download = `${mode}-draft.md`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -204,7 +207,7 @@ export default function AIWriter() {
   const printResult = () => {
     const win = window.open("", "_blank");
     if (win) {
-      win.document.write(`<html><head><title>Notar Proposal</title><style>body{font-family:Georgia,serif;max-width:700px;margin:40px auto;padding:20px;line-height:1.6;white-space:pre-wrap;}</style></head><body>${result}</body></html>`);
+      win.document.write(`<html><head><title>NotaryPrime Document</title><style>body{font-family:Georgia,serif;max-width:700px;margin:40px auto;padding:20px;line-height:1.6;white-space:pre-wrap;}</style></head><body>${result}</body></html>`);
       win.document.close();
       win.print();
     }
@@ -230,7 +233,7 @@ export default function AIWriter() {
           <Badge variant="secondary" className="mb-3"><Sparkles className="mr-1 h-3 w-3" /> AI-Powered</Badge>
           <h1 className="mb-3 text-3xl font-bold text-foreground md:text-4xl">AI Writing Tools</h1>
           <p className="mx-auto max-w-xl text-muted-foreground">
-            Generate professional emails, social media posts, documents, and lead proposals in seconds.
+            Generate professional emails, social media posts, documents, proposals, and style-matched content.
           </p>
         </div>
       </section>
@@ -239,12 +242,18 @@ export default function AIWriter() {
         <Breadcrumbs />
         <div className="mx-auto max-w-3xl">
           <Tabs value={mode} onValueChange={(v) => { setMode(v as WritingMode); setResult(""); }}>
-            <TabsList className="mb-6 w-full">
+            <TabsList className="mb-6 w-full flex-wrap h-auto gap-1">
               <TabsTrigger value="email" className="flex-1 gap-2"><Mail className="h-4 w-4" /> Email</TabsTrigger>
-              <TabsTrigger value="social" className="flex-1 gap-2"><MessageSquare className="h-4 w-4" /> Social Post</TabsTrigger>
+              <TabsTrigger value="social" className="flex-1 gap-2"><MessageSquare className="h-4 w-4" /> Social</TabsTrigger>
               <TabsTrigger value="document" className="flex-1 gap-2"><FileText className="h-4 w-4" /> Document</TabsTrigger>
-              <TabsTrigger value="proposal" className="flex-1 gap-2"><FileSignature className="h-4 w-4" /> Lead Proposal</TabsTrigger>
+              <TabsTrigger value="proposal" className="flex-1 gap-2"><FileSignature className="h-4 w-4" /> Proposal</TabsTrigger>
+              <TabsTrigger value="style-match" className="flex-1 gap-2"><Palette className="h-4 w-4" /> Style Match</TabsTrigger>
             </TabsList>
+
+            {/* Style-Match tab */}
+            <TabsContent value="style-match">
+              <StyleMatchPanel />
+            </TabsContent>
 
             <TabsContent value="email">
               <Card>
@@ -292,7 +301,7 @@ export default function AIWriter() {
                   </div>
                   <div>
                     <Label>Topic *</Label>
-                    <Textarea placeholder="What is the post about? Include any context, announcements, or key messages..." value={socialTopic} onChange={(e) => setSocialTopic(e.target.value)} rows={4} />
+                    <Textarea placeholder="What is the post about?..." value={socialTopic} onChange={(e) => setSocialTopic(e.target.value)} rows={4} />
                   </div>
                 </CardContent>
               </Card>
@@ -316,7 +325,7 @@ export default function AIWriter() {
                   </div>
                   <div>
                     <Label>Context & Details *</Label>
-                    <Textarea placeholder="Describe what this document is about, who it's for, and any specific details to include..." value={docContext} onChange={(e) => setDocContext(e.target.value)} rows={5} />
+                    <Textarea placeholder="Describe what this document is about..." value={docContext} onChange={(e) => setDocContext(e.target.value)} rows={5} />
                   </div>
                 </CardContent>
               </Card>
@@ -399,26 +408,32 @@ export default function AIWriter() {
                   </div>
                   <div>
                     <Label>Additional Notes</Label>
-                    <Textarea value={proposalForm.notes} onChange={(e) => setProposalForm({ ...proposalForm, notes: e.target.value })} rows={2} placeholder="Any context, special requirements, or details for the proposal..." />
+                    <Textarea value={proposalForm.notes} onChange={(e) => setProposalForm({ ...proposalForm, notes: e.target.value })} rows={2} placeholder="Any context, special requirements, or details..." />
                   </div>
                 </CardContent>
               </Card>
             </TabsContent>
           </Tabs>
 
-          <div className="mt-4 flex justify-end">
-            <Button onClick={generate} disabled={loading} size="lg">
-              {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...</> : <><Sparkles className="mr-2 h-4 w-4" /> Generate</>}
-            </Button>
-          </div>
+          {/* Generate button — not for style-match (it has its own) */}
+          {mode !== "style-match" && (
+            <div className="mt-4 flex justify-end">
+              <Button onClick={generate} disabled={loading} size="lg">
+                {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...</> : <><Sparkles className="mr-2 h-4 w-4" /> Generate</>}
+              </Button>
+            </div>
+          )}
 
-          {result && (
+          {result && mode !== "style-match" && (
             <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={0} className="mt-6">
               <Card>
                 <CardHeader>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
                     <CardTitle className="text-lg">Result</CardTitle>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap">
+                      <Button variant="outline" size="sm" onClick={() => setShowRendered(!showRendered)}>
+                        {showRendered ? "Raw" : "Preview"}
+                      </Button>
                       <Button variant="outline" size="sm" onClick={copyToClipboard}><Copy className="mr-1 h-3 w-3" /> Copy</Button>
                       <Button variant="outline" size="sm" onClick={downloadAsText}><Download className="mr-1 h-3 w-3" /> Download</Button>
                       {mode === "proposal" && (
@@ -428,7 +443,13 @@ export default function AIWriter() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="whitespace-pre-wrap rounded-lg bg-muted p-4 text-sm text-foreground">{result}</div>
+                  {showRendered ? (
+                    <div className="prose prose-sm dark:prose-invert max-w-none rounded-lg bg-muted/30 p-4">
+                      <ReactMarkdown>{result}</ReactMarkdown>
+                    </div>
+                  ) : (
+                    <div className="whitespace-pre-wrap rounded-lg bg-muted p-4 text-sm text-foreground">{result}</div>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>

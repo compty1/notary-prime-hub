@@ -634,7 +634,7 @@ export default function Index() {
                       required
                     />
                     <Label htmlFor="agree-terms" className="text-xs text-muted-foreground leading-tight">
-                      I agree to the <Link to="/terms" className="text-primary hover:underline" target="_blank">Terms of Service</Link> and <Link to="/terms#privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>.
+                      I agree to the <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link> and <Link to="/terms#privacy" className="text-primary hover:underline">Privacy Policy</Link>.
                     </Label>
                   </div>
                   <div aria-live="polite" className="text-sm text-destructive" />
