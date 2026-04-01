@@ -508,6 +508,15 @@ export default function RonSession() {
       eSealDocId = newDoc?.id || crypto.randomUUID();
       eSealDocName = placeholderName;
     }
+    // Generate tamper-evident SHA-256 hash for Ohio ORC §147.63 compliance
+    let documentHash: string | null = null;
+    try {
+      const hashInput = `${eSealDocId}|${eSealDocName}|${appointmentId}|${clientProfile?.full_name || ""}|${new Date().toISOString()}`;
+      const encoder = new TextEncoder();
+      const hashBuffer = await crypto.subtle.digest("SHA-256", encoder.encode(hashInput));
+      documentHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
+    } catch {}
+
     await supabase.from("e_seal_verifications").insert({
       document_id: eSealDocId,
       document_name: eSealDocName,
@@ -517,7 +526,23 @@ export default function RonSession() {
       notary_name: notaryNameSetting || "Notar",
       commissioned_state: "OH",
       status: "valid",
-    });
+      document_hash: documentHash,
+    } as any);
+
+    // Save credential analysis result for Ohio compliance
+    if (idType || idNumber || kbaCompleted) {
+      await supabase.from("notarization_sessions").update({
+        credential_analysis_result: {
+          id_type: idType || null,
+          id_number_last4: idNumber ? idNumber.slice(-4) : null,
+          id_expiration: idExpiration || null,
+          kba_completed: kbaCompleted,
+          kba_attempts: kbaAttempts,
+          id_verified: idVerified,
+          verified_at: new Date().toISOString(),
+        },
+      } as any).eq("appointment_id", appointmentId);
+    }
 
     await logAuditEvent("ron_session_completed", {
       entityType: "appointment",

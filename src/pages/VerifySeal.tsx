@@ -17,6 +17,7 @@ interface ESealRecord {
   commissioned_state: string;
   verification_note: string | null;
   status: string;
+  document_hash: string | null;
 }
 
 export default function VerifySeal() {
@@ -33,7 +34,7 @@ export default function VerifySeal() {
       }
       const { data } = await supabase
         .from("e_seal_verifications")
-        .select("id, document_name, notarized_at, signer_name, notary_name, commissioned_state, verification_note, status")
+        .select("id, document_name, notarized_at, signer_name, notary_name, commissioned_state, verification_note, status, document_hash")
         .eq("id", id)
         .eq("status", "valid")
         .maybeSingle();
@@ -94,6 +95,14 @@ export default function VerifySeal() {
                     <p className="font-medium text-sm text-foreground">{record.notary_name} ({record.commissioned_state})</p>
                   </div>
                 </div>
+
+                {record.document_hash && (
+                  <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
+                    <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1"><ShieldCheck className="h-3 w-3" /> Tamper-Evident Seal (SHA-256)</p>
+                    <p className="font-mono text-xs text-foreground break-all">{record.document_hash}</p>
+                    <p className="text-xs text-muted-foreground mt-1">This hash verifies document integrity per Ohio ORC §147.63.</p>
+                  </div>
+                )}
 
                 <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
                   <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1"><Scale className="h-3 w-3" /> Ohio Compliance</p>

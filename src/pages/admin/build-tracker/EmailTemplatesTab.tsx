@@ -128,6 +128,14 @@ export default function EmailTemplatesTab() {
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const cursorPosRef = useRef<number>(0);
 
+  // Unsaved changes warning
+  useEffect(() => {
+    if (!isDirty) return;
+    const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isDirty]);
+
   // Load saved data — useEffect instead of useMemo for side effects
   useEffect(() => {
     if (saved) {

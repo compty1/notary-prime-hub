@@ -147,22 +147,22 @@ function AnimatedRoutes() {
         <Route path="/solutions/law-firms" element={<ForLawFirms />} />
         <Route path="/solutions/small-business" element={<ForSmallBusiness />} />
         <Route path="/solutions/individuals" element={<ForIndividuals />} />
-        <Route path="/digitize" element={<ProtectedRoute><DocumentDigitize /></ProtectedRoute>} />
-        <Route path="/request" element={<ProtectedRoute><ServiceRequest /></ProtectedRoute>} />
-        <Route path="/mailroom" element={<ProtectedRoute><VirtualMailroom /></ProtectedRoute>} />
-        <Route path="/subscribe" element={<ProtectedRoute><SubscriptionPlans /></ProtectedRoute>} />
-        <Route path="/verify-id" element={<ProtectedRoute><VerifyIdentity /></ProtectedRoute>} />
-        <Route path="/mobile-upload" element={<ProtectedRoute><MobileUpload /></ProtectedRoute>} />
-        <Route path="/builder" element={<ProtectedRoute><DocumentBuilder /></ProtectedRoute>} />
-        <Route path="/fee-calculator" element={<FeeCalculator />} />
-        <Route path="/ai-writer" element={<ProtectedRoute><AIWriter /></ProtectedRoute>} />
-        <Route path="/ai-extractors" element={<ProtectedRoute><AIExtractors /></ProtectedRoute>} />
-        <Route path="/ai-knowledge" element={<ProtectedRoute><AIKnowledge /></ProtectedRoute>} />
-        <Route path="/account-settings" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
+        <Route path="/digitize" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Document digitize failed to load"><DocumentDigitize /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/request" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Service request failed to load"><ServiceRequest /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/mailroom" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Mailroom failed to load"><VirtualMailroom /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/subscribe" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Subscription plans failed to load"><SubscriptionPlans /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/verify-id" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Identity verification failed to load"><VerifyIdentity /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/mobile-upload" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Mobile upload failed to load"><MobileUpload /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/builder" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Document builder failed to load"><DocumentBuilder /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/fee-calculator" element={<ErrorBoundary fallbackMessage="Fee calculator failed to load"><FeeCalculator /></ErrorBoundary>} />
+        <Route path="/ai-writer" element={<ProtectedRoute><ErrorBoundary fallbackMessage="AI Writer failed to load"><AIWriter /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/ai-extractors" element={<ProtectedRoute><ErrorBoundary fallbackMessage="AI Extractors failed to load"><AIExtractors /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/ai-knowledge" element={<ProtectedRoute><ErrorBoundary fallbackMessage="AI Knowledge failed to load"><AIKnowledge /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/account-settings" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Account settings failed to load"><AccountSettings /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/portal" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Portal failed to load"><ClientPortal /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/confirmation" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Confirmation failed to load"><AppointmentConfirmation /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/ron-session" element={<ProtectedRoute><ErrorBoundary fallbackMessage="RON session failed to load"><RonSession /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/business-portal" element={<ProtectedRoute><BusinessPortal /></ProtectedRoute>} />
+        <Route path="/business-portal" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Business portal failed to load"><BusinessPortal /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>}>
           <Route index element={<ErrorBoundary fallbackMessage="Overview failed to load"><AdminOverview /></ErrorBoundary>} />
           <Route path="appointments" element={<ErrorBoundary fallbackMessage="Appointments failed to load"><AdminAppointments /></ErrorBoundary>} />
