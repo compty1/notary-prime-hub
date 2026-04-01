@@ -483,6 +483,99 @@ export type Database = {
         }
         Relationships: []
       }
+      crm_activities: {
+        Row: {
+          activity_type: string
+          body: string | null
+          contact_id: string
+          contact_type: string
+          created_at: string
+          created_by: string | null
+          id: string
+          subject: string | null
+        }
+        Insert: {
+          activity_type?: string
+          body?: string | null
+          contact_id: string
+          contact_type?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          subject?: string | null
+        }
+        Update: {
+          activity_type?: string
+          body?: string | null
+          contact_id?: string
+          contact_type?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          subject?: string | null
+        }
+        Relationships: []
+      }
+      deals: {
+        Row: {
+          assigned_to: string | null
+          contact_id: string | null
+          created_at: string
+          expected_close: string | null
+          hubspot_deal_id: string | null
+          id: string
+          lead_id: string | null
+          notes: string | null
+          stage: string
+          title: string
+          updated_at: string
+          value: number | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          contact_id?: string | null
+          created_at?: string
+          expected_close?: string | null
+          hubspot_deal_id?: string | null
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          stage?: string
+          title?: string
+          updated_at?: string
+          value?: number | null
+        }
+        Update: {
+          assigned_to?: string | null
+          contact_id?: string | null
+          created_at?: string
+          expected_close?: string | null
+          hubspot_deal_id?: string | null
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          stage?: string
+          title?: string
+          updated_at?: string
+          value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deals_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "deals_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       document_bundles: {
         Row: {
           bundle_type: string
