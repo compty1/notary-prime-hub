@@ -125,7 +125,7 @@ Deno.serve(async (req) => {
     console.log("IMAP login successful");
 
     let synced = 0;
-    const foldersToSync = ["INBOX", "Sent"];
+    const foldersToSync = ["INBOX", "Sent", "INBOX.Sent", "Sent Messages", "Sent Items"];
 
     for (const folderName of foldersToSync) {
       const folderKey = folderName === "INBOX" ? "inbox" : folderName.toLowerCase();
