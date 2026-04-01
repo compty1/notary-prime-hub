@@ -122,9 +122,9 @@ function AnimatedRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/book" element={<BookAppointment />} />
-        <Route path="/booking" element={<BookAppointment />} />
-        <Route path="/schedule" element={<BookAppointment />} />
+        <Route path="/book" element={<ErrorBoundary fallbackMessage="Booking failed to load"><BookAppointment /></ErrorBoundary>} />
+        <Route path="/booking" element={<ErrorBoundary fallbackMessage="Booking failed to load"><BookAppointment /></ErrorBoundary>} />
+        <Route path="/schedule" element={<ErrorBoundary fallbackMessage="Booking failed to load"><BookAppointment /></ErrorBoundary>} />
         <Route path="/notary-guide" element={<NotaryGuide />} />
         <Route path="/ron-info" element={<RonInfo />} />
         <Route path="/services" element={<Services />} />
