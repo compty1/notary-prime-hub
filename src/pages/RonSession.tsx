@@ -132,6 +132,12 @@ export default function RonSession() {
   const [sessionStatus, setSessionStatus] = useState<string>("scheduled");
   const [recordingUrl, setRecordingUrl] = useState("");
 
+  // Webhook status
+  const [webhookStatus, setWebhookStatus] = useState<string | null>(null);
+  const [webhookEventsRegistered, setWebhookEventsRegistered] = useState<number>(0);
+  const [signnowDocumentId, setSignnowDocumentId] = useState<string | null>(null);
+  const [checkingWebhooks, setCheckingWebhooks] = useState(false);
+
   const hasNativeKba = PLATFORMS_WITH_NATIVE_KBA.includes(signingPlatform);
 
   // Compute current step
