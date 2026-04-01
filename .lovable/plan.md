@@ -1,91 +1,88 @@
 
 
-# Build Intelligence & Gap Tracker — Admin Module
+# Build Tracker Enhancement Plan
 
-## What This Is
-A new admin page at `/admin/build-tracker` that serves as a centralized build management hub. It ingests all known gaps, features, and workflow issues, shows their current status and impact, and provides full to-do list management with notes, bulk operations, and accurate status reasoning.
+## Current State
+The tracker has 4 tabs (Dashboard, Gap Analysis, To-Do, Add/Import) with basic CRUD, filtering, bulk operations, and charts. It works but is missing key capabilities for effective build management.
 
-## Database
+## Enhancements
 
-### New table: `build_tracker_items`
-```sql
-CREATE TABLE build_tracker_items (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  title text NOT NULL,
-  description text,
-  category text NOT NULL DEFAULT 'gap',        -- gap, feature, workflow, security, compliance, ux, seo, performance
-  severity text NOT NULL DEFAULT 'medium',      -- critical, high, medium, low, info
-  status text NOT NULL DEFAULT 'open',          -- open, in_progress, resolved, deferred, wont_fix
-  impact_area text,                             -- e.g. "Booking Flow", "RON Session", "CRM", "Security"
-  suggested_fix text,
-  is_on_todo boolean NOT NULL DEFAULT false,
-  todo_priority integer,                        -- ordering within to-do list
-  admin_notes text,
-  resolved_at timestamptz,
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-);
-```
-- RLS: admin-only (uses `has_role` function)
-- Trigger for `updated_at`
+### 1. Refresh & Re-analyze Button
+- Add a prominent "Refresh" button in the header that refetches data from the database
+- Add a "Re-analyze Statuses" action that cross-references items against known resolved patterns and flags stale statuses
 
-### Seed data
-Pre-populate with ~80 items parsed from the user's original gap list and `.lovable/plan.md`, each with:
-- Accurate current status (resolved if implemented, open if not)
-- Category and severity assignment
-- Impact area mapping
-- Suggested fix text
+### 2. Sorting on All Columns
+- Make every column header in the Gap Analysis table clickable to sort ascending/descending
+- Support multi-field sort: Title, Category, Severity (by rank), Status, Impact Area, Updated At
+- Visual sort indicator arrows on active column
 
-## New Page: `src/pages/admin/AdminBuildTracker.tsx`
+### 3. Impact Area Filter
+- Add an Impact Area dropdown filter alongside Category/Severity/Status filters
+- Auto-populate options from distinct `impact_area` values in the dataset
 
-### Layout — 4 sections via Tabs
+### 4. Status Summary Counts in Filters
+- Show counts next to each filter option (e.g. "Security (12)", "Critical (5)")
+- Show total filtered count prominently
 
-**Tab 1: Dashboard Overview**
-- KPI cards: Total items, Open gaps, In Progress, Resolved, Deferred
-- Breakdown charts by category and severity (bar chart using existing pattern)
-- "Build Health Score" — percentage of resolved vs total
+### 5. Bulk Operations in Gap Analysis Tab
+- Add Select All checkbox + per-row checkboxes to the Gap Analysis table
+- Bulk toolbar: "Add Selected to To-Do", "Change Status", "Change Category", "Delete Selected"
+- This mirrors the To-Do tab bulk ops but works across all items
 
-**Tab 2: Gap Analysis**
-- Filterable/searchable table of all items
-- Columns: Title, Category, Severity, Status, Impact Area, On To-Do
-- Inline status dropdown to change status
-- Click row to expand: description, suggested fix, admin notes editor
-- Color-coded severity badges
+### 6. Delete Item Capability
+- Add delete mutation with confirmation dialog
+- Available in expanded row detail and via bulk selection
+- Uses `supabase.from("build_tracker_items").delete()`
 
-**Tab 3: To-Do List**
-- Shows only items where `is_on_todo = true`, ordered by `todo_priority`
-- Bulk operations toolbar:
-  - Select All / Deselect All checkbox
-  - "Add All Open to To-Do" button — bulk sets `is_on_todo = true` for all open items
-  - "Mark Selected Done" — bulk status update
-  - "Remove from To-Do" — bulk unset
-- Drag-to-reorder (or up/down buttons) for priority
-- Inline notes editing per item
-- Add custom to-do item button (opens form with title, description, category, severity)
+### 7. To-Do Tab: Inline Status Change
+- Add inline status dropdown on each to-do card (currently only shows status text)
+- When marking "resolved", auto-remove from to-do list
 
-**Tab 4: Add / Import**
-- Form to manually add new gap/feature/issue
-- Fields: title, description, category (dropdown), severity (dropdown), impact area, suggested fix
-- Bulk add via textarea (one title per line, auto-categorized as "gap")
+### 8. To-Do Tab: Filter by Category/Severity
+- Add quick-filter chips at top of to-do list for category and severity
+- Helps focus on e.g. only "security" to-dos or "critical" items
 
-### Key Behaviors
-- All CRUD via Supabase queries to `build_tracker_items`
-- Real-time status updates with optimistic UI
-- Status change auto-sets `resolved_at` when marking resolved
-- Search works across title, description, suggested_fix, admin_notes
-- Filter by: category, severity, status, impact_area, is_on_todo
+### 9. Dashboard: Impact Area Breakdown Chart
+- Third chart showing items grouped by impact_area
+- Shows which parts of the build have the most open issues
 
-## Routing & Navigation
-- Add route `/admin/build-tracker` in `App.tsx` under admin layout
-- Add sidebar item "Build Tracker" with `Bug` icon in `AdminDashboard.tsx`
+### 10. Dashboard: Recently Updated Items
+- List of 10 most recently updated items with timestamp
+- Quick-click to jump to item in Gap Analysis tab
 
-## Seed Migration
-A second migration will INSERT the initial ~80 items covering all gaps from the user's list, with statuses accurately reflecting current implementation state (cross-referenced with `.lovable/plan.md` and actual codebase).
+### 11. Gap Analysis: "Updated At" Column with Relative Time
+- Show "2h ago", "3d ago" etc. for when each item was last touched
+- Sortable column
+
+### 12. Keyboard Shortcut for Quick Add
+- "N" key opens quick-add modal from any tab
+- Minimal form: title + category + severity, then Enter to save
+
+### 13. Export Capability
+- "Export CSV" button that downloads all items (or filtered subset) as CSV
+- Useful for sharing status reports
+
+### 14. Count Badges on Tab Headers
+- Show count on each tab: "To-Do (15)", "Gap Analysis (80)"
+- To-Do shows only active to-do count; Gap Analysis shows filtered count
+
+## Technical Approach
+
+All changes are in a single file: `src/pages/admin/AdminBuildTracker.tsx`
+
+- Add `useDeleteItem` mutation hook
+- Add sorting state (`sortField`, `sortDir`) to GapAnalysisTab with clickable headers
+- Add `selectedGaps` state + bulk toolbar to GapAnalysisTab
+- Add impact_area filter derived from `useMemo` on distinct values
+- Add relative time formatter utility (inline)
+- Add CSV export function using `Blob` + `URL.createObjectURL`
+- Add `AlertDialog` for delete confirmation
+- Add category/severity filter chips to TodoTab
+- Add recently-updated section to DashboardTab
+- Add count badges to TabsTrigger components
+
+No database changes needed — all enhancements are UI-side.
 
 ## Files Changed
-1. **New:** `supabase/migrations/..._build_tracker.sql` — table + RLS + trigger + seed data
-2. **New:** `src/pages/admin/AdminBuildTracker.tsx` — full page with 4 tabs
-3. **Edit:** `src/App.tsx` — add lazy route
-4. **Edit:** `src/pages/admin/AdminDashboard.tsx` — add sidebar nav item
-5. **Edit:** `src/integrations/supabase/types.ts` — auto-updated
+1. **Edit:** `src/pages/admin/AdminBuildTracker.tsx` — all enhancements above
 
