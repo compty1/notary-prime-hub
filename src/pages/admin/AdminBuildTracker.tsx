@@ -58,6 +58,7 @@ function QuickAddDialog({ open, onClose }: { open: boolean; onClose: () => void 
             </Select>
           </div>
           <Input placeholder="Impact area (optional)" value={impactArea} onChange={(e) => setImpactArea(e.target.value)} />
+          <Input placeholder="Page route (optional, e.g. /portal)" value={pageRoute} onChange={(e) => setPageRoute(e.target.value)} />
           <Button onClick={handleSubmit} className="w-full">Add</Button>
         </div>
       </DialogContent>

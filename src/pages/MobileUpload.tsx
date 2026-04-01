@@ -131,7 +131,7 @@ export default function MobileUpload() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <main aria-label="Mobile Upload" className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
         <div className="flex items-center justify-between px-4 py-3">

@@ -129,7 +129,7 @@ export default function BusinessPortal() {
   if (loading) return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <main aria-label="Business Portal" className="min-h-screen bg-muted/30">
       <nav className="border-b border-border/50 bg-background/80 backdrop-blur-lg">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">

@@ -17,6 +17,6 @@ export default function Maintenance() {
           </p>
         </CardContent>
       </Card>
-    </div>
+    </main>
   );
 }
