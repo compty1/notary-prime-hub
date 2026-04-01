@@ -788,6 +788,22 @@ export default function RonSession() {
           </Card>
         )}
 
+        {/* Session Timeout Warning */}
+        <SessionTimeoutWarning
+          sessionStartedAt={sessionStartedAt}
+          timeoutMinutes={sessionTimeoutMinutes}
+          onExpired={() => {
+            toast({ title: "Session Expired", description: "The RON session has timed out after " + sessionTimeoutMinutes + " minutes.", variant: "destructive" });
+          }}
+        />
+
+        {/* Ohio RON Compliance Banner */}
+        {appointment?.notarization_type === "ron" && (
+          <div className="mb-4">
+            <ComplianceBanner variant="ron" compact />
+          </div>
+        )}
+
         {/* Step Indicator */}
         <StepIndicator currentStep={currentStep} />
 
