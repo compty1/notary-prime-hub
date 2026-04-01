@@ -1,211 +1,158 @@
-# Build Tracker Gap Fix Plan
 
-## 163 Gaps · 6 Phases · Priority-Ordered
 
----
+# Fix Plan for All Open Build Tracker Gaps
 
-## Phase 1: Critical Routing & Accessibility (8 items) — HIGH PRIORITY
+## Scope
 
-These gaps make existing pages/components completely unreachable.
-
-| # | Gap | Fix | Files Changed |
-|---|-----|-----|---------------|
-| 1 | AdminClientEmails page has no route (lines 90, 115, 155 — duplicated 3x) | Add `/admin/client-emails` route to App.tsx | `src/App.tsx` |
-| 2 | AdminMailbox page has no route (lines 91, 116 — duplicated) | Add `/admin/mailbox` route to App.tsx | `src/App.tsx` |
-| 3 | Missing page registry: `/booking` alias | Add entry to pageRegistry.ts | `build-tracker/pageRegistry.ts` |
-| 4 | Missing page registry: `/schedule` alias | Add entry to pageRegistry.ts | `build-tracker/pageRegistry.ts` |
-| 5 | Missing page registry: `/mailroom` | Add entry to pageRegistry.ts | `build-tracker/pageRegistry.ts` |
-| 6 | Missing page registry: `/subscribe` | Add entry to pageRegistry.ts | `build-tracker/pageRegistry.ts` |
-| 7 | No 404 handling for `/admin/*` subroutes | Add catch-all `<Route path="*">` inside admin layout | `src/App.tsx` |
-| 8 | No error boundary on public pages | Wrap critical public routes with `<ErrorBoundary>` | `src/App.tsx` |
-
-**Effort**: ~1 session. Single file edits mostly in App.tsx + pageRegistry.ts.
+101 open items across 6 CSVs, organized into 7 execution phases by priority and file grouping.
 
 ---
 
-## Phase 2: Wire Orphaned Components (14 items) — HIGH PRIORITY
+## Phase 1: Critical & High — ErrorBoundary Wrapping (15 items)
 
-Built components sitting unused. Each needs an import + render in its target page.
+Wrap all unprotected routes in `<ErrorBoundary>` in `src/App.tsx`.
 
-| # | Component | Target Integration | Files Changed |
-|---|-----------|-------------------|---------------|
-| 1 | `SessionTimeoutWarning` (HIGH) | Import in `RonSession.tsx` | `src/pages/RonSession.tsx` |
-| 2 | `ComplianceBanner` | Wire into RON session or services pages | Target page |
-| 3 | `NotarizationCertificate` | Add to RON session completion flow | `src/pages/RonSession.tsx` |
-| 4 | `SignPreviewWizard` | Add to RON pre-signing step | `src/pages/RonSession.tsx` |
-| 5 | `ClientFeedbackForm` | Wire into `PortalAppointmentsTab` | `src/pages/portal/PortalAppointmentsTab.tsx` |
-| 6 | `OnboardingWizard` | Import in `ClientPortal.tsx` for new users | `src/pages/ClientPortal.tsx` |
-| 7 | `BulkDocumentUpload` | Wire into `AdminDocuments.tsx` | `src/pages/admin/AdminDocuments.tsx` |
-| 8 | `PreSigningChecklist` | Wire into booking flow before review | `src/pages/BookAppointment.tsx` |
-| 9 | `SignerChecklist` | Wire into booking or RON session | `src/pages/BookAppointment.tsx` |
-| 10 | `ESealEmbed` | Wire into VerifySeal or RON completion | `src/pages/VerifySeal.tsx` |
-| 11 | `InvoiceGenerator` | Wire into admin revenue or RON completion | `src/pages/admin/AdminRevenue.tsx` |
-| 12 | `BackToTop` | Add to `PageShell.tsx` | `src/components/PageShell.tsx` |
-| 13 | `MobileFAB` | Add to portal/booking for mobile | `src/components/PageShell.tsx` |
-| 14 | `OfflineIndicator` | Add to `App.tsx` or `PageShell` | `src/App.tsx` |
+**Routes to wrap**: `/ron-session` (critical), `/portal`, `/confirmation`, `/verify-id` (high), `/mobile-upload`, `/builder`, `/ai-writer`, `/digitize`, `/request`, `/mailroom`, `/subscribe`, `/ai-extractors`, `/ai-knowledge`, `/account-settings`, `/business-portal`
 
-Side items (low priority):
-- `CalendarDownload` → wire into `AppointmentConfirmation.tsx`
-- `ServiceDetailPanel` → wire into `ServiceDetail.tsx`
-- `StyleMatchPanel` → wire into AI Writer
-- `TranslationPanel` → wire into document builder
-- `WhatDoINeed` → wire into services or booking
-
-**Effort**: ~2 sessions. Each is a small import + conditional render.
+**Files**: `src/App.tsx`
+**Effort**: Small — pattern already exists for admin routes.
 
 ---
 
-## Phase 3: Platform Entity & Service Flow Data (65+ items) — MEDIUM PRIORITY
-
-These are tracker metadata gaps — existing features not registered in `platformEntities.ts` or `serviceFlows.ts`.
-
-### 3A: Add to `platformEntities.ts` (~50 items)
-
-Group by entity:
-
-**Email Management** (add 12 sub-components):
-- `process-inbound-email`, `process-email-queue`, `ionos-email`, `send-correspondence` edge fns
-- `email_cache`, `email_send_log`, `email_drafts`, `email_signatures`, `email_unsubscribe_tokens`, `email_send_state`, `suppressed_emails`, `appointment_emails` tables
-- Bounce/DLQ tracking, unsubscribe management
-
-**Documents** (add 8 sub-components):
-- `ocr-digitize` edge fn
-- `form_library`, `document_bundles`, `document_collections`, `document_tags`, `document_reminders`, `document_versions`, `documents` tables
-
-**AI Services** (add 7 sub-components):
-- `ai-compliance-scan`, `ai-cross-document`, `ai-extract-document`, `ai-style-match`, `build-analyst`, `scan-id` edge fns
-- `client_style_profiles`, AI Knowledge page
-
-**RON Sessions** (add 5 sub-components):
-- `signnow`, `signnow-webhook` edge fns
-- `notarization_sessions`, `e_seal_verifications` tables
-
-**CRM** (add 7 sub-components):
-- `submit-lead`, `discover-leads`, `fetch-leads`, `scrape-social-leads` edge fns
-- `leads`, `crm_activities`, `deals`, `lead_sources`, `proposals` tables
-- CRM auto-activity triggers
-
-**Services Catalog** (add 7 sub-components):
-- `services`, `service_requests`, `service_requirements`, `service_reviews`, `service_workflows`, `service_faqs`, `apostille_requests` tables
-
-**Payments** (add 5 sub-components):
-- `get-stripe-config` edge fn
-- `payments`, `notary_payouts`, `promo_codes` tables
-- Payment webhook tracking
-
-**Admin Dashboard** (add 7 sub-components):
-- `admin-create-user` edge fn
-- `platform_settings`, `audit_log`, `notary_invites`, `notary_journal`, `notary_certifications` tables
-- Admin Users page
-
-**Client Portal** (add 4 sub-components):
-- `client_feedback`, `reviews`, `user_favorites` tables
-- `chat_messages` table
-
-**Auth** (add 2 sub-components):
-- `profiles` table, `compliance_rule_sets` table
-
-**Business Portal** (add 2): `business_members`, `business_profiles` tables
-
-**Booking/Appointments** (add 4): `appointments`, `booking_drafts`, `time_slots` tables, `continuing_education` table
-
-**New entities to create**:
-- **Mailroom**: `mailroom_items` table, VirtualMailroom page
-- **Apostille**: apostille tracking, shipping, status
-- **Solutions/Verticals**: 6 solution pages
-- **Notifications**: `notification_preferences` table
-
-### 3B: Add to `serviceFlows.ts` (12 steps)
-
-- **Booking Flow**: PreSigningChecklist, SignerChecklist, ServicePreQualifier
-- **RON Flow**: ID Scan, NotarizationCertificate, ComplianceWatchdog, multi-signer
-- **Client Portal Flow**: ClientFeedbackForm, OnboardingWizard
-- **Document Flow**: translate-document, explain-document, detect-document
-
-**Files Changed**: `platformEntities.ts`, `serviceFlows.ts`
-**Effort**: ~1 session. Pure data file edits.
-
----
-
-## Phase 4: Missing UI for Existing Data (10 items) — MEDIUM PRIORITY
-
-DB tables exist but have no admin/client UI.
-
-| # | Gap | Fix | Effort |
-|---|-----|-----|--------|
-| 1 | No admin view for client feedback | Create feedback review section in `AdminOverview` or new page | Medium |
-| 2 | No admin UI for promo codes | Create promo code management in `AdminSettings` or new page | Medium |
-| 3 | No UI for notification preferences | Add preferences section to `AccountSettings.tsx` | Small |
-| 4 | No admin UI for waitlist | Add waitlist table to `AdminOverview` | Small |
-| 5 | User favorites has no UI | Add bookmark buttons to portal items | Medium |
-| 6 | Time slots disconnected from availability UI | Verify/wire `time_slots` ↔ `AdminAvailability` | Small |
-| 7 | service_workflows table unused in UI | Wire to admin service management | Medium |
-| 8 | Notary certifications management incomplete | Add to admin team/settings page | Medium |
-| 9 | No UI for suppressed emails list | Add to email management settings | Small |
-| 10 | Booking flow has no progress indicator | Add step progress bar to `BookAppointment` | Small |
-
-**Effort**: ~3-4 sessions. Mix of new components and wiring.
-
----
-
-## Phase 5: Error Handling, Validation & Code Quality (30+ items) — MEDIUM PRIORITY
-
-### 5A: Missing Error Handling (10 pages)
-Add error states/boundaries to: `About.tsx`, `AppointmentConfirmation.tsx`, `VerifySeal.tsx`, `AdminAuditLog.tsx`, `AdminContentWorkspace.tsx`, `AdminOverview.tsx`, `AdminTaskQueue.tsx`, `PortalLeadsTab.tsx`, `AdminCRM.tsx` (loading state)
-
-### 5B: Edge Function Error Logging (4 functions)
-Add `console.error` + try/catch: `admin-create-user`, `create-payment-intent`, `get-stripe-config`, `ionos-email`
-
-### 5C: Form Validation (2 forms)
-Add zod/input validation: `AdminAIAssistant.tsx`, `AdminDocuments.tsx`
-
-### 5D: Database Triggers (2 items)
-Add `update_updated_at_column` trigger: `email_send_state`, `platform_settings`
-
-### 5E: TODO Comments (3 items)
-Review/resolve TODOs in: `OnboardingWizard.tsx`, `formatPhone.ts`, `BusinessPortal.tsx`
-
-### 5F: UX Polish (3 items)
-- No toast notification for some form successes
-- No print stylesheet for journal/certs/invoices
-- Missing loading skeleton for `AdminCRM.tsx`
-
-**Effort**: ~2 sessions. Repetitive but straightforward patterns.
-
----
-
-## Phase 6: Infrastructure & Operations (5 items) — LOW PRIORITY
+## Phase 2: Ohio Compliance Gaps (5 items, high priority)
 
 | # | Gap | Fix |
 |---|-----|-----|
-| 1 | No webhook retry mechanism | Add retry with exponential backoff to SignNow/Stripe webhooks |
-| 2 | No health check endpoint | Create `health-check` edge function |
-| 3 | No database backup schedule visible | Document RPO/RTO in admin settings |
-| 4 | No storage cleanup for orphaned files | Add cleanup trigger or scheduled function |
-| 5 | `client_correspondence` table not tracked | Add to Email Management entity |
+| 1 | No tamper-evident seal (HIGH) | Add SHA-256 document hash to `e_seal_verifications` table; verify hash on seal check in `VerifySeal.tsx` |
+| 2 | No notary commission number display | Display `commission_number` from profiles on `NotarizationCertificate` and journal entries |
+| 3 | No digital journal backup | Add "Export Journal" button to `AdminJournal.tsx` generating CSV/JSON backup |
+| 4 | No session recording storage validation | Add retention check query to `RonSession.tsx` completion flow |
+| 5 | No credential analysis verification log | Add `credential_analysis_result` column to `notarization_sessions` via migration; save KBA/ID scan results |
 
-**Effort**: ~1-2 sessions.
-
----
-
-## Deduplication Notes
-
-The CSV contains **5 duplicate entries** that should be consolidated:
-- AdminClientEmails no-route: lines 90, 115, 155 (3x)
-- AdminMailbox no-route: lines 91, 116 (2x)
-
-**Unique gaps after dedup: ~158**
+**Files**: `src/pages/VerifySeal.tsx`, `src/components/NotarizationCertificate.tsx`, `src/pages/admin/AdminJournal.tsx`, `src/pages/RonSession.tsx` + 1 DB migration
+**Effort**: Medium — 1-2 sessions.
 
 ---
 
-## Execution Order Summary
+## Phase 3: Console.log Removal (12 items)
+
+Remove or gate behind `import.meta.env.DEV` all production `console.log` statements in:
+
+`ErrorBoundary.tsx`, `PaymentForm.tsx`, `BookAppointment.tsx`, `DocumentDigitize.tsx`, `RonSession.tsx`, `ServiceDetail.tsx`, `AdminAppointments.tsx`, `AdminSettings.tsx`, `AdminAIAssistant.tsx`, `Services.tsx`, `ServiceRequest.tsx`, `NotFound.tsx`
+
+**Pattern**: Replace `console.log(...)` with nothing, or for error-level logs keep `console.error` only.
+**Files**: 12 component files
+**Effort**: Small — mechanical find-and-remove.
+
+---
+
+## Phase 4: Database Indexes & Query Limits (29 items)
+
+### 4A: Missing Indexes (20 items) — Single migration
+
+```sql
+CREATE INDEX idx_booking_drafts_user_id ON booking_drafts(user_id);
+CREATE INDEX idx_business_profiles_created_by ON business_profiles(created_by);
+CREATE INDEX idx_client_style_profiles_user_id ON client_style_profiles(user_id);
+CREATE INDEX idx_document_collections_user_id ON document_collections(user_id);
+CREATE INDEX idx_document_bundles_bundle_type ON document_bundles(bundle_type);
+CREATE INDEX idx_email_signatures_user_id ON email_signatures(user_id);
+CREATE INDEX idx_form_library_uploaded_by ON form_library(uploaded_by);
+CREATE INDEX idx_lead_sources_source_type ON lead_sources(source_type);
+CREATE INDEX idx_notary_certifications_user_id ON notary_certifications(user_id);
+CREATE INDEX idx_notary_invites_email ON notary_invites(email);
+CREATE INDEX idx_proposals_lead_id ON proposals(lead_id);
+CREATE INDEX idx_service_faqs_service_id ON service_faqs(service_id);
+CREATE INDEX idx_service_requirements_service_id ON service_requirements(service_id);
+CREATE INDEX idx_service_reviews_service_id ON service_reviews(service_id);
+CREATE INDEX idx_services_is_active ON services(is_active);
+CREATE INDEX idx_time_slots_day_available ON time_slots(day_of_week, is_available);
+CREATE INDEX idx_waitlist_email ON waitlist(email);
+CREATE INDEX idx_service_workflows_service_id ON service_workflows(service_id);
+CREATE INDEX idx_compliance_rule_sets_category ON compliance_rule_sets(category);
+CREATE INDEX idx_build_tracker_plans_source ON build_tracker_plans(source);
+```
+
+### 4B: Unbounded Queries (9 items)
+
+Add `.limit()` calls to queries in: `About.tsx`, `AccountSettings.tsx` (×3: appointments, documents, payments), `BookAppointment.tsx` (×2: services, time_slots), `BusinessPortal.tsx` (×3: documents, appointments, payments)
+
+**Files**: 1 migration + 4 page files
+**Effort**: Small-medium — 1 session.
+
+---
+
+## Phase 5: Accessibility — ARIA Attributes (20 items)
+
+Add `role="main"` and `aria-label` to the outermost wrapper `<div>` of each page:
+
+`AIExtractors`, `AIKnowledge`, `AIWriter`, `About`, `AccountSettings`, `AppointmentConfirmation`, `BusinessPortal`, `ComingSoon`, `DocumentBuilder`, `DocumentDigitize`, `DocumentTemplates`, `FeeCalculator`, `HelpSupport`, `JoinPlatform`, `LoanSigningServices`, `Maintenance`, `MobileUpload`, `NotFound`, `NotaryGuide`, `NotaryProcessGuide`
+
+**Pattern per file**: Change `<div className="...">` → `<main aria-label="Page Name" className="...">`
+**Files**: 20 page files
+**Effort**: Small — mechanical.
+
+---
+
+## Phase 6: Feature Gaps (7 items)
+
+| # | Gap | Fix | Files |
+|---|-----|-----|-------|
+| 1 | No data export for admin tables | Add CSV export utility function; wire export button to `AdminAppointments`, `AdminClients`, `AdminJournal`, `AdminRevenue` | 4-5 files |
+| 2 | No bulk actions on admin tables | Add checkbox column + bulk status dropdown to `AdminAppointments`, `AdminDocuments` | 2 files |
+| 3 | No email notification on doc status change | Add email send call in document status update handler | 1 edge fn or page file |
+| 4 | Realtime on appointments table | `ALTER PUBLICATION supabase_realtime ADD TABLE appointments` | Migration |
+| 5 | Realtime on documents table | `ALTER PUBLICATION supabase_realtime ADD TABLE documents` | Migration |
+| 6 | Realtime on service_requests table | `ALTER PUBLICATION supabase_realtime ADD TABLE service_requests` | Migration |
+| 7 | No service worker / PWA | Deferred — low severity, requires infrastructure |
+
+**Effort**: 2-3 sessions.
+
+---
+
+## Phase 7: Build Tracker UX & Performance Infra (13 items)
+
+| # | Gap | Fix |
+|---|-----|-----|
+| 1 | AI Analyst oversized context | Already fixed (4000 char truncation in build-analyst edge fn) — mark resolved |
+| 2 | Gap Analysis pagination | Already implemented — mark resolved |
+| 3 | Service Flow search | Already implemented — mark resolved |
+| 4 | Platform Functions Diagnose button | Add diagnostic checks per entity in `PlatformFunctionsTab.tsx` |
+| 5 | AI Analyst no persistence | Store chat in `localStorage` keyed by session |
+| 6 | Email template raw textarea | Replace with `RichTextEditor` component already in codebase |
+| 7 | Quick Add missing page_route | Already added impact_area; add page_route input field |
+| 8 | No unsaved changes warning | Add `beforeunload` listener in `EmailTemplatesTab` |
+| 9 | No image optimization | Add `vite-imagetools` to vite config |
+| 10 | No bundle analyzer | Add `rollup-plugin-visualizer` |
+| 11 | LegalGlossaryProvider scope | Move from App root to only content-page routes |
+| 12 | No Lighthouse CI | Deferred — CI/CD infrastructure |
+| 13 | Admin chunk grouping | Add `manualChunks` for admin routes in vite config |
+
+**Effort**: 1-2 sessions.
+
+---
+
+## Summary
 
 | Phase | Items | Priority | Sessions |
 |-------|-------|----------|----------|
-| 1. Routing & Accessibility | 8 | 🔴 Critical | 1 |
-| 2. Wire Orphaned Components | 14+ | 🔴 High | 2 |
-| 3. Platform Entity Data | 65+ | 🟡 Medium | 1 |
-| 4. Missing UI | 10 | 🟡 Medium | 3-4 |
-| 5. Error/Validation/Quality | 30+ | 🟡 Medium | 2 |
-| 6. Infrastructure | 5 | 🟢 Low | 1-2 |
-| **Total** | **~158 unique** | | **~10-12 sessions** |
+| 1. ErrorBoundary wrapping | 15 | Critical/High | 0.5 |
+| 2. Ohio Compliance | 5 | High | 1.5 |
+| 3. Console.log removal | 12 | Medium | 0.5 |
+| 4. DB indexes + query limits | 29 | Medium | 1 |
+| 5. ARIA accessibility | 20 | Low | 1 |
+| 6. Feature gaps | 7 | Medium | 2.5 |
+| 7. Build Tracker UX + perf | 13 | Low-Medium | 1.5 |
+| **Total** | **101** | | **~8.5 sessions** |
+
+### Files Changed (estimated)
+
+- `src/App.tsx` — ErrorBoundary wrapping (Phase 1)
+- 12 component files — console.log removal (Phase 3)
+- 20 page files — ARIA attributes (Phase 5)
+- 4-5 admin pages — export + bulk actions (Phase 6)
+- 5 files — Ohio compliance (Phase 2)
+- 3 build-tracker tabs — UX fixes (Phase 7)
+- `vite.config.ts` — bundle analysis + chunking (Phase 7)
+- 2-3 DB migrations — indexes, realtime, compliance columns (Phases 2, 4, 6)
+
