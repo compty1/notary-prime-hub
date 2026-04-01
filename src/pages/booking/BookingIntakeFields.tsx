@@ -67,6 +67,10 @@ interface IntakeFieldsProps {
   signerCount: number; setSignerCount: (v: number) => void;
   // Apostille toggle for notarization categories
   needsApostille?: boolean; setNeedsApostille?: (v: boolean) => void;
+  // Phase 10-12: Special instructions, multi-signer, age
+  specialInstructions?: string; setSpecialInstructions?: (v: string) => void;
+  additionalSignerEmails?: string; setAdditionalSignerEmails?: (v: string) => void;
+  signerDob?: string; setSignerDob?: (v: string) => void;
 }
 
 export default function BookingIntakeFields(props: IntakeFieldsProps) {
