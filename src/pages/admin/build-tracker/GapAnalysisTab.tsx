@@ -292,7 +292,31 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
             </TableBody>
           </Table>
         </div>
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between pt-2">
+            <span className="text-xs text-muted-foreground">
+              Showing {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, sorted.length)} of {sorted.length}
+            </span>
+            <div className="flex items-center gap-1">
+              <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>Previous</Button>
+              {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                let p: number;
+                if (totalPages <= 7) p = i + 1;
+                else if (page <= 4) p = i + 1;
+                else if (page >= totalPages - 3) p = totalPages - 6 + i;
+                else p = page - 3 + i;
+                return (
+                  <Button key={p} size="sm" variant={page === p ? "default" : "outline"} className="w-8 h-8 p-0" onClick={() => setPage(p)}>
+                    {p}
+                  </Button>
+                );
+              })}
+              <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>Next</Button>
+            </div>
+          </div>
+        )}
       )}
+
 
       <AlertDialog open={!!deleteIds} onOpenChange={(o) => !o && setDeleteIds(null)}>
         <AlertDialogContent>
