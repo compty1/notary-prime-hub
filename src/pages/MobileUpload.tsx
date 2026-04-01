@@ -237,6 +237,6 @@ export default function MobileUpload() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </main>
   );
 }

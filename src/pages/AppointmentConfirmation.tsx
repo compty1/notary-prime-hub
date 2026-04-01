@@ -364,6 +364,6 @@ export default function AppointmentConfirmation() {
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 }

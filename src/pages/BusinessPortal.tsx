@@ -292,6 +292,6 @@ export default function BusinessPortal() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </main>
   );
 }
