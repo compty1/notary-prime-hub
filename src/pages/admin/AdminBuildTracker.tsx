@@ -31,11 +31,12 @@ function QuickAddDialog({ open, onClose }: { open: boolean; onClose: () => void 
   const [category, setCategory] = useState("gap");
   const [severity, setSeverity] = useState("medium");
   const [impactArea, setImpactArea] = useState("");
+  const [pageRoute, setPageRoute] = useState("");
 
-  const handleClose = () => { setTitle(""); setCategory("gap"); setSeverity("medium"); setImpactArea(""); onClose(); };
+  const handleClose = () => { setTitle(""); setCategory("gap"); setSeverity("medium"); setImpactArea(""); setPageRoute(""); onClose(); };
   const handleSubmit = () => {
     if (!title.trim()) return;
-    insert.mutate({ title, category, severity, status: "open", impact_area: impactArea || undefined } as any);
+    insert.mutate({ title, category, severity, status: "open", impact_area: impactArea || undefined, page_route: pageRoute || undefined } as any);
     handleClose();
   };
 
@@ -57,6 +58,7 @@ function QuickAddDialog({ open, onClose }: { open: boolean; onClose: () => void 
             </Select>
           </div>
           <Input placeholder="Impact area (optional)" value={impactArea} onChange={(e) => setImpactArea(e.target.value)} />
+          <Input placeholder="Page route (optional, e.g. /portal)" value={pageRoute} onChange={(e) => setPageRoute(e.target.value)} />
           <Button onClick={handleSubmit} className="w-full">Add</Button>
         </div>
       </DialogContent>

@@ -103,7 +103,7 @@ export default function MobileUpload() {
   // Unauthenticated view
   if (!user) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
+      <main aria-label="Mobile Upload Login" className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
         <Logo size="lg" showText subtitle="Mobile Upload" className="mb-8" />
         <Card className="w-full max-w-sm border-border/50">
           <CardHeader>
@@ -126,12 +126,12 @@ export default function MobileUpload() {
             </form>
           </CardContent>
         </Card>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <main aria-label="Mobile Upload" className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
         <div className="flex items-center justify-between px-4 py-3">
@@ -237,6 +237,6 @@ export default function MobileUpload() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </main>
   );
 }

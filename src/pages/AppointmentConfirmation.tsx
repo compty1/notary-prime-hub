@@ -167,7 +167,7 @@ export default function AppointmentConfirmation() {
   const crossSells = getCrossSells(appointment);
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <main aria-label="Appointment Confirmation" className="min-h-screen bg-muted/30">
       <nav className="border-b border-border/50 bg-background/80 backdrop-blur-lg">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
@@ -364,6 +364,6 @@ export default function AppointmentConfirmation() {
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 }

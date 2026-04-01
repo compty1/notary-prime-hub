@@ -21,7 +21,7 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
+    <main aria-label="Page Not Found" className="flex min-h-screen items-center justify-center bg-background">
       <div className="text-center max-w-md px-6">
         <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10">
           <FileQuestion className="h-10 w-10 text-primary" />
@@ -54,7 +54,7 @@ const NotFound = () => {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

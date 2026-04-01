@@ -6,7 +6,7 @@ import { Logo } from "@/components/Logo";
 export default function Maintenance() {
   usePageTitle("Maintenance");
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <main aria-label="Maintenance" className="flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md border-border/50">
         <CardContent className="flex flex-col items-center py-16 text-center">
           <Logo size="lg" />
@@ -17,6 +17,6 @@ export default function Maintenance() {
           </p>
         </CardContent>
       </Card>
-    </div>
+    </main>
   );
 }

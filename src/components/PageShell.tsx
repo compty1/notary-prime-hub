@@ -6,6 +6,7 @@ import { CookieConsent } from "@/components/CookieConsent";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { MobileFAB } from "@/components/MobileFAB";
 import { AILeadChatbot } from "@/components/AILeadChatbot";
+import LegalGlossaryProvider from "@/components/LegalGlossaryProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { pageTransition } from "@/lib/animations";
@@ -53,7 +54,9 @@ export function PageShell({ children, hideNav = false, hideFooter = false }: Pag
       </a>
       {!hideNav && <Navbar />}
       <motion.main id="main-content" {...pageTransition}>
-        {children}
+        <LegalGlossaryProvider>
+          {children}
+        </LegalGlossaryProvider>
       </motion.main>
       {!hideFooter && <Footer phone={contactInfo.phone} email={contactInfo.email} />}
       <BackToTop />
