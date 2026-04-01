@@ -1,12 +1,13 @@
 import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, CheckCircle2, ArrowUp, ArrowDown, StickyNote, Download } from "lucide-react";
+import { Plus, CheckCircle2, ArrowUp, ArrowDown, StickyNote, Download, Search, Filter, X } from "lucide-react";
 import type { TrackerItem } from "./constants";
 import { CATEGORIES, SEVERITIES, STATUSES, severityColor, statusIcon, exportCSV } from "./constants";
 import { useUpdateItem, useBulkUpdate } from "./hooks";
@@ -16,20 +17,52 @@ export default function TodoTab({ items }: { items: TrackerItem[] }) {
   const [editingNotes, setEditingNotes] = useState<Record<string, string>>({});
   const [todoCatFilter, setTodoCatFilter] = useState("all");
   const [todoSevFilter, setTodoSevFilter] = useState("all");
+  const [todoStatusFilter, setTodoStatusFilter] = useState("all");
+  const [todoImpactFilter, setTodoImpactFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const update = useUpdateItem();
   const bulk = useBulkUpdate();
+
+  // Derive unique impact areas from to-do items
+  const impactAreas = useMemo(() => {
+    const areas = new Set<string>();
+    items.filter((i) => i.is_on_todo).forEach((i) => { if (i.impact_area) areas.add(i.impact_area); });
+    return Array.from(areas).sort();
+  }, [items]);
+
+  const activeFilterCount = [todoCatFilter, todoSevFilter, todoStatusFilter, todoImpactFilter]
+    .filter((f) => f !== "all").length + (searchQuery ? 1 : 0);
 
   const todoItems = useMemo(() => {
     let list = items.filter((i) => i.is_on_todo);
     if (todoCatFilter !== "all") list = list.filter((i) => i.category === todoCatFilter);
     if (todoSevFilter !== "all") list = list.filter((i) => i.severity === todoSevFilter);
+    if (todoStatusFilter !== "all") list = list.filter((i) => i.status === todoStatusFilter);
+    if (todoImpactFilter !== "all") list = list.filter((i) => i.impact_area === todoImpactFilter);
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter((i) =>
+        i.title.toLowerCase().includes(q) ||
+        (i.description ?? "").toLowerCase().includes(q) ||
+        (i.suggested_fix ?? "").toLowerCase().includes(q) ||
+        (i.admin_notes ?? "").toLowerCase().includes(q)
+      );
+    }
     return list.sort((a, b) => (a.todo_priority ?? 999) - (b.todo_priority ?? 999));
-  }, [items, todoCatFilter, todoSevFilter]);
+  }, [items, todoCatFilter, todoSevFilter, todoStatusFilter, todoImpactFilter, searchQuery]);
 
   const nonTodoOpen = useMemo(() => items.filter((i) => !i.is_on_todo && (i.status === "open" || i.status === "in_progress")), [items]);
 
   const toggleSelect = (id: string) => setSelected((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
   const allSelected = todoItems.length > 0 && todoItems.every((i) => selected.has(i.id));
+
+  const clearFilters = () => {
+    setTodoCatFilter("all");
+    setTodoSevFilter("all");
+    setTodoStatusFilter("all");
+    setTodoImpactFilter("all");
+    setSearchQuery("");
+  };
 
   const movePriority = (id: string, dir: -1 | 1) => {
     const idx = todoItems.findIndex((i) => i.id === id);
@@ -43,18 +76,82 @@ export default function TodoTab({ items }: { items: TrackerItem[] }) {
 
   return (
     <div className="space-y-4">
+      {/* Search bar */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search to-do items..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-9 pr-9"
+        />
+        {searchQuery && (
+          <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2">
+            <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+          </button>
+        )}
+      </div>
+
+      {/* Filter bar */}
       <div className="flex flex-wrap items-center gap-2">
+        <Filter className="h-4 w-4 text-muted-foreground shrink-0" />
+
+        {/* Category filters */}
         {CATEGORIES.map((c) => (
           <Button key={c} size="sm" variant={todoCatFilter === c ? "default" : "outline"} className="text-xs h-7"
             onClick={() => setTodoCatFilter(todoCatFilter === c ? "all" : c)}>{c}</Button>
         ))}
+
         <span className="text-muted-foreground mx-1">|</span>
+
+        {/* Severity filters */}
         {SEVERITIES.map((s) => (
           <Badge key={s} className={`cursor-pointer text-xs ${todoSevFilter === s ? severityColor[s] : "bg-muted text-muted-foreground"}`}
             onClick={() => setTodoSevFilter(todoSevFilter === s ? "all" : s)}>{s}</Badge>
         ))}
       </div>
 
+      {/* Status + Impact Area row */}
+      <div className="flex flex-wrap items-center gap-2">
+        <Select value={todoStatusFilter} onValueChange={setTodoStatusFilter}>
+          <SelectTrigger className="h-8 text-xs w-auto min-w-[130px]">
+            <SelectValue placeholder="All Statuses" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Statuses</SelectItem>
+            {STATUSES.map((s) => (
+              <SelectItem key={s} value={s}>
+                <span className="flex items-center gap-1.5">{statusIcon[s]} {s.replace("_", " ")}</span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {impactAreas.length > 0 && (
+          <Select value={todoImpactFilter} onValueChange={setTodoImpactFilter}>
+            <SelectTrigger className="h-8 text-xs w-auto min-w-[150px]">
+              <SelectValue placeholder="All Impact Areas" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Impact Areas</SelectItem>
+              {impactAreas.map((a) => <SelectItem key={a} value={a}>{a}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        )}
+
+        {activeFilterCount > 0 && (
+          <Button size="sm" variant="ghost" className="text-xs h-7 text-muted-foreground" onClick={clearFilters}>
+            <X className="h-3 w-3 mr-1" /> Clear {activeFilterCount} filter{activeFilterCount > 1 ? "s" : ""}
+          </Button>
+        )}
+
+        <span className="ml-auto text-xs text-muted-foreground">
+          {todoItems.length} item{todoItems.length !== 1 ? "s" : ""}
+          {activeFilterCount > 0 && ` (filtered from ${items.filter(i => i.is_on_todo).length})`}
+        </span>
+      </div>
+
+      {/* Bulk action bar */}
       <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-muted/30 p-3">
         <Checkbox checked={allSelected} onCheckedChange={() => allSelected ? setSelected(new Set()) : setSelected(new Set(todoItems.map((i) => i.id)))} />
         <span className="text-sm text-muted-foreground mr-2">{selected.size} selected</span>
@@ -71,12 +168,16 @@ export default function TodoTab({ items }: { items: TrackerItem[] }) {
           Remove from To-Do
         </Button>
         <Button size="sm" variant="outline" disabled={todoItems.length === 0} onClick={() => exportCSV(todoItems)}>
-          <Download className="h-3.5 w-3.5 mr-1" /> Download All CSV
+          <Download className="h-3.5 w-3.5 mr-1" /> Download CSV ({todoItems.length})
         </Button>
       </div>
 
       {todoItems.length === 0 ? (
-        <Card><CardContent className="p-8 text-center text-muted-foreground">No to-do items. Add from Gap Analysis or use "Add All Open".</CardContent></Card>
+        <Card><CardContent className="p-8 text-center text-muted-foreground">
+          {activeFilterCount > 0
+            ? "No to-do items match your filters. Try adjusting or clearing filters."
+            : "No to-do items. Add from Gap Analysis or use \"Add All Open\"."}
+        </CardContent></Card>
       ) : (
         <div className="space-y-2">
           {todoItems.map((item, idx) => (
@@ -89,6 +190,7 @@ export default function TodoTab({ items }: { items: TrackerItem[] }) {
                       <span className="font-medium">{item.title}</span>
                       <Badge className={`text-xs ${severityColor[item.severity]}`}>{item.severity}</Badge>
                       <Badge variant="outline" className="text-xs">{item.category}</Badge>
+                      {item.impact_area && <Badge variant="secondary" className="text-xs">{item.impact_area}</Badge>}
                       <Select value={item.status} onValueChange={(v) => {
                         const fields: Partial<TrackerItem> = { status: v };
                         if (v === "resolved") fields.is_on_todo = false;

@@ -1,10 +1,10 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Loader2, Sparkles, RotateCcw, Palette, Type, Users, TrendingUp, AlertTriangle } from "lucide-react";
+import { Loader2, Sparkles, Palette, Type, Users, TrendingUp, AlertTriangle, Eye } from "lucide-react";
 
 const STORAGE_KEY = "build-tracker-brand-analysis";
 
@@ -40,7 +40,7 @@ const BRAND_PROMPT = `Analyze the NotaryDex platform's brand identity. The platf
 Current brand uses:
 - Primary: Navy/deep blue (#1a365d-ish) for trust and authority
 - Accent: Gold/amber for premium positioning
-- Typography: System fonts with clean sans-serif
+- Typography: Plus Jakarta Sans with clean sans-serif
 - Target audience: Legal professionals, real estate agents, hospitals, individuals needing notarization
 
 Provide a JSON response with this EXACT structure (no markdown, just raw JSON):
@@ -79,6 +79,70 @@ function ScoreBar({ label, value, icon }: { label: string; value: number; icon: 
   );
 }
 
+/** Live color swatch read from CSS custom properties */
+function BrandColorPreview() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [colors, setColors] = useState<{ name: string; value: string; hsl: string }[]>([]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const style = getComputedStyle(root);
+    const tokens = [
+      { name: "Primary", var: "--primary" },
+      { name: "Primary FG", var: "--primary-foreground" },
+      { name: "Secondary", var: "--secondary" },
+      { name: "Accent", var: "--accent" },
+      { name: "Background", var: "--background" },
+      { name: "Foreground", var: "--foreground" },
+      { name: "Muted", var: "--muted" },
+      { name: "Destructive", var: "--destructive" },
+      { name: "Card", var: "--card" },
+      { name: "Border", var: "--border" },
+    ];
+    const result = tokens.map((t) => {
+      const raw = style.getPropertyValue(t.var).trim();
+      return { name: t.name, value: `hsl(${raw})`, hsl: raw };
+    });
+    setColors(result);
+  }, []);
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm flex items-center gap-2"><Eye className="h-4 w-4" /> Live Brand Colors</CardTitle>
+      </CardHeader>
+      <CardContent ref={ref}>
+        <div className="grid grid-cols-5 gap-3">
+          {colors.map((c) => (
+            <div key={c.name} className="text-center space-y-1.5">
+              <div
+                className="h-12 w-full rounded-lg border shadow-sm"
+                style={{ backgroundColor: c.value }}
+              />
+              <p className="text-xs font-medium">{c.name}</p>
+              <p className="text-[10px] text-muted-foreground font-mono">{c.hsl || "—"}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-4 rounded-lg border p-4 space-y-2">
+          <p className="text-sm font-medium">Typography Preview</p>
+          <p className="font-sans text-2xl font-bold" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            NotaryDex — Ohio Notary Services
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Professional remote online notarization, document services, and e-seal verification for Ohio residents and businesses.
+          </p>
+          <div className="flex gap-2 mt-3">
+            <Button size="sm">Primary CTA</Button>
+            <Button size="sm" variant="outline">Secondary CTA</Button>
+            <Button size="sm" variant="accent">Accent CTA</Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function BrandAnalysisTab() {
   const [analysis, setAnalysis] = useState<BrandAnalysis | null>(() => {
     try {
@@ -104,47 +168,94 @@ export default function BrandAnalysisTab() {
       });
 
       if (!resp.ok) throw new Error(`Error ${resp.status}`);
-      if (!resp.body) throw new Error("No response body");
 
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder();
-      let textBuffer = "";
+      const contentType = resp.headers.get("content-type") || "";
       let fullContent = "";
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        textBuffer += decoder.decode(value, { stream: true });
+      // Handle both streaming SSE and plain JSON responses
+      if (contentType.includes("text/event-stream") || contentType.includes("text/plain")) {
+        if (!resp.body) throw new Error("No response body");
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let textBuffer = "";
 
-        let newlineIndex: number;
-        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
-          let line = textBuffer.slice(0, newlineIndex);
-          textBuffer = textBuffer.slice(newlineIndex + 1);
-          if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (!line.startsWith("data: ")) continue;
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === "[DONE]") break;
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content;
-            if (content) fullContent += content;
-          } catch { /* partial */ }
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          textBuffer += decoder.decode(value, { stream: true });
+
+          let newlineIndex: number;
+          while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+            let line = textBuffer.slice(0, newlineIndex);
+            textBuffer = textBuffer.slice(newlineIndex + 1);
+            if (line.endsWith("\r")) line = line.slice(0, -1);
+            if (!line.startsWith("data: ")) continue;
+            const jsonStr = line.slice(6).trim();
+            if (jsonStr === "[DONE]") break;
+            try {
+              const parsed = JSON.parse(jsonStr);
+              const content = parsed.choices?.[0]?.delta?.content;
+              if (content) fullContent += content;
+            } catch { /* partial chunk */ }
+          }
         }
+        // Process any remaining buffer
+        if (textBuffer.trim()) {
+          const remaining = textBuffer.trim();
+          if (remaining.startsWith("data: ") && remaining.slice(6).trim() !== "[DONE]") {
+            try {
+              const parsed = JSON.parse(remaining.slice(6).trim());
+              const content = parsed.choices?.[0]?.delta?.content;
+              if (content) fullContent += content;
+            } catch { /* partial */ }
+          }
+        }
+      } else {
+        // Plain JSON response
+        const json = await resp.json();
+        fullContent = json.choices?.[0]?.message?.content || json.content || JSON.stringify(json);
       }
+
+      if (!fullContent.trim()) throw new Error("Empty response from AI");
 
       // Extract JSON from response (might be wrapped in markdown code blocks)
       let jsonContent = fullContent;
       const jsonMatch = fullContent.match(/```(?:json)?\s*([\s\S]*?)```/);
       if (jsonMatch) jsonContent = jsonMatch[1];
-      // Also try to find raw JSON object
       const rawJsonMatch = jsonContent.match(/\{[\s\S]*\}/);
       if (rawJsonMatch) jsonContent = rawJsonMatch[0];
 
-      const result: BrandAnalysis = { ...JSON.parse(jsonContent), timestamp: new Date().toISOString() };
+      const parsed = JSON.parse(jsonContent);
+
+      // Validate required fields exist with defaults
+      const result: BrandAnalysis = {
+        colorPsychology: parsed.colorPsychology || "Analysis unavailable",
+        typographyAnalysis: parsed.typographyAnalysis || "Analysis unavailable",
+        audienceImpact: parsed.audienceImpact || "Analysis unavailable",
+        brandScores: {
+          professionalism: parsed.brandScores?.professionalism ?? 70,
+          trustworthiness: parsed.brandScores?.trustworthiness ?? 70,
+          modernity: parsed.brandScores?.modernity ?? 60,
+          approachability: parsed.brandScores?.approachability ?? 65,
+          uniqueness: parsed.brandScores?.uniqueness ?? 55,
+        },
+        salesMetrics: {
+          ctaVisibility: parsed.salesMetrics?.ctaVisibility ?? 60,
+          visualHierarchy: parsed.salesMetrics?.visualHierarchy ?? 65,
+          scarcityCues: parsed.salesMetrics?.scarcityCues ?? 40,
+          socialProof: parsed.salesMetrics?.socialProof ?? 50,
+          urgencySignals: parsed.salesMetrics?.urgencySignals ?? 45,
+        },
+        brandGaps: Array.isArray(parsed.brandGaps) ? parsed.brandGaps : [],
+        recommendations: Array.isArray(parsed.recommendations) ? parsed.recommendations : [],
+        timestamp: new Date().toISOString(),
+      };
+
       setAnalysis(result);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(result));
       toast.success("Brand analysis complete");
     } catch (e: any) {
+      console.error("Brand analysis error:", e);
       toast.error(e.message || "Failed to analyze brand");
     } finally {
       setIsAnalyzing(false);
@@ -164,11 +275,14 @@ export default function BrandAnalysisTab() {
         </Button>
       </div>
 
+      {/* Always show live brand preview */}
+      <BrandColorPreview />
+
       {!analysis && !isAnalyzing && (
         <Card>
           <CardContent className="p-12 text-center">
             <Palette className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <p className="text-lg font-medium mb-2">No Brand Analysis Yet</p>
+            <p className="text-lg font-medium mb-2">No AI Brand Analysis Yet</p>
             <p className="text-sm text-muted-foreground mb-4">Run an AI-powered analysis to evaluate your brand's color psychology, typography, audience impact, and sales conversion signals.</p>
             <Button onClick={runAnalysis} disabled={isAnalyzing}>
               <Sparkles className="h-4 w-4 mr-1" /> Analyze Brand
