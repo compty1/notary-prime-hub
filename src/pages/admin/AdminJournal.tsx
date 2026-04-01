@@ -160,6 +160,42 @@ export default function AdminJournal() {
     toast({ title: "Journal exported", description: "CSV file downloaded." });
   };
 
+  const exportJSONBackup = () => {
+    const backup = {
+      exported_at: new Date().toISOString(),
+      format: "notary_journal_backup_v1",
+      entry_count: filtered.length,
+      entries: filtered.map(e => ({
+        journal_number: e.journal_number,
+        created_at: e.created_at,
+        signer_name: e.signer_name,
+        signer_address: e.signer_address,
+        document_type: e.document_type,
+        document_description: e.document_description,
+        service_performed: e.service_performed,
+        notarization_type: e.notarization_type,
+        id_type: e.id_type,
+        id_number: e.id_number,
+        id_expiration: e.id_expiration,
+        fees_charged: e.fees_charged,
+        platform_fees: e.platform_fees,
+        travel_fee: e.travel_fee,
+        net_profit: e.net_profit,
+        oath_administered: e.oath_administered,
+        oath_timestamp: e.oath_timestamp,
+        witnesses_present: e.witnesses_present,
+        notes: e.notes,
+        recording_url: e.recording_url,
+      })),
+    };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `notary-journal-backup-${new Date().toISOString().split("T")[0]}.json`; a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: "Journal backup exported", description: "JSON backup file downloaded." });
+  };
+
   const exportPrintablePDF = () => {
     const win = window.open("", "_blank");
     if (!win) { toast({ title: "Popup blocked", description: "Please allow popups to export.", variant: "destructive" }); return; }
