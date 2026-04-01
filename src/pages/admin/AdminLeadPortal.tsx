@@ -375,7 +375,7 @@ export default function AdminLeadPortal() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
         {[
           { label: "Total", value: stats.total },
           { label: "New", value: stats.new },
