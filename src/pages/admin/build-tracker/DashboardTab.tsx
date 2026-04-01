@@ -68,8 +68,20 @@ export default function DashboardTab({ items, plans, onJumpToGap, onTabChange, o
       const implemented = f.steps.filter((s) => s.implemented).length;
       return { name: f.name, pct: Math.round((implemented / f.steps.length) * 100), total: f.steps.length, implemented };
     }),
-    []
+    [items]
   );
+
+  // Time to resolve metric
+  const avgTimeToResolve = useMemo(() => {
+    const resolvedItems = items.filter(i => i.status === "resolved" && i.resolved_at && i.created_at);
+    if (resolvedItems.length === 0) return null;
+    const totalDays = resolvedItems.reduce((sum, i) => {
+      const created = new Date(i.created_at).getTime();
+      const resolved = new Date(i.resolved_at!).getTime();
+      return sum + (resolved - created) / (1000 * 60 * 60 * 24);
+    }, 0);
+    return Math.round((totalDays / resolvedItems.length) * 10) / 10;
+  }, [items]);
 
   const pagesWithIssues = useMemo(() => {
     const routeSet = new Set(items.filter((i) => i.page_route).map((i) => i.page_route!));
