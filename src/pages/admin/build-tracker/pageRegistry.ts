@@ -13,6 +13,8 @@ export const PAGE_REGISTRY: PageEntry[] = [
   { route: "/signup", component: "SignUp", protection: "public", category: "Auth" },
   { route: "/reset-password", component: "ForgotPassword", protection: "public", category: "Auth" },
   { route: "/book", component: "BookAppointment", protection: "public", category: "Booking" },
+  { route: "/booking", component: "BookAppointment", protection: "public", category: "Booking" },
+  { route: "/schedule", component: "BookAppointment", protection: "public", category: "Booking" },
   { route: "/notary-guide", component: "NotaryGuide", protection: "public", category: "Content" },
   { route: "/ron-info", component: "RonInfo", protection: "public", category: "Content" },
   { route: "/services", component: "Services", protection: "public", category: "Marketing" },
@@ -81,4 +83,5 @@ export const PAGE_REGISTRY: PageEntry[] = [
   { route: "/admin/build-tracker", component: "AdminBuildTracker", protection: "admin", category: "Admin" },
   { route: "/admin/settings", component: "AdminSettings", protection: "admin", category: "Admin" },
   { route: "/admin/integrations", component: "AdminIntegrationTest", protection: "admin", category: "Admin" },
+  { route: "/admin/mailbox", component: "AdminMailbox", protection: "admin", category: "Admin" },
 ];

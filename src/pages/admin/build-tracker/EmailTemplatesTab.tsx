@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +6,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -82,7 +81,6 @@ function useEmailSettings() {
   const { data, isLoading } = useQuery({
     queryKey: ["email-template-settings"],
     queryFn: async () => {
-      // platform_settings may not exist in types; use any cast
       const { data, error } = await (supabase as any).from("platform_settings").select("*").eq("key", "email_templates").maybeSingle();
       if (error && !error.message?.includes("does not exist")) throw error;
       return (data?.value ?? null) as { master: MasterTemplate; templates: Record<string, { subject: string; bodyHtml: string }> } | null;
@@ -126,10 +124,12 @@ export default function EmailTemplatesTab() {
   const [editedTemplates, setEditedTemplates] = useState<Record<string, { subject: string; bodyHtml: string }>>({});
   const [master, setMaster] = useState<MasterTemplate>(DEFAULT_MASTER);
   const [subTab, setSubTab] = useState<"templates" | "master">("templates");
+  const [isDirty, setIsDirty] = useState(false);
   const editorRef = useRef<HTMLTextAreaElement>(null);
+  const cursorPosRef = useRef<number>(0);
 
-  // Load saved data - using useMemo for initialization side effect
-  useMemo(() => {
+  // Load saved data — useEffect instead of useMemo for side effects
+  useEffect(() => {
     if (saved) {
       if (saved.master) setMaster(saved.master);
       if (saved.templates) setEditedTemplates(saved.templates);
@@ -142,6 +142,7 @@ export default function EmailTemplatesTab() {
   const currentBody = edited?.bodyHtml ?? current.bodyHtml;
 
   const updateTemplate = (field: "subject" | "bodyHtml", value: string) => {
+    setIsDirty(true);
     setEditedTemplates(prev => ({
       ...prev,
       [current.id]: { subject: field === "subject" ? value : (prev[current.id]?.subject ?? current.subject), bodyHtml: field === "bodyHtml" ? value : (prev[current.id]?.bodyHtml ?? current.bodyHtml) },
@@ -151,20 +152,30 @@ export default function EmailTemplatesTab() {
   const insertTag = useCallback((tag: string) => {
     const el = editorRef.current;
     if (!el) return;
-    const start = el.selectionStart;
-    const end = el.selectionEnd;
-    const before = currentBody.slice(0, start);
-    const after = currentBody.slice(end);
+    // Use the ref for stored cursor position
+    const start = el.selectionStart ?? cursorPosRef.current;
+    const end = el.selectionEnd ?? start;
+    const currentVal = el.value;
+    const before = currentVal.slice(0, start);
+    const after = currentVal.slice(end);
     const newBody = before + tag + after;
     updateTemplate("bodyHtml", newBody);
+    const newPos = start + tag.length;
+    cursorPosRef.current = newPos;
     setTimeout(() => {
       el.focus();
-      el.selectionStart = el.selectionEnd = start + tag.length;
+      el.selectionStart = el.selectionEnd = newPos;
     }, 0);
-  }, [currentBody, current.id]);
+  }, [current.id]);
 
   const handleSave = () => {
+    // Validate: check at least subject is non-empty for edited templates
+    const hasEmpty = Object.entries(editedTemplates).some(([, t]) => !t.subject?.trim());
+    if (hasEmpty) {
+      toast.warning("Some templates have empty subject lines");
+    }
     save.mutate({ master, templates: editedTemplates });
+    setIsDirty(false);
   };
 
   const preview = useMemo(() => renderPreview(currentBody, current.sampleData, master), [currentBody, current.sampleData, master]);
@@ -176,13 +187,23 @@ export default function EmailTemplatesTab() {
     lead: "bg-orange-500/10 text-orange-700",
   };
 
+  // Track cursor position on blur/click
+  const handleEditorInteraction = () => {
+    if (editorRef.current) {
+      cursorPosRef.current = editorRef.current.selectionStart;
+    }
+  };
+
   if (isLoading) return <div className="flex justify-center py-10"><Loader2 className="h-6 w-6 animate-spin" /></div>;
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">Manage all {DEFAULT_TEMPLATES.length} automated email templates with live preview and tag insertion.</p>
-        <Button onClick={handleSave} disabled={save.isPending}><Save className="h-3.5 w-3.5 mr-1" /> Save All</Button>
+        <div className="flex items-center gap-2">
+          {isDirty && <Badge variant="outline" className="text-xs text-yellow-600">Unsaved changes</Badge>}
+          <Button onClick={handleSave} disabled={save.isPending}><Save className="h-3.5 w-3.5 mr-1" /> Save All</Button>
+        </div>
       </div>
 
       <Tabs value={subTab} onValueChange={v => setSubTab(v as any)}>
@@ -206,19 +227,19 @@ export default function EmailTemplatesTab() {
                   <div key={c.key}>
                     <Label className="text-xs">{c.label}</Label>
                     <div className="flex items-center gap-2 mt-1">
-                      <input type="color" value={master[c.key]} onChange={e => setMaster(prev => ({ ...prev, [c.key]: e.target.value }))} className="w-8 h-8 rounded cursor-pointer" />
-                      <Input value={master[c.key]} onChange={e => setMaster(prev => ({ ...prev, [c.key]: e.target.value }))} className="text-xs h-8 font-mono" />
+                      <input type="color" value={master[c.key]} onChange={e => { setMaster(prev => ({ ...prev, [c.key]: e.target.value })); setIsDirty(true); }} className="w-8 h-8 rounded cursor-pointer" />
+                      <Input value={master[c.key]} onChange={e => { setMaster(prev => ({ ...prev, [c.key]: e.target.value })); setIsDirty(true); }} className="text-xs h-8 font-mono" />
                     </div>
                   </div>
                 ))}
               </div>
               <div>
                 <Label className="text-xs">Font Family</Label>
-                <Input value={master.fontFamily} onChange={e => setMaster(prev => ({ ...prev, fontFamily: e.target.value }))} className="mt-1" />
+                <Input value={master.fontFamily} onChange={e => { setMaster(prev => ({ ...prev, fontFamily: e.target.value })); setIsDirty(true); }} className="mt-1" />
               </div>
               <div>
                 <Label className="text-xs">Footer Text</Label>
-                <Input value={master.footerText} onChange={e => setMaster(prev => ({ ...prev, footerText: e.target.value }))} className="mt-1" />
+                <Input value={master.footerText} onChange={e => { setMaster(prev => ({ ...prev, footerText: e.target.value })); setIsDirty(true); }} className="mt-1" />
               </div>
               <div className="border rounded-lg p-2 mt-4">
                 <p className="text-xs font-medium mb-2">Preview (Master Template with sample content)</p>
@@ -252,7 +273,14 @@ export default function EmailTemplatesTab() {
               </div>
               <div>
                 <Label className="text-xs">Body HTML</Label>
-                <Textarea ref={editorRef} value={currentBody} onChange={e => updateTemplate("bodyHtml", e.target.value)} className="mt-1 font-mono text-xs min-h-[300px]" />
+                <Textarea
+                  ref={editorRef}
+                  value={currentBody}
+                  onChange={e => updateTemplate("bodyHtml", e.target.value)}
+                  onBlur={handleEditorInteraction}
+                  onClick={handleEditorInteraction}
+                  className="mt-1 font-mono text-xs min-h-[300px]"
+                />
               </div>
               <div>
                 <Label className="text-xs flex items-center gap-1"><Tag className="h-3 w-3" /> Click a tag to insert at cursor</Label>

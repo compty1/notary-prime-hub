@@ -56,12 +56,13 @@ export default function DashboardTab({ items, plans, onJumpToGap, onTabChange }:
     [items]
   );
 
+  // Fixed: added SERVICE_FLOWS as dependency
   const flowHealth = useMemo(() =>
     SERVICE_FLOWS.map((f) => {
       const implemented = f.steps.filter((s) => s.implemented).length;
       return { name: f.name, pct: Math.round((implemented / f.steps.length) * 100), total: f.steps.length, implemented };
     }),
-    []
+    [SERVICE_FLOWS]
   );
 
   const pagesWithIssues = useMemo(() => {
@@ -180,29 +181,41 @@ export default function DashboardTab({ items, plans, onJumpToGap, onTabChange }:
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm">Items by Category</CardTitle></CardHeader>
           <CardContent className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={byCategory}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="name" fontSize={11} /><YAxis /><Tooltip /><Bar dataKey="value" fill="hsl(var(--primary))" radius={[4,4,0,0]} /></BarChart>
-            </ResponsiveContainer>
+            {byCategory.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={byCategory}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="name" fontSize={11} /><YAxis /><Tooltip /><Bar dataKey="value" fill="hsl(var(--primary))" radius={[4,4,0,0]} /></BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-full text-sm text-muted-foreground">No data yet</div>
+            )}
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm">Open by Severity</CardTitle></CardHeader>
           <CardContent className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={bySeverity}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="name" fontSize={11} /><YAxis /><Tooltip />
-                <Bar dataKey="value" radius={[4,4,0,0]}>
-                  {bySeverity.map((d) => <Cell key={d.name} fill={sevColors[d.name] || "#94a3b8"} />)}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            {bySeverity.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={bySeverity}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="name" fontSize={11} /><YAxis /><Tooltip />
+                  <Bar dataKey="value" radius={[4,4,0,0]}>
+                    {bySeverity.map((d) => <Cell key={d.name} fill={sevColors[d.name] || "#94a3b8"} />)}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-full text-sm text-muted-foreground">No open items</div>
+            )}
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm">Open by Impact Area</CardTitle></CardHeader>
           <CardContent className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={byImpact} layout="vertical"><CartesianGrid strokeDasharray="3 3" /><XAxis type="number" /><YAxis dataKey="name" type="category" fontSize={10} width={100} /><Tooltip /><Bar dataKey="value" fill="hsl(var(--accent))" radius={[0,4,4,0]} /></BarChart>
-            </ResponsiveContainer>
+            {byImpact.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={byImpact} layout="vertical"><CartesianGrid strokeDasharray="3 3" /><XAxis type="number" /><YAxis dataKey="name" type="category" fontSize={10} width={100} /><Tooltip /><Bar dataKey="value" fill="hsl(var(--accent))" radius={[0,4,4,0]} /></BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-full text-sm text-muted-foreground">No open items</div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -210,18 +223,22 @@ export default function DashboardTab({ items, plans, onJumpToGap, onTabChange }:
       <Card>
         <CardHeader className="pb-2"><CardTitle className="text-sm">Recently Updated</CardTitle></CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            {recentlyUpdated.map((item) => (
-              <div key={item.id} className="flex items-center justify-between text-sm cursor-pointer hover:bg-muted/50 rounded-md px-2 py-1.5 transition-colors" onClick={() => onJumpToGap(item.id)}>
-                <div className="flex items-center gap-2 min-w-0">
-                  {statusIcon[item.status]}
-                  <span className="truncate">{item.title}</span>
-                  <Badge className={`text-[10px] ${severityColor[item.severity]}`}>{item.severity}</Badge>
+          {recentlyUpdated.length > 0 ? (
+            <div className="space-y-2">
+              {recentlyUpdated.map((item) => (
+                <div key={item.id} className="flex items-center justify-between text-sm cursor-pointer hover:bg-muted/50 rounded-md px-2 py-1.5 transition-colors" onClick={() => onJumpToGap(item.id)}>
+                  <div className="flex items-center gap-2 min-w-0">
+                    {statusIcon[item.status]}
+                    <span className="truncate">{item.title}</span>
+                    <Badge className={`text-[10px] ${severityColor[item.severity]}`}>{item.severity}</Badge>
+                  </div>
+                  <span className="text-xs text-muted-foreground shrink-0 ml-2">{relTime(item.updated_at)}</span>
                 </div>
-                <span className="text-xs text-muted-foreground shrink-0 ml-2">{relTime(item.updated_at)}</span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground text-center py-4">No items tracked yet</p>
+          )}
         </CardContent>
       </Card>
     </div>

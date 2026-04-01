@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import {
   Search, Plus, BarChart3, ListChecks, Upload, Loader2, RefreshCw, RotateCcw,
@@ -29,11 +30,12 @@ function QuickAddDialog({ open, onClose }: { open: boolean; onClose: () => void 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("gap");
   const [severity, setSeverity] = useState("medium");
+  const [impactArea, setImpactArea] = useState("");
 
-  const handleClose = () => { setTitle(""); setCategory("gap"); setSeverity("medium"); onClose(); };
+  const handleClose = () => { setTitle(""); setCategory("gap"); setSeverity("medium"); setImpactArea(""); onClose(); };
   const handleSubmit = () => {
     if (!title.trim()) return;
-    insert.mutate({ title, category, severity, status: "open" } as any);
+    insert.mutate({ title, category, severity, status: "open", impact_area: impactArea || undefined } as any);
     handleClose();
   };
 
@@ -54,6 +56,7 @@ function QuickAddDialog({ open, onClose }: { open: boolean; onClose: () => void 
               <SelectContent>{SEVERITIES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
             </Select>
           </div>
+          <Input placeholder="Impact area (optional)" value={impactArea} onChange={(e) => setImpactArea(e.target.value)} />
           <Button onClick={handleSubmit} className="w-full">Add</Button>
         </div>
       </DialogContent>
@@ -70,6 +73,7 @@ export default function AdminBuildTracker() {
   const [jumpToGapId, setJumpToGapId] = useState<string | null>(null);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [filteredGapCount, setFilteredGapCount] = useState<number | null>(null);
+  const [isReanalyzing, setIsReanalyzing] = useState(false);
   const refreshAll = useRefreshAll();
   const reanalyze = useReanalyze(items);
 
@@ -95,6 +99,15 @@ export default function AdminBuildTracker() {
     setFilteredGapCount(count);
   }, []);
 
+  const handleReanalyze = useCallback(async () => {
+    setIsReanalyzing(true);
+    try {
+      await reanalyze();
+    } finally {
+      setIsReanalyzing(false);
+    }
+  }, [reanalyze]);
+
   if (isLoading) return <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   if (error) return <div className="p-6 text-destructive">Failed to load tracker: {(error as Error).message}</div>;
 
@@ -110,8 +123,8 @@ export default function AdminBuildTracker() {
           <p className="text-muted-foreground">Comprehensive platform analysis, AI reasoning, flow diagnostics & email management</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Button variant="outline" size="sm" onClick={reanalyze}>
-            <RotateCcw className="h-3.5 w-3.5 mr-1" /> Re-analyze
+          <Button variant="outline" size="sm" onClick={handleReanalyze} disabled={isReanalyzing}>
+            <RotateCcw className={`h-3.5 w-3.5 mr-1 ${isReanalyzing ? "animate-spin" : ""}`} /> Re-analyze
           </Button>
           <Button variant="outline" size="sm" onClick={refreshAll} disabled={isFetching}>
             <RefreshCw className={`h-3.5 w-3.5 mr-1 ${isFetching ? "animate-spin" : ""}`} /> Refresh
@@ -121,18 +134,21 @@ export default function AdminBuildTracker() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="w-full justify-start flex-wrap h-auto gap-1">
-          <TabsTrigger value="dashboard" className="gap-1"><BarChart3 className="h-4 w-4" /> Dashboard</TabsTrigger>
-          <TabsTrigger value="gaps" className="gap-1"><Search className="h-4 w-4" /> {gapTabLabel}</TabsTrigger>
-          <TabsTrigger value="todo" className="gap-1"><ListChecks className="h-4 w-4" /> To-Do ({todoCount})</TabsTrigger>
-          <TabsTrigger value="flows" className="gap-1"><Workflow className="h-4 w-4" /> Service Flows</TabsTrigger>
-          <TabsTrigger value="platform" className="gap-1"><Cpu className="h-4 w-4" /> Platform Functions</TabsTrigger>
-          <TabsTrigger value="pages" className="gap-1"><Globe className="h-4 w-4" /> Page Auditor</TabsTrigger>
-          <TabsTrigger value="plans" className="gap-1"><ClipboardList className="h-4 w-4" /> Plan History</TabsTrigger>
-          <TabsTrigger value="ai" className="gap-1"><Bot className="h-4 w-4" /> AI Analyst</TabsTrigger>
-          <TabsTrigger value="emails" className="gap-1"><Mail className="h-4 w-4" /> Email Templates</TabsTrigger>
-          <TabsTrigger value="add" className="gap-1"><Plus className="h-4 w-4" /> Add / Import</TabsTrigger>
-        </TabsList>
+        <ScrollArea className="w-full">
+          <TabsList className="w-max justify-start h-auto gap-1">
+            <TabsTrigger value="dashboard" className="gap-1"><BarChart3 className="h-4 w-4" /> Dashboard</TabsTrigger>
+            <TabsTrigger value="gaps" className="gap-1"><Search className="h-4 w-4" /> {gapTabLabel}</TabsTrigger>
+            <TabsTrigger value="todo" className="gap-1"><ListChecks className="h-4 w-4" /> To-Do ({todoCount})</TabsTrigger>
+            <TabsTrigger value="flows" className="gap-1"><Workflow className="h-4 w-4" /> Service Flows</TabsTrigger>
+            <TabsTrigger value="platform" className="gap-1"><Cpu className="h-4 w-4" /> Platform Functions</TabsTrigger>
+            <TabsTrigger value="pages" className="gap-1"><Globe className="h-4 w-4" /> Page Auditor</TabsTrigger>
+            <TabsTrigger value="plans" className="gap-1"><ClipboardList className="h-4 w-4" /> Plan History</TabsTrigger>
+            <TabsTrigger value="ai" className="gap-1"><Bot className="h-4 w-4" /> AI Analyst</TabsTrigger>
+            <TabsTrigger value="emails" className="gap-1"><Mail className="h-4 w-4" /> Email Templates</TabsTrigger>
+            <TabsTrigger value="add" className="gap-1"><Plus className="h-4 w-4" /> Add / Import</TabsTrigger>
+          </TabsList>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
 
         <TabsContent value="dashboard"><DashboardTab items={items} plans={plans} onJumpToGap={handleJumpToGap} onTabChange={setActiveTab} /></TabsContent>
         <TabsContent value="gaps"><GapAnalysisTab items={items} jumpToId={jumpToGapId} onFilteredCountChange={handleFilteredCountChange} /></TabsContent>

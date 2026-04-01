@@ -2,10 +2,11 @@ import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "sonner";
-import { CheckCircle2, XCircle, ChevronDown, ChevronRight, Plus, AlertTriangle } from "lucide-react";
+import { CheckCircle2, XCircle, ChevronDown, ChevronRight, Plus, AlertTriangle, Search } from "lucide-react";
 import { SERVICE_FLOWS, type ServiceFlow, type FlowStep } from "./serviceFlows";
 import type { TrackerItem } from "./constants";
 import { useBulkInsert } from "./hooks";
@@ -17,6 +18,7 @@ type Props = {
 export default function ServiceFlowTab({ items }: Props) {
   const [expandedFlow, setExpandedFlow] = useState<string | null>(null);
   const [expandedStep, setExpandedStep] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
   const bulkInsert = useBulkInsert();
 
   const flowStats = useMemo(() =>
@@ -27,6 +29,16 @@ export default function ServiceFlowTab({ items }: Props) {
     }),
     []
   );
+
+  const filtered = useMemo(() => {
+    if (!search.trim()) return flowStats;
+    const q = search.toLowerCase();
+    return flowStats.filter(f =>
+      f.name.toLowerCase().includes(q) ||
+      f.description.toLowerCase().includes(q) ||
+      f.steps.some(s => s.name.toLowerCase().includes(q) || s.description.toLowerCase().includes(q))
+    );
+  }, [flowStats, search]);
 
   const addFlowGaps = (flow: ServiceFlow) => {
     const gaps = flow.steps.filter((s) => !s.implemented || (s.issues && s.issues.length > 0));
@@ -67,11 +79,23 @@ export default function ServiceFlowTab({ items }: Props) {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">
-        Analyze each service flow step-by-step. Green = implemented, Red = missing, Yellow = has issues.
-      </p>
+      <div className="flex items-center gap-3">
+        <p className="text-sm text-muted-foreground flex-1">
+          Analyze each service flow step-by-step. Green = implemented, Red = missing, Yellow = has issues.
+        </p>
+        <div className="relative w-64">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Search flows..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+        </div>
+      </div>
 
-      {flowStats.map((flow) => (
+      {filtered.length === 0 && (
+        <Card>
+          <CardContent className="p-8 text-center text-muted-foreground">No flows match your search.</CardContent>
+        </Card>
+      )}
+
+      {filtered.map((flow) => (
         <Card key={flow.id}>
           <Collapsible open={expandedFlow === flow.id} onOpenChange={(o) => setExpandedFlow(o ? flow.id : null)}>
             <CollapsibleTrigger asChild>
