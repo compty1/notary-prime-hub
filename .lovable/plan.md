@@ -1,5 +1,6 @@
 
 
+
 # Email-to-Lead Import with AI Extraction and Real-Time Lead Detail View
 
 ## Overview
@@ -64,20 +65,113 @@ The AI extraction prompt will identify sources based on email content patterns:
 
 ---
 
-## Files Modified
+## 5. HubSpot CRM Integration
+
+- New edge function `hubspot-sync` for two-way sync between leads and HubSpot Contacts
+- `hubspot_contact_id` and `hubspot_deal_id` columns on leads table
+- Admin Settings UI for HubSpot connection and sync controls
+
+---
+
+## 6. AI Services Suite ✅ IMPLEMENTED
+
+### 6a. Smart Due Diligence Extractors (`/ai-extractors`)
+- Four specialized extractors: Legal/Real Estate, Finance, HR, General
+- Edge function `ai-extract-document` using Gemini 2.5 Pro with tool calling
+- Structured JSON output with source citations and confidence scores
+- CSV export of extraction results
+
+### 6b. Style-Match Drafting
+- Edge function `ai-style-match` for analyzing writing samples and generating style-matched documents
+- Style analysis (tone, vocabulary, sentence patterns) stored in `client_style_profiles` table
+- Streaming document generation matching client's writing style
+
+### 6c. Compliance Watchdog
+- Edge function `ai-compliance-scan` with built-in rule sets:
+  - Ohio ORC §147 (notary compliance)
+  - GDPR privacy
+  - General legal compliance
+  - Brand guidelines
+- Returns severity-ranked findings with suggested fixes
+
+### 6d. Cross-Document Synthesis (`/ai-knowledge`)
+- Edge function `ai-cross-document` for multi-document RAG queries
+- Streaming responses with document citations
+- Chat interface for iterative questioning across document collections
+- `document_collections` table for persistent groupings
+
+### 6e. Proposal Generator Enhancement
+- `proposals` table for tracking lifecycle (draft → sent → viewed → accepted)
+- Linked to leads table for pre-filling
+
+---
+
+## 7. Database Tables Created ✅
+
+| Table | Purpose |
+|-------|---------|
+| `client_style_profiles` | Writing style samples and analysis per user |
+| `document_collections` | Groups documents for cross-document queries |
+| `proposals` | AI-generated proposals with lifecycle tracking |
+| `compliance_rule_sets` | Configurable compliance scanning rules |
+
+### Performance Indexes Added ✅
+- `idx_leads_status`, `idx_leads_source`, `idx_leads_created_at`, `idx_leads_email`
+- `idx_appointments_status`, `idx_appointments_scheduled_date`, `idx_appointments_client_id`
+
+---
+
+## 8. Security Gap Fixes ✅
+
+- CSP header updated to include AI gateway domain
+- Client-side rate limiting on lead submissions (3/minute)
+
+---
+
+## 9. Remaining Gap Fixes (Queued)
+
+### High Priority
+- Timezone selector in booking flow
+- Inline form validation (replace toast errors)
+- File upload preview in ServiceRequest
+- Apple Pay / Google Pay enablement
+- Personal/Business toggle in booking
+- Success toast duration increase
+- Remove `target="_blank"` from internal links
+
+### Medium Priority
+- Pagination on admin lists (leads, appointments, documents, journal)
+- Bulk actions in Lead Portal
+- Calendar view for appointments
+- Document tagging system
+- Invoice auto-generation
+- Notification preferences UI
+
+---
+
+## Files Modified/Created
 
 | File | Changes |
 |------|---------|
-| `supabase/functions/extract-email-leads/index.ts` | New edge function for AI email-to-lead extraction |
-| `src/pages/admin/AdminLeadPortal.tsx` | Real-time subscription, detail panel, "Import from Inbox" button |
-| Database migration | Add `lead_extracted` to `email_cache`, `email_cache_id` to `leads`, enable Realtime on leads |
+| `supabase/functions/extract-email-leads/index.ts` | AI email-to-lead extraction |
+| `supabase/functions/ai-extract-document/index.ts` | ✅ Smart due diligence extraction |
+| `supabase/functions/ai-compliance-scan/index.ts` | ✅ Compliance watchdog scanning |
+| `supabase/functions/ai-cross-document/index.ts` | ✅ Cross-document synthesis (streaming) |
+| `supabase/functions/ai-style-match/index.ts` | ✅ Style-matching document generation |
+| `src/pages/AIExtractors.tsx` | ✅ AI Document Intelligence Hub |
+| `src/pages/AIKnowledge.tsx` | ✅ Cross-document knowledge base |
+| `src/pages/admin/AdminLeadPortal.tsx` | Real-time subscription, detail panel, Import |
+| `src/lib/submitLead.ts` | ✅ Rate limiting added |
+| `index.html` | ✅ CSP updated for AI gateway |
+| Database migration | ✅ New tables + indexes |
 
 ---
 
 ## Technical Notes
-- Uses Gemini 2.5 Flash for fast, cost-effective email parsing
+- Uses Gemini 2.5 Pro for complex document analysis, Gemini 2.5 Flash for compliance scanning
+- Tool calling for structured extraction (no JSON mode)
+- Streaming SSE for cross-document and style-match generation
 - Deduplication by email address and phone number prevents duplicate leads
 - Real-time subscription uses Supabase channel on `public.leads` with `INSERT` and `UPDATE` events
-- The detail panel uses the existing Sheet UI component for a slide-out experience
-- Edge function processes emails in batches of 20 to avoid timeouts
-
+- Edge functions process emails in batches of 20 to avoid timeouts
+- Client-side rate limit: 3 submissions per 60-second window
