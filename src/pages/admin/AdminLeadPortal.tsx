@@ -50,6 +50,12 @@ export default function AdminLeadPortal() {
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [sourceEmail, setSourceEmail] = useState<any>(null);
   const [newLeadIds, setNewLeadIds] = useState<Set<string>>(new Set());
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 25;
+  // Bulk selection
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkAction, setBulkAction] = useState("");
 
   const fetchLeads = useCallback(async () => {
     const { data } = await supabase.from("leads").select("*").order("created_at", { ascending: false });
