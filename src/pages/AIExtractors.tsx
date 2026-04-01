@@ -51,8 +51,8 @@ const EXTRACTOR_CONFIG: Record<ExtractorType, { label: string; icon: typeof Scal
 };
 
 function ConfidenceBadge({ score }: { score: number }) {
-  if (score >= 80) return <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/30"><CheckCircle2 className="h-3 w-3 mr-1" />{score}% confidence</Badge>;
-  if (score >= 50) return <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/30"><AlertTriangle className="h-3 w-3 mr-1" />{score}% confidence</Badge>;
+  if (score >= 80) return <Badge variant="secondary" className="border-primary/30"><CheckCircle2 className="h-3 w-3 mr-1 text-primary" />{score}% confidence</Badge>;
+  if (score >= 50) return <Badge variant="outline"><AlertTriangle className="h-3 w-3 mr-1 text-accent-foreground" />{score}% confidence</Badge>;
   return <Badge variant="destructive"><AlertTriangle className="h-3 w-3 mr-1" />{score}% confidence</Badge>;
 }
 
