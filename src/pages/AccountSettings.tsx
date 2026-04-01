@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePageTitle } from "@/lib/usePageTitle";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { Shield, Trash2, Download, Key, Eye, EyeOff } from "lucide-react";
+import { Shield, Trash2, Download, Key, Eye, EyeOff, Bell } from "lucide-react";
 
 export default function AccountSettings() {
   usePageTitle("Account Settings");
@@ -23,6 +24,53 @@ export default function AccountSettings() {
   const [changingPassword, setChangingPassword] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [exporting, setExporting] = useState(false);
+
+  // Notification preferences
+  const NOTIF_EVENTS = [
+    { key: "appointment_reminders", label: "Appointment reminders" },
+    { key: "document_updates", label: "Document updates" },
+    { key: "session_alerts", label: "Session alerts" },
+    { key: "marketing", label: "Marketing emails" },
+  ];
+  const [notifPrefs, setNotifPrefs] = useState<Record<string, boolean>>({
+    appointment_reminders: true,
+    document_updates: true,
+    session_alerts: true,
+    marketing: false,
+  });
+  const [loadingPrefs, setLoadingPrefs] = useState(true);
+  const [savingPrefs, setSavingPrefs] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("notification_preferences")
+      .select("event_type, enabled")
+      .eq("user_id", user.id)
+      .eq("channel", "email")
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          const map: Record<string, boolean> = {};
+          data.forEach(r => { map[r.event_type] = r.enabled; });
+          setNotifPrefs(prev => ({ ...prev, ...map }));
+        }
+        setLoadingPrefs(false);
+      });
+  }, [user]);
+
+  const saveNotifPrefs = async () => {
+    if (!user) return;
+    setSavingPrefs(true);
+    const rows = NOTIF_EVENTS.map(e => ({
+      user_id: user.id,
+      event_type: e.key,
+      channel: "email",
+      enabled: notifPrefs[e.key] ?? true,
+    }));
+    const { error } = await supabase.from("notification_preferences").upsert(rows, { onConflict: "user_id,event_type,channel" });
+    if (error) toast({ title: "Error saving preferences", description: error.message, variant: "destructive" });
+    else toast({ title: "Notification preferences saved" });
+    setSavingPrefs(false);
+  };
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,6 +196,29 @@ export default function AccountSettings() {
               </div>
               <Button type="submit" disabled={changingPassword}>{changingPassword ? "Updating..." : "Update Password"}</Button>
             </form>
+          </CardContent>
+        </Card>
+
+        {/* Notification Preferences */}
+        <Card className="mb-6 border-border/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg"><Bell className="h-5 w-5 text-primary" /> Notification Preferences</CardTitle>
+            <CardDescription>Manage what emails you receive</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {loadingPrefs ? (
+              <p className="text-sm text-muted-foreground">Loading...</p>
+            ) : (
+              <>
+                {NOTIF_EVENTS.map(evt => (
+                  <div key={evt.key} className="flex items-center justify-between">
+                    <Label htmlFor={evt.key}>{evt.label}</Label>
+                    <Switch id={evt.key} checked={notifPrefs[evt.key] ?? true} onCheckedChange={v => setNotifPrefs(p => ({ ...p, [evt.key]: v }))} />
+                  </div>
+                ))}
+                <Button onClick={saveNotifPrefs} disabled={savingPrefs} size="sm">{savingPrefs ? "Saving..." : "Save Preferences"}</Button>
+              </>
+            )}
           </CardContent>
         </Card>
 

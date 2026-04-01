@@ -79,6 +79,8 @@ const AdminContentWorkspace = lazy(() => import("./pages/admin/AdminContentWorks
 const AdminTaskQueue = lazy(() => import("./pages/admin/AdminTaskQueue"));
 const AdminCRM = lazy(() => import("./pages/admin/AdminCRM"));
 const AdminBuildTracker = lazy(() => import("./pages/admin/AdminBuildTracker"));
+const AdminClientEmails = lazy(() => import("./pages/admin/AdminClientEmails"));
+const AdminMailbox = lazy(() => import("./pages/admin/AdminMailbox"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const Maintenance = lazy(() => import("./pages/Maintenance"));
 const ForNotaries = lazy(() => import("./pages/solutions/ForNotaries"));
@@ -120,19 +122,19 @@ function AnimatedRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/book" element={<BookAppointment />} />
-        <Route path="/booking" element={<BookAppointment />} />
-        <Route path="/schedule" element={<BookAppointment />} />
+        <Route path="/book" element={<ErrorBoundary fallbackMessage="Booking failed to load"><BookAppointment /></ErrorBoundary>} />
+        <Route path="/booking" element={<ErrorBoundary fallbackMessage="Booking failed to load"><BookAppointment /></ErrorBoundary>} />
+        <Route path="/schedule" element={<ErrorBoundary fallbackMessage="Booking failed to load"><BookAppointment /></ErrorBoundary>} />
         <Route path="/notary-guide" element={<NotaryGuide />} />
         <Route path="/ron-info" element={<RonInfo />} />
-        <Route path="/services" element={<Services />} />
-        <Route path="/services/:serviceId" element={<ServiceDetail />} />
+        <Route path="/services" element={<ErrorBoundary fallbackMessage="Services failed to load"><Services /></ErrorBoundary>} />
+        <Route path="/services/:serviceId" element={<ErrorBoundary fallbackMessage="Service details failed to load"><ServiceDetail /></ErrorBoundary>} />
         <Route path="/ron-check" element={<RonEligibilityChecker />} />
         <Route path="/loan-signing" element={<LoanSigningServices />} />
-        <Route path="/verify/:id" element={<VerifySeal />} />
+        <Route path="/verify/:id" element={<ErrorBoundary fallbackMessage="Verification failed to load"><VerifySeal /></ErrorBoundary>} />
         <Route path="/terms" element={<TermsPrivacy />} />
         <Route path="/templates" element={<DocumentTemplates />} />
-        <Route path="/about" element={<About />} />
+        <Route path="/about" element={<ErrorBoundary fallbackMessage="About page failed to load"><About /></ErrorBoundary>} />
         <Route path="/join" element={<JoinPlatform />} />
         <Route path="/notary-guide-process" element={<NotaryProcessGuide />} />
         <Route path="/unsubscribe" element={<Unsubscribe />} />
@@ -157,9 +159,9 @@ function AnimatedRoutes() {
         <Route path="/ai-extractors" element={<ProtectedRoute><AIExtractors /></ProtectedRoute>} />
         <Route path="/ai-knowledge" element={<ProtectedRoute><AIKnowledge /></ProtectedRoute>} />
         <Route path="/account-settings" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
-        <Route path="/portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
-        <Route path="/confirmation" element={<ProtectedRoute><AppointmentConfirmation /></ProtectedRoute>} />
-        <Route path="/ron-session" element={<ProtectedRoute><RonSession /></ProtectedRoute>} />
+        <Route path="/portal" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Portal failed to load"><ClientPortal /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/confirmation" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Confirmation failed to load"><AppointmentConfirmation /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/ron-session" element={<ProtectedRoute><ErrorBoundary fallbackMessage="RON session failed to load"><RonSession /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/business-portal" element={<ProtectedRoute><BusinessPortal /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>}>
           <Route index element={<ErrorBoundary fallbackMessage="Overview failed to load"><AdminOverview /></ErrorBoundary>} />
@@ -188,6 +190,9 @@ function AnimatedRoutes() {
           <Route path="build-tracker" element={<ErrorBoundary fallbackMessage="Build tracker failed to load"><AdminBuildTracker /></ErrorBoundary>} />
           <Route path="settings" element={<ErrorBoundary fallbackMessage="Settings failed to load"><AdminSettings /></ErrorBoundary>} />
           <Route path="integrations" element={<ErrorBoundary fallbackMessage="Integration testing failed to load"><AdminIntegrationTest /></ErrorBoundary>} />
+          <Route path="client-emails" element={<ErrorBoundary fallbackMessage="Client emails failed to load"><AdminClientEmails /></ErrorBoundary>} />
+          <Route path="mailbox" element={<ErrorBoundary fallbackMessage="Mailbox failed to load"><AdminMailbox /></ErrorBoundary>} />
+          <Route path="*" element={<NotFound />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

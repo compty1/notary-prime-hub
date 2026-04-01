@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Calendar, Clock, MapPin, Monitor, Download, ArrowLeft, Shield, Upload, ChevronRight, FileText, Wifi, Video, User, CreditCard } from "lucide-react";
 import TechCheck from "@/components/TechCheck";
 import PaymentForm from "@/components/PaymentForm";
+import { CalendarDownload } from "@/components/CalendarDownload";
 import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -239,9 +240,13 @@ export default function AppointmentConfirmation() {
         )}
 
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <Button onClick={downloadICS} variant="outline" className="gap-2">
-            <Download className="h-4 w-4" /> Add to Calendar (.ics)
-          </Button>
+          <CalendarDownload
+            date={appointment.scheduled_date}
+            time={appointment.scheduled_time}
+            serviceType={appointment.service_type}
+            notarizationType={appointment.notarization_type}
+            location={appointment.location}
+          />
           {/* Phase 5.3: Upload documents button */}
           <Link to="/portal?tab=documents">
             <Button variant="outline" className="w-full gap-2 sm:w-auto">

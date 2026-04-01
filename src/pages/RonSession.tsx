@@ -19,6 +19,8 @@ import { logAuditEvent } from "@/lib/auditLog";
 import type { Json } from "@/integrations/supabase/types";
 import { NotarySessionGuide } from "@/components/NotarySessionGuide";
 import { ESignConsent } from "@/components/ESignConsent";
+import { SessionTimeoutWarning } from "@/components/SessionTimeoutWarning";
+import { ComplianceBanner } from "@/components/ComplianceBanner";
 
 const oathScripts = {
   acknowledgment: "The signer personally appeared before me and acknowledged that they signed this document voluntarily for the purposes stated therein. (No verbal oath required for acknowledgments per ORC §147.55)",
@@ -784,6 +786,22 @@ export default function RonSession() {
               </span>
             </CardContent>
           </Card>
+        )}
+
+        {/* Session Timeout Warning */}
+        <SessionTimeoutWarning
+          sessionStartedAt={sessionStartedAt}
+          timeoutMinutes={sessionTimeoutMinutes}
+          onExpired={() => {
+            toast({ title: "Session Expired", description: "The RON session has timed out after " + sessionTimeoutMinutes + " minutes.", variant: "destructive" });
+          }}
+        />
+
+        {/* Ohio RON Compliance Banner */}
+        {appointment?.notarization_type === "ron" && (
+          <div className="mb-4">
+            <ComplianceBanner variant="ron" compact />
+          </div>
         )}
 
         {/* Step Indicator */}

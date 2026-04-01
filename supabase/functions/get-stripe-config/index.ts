@@ -6,17 +6,26 @@ const corsHeaders = {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  const publishableKey = Deno.env.get("STRIPE_PUBLISHABLE_KEY");
+  try {
+    const publishableKey = Deno.env.get("STRIPE_PUBLISHABLE_KEY");
 
-  if (!publishableKey) {
+    if (!publishableKey) {
+      console.error("get-stripe-config: STRIPE_PUBLISHABLE_KEY not set");
+      return new Response(
+        JSON.stringify({ error: "stripe_not_configured", publishableKey: "" }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     return new Response(
-      JSON.stringify({ error: "stripe_not_configured", publishableKey: "" }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({ publishableKey }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  } catch (err: any) {
+    console.error("get-stripe-config error:", err.message);
+    return new Response(
+      JSON.stringify({ error: err.message }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
-
-  return new Response(
-    JSON.stringify({ publishableKey }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-  );
 });
