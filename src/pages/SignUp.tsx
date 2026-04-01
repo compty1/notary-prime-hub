@@ -139,7 +139,7 @@ export default function SignUp() {
                   <p className="text-xs text-muted-foreground">Use 10+ chars with uppercase, numbers, and symbols</p>
                 </div>
               )}
-              {!password && <p className="mt-1 text-xs text-muted-foreground">Minimum 8 characters with uppercase and numbers</p>}
+              {!password && <p className="mt-1 text-xs text-muted-foreground">Minimum 8 characters with uppercase, lowercase, numbers &amp; special characters</p>}
             </div>
             <div>
               <Label htmlFor="confirmPassword">Confirm Password</Label>
