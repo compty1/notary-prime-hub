@@ -346,7 +346,26 @@ export default function RonSession() {
     toast({ title: "Session link saved", description: "The client can now access this signing link from their portal." });
   };
 
-  const saveSessionData = async () => {
+  const checkWebhookStatus = async () => {
+    if (!signnowDocumentId) return;
+    setCheckingWebhooks(true);
+    try {
+      const resp = await callEdgeFunction("signnow", {
+        action: "check_document_webhooks",
+        document_id: signnowDocumentId,
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        setWebhookStatus(data.total_active > 0 ? "active" : "none");
+        setWebhookEventsRegistered(data.total_active || 0);
+      }
+    } catch (e) {
+      console.error("Webhook check failed:", e);
+    } finally {
+      setCheckingWebhooks(false);
+    }
+  };
+
     if (!appointmentId) {
       toast({ title: "No appointment linked", description: "Open this session from an appointment to save data.", variant: "destructive" });
       return;
