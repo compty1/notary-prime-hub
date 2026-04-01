@@ -33,7 +33,7 @@ const SendInviteSchema = z.object({
 });
 
 const DocumentIdSchema = z.object({
-  action: z.enum(["get_document", "download_document", "create_signing_link"]),
+  action: z.enum(["get_document", "download_document", "create_signing_link", "check_document_webhooks"]),
   document_id: z.string().min(1, "document_id is required"),
 });
 
