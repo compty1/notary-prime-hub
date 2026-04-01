@@ -190,6 +190,9 @@ function AnimatedRoutes() {
           <Route path="build-tracker" element={<ErrorBoundary fallbackMessage="Build tracker failed to load"><AdminBuildTracker /></ErrorBoundary>} />
           <Route path="settings" element={<ErrorBoundary fallbackMessage="Settings failed to load"><AdminSettings /></ErrorBoundary>} />
           <Route path="integrations" element={<ErrorBoundary fallbackMessage="Integration testing failed to load"><AdminIntegrationTest /></ErrorBoundary>} />
+          <Route path="client-emails" element={<ErrorBoundary fallbackMessage="Client emails failed to load"><AdminClientEmails /></ErrorBoundary>} />
+          <Route path="mailbox" element={<ErrorBoundary fallbackMessage="Mailbox failed to load"><AdminMailbox /></ErrorBoundary>} />
+          <Route path="*" element={<NotFound />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
