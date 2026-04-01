@@ -104,7 +104,7 @@ export default function AdminServiceRequests() {
     setEditPriority(req.priority);
     setEditNotes(req.notes || "");
     setEditClientStatus(req.client_visible_status || "Submitted");
-    setEditAssignedTo(req.assigned_to || "");
+    setEditAssignedTo(req.assigned_to || "__unassigned__");
     setDeliverableFile(null);
     setDetailOpen(true);
   };
