@@ -260,6 +260,57 @@ export type Database = {
         }
         Relationships: []
       }
+      build_tracker_items: {
+        Row: {
+          admin_notes: string | null
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          impact_area: string | null
+          is_on_todo: boolean
+          resolved_at: string | null
+          severity: string
+          status: string
+          suggested_fix: string | null
+          title: string
+          todo_priority: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          impact_area?: string | null
+          is_on_todo?: boolean
+          resolved_at?: string | null
+          severity?: string
+          status?: string
+          suggested_fix?: string | null
+          title: string
+          todo_priority?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          impact_area?: string | null
+          is_on_todo?: boolean
+          resolved_at?: string | null
+          severity?: string
+          status?: string
+          suggested_fix?: string | null
+          title?: string
+          todo_priority?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       business_members: {
         Row: {
           business_id: string
