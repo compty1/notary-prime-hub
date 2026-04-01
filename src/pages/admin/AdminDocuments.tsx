@@ -56,6 +56,38 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
   const [tagInput, setTagInput] = useState<Record<string, string>>({});
   const [tagFilter, setTagFilter] = useState("");
 
+  const fetchTags = async () => {
+    const { data } = await supabase.from("document_tags").select("document_id, tag");
+    if (data) {
+      const mapped: Record<string, string[]> = {};
+      data.forEach((t: any) => {
+        if (!mapped[t.document_id]) mapped[t.document_id] = [];
+        mapped[t.document_id].push(t.tag);
+      });
+      setTagsByDoc(mapped);
+    }
+  };
+
+  const addTag = async (docId: string) => {
+    const tag = (tagInput[docId] || "").trim().toLowerCase();
+    if (!tag) return;
+    const { error } = await supabase.from("document_tags").insert({ document_id: docId, tag });
+    if (error) {
+      if (error.code === "23505") toast({ title: "Tag already exists" });
+      else toast({ title: "Failed to add tag", variant: "destructive" });
+    } else {
+      setTagsByDoc(prev => ({ ...prev, [docId]: [...(prev[docId] || []), tag] }));
+      setTagInput(prev => ({ ...prev, [docId]: "" }));
+    }
+  };
+
+  const removeTag = async (docId: string, tag: string) => {
+    await supabase.from("document_tags").delete().eq("document_id", docId).eq("tag", tag);
+    setTagsByDoc(prev => ({ ...prev, [docId]: (prev[docId] || []).filter(t => t !== tag) }));
+  };
+
+  const allTags = Array.from(new Set(Object.values(tagsByDoc).flat())).sort();
+
   const fetchDocs = async () => {
     const [docsRes, verificationsRes, profilesRes] = await Promise.all([
       supabase.from("documents").select("*").order("created_at", { ascending: false }),
@@ -65,7 +97,6 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
 
     if (docsRes.data) {
       setDocs(docsRes.data);
-      // Load thumbnails for image files
       const imageFiles = docsRes.data.filter((d: any) => isImageFile(d.file_name));
       if (imageFiles.length > 0) {
         const urls: Record<string, string> = {};
@@ -85,7 +116,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
     setLoading(false);
   };
 
-  useEffect(() => { fetchDocs(); }, []);
+  useEffect(() => { fetchDocs(); fetchTags(); }, []);
 
   const getUploaderName = (userId: string) => {
     const p = profiles.find((p) => p.user_id === userId);
