@@ -34,6 +34,7 @@ export async function submitLead(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
           apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
         body: JSON.stringify(data),

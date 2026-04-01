@@ -54,8 +54,8 @@ export default function SignUp() {
       toast({ title: "Password too short", description: "Password must be at least 8 characters.", variant: "destructive" });
       return;
     }
-    if (!/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
-      toast({ title: "Weak password", description: "Password must contain at least one uppercase letter and one number.", variant: "destructive" });
+    if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
+      toast({ title: "Weak password", description: "Password must contain uppercase, lowercase, number, and special character.", variant: "destructive" });
       return;
     }
     if (password !== confirmPassword) {
@@ -139,7 +139,7 @@ export default function SignUp() {
                   <p className="text-xs text-muted-foreground">Use 10+ chars with uppercase, numbers, and symbols</p>
                 </div>
               )}
-              {!password && <p className="mt-1 text-xs text-muted-foreground">Minimum 8 characters with uppercase and numbers</p>}
+              {!password && <p className="mt-1 text-xs text-muted-foreground">Minimum 8 characters with uppercase, lowercase, numbers &amp; special characters</p>}
             </div>
             <div>
               <Label htmlFor="confirmPassword">Confirm Password</Label>

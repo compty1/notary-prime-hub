@@ -9,6 +9,22 @@ const corsHeaders = {
 const EMAIL_RE = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
 const PHONE_RE = /^[\d\s()+\-\.]{7,20}$/;
 
+/* ─── IP-based rate limiting (in-memory, per-isolate) ─── */
+const ipHits = new Map<string, { count: number; resetAt: number }>();
+const RATE_WINDOW_MS = 60_000; // 1 minute
+const RATE_MAX = 5; // max 5 submissions per IP per minute
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = ipHits.get(ip);
+  if (!entry || now > entry.resetAt) {
+    ipHits.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
+    return false;
+  }
+  entry.count++;
+  return entry.count > RATE_MAX;
+}
+
 const ALLOWED_SOURCES = [
   "coming_soon",
   "website_contact_form",
@@ -38,6 +54,25 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // CSRF protection: require X-Requested-With header
+    if (req.headers.get("x-requested-with") !== "XMLHttpRequest") {
+      return new Response(
+        JSON.stringify({ error: "Forbidden" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Server-side rate limiting by IP
+    const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+      || req.headers.get("cf-connecting-ip")
+      || "unknown";
+    if (isRateLimited(clientIp)) {
+      return new Response(
+        JSON.stringify({ error: "Too many requests. Please try again later." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const body = await req.json();
 
     // Validate source
