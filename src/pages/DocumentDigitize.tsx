@@ -392,6 +392,12 @@ export default function DocumentDigitize() {
                     <Download className="mr-2 h-4 w-4" /> Export DOCX
                   </Button>
                 </div>
+
+                {/* Compliance Watchdog */}
+                <ComplianceWatchdog
+                  documentText={editor.getText()}
+                  className="mt-6 border-border/50"
+                />
               </CardContent>
             </Card>
           </motion.div>
