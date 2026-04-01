@@ -128,13 +128,13 @@ export default function EmailTemplatesTab() {
   const [subTab, setSubTab] = useState<"templates" | "master">("templates");
   const editorRef = useRef<HTMLTextAreaElement>(null);
 
-  // Load saved data
-  useState(() => {
+  // Load saved data - using useMemo for initialization side effect
+  useMemo(() => {
     if (saved) {
       if (saved.master) setMaster(saved.master);
       if (saved.templates) setEditedTemplates(saved.templates);
     }
-  });
+  }, [saved]);
 
   const current = DEFAULT_TEMPLATES.find(t => t.id === activeTemplate) || DEFAULT_TEMPLATES[0];
   const edited = editedTemplates[current.id];
