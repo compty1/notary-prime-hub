@@ -201,6 +201,7 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
           </CardContent>
         </Card>
       ) : (
+        <>
         <div className="rounded-lg border overflow-auto">
           <Table>
             <TableHeader data-no-glossary="true">
@@ -315,7 +316,7 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
             </div>
           </div>
         )}
-      </>
+        </>
       )}
       <AlertDialog open={!!deleteIds} onOpenChange={(o) => !o && setDeleteIds(null)}>
         <AlertDialogContent>
