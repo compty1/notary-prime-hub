@@ -96,7 +96,7 @@ export default function BookingScheduleStep(props: ScheduleStepProps) {
           <div className="mt-1 flex flex-wrap gap-2">
             {props.availableSlots.map((slot: any) => (
               <Button key={slot.id} variant={time === slot.start_time ? "default" : "outline"} size="sm" className={time === slot.start_time ? "bg-primary text-primary-foreground" : ""} onClick={() => setTime(slot.start_time)}>
-                <Clock className="mr-1 h-3 w-3" /> {formatTimeSlot(slot.start_time)} (ET)
+                <Clock className="mr-1 h-3 w-3" /> {formatTimeSlot(slot.start_time)} (Eastern)
               </Button>
             ))}
           </div>
