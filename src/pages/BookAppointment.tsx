@@ -174,7 +174,7 @@ export default function BookAppointment() {
   }, [serviceType, date, time, notes, step]);
 
   useEffect(() => {
-    supabase.from("platform_settings").select("setting_key, setting_value").then(({ data }) => {
+    supabase.from("platform_settings").select("setting_key, setting_value").limit(100).then(({ data }) => {
       if (data) { const s: Record<string, string> = {}; data.forEach((r: any) => { s[r.setting_key] = r.setting_value; }); setPricingSettings(s); }
     });
     const NON_BOOKABLE = ["admin_support","content_creation","research","customer_service","technical_support","ux_testing"];
