@@ -34,7 +34,7 @@ export default function VerifySeal() {
       }
       const { data } = await supabase
         .from("e_seal_verifications")
-        .select("id, document_name, notarized_at, signer_name, notary_name, commissioned_state, verification_note, status")
+        .select("id, document_name, notarized_at, signer_name, notary_name, commissioned_state, verification_note, status, document_hash")
         .eq("id", id)
         .eq("status", "valid")
         .maybeSingle();
