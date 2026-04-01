@@ -17,6 +17,8 @@ import { callEdgeFunction } from "@/lib/edgeFunctionAuth";
 import { cn } from "@/lib/utils";
 import { logAuditEvent } from "@/lib/auditLog";
 import type { Json } from "@/integrations/supabase/types";
+import { NotarySessionGuide } from "@/components/NotarySessionGuide";
+import { ESignConsent } from "@/components/ESignConsent";
 
 const oathScripts = {
   acknowledgment: "The signer personally appeared before me and acknowledged that they signed this document voluntarily for the purposes stated therein. (No verbal oath required for acknowledgments per ORC §147.55)",
@@ -137,6 +139,12 @@ export default function RonSession() {
   const [webhookEventsRegistered, setWebhookEventsRegistered] = useState<number>(0);
   const [signnowDocumentId, setSignnowDocumentId] = useState<string | null>(null);
   const [checkingWebhooks, setCheckingWebhooks] = useState(false);
+
+  // Notary Guide state
+  const [guideCompletedSteps, setGuideCompletedSteps] = useState<Set<number>>(new Set());
+  // E-Sign consent
+  const [esignConsented, setEsignConsented] = useState(false);
+  const [esignConsentTimestamp, setEsignConsentTimestamp] = useState<string | null>(null);
 
   const hasNativeKba = PLATFORMS_WITH_NATIVE_KBA.includes(signingPlatform);
 
@@ -696,6 +704,16 @@ export default function RonSession() {
             </CardContent>
           </Card>
 
+          {/* E-Sign Consent - Phase 4 */}
+          <ESignConsent
+            consented={esignConsented}
+            onConsentChange={(v) => {
+              setEsignConsented(v);
+              if (v && !esignConsentTimestamp) setEsignConsentTimestamp(new Date().toISOString());
+            }}
+            consentTimestamp={esignConsentTimestamp}
+          />
+
           <Card className="border-2 border-dashed border-primary/20">
             <CardContent className="flex flex-col items-center justify-center py-20 text-center">
               {participantLink ? (
@@ -705,9 +723,15 @@ export default function RonSession() {
                   <p className="max-w-md text-sm text-muted-foreground">
                     Click the button below to join your RON session. You'll complete ID verification and KBA within the platform.
                   </p>
-                  <a href={participantLink} target="_blank" rel="noopener noreferrer">
-                    <Button size="lg"><ExternalLink className="mr-2 h-5 w-5" /> Join RON Session</Button>
-                  </a>
+                  {esignConsented ? (
+                    <a href={participantLink} target="_blank" rel="noopener noreferrer">
+                      <Button size="lg"><ExternalLink className="mr-2 h-5 w-5" /> Join RON Session</Button>
+                    </a>
+                  ) : (
+                    <Button size="lg" disabled>
+                      <ExternalLink className="mr-2 h-5 w-5" /> Accept E-Sign Consent First
+                    </Button>
+                  )}
                   <p className="text-xs text-muted-foreground">Opens in a new tab — secure signing platform</p>
                 </div>
               ) : (
@@ -960,6 +984,23 @@ export default function RonSession() {
 
           {/* Sidebar tools */}
           <div className="space-y-4">
+            {/* Notary Session Guide - Phase 2 */}
+            <NotarySessionGuide
+              documentType={documentName || appointment?.service_type || ""}
+              notarizationType="ron"
+              signerCount={appointment?.signer_count || 1}
+              signingCapacity={appointment?.signing_capacity}
+              hasWitnesses={(appointment?.signer_count || 1) > 1}
+              witnessCount={0}
+              completedSteps={guideCompletedSteps}
+              onToggleStep={(i) => {
+                setGuideCompletedSteps(prev => {
+                  const next = new Set(prev);
+                  if (next.has(i)) next.delete(i); else next.add(i);
+                  return next;
+                });
+              }}
+            />
             {/* ID Verification Card */}
             <Card className="border-border/50">
               <CardContent className="p-4">

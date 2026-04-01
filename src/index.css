@@ -105,6 +105,25 @@
     @apply border-border;
   }
 
+  /* Phase 6: WCAG 2.1 AA — Visible focus indicators */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+    outline-style: solid;
+  }
+
+  /* Phase 6: Skip navigation link */
+  .skip-to-main {
+    @apply sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-md focus:bg-primary focus:text-primary-foreground focus:text-sm focus:font-medium;
+  }
+
+  /* Phase 6: Ensure minimum touch targets on mobile */
+  @media (pointer: coarse) {
+    button, a, [role="button"], input, select, textarea {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Lato', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -114,6 +133,28 @@
     font-family: 'Space Grotesk', system-ui, sans-serif;
     font-weight: 700;
     letter-spacing: -0.03em;
+  }
+
+  /* Phase 6: ARIA live region styling */
+  [aria-live] {
+    @apply sr-only;
+  }
+
+  /* Phase 6: Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Phase 6: High contrast mode improvements */
+  @media (forced-colors: active) {
+    .bg-primary {
+      forced-color-adjust: none;
+    }
   }
 }
 

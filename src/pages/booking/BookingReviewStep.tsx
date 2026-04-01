@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { MapPin, Monitor, Calendar, Shield, DollarSign, AlertTriangle, Clock, Eye, EyeOff, CreditCard } from "lucide-react";
 import { formatTimeSlot, isDigitalOnly, HAGUE_COUNTRIES } from "./bookingConstants";
 import { OhioComplianceNotice } from "@/components/OhioComplianceNotice";
@@ -36,6 +37,8 @@ interface ReviewStepProps {
   signerCount?: number;
   pricingBreakdown?: { lineItems: { label: string; amount: number }[]; total: number; deposit: number } | null;
   validationErrors?: Record<string, string>;
+  termsAccepted?: boolean;
+  setTermsAccepted?: (v: boolean) => void;
 }
 
 export default function BookingReviewStep(props: ReviewStepProps) {
@@ -150,9 +153,27 @@ export default function BookingReviewStep(props: ReviewStepProps) {
         </div>
       )}
 
+      {/* Click-wrap Terms Agreement — Phase 4 */}
+      <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-2">
+        <div className="flex items-start gap-2">
+          <Checkbox
+            id="terms-accept"
+            checked={props.termsAccepted || false}
+            onCheckedChange={(checked) => props.setTermsAccepted?.(checked === true)}
+          />
+          <Label htmlFor="terms-accept" className="text-xs leading-relaxed cursor-pointer">
+            I have read and agree to the{" "}
+            <Link to="/terms" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">Terms of Service</Link>{" "}
+            and{" "}
+            <Link to="/terms#privacy" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">Privacy Policy</Link>.
+            I understand that notarization fees are non-refundable after the session begins.
+          </Label>
+        </div>
+      </div>
+
       {/* Payment methods */}
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <CreditCard className="h-3.5 w-3.5" />
+        <CreditCard className="h-3.5 w-3.5" aria-hidden="true" />
         <span>We accept: Credit/Debit • Venmo • Zelle • CashApp • Cash (in-person only)</span>
       </div>
     </div>
