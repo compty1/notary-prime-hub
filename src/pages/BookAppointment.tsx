@@ -470,24 +470,36 @@ export default function BookAppointment() {
     setSubmitting(false);
   };
 
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
   const handleSubmit = async () => {
+    const errors: Record<string, string> = {};
     // Validate date is not in the past
     if (date) {
       const today = new Date().toISOString().split("T")[0];
-      if (date < today) {
-        toast({ title: "Invalid date", description: "Please select a future date.", variant: "destructive" });
-        return;
-      }
+      if (date < today) errors.date = "Please select a future date.";
     }
+    if (!date) errors.date = "Date is required.";
+    if (!time) errors.time = "Time is required.";
     // Validate document count
-    if (documentCount < 1) {
-      toast({ title: "Invalid document count", description: "At least 1 document is required.", variant: "destructive" });
-      return;
-    }
+    if (documentCount < 1) errors.documentCount = "At least 1 document is required.";
 
     if (!user) {
-      if (!guestEmail || !guestPassword || !guestName) { setShowSignup(true); toast({ title: "Create account to confirm", variant: "destructive" }); return; }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) { toast({ title: "Invalid email", description: "Please enter a valid email address.", variant: "destructive" }); return; }
+      if (!guestName.trim()) errors.guestName = "Full name is required.";
+      if (!guestEmail.trim()) errors.guestEmail = "Email is required.";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) errors.guestEmail = "Please enter a valid email address.";
+      if (!guestPassword || guestPassword.length < 8) errors.guestPassword = "Password must be at least 8 characters.";
+      else if (!/[A-Z]/.test(guestPassword) || !/[0-9]/.test(guestPassword)) errors.guestPassword = "Include at least one uppercase letter and one number.";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      toast({ title: "Please fix the highlighted fields", variant: "destructive" });
+      return;
+    }
+    setValidationErrors({});
+
+    if (!user) {
       localStorage.setItem(BOOKING_STORAGE_KEY, JSON.stringify({ notarizationType, serviceType, date, time, location, notes, documentCount, clientAddress, clientCity, clientState, clientZip, _savedAt: Date.now() }));
       const { error } = await signUp(guestEmail, guestPassword, guestName);
       if (error) { const { error: signInErr } = await signIn(guestEmail, guestPassword); if (signInErr) { localStorage.removeItem(BOOKING_STORAGE_KEY); toast({ title: "Account error", description: error.message, variant: "destructive" }); } return; }
@@ -567,6 +579,7 @@ export default function BookAppointment() {
     user, guestName, setGuestName, guestEmail, setGuestEmail, guestPassword, setGuestPassword,
     travelDistance, afterHoursFee, signerCapacity, facilityName, signerCount,
     pricingBreakdown,
+    validationErrors,
   };
 
   const stepLabels = isSkipTypeStep ? ["Service", "Schedule", "Confirm"] : ["Type", "Service", "Schedule", "Confirm"];

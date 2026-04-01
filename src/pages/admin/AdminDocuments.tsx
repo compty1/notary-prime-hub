@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { FileText, Download, Loader2, ShieldCheck, ShieldX, ExternalLink, Eye, Search, ChevronLeft, ChevronRight, ArrowUpDown, Trash2, Send, Upload, Image } from "lucide-react";
+import { FileText, Download, Loader2, ShieldCheck, ShieldX, ExternalLink, Eye, Search, ChevronLeft, ChevronRight, ArrowUpDown, Trash2, Send, Upload, Image, Tag, Plus, X } from "lucide-react";
 import { TableSkeleton } from "@/components/AdminLoadingSkeleton";
 
 const docStatuses = ["uploaded", "pending_review", "approved", "notarized", "rejected"];
@@ -51,6 +51,43 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
   const [sortBy, setSortBy] = useState<"date" | "name" | "status">("date");
   const [page, setPage] = useState(0);
 
+  // Document tags
+  const [tagsByDoc, setTagsByDoc] = useState<Record<string, string[]>>({});
+  const [tagInput, setTagInput] = useState<Record<string, string>>({});
+  const [tagFilter, setTagFilter] = useState("");
+
+  const fetchTags = async () => {
+    const { data } = await supabase.from("document_tags").select("document_id, tag");
+    if (data) {
+      const mapped: Record<string, string[]> = {};
+      data.forEach((t: any) => {
+        if (!mapped[t.document_id]) mapped[t.document_id] = [];
+        mapped[t.document_id].push(t.tag);
+      });
+      setTagsByDoc(mapped);
+    }
+  };
+
+  const addTag = async (docId: string) => {
+    const tag = (tagInput[docId] || "").trim().toLowerCase();
+    if (!tag) return;
+    const { error } = await supabase.from("document_tags").insert({ document_id: docId, tag });
+    if (error) {
+      if (error.code === "23505") toast({ title: "Tag already exists" });
+      else toast({ title: "Failed to add tag", variant: "destructive" });
+    } else {
+      setTagsByDoc(prev => ({ ...prev, [docId]: [...(prev[docId] || []), tag] }));
+      setTagInput(prev => ({ ...prev, [docId]: "" }));
+    }
+  };
+
+  const removeTag = async (docId: string, tag: string) => {
+    await supabase.from("document_tags").delete().eq("document_id", docId).eq("tag", tag);
+    setTagsByDoc(prev => ({ ...prev, [docId]: (prev[docId] || []).filter(t => t !== tag) }));
+  };
+
+  const allTags = Array.from(new Set(Object.values(tagsByDoc).flat())).sort();
+
   const fetchDocs = async () => {
     const [docsRes, verificationsRes, profilesRes] = await Promise.all([
       supabase.from("documents").select("*").order("created_at", { ascending: false }),
@@ -60,7 +97,6 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
 
     if (docsRes.data) {
       setDocs(docsRes.data);
-      // Load thumbnails for image files
       const imageFiles = docsRes.data.filter((d: any) => isImageFile(d.file_name));
       if (imageFiles.length > 0) {
         const urls: Record<string, string> = {};
@@ -80,7 +116,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
     setLoading(false);
   };
 
-  useEffect(() => { fetchDocs(); }, []);
+  useEffect(() => { fetchDocs(); fetchTags(); }, []);
 
   const getUploaderName = (userId: string) => {
     const p = profiles.find((p) => p.user_id === userId);
@@ -90,6 +126,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
   // Filter + search + sort
   const filtered = docs.filter((doc) => {
     if (statusFilter !== "all" && doc.status !== statusFilter) return false;
+    if (tagFilter && !(tagsByDoc[doc.id] || []).includes(tagFilter)) return false;
     if (search) {
       const term = search.toLowerCase();
       const uploaderName = getUploaderName(doc.uploaded_by).toLowerCase();
@@ -298,6 +335,15 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
             <SelectItem value="status">Sort by Status</SelectItem>
           </SelectContent>
         </Select>
+        {allTags.length > 0 && (
+          <Select value={tagFilter} onValueChange={(v) => { setTagFilter(v === "all" ? "" : v); setPage(0); }}>
+            <SelectTrigger className="w-36"><Tag className="mr-1 h-3 w-3" /><SelectValue placeholder="All Tags" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Tags</SelectItem>
+              {allTags.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        )}
       </div>
 
       <p className="mb-4 text-xs text-muted-foreground">{filtered.length} document{filtered.length !== 1 ? "s" : ""}</p>
@@ -335,6 +381,22 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
                         {" · "}{new Date(doc.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                         {doc.appointment_id && <span className="ml-2">• Linked</span>}
                       </p>
+                      <div className="flex items-center gap-1 mt-1 flex-wrap">
+                        {(tagsByDoc[doc.id] || []).map(tag => (
+                          <Badge key={tag} variant="outline" className="text-[10px] gap-0.5 px-1.5 py-0">
+                            {tag}
+                            <button onClick={(e) => { e.stopPropagation(); removeTag(doc.id, tag); }} className="ml-0.5 hover:text-destructive"><X className="h-2.5 w-2.5" /></button>
+                          </Badge>
+                        ))}
+                        <form className="inline-flex" onSubmit={(e) => { e.preventDefault(); addTag(doc.id); }}>
+                          <Input
+                            value={tagInput[doc.id] || ""}
+                            onChange={(e) => setTagInput(prev => ({ ...prev, [doc.id]: e.target.value }))}
+                            placeholder="+ tag"
+                            className="h-5 w-16 text-[10px] px-1 border-dashed"
+                          />
+                        </form>
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 flex-wrap justify-end">

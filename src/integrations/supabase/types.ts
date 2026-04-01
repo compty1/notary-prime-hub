@@ -584,6 +584,35 @@ export type Database = {
           },
         ]
       }
+      document_tags: {
+        Row: {
+          created_at: string
+          document_id: string
+          id: string
+          tag: string
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          id?: string
+          tag: string
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          id?: string
+          tag?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_tags_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           appointment_id: string | null
@@ -991,6 +1020,8 @@ export type Database = {
           created_at: string
           email: string | null
           email_cache_id: string | null
+          hubspot_contact_id: string | null
+          hubspot_deal_id: string | null
           id: string
           intent_score: string
           lead_type: string
@@ -1013,6 +1044,8 @@ export type Database = {
           created_at?: string
           email?: string | null
           email_cache_id?: string | null
+          hubspot_contact_id?: string | null
+          hubspot_deal_id?: string | null
           id?: string
           intent_score?: string
           lead_type?: string
@@ -1035,6 +1068,8 @@ export type Database = {
           created_at?: string
           email?: string | null
           email_cache_id?: string | null
+          hubspot_contact_id?: string | null
+          hubspot_deal_id?: string | null
           id?: string
           intent_score?: string
           lead_type?: string
