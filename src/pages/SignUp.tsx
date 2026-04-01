@@ -54,8 +54,8 @@ export default function SignUp() {
       toast({ title: "Password too short", description: "Password must be at least 8 characters.", variant: "destructive" });
       return;
     }
-    if (!/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
-      toast({ title: "Weak password", description: "Password must contain at least one uppercase letter and one number.", variant: "destructive" });
+    if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
+      toast({ title: "Weak password", description: "Password must contain uppercase, lowercase, number, and special character.", variant: "destructive" });
       return;
     }
     if (password !== confirmPassword) {
