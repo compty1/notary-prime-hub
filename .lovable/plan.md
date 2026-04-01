@@ -1,66 +1,91 @@
 
-# Email-to-Lead Import with AI Extraction and Real-Time Lead Detail View
+# Comprehensive Gap Resolution & CRM Build Plan
 
 ## Overview
-Build an automated pipeline that scans synced inbox emails, uses AI to extract lead information (name, phone, email, service needed, source identification), and inserts them into the `leads` table. Enhance the Lead Portal with a clickable lead detail panel and real-time updates via Supabase Realtime.
+Addresses all identified gaps across security, compliance, UX, CRM, booking, accessibility, SEO, and email systems.
 
 ---
 
-## 1. New Edge Function: `extract-email-leads` ✅ IMPLEMENTED
+## Phase 1: Native CRM System ✅ IN PROGRESS
 
-## 2. Database Changes ✅ IMPLEMENTED
+### 1.1 Admin CRM Dashboard (`/admin/crm`) ✅ IMPLEMENTED
+- Full CRM hub with tabs: Pipeline, Contacts, Deals, Activities, Reports
+- Lead Kanban board across 7 stages (new → closed-won/lost)
+- Contacts table with search, inline status editing
+- Deals pipeline with Kanban view and stage management
+- Activity timeline with logging (notes, calls, emails, meetings)
+- Reports: lead sources, conversion funnel, deal pipeline summary, recent appointments
+- KPI cards: total leads, open deals, pipeline value, won revenue
 
-## 3. Lead Portal Enhancements ✅ IMPLEMENTED
-- Real-time subscription with INSERT/UPDATE/DELETE
-- Clickable lead detail slide-out panel
-- Import from Inbox button
-- Pagination (25 per page)
-- Bulk actions (multi-select, bulk status change, bulk delete)
+### 1.2 Database Tables ✅ IMPLEMENTED
+- `deals` table with stage tracking, value, HubSpot sync
+- `crm_activities` table for interaction logging
+- RLS: admin-only management, notary view for assigned items
 
-## 4. Auto-Source Identification Logic ✅ IMPLEMENTED
-
-## 5. HubSpot CRM Integration ✅ IMPLEMENTED
-- Edge function `hubspot-sync` with test/push/pull actions
-- `hubspot_contact_id` and `hubspot_deal_id` columns on leads table
-- Admin Settings UI with Test Connection, Push Leads, Pull Contacts
-
-## 6. AI Services Suite ✅ IMPLEMENTED
-
-## 7. Database Tables Created ✅
-
-## 8. Security Gap Fixes ✅
-
-## 9. Gap Fixes ✅ COMPLETED
-
-### High Priority — Done
-- ✅ Timezone display in booking flow (Eastern Time label)
-- ✅ Inline form validation in booking (replaces toast-only errors)
-- ✅ File upload preview in ServiceRequest (image thumbnails)
-- ✅ Personal/Business toggle in booking (Signing Capacity selector)
-- ✅ Success toast duration increase (5s)
-- ✅ Remove `target="_blank"` from internal links
-
-### Medium Priority — Done
-- ✅ Pagination on admin leads list (25 per page)
-- ✅ Bulk actions in Lead Portal (multi-select + bulk status/delete)
-- ✅ Calendar view for appointments (already existed)
-- ✅ Document tagging system (inline tags with filter)
-- ✅ HubSpot CRM integration
-
-### Deferred
-- Apple Pay / Google Pay (requires Stripe dashboard config)
-- Invoice auto-generation (InvoiceGenerator component exists)
-- Notification preferences UI (table exists, UI deferred)
+### 1.3 CRM Integration Points — TODO
+- Auto-create CRM activity on appointment/email/payment events
+- HubSpot deal bidirectional sync
 
 ---
 
-## Technical Notes
-- Uses Gemini 2.5 Pro for complex document analysis, Gemini 2.5 Flash for compliance scanning
-- Tool calling for structured extraction (no JSON mode)
-- Streaming SSE for cross-document and style-match generation
-- Deduplication by email address and phone number prevents duplicate leads
-- Real-time subscription uses Supabase channel on `public.leads` with INSERT, UPDATE, DELETE events
-- Edge functions process emails in batches of 20 to avoid timeouts
-- Client-side rate limit: 3 submissions per 60-second window
-- HubSpot sync uses v3 CRM API with search-based deduplication
-- Document tags use `document_tags` table with RLS scoped to document owner
+## Phase 2: RON Session Notary Guide & Task Queue — TODO
+- Session-specific notary guide panel with contextual instructions
+- Document-type-aware oath scripts and checklists
+- Multi-signer coordination steps
+- RON pre-session task queue
+
+## Phase 3: Booking System Fixes — TODO
+- Route aliases (/booking, /schedule → /book)
+- Ghost CTA fix (replace # hrefs)
+- Google Calendar integration
+- Draft/resume workflow wiring
+
+## Phase 4: Security & Compliance Hardening — TODO
+- IDOR prevention, E-Sign consent, file upload security
+- Session timeout, rate limiting, commission expiry enforcement
+
+## Phase 5: Ohio-Specific Compliance — TODO
+- Document eligibility logic
+- Jurisdictional validation
+- Witness coordination workflow
+- Statutory technology disclosure
+
+## Phase 6: Accessibility (WCAG 2.1 AA) — TODO
+- Focus management, keyboard navigation, color/contrast, screen reader support
+
+## Phase 7: SEO & Performance — TODO
+- Unique page titles/meta, breadcrumb schema, srcset images, LCP preload
+
+## Phase 8: Email System Enhancements — TODO
+- Visual email template designer with live preview
+- Email sync error handling improvements
+
+## Phase 9: SignNow Webhook Enhancements — TODO
+- check_webhooks action
+- Webhook status indicator in admin RON view
+
+## Phase 10: UX & Navigation Fixes — TODO
+- Dead-end elimination, mobile nav, breadcrumbs
+
+## Phase 11: Hardware & Pre-Session Checks — TODO
+- Browser version check, WebRTC NAT traversal test
+
+## Phase 12: Remaining Items — TODO
+- Age verification, multi-signer pre-config, feedback loop, click-wrap, PWA
+
+---
+
+## Previously Completed ✅
+- Email-to-lead pipeline with AI extraction
+- HubSpot CRM sync (push/pull/test)
+- Lead Portal with real-time, pagination, bulk actions
+- Document tagging system
+- Inline form validation in booking
+- File upload previews
+- AI services suite (compliance scan, style match, cross-document, extractors)
+- Security headers (CSP, X-Frame-Options, etc.)
+- Error boundaries, skip navigation, branded 404
+- Dark mode, command palette, legal glossary
+
+## Runtime Error Fixes ✅
+- Fixed Select.Item empty string value errors in AdminServiceRequests and AdminDocuments
