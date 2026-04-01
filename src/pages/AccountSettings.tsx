@@ -26,11 +26,17 @@ export default function AccountSettings() {
   const [exporting, setExporting] = useState(false);
 
   // Notification preferences
-  const [notifPrefs, setNotifPrefs] = useState({
-    email_appointment_reminders: true,
-    email_document_updates: true,
-    email_marketing: false,
-    email_session_alerts: true,
+  const NOTIF_EVENTS = [
+    { key: "appointment_reminders", label: "Appointment reminders" },
+    { key: "document_updates", label: "Document updates" },
+    { key: "session_alerts", label: "Session alerts" },
+    { key: "marketing", label: "Marketing emails" },
+  ];
+  const [notifPrefs, setNotifPrefs] = useState<Record<string, boolean>>({
+    appointment_reminders: true,
+    document_updates: true,
+    session_alerts: true,
+    marketing: false,
   });
   const [loadingPrefs, setLoadingPrefs] = useState(true);
   const [savingPrefs, setSavingPrefs] = useState(false);
@@ -38,17 +44,14 @@ export default function AccountSettings() {
   useEffect(() => {
     if (!user) return;
     supabase.from("notification_preferences")
-      .select("*")
+      .select("event_type, enabled")
       .eq("user_id", user.id)
-      .maybeSingle()
+      .eq("channel", "email")
       .then(({ data }) => {
-        if (data) {
-          setNotifPrefs({
-            email_appointment_reminders: data.email_appointment_reminders ?? true,
-            email_document_updates: data.email_document_updates ?? true,
-            email_marketing: data.email_marketing ?? false,
-            email_session_alerts: data.email_session_alerts ?? true,
-          });
+        if (data && data.length > 0) {
+          const map: Record<string, boolean> = {};
+          data.forEach(r => { map[r.event_type] = r.enabled; });
+          setNotifPrefs(prev => ({ ...prev, ...map }));
         }
         setLoadingPrefs(false);
       });
@@ -57,10 +60,13 @@ export default function AccountSettings() {
   const saveNotifPrefs = async () => {
     if (!user) return;
     setSavingPrefs(true);
-    const { error } = await supabase.from("notification_preferences").upsert({
+    const rows = NOTIF_EVENTS.map(e => ({
       user_id: user.id,
-      ...notifPrefs,
-    }, { onConflict: "user_id" });
+      event_type: e.key,
+      channel: "email",
+      enabled: notifPrefs[e.key] ?? true,
+    }));
+    const { error } = await supabase.from("notification_preferences").upsert(rows, { onConflict: "user_id,event_type,channel" });
     if (error) toast({ title: "Error saving preferences", description: error.message, variant: "destructive" });
     else toast({ title: "Notification preferences saved" });
     setSavingPrefs(false);
