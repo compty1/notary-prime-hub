@@ -15,10 +15,14 @@ import { toast } from "sonner";
 import {
   Search, Plus, CheckCircle2, Trash2, Download, X,
   ChevronDown, ChevronRight, ArrowUpDown, ArrowUpNarrowWide, ArrowDownNarrowWide,
+  Sparkles, Loader2, Copy, ListChecks,
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import type { TrackerItem, SortField, SortDir } from "./constants";
 import { CATEGORIES, SEVERITIES, STATUSES, severityColor, statusIcon, sortItems, relTime, exportCSV, SEV_RANK } from "./constants";
 import { useUpdateItem, useBulkUpdate, useDeleteItems } from "./hooks";
+import BulkActionBar from "./BulkActionBar";
+import VerifyFixesButton from "./VerifyFixesButton";
 
 function SortIcon({ field, current, dir }: { field: SortField; current: SortField | null; dir: SortDir }) {
   if (current !== field) return <ArrowUpDown className="h-3 w-3 opacity-30" />;
