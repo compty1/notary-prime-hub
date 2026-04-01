@@ -64,7 +64,7 @@ export function useInsertItem() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (item: Partial<TrackerItem>) => {
-      const { error } = await supabase.from("build_tracker_items").insert(item as Record<string, unknown>);
+      const { error } = await supabase.from("build_tracker_items").insert(item as any);
       if (error) throw error;
     },
     onSuccess: () => { ALL_KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] })); toast.success("Item added"); },
