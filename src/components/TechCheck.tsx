@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Camera, Mic, Wifi, Loader2, CheckCircle, XCircle, RefreshCw } from "lucide-react";
+import { Camera, Mic, Wifi, Loader2, CheckCircle, XCircle, RefreshCw, AlertTriangle, Monitor } from "lucide-react";
 
 interface TechCheckProps {
   onComplete?: () => void;
