@@ -10,7 +10,7 @@ import { lazy, Suspense } from "react";
 import ScrollToTop from "@/components/ScrollToTop";
 import { CommandPalette } from "@/components/CommandPalette";
 import { AnimatePresence } from "framer-motion";
-import LegalGlossaryProvider from "@/components/LegalGlossaryProvider";
+
 
 // Eager load critical pages
 import ComingSoon from "./pages/ComingSoon";
