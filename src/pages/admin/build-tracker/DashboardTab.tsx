@@ -141,13 +141,14 @@ export default function DashboardTab({ items, plans, onJumpToGap, onTabChange, o
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
         {[
           { label: "Total Items", value: total, icon: <FileText className="h-4 w-4" /> },
           { label: "Open", value: open, icon: <AlertTriangle className="h-4 w-4 text-yellow-500" /> },
           { label: "In Progress", value: inProgress, icon: <Clock className="h-4 w-4 text-blue-500" /> },
           { label: "Resolved", value: resolved, icon: <CheckCircle2 className="h-4 w-4 text-green-500" /> },
           { label: "Deferred", value: deferred, icon: <XCircle className="h-4 w-4 text-muted-foreground" /> },
+          { label: "Avg Resolve", value: avgTimeToResolve !== null ? `${avgTimeToResolve}d` : "—", icon: <Activity className="h-4 w-4 text-primary" /> },
         ].map((kpi) => (
           <Card key={kpi.label}>
             <CardContent className="p-4 flex items-center gap-3">

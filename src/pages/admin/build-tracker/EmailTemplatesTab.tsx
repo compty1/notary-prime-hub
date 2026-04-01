@@ -89,7 +89,7 @@ function useEmailSettings() {
 
   const save = useMutation({
     mutationFn: async (settings: { master: MasterTemplate; templates: Record<string, { subject: string; bodyHtml: string }> }) => {
-      const { error } = await (supabase as any).from("platform_settings").upsert({ key: "email_templates", value: settings }, { onConflict: "key" });
+      const { error } = await (supabase as any).from("platform_settings").upsert({ setting_key: "email_templates", value: settings }, { onConflict: "setting_key" });
       if (error) throw error;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["email-template-settings"] }); toast.success("Email templates saved"); },

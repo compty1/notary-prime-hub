@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Loader2, Sparkles, Palette, Type, Users, TrendingUp, AlertTriangle, Eye } from "lucide-react";
+import { useSSEStream, extractJSON } from "./useSSEStream";
 
 const STORAGE_KEY = "build-tracker-brand-analysis";
 
@@ -38,7 +39,7 @@ type BrandAnalysis = {
 const BRAND_PROMPT = `Analyze the NotaryDex platform's brand identity. The platform is a professional Ohio-based remote online notarization service.
 
 Current brand uses:
-- Primary: Navy/deep blue (#1a365d-ish) for trust and authority
+- Primary: Navy/deep blue for trust and authority
 - Accent: Gold/amber for premium positioning
 - Typography: Plus Jakarta Sans with clean sans-serif
 - Target audience: Legal professionals, real estate agents, hospitals, individuals needing notarization
@@ -67,7 +68,7 @@ Provide a JSON response with this EXACT structure (no markdown, just raw JSON):
 }`;
 
 function ScoreBar({ label, value, icon }: { label: string; value: number; icon: React.ReactNode }) {
-  const color = value >= 80 ? "text-green-500" : value >= 60 ? "text-yellow-500" : "text-orange-500";
+  const color = value >= 80 ? "text-green-600 dark:text-green-400" : value >= 60 ? "text-yellow-600 dark:text-yellow-400" : "text-orange-600 dark:text-orange-400";
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
@@ -115,10 +116,7 @@ function BrandColorPreview() {
         <div className="grid grid-cols-5 gap-3">
           {colors.map((c) => (
             <div key={c.name} className="text-center space-y-1.5">
-              <div
-                className="h-12 w-full rounded-lg border shadow-sm"
-                style={{ backgroundColor: c.value }}
-              />
+              <div className="h-12 w-full rounded-lg border shadow-sm" style={{ backgroundColor: c.value }} />
               <p className="text-xs font-medium">{c.name}</p>
               <p className="text-[10px] text-muted-foreground font-mono">{c.hsl || "—"}</p>
             </div>
@@ -135,7 +133,6 @@ function BrandColorPreview() {
           <div className="flex gap-2 mt-3">
             <Button size="sm">Primary CTA</Button>
             <Button size="sm" variant="outline">Secondary CTA</Button>
-            <Button size="sm" variant="accent">Accent CTA</Button>
           </div>
         </div>
       </CardContent>
@@ -150,84 +147,19 @@ export default function BrandAnalysisTab() {
       return saved ? JSON.parse(saved) : null;
     } catch { return null; }
   });
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const { stream, isStreaming } = useSSEStream();
 
   const runAnalysis = useCallback(async () => {
-    setIsAnalyzing(true);
     try {
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/build-analyst`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
-        body: JSON.stringify({
-          messages: [{ role: "user", content: BRAND_PROMPT }],
-          context: "Brand analysis mode — return only valid JSON, no markdown wrapping.",
-        }),
-      });
-
-      if (!resp.ok) throw new Error(`Error ${resp.status}`);
-
-      const contentType = resp.headers.get("content-type") || "";
-      let fullContent = "";
-
-      // Handle both streaming SSE and plain JSON responses
-      if (contentType.includes("text/event-stream") || contentType.includes("text/plain")) {
-        if (!resp.body) throw new Error("No response body");
-        const reader = resp.body.getReader();
-        const decoder = new TextDecoder();
-        let textBuffer = "";
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          textBuffer += decoder.decode(value, { stream: true });
-
-          let newlineIndex: number;
-          while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
-            let line = textBuffer.slice(0, newlineIndex);
-            textBuffer = textBuffer.slice(newlineIndex + 1);
-            if (line.endsWith("\r")) line = line.slice(0, -1);
-            if (!line.startsWith("data: ")) continue;
-            const jsonStr = line.slice(6).trim();
-            if (jsonStr === "[DONE]") break;
-            try {
-              const parsed = JSON.parse(jsonStr);
-              const content = parsed.choices?.[0]?.delta?.content;
-              if (content) fullContent += content;
-            } catch { /* partial chunk */ }
-          }
-        }
-        // Process any remaining buffer
-        if (textBuffer.trim()) {
-          const remaining = textBuffer.trim();
-          if (remaining.startsWith("data: ") && remaining.slice(6).trim() !== "[DONE]") {
-            try {
-              const parsed = JSON.parse(remaining.slice(6).trim());
-              const content = parsed.choices?.[0]?.delta?.content;
-              if (content) fullContent += content;
-            } catch { /* partial */ }
-          }
-        }
-      } else {
-        // Plain JSON response
-        const json = await resp.json();
-        fullContent = json.choices?.[0]?.message?.content || json.content || JSON.stringify(json);
-      }
+      const fullContent = await stream(
+        [{ role: "user", content: BRAND_PROMPT }],
+        "Brand analysis mode — return only valid JSON, no markdown wrapping."
+      );
 
       if (!fullContent.trim()) throw new Error("Empty response from AI");
 
-      // Extract JSON from response (might be wrapped in markdown code blocks)
-      let jsonContent = fullContent;
-      const jsonMatch = fullContent.match(/```(?:json)?\s*([\s\S]*?)```/);
-      if (jsonMatch) jsonContent = jsonMatch[1];
-      const rawJsonMatch = jsonContent.match(/\{[\s\S]*\}/);
-      if (rawJsonMatch) jsonContent = rawJsonMatch[0];
+      const parsed = extractJSON(fullContent);
 
-      const parsed = JSON.parse(jsonContent);
-
-      // Validate required fields exist with defaults
       const result: BrandAnalysis = {
         colorPsychology: parsed.colorPsychology || "Analysis unavailable",
         typographyAnalysis: parsed.typographyAnalysis || "Analysis unavailable",
@@ -256,11 +188,8 @@ export default function BrandAnalysisTab() {
       toast.success("Brand analysis complete");
     } catch (e: any) {
       console.error("Brand analysis error:", e);
-      toast.error(e.message || "Failed to analyze brand");
-    } finally {
-      setIsAnalyzing(false);
     }
-  }, []);
+  }, [stream]);
 
   return (
     <div className="space-y-6">
@@ -269,29 +198,28 @@ export default function BrandAnalysisTab() {
           <h3 className="font-semibold">Brand & Sales Psychology Analysis</h3>
           <p className="text-sm text-muted-foreground">AI-powered analysis of color psychology, typography, audience impact, and sales conversion signals</p>
         </div>
-        <Button onClick={runAnalysis} disabled={isAnalyzing}>
-          {isAnalyzing ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Sparkles className="h-4 w-4 mr-1" />}
+        <Button onClick={runAnalysis} disabled={isStreaming}>
+          {isStreaming ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Sparkles className="h-4 w-4 mr-1" />}
           {analysis ? "Re-analyze" : "Analyze Brand"}
         </Button>
       </div>
 
-      {/* Always show live brand preview */}
       <BrandColorPreview />
 
-      {!analysis && !isAnalyzing && (
+      {!analysis && !isStreaming && (
         <Card>
           <CardContent className="p-12 text-center">
             <Palette className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
             <p className="text-lg font-medium mb-2">No AI Brand Analysis Yet</p>
             <p className="text-sm text-muted-foreground mb-4">Run an AI-powered analysis to evaluate your brand's color psychology, typography, audience impact, and sales conversion signals.</p>
-            <Button onClick={runAnalysis} disabled={isAnalyzing}>
+            <Button onClick={runAnalysis} disabled={isStreaming}>
               <Sparkles className="h-4 w-4 mr-1" /> Analyze Brand
             </Button>
           </CardContent>
         </Card>
       )}
 
-      {isAnalyzing && (
+      {isStreaming && (
         <Card>
           <CardContent className="p-12 text-center">
             <Loader2 className="h-10 w-10 animate-spin mx-auto mb-4 text-primary" />
@@ -301,7 +229,7 @@ export default function BrandAnalysisTab() {
         </Card>
       )}
 
-      {analysis && !isAnalyzing && (
+      {analysis && !isStreaming && (
         <>
           <div className="text-xs text-muted-foreground">
             Last analyzed: {new Date(analysis.timestamp).toLocaleString()}
