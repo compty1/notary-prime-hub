@@ -15,7 +15,8 @@ export default {
     extend: {
       fontFamily: {
         sans: ['"Lato"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        heading: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
+        heading: ['"Plus Jakarta Sans"', '"Space Grotesk"', 'system-ui', 'sans-serif'],
+        display: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
         body: ['"Lato"', 'system-ui', 'sans-serif'],
       },
       colors: {
