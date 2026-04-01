@@ -104,7 +104,7 @@ export default function AdminLeadPortal() {
     return () => { supabase.removeChannel(channel); };
   }, []);
 
-  const filtered = leads.filter((l) => {
+  const filtered = useMemo(() => leads.filter((l) => {
     if (filterIntent !== "all" && l.intent_score !== filterIntent) return false;
     if (filterStatus !== "all" && l.status !== filterStatus) return false;
     if (filterType !== "all" && l.lead_type !== filterType) return false;
@@ -117,7 +117,49 @@ export default function AdminLeadPortal() {
         (l.city || "").toLowerCase().includes(term);
     }
     return true;
-  });
+  }), [leads, filterIntent, filterStatus, filterType, searchTerm]);
+
+  // Reset page when filters change
+  useEffect(() => { setCurrentPage(1); setSelectedIds(new Set()); }, [filterIntent, filterStatus, filterType, searchTerm]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+  const toggleSelectAll = () => {
+    if (selectedIds.size === paginated.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(paginated.map((l) => l.id)));
+    }
+  };
+
+  const executeBulkAction = async (action: string) => {
+    if (selectedIds.size === 0) return;
+    const ids = Array.from(selectedIds);
+    if (action === "delete") {
+      if (!confirm(`Delete ${ids.length} leads?`)) return;
+      for (const id of ids) await supabase.from("leads").delete().eq("id", id);
+      toast({ title: `Deleted ${ids.length} leads` });
+    } else if (pipelineStatuses.includes(action)) {
+      for (const id of ids) {
+        await supabase.from("leads").update({
+          status: action,
+          ...(action === "contacted" ? { contacted_at: new Date().toISOString() } : {}),
+        } as any).eq("id", id);
+      }
+      toast({ title: `Moved ${ids.length} leads → ${action}` });
+    }
+    setSelectedIds(new Set());
+    setBulkAction("");
+    fetchLeads();
+  };
 
   const openCreate = () => { setEditingLead(null); setForm(emptyLead); setShowCreate(true); };
   const openEdit = (lead: any) => {
