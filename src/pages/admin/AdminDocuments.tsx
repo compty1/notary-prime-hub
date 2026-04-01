@@ -499,7 +499,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
               <Select value={uploadClientId} onValueChange={setUploadClientId}>
                 <SelectTrigger><SelectValue placeholder="Admin (self)" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Admin (self)</SelectItem>
+                  <SelectItem value="__self__">Admin (self)</SelectItem>
                   {profiles.map((p) => (
                     <SelectItem key={p.user_id} value={p.user_id}>{p.full_name || p.email || p.user_id.slice(0, 8)}</SelectItem>
                   ))}

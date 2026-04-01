@@ -346,7 +346,7 @@ export default function AdminServiceRequests() {
                 <Select value={editAssignedTo} onValueChange={setEditAssignedTo}>
                   <SelectTrigger><SelectValue placeholder="Unassigned" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Unassigned</SelectItem>
+                    <SelectItem value="__unassigned__">Unassigned</SelectItem>
                     {teamProfiles.map(p => (
                       <SelectItem key={p.user_id} value={p.user_id}>{p.full_name || p.email}</SelectItem>
                     ))}
