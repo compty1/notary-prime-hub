@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { MapPin, Monitor, Calendar, Shield, DollarSign, AlertTriangle, Clock, Eye, EyeOff, CreditCard } from "lucide-react";
 import { formatTimeSlot, isDigitalOnly, HAGUE_COUNTRIES } from "./bookingConstants";
 import { OhioComplianceNotice } from "@/components/OhioComplianceNotice";
