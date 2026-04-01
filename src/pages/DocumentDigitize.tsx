@@ -16,8 +16,9 @@ import { motion } from "framer-motion";
 import {
   Upload, FileText, Download, Save, Loader2, ChevronLeft, Eye, Menu, Languages,
   Bold, Italic, Underline as UnderlineIcon, AlignLeft, AlignCenter, AlignRight,
-  List, ListOrdered, Heading1, Heading2, Undo, Redo, Trash2, FolderOpen, Printer
+  List, ListOrdered, Heading1, Heading2, Undo, Redo, Trash2, FolderOpen, Printer, ShieldCheck
 } from "lucide-react";
+import { ComplianceWatchdog } from "@/components/ComplianceWatchdog";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
