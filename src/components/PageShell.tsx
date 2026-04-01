@@ -6,6 +6,8 @@ import { CookieConsent } from "@/components/CookieConsent";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { MobileFAB } from "@/components/MobileFAB";
 import { AILeadChatbot } from "@/components/AILeadChatbot";
+import LegalGlossaryProvider from "@/components/LegalGlossaryProvider";
+import { supabase } from "@/integrations/supabase/client";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { pageTransition } from "@/lib/animations";
