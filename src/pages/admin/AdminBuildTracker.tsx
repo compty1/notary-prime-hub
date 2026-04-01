@@ -12,6 +12,7 @@ import {
   Workflow, Globe, ClipboardList, Cpu, Bot, Mail, Monitor, Palette, Sparkles, SwatchBook,
 } from "lucide-react";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import PlatformScanButton from "./build-tracker/PlatformScanButton";
 import { useTrackerItems, useInsertItem, usePlans, useRefreshAll, useReanalyze } from "./build-tracker/hooks";
 import { CATEGORIES, SEVERITIES } from "./build-tracker/constants";
 import DashboardTab from "./build-tracker/DashboardTab";
@@ -152,6 +153,7 @@ export default function AdminBuildTracker() {
           <p className="text-muted-foreground">Comprehensive platform analysis, AI reasoning, flow diagnostics & email management</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          <PlatformScanButton />
           <Button variant="outline" size="sm" onClick={() => setFeatureGenOpen(true)}>
             <Sparkles className="h-3.5 w-3.5 mr-1" /> Feature Gen
           </Button>
