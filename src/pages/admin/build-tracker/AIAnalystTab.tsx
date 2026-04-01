@@ -1,15 +1,16 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Send, Bot, User, Loader2, Sparkles, ClipboardList, Search, Lightbulb, RotateCcw } from "lucide-react";
+import { Send, Bot, User, Loader2, Sparkles, ClipboardList, Search, Lightbulb, RotateCcw, Download } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import type { TrackerItem, TrackerPlan } from "./constants";
 import { PLATFORM_ENTITIES, getEntityHealth } from "./platformEntities";
 import { SERVICE_FLOWS } from "./serviceFlows";
 import { useInsertPlan } from "./hooks";
+import { useSSEStream, safeClipboardWrite } from "./useSSEStream";
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -17,6 +18,9 @@ type Props = {
   items: TrackerItem[];
   plans: TrackerPlan[];
 };
+
+const MAX_CHAT_HISTORY = 50;
+const STORAGE_KEY = "build-tracker-ai-chat";
 
 const QUICK_PROMPTS = [
   { icon: <Search className="h-3.5 w-3.5" />, label: "Full gap analysis", prompt: "Perform a comprehensive gap analysis of the current build. Identify missing features, broken flows, compliance risks, and UX improvements. Prioritize by severity." },
@@ -26,21 +30,25 @@ const QUICK_PROMPTS = [
 ];
 
 export default function AIAnalystTab({ items, plans }: Props) {
-  const STORAGE_KEY = "build-tracker-ai-chat";
   const [messages, setMessages] = useState<Message[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : [];
+      const parsed = saved ? JSON.parse(saved) : [];
+      // Limit stored history
+      return Array.isArray(parsed) ? parsed.slice(-MAX_CHAT_HISTORY) : [];
     } catch { return []; }
   });
   const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const insertPlan = useInsertPlan();
+  const { stream, isStreaming } = useSSEStream();
 
-  // Persist chat to localStorage
+  // Persist chat to localStorage (bounded)
   useEffect(() => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(messages)); } catch {}
+    try {
+      const bounded = messages.slice(-MAX_CHAT_HISTORY);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(bounded));
+    } catch {}
   }, [messages]);
 
   useEffect(() => {
@@ -61,7 +69,6 @@ export default function AIAnalystTab({ items, plans }: Props) {
       return `- ${f.name}: ${impl}/${f.steps.length} steps${issues.length > 0 ? ` (${issues.length} issues)` : ""}`;
     }).join("\n");
 
-    // Truncate to prevent oversized payloads
     const ctx = `Items: ${items.length} total, ${open.length} open, ${inProgress.length} in-progress, ${items.filter(i => i.status === "resolved").length} resolved
 Plans: ${plans.length} tracked
 
@@ -76,82 +83,39 @@ ${openSummary || "None"}`;
     return ctx.slice(0, 4000);
   }, [items, plans]);
 
-  const send = async (text: string) => {
-    if (!text.trim() || isLoading) return;
+  const send = useCallback(async (text: string) => {
+    if (!text.trim() || isStreaming) return;
     const userMsg: Message = { role: "user", content: text };
     setMessages(prev => [...prev, userMsg]);
     setInput("");
-    setIsLoading(true);
 
     let assistantSoFar = "";
     const allMessages = [...messages, userMsg];
 
     try {
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/build-analyst`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
-        body: JSON.stringify({
-          messages: allMessages.slice(-10).map(m => ({ role: m.role, content: m.content })),
-          context: buildContext,
-        }),
-      });
-
-      if (!resp.ok) {
-        const err = await resp.json().catch(() => ({ error: "AI service error" }));
-        throw new Error(err.error || `Error ${resp.status}`);
-      }
-
-      if (!resp.body) throw new Error("No response body");
-
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder();
-      let textBuffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        textBuffer += decoder.decode(value, { stream: true });
-
-        let newlineIndex: number;
-        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
-          let line = textBuffer.slice(0, newlineIndex);
-          textBuffer = textBuffer.slice(newlineIndex + 1);
-          if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (line.startsWith(":") || line.trim() === "") continue;
-          if (!line.startsWith("data: ")) continue;
-
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === "[DONE]") break;
-
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content;
-            if (content) {
-              assistantSoFar += content;
-              setMessages(prev => {
-                const last = prev[prev.length - 1];
-                if (last?.role === "assistant") {
-                  return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantSoFar } : m);
-                }
-                return [...prev, { role: "assistant", content: assistantSoFar }];
-              });
-            }
-          } catch {
-            textBuffer = line + "\n" + textBuffer;
-            break;
-          }
+      await stream(
+        allMessages.slice(-10).map(m => ({ role: m.role, content: m.content })),
+        buildContext,
+        {
+          onChunk: (chunk, full) => {
+            assistantSoFar = full;
+            setMessages(prev => {
+              const last = prev[prev.length - 1];
+              if (last?.role === "assistant") {
+                return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: full } : m);
+              }
+              return [...prev, { role: "assistant", content: full }];
+            });
+          },
+          onError: (e) => {
+            setMessages(prev => [...prev, { role: "assistant", content: `Error: ${e.message}` }]);
+          },
         }
-      }
-    } catch (e: any) {
-      toast.error(e.message || "Failed to get AI response");
-      setMessages(prev => [...prev, { role: "assistant", content: `Error: ${e.message}` }]);
-    } finally {
-      setIsLoading(false);
+      );
+    } catch {
+      // Error handled by onError callback
     }
-  };
+  }, [messages, isStreaming, stream, buildContext]);
 
   const savePlan = (content: string) => {
     const lines = content.split("\n").filter(l => /^\d+[\.\)]\s/.test(l.trim()));
@@ -172,9 +136,21 @@ ${openSummary || "None"}`;
     });
   };
 
+  const exportChat = useCallback(() => {
+    const md = messages.map(m => `## ${m.role === "user" ? "You" : "AI Analyst"}\n\n${m.content}`).join("\n\n---\n\n");
+    const blob = new Blob([md], { type: "text/markdown" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `ai-analysis-${new Date().toISOString().slice(0, 10)}.md`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast.success("Chat exported as Markdown");
+  }, [messages]);
+
   const clearChat = () => {
     setMessages([]);
     setInput("");
+    localStorage.removeItem(STORAGE_KEY);
   };
 
   return (
@@ -184,9 +160,14 @@ ${openSummary || "None"}`;
           AI specialist in UX, development, Ohio notary compliance, marketing, and brand psychology.
         </p>
         {messages.length > 0 && (
-          <Button size="sm" variant="ghost" onClick={clearChat}>
-            <RotateCcw className="h-3.5 w-3.5 mr-1" /> Clear Chat
-          </Button>
+          <div className="flex gap-1">
+            <Button size="sm" variant="ghost" onClick={exportChat}>
+              <Download className="h-3.5 w-3.5 mr-1" /> Export
+            </Button>
+            <Button size="sm" variant="ghost" onClick={clearChat}>
+              <RotateCcw className="h-3.5 w-3.5 mr-1" /> Clear
+            </Button>
+          </div>
         )}
       </div>
 
@@ -227,7 +208,7 @@ ${openSummary || "None"}`;
             )}
           </div>
         ))}
-        {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
+        {isStreaming && messages[messages.length - 1]?.role !== "assistant" && (
           <div className="flex gap-2">
             <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
               <Loader2 className="h-4 w-4 animate-spin text-primary" />
@@ -237,15 +218,10 @@ ${openSummary || "None"}`;
         )}
       </div>
 
-      {messages.length > 0 && (
+      {messages.length > 0 && messages[messages.length - 1]?.role === "assistant" && !isStreaming && (
         <div className="flex gap-2 mb-2">
-          {messages[messages.length - 1]?.role === "assistant" && !isLoading && (
-            <Button size="sm" variant="outline" onClick={() => savePlan(messages[messages.length - 1].content)} disabled={insertPlan.isPending}>
-              <ClipboardList className="h-3.5 w-3.5 mr-1" /> Save as Plan
-            </Button>
-          )}
-          <Button size="sm" variant="ghost" onClick={() => { setMessages([]); localStorage.removeItem(STORAGE_KEY); }}>
-            <RotateCcw className="h-3.5 w-3.5 mr-1" /> Clear Chat
+          <Button size="sm" variant="outline" onClick={() => savePlan(messages[messages.length - 1].content)} disabled={insertPlan.isPending}>
+            <ClipboardList className="h-3.5 w-3.5 mr-1" /> Save as Plan
           </Button>
         </div>
       )}
@@ -257,10 +233,10 @@ ${openSummary || "None"}`;
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); } }}
           className="min-h-[60px] resize-none"
-          disabled={isLoading}
+          disabled={isStreaming}
         />
-        <Button onClick={() => send(input)} disabled={isLoading || !input.trim()} className="shrink-0">
-          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+        <Button onClick={() => send(input)} disabled={isStreaming || !input.trim()} className="shrink-0">
+          {isStreaming ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
         </Button>
       </div>
     </div>

@@ -27,7 +27,7 @@ export default function ServiceFlowTab({ items }: Props) {
       const issues = f.steps.reduce((a, s) => a + (s.issues?.length ?? 0), 0);
       return { ...f, implemented: impl, pct: Math.round((impl / f.steps.length) * 100), issueCount: issues };
     }),
-    []
+    [items]
   );
 
   const filtered = useMemo(() => {

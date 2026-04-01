@@ -81,7 +81,7 @@ function useEmailSettings() {
   const { data, isLoading } = useQuery({
     queryKey: ["email-template-settings"],
     queryFn: async () => {
-      const { data, error } = await (supabase as any).from("platform_settings").select("*").eq("key", "email_templates").maybeSingle();
+      const { data, error } = await (supabase as any).from("platform_settings").select("*").eq("setting_key", "email_templates").maybeSingle();
       if (error && !error.message?.includes("does not exist")) throw error;
       return (data?.value ?? null) as { master: MasterTemplate; templates: Record<string, { subject: string; bodyHtml: string }> } | null;
     },
@@ -89,7 +89,7 @@ function useEmailSettings() {
 
   const save = useMutation({
     mutationFn: async (settings: { master: MasterTemplate; templates: Record<string, { subject: string; bodyHtml: string }> }) => {
-      const { error } = await (supabase as any).from("platform_settings").upsert({ key: "email_templates", value: settings }, { onConflict: "key" });
+      const { error } = await (supabase as any).from("platform_settings").upsert({ setting_key: "email_templates", value: settings }, { onConflict: "setting_key" });
       if (error) throw error;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["email-template-settings"] }); toast.success("Email templates saved"); },

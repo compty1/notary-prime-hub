@@ -6,9 +6,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Loader2, Sparkles, Trash2, Copy, Download, Eye, EyeOff, Palette } from "lucide-react";
+import { Loader2, Sparkles, Trash2, Copy, Download, Eye, EyeOff, Palette, AlertTriangle } from "lucide-react";
+import { useSSEStream, extractJSON, safeClipboardWrite } from "./useSSEStream";
 
 const STORAGE_KEY = "build-tracker-themes";
+const MAX_THEMES = 20;
 
 type ThemeColors = {
   primary: string;
@@ -52,6 +54,55 @@ Return ONLY valid JSON (no markdown), with this structure:
 }
 
 Make themes diverse: one warm/corporate, one cool/modern, one minimal/clean, one bold/premium.`;
+
+/** Calculate WCAG 2.1 contrast ratio between two hex colors */
+function hexToLuminance(hex: string): number {
+  const c = hex.replace("#", "");
+  const r = parseInt(c.substring(0, 2), 16) / 255;
+  const g = parseInt(c.substring(2, 4), 16) / 255;
+  const b = parseInt(c.substring(4, 6), 16) / 255;
+  const toLinear = (v: number) => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+}
+
+function contrastRatio(hex1: string, hex2: string): number {
+  const l1 = hexToLuminance(hex1);
+  const l2 = hexToLuminance(hex2);
+  const lighter = Math.max(l1, l2);
+  const darker = Math.min(l1, l2);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+function wcagLevel(ratio: number): { level: string; color: string } {
+  if (ratio >= 7) return { level: "AAA", color: "text-green-600 dark:text-green-400" };
+  if (ratio >= 4.5) return { level: "AA", color: "text-yellow-600 dark:text-yellow-400" };
+  return { level: "Fail", color: "text-destructive" };
+}
+
+function ContrastCheck({ theme }: { theme: Theme }) {
+  const pairs = [
+    { label: "FG on BG", fg: theme.colors.foreground, bg: theme.colors.background },
+    { label: "Primary on BG", fg: theme.colors.primary, bg: theme.colors.background },
+    { label: "FG on Muted", fg: theme.colors.foreground, bg: theme.colors.muted },
+  ];
+  return (
+    <div className="space-y-1 mt-2">
+      <p className="text-[10px] font-medium text-muted-foreground flex items-center gap-1">
+        <AlertTriangle className="h-3 w-3" /> WCAG Contrast
+      </p>
+      {pairs.map(p => {
+        const ratio = contrastRatio(p.fg, p.bg);
+        const { level, color } = wcagLevel(ratio);
+        return (
+          <div key={p.label} className="flex items-center justify-between text-[10px]">
+            <span className="text-muted-foreground">{p.label}</span>
+            <span className={`font-bold ${color}`}>{ratio.toFixed(1)}:1 ({level})</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 function ColorSwatch({ color, label }: { color: string; label: string }) {
   return (
@@ -104,68 +155,28 @@ export default function ThemeExplorerTab() {
   const [themes, setThemes] = useState<Theme[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : [];
+      const parsed = saved ? JSON.parse(saved) : [];
+      return Array.isArray(parsed) ? parsed.slice(0, MAX_THEMES) : [];
     } catch { return []; }
   });
-  const [isGenerating, setIsGenerating] = useState(false);
   const [exportTheme, setExportTheme] = useState<Theme | null>(null);
   const [compareIds, setCompareIds] = useState<string[]>([]);
+  const { stream, isStreaming } = useSSEStream();
 
   const saveThemes = useCallback((t: Theme[]) => {
-    setThemes(t);
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(t)); } catch {}
+    const bounded = t.slice(0, MAX_THEMES);
+    setThemes(bounded);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(bounded)); } catch {}
   }, []);
 
   const generate = useCallback(async () => {
-    setIsGenerating(true);
     try {
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/build-analyst`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
-        body: JSON.stringify({
-          messages: [{ role: "user", content: THEME_PROMPT }],
-          context: "Theme generation mode — return only valid JSON.",
-        }),
-      });
+      const fullContent = await stream(
+        [{ role: "user", content: THEME_PROMPT }],
+        "Theme generation mode — return only valid JSON."
+      );
 
-      if (!resp.ok) throw new Error(`Error ${resp.status}`);
-      if (!resp.body) throw new Error("No response body");
-
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder();
-      let textBuffer = "";
-      let fullContent = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        textBuffer += decoder.decode(value, { stream: true });
-        let idx: number;
-        while ((idx = textBuffer.indexOf("\n")) !== -1) {
-          let line = textBuffer.slice(0, idx);
-          textBuffer = textBuffer.slice(idx + 1);
-          if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (!line.startsWith("data: ")) continue;
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === "[DONE]") break;
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content;
-            if (content) fullContent += content;
-          } catch { /* partial */ }
-        }
-      }
-
-      let jsonContent = fullContent;
-      const jsonMatch = fullContent.match(/```(?:json)?\s*([\s\S]*?)```/);
-      if (jsonMatch) jsonContent = jsonMatch[1];
-      const rawMatch = jsonContent.match(/\{[\s\S]*\}/);
-      if (rawMatch) jsonContent = rawMatch[0];
-
-      const result = JSON.parse(jsonContent);
+      const result = extractJSON(fullContent);
       const newThemes: Theme[] = (result.themes || []).map((t: any, i: number) => ({
         ...t,
         id: `theme-${Date.now()}-${i}`,
@@ -174,12 +185,10 @@ export default function ThemeExplorerTab() {
 
       saveThemes([...themes, ...newThemes]);
       toast.success(`Generated ${newThemes.length} themes`);
-    } catch (e: any) {
-      toast.error(e.message || "Failed to generate themes");
-    } finally {
-      setIsGenerating(false);
+    } catch {
+      // Error handled by useSSEStream
     }
-  }, [themes, saveThemes]);
+  }, [themes, saveThemes, stream]);
 
   const toggleSave = (id: string) => {
     saveThemes(themes.map(t => t.id === id ? { ...t, saved: !t.saved } : t));
@@ -195,9 +204,10 @@ export default function ThemeExplorerTab() {
     );
   };
 
-  const copyText = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard");
+  const copyText = async (text: string) => {
+    const ok = await safeClipboardWrite(text);
+    if (ok) toast.success("Copied to clipboard");
+    else toast.error("Failed to copy");
   };
 
   const compareThemes = themes.filter(t => compareIds.includes(t.id));
@@ -215,14 +225,14 @@ export default function ThemeExplorerTab() {
               <EyeOff className="h-3.5 w-3.5 mr-1" /> Exit Compare
             </Button>
           )}
-          <Button onClick={generate} disabled={isGenerating}>
-            {isGenerating ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Sparkles className="h-4 w-4 mr-1" />}
+          <Button onClick={generate} disabled={isStreaming}>
+            {isStreaming ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Sparkles className="h-4 w-4 mr-1" />}
             Generate Alternatives
           </Button>
         </div>
       </div>
 
-      {themes.length === 0 && !isGenerating && (
+      {themes.length === 0 && !isStreaming && (
         <Card>
           <CardContent className="p-12 text-center">
             <Palette className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
@@ -233,7 +243,7 @@ export default function ThemeExplorerTab() {
         </Card>
       )}
 
-      {isGenerating && (
+      {isStreaming && (
         <Card>
           <CardContent className="p-12 text-center">
             <Loader2 className="h-10 w-10 animate-spin mx-auto mb-4 text-primary" />
@@ -260,6 +270,7 @@ export default function ThemeExplorerTab() {
                   </div>
                   <p className="text-xs text-muted-foreground">{theme.mood}</p>
                   <p className="text-xs">Fonts: {theme.typography.heading} / {theme.typography.body}</p>
+                  <ContrastCheck theme={theme} />
                 </div>
               ))}
             </div>
@@ -291,7 +302,6 @@ export default function ThemeExplorerTab() {
             <CardContent className="space-y-3">
               <p className="text-xs text-muted-foreground">{theme.description}</p>
 
-              {/* Color preview strip */}
               <div className="flex gap-0.5 rounded-md overflow-hidden h-8">
                 {Object.entries(theme.colors).map(([key, color]) => (
                   <div key={key} className="flex-1" style={{ backgroundColor: color }} title={`${key}: ${color}`} />
@@ -303,6 +313,8 @@ export default function ThemeExplorerTab() {
                   <ColorSwatch key={key} color={color} label={key} />
                 ))}
               </div>
+
+              <ContrastCheck theme={theme} />
 
               <div className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">

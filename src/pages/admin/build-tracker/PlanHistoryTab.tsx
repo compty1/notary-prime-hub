@@ -12,7 +12,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { ChevronDown, ChevronRight, CheckCircle2, Clock, AlertTriangle, Plus, Loader2, Upload, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, CheckCircle2, Clock, AlertTriangle, Plus, Loader2, Upload, Trash2, Search } from "lucide-react";
 import type { TrackerPlan, PlanItem, TrackerItem } from "./constants";
 import { autoCategorize } from "./constants";
 import { usePlans, useUpdatePlan, useBulkInsert, useInsertPlan, useDeletePlan } from "./hooks";
@@ -33,22 +33,36 @@ function parsePlanText(text: string): PlanItem[] {
   return planItems;
 }
 
-// Improved cross-reference: uses word-level matching instead of naive 20-char prefix
 function crossReferenceItems(planItems: PlanItem[], trackerItems: TrackerItem[]): PlanItem[] {
+  // Build word index for O(n+m) instead of O(n*m)
+  const wordIndex = new Map<string, TrackerItem[]>();
+  for (const ti of trackerItems) {
+    const words = ti.title.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+    for (const w of words) {
+      if (!wordIndex.has(w)) wordIndex.set(w, []);
+      wordIndex.get(w)!.push(ti);
+    }
+  }
+
   return planItems.map(pi => {
     const titleWords = pi.title.toLowerCase().split(/\s+/).filter(w => w.length > 3);
     if (titleWords.length === 0) return pi;
 
+    const candidates = new Map<string, number>();
+    for (const w of titleWords) {
+      const matches = wordIndex.get(w) || [];
+      for (const m of matches) {
+        candidates.set(m.id, (candidates.get(m.id) || 0) + 1);
+      }
+    }
+
     let bestMatch: TrackerItem | null = null;
     let bestScore = 0;
-
-    for (const ti of trackerItems) {
-      const tiWords = ti.title.toLowerCase().split(/\s+/).filter(w => w.length > 3);
-      const matchCount = titleWords.filter(w => tiWords.some(tw => tw.includes(w) || w.includes(tw))).length;
-      const score = matchCount / Math.max(titleWords.length, 1);
+    for (const [id, count] of candidates) {
+      const score = count / Math.max(titleWords.length, 1);
       if (score > bestScore && score >= 0.4) {
         bestScore = score;
-        bestMatch = ti;
+        bestMatch = trackerItems.find(t => t.id === id) || null;
       }
     }
 
@@ -71,6 +85,7 @@ export default function PlanHistoryTab({ items }: Props) {
   const [importText, setImportText] = useState("");
   const [importTitle, setImportTitle] = useState("");
   const [deletePlanId, setDeletePlanId] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
   const planStats = useMemo(() =>
     plans.map((p) => {
@@ -81,6 +96,16 @@ export default function PlanHistoryTab({ items }: Props) {
     }),
     [plans]
   );
+
+  const filteredPlans = useMemo(() => {
+    if (!search.trim()) return planStats;
+    const q = search.toLowerCase();
+    return planStats.filter(p =>
+      p.plan_title.toLowerCase().includes(q) ||
+      p.plan_summary?.toLowerCase().includes(q) ||
+      p.plan_items.some(i => i.title.toLowerCase().includes(q))
+    );
+  }, [planStats, search]);
 
   const updateItemStatus = (planId: string, idx: number, status: PlanItem["status"]) => {
     const plan = plans.find((p) => p.id === planId);
@@ -144,13 +169,19 @@ export default function PlanHistoryTab({ items }: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">
           Track implementation plans, auto-import from chat, and cross-reference against tracker items.
         </p>
-        <Button size="sm" variant="outline" onClick={() => setImportOpen(!importOpen)}>
-          <Upload className="h-3.5 w-3.5 mr-1" /> Import Plan from Chat
-        </Button>
+        <div className="flex items-center gap-2">
+          <div className="relative w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Search plans..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+          </div>
+          <Button size="sm" variant="outline" onClick={() => setImportOpen(!importOpen)}>
+            <Upload className="h-3.5 w-3.5 mr-1" /> Import Plan
+          </Button>
+        </div>
       </div>
 
       {importOpen && (
@@ -174,15 +205,19 @@ export default function PlanHistoryTab({ items }: Props) {
         </Card>
       )}
 
-      {plans.length === 0 ? (
+      {filteredPlans.length === 0 && !search ? (
         <Card>
           <CardContent className="p-12 text-center">
             <p className="text-lg font-medium mb-1">No plans tracked yet</p>
             <p className="text-sm text-muted-foreground">Import a plan from chat or use the AI Analyst to generate one.</p>
           </CardContent>
         </Card>
+      ) : filteredPlans.length === 0 ? (
+        <Card>
+          <CardContent className="p-8 text-center text-muted-foreground">No plans match "{search}"</CardContent>
+        </Card>
       ) : (
-        planStats.map((plan) => (
+        filteredPlans.map((plan) => (
           <Card key={plan.id}>
             <Collapsible open={expandedPlan === plan.id} onOpenChange={(o) => setExpandedPlan(o ? plan.id : null)}>
               <CollapsibleTrigger asChild>
