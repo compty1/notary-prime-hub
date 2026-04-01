@@ -218,7 +218,7 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sorted.map((item) => {
+              {paginated.map((item) => {
                 const expanded = expandedId === item.id;
                 return (
                   <Fragment key={item.id}>
