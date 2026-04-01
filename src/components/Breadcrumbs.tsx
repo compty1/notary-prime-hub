@@ -45,6 +45,9 @@ const labelMap: Record<string, string> = {
   "law-firms": "Law Firms",
   "small-business": "Small Business",
   individuals: "Individuals",
+  "ai-writer": "AI Writer",
+  "ai-extractors": "AI Document Intelligence",
+  "ai-knowledge": "Knowledge Base",
 };
 
 export function Breadcrumbs() {

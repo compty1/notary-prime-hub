@@ -46,6 +46,8 @@ const SubscriptionPlans = lazy(() => import("./pages/SubscriptionPlans"));
 const VerifyIdentity = lazy(() => import("./pages/VerifyIdentity"));
 const MobileUpload = lazy(() => import("./pages/MobileUpload"));
 const AIWriter = lazy(() => import("./pages/AIWriter"));
+const AIExtractors = lazy(() => import("./pages/AIExtractors"));
+const AIKnowledge = lazy(() => import("./pages/AIKnowledge"));
 
 // Admin pages
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
@@ -148,6 +150,8 @@ function AnimatedRoutes() {
         <Route path="/builder" element={<ProtectedRoute><DocumentBuilder /></ProtectedRoute>} />
         <Route path="/fee-calculator" element={<FeeCalculator />} />
         <Route path="/ai-writer" element={<ProtectedRoute><AIWriter /></ProtectedRoute>} />
+        <Route path="/ai-extractors" element={<ProtectedRoute><AIExtractors /></ProtectedRoute>} />
+        <Route path="/ai-knowledge" element={<ProtectedRoute><AIKnowledge /></ProtectedRoute>} />
         <Route path="/account-settings" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
         <Route path="/portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
         <Route path="/confirmation" element={<ProtectedRoute><AppointmentConfirmation /></ProtectedRoute>} />

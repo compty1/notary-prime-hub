@@ -420,6 +420,69 @@ export type Database = {
           },
         ]
       }
+      client_style_profiles: {
+        Row: {
+          created_at: string
+          id: string
+          profile_name: string
+          sample_texts: string[]
+          style_analysis: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          profile_name?: string
+          sample_texts?: string[]
+          style_analysis?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          profile_name?: string
+          sample_texts?: string[]
+          style_analysis?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      compliance_rule_sets: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          rules: Json
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          rules?: Json
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          rules?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       document_bundles: {
         Row: {
           bundle_type: string
@@ -450,6 +513,36 @@ export type Database = {
           is_active?: boolean | null
           name?: string
           price?: number | null
+        }
+        Relationships: []
+      }
+      document_collections: {
+        Row: {
+          created_at: string
+          description: string | null
+          document_ids: string[]
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          document_ids?: string[]
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          document_ids?: string[]
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -1556,6 +1649,62 @@ export type Database = {
           valid_to?: string | null
         }
         Relationships: []
+      }
+      proposals: {
+        Row: {
+          accepted_at: string | null
+          branding: Json | null
+          content_html: string
+          created_at: string
+          id: string
+          lead_id: string | null
+          sent_at: string | null
+          status: string
+          template_type: string
+          title: string
+          updated_at: string
+          user_id: string
+          viewed_at: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          branding?: Json | null
+          content_html?: string
+          created_at?: string
+          id?: string
+          lead_id?: string | null
+          sent_at?: string | null
+          status?: string
+          template_type?: string
+          title: string
+          updated_at?: string
+          user_id: string
+          viewed_at?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          branding?: Json | null
+          content_html?: string
+          created_at?: string
+          id?: string
+          lead_id?: string | null
+          sent_at?: string | null
+          status?: string
+          template_type?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposals_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reviews: {
         Row: {
