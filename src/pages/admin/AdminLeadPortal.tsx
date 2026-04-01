@@ -1,5 +1,5 @@
 import { usePageTitle } from "@/lib/usePageTitle";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,8 +13,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { Phone, Mail, MapPin, Plus, Search, Loader2, Calendar, Building2, User, Star, ArrowRight, Download, Upload, ExternalLink, Pencil, Trash2, Sparkles, RefreshCw, Inbox, Clock, Globe, FileText, Tag } from "lucide-react";
+import { Phone, Mail, MapPin, Plus, Search, Loader2, Calendar, Building2, User, Star, ArrowRight, Download, Upload, ExternalLink, Pencil, Trash2, Sparkles, RefreshCw, Inbox, Clock, Globe, FileText, Tag, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { leadIntentColors as intentColors, leadStatusColors as statusColors } from "@/lib/statusColors";
@@ -49,6 +50,12 @@ export default function AdminLeadPortal() {
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [sourceEmail, setSourceEmail] = useState<any>(null);
   const [newLeadIds, setNewLeadIds] = useState<Set<string>>(new Set());
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 25;
+  // Bulk selection
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkAction, setBulkAction] = useState("");
 
   const fetchLeads = useCallback(async () => {
     const { data } = await supabase.from("leads").select("*").order("created_at", { ascending: false });
@@ -97,7 +104,7 @@ export default function AdminLeadPortal() {
     return () => { supabase.removeChannel(channel); };
   }, []);
 
-  const filtered = leads.filter((l) => {
+  const filtered = useMemo(() => leads.filter((l) => {
     if (filterIntent !== "all" && l.intent_score !== filterIntent) return false;
     if (filterStatus !== "all" && l.status !== filterStatus) return false;
     if (filterType !== "all" && l.lead_type !== filterType) return false;
@@ -110,7 +117,49 @@ export default function AdminLeadPortal() {
         (l.city || "").toLowerCase().includes(term);
     }
     return true;
-  });
+  }), [leads, filterIntent, filterStatus, filterType, searchTerm]);
+
+  // Reset page when filters change
+  useEffect(() => { setCurrentPage(1); setSelectedIds(new Set()); }, [filterIntent, filterStatus, filterType, searchTerm]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+  const toggleSelectAll = () => {
+    if (selectedIds.size === paginated.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(paginated.map((l) => l.id)));
+    }
+  };
+
+  const executeBulkAction = async (action: string) => {
+    if (selectedIds.size === 0) return;
+    const ids = Array.from(selectedIds);
+    if (action === "delete") {
+      if (!confirm(`Delete ${ids.length} leads?`)) return;
+      for (const id of ids) await supabase.from("leads").delete().eq("id", id);
+      toast({ title: `Deleted ${ids.length} leads` });
+    } else if (pipelineStatuses.includes(action)) {
+      for (const id of ids) {
+        await supabase.from("leads").update({
+          status: action,
+          ...(action === "contacted" ? { contacted_at: new Date().toISOString() } : {}),
+        } as any).eq("id", id);
+      }
+      toast({ title: `Moved ${ids.length} leads → ${action}` });
+    }
+    setSelectedIds(new Set());
+    setBulkAction("");
+    fetchLeads();
+  };
 
   const openCreate = () => { setEditingLead(null); setForm(emptyLead); setShowCreate(true); };
   const openEdit = (lead: any) => {
@@ -368,23 +417,54 @@ export default function AdminLeadPortal() {
             <Card className="border-border/50"><CardContent className="py-8 text-center text-muted-foreground">No leads found. Add your first lead or import from your inbox.</CardContent></Card>
           ) : (
             <div className="space-y-3">
-              {filtered.map((lead) => (
+              {/* Bulk Actions Bar */}
+              <div className="flex items-center gap-3 text-sm">
+                <Checkbox
+                  checked={selectedIds.size === paginated.length && paginated.length > 0}
+                  onCheckedChange={toggleSelectAll}
+                  aria-label="Select all on page"
+                />
+                <span className="text-muted-foreground">{selectedIds.size > 0 ? `${selectedIds.size} selected` : `${filtered.length} leads`}</span>
+                {selectedIds.size > 0 && (
+                  <>
+                    <Select value={bulkAction} onValueChange={(v) => { setBulkAction(v); executeBulkAction(v); }}>
+                      <SelectTrigger className="w-36 h-7 text-xs"><SelectValue placeholder="Bulk action..." /></SelectTrigger>
+                      <SelectContent>
+                        {pipelineStatuses.map((s) => <SelectItem key={s} value={s}>Move → {s}</SelectItem>)}
+                        <SelectItem value="delete">Delete selected</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button variant="ghost" size="sm" className="text-xs" onClick={() => setSelectedIds(new Set())}>Clear</Button>
+                  </>
+                )}
+                <span className="ml-auto text-xs text-muted-foreground">Page {currentPage} of {totalPages}</span>
+              </div>
+
+              {paginated.map((lead) => (
                 <Card
                   key={lead.id}
-                  className={`border-border/50 transition-all ${newLeadIds.has(lead.id) ? "ring-2 ring-primary animate-pulse" : ""}`}
+                  className={`border-border/50 transition-all ${newLeadIds.has(lead.id) ? "ring-2 ring-primary animate-pulse" : ""} ${selectedIds.has(lead.id) ? "ring-1 ring-primary/50 bg-primary/5" : ""}`}
                 >
                   <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-center gap-3 cursor-pointer" onClick={() => openDetail(lead)}>
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                        {lead.lead_type === "business" ? <Building2 className="h-5 w-5 text-primary" /> : <User className="h-5 w-5 text-primary" />}
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-foreground">{lead.name || lead.business_name || "Unknown"}</p>
-                        {lead.business_name && lead.name && <p className="text-xs text-muted-foreground">{lead.business_name}</p>}
-                        <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
-                          {lead.city && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{lead.city}, {lead.state}</span>}
-                          {lead.service_needed && <span>{lead.service_needed}</span>}
-                          {lead.source && lead.source !== "manual" && <Badge variant="outline" className="text-[10px]">{lead.source}</Badge>}
+                    <div className="flex items-center gap-3">
+                      <Checkbox
+                        checked={selectedIds.has(lead.id)}
+                        onCheckedChange={() => toggleSelect(lead.id)}
+                        aria-label={`Select ${lead.name || lead.business_name}`}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      <div className="flex items-center gap-3 cursor-pointer" onClick={() => openDetail(lead)}>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                          {lead.lead_type === "business" ? <Building2 className="h-5 w-5 text-primary" /> : <User className="h-5 w-5 text-primary" />}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-foreground">{lead.name || lead.business_name || "Unknown"}</p>
+                          {lead.business_name && lead.name && <p className="text-xs text-muted-foreground">{lead.business_name}</p>}
+                          <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                            {lead.city && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{lead.city}, {lead.state}</span>}
+                            {lead.service_needed && <span>{lead.service_needed}</span>}
+                            {lead.source && lead.source !== "manual" && <Badge variant="outline" className="text-[10px]">{lead.source}</Badge>}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -419,6 +499,30 @@ export default function AdminLeadPortal() {
                   </CardContent>
                 </Card>
               ))}
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 pt-2">
+                  <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage((p) => p - 1)}>
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                    let page: number;
+                    if (totalPages <= 7) page = i + 1;
+                    else if (currentPage <= 4) page = i + 1;
+                    else if (currentPage >= totalPages - 3) page = totalPages - 6 + i;
+                    else page = currentPage - 3 + i;
+                    return (
+                      <Button key={page} variant={page === currentPage ? "default" : "outline"} size="sm" className="w-8 h-8 p-0" onClick={() => setCurrentPage(page)}>
+                        {page}
+                      </Button>
+                    );
+                  })}
+                  <Button variant="outline" size="sm" disabled={currentPage === totalPages} onClick={() => setCurrentPage((p) => p + 1)}>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </TabsContent>
