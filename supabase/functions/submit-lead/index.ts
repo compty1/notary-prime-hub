@@ -9,6 +9,22 @@ const corsHeaders = {
 const EMAIL_RE = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
 const PHONE_RE = /^[\d\s()+\-\.]{7,20}$/;
 
+/* ─── IP-based rate limiting (in-memory, per-isolate) ─── */
+const ipHits = new Map<string, { count: number; resetAt: number }>();
+const RATE_WINDOW_MS = 60_000; // 1 minute
+const RATE_MAX = 5; // max 5 submissions per IP per minute
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = ipHits.get(ip);
+  if (!entry || now > entry.resetAt) {
+    ipHits.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
+    return false;
+  }
+  entry.count++;
+  return entry.count > RATE_MAX;
+}
+
 const ALLOWED_SOURCES = [
   "coming_soon",
   "website_contact_form",
