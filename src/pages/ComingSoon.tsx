@@ -148,7 +148,7 @@ export default function ComingSoon() {
         <p className="mt-3">© {new Date().getFullYear()} Notar. Ohio Notary & Document Services.</p>
       </footer>
       <AILeadChatbot />
-    </div>
+    </main>
   );
 }
 
