@@ -77,7 +77,7 @@ export function useBulkInsert() {
   return useMutation({
     mutationFn: async (items: Partial<TrackerItem>[]) => {
       if (items.length > 100) throw new Error("Bulk import limited to 100 items at a time");
-      const { error } = await supabase.from("build_tracker_items").insert(items as Record<string, unknown>[]);
+      const { error } = await supabase.from("build_tracker_items").insert(items as any[]);
       if (error) throw error;
     },
     onSuccess: () => { ALL_KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] })); toast.success("Bulk import complete"); },
