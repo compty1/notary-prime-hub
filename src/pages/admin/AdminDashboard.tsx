@@ -26,6 +26,7 @@ const adminNavItems = [
   { title: "Apostille", url: "/admin/apostille", icon: Package, adminOnly: true },
   { title: "Email Management", url: "/admin/email-management", icon: Mail, adminOnly: true },
   { title: "Lead Portal", url: "/admin/leads", icon: Target, adminOnly: true },
+  { title: "CRM", url: "/admin/crm", icon: Handshake, adminOnly: true },
   { title: "Live Chat", url: "/admin/chat", icon: MessageSquare, adminOnly: true },
   { title: "Journal", url: "/admin/journal", icon: BookMarked, adminOnly: false },
   { title: "Revenue", url: "/admin/revenue", icon: DollarSign, adminOnly: true },
