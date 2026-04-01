@@ -487,6 +487,18 @@ export default function AdminSettings() {
           </CardContent>
         </Card>
 
+        {/* Email Template Designer */}
+        <Card className="border-border/50 lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="font-sans text-lg flex items-center gap-2">
+              <Palette className="h-5 w-5 text-primary" /> Email Template Designer
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <EmailTemplateDesigner settings={editValues} onSave={(key, value) => updateValue(key, value)} />
+          </CardContent>
+        </Card>
+
         {/* Email Notification Templates */}
         <Card className="border-border/50 lg:col-span-2">
           <CardHeader>
