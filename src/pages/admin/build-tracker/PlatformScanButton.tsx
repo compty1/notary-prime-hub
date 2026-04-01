@@ -206,13 +206,14 @@ export default function PlatformScanButton() {
     updatePhase(3, { status: "running" });
     const entityFindings: ScanFinding[] = [];
     PLATFORM_ENTITIES.forEach(entity => {
-      if (entity.status === "stub" || entity.status === "missing") {
+      const unhealthy = entity.subComponents.filter(sc => sc.status === "missing" || sc.status === "needs_attention");
+      if (unhealthy.length > 0) {
         entityFindings.push({
-          title: `Platform entity "${entity.name}" is ${entity.status}`,
-          description: entity.description || `The ${entity.name} feature needs implementation`,
-          category: "feature", severity: entity.status === "missing" ? "high" : "medium",
+          title: `Platform entity "${entity.name}" has ${unhealthy.length} issues`,
+          description: unhealthy.map(sc => `${sc.name}: ${sc.status}`).join(", "),
+          category: "feature", severity: unhealthy.some(sc => sc.status === "missing") ? "high" : "medium",
           impact_area: "platform",
-          suggested_fix: `Implement full ${entity.name} functionality`,
+          suggested_fix: `Fix ${unhealthy.length} sub-components in ${entity.name}`,
         });
       }
     });
@@ -222,14 +223,23 @@ export default function PlatformScanButton() {
     updatePhase(4, { status: "running" });
     const flowFindings: ScanFinding[] = [];
     SERVICE_FLOWS.forEach(flow => {
-      const brokenSteps = flow.steps.filter(s => s.status === "broken" || s.status === "missing");
-      if (brokenSteps.length > 0) {
+      const notImpl = flow.steps.filter(s => !s.implemented);
+      const withIssues = flow.steps.filter(s => s.issues && s.issues.length > 0);
+      if (notImpl.length > 0) {
         flowFindings.push({
-          title: `Service flow "${flow.name}" has ${brokenSteps.length} broken steps`,
-          description: brokenSteps.map(s => `${s.label}: ${s.status}`).join(", "),
+          title: `Service flow "${flow.name}" has ${notImpl.length} unimplemented steps`,
+          description: notImpl.map(s => s.name).join(", "),
           category: "flow", severity: "high", impact_area: "service_delivery",
-          suggested_fix: `Fix broken steps in ${flow.name} flow`,
+          suggested_fix: `Implement missing steps in ${flow.name} flow`,
           page_route: flow.steps[0]?.route,
+        });
+      }
+      if (withIssues.length > 0) {
+        flowFindings.push({
+          title: `Service flow "${flow.name}" has ${withIssues.length} steps with known issues`,
+          description: withIssues.map(s => `${s.name}: ${(s.issues || []).join(", ")}`).join("; "),
+          category: "flow", severity: "medium", impact_area: "service_delivery",
+          suggested_fix: `Resolve issues in ${flow.name} flow steps`,
         });
       }
     });
