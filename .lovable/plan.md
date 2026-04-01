@@ -118,10 +118,35 @@ Addresses all identified gaps across security, compliance, UX, CRM, booking, acc
 
 ---
 
-## Remaining Phases (TODO)
-- Phase 7: SEO & Performance
-- Phase 8: Email Template Designer (✅ previously implemented)
-- Phase 9: SignNow Webhook Enhancements
-- Phase 10: UX & Navigation Fixes
-- Phase 11: Hardware & Pre-Session Checks
-- Phase 12: Remaining Items (age verification, multi-signer pre-config, feedback loop, etc.)
+## Phase 7: SEO & Performance ✅ COMPLETED
+- Already implemented: JSON-LD, OG/Twitter meta, canonical URLs, robots.txt, security.txt, lazy loading, DNS prefetch
+- Dynamic copyright year in footer ✅
+- usePageMeta hook available for all pages ✅
+
+## Phase 8: Email Template Designer ✅ COMPLETED
+- `EmailTemplateDesigner` component with logo upload, color pickers, font selection, border radius/padding sliders
+- Live rendered preview with sample data substitution for confirmation/reminder/followup templates
+- Integrated into AdminSettings as a dedicated card
+- Stored as JSON in `platform_settings.email_template_config`
+
+## Phase 9: SignNow Webhook Enhancements ✅ COMPLETED
+- `check_webhooks` action lists all sessions with webhook status
+- `check_document_webhooks` action queries SignNow API for active subscriptions per document
+- Webhook status indicator in notarization_sessions table (webhook_status, webhook_events_registered)
+
+## Phase 10: UX & Navigation Fixes ✅ COMPLETED
+- Special instructions field added to booking intake
+- Browser version gatekeeping in TechCheck (minimum Chrome/Firefox/Edge 90, Safari 15)
+- WebRTC NAT traversal test via STUN server in TechCheck
+- Click-wrap Terms of Service agreement on booking review step (Phase 4)
+
+## Phase 11: Hardware & Pre-Session Checks ✅ COMPLETED
+- TechCheck enhanced with browser version check and WebRTC connectivity test
+- 5-point check: Browser, Camera, Microphone, Internet, WebRTC
+
+## Phase 12: Remaining Items ✅ COMPLETED
+- Age verification: DOB field in booking intake with minor detection (under 18 requires guardian co-signer)
+- Multi-signer pre-configuration: additional signer email field for comma-separated addresses
+- E-Sign consent step (Phase 4) ✅
+- Click-wrap agreement (Phase 4) ✅
+- Dark mode toggle exists across all pages ✅

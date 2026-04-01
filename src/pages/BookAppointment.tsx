@@ -119,6 +119,9 @@ export default function BookAppointment() {
   const [needsApostille, setNeedsApostille] = useState(false);
   const [outsideServiceArea, setOutsideServiceArea] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [specialInstructions, setSpecialInstructions] = useState("");
+  const [additionalSignerEmails, setAdditionalSignerEmails] = useState("");
+  const [signerDob, setSignerDob] = useState("");
 
   // Booking draft persistence (Phase 3.4)
   useEffect(() => {
@@ -585,6 +588,9 @@ export default function BookAppointment() {
     facilityName, setFacilityName, facilityContact, setFacilityContact, facilityRoom, setFacilityRoom,
     signerCount, setSignerCount,
     needsApostille, setNeedsApostille,
+    specialInstructions, setSpecialInstructions,
+    additionalSignerEmails, setAdditionalSignerEmails,
+    signerDob, setSignerDob,
   };
 
   const scheduleStepProps = {

@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, DollarSign, MapPin, Monitor, Save, Loader2, AlertTriangle, CalendarClock, Shield, Upload, Eye, Mail, CheckCircle, XCircle, ArrowDownUp } from "lucide-react";
+import { Settings, DollarSign, MapPin, Monitor, Save, Loader2, AlertTriangle, CalendarClock, Shield, Upload, Eye, Mail, CheckCircle, XCircle, ArrowDownUp, Palette } from "lucide-react";
+import EmailTemplateDesigner from "@/components/EmailTemplateDesigner";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -484,6 +485,18 @@ export default function AdminSettings() {
               <Input value={editValues.zoom_meeting_link || ""} onChange={(e) => updateValue("zoom_meeting_link", e.target.value)} placeholder="https://zoom.us/j/1234567890" />
               <p className="mt-1 text-xs text-muted-foreground">Displayed to clients for consultation appointments</p>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Email Template Designer */}
+        <Card className="border-border/50 lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="font-sans text-lg flex items-center gap-2">
+              <Palette className="h-5 w-5 text-primary" /> Email Template Designer
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <EmailTemplateDesigner settings={editValues} onSave={(key, value) => updateValue(key, value)} />
           </CardContent>
         </Card>
 

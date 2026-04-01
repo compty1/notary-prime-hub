@@ -67,6 +67,10 @@ interface IntakeFieldsProps {
   signerCount: number; setSignerCount: (v: number) => void;
   // Apostille toggle for notarization categories
   needsApostille?: boolean; setNeedsApostille?: (v: boolean) => void;
+  // Phase 10-12: Special instructions, multi-signer, age
+  specialInstructions?: string; setSpecialInstructions?: (v: string) => void;
+  additionalSignerEmails?: string; setAdditionalSignerEmails?: (v: string) => void;
+  signerDob?: string; setSignerDob?: (v: string) => void;
 }
 
 export default function BookingIntakeFields(props: IntakeFieldsProps) {
@@ -402,6 +406,59 @@ export default function BookingIntakeFields(props: IntakeFieldsProps) {
               </Select>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Multi-Signer Pre-Configuration */}
+      {props.signerCount > 1 && props.setAdditionalSignerEmails && (
+        <div>
+          <Label>Additional Signer Email(s)</Label>
+          <Input
+            value={props.additionalSignerEmails || ""}
+            onChange={e => props.setAdditionalSignerEmails?.(e.target.value)}
+            placeholder="signer2@email.com, signer3@email.com"
+          />
+          <p className="text-xs text-muted-foreground mt-1">Comma-separated. Each signer will receive a separate verification link.</p>
+        </div>
+      )}
+
+      {/* Age Verification / Minor Detection */}
+      {props.setSignerDob && (
+        <div>
+          <Label>Signer Date of Birth</Label>
+          <Input
+            type="date"
+            value={props.signerDob || ""}
+            onChange={e => props.setSignerDob?.(e.target.value)}
+            max={new Date().toISOString().split("T")[0]}
+          />
+          {props.signerDob && (() => {
+            const age = Math.floor((Date.now() - new Date(props.signerDob).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+            if (age < 18) return (
+              <div className="mt-2 rounded-lg border border-amber-300 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-700 p-3 text-xs">
+                <p className="font-medium text-amber-800 dark:text-amber-300 flex items-center gap-1">
+                  <Info className="h-3.5 w-3.5" /> Minor Signer Detected (Age {age})
+                </p>
+                <p className="text-amber-700 dark:text-amber-400 mt-1">A parent or legal guardian must be present as a co-signer. They will need to provide their own valid ID.</p>
+              </div>
+            );
+            return null;
+          })()}
+        </div>
+      )}
+
+      {/* Special Instructions */}
+      {props.setSpecialInstructions && (
+        <div>
+          <Label>Special Instructions (Optional)</Label>
+          <Textarea
+            value={props.specialInstructions || ""}
+            onChange={e => props.setSpecialInstructions?.(e.target.value)}
+            placeholder="Gate code, parking instructions, specific timing needs, accessibility requirements..."
+            rows={3}
+            maxLength={500}
+          />
+          <p className="text-xs text-muted-foreground mt-1">{(props.specialInstructions || "").length}/500</p>
         </div>
       )}
     </div>
