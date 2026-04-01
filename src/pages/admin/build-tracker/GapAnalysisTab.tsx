@@ -174,7 +174,20 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
         </div>
       )}
 
-      <p className="text-sm text-muted-foreground">{sorted.length} items{hasActiveFilters ? ` (filtered from ${items.length})` : ""}</p>
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">{sorted.length} items{hasActiveFilters ? ` (filtered from ${items.length})` : ""}</p>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">Per page:</span>
+          <Select value={String(pageSize)} onValueChange={v => { setPageSize(Number(v)); setPage(1); }}>
+            <SelectTrigger className="h-7 w-[70px] text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="25">25</SelectItem>
+              <SelectItem value="50">50</SelectItem>
+              <SelectItem value="100">100</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
       {sorted.length === 0 ? (
         <Card>
