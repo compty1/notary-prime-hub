@@ -4,21 +4,23 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   BarChart3, FileText, AlertTriangle, Clock, CheckCircle2, XCircle, Shield,
-  Workflow, Globe, ClipboardList,
+  Workflow, Globe, ClipboardList, Cpu, Bot, Mail, Activity,
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import type { TrackerItem, TrackerPlan } from "./constants";
 import { SEVERITIES, severityColor, statusIcon, sevColors, relTime } from "./constants";
 import { SERVICE_FLOWS } from "./serviceFlows";
 import { PAGE_REGISTRY } from "./pageRegistry";
+import { PLATFORM_ENTITIES, getEntityHealth } from "./platformEntities";
 
 type Props = {
   items: TrackerItem[];
   plans: TrackerPlan[];
   onJumpToGap: (id: string) => void;
+  onTabChange?: (tab: string) => void;
 };
 
-export default function DashboardTab({ items, plans, onJumpToGap }: Props) {
+export default function DashboardTab({ items, plans, onJumpToGap, onTabChange }: Props) {
   const total = items.length;
   const open = items.filter((i) => i.status === "open").length;
   const inProgress = items.filter((i) => i.status === "in_progress").length;
@@ -54,7 +56,6 @@ export default function DashboardTab({ items, plans, onJumpToGap }: Props) {
     [items]
   );
 
-  // Service flow health
   const flowHealth = useMemo(() =>
     SERVICE_FLOWS.map((f) => {
       const implemented = f.steps.filter((s) => s.implemented).length;
@@ -63,19 +64,25 @@ export default function DashboardTab({ items, plans, onJumpToGap }: Props) {
     []
   );
 
-  // Pages with issues
   const pagesWithIssues = useMemo(() => {
     const routeSet = new Set(items.filter((i) => i.page_route).map((i) => i.page_route!));
     return routeSet.size;
   }, [items]);
 
-  // Plans completion
   const plansCompletion = useMemo(() => {
     if (!plans.length) return 0;
     const totalItems = plans.reduce((a, p) => a + p.plan_items.length, 0);
     const done = plans.reduce((a, p) => a + p.plan_items.filter((i) => i.status === "implemented").length, 0);
     return totalItems > 0 ? Math.round((done / totalItems) * 100) : 0;
   }, [plans]);
+
+  const platformHealth = useMemo(() => {
+    const allSub = PLATFORM_ENTITIES.flatMap(e => e.subComponents);
+    const healthy = allSub.filter(s => s.status === "healthy").length;
+    return { pct: Math.round((healthy / allSub.length) * 100), total: allSub.length, healthy };
+  }, []);
+
+  const goTo = (tab: string) => onTabChange?.(tab);
 
   return (
     <div className="space-y-6">
@@ -96,9 +103,8 @@ export default function DashboardTab({ items, plans, onJumpToGap }: Props) {
         ))}
       </div>
 
-      {/* New summary row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="cursor-pointer hover:border-primary/50 transition-colors" onClick={() => goTo("gaps")}>
           <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><Shield className="h-4 w-4" /> Build Health</CardTitle></CardHeader>
           <CardContent>
             <div className="text-3xl font-bold mb-2">{healthScore}%</div>
@@ -106,14 +112,22 @@ export default function DashboardTab({ items, plans, onJumpToGap }: Props) {
             <p className="text-xs text-muted-foreground mt-1">{resolved}/{total} resolved</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="cursor-pointer hover:border-primary/50 transition-colors" onClick={() => goTo("platform")}>
+          <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><Cpu className="h-4 w-4" /> Platform Health</CardTitle></CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold mb-2">{platformHealth.pct}%</div>
+            <Progress value={platformHealth.pct} className="h-2" />
+            <p className="text-xs text-muted-foreground mt-1">{platformHealth.healthy}/{platformHealth.total} components healthy</p>
+          </CardContent>
+        </Card>
+        <Card className="cursor-pointer hover:border-primary/50 transition-colors" onClick={() => goTo("pages")}>
           <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><Globe className="h-4 w-4" /> Pages with Issues</CardTitle></CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{pagesWithIssues}</div>
             <p className="text-xs text-muted-foreground">of {PAGE_REGISTRY.length} total routes</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="cursor-pointer hover:border-primary/50 transition-colors" onClick={() => goTo("plans")}>
           <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><ClipboardList className="h-4 w-4" /> Plans Completion</CardTitle></CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{plansCompletion}%</div>
@@ -124,7 +138,7 @@ export default function DashboardTab({ items, plans, onJumpToGap }: Props) {
       </div>
 
       {/* Service Flow Health */}
-      <Card>
+      <Card className="cursor-pointer hover:border-primary/50 transition-colors" onClick={() => goTo("flows")}>
         <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><Workflow className="h-4 w-4" /> Service Flow Health</CardTitle></CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -139,6 +153,28 @@ export default function DashboardTab({ items, plans, onJumpToGap }: Props) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Quick Access Row */}
+      <div className="grid grid-cols-2 gap-4">
+        <Card className="cursor-pointer hover:border-primary/50 transition-colors" onClick={() => goTo("ai")}>
+          <CardContent className="p-4 flex items-center gap-3">
+            <Bot className="h-5 w-5 text-primary" />
+            <div>
+              <p className="font-medium text-sm">AI Build Analyst</p>
+              <p className="text-xs text-muted-foreground">UX, compliance, marketing & architecture analysis</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="cursor-pointer hover:border-primary/50 transition-colors" onClick={() => goTo("emails")}>
+          <CardContent className="p-4 flex items-center gap-3">
+            <Mail className="h-5 w-5 text-primary" />
+            <div>
+              <p className="font-medium text-sm">Email Templates</p>
+              <p className="text-xs text-muted-foreground">14 automated templates · Master template editor</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       <div className="grid md:grid-cols-3 gap-6">
         <Card>

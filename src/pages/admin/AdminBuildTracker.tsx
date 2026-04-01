@@ -8,10 +8,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { toast } from "sonner";
 import {
   Search, Plus, BarChart3, ListChecks, Upload, Loader2, RefreshCw, RotateCcw,
-  Workflow, Globe, ClipboardList,
+  Workflow, Globe, ClipboardList, Cpu, Bot, Mail,
 } from "lucide-react";
-import { useTrackerItems, useBulkUpdate, useInsertItem } from "./build-tracker/hooks";
-import { usePlans } from "./build-tracker/hooks";
+import { useTrackerItems, useInsertItem, usePlans, useRefreshAll, useReanalyze } from "./build-tracker/hooks";
 import { CATEGORIES, SEVERITIES } from "./build-tracker/constants";
 import DashboardTab from "./build-tracker/DashboardTab";
 import GapAnalysisTab from "./build-tracker/GapAnalysisTab";
@@ -20,6 +19,9 @@ import AddImportTab from "./build-tracker/AddImportTab";
 import ServiceFlowTab from "./build-tracker/ServiceFlowTab";
 import PageAuditorTab from "./build-tracker/PageAuditorTab";
 import PlanHistoryTab from "./build-tracker/PlanHistoryTab";
+import PlatformFunctionsTab from "./build-tracker/PlatformFunctionsTab";
+import AIAnalystTab from "./build-tracker/AIAnalystTab";
+import EmailTemplatesTab from "./build-tracker/EmailTemplatesTab";
 
 /* ─── Quick Add Dialog ─── */
 function QuickAddDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -62,13 +64,14 @@ function QuickAddDialog({ open, onClose }: { open: boolean; onClose: () => void 
 /* ─── Main Page ─── */
 export default function AdminBuildTracker() {
   usePageTitle("Build Tracker");
-  const { data: items = [], isLoading, error, refetch, isFetching } = useTrackerItems();
+  const { data: items = [], isLoading, error, isFetching } = useTrackerItems();
   const { data: plans = [] } = usePlans();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [jumpToGapId, setJumpToGapId] = useState<string | null>(null);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [filteredGapCount, setFilteredGapCount] = useState<number | null>(null);
-  const bulk = useBulkUpdate();
+  const refreshAll = useRefreshAll();
+  const reanalyze = useReanalyze(items);
 
   const todoCount = useMemo(() => items.filter((i) => i.is_on_todo).length, [items]);
 
@@ -88,18 +91,6 @@ export default function AdminBuildTracker() {
     setActiveTab("gaps");
   }, []);
 
-  const handleReanalyze = useCallback(() => {
-    const staleResolved = items.filter((i) => i.status === "resolved" && !i.resolved_at);
-    if (staleResolved.length === 0) {
-      toast.info("All resolved items have valid timestamps — nothing to flag.");
-      return;
-    }
-    bulk.mutate(
-      { ids: staleResolved.map((i) => i.id), fields: { status: "open" } },
-      { onSuccess: () => toast.success(`Re-opened ${staleResolved.length} stale resolved items`) },
-    );
-  }, [items, bulk]);
-
   const handleFilteredCountChange = useCallback((count: number) => {
     setFilteredGapCount(count);
   }, []);
@@ -116,13 +107,13 @@ export default function AdminBuildTracker() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Build Intelligence & Gap Tracker</h1>
-          <p className="text-muted-foreground">Service flow analysis, page auditing, plan tracking & gap management</p>
+          <p className="text-muted-foreground">Comprehensive platform analysis, AI reasoning, flow diagnostics & email management</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Button variant="outline" size="sm" onClick={handleReanalyze} disabled={bulk.isPending}>
-            <RotateCcw className={`h-3.5 w-3.5 mr-1 ${bulk.isPending ? "animate-spin" : ""}`} /> Re-analyze
+          <Button variant="outline" size="sm" onClick={reanalyze}>
+            <RotateCcw className="h-3.5 w-3.5 mr-1" /> Re-analyze
           </Button>
-          <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>
+          <Button variant="outline" size="sm" onClick={refreshAll} disabled={isFetching}>
             <RefreshCw className={`h-3.5 w-3.5 mr-1 ${isFetching ? "animate-spin" : ""}`} /> Refresh
           </Button>
           <Button size="sm" onClick={() => setQuickAddOpen(true)}><Plus className="h-3.5 w-3.5 mr-1" /> Quick Add (N)</Button>
@@ -135,17 +126,23 @@ export default function AdminBuildTracker() {
           <TabsTrigger value="gaps" className="gap-1"><Search className="h-4 w-4" /> {gapTabLabel}</TabsTrigger>
           <TabsTrigger value="todo" className="gap-1"><ListChecks className="h-4 w-4" /> To-Do ({todoCount})</TabsTrigger>
           <TabsTrigger value="flows" className="gap-1"><Workflow className="h-4 w-4" /> Service Flows</TabsTrigger>
+          <TabsTrigger value="platform" className="gap-1"><Cpu className="h-4 w-4" /> Platform Functions</TabsTrigger>
           <TabsTrigger value="pages" className="gap-1"><Globe className="h-4 w-4" /> Page Auditor</TabsTrigger>
           <TabsTrigger value="plans" className="gap-1"><ClipboardList className="h-4 w-4" /> Plan History</TabsTrigger>
+          <TabsTrigger value="ai" className="gap-1"><Bot className="h-4 w-4" /> AI Analyst</TabsTrigger>
+          <TabsTrigger value="emails" className="gap-1"><Mail className="h-4 w-4" /> Email Templates</TabsTrigger>
           <TabsTrigger value="add" className="gap-1"><Plus className="h-4 w-4" /> Add / Import</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="dashboard"><DashboardTab items={items} plans={plans} onJumpToGap={handleJumpToGap} /></TabsContent>
+        <TabsContent value="dashboard"><DashboardTab items={items} plans={plans} onJumpToGap={handleJumpToGap} onTabChange={setActiveTab} /></TabsContent>
         <TabsContent value="gaps"><GapAnalysisTab items={items} jumpToId={jumpToGapId} onFilteredCountChange={handleFilteredCountChange} /></TabsContent>
         <TabsContent value="todo"><TodoTab items={items} /></TabsContent>
         <TabsContent value="flows"><ServiceFlowTab items={items} /></TabsContent>
+        <TabsContent value="platform"><PlatformFunctionsTab items={items} /></TabsContent>
         <TabsContent value="pages"><PageAuditorTab items={items} /></TabsContent>
         <TabsContent value="plans"><PlanHistoryTab items={items} /></TabsContent>
+        <TabsContent value="ai"><AIAnalystTab items={items} plans={plans} /></TabsContent>
+        <TabsContent value="emails"><EmailTemplatesTab /></TabsContent>
         <TabsContent value="add"><AddImportTab /></TabsContent>
       </Tabs>
 
