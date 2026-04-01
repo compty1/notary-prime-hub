@@ -1,4 +1,4 @@
-import { useState, useMemo, Fragment, useEffect, useRef } from "react";
+import { useState, useMemo, Fragment, useEffect, useRef, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,6 +94,15 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
 
   const sorted = useMemo(() => sortField ? sortItems(filtered, sortField, sortDir) : filtered, [filtered, sortField, sortDir]);
 
+  // Pagination
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(50);
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
+  const paginated = useMemo(() => sorted.slice((page - 1) * pageSize, page * pageSize), [sorted, page, pageSize]);
+
+  // Reset page when filters change
+  useEffect(() => { setPage(1); }, [search, catFilter, sevFilter, statusFilter, impactFilter, pageFilter]);
+
   useEffect(() => { onFilteredCountChange(sorted.length); }, [sorted.length, onFilteredCountChange]);
 
   const toggleSort = (field: SortField) => {
@@ -165,7 +174,20 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
         </div>
       )}
 
-      <p className="text-sm text-muted-foreground">{sorted.length} items{hasActiveFilters ? ` (filtered from ${items.length})` : ""}</p>
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">{sorted.length} items{hasActiveFilters ? ` (filtered from ${items.length})` : ""}</p>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">Per page:</span>
+          <Select value={String(pageSize)} onValueChange={v => { setPageSize(Number(v)); setPage(1); }}>
+            <SelectTrigger className="h-7 w-[70px] text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="25">25</SelectItem>
+              <SelectItem value="50">50</SelectItem>
+              <SelectItem value="100">100</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
       {sorted.length === 0 ? (
         <Card>
@@ -179,6 +201,7 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
           </CardContent>
         </Card>
       ) : (
+        <>
         <div className="rounded-lg border overflow-auto">
           <Table>
             <TableHeader data-no-glossary="true">
@@ -196,7 +219,7 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sorted.map((item) => {
+              {paginated.map((item) => {
                 const expanded = expandedId === item.id;
                 return (
                   <Fragment key={item.id}>
@@ -270,8 +293,31 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
             </TableBody>
           </Table>
         </div>
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between pt-2">
+            <span className="text-xs text-muted-foreground">
+              Showing {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, sorted.length)} of {sorted.length}
+            </span>
+            <div className="flex items-center gap-1">
+              <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>Previous</Button>
+              {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                let p: number;
+                if (totalPages <= 7) p = i + 1;
+                else if (page <= 4) p = i + 1;
+                else if (page >= totalPages - 3) p = totalPages - 6 + i;
+                else p = page - 3 + i;
+                return (
+                  <Button key={p} size="sm" variant={page === p ? "default" : "outline"} className="w-8 h-8 p-0" onClick={() => setPage(p)}>
+                    {p}
+                  </Button>
+                );
+              })}
+              <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>Next</Button>
+            </div>
+          </div>
+        )}
+        </>
       )}
-
       <AlertDialog open={!!deleteIds} onOpenChange={(o) => !o && setDeleteIds(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
