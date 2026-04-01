@@ -244,7 +244,7 @@ export default function AIExtractors() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <config.icon className={`h-5 w-5 ${config.color}`} />
+                    <config.icon className="h-5 w-5 text-primary" />
                     {config.label} Extractor
                   </CardTitle>
                   <CardDescription>{config.description}</CardDescription>
