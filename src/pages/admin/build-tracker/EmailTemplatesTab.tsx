@@ -82,9 +82,10 @@ function useEmailSettings() {
   const { data, isLoading } = useQuery({
     queryKey: ["email-template-settings"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("platform_settings" as any).select("*").eq("key", "email_templates").maybeSingle();
-      if (error && !error.message.includes("does not exist")) throw error;
-      return data?.value as { master: MasterTemplate; templates: Record<string, { subject: string; bodyHtml: string }> } | null;
+      // platform_settings may not exist in types; use any cast
+      const { data, error } = await (supabase as any).from("platform_settings").select("*").eq("key", "email_templates").maybeSingle();
+      if (error && !error.message?.includes("does not exist")) throw error;
+      return (data?.value ?? null) as { master: MasterTemplate; templates: Record<string, { subject: string; bodyHtml: string }> } | null;
     },
   });
 
