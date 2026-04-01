@@ -232,7 +232,7 @@ export default function AIExtractors() {
               const Icon = config.icon;
               return (
                 <TabsTrigger key={key} value={key} className="gap-1.5 text-xs sm:text-sm">
-                  <Icon className={`h-4 w-4 ${config.color}`} />
+                  <Icon className="h-4 w-4 text-primary" />
                   <span className="hidden sm:inline">{config.label}</span>
                 </TabsTrigger>
               );
