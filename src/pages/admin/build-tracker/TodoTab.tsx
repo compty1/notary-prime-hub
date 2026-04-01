@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, CheckCircle2, ArrowUp, ArrowDown, StickyNote } from "lucide-react";
+import { Plus, CheckCircle2, ArrowUp, ArrowDown, StickyNote, Download } from "lucide-react";
 import type { TrackerItem } from "./constants";
 import { CATEGORIES, SEVERITIES, STATUSES, severityColor, statusIcon } from "./constants";
 import { useUpdateItem, useBulkUpdate } from "./hooks";
