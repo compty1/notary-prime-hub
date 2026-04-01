@@ -26,11 +26,22 @@ const QUICK_PROMPTS = [
 ];
 
 export default function AIAnalystTab({ items, plans }: Props) {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const STORAGE_KEY = "build-tracker-ai-chat";
+  const [messages, setMessages] = useState<Message[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const insertPlan = useInsertPlan();
+
+  // Persist chat to localStorage
+  useEffect(() => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(messages)); } catch {}
+  }, [messages]);
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
