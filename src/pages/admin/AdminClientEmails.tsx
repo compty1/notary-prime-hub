@@ -63,6 +63,20 @@ export default function AdminClientEmails() {
     fetchData();
   }, []);
 
+  // Realtime subscription — auto-refresh when client_correspondence changes
+  useEffect(() => {
+    const channel = supabase
+      .channel("client-correspondence-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "client_correspondence" },
+        () => { fetchData(); }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+
   const fetchData = async () => {
     setLoading(true);
     const [corrRes, clientRes] = await Promise.all([
