@@ -278,6 +278,9 @@ export default function AdminJournal() {
               <Button variant="outline" size="sm" onClick={exportPrintablePDF}>
                 <FileText className="mr-1 h-4 w-4" /> Print PDF
               </Button>
+              <Button variant="outline" size="sm" onClick={exportJSONBackup}>
+                <Download className="mr-1 h-4 w-4" /> JSON Backup
+              </Button>
             </>
           )}
           <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) resetForm(); }}>
