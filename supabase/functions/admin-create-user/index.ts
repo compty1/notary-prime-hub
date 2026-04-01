@@ -11,7 +11,6 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Verify admin caller
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -28,6 +27,7 @@ Deno.serve(async (req) => {
 
     const { data: { user: caller }, error: authError } = await anonClient.auth.getUser();
     if (authError || !caller) {
+      console.error("admin-create-user auth error:", authError?.message);
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -61,7 +61,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Create auth user
     const { data: newUser, error: createError } = await serviceClient.auth.admin.createUser({
       email,
       password,
@@ -70,6 +69,7 @@ Deno.serve(async (req) => {
     });
 
     if (createError) {
+      console.error("admin-create-user creation error:", createError.message);
       return new Response(JSON.stringify({ error: createError.message }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -78,7 +78,6 @@ Deno.serve(async (req) => {
 
     const userId = newUser.user.id;
 
-    // Update profile with extra fields (profile is auto-created by handle_new_user trigger)
     await serviceClient.from("profiles").update({
       phone: phone || null,
       address: address || null,
@@ -93,14 +92,12 @@ Deno.serve(async (req) => {
       bond_amount: bond_amount ? parseFloat(bond_amount) : null,
     }).eq("user_id", userId);
 
-    // Assign role
     const assignRole = role || "notary";
     await serviceClient.from("user_roles").insert({
       user_id: userId,
       role: assignRole,
     });
 
-    // Audit log
     await serviceClient.from("audit_log").insert({
       action: "admin_created_user",
       entity_type: "profile",
@@ -112,6 +109,7 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err: any) {
+    console.error("admin-create-user unhandled error:", err.message, err.stack);
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

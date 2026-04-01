@@ -26,6 +26,7 @@ Deno.serve(async (req) => {
 
     const { data: { user }, error: userErr } = await supabase.auth.getUser();
     if (userErr || !user) {
+      console.error("create-payment-intent auth error:", userErr?.message);
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
     }
     const userId = user.id;
@@ -39,7 +40,6 @@ Deno.serve(async (req) => {
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
 
-    // Get or create Stripe customer
     const { data: profile } = await supabase
       .from("profiles")
       .select("stripe_customer_id, full_name, email")
@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
     }
 
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // cents
+      amount: Math.round(amount * 100),
       currency: "usd",
       customer: customerId,
       metadata: {
@@ -74,7 +74,6 @@ Deno.serve(async (req) => {
       automatic_payment_methods: { enabled: true },
     });
 
-    // Create payment record
     if (appointmentId) {
       await supabase.from("payments").insert({
         client_id: userId,
@@ -91,6 +90,7 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err: any) {
+    console.error("create-payment-intent error:", err.message, err.stack);
     return new Response(
       JSON.stringify({ error: err.message }),
       { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }

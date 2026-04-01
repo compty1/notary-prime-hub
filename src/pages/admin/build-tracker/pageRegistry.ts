@@ -84,4 +84,5 @@ export const PAGE_REGISTRY: PageEntry[] = [
   { route: "/admin/settings", component: "AdminSettings", protection: "admin", category: "Admin" },
   { route: "/admin/integrations", component: "AdminIntegrationTest", protection: "admin", category: "Admin" },
   { route: "/admin/mailbox", component: "AdminMailbox", protection: "admin", category: "Admin" },
+  { route: "/admin/client-emails", component: "AdminClientEmails", protection: "admin", category: "Admin" },
 ];
