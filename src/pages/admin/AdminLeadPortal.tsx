@@ -1,5 +1,5 @@
 import { usePageTitle } from "@/lib/usePageTitle";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,15 +10,16 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { Phone, Mail, MapPin, Plus, Search, Loader2, Calendar, Building2, User, Star, ArrowRight, Download, Upload, ExternalLink, Pencil, Trash2, Sparkles, RefreshCw } from "lucide-react";
+import { Phone, Mail, MapPin, Plus, Search, Loader2, Calendar, Building2, User, Star, ArrowRight, Download, Upload, ExternalLink, Pencil, Trash2, Sparkles, RefreshCw, Inbox, Clock, Globe, FileText, Tag } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { leadIntentColors as intentColors, leadStatusColors as statusColors } from "@/lib/statusColors";
 
 const pipelineStatuses = ["new", "contacted", "qualified", "converted", "closed"];
-const leadTypes = ["all", "individual", "business"];
 
 const emptyLead = {
   name: "", phone: "", email: "", business_name: "", address: "", city: "", state: "OH", zip: "",
@@ -44,14 +45,57 @@ export default function AdminLeadPortal() {
   const [discovering, setDiscovering] = useState(false);
   const [enriching, setEnriching] = useState(false);
   const [scrapingSocial, setScrapingSocial] = useState(false);
+  const [importingEmail, setImportingEmail] = useState(false);
+  const [selectedLead, setSelectedLead] = useState<any>(null);
+  const [sourceEmail, setSourceEmail] = useState<any>(null);
+  const [newLeadIds, setNewLeadIds] = useState<Set<string>>(new Set());
 
-  const fetchLeads = async () => {
+  const fetchLeads = useCallback(async () => {
     const { data } = await supabase.from("leads").select("*").order("created_at", { ascending: false });
     if (data) setLeads(data);
     setLoading(false);
-  };
+  }, []);
 
-  useEffect(() => { fetchLeads(); }, []);
+  useEffect(() => { fetchLeads(); }, [fetchLeads]);
+
+  // Real-time subscription
+  useEffect(() => {
+    const channel = supabase
+      .channel("leads-realtime")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "leads" },
+        (payload) => {
+          setLeads((prev) => [payload.new as any, ...prev]);
+          setNewLeadIds((prev) => new Set(prev).add((payload.new as any).id));
+          // Clear "new" highlight after 10s
+          setTimeout(() => {
+            setNewLeadIds((prev) => {
+              const next = new Set(prev);
+              next.delete((payload.new as any).id);
+              return next;
+            });
+          }, 10000);
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "leads" },
+        (payload) => {
+          setLeads((prev) => prev.map((l) => (l.id === (payload.new as any).id ? payload.new as any : l)));
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "DELETE", schema: "public", table: "leads" },
+        (payload) => {
+          setLeads((prev) => prev.filter((l) => l.id !== (payload.old as any).id));
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   const filtered = leads.filter((l) => {
     if (filterIntent !== "all" && l.intent_score !== filterIntent) return false;
@@ -80,6 +124,20 @@ export default function AdminLeadPortal() {
       source_url: lead.source_url || "", notes: lead.notes || "",
     });
     setShowCreate(true);
+  };
+
+  const openDetail = async (lead: any) => {
+    setSelectedLead(lead);
+    setSourceEmail(null);
+    // Load source email if linked
+    if (lead.email_cache_id) {
+      const { data } = await supabase
+        .from("email_cache")
+        .select("from_address, from_name, subject, body_text, date")
+        .eq("id", lead.email_cache_id)
+        .single();
+      if (data) setSourceEmail(data);
+    }
   };
 
   const saveLead = async () => {
@@ -115,6 +173,7 @@ export default function AdminLeadPortal() {
     if (!confirm("Delete this lead?")) return;
     await supabase.from("leads").delete().eq("id", id);
     toast({ title: "Lead deleted" });
+    if (selectedLead?.id === id) setSelectedLead(null);
     fetchLeads();
   };
 
@@ -150,6 +209,26 @@ export default function AdminLeadPortal() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const importFromInbox = async () => {
+    setImportingEmail(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("extract-email-leads", {});
+      if (error) throw error;
+      if (data?.error) {
+        toast({ title: "Import issue", description: data.error, variant: "destructive" });
+      } else {
+        toast({
+          title: "Email Import Complete",
+          description: data.message || `Scanned ${data.scanned} emails, extracted ${data.extracted} new leads.`,
+        });
+        fetchLeads();
+      }
+    } catch (e: any) {
+      toast({ title: "Import error", description: e.message, variant: "destructive" });
+    }
+    setImportingEmail(false);
+  };
+
   const stats = {
     total: leads.length,
     new: leads.filter((l) => l.status === "new").length,
@@ -162,38 +241,22 @@ export default function AdminLeadPortal() {
   const discoverLeads = async () => {
     setDiscovering(true);
     try {
-      const { data, error } = await supabase.functions.invoke("discover-leads", {
-        body: { action: "discover" },
-      });
+      const { data, error } = await supabase.functions.invoke("discover-leads", { body: { action: "discover" } });
       if (error) throw error;
-      if (data?.error) {
-        toast({ title: "Discovery issue", description: data.error, variant: "destructive" });
-      } else {
-        toast({ title: "AI Discovery Complete", description: `Found ${data.found} leads, inserted ${data.inserted} new ones.` });
-        fetchLeads();
-      }
-    } catch (e: any) {
-      toast({ title: "Discovery error", description: e.message, variant: "destructive" });
-    }
+      if (data?.error) toast({ title: "Discovery issue", description: data.error, variant: "destructive" });
+      else { toast({ title: "AI Discovery Complete", description: `Found ${data.found} leads, inserted ${data.inserted} new ones.` }); fetchLeads(); }
+    } catch (e: any) { toast({ title: "Discovery error", description: e.message, variant: "destructive" }); }
     setDiscovering(false);
   };
 
   const enrichLeads = async () => {
     setEnriching(true);
     try {
-      const { data, error } = await supabase.functions.invoke("discover-leads", {
-        body: { action: "enrich" },
-      });
+      const { data, error } = await supabase.functions.invoke("discover-leads", { body: { action: "enrich" } });
       if (error) throw error;
-      if (data?.error) {
-        toast({ title: "Enrichment issue", description: data.error, variant: "destructive" });
-      } else {
-        toast({ title: "Enrichment Complete", description: `Enriched ${data.enriched} leads with outreach tips.` });
-        fetchLeads();
-      }
-    } catch (e: any) {
-      toast({ title: "Enrichment error", description: e.message, variant: "destructive" });
-    }
+      if (data?.error) toast({ title: "Enrichment issue", description: data.error, variant: "destructive" });
+      else { toast({ title: "Enrichment Complete", description: `Enriched ${data.enriched} leads.` }); fetchLeads(); }
+    } catch (e: any) { toast({ title: "Enrichment error", description: e.message, variant: "destructive" }); }
     setEnriching(false);
   };
 
@@ -202,17 +265,13 @@ export default function AdminLeadPortal() {
     try {
       const { data, error } = await supabase.functions.invoke("scrape-social-leads", {});
       if (error) throw error;
-      if (data?.error) {
-        toast({ title: "Scrape issue", description: data.error, variant: "destructive" });
-      } else {
-        toast({ title: "Social Scrape Complete", description: `Found ${data.results_found} results, extracted ${data.leads_extracted} leads, inserted ${data.inserted} new ones.` });
-        fetchLeads();
-      }
-    } catch (e: any) {
-      toast({ title: "Scrape error", description: e.message, variant: "destructive" });
-    }
+      if (data?.error) toast({ title: "Scrape issue", description: data.error, variant: "destructive" });
+      else { toast({ title: "Social Scrape Complete", description: `Found ${data.results_found} results, extracted ${data.leads_extracted} leads, inserted ${data.inserted} new ones.` }); fetchLeads(); }
+    } catch (e: any) { toast({ title: "Scrape error", description: e.message, variant: "destructive" }); }
     setScrapingSocial(false);
   };
+
+  const formatDate = (d: string | null) => d ? new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }) : "—";
 
   return (
     <div className="space-y-6">
@@ -222,6 +281,10 @@ export default function AdminLeadPortal() {
           <p className="text-sm text-muted-foreground">Ohio notarization leads — discover, manage, convert</p>
         </div>
         <div className="flex gap-2 flex-wrap">
+          <Button variant="outline" size="sm" onClick={importFromInbox} disabled={importingEmail}>
+            {importingEmail ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Inbox className="mr-1 h-3 w-3" />}
+            Import from Inbox
+          </Button>
           <Button variant="outline" size="sm" onClick={scrapeSocial} disabled={scrapingSocial}>
             {scrapingSocial ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Search className="mr-1 h-3 w-3" />}
             Scrape Social
@@ -232,12 +295,12 @@ export default function AdminLeadPortal() {
           </Button>
           <Button variant="outline" size="sm" onClick={enrichLeads} disabled={enriching}>
             {enriching ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <RefreshCw className="mr-1 h-3 w-3" />}
-            Enrich Leads
+            Enrich
           </Button>
           <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={importCSV} />
-          <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}><Upload className="mr-1 h-3 w-3" /> Import CSV</Button>
+          <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}><Upload className="mr-1 h-3 w-3" /> CSV</Button>
           <Button variant="outline" size="sm" onClick={exportCSV}><Download className="mr-1 h-3 w-3" /> Export</Button>
-          <Button onClick={openCreate} className=""><Plus className="mr-1 h-4 w-4" /> Add Lead</Button>
+          <Button onClick={openCreate}><Plus className="mr-1 h-4 w-4" /> Add Lead</Button>
         </div>
       </div>
 
@@ -302,13 +365,16 @@ export default function AdminLeadPortal() {
           {loading ? (
             <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
           ) : filtered.length === 0 ? (
-            <Card className="border-border/50"><CardContent className="py-8 text-center text-muted-foreground">No leads found. Add your first lead or import a CSV.</CardContent></Card>
+            <Card className="border-border/50"><CardContent className="py-8 text-center text-muted-foreground">No leads found. Add your first lead or import from your inbox.</CardContent></Card>
           ) : (
             <div className="space-y-3">
               {filtered.map((lead) => (
-                <Card key={lead.id} className="border-border/50">
+                <Card
+                  key={lead.id}
+                  className={`border-border/50 transition-all ${newLeadIds.has(lead.id) ? "ring-2 ring-primary animate-pulse" : ""}`}
+                >
                   <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-center gap-3 cursor-pointer" onClick={() => openEdit(lead)}>
+                    <div className="flex items-center gap-3 cursor-pointer" onClick={() => openDetail(lead)}>
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                         {lead.lead_type === "business" ? <Building2 className="h-5 w-5 text-primary" /> : <User className="h-5 w-5 text-primary" />}
                       </div>
@@ -369,7 +435,7 @@ export default function AdminLeadPortal() {
                   </div>
                   <div className="space-y-2 min-h-[200px]">
                     {pipeLeads.map((lead) => (
-                      <Card key={lead.id} className="border-border/50 cursor-pointer hover:shadow-sm" onClick={() => openEdit(lead)}>
+                      <Card key={lead.id} className="border-border/50 cursor-pointer hover:shadow-sm" onClick={() => openDetail(lead)}>
                         <CardContent className="p-3">
                           <p className="text-xs font-medium truncate">{lead.name || lead.business_name}</p>
                           {lead.phone && <p className="text-[10px] text-muted-foreground mt-1">{lead.phone}</p>}
@@ -384,6 +450,168 @@ export default function AdminLeadPortal() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Lead Detail Sheet */}
+      <Sheet open={!!selectedLead} onOpenChange={(open) => { if (!open) setSelectedLead(null); }}>
+        <SheetContent className="sm:max-w-lg overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2">
+              {selectedLead?.lead_type === "business" ? <Building2 className="h-5 w-5 text-primary" /> : <User className="h-5 w-5 text-primary" />}
+              {selectedLead?.name || selectedLead?.business_name || "Lead Details"}
+            </SheetTitle>
+            <SheetDescription>
+              {selectedLead?.business_name && selectedLead?.name ? selectedLead.business_name : "View all details and take action"}
+            </SheetDescription>
+          </SheetHeader>
+
+          {selectedLead && (
+            <div className="space-y-6 mt-6">
+              {/* Contact Info */}
+              <div>
+                <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-3 flex items-center gap-1.5"><User className="h-3.5 w-3.5" /> Contact Information</h4>
+                <div className="space-y-2">
+                  {selectedLead.name && <div className="flex justify-between text-sm"><span className="text-muted-foreground">Name</span><span className="font-medium text-foreground">{selectedLead.name}</span></div>}
+                  {selectedLead.business_name && <div className="flex justify-between text-sm"><span className="text-muted-foreground">Business</span><span className="font-medium text-foreground">{selectedLead.business_name}</span></div>}
+                  {selectedLead.phone && (
+                    <div className="flex justify-between text-sm items-center">
+                      <span className="text-muted-foreground">Phone</span>
+                      <a href={`tel:${selectedLead.phone}`} className="font-medium text-primary hover:underline flex items-center gap-1"><Phone className="h-3 w-3" />{selectedLead.phone}</a>
+                    </div>
+                  )}
+                  {selectedLead.email && (
+                    <div className="flex justify-between text-sm items-center">
+                      <span className="text-muted-foreground">Email</span>
+                      <a href={`mailto:${selectedLead.email}`} className="font-medium text-primary hover:underline flex items-center gap-1"><Mail className="h-3 w-3" />{selectedLead.email}</a>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Location */}
+              {(selectedLead.address || selectedLead.city || selectedLead.state || selectedLead.zip) && (
+                <>
+                  <div>
+                    <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-3 flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" /> Location</h4>
+                    <div className="space-y-2">
+                      {selectedLead.address && <div className="flex justify-between text-sm"><span className="text-muted-foreground">Address</span><span className="font-medium text-foreground">{selectedLead.address}</span></div>}
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">City / State / Zip</span>
+                        <span className="font-medium text-foreground">{[selectedLead.city, selectedLead.state, selectedLead.zip].filter(Boolean).join(", ")}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <Separator />
+                </>
+              )}
+
+              {/* Lead Intelligence */}
+              <div>
+                <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-3 flex items-center gap-1.5"><Tag className="h-3.5 w-3.5" /> Lead Intelligence</h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm items-center">
+                    <span className="text-muted-foreground">Status</span>
+                    <Badge className={statusColors[selectedLead.status]}>{selectedLead.status}</Badge>
+                  </div>
+                  <div className="flex justify-between text-sm items-center">
+                    <span className="text-muted-foreground">Intent</span>
+                    <Badge className={intentColors[selectedLead.intent_score]}>{selectedLead.intent_score}</Badge>
+                  </div>
+                  <div className="flex justify-between text-sm"><span className="text-muted-foreground">Type</span><span className="font-medium text-foreground capitalize">{selectedLead.lead_type}</span></div>
+                  {selectedLead.service_needed && <div className="flex justify-between text-sm"><span className="text-muted-foreground">Service Needed</span><span className="font-medium text-foreground">{selectedLead.service_needed}</span></div>}
+                  <div className="flex justify-between text-sm items-center">
+                    <span className="text-muted-foreground">Source</span>
+                    <span className="font-medium text-foreground flex items-center gap-1"><Globe className="h-3 w-3 text-muted-foreground" />{selectedLead.source}</span>
+                  </div>
+                  {selectedLead.source_url && (
+                    <div className="flex justify-between text-sm items-center">
+                      <span className="text-muted-foreground">Source URL</span>
+                      <a href={selectedLead.source_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1 text-xs truncate max-w-[200px]"><ExternalLink className="h-3 w-3" />{selectedLead.source_url}</a>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Timeline */}
+              <div>
+                <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-3 flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> Timeline</h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm"><span className="text-muted-foreground">Created</span><span className="text-foreground">{formatDate(selectedLead.created_at)}</span></div>
+                  <div className="flex justify-between text-sm"><span className="text-muted-foreground">Last Updated</span><span className="text-foreground">{formatDate(selectedLead.updated_at)}</span></div>
+                  <div className="flex justify-between text-sm"><span className="text-muted-foreground">Contacted</span><span className="text-foreground">{formatDate(selectedLead.contacted_at)}</span></div>
+                </div>
+              </div>
+
+              {/* Notes */}
+              {selectedLead.notes && (
+                <>
+                  <Separator />
+                  <div>
+                    <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-3 flex items-center gap-1.5"><FileText className="h-3.5 w-3.5" /> Notes</h4>
+                    <p className="text-sm text-foreground whitespace-pre-wrap bg-muted/50 rounded-lg p-3">{selectedLead.notes}</p>
+                  </div>
+                </>
+              )}
+
+              {/* Source Email Preview */}
+              {sourceEmail && (
+                <>
+                  <Separator />
+                  <div>
+                    <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-3 flex items-center gap-1.5"><Mail className="h-3.5 w-3.5" /> Source Email</h4>
+                    <Card className="border-border/50">
+                      <CardContent className="p-3 space-y-2">
+                        <div className="flex justify-between text-xs">
+                          <span className="text-muted-foreground">From</span>
+                          <span className="font-medium text-foreground">{sourceEmail.from_name || sourceEmail.from_address}</span>
+                        </div>
+                        <div className="flex justify-between text-xs">
+                          <span className="text-muted-foreground">Subject</span>
+                          <span className="font-medium text-foreground truncate max-w-[250px]">{sourceEmail.subject}</span>
+                        </div>
+                        <div className="flex justify-between text-xs">
+                          <span className="text-muted-foreground">Date</span>
+                          <span className="text-foreground">{formatDate(sourceEmail.date)}</span>
+                        </div>
+                        {sourceEmail.body_text && (
+                          <p className="text-xs text-muted-foreground mt-2 whitespace-pre-wrap line-clamp-6 bg-muted/30 rounded p-2">{sourceEmail.body_text.substring(0, 500)}</p>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
+                </>
+              )}
+
+              <Separator />
+
+              {/* Actions */}
+              <div className="flex flex-wrap gap-2">
+                <Button size="sm" variant="outline" onClick={() => { setSelectedLead(null); openEdit(selectedLead); }}>
+                  <Pencil className="mr-1 h-3 w-3" /> Edit
+                </Button>
+                <Link to={`/admin/appointments?newLead=${selectedLead.name || selectedLead.business_name}`}>
+                  <Button size="sm" variant="outline"><Calendar className="mr-1 h-3 w-3" /> Schedule Appointment</Button>
+                </Link>
+                <Link to={`/ai-writer?tab=proposal&leadId=${selectedLead.id}`}>
+                  <Button size="sm" variant="outline"><Sparkles className="mr-1 h-3 w-3" /> Generate Proposal</Button>
+                </Link>
+                <Select value={selectedLead.status} onValueChange={(v) => { updateStatus(selectedLead.id, v); setSelectedLead({ ...selectedLead, status: v }); }}>
+                  <SelectTrigger className="w-32 h-8 text-xs"><SelectValue placeholder="Status" /></SelectTrigger>
+                  <SelectContent>
+                    {pipelineStatuses.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Button size="sm" variant="destructive" onClick={() => deleteLead(selectedLead.id)}>
+                  <Trash2 className="mr-1 h-3 w-3" /> Delete
+                </Button>
+              </div>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
 
       {/* Create/Edit Dialog */}
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
@@ -438,7 +666,7 @@ export default function AdminLeadPortal() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
-            <Button onClick={saveLead} disabled={saving} className="">
+            <Button onClick={saveLead} disabled={saving}>
               {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Plus className="mr-1 h-4 w-4" />}
               {editingLead ? "Update" : "Add Lead"}
             </Button>
