@@ -153,9 +153,27 @@ export default function BookingReviewStep(props: ReviewStepProps) {
         </div>
       )}
 
+      {/* Click-wrap Terms Agreement — Phase 4 */}
+      <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-2">
+        <div className="flex items-start gap-2">
+          <Checkbox
+            id="terms-accept"
+            checked={props.termsAccepted || false}
+            onCheckedChange={(checked) => props.setTermsAccepted?.(checked === true)}
+          />
+          <Label htmlFor="terms-accept" className="text-xs leading-relaxed cursor-pointer">
+            I have read and agree to the{" "}
+            <Link to="/terms" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">Terms of Service</Link>{" "}
+            and{" "}
+            <Link to="/terms#privacy" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">Privacy Policy</Link>.
+            I understand that notarization fees are non-refundable after the session begins.
+          </Label>
+        </div>
+      </div>
+
       {/* Payment methods */}
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <CreditCard className="h-3.5 w-3.5" />
+        <CreditCard className="h-3.5 w-3.5" aria-hidden="true" />
         <span>We accept: Credit/Debit • Venmo • Zelle • CashApp • Cash (in-person only)</span>
       </div>
     </div>
