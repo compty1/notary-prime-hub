@@ -25,6 +25,47 @@ export default function AccountSettings() {
   const [deleting, setDeleting] = useState(false);
   const [exporting, setExporting] = useState(false);
 
+  // Notification preferences
+  const [notifPrefs, setNotifPrefs] = useState({
+    email_appointment_reminders: true,
+    email_document_updates: true,
+    email_marketing: false,
+    email_session_alerts: true,
+  });
+  const [loadingPrefs, setLoadingPrefs] = useState(true);
+  const [savingPrefs, setSavingPrefs] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("notification_preferences")
+      .select("*")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) {
+          setNotifPrefs({
+            email_appointment_reminders: data.email_appointment_reminders ?? true,
+            email_document_updates: data.email_document_updates ?? true,
+            email_marketing: data.email_marketing ?? false,
+            email_session_alerts: data.email_session_alerts ?? true,
+          });
+        }
+        setLoadingPrefs(false);
+      });
+  }, [user]);
+
+  const saveNotifPrefs = async () => {
+    if (!user) return;
+    setSavingPrefs(true);
+    const { error } = await supabase.from("notification_preferences").upsert({
+      user_id: user.id,
+      ...notifPrefs,
+    }, { onConflict: "user_id" });
+    if (error) toast({ title: "Error saving preferences", description: error.message, variant: "destructive" });
+    else toast({ title: "Notification preferences saved" });
+    setSavingPrefs(false);
+  };
+
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword.length < 8) {
