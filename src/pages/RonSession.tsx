@@ -13,6 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Shield, Monitor, ArrowLeft, CheckCircle, AlertCircle, Mic, MicOff, BookOpen, Save, Loader2, XCircle, FileCheck, CreditCard, ExternalLink, Video, Link2, Info, Wifi, WifiOff, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { callEdgeFunction } from "@/lib/edgeFunctionAuth";
 import { cn } from "@/lib/utils";
 import { logAuditEvent } from "@/lib/auditLog";
 import type { Json } from "@/integrations/supabase/types";
