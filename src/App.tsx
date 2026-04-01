@@ -161,6 +161,9 @@ function AnimatedRoutes() {
         <Route path="/ai-writer" element={<ProtectedRoute><ErrorBoundary fallbackMessage="AI Writer failed to load"><AIWriter /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/ai-extractors" element={<ProtectedRoute><ErrorBoundary fallbackMessage="AI Extractors failed to load"><AIExtractors /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/ai-knowledge" element={<ProtectedRoute><ErrorBoundary fallbackMessage="AI Knowledge failed to load"><AIKnowledge /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/signature-generator" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Signature generator failed to load"><SignatureGeneratorPage /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/grants" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Grant generator failed to load"><GrantDashboard /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/resume-builder" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Resume builder failed to load"><ResumeBuilder /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/account-settings" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Account settings failed to load"><AccountSettings /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/portal" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Portal failed to load"><ClientPortal /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/confirmation" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Confirmation failed to load"><AppointmentConfirmation /></ErrorBoundary></ProtectedRoute>} />
