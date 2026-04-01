@@ -512,6 +512,61 @@ Deno.serve(async (req) => {
         });
       }
 
+      case "check_document_webhooks": {
+        const parsed = DocumentIdSchema.safeParse(body);
+        if (!parsed.success) return zodError(parsed.error);
+        const { document_id } = parsed.data;
+        const token = Deno.env.get("SIGNNOW_API_TOKEN");
+        if (!token) throw new Error("SIGNNOW_API_TOKEN not configured");
+
+        // Query SignNow API for active event subscriptions on this document
+        const resp = await fetchWithRetry(
+          `${SIGNNOW_BASE}/api/v2/events?entity_id=${document_id}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json",
+            },
+          },
+          2,
+          300
+        );
+
+        if (!resp.ok) {
+          const text = await resp.text();
+          console.error(`Check webhooks failed ${resp.status}: ${text}`);
+          return new Response(JSON.stringify({
+            document_id,
+            subscriptions: [],
+            error: `SignNow API ${resp.status}: ${text}`,
+          }), {
+            status: 200,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const data = await resp.json();
+        const subscriptions = Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : [];
+
+        // Also fetch local DB status
+        const { data: sessionData } = await serviceClient
+          .from("notarization_sessions")
+          .select("webhook_status, webhook_events_registered")
+          .eq("signnow_document_id", document_id)
+          .single();
+
+        return new Response(JSON.stringify({
+          document_id,
+          subscriptions,
+          total_active: subscriptions.length,
+          db_status: sessionData?.webhook_status || null,
+          db_events_registered: sessionData?.webhook_events_registered || 0,
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       default:
         return new Response(JSON.stringify({ error: `Unknown action: ${action}` }), {
           status: 400,
