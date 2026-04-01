@@ -383,6 +383,8 @@ export default function AdminLeadPortal() {
           { label: "Qualified", value: stats.qualified },
           { label: "Converted", value: stats.converted },
           { label: "High Intent", value: stats.highIntent },
+          { label: "Conversion", value: `${stats.conversionRate}%` },
+          { label: "Duplicates", value: duplicates.size },
         ].map((s) => (
           <Card key={s.label} className="border-border/50">
             <CardContent className="p-3 text-center">
