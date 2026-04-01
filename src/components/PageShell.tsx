@@ -55,7 +55,9 @@ export function PageShell({ children, hideNav = false, hideFooter = false }: Pag
       </a>
       {!hideNav && <Navbar />}
       <motion.main id="main-content" {...pageTransition}>
-        {children}
+        <LegalGlossaryProvider>
+          {children}
+        </LegalGlossaryProvider>
       </motion.main>
       {!hideFooter && <Footer phone={contactInfo.phone} email={contactInfo.email} />}
       <BackToTop />
