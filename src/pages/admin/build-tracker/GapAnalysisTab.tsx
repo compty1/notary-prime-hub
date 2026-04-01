@@ -164,6 +164,7 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
         {hasActiveFilters && (
           <Button variant="ghost" size="sm" onClick={clearFilters} className="text-muted-foreground"><X className="h-3.5 w-3.5 mr-1" /> Clear</Button>
         )}
+        <VerifyFixesButton items={sorted} />
         <Button variant="outline" size="sm" onClick={() => exportCSV(sorted)}><Download className="h-3.5 w-3.5 mr-1" /> CSV</Button>
       </div>
 
