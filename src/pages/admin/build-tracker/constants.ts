@@ -39,19 +39,28 @@ export type PlanItem = {
   tracker_item_id?: string;
 };
 
+/** Status constants to avoid magic strings */
+export const STATUS = {
+  OPEN: "open",
+  IN_PROGRESS: "in_progress",
+  RESOLVED: "resolved",
+  DEFERRED: "deferred",
+  WONT_FIX: "wont_fix",
+} as const;
+
 export const CATEGORIES = [
   "gap", "feature", "workflow", "security", "compliance", "ux", "seo",
   "performance", "brand", "integration", "mobile", "accessibility", "data",
 ];
 
 export const SEVERITIES = ["critical", "high", "medium", "low", "info"];
-export const STATUSES = ["open", "in_progress", "resolved", "deferred", "wont_fix"];
+export const STATUSES = [STATUS.OPEN, STATUS.IN_PROGRESS, STATUS.RESOLVED, STATUS.DEFERRED, STATUS.WONT_FIX];
 export const SEV_RANK: Record<string, number> = { critical: 0, high: 1, medium: 2, low: 3, info: 4 };
 
 export const severityColor: Record<string, string> = {
   critical: "bg-destructive text-destructive-foreground",
   high: "bg-orange-500/90 text-white",
-  medium: "bg-yellow-500/90 text-white",
+  medium: "bg-yellow-600/90 text-white",
   low: "bg-blue-500/80 text-white",
   info: "bg-muted text-muted-foreground",
 };
@@ -68,20 +77,29 @@ export const sevColors: Record<string, string> = {
   critical: "#ef4444", high: "#f97316", medium: "#eab308", low: "#3b82f6", info: "#94a3b8",
 };
 
-export type SortField = "title" | "category" | "severity" | "status" | "impact_area" | "updated_at";
+export type SortField = "title" | "category" | "severity" | "status" | "impact_area" | "updated_at" | "created_at";
 export type SortDir = "asc" | "desc";
 
+/**
+ * Sort tracker items by the given field and direction.
+ * @param items - Array of TrackerItems to sort
+ * @param field - Field to sort by
+ * @param dir - Sort direction (asc/desc)
+ */
 export function sortItems(items: TrackerItem[], field: SortField, dir: SortDir): TrackerItem[] {
   const m = dir === "asc" ? 1 : -1;
   return [...items].sort((a, b) => {
     if (field === "severity") return m * ((SEV_RANK[a.severity] ?? 9) - (SEV_RANK[b.severity] ?? 9));
-    if (field === "updated_at") return m * (new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime());
+    if (field === "updated_at" || field === "created_at") return m * (new Date(a[field]).getTime() - new Date(b[field]).getTime());
     const av = (a[field] ?? "") as string;
     const bv = (b[field] ?? "") as string;
     return m * av.localeCompare(bv);
   });
 }
 
+/**
+ * Format a date string as relative time (e.g., "3 hours ago").
+ */
 export function relTime(d: string | null) {
   if (!d) return "—";
   try {
@@ -89,7 +107,10 @@ export function relTime(d: string | null) {
   } catch { return "—"; }
 }
 
-/** Auto-categorize based on title keywords */
+/**
+ * Auto-categorize a tracker item based on title keywords.
+ * Returns the best matching category and impact area.
+ */
 export function autoCategorize(title: string): { category: string; impact_area: string } {
   const t = title.toLowerCase();
   const map: [string[], string, string][] = [
@@ -113,13 +134,19 @@ export function autoCategorize(title: string): { category: string; impact_area: 
   return { category: "gap", impact_area: "" };
 }
 
+/**
+ * Export tracker items to CSV and trigger download.
+ * Includes item ID for re-import capability.
+ */
 export function exportCSV(items: TrackerItem[]) {
-  const headers = ["Title", "Category", "Severity", "Status", "Impact Area", "Page Route", "Description", "Suggested Fix", "Admin Notes", "On To-Do", "Updated At"];
+  const headers = ["ID", "Title", "Category", "Severity", "Status", "Impact Area", "Page Route", "Description", "Suggested Fix", "Admin Notes", "On To-Do", "Created At", "Updated At", "Resolved At"];
   const rows = items.map((i) => [
-    i.title, i.category, i.severity, i.status, i.impact_area ?? "", i.page_route ?? "",
-    i.description ?? "", i.suggested_fix ?? "", i.admin_notes ?? "", i.is_on_todo ? "Yes" : "No", i.updated_at,
+    i.id, i.title, i.category, i.severity, i.status, i.impact_area ?? "", i.page_route ?? "",
+    i.description ?? "", i.suggested_fix ?? "", i.admin_notes ?? "", i.is_on_todo ? "Yes" : "No",
+    i.created_at, i.updated_at, i.resolved_at ?? "",
   ].map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","));
   const blob = new Blob([headers.join(",") + "\n" + rows.join("\n")], { type: "text/csv" });
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
   a.download = `build-tracker-${new Date().toISOString().slice(0, 10)}.csv`; a.click();
+  URL.revokeObjectURL(a.href);
 }

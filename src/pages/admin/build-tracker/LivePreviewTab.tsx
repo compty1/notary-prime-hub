@@ -1,8 +1,8 @@
 import { useState, useRef, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Monitor, Tablet, Smartphone, RefreshCw, ExternalLink, AlertTriangle } from "lucide-react";
+import { Loader2, Monitor, Tablet, Smartphone, RefreshCw, ExternalLink, AlertTriangle } from "lucide-react";
 
 const PREVIEW_URL = "https://id-preview--b6d1b88a-ed8c-42c3-98a9-3a2517fa9990.lovable.app";
 
@@ -27,12 +27,14 @@ export default function LivePreviewTab({ themeOverlay }: Props) {
   const [viewport, setViewport] = useState(0);
   const [loadError, setLoadError] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const current = VIEWPORTS[viewport];
 
   const refresh = useCallback(() => {
     setIsRefreshing(true);
     setLoadError(false);
+    setIsLoading(true);
     if (iframeRef.current) {
       iframeRef.current.src = PREVIEW_URL + "?t=" + Date.now();
     }
@@ -48,7 +50,7 @@ export default function LivePreviewTab({ themeOverlay }: Props) {
               key={vp.label}
               variant={viewport === idx ? "default" : "outline"}
               size="sm"
-              onClick={() => setViewport(idx)}
+              onClick={() => { setViewport(idx); setIsLoading(true); }}
               className="gap-1.5"
             >
               <vp.icon className="h-4 w-4" />
@@ -113,14 +115,19 @@ export default function LivePreviewTab({ themeOverlay }: Props) {
                 maxHeight: "80vh",
               }}
             >
+              {isLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-background/80 z-10">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              )}
               <iframe
                 ref={iframeRef}
                 src={PREVIEW_URL}
                 className="w-full h-full"
                 title="Live Site Preview"
-                sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                sandbox="allow-scripts allow-same-origin allow-forms"
                 onError={() => setLoadError(true)}
-                onLoad={() => setLoadError(false)}
+                onLoad={() => { setLoadError(false); setIsLoading(false); }}
               />
             </div>
           )}
