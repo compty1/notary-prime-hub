@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PlatformScanButton from "./build-tracker/PlatformScanButton";
+import { useTrackerItems, useInsertItem, usePlans, useRefreshAll, useReanalyze } from "./build-tracker/hooks";
 import { CATEGORIES, SEVERITIES } from "./build-tracker/constants";
 import DashboardTab from "./build-tracker/DashboardTab";
 import GapAnalysisTab from "./build-tracker/GapAnalysisTab";
