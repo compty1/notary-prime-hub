@@ -2,6 +2,7 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import UnderlineExt from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
+import DOMPurify from "dompurify";
 import { Bold, Italic, Underline, List, ListOrdered, AlignLeft, AlignCenter, AlignRight, Heading2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
