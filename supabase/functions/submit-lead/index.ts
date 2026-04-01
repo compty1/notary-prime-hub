@@ -54,6 +54,14 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // CSRF protection: require X-Requested-With header
+    if (req.headers.get("x-requested-with") !== "XMLHttpRequest") {
+      return new Response(
+        JSON.stringify({ error: "Forbidden" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Server-side rate limiting by IP
     const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
       || req.headers.get("cf-connecting-ip")
