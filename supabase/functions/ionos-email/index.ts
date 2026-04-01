@@ -337,6 +337,7 @@ Deno.serve(async (req) => {
         });
     }
   } catch (err: any) {
+    console.error("ionos-email error:", err.message, err.stack);
     const status = err.message === "Unauthorized" ? 401 : err.message?.startsWith("Forbidden") ? 403 : 400;
     return new Response(
       JSON.stringify({ error: err.message }),

@@ -193,6 +193,39 @@ export default function AccountSettings() {
           </CardContent>
         </Card>
 
+        {/* Notification Preferences */}
+        <Card className="mb-6 border-border/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg"><Bell className="h-5 w-5 text-primary" /> Notification Preferences</CardTitle>
+            <CardDescription>Manage what emails you receive</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {loadingPrefs ? (
+              <p className="text-sm text-muted-foreground">Loading...</p>
+            ) : (
+              <>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="apptReminders">Appointment reminders</Label>
+                  <Switch id="apptReminders" checked={notifPrefs.email_appointment_reminders} onCheckedChange={v => setNotifPrefs(p => ({ ...p, email_appointment_reminders: v }))} />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="docUpdates">Document updates</Label>
+                  <Switch id="docUpdates" checked={notifPrefs.email_document_updates} onCheckedChange={v => setNotifPrefs(p => ({ ...p, email_document_updates: v }))} />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="sessionAlerts">Session alerts</Label>
+                  <Switch id="sessionAlerts" checked={notifPrefs.email_session_alerts} onCheckedChange={v => setNotifPrefs(p => ({ ...p, email_session_alerts: v }))} />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="marketing">Marketing emails</Label>
+                  <Switch id="marketing" checked={notifPrefs.email_marketing} onCheckedChange={v => setNotifPrefs(p => ({ ...p, email_marketing: v }))} />
+                </div>
+                <Button onClick={saveNotifPrefs} disabled={savingPrefs} size="sm">{savingPrefs ? "Saving..." : "Save Preferences"}</Button>
+              </>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Export Data */}
         <Card className="mb-6 border-border/50">
           <CardHeader>
