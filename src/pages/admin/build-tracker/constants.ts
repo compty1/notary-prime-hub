@@ -85,7 +85,6 @@ export function sortItems(items: TrackerItem[], field: SortField, dir: SortDir):
 export function relTime(d: string | null) {
   if (!d) return "—";
   try {
-    const { formatDistanceToNow } = require("date-fns");
     return formatDistanceToNow(new Date(d), { addSuffix: true });
   } catch { return "—"; }
 }
