@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { usePageTitle } from "@/lib/usePageTitle";
 import { AILeadChatbot } from "@/components/AILeadChatbot";
 import { Link } from "react-router-dom";
 import { Logo } from "@/components/Logo";
