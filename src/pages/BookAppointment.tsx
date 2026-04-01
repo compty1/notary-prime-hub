@@ -604,6 +604,7 @@ export default function BookAppointment() {
     travelDistance, afterHoursFee, signerCapacity, facilityName, signerCount,
     pricingBreakdown,
     validationErrors,
+    termsAccepted, setTermsAccepted,
   };
 
   const stepLabels = isSkipTypeStep ? ["Service", "Schedule", "Confirm"] : ["Type", "Service", "Schedule", "Confirm"];
