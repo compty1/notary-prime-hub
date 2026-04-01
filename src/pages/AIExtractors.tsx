@@ -27,30 +27,26 @@ interface ExtractionResult {
   confidence: number;
 }
 
-const EXTRACTOR_CONFIG: Record<ExtractorType, { label: string; icon: typeof Scale; description: string; color: string }> = {
+const EXTRACTOR_CONFIG: Record<ExtractorType, { label: string; icon: typeof Scale; description: string }> = {
   legal: {
     label: "Legal / Real Estate",
     icon: Scale,
     description: "Extract termination clauses, expiration dates, renewal obligations, parties, and consideration amounts from contracts and deeds.",
-    color: "text-blue-500",
   },
   finance: {
     label: "Finance",
     icon: DollarSign,
     description: "Parse invoices and bank statements into categorized transactions with spending breakdowns and CSV export.",
-    color: "text-emerald-500",
   },
   hr: {
     label: "HR / Personnel",
     icon: Users,
     description: "Analyze resumes for candidate profiles or parse employee handbooks for policy information.",
-    color: "text-violet-500",
   },
   general: {
     label: "General",
     icon: FileSearch,
     description: "Extract key entities, dates, obligations, and action items from any document type.",
-    color: "text-amber-500",
   },
 };
 
