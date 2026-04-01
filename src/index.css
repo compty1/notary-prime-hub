@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Lato:wght@300;400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Lato:wght@300;400;700;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -51,6 +51,15 @@
     --sidebar-accent-foreground: 210 20% 90%;
     --sidebar-border: 216 50% 22%;
     --sidebar-ring: 181 71% 41%;
+
+    --accent-warm: 30 80% 55%;
+    --accent-warm-foreground: 0 0% 100%;
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --info: 210 100% 52%;
+    --info-foreground: 0 0% 100%;
   }
 
   .dark {
@@ -97,6 +106,15 @@
     --sidebar-accent-foreground: 210 20% 90%;
     --sidebar-border: 216 40% 14%;
     --sidebar-ring: 181 71% 41%;
+
+    --accent-warm: 30 70% 50%;
+    --accent-warm-foreground: 0 0% 100%;
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 80% 50%;
+    --warning-foreground: 0 0% 100%;
+    --info: 210 80% 55%;
+    --info-foreground: 0 0% 100%;
   }
 }
 

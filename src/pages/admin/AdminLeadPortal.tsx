@@ -285,7 +285,28 @@ export default function AdminLeadPortal() {
     qualified: leads.filter((l) => l.status === "qualified").length,
     converted: leads.filter((l) => l.status === "converted").length,
     highIntent: leads.filter((l) => l.intent_score === "high").length,
+    conversionRate: leads.length > 0 ? Math.round((leads.filter((l) => l.status === "converted").length / leads.length) * 100) : 0,
   };
+
+  // Duplicate detection
+  const duplicates = useMemo(() => {
+    const emailMap = new Map<string, string[]>();
+    const bizMap = new Map<string, string[]>();
+    leads.forEach((l) => {
+      if (l.email) {
+        const key = l.email.toLowerCase().trim();
+        emailMap.set(key, [...(emailMap.get(key) || []), l.id]);
+      }
+      if (l.business_name) {
+        const key = l.business_name.toLowerCase().trim();
+        bizMap.set(key, [...(bizMap.get(key) || []), l.id]);
+      }
+    });
+    const dupIds = new Set<string>();
+    emailMap.forEach((ids) => { if (ids.length > 1) ids.forEach((id) => dupIds.add(id)); });
+    bizMap.forEach((ids) => { if (ids.length > 1) ids.forEach((id) => dupIds.add(id)); });
+    return dupIds;
+  }, [leads]);
 
   const discoverLeads = async () => {
     setDiscovering(true);
@@ -354,7 +375,7 @@ export default function AdminLeadPortal() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
         {[
           { label: "Total", value: stats.total },
           { label: "New", value: stats.new },
@@ -362,6 +383,8 @@ export default function AdminLeadPortal() {
           { label: "Qualified", value: stats.qualified },
           { label: "Converted", value: stats.converted },
           { label: "High Intent", value: stats.highIntent },
+          { label: "Conversion", value: `${stats.conversionRate}%` },
+          { label: "Duplicates", value: duplicates.size },
         ].map((s) => (
           <Card key={s.label} className="border-border/50">
             <CardContent className="p-3 text-center">
@@ -371,6 +394,11 @@ export default function AdminLeadPortal() {
           </Card>
         ))}
       </div>
+
+      {/* Privacy & Ethics Notice */}
+      <p className="text-xs text-muted-foreground bg-muted/50 rounded-md p-2">
+        📋 All lead data is sourced from public directories and direct inquiries. Data handling complies with Ohio privacy regulations. Source attribution is tracked per lead.
+      </p>
 
       {/* Filters */}
       <div className="flex gap-3 flex-wrap">

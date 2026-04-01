@@ -29,8 +29,14 @@ const solutionLinks = [
   { to: "/solutions/individuals", label: "For Individuals", desc: "Personal document services" },
 ];
 
+const toolLinks = [
+  { to: "/ai-writer", label: "AI Writer" },
+  { to: "/grants", label: "Grant Generator" },
+  { to: "/resume-builder", label: "Resume Builder" },
+  { to: "/signature-generator", label: "Signature Generator" },
+];
+
 const plainLinks = [
-  { to: "/ai-writer", label: "AI Tools" },
   { to: "/about", label: "About" },
   { to: "/templates", label: "Templates" },
   { to: "/fee-calculator", label: "Pricing" },
@@ -129,6 +135,21 @@ export function Navbar() {
                     <p className="text-sm font-medium text-foreground">{link.label}</p>
                     <p className="text-xs text-muted-foreground">{link.desc}</p>
                   </div>
+                </Link>
+              ))}
+            </div>
+          </DropdownNav>
+
+          {/* Tools Dropdown */}
+          <DropdownNav label="Tools" linkTo="/ai-writer">
+            <div className="space-y-1">
+              {toolLinks.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className="flex items-start gap-3 rounded-lg p-2 hover:bg-muted transition-colors"
+                >
+                  <p className="text-sm font-medium text-foreground">{link.label}</p>
                 </Link>
               ))}
             </div>

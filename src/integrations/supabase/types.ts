@@ -664,6 +664,53 @@ export type Database = {
         }
         Relationships: []
       }
+      cover_letters: {
+        Row: {
+          company: string | null
+          content: Json | null
+          created_at: string
+          id: string
+          job_title: string | null
+          resume_id: string | null
+          status: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company?: string | null
+          content?: Json | null
+          created_at?: string
+          id?: string
+          job_title?: string | null
+          resume_id?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company?: string | null
+          content?: Json | null
+          created_at?: string
+          id?: string
+          job_title?: string | null
+          resume_id?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cover_letters_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crm_activities: {
         Row: {
           activity_type: string
@@ -1293,6 +1340,72 @@ export type Database = {
           notes?: string | null
           title?: string
           uploaded_by?: string
+        }
+        Relationships: []
+      }
+      grant_templates: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          template_content: Json | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          template_content?: Json | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          template_content?: Json | null
+        }
+        Relationships: []
+      }
+      grants: {
+        Row: {
+          content: Json | null
+          created_at: string
+          grant_type: string | null
+          id: string
+          status: string | null
+          template_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: Json | null
+          created_at?: string
+          grant_type?: string | null
+          id?: string
+          status?: string | null
+          template_id?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: Json | null
+          created_at?: string
+          grant_type?: string | null
+          id?: string
+          status?: string | null
+          template_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -2062,6 +2175,39 @@ export type Database = {
           },
         ]
       }
+      resumes: {
+        Row: {
+          content: Json | null
+          created_at: string
+          id: string
+          status: string | null
+          template_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: Json | null
+          created_at?: string
+          id?: string
+          status?: string | null
+          template_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: Json | null
+          created_at?: string
+          id?: string
+          status?: string | null
+          template_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           appointment_id: string | null
@@ -2472,6 +2618,42 @@ export type Database = {
         Update: {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_signatures: {
+        Row: {
+          created_at: string
+          font_family: string | null
+          id: string
+          image_path: string | null
+          is_default: boolean | null
+          name: string
+          style_config: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          font_family?: string | null
+          id?: string
+          image_path?: string | null
+          is_default?: boolean | null
+          name?: string
+          style_config?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          font_family?: string | null
+          id?: string
+          image_path?: string | null
+          is_default?: boolean | null
+          name?: string
+          style_config?: Json | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
