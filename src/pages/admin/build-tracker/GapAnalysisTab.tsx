@@ -7,13 +7,14 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import {
-  Search, Plus, CheckCircle2, Trash2, Download, X,
+  Search, CheckCircle2, Trash2, Download, X,
   ChevronDown, ChevronRight, ArrowUpDown, ArrowUpNarrowWide, ArrowDownNarrowWide,
   Sparkles, Loader2, Copy, ListChecks,
 } from "lucide-react";
@@ -23,6 +24,7 @@ import { CATEGORIES, SEVERITIES, STATUSES, severityColor, statusIcon, sortItems,
 import { useUpdateItem, useBulkUpdate, useDeleteItems } from "./hooks";
 import BulkActionBar from "./BulkActionBar";
 import VerifyFixesButton from "./VerifyFixesButton";
+import { useSSEStream, safeClipboardWrite } from "./useSSEStream";
 
 function SortIcon({ field, current, dir }: { field: SortField; current: SortField | null; dir: SortDir }) {
   if (current !== field) return <ArrowUpDown className="h-3 w-3 opacity-30" />;
@@ -33,9 +35,10 @@ type Props = {
   items: TrackerItem[];
   jumpToId: string | null;
   onFilteredCountChange: (count: number) => void;
+  onJumpConsumed?: () => void;
 };
 
-export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange }: Props) {
+export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange, onJumpConsumed }: Props) {
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState("all");
   const [sevFilter, setSevFilter] = useState("all");
@@ -50,15 +53,17 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
   const [deleteIds, setDeleteIds] = useState<string[] | null>(null);
   const expandedRowRef = useRef<HTMLTableRowElement>(null);
   const update = useUpdateItem();
-  const bulk = useBulkUpdate();
   const del = useDeleteItems();
 
   useEffect(() => {
     if (jumpToId) {
       setExpandedId(jumpToId);
-      setTimeout(() => expandedRowRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 100);
+      setTimeout(() => {
+        expandedRowRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        onJumpConsumed?.();
+      }, 100);
     }
-  }, [jumpToId]);
+  }, [jumpToId, onJumpConsumed]);
 
   const hasActiveFilters = search || catFilter !== "all" || sevFilter !== "all" || statusFilter !== "all" || impactFilter !== "all" || pageFilter !== "all";
 
@@ -104,8 +109,13 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
   const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
   const paginated = useMemo(() => sorted.slice((page - 1) * pageSize, page * pageSize), [sorted, page, pageSize]);
 
-  // Reset page when filters change
+  // Reset page when filters change, but preserve on data updates
   useEffect(() => { setPage(1); }, [search, catFilter, sevFilter, statusFilter, impactFilter, pageFilter]);
+
+  // Clamp page if items shrink (e.g. after bulk delete)
+  useEffect(() => {
+    if (page > totalPages) setPage(Math.max(1, totalPages));
+  }, [totalPages, page]);
 
   useEffect(() => { onFilteredCountChange(sorted.length); }, [sorted.length, onFilteredCountChange]);
 
@@ -115,10 +125,23 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
   };
 
   const toggleSelect = (id: string) => setSelectedIds((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
-  const allFilteredSelected = sorted.length > 0 && sorted.every((i) => selectedIds.has(i.id));
+  
+  // Select visible page only vs all
+  const allPageSelected = paginated.length > 0 && paginated.every((i) => selectedIds.has(i.id));
   const toggleAll = () => {
-    if (allFilteredSelected) setSelectedIds(new Set());
-    else setSelectedIds(new Set(sorted.map((i) => i.id)));
+    if (allPageSelected) {
+      setSelectedIds(prev => {
+        const n = new Set(prev);
+        paginated.forEach(i => n.delete(i.id));
+        return n;
+      });
+    } else {
+      setSelectedIds(prev => {
+        const n = new Set(prev);
+        paginated.forEach(i => n.add(i.id));
+        return n;
+      });
+    }
   };
 
   const deleteItemTitles = useMemo(() => {
@@ -133,6 +156,7 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
   );
 
   return (
+    <TooltipProvider>
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
         <div className="relative flex-1 min-w-[200px]">
@@ -168,17 +192,6 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
         <Button variant="outline" size="sm" onClick={() => exportCSV(sorted)}><Download className="h-3.5 w-3.5 mr-1" /> CSV</Button>
       </div>
 
-      {selectedIds.size > 0 && (
-        <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-muted/30 p-3">
-          <span className="text-sm font-medium">{selectedIds.size} selected</span>
-          <Button size="sm" variant="outline" onClick={() => bulk.mutate({ ids: [...selectedIds], fields: { is_on_todo: true } })}><Plus className="h-3.5 w-3.5 mr-1" /> Add to To-Do</Button>
-          <Button size="sm" variant="outline" onClick={() => bulk.mutate({ ids: [...selectedIds], fields: { status: "resolved" } })}><CheckCircle2 className="h-3.5 w-3.5 mr-1" /> Mark Resolved</Button>
-          <Button size="sm" variant="outline" onClick={() => bulk.mutate({ ids: [...selectedIds], fields: { status: "deferred" } })}>Defer</Button>
-          <Button size="sm" variant="destructive" onClick={() => setDeleteIds([...selectedIds])}><Trash2 className="h-3.5 w-3.5 mr-1" /> Delete</Button>
-          <Button size="sm" variant="ghost" onClick={() => setSelectedIds(new Set())}>Clear</Button>
-        </div>
-      )}
-
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">{sorted.length} items{hasActiveFilters ? ` (filtered from ${items.length})` : ""}</p>
         <div className="flex items-center gap-2">
@@ -211,14 +224,17 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
           <Table>
             <TableHeader data-no-glossary="true">
               <TableRow>
-                <TableHead className="w-8"><Checkbox checked={allFilteredSelected} onCheckedChange={toggleAll} /></TableHead>
+                <TableHead className="w-8">
+                  <Checkbox checked={allPageSelected} onCheckedChange={toggleAll} />
+                </TableHead>
                 <TableHead className="w-8" />
                 <SortableHead field="title">Title</SortableHead>
                 <SortableHead field="category" className="w-[100px]">Category</SortableHead>
                 <SortableHead field="severity" className="w-[90px]">Severity</SortableHead>
                 <SortableHead field="status" className="w-[120px]">Status</SortableHead>
                 <SortableHead field="impact_area" className="w-[120px]">Impact</SortableHead>
-                <SortableHead field="updated_at" className="w-[100px]">Updated</SortableHead>
+                <SortableHead field="created_at" className="w-[90px]">Created</SortableHead>
+                <SortableHead field="updated_at" className="w-[90px]">Updated</SortableHead>
                 <TableHead className="w-[60px]">To-Do</TableHead>
                 <TableHead className="w-[40px]" />
               </TableRow>
@@ -236,8 +252,15 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
                       <TableCell onClick={() => setExpandedId(expanded ? null : item.id)}>
                         {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                       </TableCell>
-                      <TableCell className="font-medium" onClick={() => setExpandedId(expanded ? null : item.id)}>
-                        {item.title}
+                      <TableCell className="font-medium max-w-[300px]" onClick={() => setExpandedId(expanded ? null : item.id)}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="block truncate">{item.title}</span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-[400px]">
+                            <p>{item.title}</p>
+                          </TooltipContent>
+                        </Tooltip>
                         {item.page_route && <span className="ml-2 text-[10px] text-muted-foreground">{item.page_route}</span>}
                       </TableCell>
                       <TableCell><Badge variant="outline" className="text-xs">{item.category}</Badge></TableCell>
@@ -251,6 +274,7 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
                         </Select>
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">{item.impact_area}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{relTime(item.created_at)}</TableCell>
                       <TableCell className="text-xs text-muted-foreground">{relTime(item.updated_at)}</TableCell>
                       <TableCell onClick={(e) => e.stopPropagation()}>
                         <Checkbox checked={item.is_on_todo} onCheckedChange={(v) => update.mutate({ id: item.id, is_on_todo: !!v })} />
@@ -263,7 +287,7 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
                     </TableRow>
                     {expanded && (
                       <TableRow>
-                        <TableCell colSpan={10} className="bg-muted/30 p-4">
+                        <TableCell colSpan={11} className="bg-muted/30 p-4">
                           <ExpandedGapRow item={item} editingNotes={editingNotes} setEditingNotes={setEditingNotes} update={update} />
                         </TableCell>
                       </TableRow>
@@ -275,9 +299,10 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
           </Table>
         </div>
         {totalPages > 1 && (
-          <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center justify-between pt-2 pb-12">
             <span className="text-xs text-muted-foreground">
               Showing {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, sorted.length)} of {sorted.length}
+              {selectedIds.size > 0 && ` · ${selectedIds.size} selected`}
             </span>
             <div className="flex items-center gap-1">
               <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>Previous</Button>
@@ -315,7 +340,7 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => { if (deleteIds) { del.mutate(deleteIds); setSelectedIds((p) => { const n = new Set(p); deleteIds.forEach((id) => n.delete(id)); return n; }); setDeleteIds(null); } }}>
+            <AlertDialogAction disabled={del.isPending} onClick={() => { if (deleteIds) { del.mutate(deleteIds); setSelectedIds((p) => { const n = new Set(p); deleteIds.forEach((id) => n.delete(id)); return n; }); setDeleteIds(null); } }}>
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -324,6 +349,7 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange 
 
       <BulkActionBar selectedIds={selectedIds} items={items} onClear={() => setSelectedIds(new Set())} />
     </div>
+    </TooltipProvider>
   );
 }
 
@@ -336,55 +362,18 @@ function ExpandedGapRow({
   setEditingNotes: React.Dispatch<React.SetStateAction<Record<string, string>>>;
   update: ReturnType<typeof useUpdateItem>;
 }) {
-  const [enhanceSpec, setEnhanceSpec] = useState("");
-  const [isEnhancing, setIsEnhancing] = useState(false);
+  const { stream, isStreaming, content } = useSSEStream();
 
   const enhance = async () => {
-    setIsEnhancing(true);
-    setEnhanceSpec("");
     try {
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/build-analyst`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
-        body: JSON.stringify({
-          messages: [{
-            role: "user",
-            content: `Generate a detailed implementation spec for this gap item:\n\nTitle: ${item.title}\nCategory: ${item.category}\nSeverity: ${item.severity}\nDescription: ${item.description || "N/A"}\nSuggested Fix: ${item.suggested_fix || "N/A"}\nPage Route: ${item.page_route || "N/A"}\n\nProvide: 1) Specific implementation steps 2) Files to modify 3) Testing approach 4) Complexity estimate`,
-          }],
-          context: "Implementation spec mode for a single gap item.",
-        }),
-      });
-      if (!resp.ok || !resp.body) throw new Error("Failed");
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder();
-      let buf = "", full = "";
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buf += decoder.decode(value, { stream: true });
-        let idx: number;
-        while ((idx = buf.indexOf("\n")) !== -1) {
-          let line = buf.slice(0, idx);
-          buf = buf.slice(idx + 1);
-          if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (!line.startsWith("data: ")) continue;
-          const j = line.slice(6).trim();
-          if (j === "[DONE]") break;
-          try {
-            const p = JSON.parse(j);
-            const c = p.choices?.[0]?.delta?.content;
-            if (c) { full += c; setEnhanceSpec(full); }
-          } catch { /* partial */ }
-        }
-      }
-    } catch {
-      toast.error("Failed to enhance item");
-    } finally {
-      setIsEnhancing(false);
-    }
+      await stream(
+        [{
+          role: "user",
+          content: `Generate a detailed implementation spec for this gap item:\n\nTitle: ${item.title}\nCategory: ${item.category}\nSeverity: ${item.severity}\nDescription: ${item.description || "N/A"}\nSuggested Fix: ${item.suggested_fix || "N/A"}\n\nProvide: 1) Specific implementation steps 2) Files to modify 3) Testing approach 4) Complexity estimate`,
+        }],
+        "Implementation spec mode for a single gap item."
+      );
+    } catch { /* handled */ }
   };
 
   return (
@@ -401,6 +390,8 @@ function ExpandedGapRow({
               <p className="text-muted-foreground">{item.page_route}</p>
             </>
           )}
+          <p className="font-medium mt-3 mb-1">Created</p>
+          <p className="text-xs text-muted-foreground">{new Date(item.created_at).toLocaleString()}</p>
         </div>
         <div>
           <p className="font-medium mb-1">Admin Notes</p>
@@ -413,34 +404,34 @@ function ExpandedGapRow({
               update.mutate({ id: item.id, admin_notes: editingNotes[item.id] ?? item.admin_notes ?? "" });
               toast.success("Notes saved");
             }}>Save Notes</Button>
-            <Button size="sm" variant="outline" onClick={enhance} disabled={isEnhancing}>
-              {isEnhancing ? <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 mr-1" />}
+            <Button size="sm" variant="outline" onClick={enhance} disabled={isStreaming}>
+              {isStreaming ? <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 mr-1" />}
               Enhance
             </Button>
           </div>
         </div>
       </div>
 
-      {(enhanceSpec || isEnhancing) && (
+      {(content || isStreaming) && (
         <div className="rounded-lg border bg-background p-4">
           <div className="flex items-center justify-between mb-2">
             <Badge variant="outline" className="text-xs">
               <Sparkles className="h-3 w-3 mr-1" /> AI Implementation Spec
             </Badge>
-            {enhanceSpec && (
-              <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText(enhanceSpec); toast.success("Copied"); }}>
+            {content && (
+              <Button size="sm" variant="ghost" onClick={async () => { const ok = await safeClipboardWrite(content); if (ok) toast.success("Copied"); else toast.error("Copy failed"); }}>
                 <Copy className="h-3 w-3 mr-1" /> Copy
               </Button>
             )}
           </div>
-          {isEnhancing && !enhanceSpec && (
+          {isStreaming && !content && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" /> Generating spec...
             </div>
           )}
-          {enhanceSpec && (
+          {content && (
             <div className="prose prose-sm dark:prose-invert max-w-none max-h-[300px] overflow-y-auto">
-              <ReactMarkdown>{enhanceSpec}</ReactMarkdown>
+              <ReactMarkdown>{content}</ReactMarkdown>
             </div>
           )}
         </div>

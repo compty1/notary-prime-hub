@@ -1,10 +1,11 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Plus, CheckCircle2, ArrowUp, ArrowDown, StickyNote, Download, Search, Filter, X } from "lucide-react";
@@ -20,8 +21,10 @@ export default function TodoTab({ items }: { items: TrackerItem[] }) {
   const [todoStatusFilter, setTodoStatusFilter] = useState("all");
   const [todoImpactFilter, setTodoImpactFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showNotes, setShowNotes] = useState<Set<string>>(new Set());
   const update = useUpdateItem();
   const bulk = useBulkUpdate();
+  const moveDebounceRef = useRef<number>(0);
 
   // Derive unique impact areas from to-do items
   const impactAreas = useMemo(() => {
@@ -30,11 +33,20 @@ export default function TodoTab({ items }: { items: TrackerItem[] }) {
     return Array.from(areas).sort();
   }, [items]);
 
+  // Derive categories that have to-do items
+  const todoCats = useMemo(() => {
+    const cats = new Set<string>();
+    items.filter((i) => i.is_on_todo).forEach((i) => cats.add(i.category));
+    return CATEGORIES.filter(c => cats.has(c));
+  }, [items]);
+
   const activeFilterCount = [todoCatFilter, todoSevFilter, todoStatusFilter, todoImpactFilter]
     .filter((f) => f !== "all").length + (searchQuery ? 1 : 0);
 
+  const allTodoItems = useMemo(() => items.filter((i) => i.is_on_todo), [items]);
+
   const todoItems = useMemo(() => {
-    let list = items.filter((i) => i.is_on_todo);
+    let list = [...allTodoItems];
     if (todoCatFilter !== "all") list = list.filter((i) => i.category === todoCatFilter);
     if (todoSevFilter !== "all") list = list.filter((i) => i.severity === todoSevFilter);
     if (todoStatusFilter !== "all") list = list.filter((i) => i.status === todoStatusFilter);
@@ -49,9 +61,13 @@ export default function TodoTab({ items }: { items: TrackerItem[] }) {
       );
     }
     return list.sort((a, b) => (a.todo_priority ?? 999) - (b.todo_priority ?? 999));
-  }, [items, todoCatFilter, todoSevFilter, todoStatusFilter, todoImpactFilter, searchQuery]);
+  }, [allTodoItems, todoCatFilter, todoSevFilter, todoStatusFilter, todoImpactFilter, searchQuery]);
 
   const nonTodoOpen = useMemo(() => items.filter((i) => !i.is_on_todo && (i.status === "open" || i.status === "in_progress")), [items]);
+
+  // Progress metrics
+  const resolvedTodo = allTodoItems.filter(i => i.status === "resolved" || i.status === "wont_fix").length;
+  const progressPct = allTodoItems.length > 0 ? Math.round((resolvedTodo / allTodoItems.length) * 100) : 0;
 
   const toggleSelect = (id: string) => setSelected((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
   const allSelected = todoItems.length > 0 && todoItems.every((i) => selected.has(i.id));
@@ -64,7 +80,19 @@ export default function TodoTab({ items }: { items: TrackerItem[] }) {
     setSearchQuery("");
   };
 
-  const movePriority = (id: string, dir: -1 | 1) => {
+  const toggleNotes = (id: string) => {
+    setShowNotes(prev => {
+      const n = new Set(prev);
+      n.has(id) ? n.delete(id) : n.add(id);
+      return n;
+    });
+  };
+
+  const movePriority = useCallback((id: string, dir: -1 | 1) => {
+    const now = Date.now();
+    if (now - moveDebounceRef.current < 200) return;
+    moveDebounceRef.current = now;
+
     const idx = todoItems.findIndex((i) => i.id === id);
     const swapIdx = idx + dir;
     if (swapIdx < 0 || swapIdx >= todoItems.length) return;
@@ -72,10 +100,24 @@ export default function TodoTab({ items }: { items: TrackerItem[] }) {
     const itemB = todoItems[swapIdx];
     update.mutate({ id: itemA.id, todo_priority: swapIdx });
     setTimeout(() => update.mutate({ id: itemB.id, todo_priority: idx }), 50);
-  };
+  }, [todoItems, update]);
 
   return (
     <div className="space-y-4">
+      {/* Progress bar */}
+      {allTodoItems.length > 0 && (
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium">To-Do Progress</span>
+              <span className="text-sm font-bold">{progressPct}%</span>
+            </div>
+            <Progress value={progressPct} className="h-2" />
+            <p className="text-xs text-muted-foreground mt-1">{resolvedTodo}/{allTodoItems.length} completed</p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Search bar */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -92,19 +134,14 @@ export default function TodoTab({ items }: { items: TrackerItem[] }) {
         )}
       </div>
 
-      {/* Filter bar */}
+      {/* Filter bar - only show categories that have items */}
       <div className="flex flex-wrap items-center gap-2">
         <Filter className="h-4 w-4 text-muted-foreground shrink-0" />
-
-        {/* Category filters */}
-        {CATEGORIES.map((c) => (
+        {todoCats.map((c) => (
           <Button key={c} size="sm" variant={todoCatFilter === c ? "default" : "outline"} className="text-xs h-7"
             onClick={() => setTodoCatFilter(todoCatFilter === c ? "all" : c)}>{c}</Button>
         ))}
-
-        <span className="text-muted-foreground mx-1">|</span>
-
-        {/* Severity filters */}
+        {todoCats.length > 0 && <span className="text-muted-foreground mx-1">|</span>}
         {SEVERITIES.map((s) => (
           <Badge key={s} className={`cursor-pointer text-xs ${todoSevFilter === s ? severityColor[s] : "bg-muted text-muted-foreground"}`}
             onClick={() => setTodoSevFilter(todoSevFilter === s ? "all" : s)}>{s}</Badge>
@@ -147,7 +184,7 @@ export default function TodoTab({ items }: { items: TrackerItem[] }) {
 
         <span className="ml-auto text-xs text-muted-foreground">
           {todoItems.length} item{todoItems.length !== 1 ? "s" : ""}
-          {activeFilterCount > 0 && ` (filtered from ${items.filter(i => i.is_on_todo).length})`}
+          {activeFilterCount > 0 && ` (filtered from ${allTodoItems.length})`}
         </span>
       </div>
 
@@ -203,16 +240,25 @@ export default function TodoTab({ items }: { items: TrackerItem[] }) {
                       </Select>
                     </div>
                     {item.suggested_fix && <p className="text-sm text-muted-foreground mt-1">{item.suggested_fix}</p>}
-                    <div className="mt-2 flex items-start gap-2">
-                      <StickyNote className="h-3.5 w-3.5 mt-1 text-muted-foreground shrink-0" />
-                      <Textarea rows={2} className="text-xs"
-                        value={editingNotes[item.id] ?? item.admin_notes ?? ""}
-                        onChange={(e) => setEditingNotes((p) => ({ ...p, [item.id]: e.target.value }))}
-                        placeholder="Add notes..." />
-                      <Button size="sm" variant="ghost" onClick={() => {
-                        update.mutate({ id: item.id, admin_notes: editingNotes[item.id] ?? item.admin_notes ?? "" });
-                        toast.success("Saved");
-                      }}>Save</Button>
+                    
+                    {/* Collapsible notes */}
+                    <div className="mt-2">
+                      <Button size="sm" variant="ghost" className="h-6 text-xs px-1.5 text-muted-foreground" onClick={() => toggleNotes(item.id)}>
+                        <StickyNote className="h-3 w-3 mr-1" />
+                        {showNotes.has(item.id) ? "Hide Notes" : (item.admin_notes ? "Show Notes" : "Add Notes")}
+                      </Button>
+                      {showNotes.has(item.id) && (
+                        <div className="flex items-start gap-2 mt-1">
+                          <Textarea rows={2} className="text-xs"
+                            value={editingNotes[item.id] ?? item.admin_notes ?? ""}
+                            onChange={(e) => setEditingNotes((p) => ({ ...p, [item.id]: e.target.value }))}
+                            placeholder="Add notes..." />
+                          <Button size="sm" variant="ghost" onClick={() => {
+                            update.mutate({ id: item.id, admin_notes: editingNotes[item.id] ?? item.admin_notes ?? "" });
+                            toast.success("Saved");
+                          }}>Save</Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-col gap-1">
