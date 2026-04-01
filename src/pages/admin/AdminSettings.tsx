@@ -430,6 +430,47 @@ export default function AdminSettings() {
           </CardContent>
         </Card>
 
+        {/* HubSpot CRM Integration */}
+        <Card className="border-border/50">
+          <CardHeader>
+            <CardTitle className="font-sans text-lg flex items-center gap-2">
+              <ArrowDownUp className="h-5 w-5 text-primary" /> HubSpot CRM
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-xs text-muted-foreground">
+              Two-way sync between leads and HubSpot contacts. Configure your HubSpot Private App token below.
+            </p>
+            <div>
+              <Label>HubSpot API Key</Label>
+              <Input
+                type="password"
+                value={editValues.hubspot_api_key || ""}
+                onChange={(e) => updateValue("hubspot_api_key", e.target.value)}
+                placeholder="pat-na1-••••••••"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">Create a Private App in HubSpot → Settings → Integrations → API</p>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={async () => {
+                const { data, error } = await supabase.functions.invoke("hubspot-sync", { body: { action: "test" } });
+                if (error || !data?.connected) toast({ title: "HubSpot connection failed", description: data?.error || error?.message, variant: "destructive" });
+                else toast({ title: "HubSpot connected successfully" });
+              }}>Test Connection</Button>
+              <Button variant="outline" size="sm" onClick={async () => {
+                const { data, error } = await supabase.functions.invoke("hubspot-sync", { body: { action: "push" } });
+                if (error) toast({ title: "Push failed", description: error.message, variant: "destructive" });
+                else toast({ title: data?.message || "Leads pushed to HubSpot" });
+              }}>Push Leads</Button>
+              <Button variant="outline" size="sm" onClick={async () => {
+                const { data, error } = await supabase.functions.invoke("hubspot-sync", { body: { action: "pull" } });
+                if (error) toast({ title: "Pull failed", description: error.message, variant: "destructive" });
+                else toast({ title: data?.message || "Contacts pulled from HubSpot" });
+              }}>Pull Contacts</Button>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Zoom / Meeting Integration */}
         <Card className="border-border/50">
           <CardHeader>
