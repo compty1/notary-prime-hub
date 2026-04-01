@@ -78,6 +78,7 @@ const AccountSettings = lazy(() => import("./pages/AccountSettings"));
 const AdminContentWorkspace = lazy(() => import("./pages/admin/AdminContentWorkspace"));
 const AdminTaskQueue = lazy(() => import("./pages/admin/AdminTaskQueue"));
 const AdminCRM = lazy(() => import("./pages/admin/AdminCRM"));
+const AdminBuildTracker = lazy(() => import("./pages/admin/AdminBuildTracker"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const Maintenance = lazy(() => import("./pages/Maintenance"));
 const ForNotaries = lazy(() => import("./pages/solutions/ForNotaries"));
