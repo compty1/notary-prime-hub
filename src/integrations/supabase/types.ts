@@ -266,9 +266,12 @@ export type Database = {
           category: string
           created_at: string | null
           description: string | null
+          flow_steps: Json | null
           id: string
           impact_area: string | null
           is_on_todo: boolean
+          page_route: string | null
+          plan_id: string | null
           resolved_at: string | null
           severity: string
           status: string
@@ -282,9 +285,12 @@ export type Database = {
           category?: string
           created_at?: string | null
           description?: string | null
+          flow_steps?: Json | null
           id?: string
           impact_area?: string | null
           is_on_todo?: boolean
+          page_route?: string | null
+          plan_id?: string | null
           resolved_at?: string | null
           severity?: string
           status?: string
@@ -298,15 +304,59 @@ export type Database = {
           category?: string
           created_at?: string | null
           description?: string | null
+          flow_steps?: Json | null
           id?: string
           impact_area?: string | null
           is_on_todo?: boolean
+          page_route?: string | null
+          plan_id?: string | null
           resolved_at?: string | null
           severity?: string
           status?: string
           suggested_fix?: string | null
           title?: string
           todo_priority?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "build_tracker_items_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "build_tracker_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      build_tracker_plans: {
+        Row: {
+          chat_context: string | null
+          created_at: string | null
+          id: string
+          plan_items: Json
+          plan_summary: string | null
+          plan_title: string
+          source: string
+          updated_at: string | null
+        }
+        Insert: {
+          chat_context?: string | null
+          created_at?: string | null
+          id?: string
+          plan_items?: Json
+          plan_summary?: string | null
+          plan_title: string
+          source?: string
+          updated_at?: string | null
+        }
+        Update: {
+          chat_context?: string | null
+          created_at?: string | null
+          id?: string
+          plan_items?: Json
+          plan_summary?: string | null
+          plan_title?: string
+          source?: string
           updated_at?: string | null
         }
         Relationships: []
