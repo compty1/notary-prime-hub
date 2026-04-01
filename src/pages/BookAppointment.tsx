@@ -118,6 +118,30 @@ export default function BookAppointment() {
   const [afterHoursFee, setAfterHoursFee] = useState(0);
   const [needsApostille, setNeedsApostille] = useState(false);
   const [outsideServiceArea, setOutsideServiceArea] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+
+  // Booking draft persistence (Phase 3.4)
+  useEffect(() => {
+    if (!user) return;
+    const saveDraft = async () => {
+      if (!serviceType && !date) return;
+      try {
+        const draftData = {
+          notarizationType, serviceType, date, time, notes, clientAddress,
+          clientCity, clientState, clientZip, documentCount, signerCapacity,
+          entityName, signerTitle, facilityName, urgencyLevel, destinationCountry,
+        };
+        const { data: existing } = await supabase.from("booking_drafts").select("id").eq("user_id", user.id).limit(1).single();
+        if (existing) {
+          await supabase.from("booking_drafts").update({ draft_data: draftData as any, step, updated_at: new Date().toISOString() }).eq("id", existing.id);
+        } else {
+          await supabase.from("booking_drafts").insert({ user_id: user.id, draft_data: draftData as any, step });
+        }
+      } catch {}
+    };
+    const timer = setTimeout(saveDraft, 2000);
+    return () => clearTimeout(timer);
+  }, [user, step, serviceType, date, time, notes, clientAddress, notarizationType]);
 
   useEffect(() => {
     if (navigator.geolocation) {
