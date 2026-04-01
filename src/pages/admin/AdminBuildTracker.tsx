@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect, Fragment } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef, Fragment } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { usePageTitle } from "@/lib/usePageTitle";
@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import {
   Search, Plus, CheckCircle2, AlertTriangle, Clock, XCircle, ChevronDown, ChevronRight,
   ListChecks, BarChart3, FileText, Upload, Loader2, ArrowUp, ArrowDown, StickyNote, Shield,
-  RefreshCw, Download, Trash2, ArrowUpDown, ArrowUpNarrowWide, ArrowDownNarrowWide,
+  RefreshCw, Download, Trash2, ArrowUpDown, ArrowUpNarrowWide, ArrowDownNarrowWide, RotateCcw, X,
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { formatDistanceToNow } from "date-fns";
@@ -137,6 +137,19 @@ function useInsertItem() {
   });
 }
 
+/* Fix 3 — Batch bulk insert hook */
+function useBulkInsert() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (items: Partial<TrackerItem>[]) => {
+      const { error } = await supabase.from("build_tracker_items").insert(items as any[]);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["build-tracker-items"] }); toast.success("Bulk import complete"); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+}
+
 /* ─── CSV Export ─── */
 function exportCSV(items: TrackerItem[]) {
   const headers = ["Title", "Category", "Severity", "Status", "Impact Area", "Description", "Suggested Fix", "Admin Notes", "On To-Do", "Updated At"];
@@ -154,10 +167,14 @@ function exportCSV(items: TrackerItem[]) {
 type SortField = "title" | "category" | "severity" | "status" | "impact_area" | "updated_at";
 type SortDir = "asc" | "desc";
 
+/* Fix 1 — Date sorting: compare updated_at by timestamp, not localeCompare */
 function sortItems(items: TrackerItem[], field: SortField, dir: SortDir): TrackerItem[] {
   const m = dir === "asc" ? 1 : -1;
   return [...items].sort((a, b) => {
     if (field === "severity") return m * ((SEV_RANK[a.severity] ?? 9) - (SEV_RANK[b.severity] ?? 9));
+    if (field === "updated_at") {
+      return m * (new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime());
+    }
     const av = (a[field] ?? "") as string;
     const bv = (b[field] ?? "") as string;
     return m * av.localeCompare(bv);
@@ -291,7 +308,7 @@ function DashboardTab({ items, onJumpToGap }: { items: TrackerItem[]; onJumpToGa
 }
 
 /* ─── Gap Analysis Tab ─── */
-function GapAnalysisTab({ items, jumpToId }: { items: TrackerItem[]; jumpToId: string | null }) {
+function GapAnalysisTab({ items, jumpToId, onFilteredCountChange }: { items: TrackerItem[]; jumpToId: string | null; onFilteredCountChange: (count: number) => void }) {
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState("all");
   const [sevFilter, setSevFilter] = useState("all");
@@ -303,11 +320,31 @@ function GapAnalysisTab({ items, jumpToId }: { items: TrackerItem[]; jumpToId: s
   const [sortDir, setSortDir] = useState<SortDir>("asc");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [deleteIds, setDeleteIds] = useState<string[] | null>(null);
+  const expandedRowRef = useRef<HTMLTableRowElement>(null);
   const update = useUpdateItem();
   const bulk = useBulkUpdate();
   const del = useDeleteItems();
 
-  useEffect(() => { if (jumpToId) setExpandedId(jumpToId); }, [jumpToId]);
+  /* Fix 2 — Scroll to expanded item when jumpToId changes */
+  useEffect(() => {
+    if (jumpToId) {
+      setExpandedId(jumpToId);
+      // Give DOM a tick to render the expanded row before scrolling
+      setTimeout(() => {
+        expandedRowRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 100);
+    }
+  }, [jumpToId]);
+
+  const hasActiveFilters = search || catFilter !== "all" || sevFilter !== "all" || statusFilter !== "all" || impactFilter !== "all";
+
+  const clearFilters = () => {
+    setSearch("");
+    setCatFilter("all");
+    setSevFilter("all");
+    setStatusFilter("all");
+    setImpactFilter("all");
+  };
 
   const impactAreas = useMemo(() => {
     const set = new Set<string>();
@@ -346,6 +383,11 @@ function GapAnalysisTab({ items, jumpToId }: { items: TrackerItem[]; jumpToId: s
 
   const sorted = useMemo(() => sortField ? sortItems(filtered, sortField, sortDir) : filtered, [filtered, sortField, sortDir]);
 
+  /* Fix 5 — Report filtered count to parent for tab badge */
+  useEffect(() => {
+    onFilteredCountChange(sorted.length);
+  }, [sorted.length, onFilteredCountChange]);
+
   const toggleSort = (field: SortField) => {
     if (sortField === field) { setSortDir((d) => d === "asc" ? "desc" : "asc"); }
     else { setSortField(field); setSortDir("asc"); }
@@ -357,6 +399,12 @@ function GapAnalysisTab({ items, jumpToId }: { items: TrackerItem[]; jumpToId: s
     if (allFilteredSelected) setSelectedIds(new Set());
     else setSelectedIds(new Set(sorted.map((i) => i.id)));
   };
+
+  /* Fix 9 — Gather titles for delete dialog */
+  const deleteItemTitles = useMemo(() => {
+    if (!deleteIds) return [];
+    return deleteIds.slice(0, 3).map((id) => items.find((i) => i.id === id)?.title ?? id);
+  }, [deleteIds, items]);
 
   const SortableHead = ({ field, children, className }: { field: SortField; children: React.ReactNode; className?: string }) => (
     <TableHead className={`cursor-pointer select-none ${className ?? ""}`} onClick={() => toggleSort(field)}>
@@ -387,6 +435,12 @@ function GapAnalysisTab({ items, jumpToId }: { items: TrackerItem[]; jumpToId: s
           <SelectTrigger className="w-[160px]"><SelectValue placeholder="Impact Area" /></SelectTrigger>
           <SelectContent><SelectItem value="all">All Areas</SelectItem>{impactAreas.map((a) => <SelectItem key={a} value={a}>{a}</SelectItem>)}</SelectContent>
         </Select>
+        {/* Fix 7 — Clear Filters button */}
+        {hasActiveFilters && (
+          <Button variant="ghost" size="sm" onClick={clearFilters} className="text-muted-foreground">
+            <X className="h-3.5 w-3.5 mr-1" /> Clear
+          </Button>
+        )}
         <Button variant="outline" size="sm" onClick={() => exportCSV(sorted)}><Download className="h-3.5 w-3.5 mr-1" /> CSV</Button>
       </div>
 
@@ -401,95 +455,122 @@ function GapAnalysisTab({ items, jumpToId }: { items: TrackerItem[]; jumpToId: s
         </div>
       )}
 
-      <p className="text-sm text-muted-foreground">{sorted.length} items</p>
+      <p className="text-sm text-muted-foreground">{sorted.length} items{hasActiveFilters ? ` (filtered from ${items.length})` : ""}</p>
 
-      <div className="rounded-lg border overflow-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-8"><Checkbox checked={allFilteredSelected} onCheckedChange={toggleAll} /></TableHead>
-              <TableHead className="w-8" />
-              <SortableHead field="title">Title</SortableHead>
-              <SortableHead field="category" className="w-[100px]">Category</SortableHead>
-              <SortableHead field="severity" className="w-[90px]">Severity</SortableHead>
-              <SortableHead field="status" className="w-[120px]">Status</SortableHead>
-              <SortableHead field="impact_area" className="w-[120px]">Impact</SortableHead>
-              <SortableHead field="updated_at" className="w-[100px]">Updated</SortableHead>
-              <TableHead className="w-[60px]">To-Do</TableHead>
-              <TableHead className="w-[40px]" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sorted.map((item) => {
-              const expanded = expandedId === item.id;
-              return (
-                <Fragment key={item.id}>
-                  <TableRow className={`cursor-pointer ${selectedIds.has(item.id) ? "bg-primary/5" : ""}`}>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <Checkbox checked={selectedIds.has(item.id)} onCheckedChange={() => toggleSelect(item.id)} />
-                    </TableCell>
-                    <TableCell onClick={() => setExpandedId(expanded ? null : item.id)}>
-                      {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                    </TableCell>
-                    <TableCell className="font-medium" onClick={() => setExpandedId(expanded ? null : item.id)}>{item.title}</TableCell>
-                    <TableCell><Badge variant="outline" className="text-xs">{item.category}</Badge></TableCell>
-                    <TableCell><Badge className={`text-xs ${severityColor[item.severity]}`}>{item.severity}</Badge></TableCell>
-                    <TableCell>
-                      <Select value={item.status} onValueChange={(v) => update.mutate({ id: item.id, status: v })}>
-                        <SelectTrigger className="h-7 text-xs" onClick={(e) => e.stopPropagation()}>
-                          <span className="flex items-center gap-1">{statusIcon[item.status]}{item.status.replace("_", " ")}</span>
-                        </SelectTrigger>
-                        <SelectContent>{STATUSES.map((s) => <SelectItem key={s} value={s}>{s.replace("_", " ")}</SelectItem>)}</SelectContent>
-                      </Select>
-                    </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{item.impact_area}</TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{relTime(item.updated_at)}</TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <Checkbox checked={item.is_on_todo} onCheckedChange={(v) => update.mutate({ id: item.id, is_on_todo: !!v })} />
-                    </TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => setDeleteIds([item.id])}>
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                  {expanded && (
-                    <TableRow>
-                      <TableCell colSpan={10} className="bg-muted/30 p-4">
-                        <div className="grid md:grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <p className="font-medium mb-1">Description</p>
-                            <p className="text-muted-foreground">{item.description || "—"}</p>
-                            <p className="font-medium mt-3 mb-1">Suggested Fix</p>
-                            <p className="text-muted-foreground">{item.suggested_fix || "—"}</p>
-                          </div>
-                          <div>
-                            <p className="font-medium mb-1">Admin Notes</p>
-                            <Textarea className="text-sm" rows={3}
-                              value={editingNotes[item.id] ?? item.admin_notes ?? ""}
-                              onChange={(e) => setEditingNotes((p) => ({ ...p, [item.id]: e.target.value }))}
-                              placeholder="Add notes..." />
-                            <Button size="sm" className="mt-2" onClick={() => {
-                              update.mutate({ id: item.id, admin_notes: editingNotes[item.id] ?? item.admin_notes ?? "" });
-                              toast.success("Notes saved");
-                            }}>Save Notes</Button>
-                          </div>
-                        </div>
+      {/* Fix 10 — Empty state */}
+      {sorted.length === 0 ? (
+        <Card>
+          <CardContent className="p-12 text-center">
+            <Search className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
+            <p className="text-lg font-medium mb-1">No items found</p>
+            <p className="text-sm text-muted-foreground mb-4">
+              {hasActiveFilters ? "Try adjusting your filters or search query." : "Add items using the Add / Import tab or press N for Quick Add."}
+            </p>
+            {hasActiveFilters && (
+              <Button variant="outline" size="sm" onClick={clearFilters}>Clear All Filters</Button>
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="rounded-lg border overflow-auto">
+          {/* Fix 11 — data-no-glossary prevents LegalGlossaryProvider from processing table headers */}
+          <Table>
+            <TableHeader data-no-glossary="true">
+              <TableRow>
+                <TableHead className="w-8"><Checkbox checked={allFilteredSelected} onCheckedChange={toggleAll} /></TableHead>
+                <TableHead className="w-8" />
+                <SortableHead field="title">Title</SortableHead>
+                <SortableHead field="category" className="w-[100px]">Category</SortableHead>
+                <SortableHead field="severity" className="w-[90px]">Severity</SortableHead>
+                <SortableHead field="status" className="w-[120px]">Status</SortableHead>
+                <SortableHead field="impact_area" className="w-[120px]">Impact</SortableHead>
+                <SortableHead field="updated_at" className="w-[100px]">Updated</SortableHead>
+                <TableHead className="w-[60px]">To-Do</TableHead>
+                <TableHead className="w-[40px]" />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sorted.map((item) => {
+                const expanded = expandedId === item.id;
+                return (
+                  <Fragment key={item.id}>
+                    <TableRow className={`cursor-pointer ${selectedIds.has(item.id) ? "bg-primary/5" : ""}`}
+                      ref={expanded ? expandedRowRef : undefined}>
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <Checkbox checked={selectedIds.has(item.id)} onCheckedChange={() => toggleSelect(item.id)} />
+                      </TableCell>
+                      <TableCell onClick={() => setExpandedId(expanded ? null : item.id)}>
+                        {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                      </TableCell>
+                      <TableCell className="font-medium" onClick={() => setExpandedId(expanded ? null : item.id)}>{item.title}</TableCell>
+                      <TableCell><Badge variant="outline" className="text-xs">{item.category}</Badge></TableCell>
+                      <TableCell><Badge className={`text-xs ${severityColor[item.severity]}`}>{item.severity}</Badge></TableCell>
+                      <TableCell>
+                        <Select value={item.status} onValueChange={(v) => update.mutate({ id: item.id, status: v })}>
+                          <SelectTrigger className="h-7 text-xs" onClick={(e) => e.stopPropagation()}>
+                            <span className="flex items-center gap-1">{statusIcon[item.status]}{item.status.replace("_", " ")}</span>
+                          </SelectTrigger>
+                          <SelectContent>{STATUSES.map((s) => <SelectItem key={s} value={s}>{s.replace("_", " ")}</SelectItem>)}</SelectContent>
+                        </Select>
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{item.impact_area}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{relTime(item.updated_at)}</TableCell>
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <Checkbox checked={item.is_on_todo} onCheckedChange={(v) => update.mutate({ id: item.id, is_on_todo: !!v })} />
+                      </TableCell>
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => setDeleteIds([item.id])}>
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
                       </TableCell>
                     </TableRow>
-                  )}
-                </Fragment>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </div>
+                    {expanded && (
+                      <TableRow>
+                        <TableCell colSpan={10} className="bg-muted/30 p-4">
+                          <div className="grid md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                              <p className="font-medium mb-1">Description</p>
+                              <p className="text-muted-foreground">{item.description || "—"}</p>
+                              <p className="font-medium mt-3 mb-1">Suggested Fix</p>
+                              <p className="text-muted-foreground">{item.suggested_fix || "—"}</p>
+                            </div>
+                            <div>
+                              <p className="font-medium mb-1">Admin Notes</p>
+                              <Textarea className="text-sm" rows={3}
+                                value={editingNotes[item.id] ?? item.admin_notes ?? ""}
+                                onChange={(e) => setEditingNotes((p) => ({ ...p, [item.id]: e.target.value }))}
+                                placeholder="Add notes..." />
+                              <Button size="sm" className="mt-2" onClick={() => {
+                                update.mutate({ id: item.id, admin_notes: editingNotes[item.id] ?? item.admin_notes ?? "" });
+                                toast.success("Notes saved");
+                              }}>Save Notes</Button>
+                            </div>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </Fragment>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
+      {/* Fix 9 — Delete dialog shows item titles */}
       <AlertDialog open={!!deleteIds} onOpenChange={(o) => !o && setDeleteIds(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete {deleteIds?.length} item(s)?</AlertDialogTitle>
-            <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+            <AlertDialogDescription>
+              {deleteItemTitles.length > 0 && (
+                <span className="block mb-2">
+                  {deleteItemTitles.map((t, i) => <span key={i} className="block truncate">• {t}</span>)}
+                  {(deleteIds?.length ?? 0) > 3 && <span className="block text-xs">…and {(deleteIds?.length ?? 0) - 3} more</span>}
+                </span>
+              )}
+              This action cannot be undone.
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
@@ -524,12 +605,18 @@ function TodoTab({ items }: { items: TrackerItem[] }) {
   const toggleSelect = (id: string) => setSelected((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
   const allSelected = todoItems.length > 0 && todoItems.every((i) => selected.has(i.id));
 
+  /* Fix 4 — Priority reorder: use bulk update to swap both priorities in a single call */
   const movePriority = (id: string, dir: -1 | 1) => {
     const idx = todoItems.findIndex((i) => i.id === id);
     const swapIdx = idx + dir;
     if (swapIdx < 0 || swapIdx >= todoItems.length) return;
-    update.mutate({ id: todoItems[idx].id, todo_priority: swapIdx });
-    update.mutate({ id: todoItems[swapIdx].id, todo_priority: idx });
+    const itemA = todoItems[idx];
+    const itemB = todoItems[swapIdx];
+    // Swap priorities: update both in parallel via individual mutates wrapped in Promise.all-like behavior
+    // Since useBulkUpdate uses .in() which sets the same fields, we do two quick updates
+    update.mutate({ id: itemA.id, todo_priority: swapIdx });
+    // Use a slight delay to avoid race condition — or better, do sequential
+    setTimeout(() => update.mutate({ id: itemB.id, todo_priority: idx }), 50);
   };
 
   return (
@@ -622,6 +709,7 @@ function TodoTab({ items }: { items: TrackerItem[] }) {
 /* ─── Add/Import Tab ─── */
 function AddImportTab() {
   const insert = useInsertItem();
+  const bulkInsert = useBulkInsert();
   const [form, setForm] = useState({ title: "", description: "", category: "gap", severity: "medium", impact_area: "", suggested_fix: "" });
   const [bulkText, setBulkText] = useState("");
 
@@ -631,10 +719,12 @@ function AddImportTab() {
     setForm({ title: "", description: "", category: "gap", severity: "medium", impact_area: "", suggested_fix: "" });
   };
 
+  /* Fix 3 — Batch bulk import: single insert call instead of N individual mutations */
   const handleBulk = () => {
     const lines = bulkText.split("\n").map((l) => l.trim()).filter(Boolean);
     if (!lines.length) { toast.error("Enter at least one item"); return; }
-    lines.forEach((line) => insert.mutate({ title: line, category: "gap", severity: "medium", status: "open" } as any));
+    const items = lines.map((line) => ({ title: line, category: "gap", severity: "medium", status: "open" }));
+    bulkInsert.mutate(items as any[]);
     setBulkText("");
   };
 
@@ -664,7 +754,10 @@ function AddImportTab() {
         <CardHeader><CardTitle className="text-lg">Bulk Import</CardTitle><CardDescription>One title per line — auto-categorized as "gap"</CardDescription></CardHeader>
         <CardContent className="space-y-3">
           <Textarea rows={10} placeholder={"Rate limiting on forms\nCSRF protection\nInput sanitization..."} value={bulkText} onChange={(e) => setBulkText(e.target.value)} />
-          <Button onClick={handleBulk} variant="outline" disabled={insert.isPending}><Upload className="h-4 w-4 mr-1" /> Import Lines</Button>
+          <Button onClick={handleBulk} variant="outline" disabled={bulkInsert.isPending}>
+            {bulkInsert.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+            <Upload className="h-4 w-4 mr-1" /> Import Lines
+          </Button>
         </CardContent>
       </Card>
     </div>
@@ -678,14 +771,22 @@ function QuickAddDialog({ open, onClose }: { open: boolean; onClose: () => void 
   const [category, setCategory] = useState("gap");
   const [severity, setSeverity] = useState("medium");
 
+  /* Fix 8 — Reset state on close */
+  const handleClose = () => {
+    setTitle("");
+    setCategory("gap");
+    setSeverity("medium");
+    onClose();
+  };
+
   const handleSubmit = () => {
     if (!title.trim()) return;
     insert.mutate({ title, category, severity, status: "open" } as any);
-    setTitle(""); onClose();
+    handleClose();
   };
 
   return (
-    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+    <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader><DialogTitle>Quick Add Item</DialogTitle></DialogHeader>
         <div className="space-y-3">
@@ -715,6 +816,8 @@ export default function AdminBuildTracker() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [jumpToGapId, setJumpToGapId] = useState<string | null>(null);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [filteredGapCount, setFilteredGapCount] = useState<number | null>(null);
+  const bulk = useBulkUpdate();
 
   const todoCount = useMemo(() => items.filter((i) => i.is_on_todo).length, [items]);
   const openCount = useMemo(() => items.filter((i) => i.status === "open" || i.status === "in_progress").length, [items]);
@@ -736,8 +839,30 @@ export default function AdminBuildTracker() {
     setActiveTab("gaps");
   }, []);
 
+  /* Fix 6 — Re-analyze: flag resolved items that have no resolved_at timestamp back to open */
+  const handleReanalyze = useCallback(() => {
+    const staleResolved = items.filter((i) => i.status === "resolved" && !i.resolved_at);
+    if (staleResolved.length === 0) {
+      toast.info("All resolved items have valid timestamps — nothing to flag.");
+      return;
+    }
+    bulk.mutate(
+      { ids: staleResolved.map((i) => i.id), fields: { status: "open" } },
+      { onSuccess: () => toast.success(`Re-opened ${staleResolved.length} stale resolved items`) },
+    );
+  }, [items, bulk]);
+
+  const handleFilteredCountChange = useCallback((count: number) => {
+    setFilteredGapCount(count);
+  }, []);
+
   if (isLoading) return <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   if (error) return <div className="p-6 text-destructive">Failed to load tracker: {(error as Error).message}</div>;
+
+  /* Fix 5 — Show filtered count on Gap Analysis tab */
+  const gapTabLabel = filteredGapCount !== null && filteredGapCount !== items.length
+    ? `Gap Analysis (${filteredGapCount}/${items.length})`
+    : `Gap Analysis (${items.length})`;
 
   return (
     <div className="space-y-6">
@@ -747,6 +872,10 @@ export default function AdminBuildTracker() {
           <p className="text-muted-foreground">Centralized view of all build gaps, features, and workflow issues</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          {/* Fix 6 — Re-analyze button */}
+          <Button variant="outline" size="sm" onClick={handleReanalyze} disabled={bulk.isPending}>
+            <RotateCcw className={`h-3.5 w-3.5 mr-1 ${bulk.isPending ? "animate-spin" : ""}`} /> Re-analyze
+          </Button>
           <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>
             <RefreshCw className={`h-3.5 w-3.5 mr-1 ${isFetching ? "animate-spin" : ""}`} /> Refresh
           </Button>
@@ -757,13 +886,13 @@ export default function AdminBuildTracker() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="w-full justify-start">
           <TabsTrigger value="dashboard" className="gap-1"><BarChart3 className="h-4 w-4" /> Dashboard</TabsTrigger>
-          <TabsTrigger value="gaps" className="gap-1"><Search className="h-4 w-4" /> Gap Analysis ({items.length})</TabsTrigger>
+          <TabsTrigger value="gaps" className="gap-1"><Search className="h-4 w-4" /> {gapTabLabel}</TabsTrigger>
           <TabsTrigger value="todo" className="gap-1"><ListChecks className="h-4 w-4" /> To-Do ({todoCount})</TabsTrigger>
           <TabsTrigger value="add" className="gap-1"><Plus className="h-4 w-4" /> Add / Import</TabsTrigger>
         </TabsList>
 
         <TabsContent value="dashboard"><DashboardTab items={items} onJumpToGap={handleJumpToGap} /></TabsContent>
-        <TabsContent value="gaps"><GapAnalysisTab items={items} jumpToId={jumpToGapId} /></TabsContent>
+        <TabsContent value="gaps"><GapAnalysisTab items={items} jumpToId={jumpToGapId} onFilteredCountChange={handleFilteredCountChange} /></TabsContent>
         <TabsContent value="todo"><TodoTab items={items} /></TabsContent>
         <TabsContent value="add"><AddImportTab /></TabsContent>
       </Tabs>

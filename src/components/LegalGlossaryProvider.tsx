@@ -53,6 +53,8 @@ export default function LegalGlossaryProvider({ children }: { children: React.Re
     if (["SCRIPT", "STYLE", "INPUT", "TEXTAREA", "CODE", "PRE"].includes(tag)) return;
     if (parent.isContentEditable) return;
     if (parent.classList.contains("legal-term")) return;
+    // Skip elements (or ancestors) marked with data-no-glossary
+    if (parent.closest("[data-no-glossary]")) return;
 
     const regex = buildGlossaryRegex();
     const text = node.textContent || "";
