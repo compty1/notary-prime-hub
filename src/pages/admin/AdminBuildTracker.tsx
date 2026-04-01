@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, lazy, Suspense } from "react";
 import { usePageTitle } from "@/lib/usePageTitle";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import {
   Search, Plus, BarChart3, ListChecks, Upload, Loader2, RefreshCw, RotateCcw,
   Workflow, Globe, ClipboardList, Cpu, Bot, Mail, Monitor, Palette, Sparkles, SwatchBook,
 } from "lucide-react";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { useTrackerItems, useInsertItem, usePlans, useRefreshAll, useReanalyze } from "./build-tracker/hooks";
 import { CATEGORIES, SEVERITIES } from "./build-tracker/constants";
 import DashboardTab from "./build-tracker/DashboardTab";
@@ -21,12 +22,26 @@ import ServiceFlowTab from "./build-tracker/ServiceFlowTab";
 import PageAuditorTab from "./build-tracker/PageAuditorTab";
 import PlanHistoryTab from "./build-tracker/PlanHistoryTab";
 import PlatformFunctionsTab from "./build-tracker/PlatformFunctionsTab";
-import AIAnalystTab from "./build-tracker/AIAnalystTab";
-import EmailTemplatesTab from "./build-tracker/EmailTemplatesTab";
-import LivePreviewTab from "./build-tracker/LivePreviewTab";
-import BrandAnalysisTab from "./build-tracker/BrandAnalysisTab";
-import ThemeExplorerTab from "./build-tracker/ThemeExplorerTab";
 import DesignFeatureDialog from "./build-tracker/DesignFeatureDialog";
+
+// Lazy-load heavy AI/Brand/Theme tabs
+const AIAnalystTab = lazy(() => import("./build-tracker/AIAnalystTab"));
+const EmailTemplatesTab = lazy(() => import("./build-tracker/EmailTemplatesTab"));
+const LivePreviewTab = lazy(() => import("./build-tracker/LivePreviewTab"));
+const BrandAnalysisTab = lazy(() => import("./build-tracker/BrandAnalysisTab"));
+const ThemeExplorerTab = lazy(() => import("./build-tracker/ThemeExplorerTab"));
+
+function TabFallback() {
+  return <div className="flex items-center justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
+}
+
+function TabErrorBoundary({ children, name }: { children: React.ReactNode; name: string }) {
+  return (
+    <ErrorBoundary fallbackMessage={`${name} tab encountered an error`}>
+      {children}
+    </ErrorBoundary>
+  );
+}
 
 /* ─── Quick Add Dialog ─── */
 function QuickAddDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -81,6 +96,7 @@ export default function AdminBuildTracker() {
   const [featureGenOpen, setFeatureGenOpen] = useState(false);
   const [filteredGapCount, setFilteredGapCount] = useState<number | null>(null);
   const [isReanalyzing, setIsReanalyzing] = useState(false);
+  const [lastAnalyzed, setLastAnalyzed] = useState<string | null>(null);
   const refreshAll = useRefreshAll();
   const reanalyze = useReanalyze(items);
 
@@ -102,6 +118,11 @@ export default function AdminBuildTracker() {
     setActiveTab("gaps");
   }, []);
 
+  // Clear jumpToGapId after it's been consumed
+  const handleJumpConsumed = useCallback(() => {
+    setJumpToGapId(null);
+  }, []);
+
   const handleFilteredCountChange = useCallback((count: number) => {
     setFilteredGapCount(count);
   }, []);
@@ -110,6 +131,7 @@ export default function AdminBuildTracker() {
     setIsReanalyzing(true);
     try {
       await reanalyze();
+      setLastAnalyzed(new Date().toISOString());
     } finally {
       setIsReanalyzing(false);
     }
@@ -133,9 +155,12 @@ export default function AdminBuildTracker() {
           <Button variant="outline" size="sm" onClick={() => setFeatureGenOpen(true)}>
             <Sparkles className="h-3.5 w-3.5 mr-1" /> Feature Gen
           </Button>
-          <Button variant="outline" size="sm" onClick={handleReanalyze} disabled={isReanalyzing}>
-            <RotateCcw className={`h-3.5 w-3.5 mr-1 ${isReanalyzing ? "animate-spin" : ""}`} /> Re-analyze
-          </Button>
+          <div className="flex flex-col items-end">
+            <Button variant="outline" size="sm" onClick={handleReanalyze} disabled={isReanalyzing}>
+              <RotateCcw className={`h-3.5 w-3.5 mr-1 ${isReanalyzing ? "animate-spin" : ""}`} /> Re-analyze
+            </Button>
+            {lastAnalyzed && <span className="text-[10px] text-muted-foreground mt-0.5">Last: {new Date(lastAnalyzed).toLocaleTimeString()}</span>}
+          </div>
           <Button variant="outline" size="sm" onClick={refreshAll} disabled={isFetching}>
             <RefreshCw className={`h-3.5 w-3.5 mr-1 ${isFetching ? "animate-spin" : ""}`} /> Refresh
           </Button>
@@ -152,7 +177,7 @@ export default function AdminBuildTracker() {
             <TabsTrigger value="flows" className="gap-1"><Workflow className="h-4 w-4" /> Service Flows</TabsTrigger>
             <TabsTrigger value="platform" className="gap-1"><Cpu className="h-4 w-4" /> Platform Functions</TabsTrigger>
             <TabsTrigger value="pages" className="gap-1"><Globe className="h-4 w-4" /> Page Auditor</TabsTrigger>
-            <TabsTrigger value="plans" className="gap-1"><ClipboardList className="h-4 w-4" /> Plan History</TabsTrigger>
+            <TabsTrigger value="plans" className="gap-1"><ClipboardList className="h-4 w-4" /> Plan History ({plans.length})</TabsTrigger>
             <TabsTrigger value="ai" className="gap-1"><Bot className="h-4 w-4" /> AI Analyst</TabsTrigger>
             <TabsTrigger value="preview" className="gap-1"><Monitor className="h-4 w-4" /> Preview</TabsTrigger>
             <TabsTrigger value="brand" className="gap-1"><Palette className="h-4 w-4" /> Brand</TabsTrigger>
@@ -164,20 +189,80 @@ export default function AdminBuildTracker() {
         </ScrollArea>
 
         <TabsContent value="dashboard">
-          <DashboardTab items={items} plans={plans} onJumpToGap={handleJumpToGap} onTabChange={setActiveTab} onOpenFeatureGen={() => setFeatureGenOpen(true)} />
+          <TabErrorBoundary name="Dashboard">
+            <DashboardTab items={items} plans={plans} onJumpToGap={handleJumpToGap} onTabChange={setActiveTab} onOpenFeatureGen={() => setFeatureGenOpen(true)} />
+          </TabErrorBoundary>
         </TabsContent>
-        <TabsContent value="gaps"><GapAnalysisTab items={items} jumpToId={jumpToGapId} onFilteredCountChange={handleFilteredCountChange} /></TabsContent>
-        <TabsContent value="todo"><TodoTab items={items} /></TabsContent>
-        <TabsContent value="flows"><ServiceFlowTab items={items} /></TabsContent>
-        <TabsContent value="platform"><PlatformFunctionsTab items={items} /></TabsContent>
-        <TabsContent value="pages"><PageAuditorTab items={items} /></TabsContent>
-        <TabsContent value="plans"><PlanHistoryTab items={items} /></TabsContent>
-        <TabsContent value="ai"><AIAnalystTab items={items} plans={plans} /></TabsContent>
-        <TabsContent value="preview"><LivePreviewTab /></TabsContent>
-        <TabsContent value="brand"><BrandAnalysisTab /></TabsContent>
-        <TabsContent value="themes"><ThemeExplorerTab /></TabsContent>
-        <TabsContent value="emails"><EmailTemplatesTab /></TabsContent>
-        <TabsContent value="add"><AddImportTab /></TabsContent>
+        <TabsContent value="gaps">
+          <TabErrorBoundary name="Gap Analysis">
+            <GapAnalysisTab items={items} jumpToId={jumpToGapId} onFilteredCountChange={handleFilteredCountChange} onJumpConsumed={handleJumpConsumed} />
+          </TabErrorBoundary>
+        </TabsContent>
+        <TabsContent value="todo">
+          <TabErrorBoundary name="To-Do">
+            <TodoTab items={items} />
+          </TabErrorBoundary>
+        </TabsContent>
+        <TabsContent value="flows">
+          <TabErrorBoundary name="Service Flows">
+            <ServiceFlowTab items={items} />
+          </TabErrorBoundary>
+        </TabsContent>
+        <TabsContent value="platform">
+          <TabErrorBoundary name="Platform Functions">
+            <PlatformFunctionsTab items={items} />
+          </TabErrorBoundary>
+        </TabsContent>
+        <TabsContent value="pages">
+          <TabErrorBoundary name="Page Auditor">
+            <PageAuditorTab items={items} />
+          </TabErrorBoundary>
+        </TabsContent>
+        <TabsContent value="plans">
+          <TabErrorBoundary name="Plan History">
+            <PlanHistoryTab items={items} />
+          </TabErrorBoundary>
+        </TabsContent>
+        <TabsContent value="ai">
+          <TabErrorBoundary name="AI Analyst">
+            <Suspense fallback={<TabFallback />}>
+              <AIAnalystTab items={items} plans={plans} />
+            </Suspense>
+          </TabErrorBoundary>
+        </TabsContent>
+        <TabsContent value="preview">
+          <TabErrorBoundary name="Preview">
+            <Suspense fallback={<TabFallback />}>
+              <LivePreviewTab />
+            </Suspense>
+          </TabErrorBoundary>
+        </TabsContent>
+        <TabsContent value="brand">
+          <TabErrorBoundary name="Brand">
+            <Suspense fallback={<TabFallback />}>
+              <BrandAnalysisTab />
+            </Suspense>
+          </TabErrorBoundary>
+        </TabsContent>
+        <TabsContent value="themes">
+          <TabErrorBoundary name="Themes">
+            <Suspense fallback={<TabFallback />}>
+              <ThemeExplorerTab />
+            </Suspense>
+          </TabErrorBoundary>
+        </TabsContent>
+        <TabsContent value="emails">
+          <TabErrorBoundary name="Email Templates">
+            <Suspense fallback={<TabFallback />}>
+              <EmailTemplatesTab />
+            </Suspense>
+          </TabErrorBoundary>
+        </TabsContent>
+        <TabsContent value="add">
+          <TabErrorBoundary name="Add/Import">
+            <AddImportTab />
+          </TabErrorBoundary>
+        </TabsContent>
       </Tabs>
 
       <QuickAddDialog open={quickAddOpen} onClose={() => setQuickAddOpen(false)} />

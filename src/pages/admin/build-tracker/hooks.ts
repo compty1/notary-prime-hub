@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { TrackerItem, TrackerPlan, PlanItem } from "./constants";
-import { autoCategorize } from "./constants";
+import { autoCategorize, STATUS } from "./constants";
 
 const ALL_KEYS = ["build-tracker-items", "build-tracker-plans"];
 
@@ -25,8 +25,8 @@ export function useUpdateItem() {
   return useMutation({
     mutationFn: async (update: { id: string } & Partial<TrackerItem>) => {
       const { id, ...fields } = update;
-      if (fields.status === "resolved" && !fields.resolved_at) fields.resolved_at = new Date().toISOString();
-      const { error } = await supabase.from("build_tracker_items").update(fields as any).eq("id", id);
+      if (fields.status === STATUS.RESOLVED && !fields.resolved_at) fields.resolved_at = new Date().toISOString();
+      const { error } = await supabase.from("build_tracker_items").update(fields as Record<string, unknown>).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => ALL_KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] })),
@@ -39,8 +39,8 @@ export function useBulkUpdate() {
   return useMutation({
     mutationFn: async (updates: { ids: string[]; fields: Partial<TrackerItem> }) => {
       const fields = { ...updates.fields };
-      if (fields.status === "resolved" && !fields.resolved_at) fields.resolved_at = new Date().toISOString();
-      const { error } = await supabase.from("build_tracker_items").update(fields as any).in("id", updates.ids);
+      if (fields.status === STATUS.RESOLVED && !fields.resolved_at) fields.resolved_at = new Date().toISOString();
+      const { error } = await supabase.from("build_tracker_items").update(fields as Record<string, unknown>).in("id", updates.ids);
       if (error) throw error;
     },
     onSuccess: () => { ALL_KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] })); toast.success("Bulk update applied"); },
@@ -95,9 +95,9 @@ export function usePlans() {
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return (data ?? []).map((d: any) => ({
+      return (data ?? []).map((d: Record<string, unknown>) => ({
         ...d,
-        plan_items: (d.plan_items ?? []) as PlanItem[],
+        plan_items: ((d.plan_items as PlanItem[]) ?? []),
       })) as TrackerPlan[];
     },
   });
@@ -119,7 +119,7 @@ export function useUpdatePlan() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (update: { id: string; plan_items: PlanItem[] }) => {
-      const { error } = await supabase.from("build_tracker_plans").update({ plan_items: update.plan_items as any }).eq("id", update.id);
+      const { error } = await supabase.from("build_tracker_plans").update({ plan_items: update.plan_items as unknown } as Record<string, unknown>).eq("id", update.id);
       if (error) throw error;
     },
     onSuccess: () => { ALL_KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] })); },
@@ -148,21 +148,14 @@ export function useRefreshAll() {
 /* ─── Deep re-analysis ─── */
 export function useReanalyze(items: TrackerItem[]) {
   const bulkUpdate = useBulkUpdate();
-  const bulkInsert = useBulkInsert();
 
   return async () => {
     const findings: string[] = [];
-    const mutations: Promise<void>[] = [];
 
     // 1. Flag stale resolved items (resolved without timestamp)
-    const staleResolved = items.filter(i => i.status === "resolved" && !i.resolved_at);
+    const staleResolved = items.filter(i => i.status === STATUS.RESOLVED && !i.resolved_at);
     if (staleResolved.length > 0) {
-      mutations.push(
-        new Promise<void>((resolve, reject) => {
-          bulkUpdate.mutateAsync({ ids: staleResolved.map(i => i.id), fields: { status: "open" } })
-            .then(() => resolve()).catch(reject);
-        })
-      );
+      await bulkUpdate.mutateAsync({ ids: staleResolved.map(i => i.id), fields: { status: STATUS.OPEN } });
       findings.push(`Re-opened ${staleResolved.length} stale resolved items`);
     }
 
@@ -177,19 +170,13 @@ export function useReanalyze(items: TrackerItem[]) {
         }
       }
       if (toAutoUpdate.length > 0) {
-        // Batch updates by shared fields
         const byFields = new Map<string, string[]>();
         for (const u of toAutoUpdate) {
           const key = JSON.stringify(u.fields);
           byFields.set(key, [...(byFields.get(key) || []), u.id]);
         }
         for (const [fieldsJson, ids] of byFields) {
-          mutations.push(
-            new Promise<void>((resolve, reject) => {
-              bulkUpdate.mutateAsync({ ids, fields: JSON.parse(fieldsJson) })
-                .then(() => resolve()).catch(reject);
-            })
-          );
+          await bulkUpdate.mutateAsync({ ids, fields: JSON.parse(fieldsJson) });
         }
         findings.push(`Auto-categorized ${toAutoUpdate.length} items`);
       }
@@ -208,19 +195,12 @@ export function useReanalyze(items: TrackerItem[]) {
 
     // 4. Flag old open items (>30 days)
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-    const staleOpen = items.filter(i => i.status === "open" && i.created_at && i.created_at < thirtyDaysAgo);
+    const staleOpen = items.filter(i => i.status === STATUS.OPEN && i.created_at && i.created_at < thirtyDaysAgo);
     if (staleOpen.length > 0) findings.push(`${staleOpen.length} open items older than 30 days`);
 
     // 5. Items with no description or suggested_fix
-    const incomplete = items.filter(i => i.status !== "resolved" && i.status !== "wont_fix" && !i.description && !i.suggested_fix);
+    const incomplete = items.filter(i => i.status !== STATUS.RESOLVED && i.status !== STATUS.WONT_FIX && !i.description && !i.suggested_fix);
     if (incomplete.length > 0) findings.push(`${incomplete.length} items missing description & suggested fix`);
-
-    // Wait for all mutations
-    try {
-      await Promise.all(mutations);
-    } catch (e) {
-      toast.error("Some re-analysis updates failed");
-    }
 
     if (findings.length === 0) {
       toast.info("Analysis complete — no issues found");
