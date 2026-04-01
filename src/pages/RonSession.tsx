@@ -188,6 +188,9 @@ export default function RonSession() {
         if ((session as any).kba_attempts) setKbaAttempts((session as any).kba_attempts);
         if ((session as any).session_timeout_minutes) setSessionTimeoutMinutes((session as any).session_timeout_minutes);
         if ((session as any).started_at) setSessionStartedAt((session as any).started_at);
+        if ((session as any).webhook_status) setWebhookStatus((session as any).webhook_status);
+        if ((session as any).webhook_events_registered) setWebhookEventsRegistered((session as any).webhook_events_registered);
+        if ((session as any).signnow_document_id) setSignnowDocumentId((session as any).signnow_document_id);
       } else {
         // Capture signer IP on first session load (Ohio RON compliance)
         try {
