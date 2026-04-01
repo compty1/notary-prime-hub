@@ -1,5 +1,6 @@
 import { AlertTriangle, Clock, CheckCircle2, XCircle } from "lucide-react";
 import { createElement } from "react";
+import { formatDistanceToNow } from "date-fns";
 
 export type TrackerItem = {
   id: string;
