@@ -335,6 +335,15 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
             <SelectItem value="status">Sort by Status</SelectItem>
           </SelectContent>
         </Select>
+        {allTags.length > 0 && (
+          <Select value={tagFilter} onValueChange={(v) => { setTagFilter(v === "all" ? "" : v); setPage(0); }}>
+            <SelectTrigger className="w-36"><Tag className="mr-1 h-3 w-3" /><SelectValue placeholder="All Tags" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Tags</SelectItem>
+              {allTags.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        )}
       </div>
 
       <p className="mb-4 text-xs text-muted-foreground">{filtered.length} document{filtered.length !== 1 ? "s" : ""}</p>
