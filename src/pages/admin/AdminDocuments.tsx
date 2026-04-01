@@ -126,6 +126,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
   // Filter + search + sort
   const filtered = docs.filter((doc) => {
     if (statusFilter !== "all" && doc.status !== statusFilter) return false;
+    if (tagFilter && !(tagsByDoc[doc.id] || []).includes(tagFilter)) return false;
     if (search) {
       const term = search.toLowerCase();
       const uploaderName = getUploaderName(doc.uploaded_by).toLowerCase();
