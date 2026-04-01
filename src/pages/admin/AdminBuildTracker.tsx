@@ -31,8 +31,9 @@ function QuickAddDialog({ open, onClose }: { open: boolean; onClose: () => void 
   const [category, setCategory] = useState("gap");
   const [severity, setSeverity] = useState("medium");
   const [impactArea, setImpactArea] = useState("");
+  const [pageRoute, setPageRoute] = useState("");
 
-  const handleClose = () => { setTitle(""); setCategory("gap"); setSeverity("medium"); setImpactArea(""); onClose(); };
+  const handleClose = () => { setTitle(""); setCategory("gap"); setSeverity("medium"); setImpactArea(""); setPageRoute(""); onClose(); };
   const handleSubmit = () => {
     if (!title.trim()) return;
     insert.mutate({ title, category, severity, status: "open", impact_area: impactArea || undefined } as any);
