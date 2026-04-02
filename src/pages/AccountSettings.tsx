@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from "@/hooks/use-toast";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { Shield, Trash2, Download, Key, Eye, EyeOff, Bell } from "lucide-react";
+import { Shield, Trash2, Download, Key, Eye, EyeOff, Bell, Smartphone } from "lucide-react";
 
 export default function AccountSettings() {
   usePageTitle("Account Settings");
