@@ -180,6 +180,7 @@ export default function AppointmentConfirmation() {
       </nav>
 
       <div className="container mx-auto max-w-lg px-4 py-16 text-center">
+        <Breadcrumbs />
         <div className="mb-6 flex justify-center">
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/20">
             <CheckCircle className="h-10 w-10 text-primary" />

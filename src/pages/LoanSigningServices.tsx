@@ -100,6 +100,7 @@ export default function LoanSigningServices() {
       {/* Hero */}
       <section className="bg-gradient-hero py-16 md:py-20">
         <div className="container mx-auto px-4 text-center">
+          <Breadcrumbs />
           <Badge className="mb-4 border-primary/20 bg-primary/10 text-primary">
             <Building2 className="mr-1 h-3 w-3" /> For Title Companies & Lenders
           </Badge>

@@ -122,6 +122,7 @@ export default function JoinPlatform() {
       {/* Hero */}
       <section className="bg-gradient-hero py-16 md:py-24">
         <div className="container mx-auto max-w-4xl px-4 text-center">
+          <Breadcrumbs />
           <motion.div initial="hidden" animate="visible">
             <motion.div variants={fadeUp} custom={0}>
               <Badge className="mb-6 border-primary/20 bg-primary/10 text-primary">

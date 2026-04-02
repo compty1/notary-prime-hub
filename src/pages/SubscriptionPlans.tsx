@@ -127,6 +127,7 @@ export default function SubscriptionPlans() {
       {/* Hero */}
       <section className="bg-gradient-hero py-16">
         <div className="container mx-auto px-4 text-center">
+          <Breadcrumbs />
           <h1 className="mb-4 font-sans text-4xl font-bold text-primary-foreground">Business Plans</h1>
           <p className="mx-auto max-w-2xl text-lg text-primary-foreground/70">
             Scalable notarization and document services for teams of every size.
