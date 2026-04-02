@@ -265,7 +265,7 @@ export const PLATFORM_ENTITIES: PlatformEntity[] = [
       { name: "Protected Routes", status: "healthy", description: "Route guard component" },
       { name: "User Profiles", status: "healthy", description: "User profile data (profiles table)" },
       { name: "Compliance Rule Sets", status: "healthy", description: "Configurable compliance rules (compliance_rule_sets table)" },
-      { name: "MFA", status: "needs_attention", description: "Multi-factor authentication (deferred)" },
+      { name: "MFA", status: "partial", description: "Multi-factor authentication (deferred per roadmap)" },
       { name: "Session Management", status: "healthy", description: "Auto-refresh tokens" },
     ],
   },
