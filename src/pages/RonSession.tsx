@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useState, useRef, useEffect } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -80,7 +80,7 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
 }
 
 export default function RonSession() {
-  usePageTitle("RON Session");
+  usePageMeta({ title: "RON Session", description: "Secure remote online notarization session — Ohio-compliant video conferencing with identity verification and e-seal.", noIndex: true });
   const { user, isAdmin, isNotary } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,7 +13,7 @@ import { Logo } from "@/components/Logo";
 import { Upload, Camera, FileText, CheckCircle, Loader2, LogOut, RefreshCw } from "lucide-react";
 
 export default function MobileUpload() {
-  usePageTitle("Mobile Upload");
+  usePageMeta({ title: "Mobile Upload", description: "Upload documents directly from your phone for notarization. Snap photos or choose files.", noIndex: true });
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
@@ -66,8 +66,24 @@ export default function MobileUpload() {
     setLoginLoading(false);
   };
 
+  const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
+  const ALLOWED_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/jpg", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+
   const handleUpload = async (files: FileList | null) => {
     if (!files || !user) return;
+
+    // Validate files before uploading
+    for (const file of Array.from(files)) {
+      if (file.size > MAX_FILE_SIZE) {
+        toast({ title: "File too large", description: `${file.name} exceeds the 25MB limit.`, variant: "destructive" });
+        return;
+      }
+      if (!ALLOWED_TYPES.includes(file.type) && !file.name.match(/\.(pdf|jpe?g|png|docx?)$/i)) {
+        toast({ title: "Unsupported file type", description: `${file.name} is not a supported format. Please upload PDF, JPG, PNG, DOC, or DOCX files.`, variant: "destructive" });
+        return;
+      }
+    }
+
     setUploading(true);
     let successCount = 0;
 

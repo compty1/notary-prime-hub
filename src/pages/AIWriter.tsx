@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useAuth } from "@/contexts/AuthContext";
 import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,7 +24,7 @@ import ReactMarkdown from "react-markdown";
 type WritingMode = "email" | "social" | "document" | "proposal" | "style-match";
 
 export default function AIWriter() {
-  usePageTitle("AI Writing Tools");
+  usePageMeta({ title: "AI Writing Tools", description: "AI-powered writing assistant for professional emails, social media posts, proposals, and business documents." });
   const { user } = useAuth();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();

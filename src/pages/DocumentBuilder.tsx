@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -102,7 +102,7 @@ const getSteps = (docType: DocType): StepConfig[] => {
 };
 
 export default function DocumentBuilder() {
-  usePageTitle("Document Builder");
+  usePageMeta({ title: "Document Builder", description: "Build legal documents step by step — affidavits, travel consent forms, bills of sale, and more." });
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();

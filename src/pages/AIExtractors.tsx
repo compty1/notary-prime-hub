@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useAuth } from "@/contexts/AuthContext";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -122,7 +122,7 @@ function ResultSection({ title, data }: { title: string; data: unknown }) {
 }
 
 export default function AIExtractors() {
-  usePageTitle("AI Document Intelligence");
+  usePageMeta({ title: "AI Document Intelligence", description: "Extract key data from legal, financial, and HR documents using AI. Automated analysis with confidence scores." });
   const { user } = useAuth();
   const { toast } = useToast();
 

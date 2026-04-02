@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,7 +27,7 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [rateLimitEnd, setRateLimitEnd] = useState<number | null>(null);
 
-  usePageTitle(forgotMode ? "Reset Password" : "Sign In");
+  usePageMeta({ title: forgotMode ? "Reset Password" : "Sign In", description: "Sign in to your Notar account to access notarization services, document management, and your client portal.", noIndex: true });
 
   useEffect(() => {
     if (!loading && user) {

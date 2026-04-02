@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -37,7 +37,7 @@ interface ProcessedDoc {
 }
 
 export default function DocumentDigitize() {
-  usePageTitle("Digitize Documents");
+  usePageMeta({ title: "Digitize Documents", description: "Convert physical documents to digital format with AI-powered OCR. Extract text from scanned papers, images, and PDFs." });
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
