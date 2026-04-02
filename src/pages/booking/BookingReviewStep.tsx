@@ -109,7 +109,7 @@ export default function BookingReviewStep(props: ReviewStepProps) {
           <p className="text-sm font-medium flex items-center gap-2"><Shield className="h-4 w-4 text-primary" /> Create your account to confirm</p>
           <div>
             <Label>Full Name</Label>
-            <Input value={props.guestName} onChange={e => props.setGuestName(e.target.value)} placeholder="Your full name" className={props.validationErrors?.guestName ? "border-destructive" : ""} />
+            <Input value={props.guestName} onChange={e => props.setGuestName(e.target.value)} placeholder="Your full name" autoComplete="name" className={props.validationErrors?.guestName ? "border-destructive" : ""} />
             {props.validationErrors?.guestName && <p className="text-xs text-destructive mt-1">{props.validationErrors.guestName}</p>}
           </div>
           <div>
