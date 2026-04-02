@@ -75,6 +75,7 @@ const DEFAULT_MASTER: MasterTemplate = {
   fontFamily: "'Space Grotesk', Arial, sans-serif",
   logoUrl: "",
   footerText: "NotaryDex · Ohio Online Notary Services · notify@notardex.com",
+  senderEmail: "notify@notardex.com",
 };
 
 function useEmailSettings() {
