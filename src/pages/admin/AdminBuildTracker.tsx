@@ -98,6 +98,7 @@ export default function AdminBuildTracker() {
   const [filteredGapCount, setFilteredGapCount] = useState<number | null>(null);
   const [isReanalyzing, setIsReanalyzing] = useState(false);
   const [lastAnalyzed, setLastAnalyzed] = useState<string | null>(null);
+  const [themeOverlay, setThemeOverlay] = useState<{ primary?: string; background?: string; foreground?: string; accent?: string; secondary?: string; muted?: string } | null>(null);
   const refreshAll = useRefreshAll();
   const reanalyze = useReanalyze(items);
 
