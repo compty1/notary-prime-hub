@@ -48,6 +48,18 @@ const labelMap: Record<string, string> = {
   "ai-writer": "AI Writer",
   "ai-extractors": "AI Document Intelligence",
   "ai-knowledge": "Knowledge Base",
+  confirmation: "Confirmation",
+  "document-builder": "Document Builder",
+  "notary-guide": "Notary Guide",
+  "notary-process": "Notary Process",
+  grants: "Grant Dashboard",
+  "resume-builder": "Resume Builder",
+  "signature-generator": "Signature Generator",
+  "verify-seal": "Verify E-Seal",
+  "verify-identity": "Verify Identity",
+  unsubscribe: "Unsubscribe",
+  "business-portal": "Business Portal",
+  "forgot-password": "Reset Password",
 };
 
 export function Breadcrumbs() {
