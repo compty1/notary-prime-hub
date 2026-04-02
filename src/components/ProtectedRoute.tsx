@@ -6,6 +6,8 @@ import { AlertTriangle } from "lucide-react";
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireAdmin?: boolean;
+  /** If true, only admin role is allowed (not notary). Use for sensitive admin pages like Users, Settings, Revenue. */
+  adminOnly?: boolean;
 }
 
 const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
