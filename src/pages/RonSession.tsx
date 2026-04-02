@@ -1117,10 +1117,58 @@ export default function RonSession() {
                   </div>
                 )}
 
+                {/* KBA Attempt Counter */}
+                <div className="mb-3 rounded-md border border-border p-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-medium">KBA Attempts</span>
+                    <Badge variant={kbaAttempts >= 2 ? "destructive" : "secondary"} className="text-[10px]">
+                      {kbaAttempts} / 2
+                    </Badge>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-1.5">
+                    <div
+                      className={cn("h-1.5 rounded-full transition-all", kbaAttempts >= 2 ? "bg-destructive" : "bg-primary")}
+                      style={{ width: `${(kbaAttempts / 2) * 100}%` }}
+                    />
+                  </div>
+                  {kbaAttempts >= 2 && !kbaCompleted && (
+                    <p className="mt-1.5 text-[10px] text-destructive font-medium">
+                      ⚠ Maximum KBA attempts reached per Ohio ORC §147.66. Session cannot proceed.
+                    </p>
+                  )}
+                </div>
+
                 <div className="flex items-center gap-2 mb-2">
-                  <Switch checked={kbaCompleted} onCheckedChange={setKbaCompleted} />
+                  <Switch
+                    checked={kbaCompleted}
+                    onCheckedChange={setKbaCompleted}
+                    disabled={kbaAttempts >= 2 && !kbaCompleted}
+                  />
                   <Label className="text-xs">KBA {kbaCompleted ? "Passed" : "Pending"}</Label>
                 </div>
+                {!kbaCompleted && kbaAttempts < 2 && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full text-xs mb-2"
+                    onClick={async () => {
+                      const newAttempts = kbaAttempts + 1;
+                      setKbaAttempts(newAttempts);
+                      if (appointmentId) {
+                        await supabase.from("notarization_sessions").update({
+                          kba_attempts: newAttempts,
+                        } as any).eq("appointment_id", appointmentId);
+                      }
+                      toast({
+                        title: `KBA Attempt ${newAttempts} of 2`,
+                        description: newAttempts >= 2 ? "This is the final attempt allowed under Ohio law." : "One attempt remaining.",
+                        variant: newAttempts >= 2 ? "destructive" : "default",
+                      });
+                    }}
+                  >
+                    Record KBA Attempt ({kbaAttempts + 1}/2)
+                  </Button>
+                )}
                 {kbaCompleted ? (
                   <Badge variant="secondary" className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary text-xs"><CheckCircle className="mr-1 h-3 w-3" /> KBA Passed</Badge>
                 ) : (
