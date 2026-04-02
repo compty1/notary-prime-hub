@@ -30,6 +30,8 @@ import PortalChatTab from "./portal/PortalChatTab";
 import { PortalLoadingSkeleton } from "@/components/PortalLoadingSkeleton";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { usePageTitle } from "@/lib/usePageTitle";
+import { PortalOnboardingChecklist } from "@/components/PortalOnboardingChecklist";
+import { PortalQuickActions } from "@/components/PortalQuickActions";
 const pipelineSteps = [
   { key: "uploaded", label: "Intake", icon: Upload },
   { key: "pending_review", label: "Review", icon: FileText },
@@ -295,8 +297,8 @@ export default function ClientPortal() {
         </motion.div>
 
         <Tabs defaultValue={initialTab} className="space-y-6" onValueChange={val => {
-          // Deep link support
-          window.history.replaceState(null, "", `/portal#${val}`);
+          // Deep link support (item 555-556)
+          setSearchParams({ tab: val }, { replace: true });
           if (val === "chat" && user && unreadCount > 0) {
             const unreadIds = chatMessages.filter(m => m.is_admin && !m.read).map(m => m.id);
             if (unreadIds.length > 0) supabase.from("chat_messages").update({ read: true }).in("id", unreadIds).then(() => { setChatMessages(prev => prev.map(m => unreadIds.includes(m.id) ? { ...m, read: true } : m)); setUnreadCount(0); });
@@ -319,6 +321,8 @@ export default function ClientPortal() {
 
           {/* DASHBOARD OVERVIEW TAB — Item 171 */}
           <TabsContent value="overview" className="space-y-6">
+            <PortalOnboardingChecklist profile={profile} documents={documents} appointments={appointments} onEditProfile={() => setEditProfileOpen(true)} />
+            <PortalQuickActions />
             <ClientProgressTracker appointments={appointments} documents={documents} />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <Card className="border-border/50">

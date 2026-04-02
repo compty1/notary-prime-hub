@@ -717,7 +717,16 @@ export default function BookAppointment() {
                     <Label>Service Type</Label>
                     <Select value={serviceType} onValueChange={setServiceType}>
                       <SelectTrigger><SelectValue placeholder="Select document type" /></SelectTrigger>
-                      <SelectContent>{serviceTypes.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                      <SelectContent>
+                        {serviceTypes.map(s => (
+                          <SelectItem key={s} value={s}>
+                            <div className="flex flex-col">
+                              <span>{s}</span>
+                              {serviceDescriptions[s] && <span className="text-[10px] text-muted-foreground max-w-[280px] truncate">{serviceDescriptions[s]}</span>}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
                     </Select>
                   </div>
                   {serviceType === "Other" && <div><Label>Describe your document</Label><Input placeholder="What type of document do you need notarized?" value={notes} onChange={e => setNotes(e.target.value)} /></div>}

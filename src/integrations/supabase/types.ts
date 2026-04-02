@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_saved_filters: {
+        Row: {
+          created_at: string
+          filter_config: Json
+          filter_name: string
+          id: string
+          page_key: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          filter_config?: Json
+          filter_name: string
+          id?: string
+          page_key: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          filter_config?: Json
+          filter_name?: string
+          id?: string
+          page_key?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       apostille_requests: {
         Row: {
           client_id: string
@@ -443,6 +470,38 @@ export type Database = {
           verification_status?: string
         }
         Relationships: []
+      }
+      business_roles: {
+        Row: {
+          business_id: string
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_roles_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "business_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       chat_messages: {
         Row: {
@@ -1670,6 +1729,8 @@ export type Database = {
           kba_completed: boolean | null
           last_activity_at: string | null
           participant_link: string | null
+          pause_reason: string | null
+          paused_at: string | null
           recording_consent: boolean | null
           recording_consent_at: string | null
           recording_url: string | null
@@ -1684,6 +1745,7 @@ export type Database = {
           signnow_document_id: string | null
           started_at: string | null
           status: Database["public"]["Enums"]["appointment_status"]
+          total_pause_duration_seconds: number | null
           updated_at: string
           webhook_events_registered: number | null
           webhook_status: string | null
@@ -1701,6 +1763,8 @@ export type Database = {
           kba_completed?: boolean | null
           last_activity_at?: string | null
           participant_link?: string | null
+          pause_reason?: string | null
+          paused_at?: string | null
           recording_consent?: boolean | null
           recording_consent_at?: string | null
           recording_url?: string | null
@@ -1715,6 +1779,7 @@ export type Database = {
           signnow_document_id?: string | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
+          total_pause_duration_seconds?: number | null
           updated_at?: string
           webhook_events_registered?: number | null
           webhook_status?: string | null
@@ -1732,6 +1797,8 @@ export type Database = {
           kba_completed?: boolean | null
           last_activity_at?: string | null
           participant_link?: string | null
+          pause_reason?: string | null
+          paused_at?: string | null
           recording_consent?: boolean | null
           recording_consent_at?: string | null
           recording_url?: string | null
@@ -1746,6 +1813,7 @@ export type Database = {
           signnow_document_id?: string | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
+          total_pause_duration_seconds?: number | null
           updated_at?: string
           webhook_events_registered?: number | null
           webhook_status?: string | null
@@ -2376,6 +2444,63 @@ export type Database = {
             columns: ["appointment_id"]
             isOneToOne: false
             referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ron_credential_analysis: {
+        Row: {
+          analysis_result: Json | null
+          appointment_id: string | null
+          created_at: string
+          id: string
+          id_expiration: string | null
+          id_number_hash: string | null
+          id_state: string | null
+          id_type: string
+          session_id: string | null
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          analysis_result?: Json | null
+          appointment_id?: string | null
+          created_at?: string
+          id?: string
+          id_expiration?: string | null
+          id_number_hash?: string | null
+          id_state?: string | null
+          id_type: string
+          session_id?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          analysis_result?: Json | null
+          appointment_id?: string | null
+          created_at?: string
+          id?: string
+          id_expiration?: string | null
+          id_number_hash?: string | null
+          id_state?: string | null
+          id_type?: string
+          session_id?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ron_credential_analysis_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ron_credential_analysis_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "notarization_sessions"
             referencedColumns: ["id"]
           },
         ]
