@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Cookie, X } from "lucide-react";
+import { safeGetItem, safeSetItem } from "@/lib/safeStorage";
 
 const COOKIE_KEY = "cookie_consent_accepted";
 
