@@ -262,7 +262,7 @@ export default function AdminOverview() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-7 gap-1">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-1">
               {weekDays.map((day) => {
                 const isToday = day.toDateString() === new Date().toDateString();
                 const dayAppts = getAppointmentsForDay(day);
