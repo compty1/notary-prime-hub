@@ -123,7 +123,7 @@ export default function RonInfo() {
   const filteredStates = stateRonData.filter(s =>
     s.state.toLowerCase().includes(stateSearch.toLowerCase())
   );
-  usePageTitle("Remote Online Notarization (RON)");
+  usePageMeta({ title: "Remote Online Notarization (RON) in Ohio", description: "Learn about Ohio Remote Online Notarization (RON) — how it works, legal requirements under ORC §147.65-66, and how to get started." });
 
   return (
     <PageShell>
