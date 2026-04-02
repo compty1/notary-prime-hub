@@ -1917,6 +1917,75 @@ FORMAT:
 9. **Risks & Mitigations**: Roadmap execution risks
 10. **Review Cadence**: How and when to update`,
   },
+  // ═══════════════════════════════════════
+  // ADDITIONAL TOOLS (49-50)
+  // ═══════════════════════════════════════
+  {
+    id: "proposal-template",
+    title: "RFP Proposal Template",
+    category: "Documents & Generation",
+    description: "Generate a polished RFP-ready proposal with scope, deliverables, timeline, and pricing tables.",
+    icon: Briefcase,
+    fields: [
+      { name: "projectName", label: "Project / RFP Name", type: "text", required: true, placeholder: "e.g. Website Redesign for Acme Corp" },
+      { name: "clientName", label: "Client / Organization", type: "text", required: true, placeholder: "e.g. Acme Corp" },
+      { name: "scope", label: "Scope of Work", type: "textarea", required: true, placeholder: "Describe the deliverables, phases, and objectives..." },
+      { name: "budget", label: "Budget Range", type: "text", placeholder: "e.g. $15,000 – $25,000" },
+      { name: "timeline", label: "Timeline", type: "text", placeholder: "e.g. 8 weeks" },
+      { name: "tone", label: "Tone", type: "select", options: [
+        { value: "formal", label: "Formal" },
+        { value: "professional", label: "Professional" },
+        { value: "conversational", label: "Conversational" },
+      ]},
+    ],
+    systemPrompt: `You are a proposal writing expert. Generate a complete, professional RFP-ready proposal in markdown with these sections:
+1. **Cover Page** (project title, prepared for, prepared by, date)
+2. **Executive Summary** (2-3 paragraphs)
+3. **Understanding of Requirements**
+4. **Scope of Work** (numbered deliverables)
+5. **Project Timeline** (markdown table with phases, milestones, dates)
+6. **Pricing** (markdown table with line items, quantities, unit prices, totals)
+7. **Team & Qualifications**
+8. **Terms & Conditions**
+9. **Next Steps**
+
+Use professional formatting, numbered sections, and clear markdown tables for pricing and timelines.`,
+    maxTokens: 4000,
+  },
+  {
+    id: "executive-summary",
+    title: "Executive Summary Generator",
+    category: "Documents & Generation",
+    description: "Create a concise, impactful executive summary for business plans, reports, or proposals.",
+    icon: FileText,
+    fields: [
+      { name: "documentType", label: "Document Type", type: "select", required: true, options: [
+        { value: "business-plan", label: "Business Plan" },
+        { value: "annual-report", label: "Annual Report" },
+        { value: "project-proposal", label: "Project Proposal" },
+        { value: "research-report", label: "Research Report" },
+        { value: "strategic-plan", label: "Strategic Plan" },
+      ]},
+      { name: "keyPoints", label: "Key Points / Content to Summarize", type: "textarea", required: true, placeholder: "Paste the main content, data points, or bullet points to summarize..." },
+      { name: "audience", label: "Target Audience", type: "text", required: true, placeholder: "e.g. Board of Directors, Investors, C-Suite" },
+      { name: "length", label: "Desired Length", type: "select", options: [
+        { value: "brief", label: "Brief (1 paragraph)" },
+        { value: "standard", label: "Standard (3-5 paragraphs)" },
+        { value: "detailed", label: "Detailed (1-2 pages)" },
+      ]},
+    ],
+    systemPrompt: `You are an executive communications specialist. Write a compelling executive summary in markdown that:
+- Opens with a strong hook or key finding
+- Highlights the most critical data points and outcomes
+- Uses clear, jargon-free language appropriate for the target audience
+- Includes a brief recommendation or call to action
+- Maintains a confident, authoritative tone
+- Uses bold for key metrics and findings
+- Keeps paragraphs concise and scannable
+
+Structure: Problem/Opportunity → Key Findings → Recommendations → Next Steps.`,
+    maxTokens: 2000,
+  },
 ];
 
 export const TOOL_CATEGORIES: ToolCategory[] = [

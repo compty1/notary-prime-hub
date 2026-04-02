@@ -293,8 +293,16 @@ function ToolRunner({ tool, onBack }: { tool: AITool; onBack: () => void }) {
     printWindow.print();
   };
 
+  // Ctrl+Enter keyboard shortcut
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && !loading) {
+      e.preventDefault();
+      handleGenerate();
+    }
+  }, [handleGenerate, loading]);
+
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8" onKeyDown={handleKeyDown}>
       <Button variant="ghost" onClick={onBack} className="mb-4 gap-2">
         <ArrowLeft className="h-4 w-4" /> Back to All Tools
       </Button>
@@ -360,21 +368,29 @@ function ToolRunner({ tool, onBack }: { tool: AITool; onBack: () => void }) {
                 )}
               </div>
             ))}
-            <Button
-              className="w-full mt-4"
-              onClick={handleGenerate}
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="mr-2 h-4 w-4" /> Generate
-                </>
+            <div className="flex gap-2 mt-4">
+              <Button
+                className="flex-1"
+                onClick={handleGenerate}
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" /> Generate
+                  </>
+                )}
+              </Button>
+              {lastError && !loading && (
+                <Button variant="outline" onClick={handleGenerate} className="gap-1">
+                  <Sparkles className="h-4 w-4" /> Retry
+                </Button>
               )}
-            </Button>
+            </div>
+            <p className="text-xs text-muted-foreground text-center">Press Ctrl+Enter to generate</p>
           </CardContent>
         </Card>
 
