@@ -248,6 +248,30 @@ export default function AdminServices() {
         </Card>
       )}
 
+      {/* Content gap reminder */}
+      {(() => {
+        const missingDesc = services.filter(s => s.is_active && !s.description);
+        const missingTurnaround = services.filter(s => s.is_active && !s.estimated_turnaround);
+        const missingFaqs = services.filter(s => s.is_active && !(faqCount[s.id]));
+        const total = missingDesc.length + missingTurnaround.length + missingFaqs.length;
+        if (total === 0) return null;
+        return (
+          <Card className="border-amber-500/30 bg-amber-50/50 dark:bg-amber-900/10">
+            <CardContent className="py-3 px-4 flex items-start gap-2">
+              <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+              <div className="text-sm text-amber-800 dark:text-amber-200">
+                <span className="font-medium">Content gaps detected:</span>{" "}
+                {missingDesc.length > 0 && <span>{missingDesc.length} services missing descriptions. </span>}
+                {missingTurnaround.length > 0 && <span>{missingTurnaround.length} missing turnaround estimates. </span>}
+                {missingFaqs.length > 0 && <span>{missingFaqs.length} missing FAQs. </span>}
+                <span className="text-amber-600 dark:text-amber-300">Complete these for better SEO and client experience.</span>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })()}
+
+
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="all">All ({services.length})</TabsTrigger>
@@ -263,8 +287,8 @@ export default function AdminServices() {
         <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
       ) : (
         <Card className="border-border/50">
-          <CardContent className="p-0">
-            <Table>
+          <CardContent className="p-0 overflow-x-auto">
+            <Table className="min-w-[800px]">
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-8">#</TableHead>

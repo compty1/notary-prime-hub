@@ -262,7 +262,7 @@ export default function AdminOverview() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-7 gap-1">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-1">
               {weekDays.map((day) => {
                 const isToday = day.toDateString() === new Date().toDateString();
                 const dayAppts = getAppointmentsForDay(day);
@@ -293,7 +293,7 @@ export default function AdminOverview() {
         </Card>
       </div>
 
-      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="mb-8 grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
         {statCards.map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
             <Link to={s.link}>
@@ -397,7 +397,7 @@ export default function AdminOverview() {
         <Card className="border-border/50">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm min-w-[600px]">
                 <thead><tr className="border-b border-border/50">
                   <th className="px-4 py-3 text-left font-medium text-muted-foreground">Client</th>
                   <th className="px-4 py-3 text-left font-medium text-muted-foreground">Date</th>
