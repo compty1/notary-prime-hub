@@ -109,18 +109,18 @@ export default function BookingReviewStep(props: ReviewStepProps) {
           <p className="text-sm font-medium flex items-center gap-2"><Shield className="h-4 w-4 text-primary" /> Create your account to confirm</p>
           <div>
             <Label>Full Name</Label>
-            <Input value={props.guestName} onChange={e => props.setGuestName(e.target.value)} placeholder="Your full name" className={props.validationErrors?.guestName ? "border-destructive" : ""} />
+            <Input value={props.guestName} onChange={e => props.setGuestName(e.target.value)} placeholder="Your full name" autoComplete="name" className={props.validationErrors?.guestName ? "border-destructive" : ""} />
             {props.validationErrors?.guestName && <p className="text-xs text-destructive mt-1">{props.validationErrors.guestName}</p>}
           </div>
           <div>
             <Label>Email</Label>
-            <Input type="email" value={props.guestEmail} onChange={e => props.setGuestEmail(e.target.value)} placeholder="your@email.com" className={props.validationErrors?.guestEmail ? "border-destructive" : ""} />
+            <Input type="email" value={props.guestEmail} onChange={e => props.setGuestEmail(e.target.value)} placeholder="your@email.com" autoComplete="email" className={props.validationErrors?.guestEmail ? "border-destructive" : ""} />
             {props.validationErrors?.guestEmail && <p className="text-xs text-destructive mt-1">{props.validationErrors.guestEmail}</p>}
           </div>
           <div>
             <Label>Password</Label>
             <div className="relative">
-              <Input type={showGuestPassword ? "text" : "password"} value={props.guestPassword} onChange={e => props.setGuestPassword(e.target.value)} placeholder="Create a password (min 8 characters)" minLength={8} className={`pr-10 ${props.validationErrors?.guestPassword ? "border-destructive" : ""}`} />
+              <Input type={showGuestPassword ? "text" : "password"} value={props.guestPassword} onChange={e => props.setGuestPassword(e.target.value)} placeholder="Create a password (min 8 characters)" minLength={8} autoComplete="new-password" className={`pr-10 ${props.validationErrors?.guestPassword ? "border-destructive" : ""}`} />
               <button type="button" onClick={() => setShowGuestPassword(!showGuestPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" tabIndex={-1}>
                 {showGuestPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -153,7 +153,18 @@ export default function BookingReviewStep(props: ReviewStepProps) {
         </div>
       )}
 
-      {/* Click-wrap Terms Agreement — Phase 4 */}
+      {/* Conflict of Interest Attestation */}
+      <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-2">
+        <div className="flex items-start gap-2">
+          <Checkbox id="conflict-attest" checked disabled className="mt-0.5" />
+          <Label htmlFor="conflict-attest" className="text-xs leading-relaxed text-muted-foreground">
+            I attest that the notary performing this act does not have a direct financial or beneficial interest in the transaction,
+            and is not a party to the document being notarized (per ORC §147.141).
+          </Label>
+        </div>
+      </div>
+
+      {/* Click-wrap Terms Agreement */}
       <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-2">
         <div className="flex items-start gap-2">
           <Checkbox

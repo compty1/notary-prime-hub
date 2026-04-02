@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -108,7 +108,7 @@ const getCrossSells = (appt: any) => {
 };
 
 export default function AppointmentConfirmation() {
-  usePageTitle("Appointment Confirmed");
+  usePageMeta({ title: "Appointment Confirmed — Notar", description: "Your notarization appointment has been confirmed. Review your session details, download a calendar invite, and prepare for your appointment." });
   const [searchParams] = useSearchParams();
   const appointmentId = searchParams.get("id");
   const { user } = useAuth();
