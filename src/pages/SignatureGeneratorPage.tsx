@@ -9,6 +9,7 @@ export default function SignatureGeneratorPage() {
   return (
     <PageShell>
       <div className="container mx-auto px-4 py-8 max-w-3xl">
+        <Breadcrumbs />
         <div className="mb-8">
           <h1 className="font-display text-3xl font-bold text-foreground">Professional Signature Generator</h1>
           <p className="text-muted-foreground mt-2">

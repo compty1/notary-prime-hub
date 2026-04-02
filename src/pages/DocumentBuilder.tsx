@@ -146,6 +146,7 @@ export default function DocumentBuilder() {
     <PageShell>
 
       <div className="container mx-auto max-w-2xl px-4 py-8">
+        <Breadcrumbs />
         <div className="mb-6 text-center">
           <h1 className="font-sans text-3xl font-bold mb-2">Guided Document Builder</h1>
           <p className="text-muted-foreground">Fill in the blanks step-by-step — we'll build the document for you</p>

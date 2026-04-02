@@ -30,6 +30,7 @@ export default function Unsubscribe() {
   return (
     <PageShell>
       <div className="flex min-h-[60vh] items-center justify-center px-4">
+        <Breadcrumbs />
         <Card className="w-full max-w-md border-border/50">
           <CardContent className="flex flex-col items-center py-12 text-center">
             {status === "loading" && <Loader2 className="h-12 w-12 animate-spin text-muted-foreground mb-4" />}

@@ -170,6 +170,7 @@ export default function GrantDashboard() {
   return (
     <PageShell>
       <div className="container mx-auto px-4 py-8 max-w-5xl">
+        <Breadcrumbs />
         <div className="flex items-start justify-between gap-4 mb-8">
           <div>
             <h1 className="font-display text-3xl font-bold text-foreground">Grant Generator</h1>

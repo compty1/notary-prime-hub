@@ -219,6 +219,7 @@ export default function DocumentDigitize() {
     <PageShell>
 
       <div className="container mx-auto max-w-5xl px-4 py-8">
+        <Breadcrumbs />
         {/* Mode tabs */}
         <Tabs value={activeMode} onValueChange={v => setActiveMode(v as any)} className="mb-6">
           <TabsList>

@@ -400,6 +400,7 @@ export default function ServiceRequest() {
     <PageShell>
 
       <div className="container mx-auto max-w-2xl px-4 py-12">
+        <Breadcrumbs />
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="mb-6 flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
