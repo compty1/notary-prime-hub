@@ -114,7 +114,7 @@ export default function BookingReviewStep(props: ReviewStepProps) {
           </div>
           <div>
             <Label>Email</Label>
-            <Input type="email" value={props.guestEmail} onChange={e => props.setGuestEmail(e.target.value)} placeholder="your@email.com" className={props.validationErrors?.guestEmail ? "border-destructive" : ""} />
+            <Input type="email" value={props.guestEmail} onChange={e => props.setGuestEmail(e.target.value)} placeholder="your@email.com" autoComplete="email" className={props.validationErrors?.guestEmail ? "border-destructive" : ""} />
             {props.validationErrors?.guestEmail && <p className="text-xs text-destructive mt-1">{props.validationErrors.guestEmail}</p>}
           </div>
           <div>
