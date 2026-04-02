@@ -120,7 +120,7 @@ export default function BookingReviewStep(props: ReviewStepProps) {
           <div>
             <Label>Password</Label>
             <div className="relative">
-              <Input type={showGuestPassword ? "text" : "password"} value={props.guestPassword} onChange={e => props.setGuestPassword(e.target.value)} placeholder="Create a password (min 8 characters)" minLength={8} className={`pr-10 ${props.validationErrors?.guestPassword ? "border-destructive" : ""}`} />
+              <Input type={showGuestPassword ? "text" : "password"} value={props.guestPassword} onChange={e => props.setGuestPassword(e.target.value)} placeholder="Create a password (min 8 characters)" minLength={8} autoComplete="new-password" className={`pr-10 ${props.validationErrors?.guestPassword ? "border-destructive" : ""}`} />
               <button type="button" onClick={() => setShowGuestPassword(!showGuestPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" tabIndex={-1}>
                 {showGuestPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>

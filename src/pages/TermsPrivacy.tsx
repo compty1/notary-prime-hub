@@ -99,6 +99,64 @@ export default function TermsPrivacy() {
           </div>
         </section>
 
+        <hr className="border-border" />
+
+        {/* Data Retention Policy */}
+        <section>
+          <h2 className="mb-6 font-sans text-3xl font-bold text-foreground">Data Retention Policy</h2>
+          <div className="prose prose-sm text-muted-foreground space-y-4">
+            <p>In accordance with Ohio Revised Code, we retain records as follows:</p>
+            <ul className="list-disc pl-6 space-y-1">
+              <li><strong>Notary Journal Entries:</strong> Minimum 5 years from the date of the notarial act (ORC §147.551). Journal entries include signer name, ID type, date, type of act, and fee charged.</li>
+              <li><strong>RON Session Recordings:</strong> Minimum 10 years (ORC §147.66). Audio/video recordings are stored in encrypted cloud storage with access restricted to the commissioned notary and authorized officials.</li>
+              <li><strong>Client Account Data:</strong> Retained while your account is active and for 1 year after account closure, unless a longer period is required by law.</li>
+              <li><strong>Payment Records:</strong> 7 years per IRS requirements.</li>
+              <li><strong>Communication Logs:</strong> 2 years for appointment-related emails and messages.</li>
+            </ul>
+            <p>You may request deletion of non-legally-required data by contacting us. We cannot delete notary journal entries or RON recordings as they are mandatory legal records.</p>
+          </div>
+        </section>
+
+        <hr className="border-border" />
+
+        {/* Refund & Cancellation Policy */}
+        <section>
+          <h2 className="mb-6 font-sans text-3xl font-bold text-foreground">Refund & Cancellation Policy</h2>
+          <div className="prose prose-sm text-muted-foreground space-y-4">
+            <h3 className="font-sans text-lg font-semibold text-foreground">Cancellations</h3>
+            <ul className="list-disc pl-6 space-y-1">
+              <li><strong>2+ hours before appointment:</strong> Full refund (minus processing fees)</li>
+              <li><strong>Less than 2 hours before:</strong> 50% refund</li>
+              <li><strong>No-show:</strong> No refund. A $25 no-show fee applies.</li>
+            </ul>
+            <h3 className="font-sans text-lg font-semibold text-foreground">Refunds</h3>
+            <ul className="list-disc pl-6 space-y-1">
+              <li>Notarization fees are <strong>non-refundable</strong> once the notarial act has been performed.</li>
+              <li>If the notary is unable to complete the act (e.g., signer fails KBA, expired ID), the notarization fee is refunded but platform/tech fees are not.</li>
+              <li>Travel fees for mobile appointments are <strong>non-refundable</strong> once the notary has departed.</li>
+            </ul>
+            <h3 className="font-sans text-lg font-semibold text-foreground">How to Request a Refund</h3>
+            <p>Contact us through your client portal or email us. Refunds are processed within 5-10 business days to the original payment method.</p>
+          </div>
+        </section>
+
+        <hr className="border-border" />
+
+        {/* Foreign Language Document Policy */}
+        <section>
+          <h2 className="mb-6 font-sans text-3xl font-bold text-foreground">Foreign Language Document Policy</h2>
+          <div className="prose prose-sm text-muted-foreground space-y-4">
+            <p>Ohio law requires the notary to be able to communicate directly with the signer. For documents in foreign languages:</p>
+            <ul className="list-disc pl-6 space-y-1">
+              <li>The <strong>notarial certificate</strong> (jurat, acknowledgment) must be in English.</li>
+              <li>The signer must understand what they are signing. If needed, bring a qualified interpreter — they cannot be a party to the document.</li>
+              <li>Notaries are not required to read or understand the foreign-language content of the document, but they must verify the signer's identity and willingness.</li>
+              <li>For certified translation services, see our <Link to="/services" className="text-primary hover:underline">Translation Coordination service</Link>.</li>
+              <li>Apostille/authentication for foreign-language documents may require additional processing time.</li>
+            </ul>
+          </div>
+        </section>
+
         <div className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm text-muted-foreground">
           <Shield className="h-5 w-5 flex-shrink-0 text-primary" />
           <span>We take your privacy seriously. All data handling complies with Ohio Revised Code §147 and applicable privacy regulations.</span>
