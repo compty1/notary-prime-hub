@@ -34,7 +34,7 @@ export default function About() {
   const [commissionExp, setCommissionExp] = useState<string | null>(null);
   const [eoStatus, setEoStatus] = useState<string | null>(null);
   const [bondStatus, setBondStatus] = useState<string | null>(null);
-  usePageTitle("About", "Learn about Notar — Ohio-commissioned notary team providing in-person and RON services in Franklin County, Columbus, Ohio.");
+  usePageMeta({ title: "About Us", description: "Learn about Notar — Ohio-commissioned notary providing in-person and remote online notarization (RON) in Franklin County, Columbus." });
 
   useEffect(() => {
     supabase.from("platform_settings").select("setting_key, setting_value")
