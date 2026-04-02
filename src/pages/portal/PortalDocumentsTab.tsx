@@ -105,8 +105,8 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
     input.click();
   };
 
-  const notarizedDocs = documents.filter(d => d.status === "notarized");
-  const otherDocs = documents.filter(d => d.status !== "notarized");
+  const notarizedDocs = filteredDocuments.filter(d => d.status === "notarized");
+  const otherDocs = filteredDocuments.filter(d => d.status !== "notarized");
 
   return (
     <div className="space-y-6"
