@@ -11,7 +11,7 @@ export function CookieConsent() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const accepted = localStorage.getItem(COOKIE_KEY);
+    const accepted = safeGetItem(COOKIE_KEY);
     if (!accepted) {
       const timer = setTimeout(() => setVisible(true), 1500);
       return () => clearTimeout(timer);
