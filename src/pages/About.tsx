@@ -1,4 +1,3 @@
-import { usePageMeta } from "@/hooks/usePageMeta";
 import { Link } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
@@ -13,8 +12,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { usePageTitle } from "@/lib/usePageTitle";
-import { usePageMeta as _usePageMetaUnused } from "@/hooks/usePageMeta";
+import { usePageMeta } from "@/hooks/usePageMeta";
+import { fadeUp, scaleReveal } from "@/lib/animations";
 
 const credentials = [
   { icon: Award, title: "NNA Certified & Trained", desc: "National Notary Association certified notary signing agent with advanced training in loan document signing and compliance." },
