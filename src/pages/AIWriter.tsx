@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useAuth } from "@/contexts/AuthContext";
 import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
 import { supabase } from "@/integrations/supabase/client";
