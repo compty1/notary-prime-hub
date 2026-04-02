@@ -151,7 +151,7 @@ function generateLovablePrompt(theme: Theme): string {
   return `Update the theme to "${theme.name}": Use ${theme.colors.primary} as primary, ${theme.colors.accent} as accent, ${theme.colors.background} background. Heading font: ${theme.typography.heading}, body font: ${theme.typography.body}. Mood: ${theme.mood}. ${theme.description}`;
 }
 
-export default function ThemeExplorerTab() {
+export default function ThemeExplorerTab({ onPreviewTheme }: { onPreviewTheme?: (colors: ThemeColors) => void }) {
   const [themes, setThemes] = useState<Theme[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -327,6 +327,11 @@ export default function ThemeExplorerTab() {
                 <Button variant="outline" size="sm" className="flex-1" onClick={() => toggleSave(theme.id)}>
                   {theme.saved ? "Unsave" : "Save"}
                 </Button>
+                {onPreviewTheme && (
+                  <Button variant="outline" size="sm" className="flex-1" onClick={() => onPreviewTheme(theme.colors)}>
+                    <Eye className="h-3.5 w-3.5 mr-1" /> Preview
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>

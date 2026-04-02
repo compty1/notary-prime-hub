@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,7 +28,7 @@ const complianceItems = [
 ];
 
 export default function ForRealEstate() {
-  usePageTitle("For Real Estate — Closings & Title Services", "Professional notarization for real estate closings, deed transfers, and loan signings in Ohio. In-person and RON available.");
+  usePageMeta({ title: "For Real Estate — Closings & Title Services", description: "Professional notarization for real estate closings, deed transfers, and loan signings in Ohio. In-person and RON available." });
 
   return (
     <PageShell>

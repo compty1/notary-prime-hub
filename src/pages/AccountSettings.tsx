@@ -7,11 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { Shield, Trash2, Download, Key, Eye, EyeOff, Bell } from "lucide-react";
+import { Shield, Trash2, Download, Key, Eye, EyeOff, Bell, Smartphone } from "lucide-react";
 
 export default function AccountSettings() {
   usePageTitle("Account Settings");
@@ -230,6 +231,24 @@ export default function AccountSettings() {
           </CardHeader>
           <CardContent>
             <Button variant="outline" onClick={handleExportData} disabled={exporting}>{exporting ? "Exporting..." : "Download Data"}</Button>
+          </CardContent>
+        </Card>
+
+        {/* MFA Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Smartphone className="h-5 w-5 text-primary" /> Multi-Factor Authentication
+            </CardTitle>
+            <CardDescription>Add an extra layer of security to your account</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+              <p className="text-sm text-muted-foreground mb-2">
+                MFA adds a second verification step when signing in — typically a code from an authenticator app.
+              </p>
+              <Badge variant="secondary" className="text-xs">Available — Contact admin to enable</Badge>
+            </div>
           </CardContent>
         </Card>
 

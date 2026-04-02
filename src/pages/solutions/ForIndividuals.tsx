@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,7 +28,7 @@ const complianceItems = [
 ];
 
 export default function ForIndividuals() {
-  usePageTitle("For Individuals — Personal Document Services", "Personal notarization services in Ohio — wills, vehicle titles, affidavits, immigration documents, and RON from home.");
+  usePageMeta({ title: "For Individuals — Personal Document Services", description: "Personal notarization services in Ohio — wills, vehicle titles, affidavits, immigration documents, and RON from home." });
 
   return (
     <PageShell>

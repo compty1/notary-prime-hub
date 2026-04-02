@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,7 +28,7 @@ const complianceItems = [
 ];
 
 export default function ForSmallBusiness() {
-  usePageTitle("For Small Business — Notary & Document Services", "Affordable notarization and document services for Ohio small businesses. Corporate documents, contracts, I-9 verification, and subscription plans.");
+  usePageMeta({ title: "For Small Business — Notary & Document Services", description: "Affordable notarization and document services for Ohio small businesses. Corporate documents, contracts, I-9 verification, and subscription plans." });
 
   return (
     <PageShell>

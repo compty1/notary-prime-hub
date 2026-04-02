@@ -460,16 +460,27 @@ export default function AdminMailbox() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
                         <span className={`truncate text-sm ${!email.is_read ? "font-semibold text-foreground" : "text-foreground/80"}`}>
-                          {email.from_name || email.from_address || "Unknown"}
+                          {activeFolder === "sent"
+                            ? `To: ${(email.to_addresses || []).join(", ") || "Unknown"}`
+                            : email.from_name || email.from_address || "Unknown"
+                          }
                         </span>
                         <span className="shrink-0 text-xs text-muted-foreground">{formatDate(email.date)}</span>
                       </div>
                       <p className={`truncate text-sm ${!email.is_read ? "font-medium text-foreground" : "text-muted-foreground"}`}>
                         {email.subject || "(no subject)"}
                       </p>
+                      {email.body_text && (
+                        <p className="truncate text-xs text-muted-foreground mt-0.5">
+                          {email.body_text.slice(0, 80)}
+                        </p>
+                      )}
                       <div className="flex items-center gap-1 mt-0.5">
                         {email.has_attachments && <Paperclip className="h-3 w-3 text-muted-foreground" />}
                         {!email.is_read && <span className="h-2 w-2 rounded-full bg-primary" />}
+                        {activeFolder === "inbox" && email.from_address && (
+                          <span className="text-[10px] text-muted-foreground">&lt;{email.from_address}&gt;</span>
+                        )}
                       </div>
                     </div>
                   </button>

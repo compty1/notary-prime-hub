@@ -94,7 +94,7 @@ Deno.serve(async (req) => {
         const { folder = "inbox", limit = 50, offset = 0, search } = body;
         let query = serviceClient
           .from("email_cache")
-          .select("id, message_id, folder, from_address, from_name, to_addresses, subject, date, is_read, is_starred, has_attachments, attachments")
+          .select("id, message_id, folder, from_address, from_name, to_addresses, subject, date, is_read, is_starred, has_attachments, attachments, body_text")
           .eq("folder", folder)
           .order("date", { ascending: false })
           .range(offset, offset + limit - 1);

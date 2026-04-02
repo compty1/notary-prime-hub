@@ -1,8 +1,10 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Monitor, Tablet, Smartphone, RefreshCw, ExternalLink, AlertTriangle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Loader2, Monitor, Tablet, Smartphone, RefreshCw, ExternalLink, AlertTriangle, Navigation } from "lucide-react";
 
 const PREVIEW_URL = "https://id-preview--b6d1b88a-ed8c-42c3-98a9-3a2517fa9990.lovable.app";
 
@@ -17,33 +19,118 @@ type ThemeOverlay = {
   background?: string;
   foreground?: string;
   accent?: string;
+  secondary?: string;
+  muted?: string;
 } | null;
 
 type Props = {
   themeOverlay?: ThemeOverlay;
 };
 
+/** Convert hex to HSL string for CSS variable injection */
+function hexToHSL(hex: string): string {
+  const c = hex.replace("#", "");
+  const r = parseInt(c.substring(0, 2), 16) / 255;
+  const g = parseInt(c.substring(2, 4), 16) / 255;
+  const b = parseInt(c.substring(4, 6), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0, s = 0;
+  const l = (max + min) / 2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+      case g: h = ((b - r) / d + 2) / 6; break;
+      case b: h = ((r - g) / d + 4) / 6; break;
+    }
+  }
+  return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+}
+
+/** Build a theme query string for the preview iframe */
+function buildThemeQuery(overlay: ThemeOverlay): string {
+  if (!overlay) return "";
+  const params = new URLSearchParams();
+  Object.entries(overlay).forEach(([key, val]) => {
+    if (val) params.set(`theme_${key}`, val);
+  });
+  const str = params.toString();
+  return str ? `&${str}` : "";
+}
+
+const QUICK_ROUTES = [
+  { label: "Home", path: "/" },
+  { label: "About", path: "/about" },
+  { label: "Services", path: "/services" },
+  { label: "Book", path: "/book" },
+  { label: "Login", path: "/login" },
+  { label: "RON Info", path: "/ron-info" },
+  { label: "Resources", path: "/resources" },
+];
+
 export default function LivePreviewTab({ themeOverlay }: Props) {
   const [viewport, setViewport] = useState(0);
   const [loadError, setLoadError] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [routePath, setRoutePath] = useState("/");
+  const [inputPath, setInputPath] = useState("/");
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const current = VIEWPORTS[viewport];
+
+  const getIframeSrc = useCallback((path: string = "/") => {
+    const cacheBust = `t=${Date.now()}`;
+    const themeQ = buildThemeQuery(themeOverlay);
+    return `${PREVIEW_URL}${path}?${cacheBust}${themeQ}`;
+  }, [themeOverlay]);
 
   const refresh = useCallback(() => {
     setIsRefreshing(true);
     setLoadError(false);
     setIsLoading(true);
     if (iframeRef.current) {
-      iframeRef.current.src = PREVIEW_URL + "?t=" + Date.now();
+      iframeRef.current.src = getIframeSrc(routePath);
     }
     setTimeout(() => setIsRefreshing(false), 1500);
-  }, []);
+  }, [getIframeSrc, routePath]);
+
+  const navigateTo = useCallback((path: string) => {
+    setRoutePath(path);
+    setInputPath(path);
+    setIsLoading(true);
+    if (iframeRef.current) {
+      iframeRef.current.src = getIframeSrc(path);
+    }
+  }, [getIframeSrc]);
+
+  // Re-load iframe when theme overlay changes
+  useEffect(() => {
+    if (iframeRef.current && themeOverlay) {
+      setIsLoading(true);
+      iframeRef.current.src = getIframeSrc(routePath);
+    }
+  }, [themeOverlay, getIframeSrc, routePath]);
+
+  // Also try postMessage for theme injection (works if same-origin or if app listens)
+  useEffect(() => {
+    if (!themeOverlay || !iframeRef.current) return;
+    const cssVars: Record<string, string> = {};
+    Object.entries(themeOverlay).forEach(([key, val]) => {
+      if (val) cssVars[`--${key}`] = hexToHSL(val);
+    });
+    try {
+      iframeRef.current.contentWindow?.postMessage(
+        { type: "THEME_OVERRIDE", cssVars },
+        "*"
+      );
+    } catch {}
+  }, [themeOverlay, isLoading]);
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      {/* Viewport & Actions Bar */}
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2">
           {VIEWPORTS.map((vp, idx) => (
             <Button
@@ -75,6 +162,36 @@ export default function LivePreviewTab({ themeOverlay }: Props) {
         </div>
       </div>
 
+      {/* Page Navigation */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-1">
+          <Navigation className="h-3.5 w-3.5 text-muted-foreground" />
+          <Label className="text-xs text-muted-foreground">Navigate:</Label>
+        </div>
+        {QUICK_ROUTES.map(r => (
+          <Button
+            key={r.path}
+            variant={routePath === r.path ? "secondary" : "ghost"}
+            size="sm"
+            className="h-7 text-xs"
+            onClick={() => navigateTo(r.path)}
+          >
+            {r.label}
+          </Button>
+        ))}
+        <div className="flex items-center gap-1 ml-auto">
+          <Input
+            value={inputPath}
+            onChange={e => setInputPath(e.target.value)}
+            onKeyDown={e => { if (e.key === "Enter") navigateTo(inputPath); }}
+            placeholder="/path"
+            className="h-7 w-32 text-xs"
+          />
+          <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => navigateTo(inputPath)}>Go</Button>
+        </div>
+      </div>
+
+      {/* Theme Overlay Indicator */}
       {themeOverlay && (
         <div className="flex items-center gap-2 rounded-lg border bg-muted/30 p-2 text-xs">
           <span className="font-medium">Theme overlay active:</span>
@@ -87,6 +204,7 @@ export default function LivePreviewTab({ themeOverlay }: Props) {
         </div>
       )}
 
+      {/* Preview Frame */}
       <Card className="overflow-hidden">
         <CardContent className="p-0 flex justify-center bg-muted/20" style={{ minHeight: "500px" }}>
           {loadError ? (
@@ -122,7 +240,7 @@ export default function LivePreviewTab({ themeOverlay }: Props) {
               )}
               <iframe
                 ref={iframeRef}
-                src={PREVIEW_URL}
+                src={getIframeSrc(routePath)}
                 className="w-full h-full"
                 title="Live Site Preview"
                 sandbox="allow-scripts allow-same-origin allow-forms"
