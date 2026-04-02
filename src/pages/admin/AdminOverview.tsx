@@ -233,7 +233,7 @@ export default function AdminOverview() {
       )}
 
       <div className="mb-6 flex flex-wrap gap-2">
-        <Link to={`/admin/appointments`}><Button size="sm" variant="outline"><Calendar className="mr-1 h-3 w-3" /> Today's Appointments {todayCount > 0 && `(${todayCount})`}</Button></Link>
+        <Link to={`/admin/appointments`}><Button size="sm" variant="outline"><CalendarIcon className="mr-1 h-3 w-3" /> Today's Appointments {todayCount > 0 && `(${todayCount})`}</Button></Link>
         <Link to="/admin/journal"><Button size="sm" variant="outline"><BookMarked className="mr-1 h-3 w-3" /> New Journal Entry</Button></Link>
         <Link to="/admin/documents"><Button size="sm" variant="outline"><FileText className="mr-1 h-3 w-3" /> Review Documents</Button></Link>
         <Link to="/admin/availability"><Button size="sm" variant="outline"><Clock className="mr-1 h-3 w-3" /> Set Availability</Button></Link>
@@ -242,6 +242,55 @@ export default function AdminOverview() {
             <Button size="sm" className="bg-purple-600 text-white hover:bg-purple-700"><Video className="mr-1 h-3 w-3" /> Launch RON Session</Button>
           </Link>
         )}
+      </div>
+
+      {/* Live Calendar Widget */}
+      <div className="mb-8">
+        <Card className="border-border/50">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <CalendarIcon className="h-4 w-4" /> Weekly Calendar
+                {gcalConnected && <Badge variant="outline" className="text-xs text-primary">Google Calendar Connected</Badge>}
+                {gcalConnected === false && <Badge variant="outline" className="text-xs text-muted-foreground">Google Calendar: Not Connected</Badge>}
+              </CardTitle>
+              <div className="flex gap-1">
+                <Button variant="ghost" size="sm" onClick={() => shiftWeek(-1)}><ChevronLeft className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="sm" onClick={() => { const d = new Date(); d.setDate(d.getDate() - d.getDay()); d.setHours(0,0,0,0); setCalendarWeekStart(d); }}>Today</Button>
+                <Button variant="ghost" size="sm" onClick={() => shiftWeek(1)}><ChevronRight className="h-4 w-4" /></Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-7 gap-1">
+              {weekDays.map((day) => {
+                const isToday = day.toDateString() === new Date().toDateString();
+                const dayAppts = getAppointmentsForDay(day);
+                const dayGcal = getGcalForDay(day);
+                return (
+                  <div key={day.toISOString()} className={`rounded-lg border p-2 min-h-[100px] ${isToday ? "border-primary bg-primary/5" : "border-border/50"}`}>
+                    <p className={`text-xs font-medium mb-1 ${isToday ? "text-primary" : "text-muted-foreground"}`}>
+                      {day.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
+                    </p>
+                    <div className="space-y-1">
+                      {dayAppts.map(a => (
+                        <div key={a.id} className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] text-primary truncate" title={`${a.service_type} - ${a.status}`}>
+                          {a.scheduled_time?.slice(0,5)} {a.service_type?.slice(0,15)}
+                        </div>
+                      ))}
+                      {dayGcal.map((e: any, i: number) => (
+                        <div key={i} className="rounded bg-blue-100 dark:bg-blue-900/30 px-1.5 py-0.5 text-[10px] text-blue-700 dark:text-blue-300 truncate" title={e.summary}>
+                          {e.start?.dateTime ? new Date(e.start.dateTime).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "All day"} {e.summary?.slice(0,12)}
+                        </div>
+                      ))}
+                      {dayAppts.length === 0 && dayGcal.length === 0 && <p className="text-[10px] text-muted-foreground/50">—</p>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">

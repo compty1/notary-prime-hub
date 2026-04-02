@@ -34,6 +34,7 @@ const paymentStatusColors: Record<string, string> = {
   pending: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
   cancelled: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
   failed: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+  refunded: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
 };
 
 export default function AdminRevenue() {
