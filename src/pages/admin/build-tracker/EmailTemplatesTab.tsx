@@ -199,7 +199,7 @@ export default function EmailTemplatesTab() {
     setIsDirty(false);
   };
 
-  const preview = useMemo(() => renderPreview(currentBody, current.sampleData, master), [currentBody, current.sampleData, master]);
+  const preview = useMemo(() => renderPreview(currentBody, current.sampleData, master, currentSubject), [currentBody, current.sampleData, master, currentSubject]);
 
   const categoryColors: Record<string, string> = {
     auth: "bg-blue-500/10 text-blue-700",
