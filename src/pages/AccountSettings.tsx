@@ -15,7 +15,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Shield, Trash2, Download, Key, Eye, EyeOff, Bell, Smartphone } from "lucide-react";
 
 export default function AccountSettings() {
-  usePageTitle("Account Settings");
+  usePageMeta({ title: "Account Settings", description: "Manage your Notar account — update password, notification preferences, and security settings.", noIndex: true });
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   const [currentPassword, setCurrentPassword] = useState("");

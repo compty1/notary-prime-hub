@@ -23,7 +23,7 @@ export default function VerifyIdentity() {
   const [saved, setSaved] = useState(false);
   const [showAssistant, setShowAssistant] = useState(true);
 
-  usePageTitle("ID Verification");
+  usePageMeta({ title: "ID Verification", description: "Verify your identity securely for notarization services. Upload a government-issued photo ID.", noIndex: true });
 
   const handleIdScan = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

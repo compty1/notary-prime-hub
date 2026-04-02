@@ -24,7 +24,7 @@ export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  usePageTitle("Reset Password");
+  usePageMeta({ title: "Reset Password", description: "Reset your Notar account password securely. Enter your email to receive a password reset link.", noIndex: true });
 
   useEffect(() => {
     const hash = window.location.hash;

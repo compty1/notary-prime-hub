@@ -102,7 +102,7 @@ const getSteps = (docType: DocType): StepConfig[] => {
 };
 
 export default function DocumentBuilder() {
-  usePageTitle("Document Builder");
+  usePageMeta({ title: "Document Builder", description: "Build legal documents step by step — affidavits, travel consent forms, bills of sale, and more." });
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();

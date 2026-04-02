@@ -1,9 +1,9 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { PageShell } from "@/components/PageShell";
 import SignatureGenerator from "@/components/SignatureGenerator";
 
 export default function SignatureGeneratorPage() {
-  usePageTitle("Signature Generator");
+  usePageMeta({ title: "Signature Generator", description: "Create a professional digital signature for your documents. Type or draw your signature, customize the style, and save it." });
 
   return (
     <PageShell>

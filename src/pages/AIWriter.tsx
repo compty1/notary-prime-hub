@@ -24,7 +24,7 @@ import ReactMarkdown from "react-markdown";
 type WritingMode = "email" | "social" | "document" | "proposal" | "style-match";
 
 export default function AIWriter() {
-  usePageTitle("AI Writing Tools");
+  usePageMeta({ title: "AI Writing Tools", description: "AI-powered writing assistant for professional emails, social media posts, proposals, and business documents." });
   const { user } = useAuth();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();

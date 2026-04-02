@@ -27,7 +27,7 @@ interface Message {
 }
 
 export default function AIKnowledge() {
-  usePageTitle("AI Knowledge Base");
+  usePageMeta({ title: "AI Knowledge Base", description: "Upload documents and ask questions — AI-powered knowledge assistant for cross-document analysis and insights." });
   const { user } = useAuth();
   const { toast } = useToast();
 

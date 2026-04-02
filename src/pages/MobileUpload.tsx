@@ -13,7 +13,7 @@ import { Logo } from "@/components/Logo";
 import { Upload, Camera, FileText, CheckCircle, Loader2, LogOut, RefreshCw } from "lucide-react";
 
 export default function MobileUpload() {
-  usePageTitle("Mobile Upload");
+  usePageMeta({ title: "Mobile Upload", description: "Upload documents directly from your phone for notarization. Snap photos or choose files.", noIndex: true });
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);

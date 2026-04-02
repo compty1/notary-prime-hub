@@ -122,7 +122,7 @@ function ResultSection({ title, data }: { title: string; data: unknown }) {
 }
 
 export default function AIExtractors() {
-  usePageTitle("AI Document Intelligence");
+  usePageMeta({ title: "AI Document Intelligence", description: "Extract key data from legal, financial, and HR documents using AI. Automated analysis with confidence scores." });
   const { user } = useAuth();
   const { toast } = useToast();
 

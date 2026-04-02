@@ -40,7 +40,7 @@ export default function SignUp() {
 
   const strength = useMemo(() => getPasswordStrength(password), [password]);
 
-  usePageTitle("Sign Up");
+  usePageMeta({ title: "Sign Up", description: "Create a free Notar account to book notarization appointments, upload documents, and access Ohio notary services online.", noIndex: true });
 
   // Redirect already-authenticated users based on role
   if (!loading && user) {
