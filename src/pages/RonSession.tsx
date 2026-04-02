@@ -1190,15 +1190,28 @@ export default function RonSession() {
                   <Video className="h-4 w-4 text-primary" /> Recording Consent
                 </h3>
                 <p className="text-[10px] text-muted-foreground mb-2">
-                  Ohio is a one-party consent state, but RON best practice requires explicit consent per ORC §147.66.
+                  Ohio RON requires explicit consent before session recording begins (ORC §147.66). <strong>Session cannot proceed without consent.</strong>
                 </p>
+                {!recordingConsent && participantLink && (
+                  <div className="mb-2 rounded-md border border-destructive bg-destructive/10 p-2">
+                    <p className="text-[10px] text-destructive font-medium">⚠ Recording consent is required before proceeding with the session. The signer must verbally acknowledge and you must toggle this switch.</p>
+                  </div>
+                )}
                 <div className="flex items-center gap-2 mb-2">
                   <Switch
                     checked={recordingConsent}
                     onCheckedChange={(checked) => {
                       setRecordingConsent(checked);
                       if (checked && !recordingConsentAt) {
-                        setRecordingConsentAt(new Date().toISOString());
+                        const ts = new Date().toISOString();
+                        setRecordingConsentAt(ts);
+                        // Save consent timestamp immediately
+                        if (appointmentId) {
+                          supabase.from("notarization_sessions").update({
+                            recording_consent: true,
+                            recording_consent_at: ts,
+                          } as any).eq("appointment_id", appointmentId);
+                        }
                       }
                     }}
                   />
