@@ -259,6 +259,10 @@ export default function EmailTemplatesTab() {
                 <Input value={master.fontFamily} onChange={e => { setMaster(prev => ({ ...prev, fontFamily: e.target.value })); setIsDirty(true); }} className="mt-1" />
               </div>
               <div>
+                <Label className="text-xs">Sender Email</Label>
+                <Input value={master.senderEmail} onChange={e => { setMaster(prev => ({ ...prev, senderEmail: e.target.value })); setIsDirty(true); }} className="mt-1" placeholder="notify@notardex.com" />
+              </div>
+              <div>
                 <Label className="text-xs">Footer Text</Label>
                 <Input value={master.footerText} onChange={e => { setMaster(prev => ({ ...prev, footerText: e.target.value })); setIsDirty(true); }} className="mt-1" />
               </div>
