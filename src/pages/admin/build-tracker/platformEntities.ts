@@ -175,7 +175,7 @@ export const PLATFORM_ENTITIES: PlatformEntity[] = [
       { name: "Lead Fetching", status: "healthy", edgeFunction: "fetch-leads", description: "Lead data retrieval" },
       { name: "Lead Submission", status: "healthy", edgeFunction: "submit-lead", description: "Public lead form endpoint" },
       { name: "Social Lead Scraping", status: "healthy", edgeFunction: "scrape-social-leads", description: "Social media lead discovery" },
-      { name: "HubSpot Sync", status: "needs_attention", edgeFunction: "hubspot-sync", description: "CRM synchronization" },
+      { name: "HubSpot Sync", status: "partial", edgeFunction: "hubspot-sync", description: "CRM synchronization (deferred per roadmap)" },
       { name: "Leads Table", status: "healthy", description: "Lead records (leads table)" },
     ],
   },
