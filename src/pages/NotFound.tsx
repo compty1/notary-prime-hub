@@ -1,6 +1,7 @@
 import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
+import { PageShell } from "@/components/PageShell";
 import { Button } from "@/components/ui/button";
 import { Home, ArrowLeft, FileQuestion, Search } from "lucide-react";
 
@@ -15,7 +16,7 @@ const popularPages = [
 const NotFound = () => {
   const location = useLocation();
 
-  usePageTitle("Page Not Found");
+  usePageMeta({ title: "Page Not Found", description: "The page you're looking for doesn't exist. Browse our services or return home.", noIndex: true });
   useEffect(() => {
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
   }, [location.pathname]);
