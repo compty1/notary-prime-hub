@@ -239,7 +239,7 @@ export default function Index() {
                 custom={1}
                 className="mb-6 text-4xl font-extrabold tracking-tight text-foreground md:text-5xl lg:text-6xl"
               >
-                Get documents notarized with less hassle
+                Ohio's trusted notary — get documents notarized with less hassle
               </motion.h1>
               <motion.p
                 variants={blurIn}

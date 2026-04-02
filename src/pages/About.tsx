@@ -94,6 +94,37 @@ export default function About() {
               </div>
             </motion.div>
           </motion.div>
+
+          {/* Commission & Insurance Status Badges */}
+          <motion.div variants={fadeUp} custom={2} className="mt-6 flex flex-wrap gap-3">
+            {commissionExp && (() => {
+              const days = Math.ceil((new Date(commissionExp).getTime() - Date.now()) / 86400000);
+              return (
+                <Badge variant={days > 90 ? "secondary" : days > 0 ? "outline" : "destructive"} className="text-xs">
+                  <Award className="mr-1 h-3 w-3" />
+                  Commission {days > 0 ? `expires ${new Date(commissionExp).toLocaleDateString("en-US", { month: "short", year: "numeric" })}` : "EXPIRED"}
+                </Badge>
+              );
+            })()}
+            {eoStatus && (() => {
+              const days = Math.ceil((new Date(eoStatus).getTime() - Date.now()) / 86400000);
+              return (
+                <Badge variant={days > 60 ? "secondary" : "outline"} className="text-xs">
+                  <Shield className="mr-1 h-3 w-3" />
+                  E&O Insurance {days > 0 ? "Active" : "Expired"}
+                </Badge>
+              );
+            })()}
+            {bondStatus && (() => {
+              const days = Math.ceil((new Date(bondStatus).getTime() - Date.now()) / 86400000);
+              return (
+                <Badge variant={days > 60 ? "secondary" : "outline"} className="text-xs">
+                  <Shield className="mr-1 h-3 w-3" />
+                  Surety Bond {days > 0 ? "Active" : "Expired"}
+                </Badge>
+              );
+            })()}
+          </motion.div>
         </div>
       </section>
 
