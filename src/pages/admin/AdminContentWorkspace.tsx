@@ -1,5 +1,6 @@
 import { usePageTitle } from "@/lib/usePageTitle";
-import { useEffect, useState, lazy, Suspense } from "react";
+import { useEffect, useState } from "react";
+import { RichTextEditor } from "@/components/RichTextEditor";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
