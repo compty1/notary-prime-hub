@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { submitLead } from "@/lib/submitLead";
@@ -70,7 +70,7 @@ const serviceOptions = [
 ];
 
 export default function JoinPlatform() {
-  usePageTitle("Join Our Platform");
+  usePageMeta({ title: "Join Our Notary Network", description: "Apply to join the Notar notary network. Commission-based opportunities for Ohio-commissioned notaries and signing agents." });
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);

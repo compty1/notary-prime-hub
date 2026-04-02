@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Shield } from "lucide-react";
@@ -7,7 +7,7 @@ import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 export default function TermsPrivacy() {
-  usePageTitle("Terms & Privacy");
+  usePageMeta({ title: "Terms of Service & Privacy Policy", description: "Notar terms of service, privacy policy, and data handling practices. Learn how we protect your information." });
   return (
     <PageShell>
 

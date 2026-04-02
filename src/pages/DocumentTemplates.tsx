@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -636,7 +636,7 @@ function EditorToolbar({ editor }: { editor: any }) {
 }
 
 export default function DocumentTemplates() {
-  usePageTitle("Document Templates");
+  usePageMeta({ title: "Notary Document Templates", description: "Free Ohio notary document templates — affidavits, acknowledgments, jurats, and more. Download and customize for your needs." });
   const [search, setSearch] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [formData, setFormData] = useState<Record<string, string>>({});

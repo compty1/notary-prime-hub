@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -201,7 +201,7 @@ const ronSteps = [
 export default function NotaryGuide() {
   const [searchTerm, setSearchTerm] = useState("");
   const { user } = useAuth();
-  usePageTitle("What Can Be Notarized?");
+  usePageMeta({ title: "Ohio Notary Guide", description: "Complete guide to Ohio notarization — requirements, document types, fees, and Ohio Revised Code compliance. Everything you need to know." });
 
   const filteredCategories = documentCategories.map((cat) => ({
     ...cat,

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Link, useSearchParams } from "react-router-dom";
 import { useDebounce } from "@/lib/useDebounce";
 import { supabase } from "@/integrations/supabase/client";
@@ -63,7 +63,7 @@ export default function Services() {
     categoryParam && CATEGORY_ORDER.includes(categoryParam) ? categoryParam : "all"
   );
   const [searchQuery, setSearchQuery] = useState(queryParam);
-  usePageTitle("Services");
+  usePageMeta({ title: "Notary & Document Services", description: "Browse our full range of Ohio notary services including RON, mobile notarization, loan signing, apostille, I-9 verification, and more." });
 
   useEffect(() => {
     if (categoryParam && CATEGORY_ORDER.includes(categoryParam)) setActiveCategory(categoryParam);

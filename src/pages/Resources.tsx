@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -52,7 +52,7 @@ const resources = [
 ];
 
 export default function Resources() {
-  usePageTitle("Resources — Ohio Notary Guides & Tools");
+  usePageMeta({ title: "Notary Resources & Guides", description: "Free notary resources, Ohio compliance guides, document preparation tips, and helpful tools for signers and notaries." });
 
   return (
     <PageShell>
