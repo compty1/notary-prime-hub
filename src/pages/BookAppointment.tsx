@@ -618,6 +618,7 @@ export default function BookAppointment() {
   return (
     <PageShell>
       <div className="container mx-auto max-w-2xl px-4 py-12">
+        <Breadcrumbs />
         {user && pastAppointments.length > 0 && step === 1 && (
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
             <Card className="mb-6 border-primary/20 bg-primary/5">
