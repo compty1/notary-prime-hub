@@ -109,7 +109,7 @@ export default function Login() {
             <form onSubmit={handleForgotPassword} className="space-y-4">
               <div>
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
               </div>
               {!resetSent && (
                 <Button type="submit" className="w-full" disabled={submitting}>
