@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -219,6 +220,7 @@ export default function NotaryGuide() {
       {/* Hero */}
       <section className="bg-gradient-hero py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
+          <Breadcrumbs />
           <motion.div initial="hidden" animate="visible">
             <motion.div variants={fadeUp} custom={0}>
               <Badge className="mb-4 border-primary/20 bg-primary/10 text-primary">

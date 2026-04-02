@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ export default function NotaryProcessGuide() {
       {/* Hero */}
       <section className="bg-gradient-hero py-12 md:py-16">
         <div className="container mx-auto px-4 text-center">
+          <Breadcrumbs />
           <Badge className="mb-4 border-primary/20 bg-primary/10 text-primary">
             <BookOpen className="mr-1 h-3 w-3" /> Provider Reference
           </Badge>

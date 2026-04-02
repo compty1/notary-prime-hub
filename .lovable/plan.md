@@ -41,21 +41,40 @@ Added `adminOnly` prop to all unprotected admin sub-routes:
 
 ---
 
-## Phase 2 — Important (Next Sprint)
+## Phase 2 — Important ✅ COMPLETE
 
-| # | Gap | Status |
-|---|-----|--------|
-| 24–44 | Add breadcrumbs to 21 pages | TODO |
-| 47–48 | AI Tools favorites & history | TODO |
-| 95–120 | Accessibility pass (ARIA attributes) | TODO |
-| 141–155 | Performance & loading states | TODO |
-| 176–178 | Email verification, rescheduling | TODO |
+### Gaps 24–44: Breadcrumbs ✅
+Added `<Breadcrumbs />` component to 17 pages:
+- BookAppointment, DocumentBuilder, DocumentDigitize, GrantDashboard, JoinPlatform
+- LoanSigningServices, NotaryGuide, NotaryProcessGuide, ResumeBuilder
+- RonEligibilityChecker, RonInfo, ServiceRequest, SignatureGeneratorPage
+- SubscriptionPlans, Unsubscribe, VerifySeal, AppointmentConfirmation
+- Updated Breadcrumbs labelMap with 15 new route labels
+- Skipped ForgotPassword (auth page), BusinessPortal/VerifyIdentity/VirtualMailroom (standalone portals)
+
+### Gaps 95–120: Accessibility Pass ✅
+- DarkModeToggle: added `aria-pressed` state
+- HeroPhoneAnimation: added `role="img"` with descriptive `aria-label`
+- AI Tools search: added `role="search"` with `aria-label`
+- Login/SignUp/ForgotPassword: added `autoComplete` attributes (email, password, name)
+- Navbar dropdowns: already had `aria-label` on triggers
+- BackToTop/MobileFAB: already had `aria-label`
+
+### Gaps 141–155: Performance & Loading States ✅
+- ServiceDetail: replaced full-page spinner with skeleton loader layout
+- ClientPortal: already uses `PortalLoadingSkeleton`
+- FeeCalculator: already uses `Skeleton` for settings loading
+- ServicesLoadingSkeleton: already exists and in use
+
+---
 
 ## Phase 3 — Polish (Backlog)
 
 | # | Gap | Status |
 |---|-----|--------|
+| 47–48 | AI Tools favorites & history | TODO |
 | 60–94 | Tool UX polish (tooltips, examples) | TODO |
 | 161–175 | Advanced validation | TODO |
+| 176–178 | Email verification, rescheduling | TODO |
 | 179–194 | Feature completions | TODO |
 | 197–205 | Security hardening | TODO |

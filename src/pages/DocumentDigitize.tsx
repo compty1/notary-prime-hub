@@ -1,5 +1,6 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { useState, useCallback } from "react";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -218,6 +219,7 @@ export default function DocumentDigitize() {
     <PageShell>
 
       <div className="container mx-auto max-w-5xl px-4 py-8">
+        <Breadcrumbs />
         {/* Mode tabs */}
         <Tabs value={activeMode} onValueChange={v => setActiveMode(v as any)} className="mb-6">
           <TabsList>

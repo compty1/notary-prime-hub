@@ -22,7 +22,7 @@ export default function HeroPhoneAnimation() {
   }, []);
 
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center justify-center" role="img" aria-label="Animated demonstration of the remote online notarization process: ID scanning, identity verification, and secure document signing">
       <style>{`
         @keyframes laserScan {
           0% { top: 10%; opacity: 0; }

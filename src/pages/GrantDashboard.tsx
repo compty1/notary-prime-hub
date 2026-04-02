@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { usePageTitle } from "@/lib/usePageTitle";
 import { PageShell } from "@/components/PageShell";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -169,6 +170,7 @@ export default function GrantDashboard() {
   return (
     <PageShell>
       <div className="container mx-auto px-4 py-8 max-w-5xl">
+        <Breadcrumbs />
         <div className="flex items-start justify-between gap-4 mb-8">
           <div>
             <h1 className="font-display text-3xl font-bold text-foreground">Grant Generator</h1>
