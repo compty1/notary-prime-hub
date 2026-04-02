@@ -482,10 +482,13 @@ export default function AITools() {
   const toolParam = searchParams.get("tool");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<ToolCategory | "all">("all");
+  const favoritesHook = useFavoriteTools();
+  const { recordUsage } = useToolHistory();
 
   const selectedTool = toolParam ? getToolById(toolParam) : undefined;
 
   const handleSelectTool = (id: string) => {
+    recordUsage(id);
     setSearchParams({ tool: id }, { replace: true });
   };
 
@@ -504,6 +507,7 @@ export default function AITools() {
           setSearchQuery={setSearchQuery}
           activeCategory={activeCategory}
           setActiveCategory={setActiveCategory}
+          favorites={favoritesHook}
         />
       )}
     </PageShell>
