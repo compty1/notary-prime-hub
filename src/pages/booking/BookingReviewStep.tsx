@@ -153,7 +153,18 @@ export default function BookingReviewStep(props: ReviewStepProps) {
         </div>
       )}
 
-      {/* Click-wrap Terms Agreement — Phase 4 */}
+      {/* Conflict of Interest Attestation */}
+      <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-2">
+        <div className="flex items-start gap-2">
+          <Checkbox id="conflict-attest" checked disabled className="mt-0.5" />
+          <Label htmlFor="conflict-attest" className="text-xs leading-relaxed text-muted-foreground">
+            I attest that the notary performing this act does not have a direct financial or beneficial interest in the transaction,
+            and is not a party to the document being notarized (per ORC §147.141).
+          </Label>
+        </div>
+      </div>
+
+      {/* Click-wrap Terms Agreement */}
       <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-2">
         <div className="flex items-start gap-2">
           <Checkbox
