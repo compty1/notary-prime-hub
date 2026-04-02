@@ -327,6 +327,11 @@ export default function ThemeExplorerTab({ onPreviewTheme }: { onPreviewTheme?: 
                 <Button variant="outline" size="sm" className="flex-1" onClick={() => toggleSave(theme.id)}>
                   {theme.saved ? "Unsave" : "Save"}
                 </Button>
+                {onPreviewTheme && (
+                  <Button variant="outline" size="sm" className="flex-1" onClick={() => onPreviewTheme(theme.colors)}>
+                    <Eye className="h-3.5 w-3.5 mr-1" /> Preview
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>
