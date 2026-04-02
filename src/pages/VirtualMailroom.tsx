@@ -26,7 +26,7 @@ export default function VirtualMailroom() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
 
-  usePageTitle("Virtual Mailroom");
+  usePageMeta({ title: "Virtual Mailroom", description: "Track and manage your physical mail items — scanned documents, forwarding, and secure digital access." });
 
   useEffect(() => {
     if (!user) return;

@@ -17,7 +17,7 @@ import { PageShell } from "@/components/PageShell";
 export default function NotaryProcessGuide() {
   const { user } = useAuth();
 
-  usePageTitle("Notary Process Guide");
+  usePageMeta({ title: "Notary Process Guide — Step by Step", description: "Step-by-step guide to the Ohio notarization process. Learn what to expect, what to bring, and how to prepare for your appointment." });
 
   return (
     <PageShell>
