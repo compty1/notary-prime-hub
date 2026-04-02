@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Link } from "react-router-dom";
 import { submitLead } from "@/lib/submitLead";
 import { Button } from "@/components/ui/button";
@@ -41,7 +41,7 @@ export default function LoanSigningServices() {
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
 
-  usePageTitle("Loan Signing Services");
+  usePageMeta({ title: "Loan Signing Agent Services", description: "Professional loan signing agent services in Ohio. NNA-certified for real estate closings, refinances, and HELOC signings." });
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({
     companyName: "",

@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Link } from "react-router-dom";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -318,10 +318,7 @@ const quickLinks = [
 /* ─── Component ───────────────────────────────────────────────── */
 
 export default function HelpSupport() {
-  usePageTitle(
-    "Help & Support — Ohio Notary FAQ",
-    "Find answers to common questions about notarization, remote online notarization (RON), pricing, ID requirements, and how to book an appointment with Notar."
-  );
+  usePageMeta({ title: "Help & Support", description: "Find answers to common questions about notarization, remote online notarization (RON), pricing, ID requirements, and how to book an appointment with Notar." });
 
   return (
     <PageShell>

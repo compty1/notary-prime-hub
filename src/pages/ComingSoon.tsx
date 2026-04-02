@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { AILeadChatbot } from "@/components/AILeadChatbot";
 import { Link } from "react-router-dom";
 import { Logo } from "@/components/Logo";
@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 
 export default function ComingSoon() {
-  usePageTitle("Coming Soon");
+  usePageMeta({ title: "Coming Soon", description: "New features coming soon to Notar — Ohio's professional notary and document services platform." });
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);

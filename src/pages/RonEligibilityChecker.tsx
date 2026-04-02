@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -236,7 +236,7 @@ function getEligibility(state: string, docType: string, entity: string, purpose:
 }
 
 export default function RonEligibilityChecker() {
-  usePageTitle("RON Eligibility Checker");
+  usePageMeta({ title: "RON Eligibility Checker", description: "Check if your document is eligible for Remote Online Notarization (RON) in Ohio. Instant eligibility assessment." });
   const [state, setState] = useState("");
   const [docType, setDocType] = useState("");
   const [entity, setEntity] = useState("");

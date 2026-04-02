@@ -622,6 +622,48 @@ export type Database = {
         }
         Relationships: []
       }
+      content_posts: {
+        Row: {
+          author_id: string
+          body: string | null
+          category: string
+          created_at: string
+          hero_image_url: string | null
+          id: string
+          published_at: string | null
+          service_id: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          body?: string | null
+          category?: string
+          created_at?: string
+          hero_image_url?: string | null
+          id?: string
+          published_at?: string | null
+          service_id?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          body?: string | null
+          category?: string
+          created_at?: string
+          hero_image_url?: string | null
+          id?: string
+          published_at?: string | null
+          service_id?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       continuing_education: {
         Row: {
           certificate_path: string | null

@@ -94,6 +94,7 @@ const ForSmallBusiness = lazy(() => import("./pages/solutions/ForSmallBusiness")
 const ForIndividuals = lazy(() => import("./pages/solutions/ForIndividuals"));
 const Resources = lazy(() => import("./pages/Resources"));
 const HelpSupport = lazy(() => import("./pages/HelpSupport"));
+const SignerRights = lazy(() => import("./pages/SignerRights"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -145,6 +146,7 @@ function AnimatedRoutes() {
         <Route path="/solutions/notaries" element={<ForNotaries />} />
         <Route path="/resources" element={<Resources />} />
         <Route path="/help" element={<HelpSupport />} />
+        <Route path="/signer-rights" element={<SignerRights />} />
         <Route path="/solutions/hospitals" element={<ForHospitals />} />
         <Route path="/solutions/real-estate" element={<ForRealEstate />} />
         <Route path="/solutions/law-firms" element={<ForLawFirms />} />

@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,7 +28,7 @@ const complianceItems = [
 ];
 
 export default function ForNotaries() {
-  usePageTitle("For Notaries — Platform & Tools");
+  usePageMeta({ title: "For Notaries — Platform & Tools", description: "Join the Notar notary network. Access RON technology, client management tools, and commission-based signing opportunities in Ohio." });
 
   return (
     <PageShell>

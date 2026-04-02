@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,7 +31,7 @@ export default function FeeCalculator() {
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [settingsLoading, setSettingsLoading] = useState(true);
 
-  usePageTitle("Fee Calculator");
+  usePageMeta({ title: "Notary Fee Calculator", description: "Calculate Ohio notary fees instantly. Transparent pricing for in-person, mobile, and remote online notarization services." });
   const [notarizationType, setNotarizationType] = useState<"in_person" | "ron">("in_person");
   const [documentCount, setDocumentCount] = useState(1);
   const [signerCount, setSignerCount] = useState(1);

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Logo } from "@/components/Logo";
+import { Badge } from "@/components/ui/badge";
 import { Phone, Mail } from "lucide-react";
 
 interface FooterProps {
@@ -58,8 +59,11 @@ export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com
               <a href={`mailto:${email}`} className="flex items-center gap-2 transition-colors hover:text-primary">
                 <Mail className="h-3.5 w-3.5" /> {email}
               </a>
+              <p className="text-xs text-sidebar-foreground/50">Columbus, OH 43215 · Franklin County</p>
               <Link to="/join" className="block transition-colors hover:text-primary">Join as Provider</Link>
               <Link to="/login" className="block transition-colors hover:text-primary">Client Portal</Link>
+              <Link to="/signer-rights" className="block transition-colors hover:text-primary">Signer Bill of Rights</Link>
+              <a href="https://www.ohiosos.gov/businesses/notary-public/" target="_blank" rel="noopener noreferrer" className="block transition-colors hover:text-primary text-xs">Ohio SOS Notary Search ↗</a>
             </div>
           </div>
         </div>
@@ -79,7 +83,7 @@ export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com
           <p>Notar is not a law firm. Our notaries are not attorneys and cannot provide legal advice, draft legal documents, or advise on the content of any document. (ORC §147.01)</p>
         </div>
         <div className="mt-2 text-center text-xs text-sidebar-foreground/40 max-w-2xl mx-auto">
-          <p>$25,000 surety bond &amp; E&amp;O insurance maintained. All notaries are background-checked and Ohio-commissioned.</p>
+          <p>$25,000 surety bond &amp; E&amp;O insurance maintained. All notaries are background-checked and Ohio-commissioned. <Badge className="bg-primary/20 text-primary text-[10px] ml-1">Insured & Bonded</Badge></p>
         </div>
 
         <div className="mt-4 border-t border-sidebar-border pt-4 text-center text-xs text-sidebar-foreground/50">

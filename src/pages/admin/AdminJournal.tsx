@@ -48,7 +48,32 @@ export default function AdminJournal() {
     if (data) setAppointments(data);
   };
 
+  const [missingJournalCount, setMissingJournalCount] = useState(0);
+
   useEffect(() => { fetchEntries(); fetchAppointments(); }, []);
+
+  // Compliance banner: check completed appointments without journal entries
+  useEffect(() => {
+    const checkMissingJournals = async () => {
+      const { data: completedAppts } = await supabase
+        .from("appointments")
+        .select("id")
+        .eq("status", "completed")
+        .order("scheduled_date", { ascending: false })
+        .limit(200);
+      if (!completedAppts || completedAppts.length === 0) return;
+
+      const { data: journalApptIds } = await supabase
+        .from("notary_journal")
+        .select("appointment_id")
+        .not("appointment_id", "is", null);
+
+      const journalSet = new Set((journalApptIds || []).map((j: any) => j.appointment_id));
+      const missing = completedAppts.filter(a => !journalSet.has(a.id));
+      setMissingJournalCount(missing.length);
+    };
+    checkMissingJournals();
+  }, [entries]);
 
   useEffect(() => {
     if (selectedAppointment && selectedAppointment !== "") {
@@ -264,6 +289,29 @@ export default function AdminJournal() {
 
   return (
     <div>
+      {/* Compliance Warning Banner */}
+      {missingJournalCount > 0 && (
+        <div className="mb-4 flex items-center gap-3 rounded-lg border border-amber-500 bg-amber-50 dark:bg-amber-900/20 p-3 text-sm">
+          <Shield className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+          <div className="flex-1">
+            <p className="font-medium text-amber-800 dark:text-amber-300">
+              {missingJournalCount} completed appointment{missingJournalCount > 1 ? "s" : ""} without journal entries
+            </p>
+            <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">
+              Ohio ORC §147.551 requires a journal entry for every notarial act. Create entries for all completed appointments.
+            </p>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            className="border-amber-500 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40"
+            onClick={() => { setDialogOpen(true); }}
+          >
+            <Plus className="mr-1 h-3 w-3" /> Create Entry
+          </Button>
+        </div>
+      )}
+
       <div className="mb-6 flex items-center justify-between flex-wrap gap-2">
         <div>
           <h1 className="font-sans text-2xl font-bold text-foreground">Notary Journal</h1>
