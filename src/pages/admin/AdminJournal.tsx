@@ -48,7 +48,32 @@ export default function AdminJournal() {
     if (data) setAppointments(data);
   };
 
+  const [missingJournalCount, setMissingJournalCount] = useState(0);
+
   useEffect(() => { fetchEntries(); fetchAppointments(); }, []);
+
+  // Compliance banner: check completed appointments without journal entries
+  useEffect(() => {
+    const checkMissingJournals = async () => {
+      const { data: completedAppts } = await supabase
+        .from("appointments")
+        .select("id")
+        .eq("status", "completed")
+        .order("scheduled_date", { ascending: false })
+        .limit(200);
+      if (!completedAppts || completedAppts.length === 0) return;
+
+      const { data: journalApptIds } = await supabase
+        .from("notary_journal")
+        .select("appointment_id")
+        .not("appointment_id", "is", null);
+
+      const journalSet = new Set((journalApptIds || []).map((j: any) => j.appointment_id));
+      const missing = completedAppts.filter(a => !journalSet.has(a.id));
+      setMissingJournalCount(missing.length);
+    };
+    checkMissingJournals();
+  }, [entries]);
 
   useEffect(() => {
     if (selectedAppointment && selectedAppointment !== "") {
