@@ -236,7 +236,7 @@ export default function AdminBuildTracker() {
         <TabsContent value="preview">
           <TabErrorBoundary name="Preview">
             <Suspense fallback={<TabFallback />}>
-              <LivePreviewTab />
+              <LivePreviewTab themeOverlay={themeOverlay} />
             </Suspense>
           </TabErrorBoundary>
         </TabsContent>
