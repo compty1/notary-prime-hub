@@ -30,6 +30,7 @@ const solutionLinks = [
 ];
 
 const toolLinks = [
+  { to: "/ai-tools", label: "AI Tools Hub" },
   { to: "/ai-writer", label: "AI Writer" },
   { to: "/grants", label: "Grant Generator" },
   { to: "/resume-builder", label: "Resume Builder" },
