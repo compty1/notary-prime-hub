@@ -15,7 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FileText, Clock, CheckCircle, Send, Loader2, RefreshCw, Plus, Search, Sparkles, Eye, Edit, Trash2, Image } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-const RichTextEditor = lazy(() => import("@/components/RichTextEditor").then(m => ({ default: m.default || m })));
+const RichTextEditor = lazy(() => import("@/components/RichTextEditor").then(m => ({ default: (m as any).default ?? (m as any).RichTextEditor ?? Object.values(m)[0] as any })));
 
 const STATUS_COLORS: Record<string, string> = {
   draft: "bg-muted text-muted-foreground",
