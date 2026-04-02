@@ -295,8 +295,8 @@ export default function ClientPortal() {
         </motion.div>
 
         <Tabs defaultValue={initialTab} className="space-y-6" onValueChange={val => {
-          // Deep link support
-          window.history.replaceState(null, "", `/portal#${val}`);
+          // Deep link support (item 555-556)
+          setSearchParams({ tab: val }, { replace: true });
           if (val === "chat" && user && unreadCount > 0) {
             const unreadIds = chatMessages.filter(m => m.is_admin && !m.read).map(m => m.id);
             if (unreadIds.length > 0) supabase.from("chat_messages").update({ read: true }).in("id", unreadIds).then(() => { setChatMessages(prev => prev.map(m => unreadIds.includes(m.id) ? { ...m, read: true } : m)); setUnreadCount(0); });
