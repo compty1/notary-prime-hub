@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/Logo";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 const formatDate = (dateStr: string) =>
   new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
