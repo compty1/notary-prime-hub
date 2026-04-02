@@ -124,11 +124,21 @@ export default function ResetPassword() {
                 <div>
                   <Label htmlFor="password">New Password</Label>
                   <div className="relative">
-                    <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+                    <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" />
                     <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Hide password" : "Show password"}>
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
+                  {password.length > 0 && (
+                    <div className="mt-2 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Progress value={strength * 20} className="h-1.5 flex-1" />
+                        <span className={`text-xs font-medium ${strength <= 2 ? "text-destructive" : strength <= 3 ? "text-yellow-600" : "text-primary"}`}>
+                          {strengthLabels[strength]}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="confirm">Confirm Password</Label>
