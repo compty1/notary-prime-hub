@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Logo } from "@/components/Logo";
+import { Badge } from "@/components/ui/badge";
 import { Phone, Mail } from "lucide-react";
 
 interface FooterProps {
