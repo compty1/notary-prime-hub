@@ -100,6 +100,8 @@ export type Database = {
         Row: {
           admin_notes: string | null
           after_hours_fee: number | null
+          appointment_duration_actual: number | null
+          booking_source: string | null
           client_address: string | null
           client_id: string
           confirmation_number: string | null
@@ -121,6 +123,7 @@ export type Database = {
           scheduled_date: string
           scheduled_time: string
           service_type: string
+          session_recording_duration: number | null
           signer_count: number | null
           signer_title: string | null
           signing_capacity: string | null
@@ -132,6 +135,8 @@ export type Database = {
         Insert: {
           admin_notes?: string | null
           after_hours_fee?: number | null
+          appointment_duration_actual?: number | null
+          booking_source?: string | null
           client_address?: string | null
           client_id: string
           confirmation_number?: string | null
@@ -153,6 +158,7 @@ export type Database = {
           scheduled_date: string
           scheduled_time: string
           service_type: string
+          session_recording_duration?: number | null
           signer_count?: number | null
           signer_title?: string | null
           signing_capacity?: string | null
@@ -164,6 +170,8 @@ export type Database = {
         Update: {
           admin_notes?: string | null
           after_hours_fee?: number | null
+          appointment_duration_actual?: number | null
+          booking_source?: string | null
           client_address?: string | null
           client_id?: string
           confirmation_number?: string | null
@@ -185,6 +193,7 @@ export type Database = {
           scheduled_date?: string
           scheduled_time?: string
           service_type?: string
+          session_recording_duration?: number | null
           signer_count?: number | null
           signer_title?: string | null
           signing_capacity?: string | null
@@ -1021,6 +1030,7 @@ export type Database = {
         Row: {
           appointment_id: string | null
           created_at: string
+          document_hash: string | null
           file_name: string
           file_path: string
           id: string
@@ -1032,6 +1042,7 @@ export type Database = {
         Insert: {
           appointment_id?: string | null
           created_at?: string
+          document_hash?: string | null
           file_name: string
           file_path: string
           id?: string
@@ -1043,6 +1054,7 @@ export type Database = {
         Update: {
           appointment_id?: string | null
           created_at?: string
+          document_hash?: string | null
           file_name?: string
           file_path?: string
           id?: string
@@ -1351,6 +1363,44 @@ export type Database = {
           used_at?: string | null
         }
         Relationships: []
+      }
+      fee_adjustments: {
+        Row: {
+          adjusted_by: string
+          adjusted_fee: number
+          appointment_id: string
+          created_at: string
+          id: string
+          original_fee: number
+          reason: string
+        }
+        Insert: {
+          adjusted_by: string
+          adjusted_fee?: number
+          appointment_id: string
+          created_at?: string
+          id?: string
+          original_fee?: number
+          reason: string
+        }
+        Update: {
+          adjusted_by?: string
+          adjusted_fee?: number
+          appointment_id?: string
+          created_at?: string
+          id?: string
+          original_fee?: number
+          reason?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fee_adjustments_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       form_library: {
         Row: {
@@ -1964,6 +2014,48 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_queue: {
+        Row: {
+          body: string | null
+          channel: string
+          created_at: string
+          error_message: string | null
+          id: string
+          metadata: Json | null
+          priority: string
+          sent_at: string | null
+          status: string
+          subject: string | null
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          channel?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          priority?: string
+          sent_at?: string | null
+          status?: string
+          subject?: string | null
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          channel?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          priority?: string
+          sent_at?: string | null
+          status?: string
+          subject?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
@@ -2058,6 +2150,7 @@ export type Database = {
           bond_amount: number | null
           bond_company: string | null
           city: string | null
+          client_preferred_language: string | null
           commission_expiration: string | null
           commission_number: string | null
           created_at: string
@@ -2081,6 +2174,7 @@ export type Database = {
           bond_amount?: number | null
           bond_company?: string | null
           city?: string | null
+          client_preferred_language?: string | null
           commission_expiration?: string | null
           commission_number?: string | null
           created_at?: string
@@ -2104,6 +2198,7 @@ export type Database = {
           bond_amount?: number | null
           bond_company?: string | null
           city?: string | null
+          client_preferred_language?: string | null
           commission_expiration?: string | null
           commission_number?: string | null
           created_at?: string
@@ -2738,6 +2833,44 @@ export type Database = {
           },
         ]
       }
+      witnesses: {
+        Row: {
+          address: string | null
+          appointment_id: string
+          created_at: string
+          full_name: string
+          id: string
+          id_number: string | null
+          id_type: string | null
+        }
+        Insert: {
+          address?: string | null
+          appointment_id: string
+          created_at?: string
+          full_name: string
+          id?: string
+          id_number?: string | null
+          id_type?: string | null
+        }
+        Update: {
+          address?: string | null
+          appointment_id?: string
+          created_at?: string
+          full_name?: string
+          id?: string
+          id_number?: string | null
+          id_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "witnesses_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       public_reviews: {
@@ -2780,6 +2913,10 @@ export type Database = {
       }
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
+        Returns: number
+      }
+      get_client_lifetime_value: {
+        Args: { _client_id: string }
         Returns: number
       }
       has_role: {
