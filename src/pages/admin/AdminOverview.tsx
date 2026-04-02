@@ -144,12 +144,63 @@ export default function AdminOverview() {
   }, [allAppointments]);
 
   const statCards = [
-    { label: "Total Appointments", value: stats.total, icon: Calendar, color: "text-blue-600" },
+    { label: "Total Appointments", value: stats.total, icon: CalendarIcon, color: "text-blue-600" },
     { label: "Upcoming", value: stats.upcoming, icon: Clock, color: "text-amber-600" },
     { label: "Completed", value: stats.completed, icon: CheckCircle, color: "text-primary" },
     { label: "Clients", value: stats.clients, icon: Users, color: "text-purple-600" },
     { label: "Revenue", value: `$${stats.revenue.toFixed(2)}`, icon: DollarSign, color: "text-primary" },
   ];
+
+  // Live Calendar Widget — shows week view of appointments + Google Calendar events
+  const [calendarWeekStart, setCalendarWeekStart] = useState(() => {
+    const d = new Date(); d.setDate(d.getDate() - d.getDay()); d.setHours(0,0,0,0); return d;
+  });
+  const [gcalEvents, setGcalEvents] = useState<any[]>([]);
+  const [gcalConnected, setGcalConnected] = useState<boolean | null>(null);
+
+  const weekDays = useMemo(() => {
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(calendarWeekStart); d.setDate(d.getDate() + i); return d;
+    });
+  }, [calendarWeekStart]);
+
+  const shiftWeek = (dir: number) => {
+    setCalendarWeekStart(prev => { const d = new Date(prev); d.setDate(d.getDate() + dir * 7); return d; });
+  };
+
+  // Fetch Google Calendar events for the week
+  useEffect(() => {
+    const fetchGcal = async () => {
+      try {
+        const headers = await getEdgeFunctionHeaders();
+        const timeMin = calendarWeekStart.toISOString();
+        const end = new Date(calendarWeekStart); end.setDate(end.getDate() + 7);
+        const res = await supabase.functions.invoke("google-calendar-sync", {
+          body: { action: "list_events", timeMin, timeMax: end.toISOString() },
+        });
+        if (res.data?.connected) {
+          setGcalConnected(true);
+          setGcalEvents(res.data.events || []);
+        } else {
+          setGcalConnected(false);
+        }
+      } catch { setGcalConnected(false); }
+    };
+    fetchGcal();
+  }, [calendarWeekStart]);
+
+  const getAppointmentsForDay = (date: Date) => {
+    const dateStr = date.toISOString().split("T")[0];
+    return allAppointments.filter(a => a.scheduled_date === dateStr && !["cancelled", "no_show"].includes(a.status));
+  };
+
+  const getGcalForDay = (date: Date) => {
+    const dateStr = date.toISOString().split("T")[0];
+    return gcalEvents.filter((e: any) => {
+      const start = e.start?.dateTime || e.start?.date || "";
+      return start.startsWith(dateStr);
+    });
+  };
 
   if (loading) return <OverviewSkeleton />;
 
