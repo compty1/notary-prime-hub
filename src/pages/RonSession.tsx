@@ -147,6 +147,9 @@ export default function RonSession() {
   // E-Sign consent
   const [esignConsented, setEsignConsented] = useState(false);
   const [esignConsentTimestamp, setEsignConsentTimestamp] = useState<string | null>(null);
+  // Session pause/resume (item 591)
+  const [isPaused, setIsPaused] = useState(false);
+  const [pauseReason, setPauseReason] = useState("");
 
   const hasNativeKba = PLATFORMS_WITH_NATIVE_KBA.includes(signingPlatform);
 
