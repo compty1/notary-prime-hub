@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
