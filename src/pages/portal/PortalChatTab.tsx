@@ -1,5 +1,6 @@
-import React, { useRef } from "react";
+import React, { useRef, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
+import { stripHtml } from "@/lib/sanitize";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
