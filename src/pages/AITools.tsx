@@ -15,13 +15,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft, Copy, Download, Loader2, Sparkles, Search, Eye, Code, Printer,
+  ArrowLeft, Copy, Download, Loader2, Sparkles, Search, Eye, Code, Printer, Star, Clock,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import {
   AI_TOOLS, TOOL_CATEGORIES, CATEGORY_ICONS, getToolById,
   type AITool, type ToolCategory,
 } from "@/lib/aiToolsRegistry";
+import { useFavoriteTools, useToolHistory } from "@/hooks/useFavoriteTools";
 
 /* ── SSE parser (reused pattern from AIWriter) ── */
 function parseSSEChunk(chunk: string): string {
