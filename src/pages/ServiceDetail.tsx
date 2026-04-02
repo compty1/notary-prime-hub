@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
+import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import ServicePreQualifier from "@/components/ServicePreQualifier";
 import { Button } from "@/components/ui/button";
