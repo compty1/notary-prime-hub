@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Cookie, X } from "lucide-react";
+import { safeGetItem, safeSetItem } from "@/lib/safeStorage";
 
 const COOKIE_KEY = "cookie_consent_accepted";
 
@@ -10,7 +11,7 @@ export function CookieConsent() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const accepted = localStorage.getItem(COOKIE_KEY);
+    const accepted = safeGetItem(COOKIE_KEY);
     if (!accepted) {
       const timer = setTimeout(() => setVisible(true), 1500);
       return () => clearTimeout(timer);
@@ -18,7 +19,7 @@ export function CookieConsent() {
   }, []);
 
   const accept = () => {
-    localStorage.setItem(COOKIE_KEY, "true");
+    safeSetItem(COOKIE_KEY, "true");
     setVisible(false);
   };
 

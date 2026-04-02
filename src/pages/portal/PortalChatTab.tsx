@@ -1,5 +1,6 @@
-import React, { useRef } from "react";
+import React, { useRef, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
+import { stripHtml } from "@/lib/sanitize";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -72,7 +73,7 @@ export default function PortalChatTab({ userId, chatMessages, chatInput, setChat
                       <FileText className="h-3 w-3" /> Attachment
                     </a>
                   )}
-                  <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:m-0"><ReactMarkdown>{msg.message}</ReactMarkdown></div>
+                  <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:m-0"><ReactMarkdown>{stripHtml(msg.message)}</ReactMarkdown></div>
                   <p className="mt-1 text-[10px] opacity-60">{new Date(msg.created_at).toLocaleTimeString()}</p>
                 </div>
               </div>
