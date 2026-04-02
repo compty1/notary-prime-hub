@@ -67,18 +67,17 @@ export default function ResetPassword() {
     setSubmitting(false);
   };
 
+  const strength = useMemo(() => getPasswordStrength(password), [password]);
+
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       toast({ title: "Passwords don't match", variant: "destructive" });
       return;
     }
-    if (password.length < 8) {
-      toast({ title: "Password too short", description: "Minimum 8 characters.", variant: "destructive" });
-      return;
-    }
-    if (!/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
-      toast({ title: "Weak password", description: "Must contain at least one uppercase letter and one number.", variant: "destructive" });
+    const complexity = validatePasswordComplexity(password);
+    if (!complexity.valid) {
+      toast({ title: "Weak password", description: complexity.message, variant: "destructive" });
       return;
     }
     setSubmitting(true);
