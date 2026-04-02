@@ -58,8 +58,11 @@ export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com
               <a href={`mailto:${email}`} className="flex items-center gap-2 transition-colors hover:text-primary">
                 <Mail className="h-3.5 w-3.5" /> {email}
               </a>
+              <p className="text-xs text-sidebar-foreground/50">Columbus, OH 43215 · Franklin County</p>
               <Link to="/join" className="block transition-colors hover:text-primary">Join as Provider</Link>
               <Link to="/login" className="block transition-colors hover:text-primary">Client Portal</Link>
+              <Link to="/signer-rights" className="block transition-colors hover:text-primary">Signer Bill of Rights</Link>
+              <a href="https://www.ohiosos.gov/businesses/notary-public/" target="_blank" rel="noopener noreferrer" className="block transition-colors hover:text-primary text-xs">Ohio SOS Notary Search ↗</a>
             </div>
           </div>
         </div>
