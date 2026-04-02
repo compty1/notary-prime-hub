@@ -248,6 +248,15 @@ export default function Index() {
               >
                 Notar is a full-service notary platform you'll actually enjoy using. Book appointments, verify identities, and sign documents — not chase paperwork.
               </motion.p>
+              <motion.p variants={blurIn} custom={2.5} className="mb-2 text-xs text-muted-foreground">
+                No credit card required to book. &nbsp;•&nbsp; Typical response: &lt; 2 hours
+              </motion.p>
+              {/* Requirements Checklist */}
+              <motion.div variants={fadeUp} custom={2.7} className="mb-6 flex flex-wrap gap-4 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1"><CheckCircle className="h-3 w-3 text-primary" /> Valid Photo ID</span>
+                <span className="flex items-center gap-1"><Monitor className="h-3 w-3 text-primary" /> Camera & Mic</span>
+                <span className="flex items-center gap-1"><Globe className="h-3 w-3 text-primary" /> Internet Access</span>
+              </motion.div>
               <motion.div variants={fadeUp} custom={3} className="flex flex-wrap gap-3">
                 <Link to="/book?type=ron">
                   <Button variant="accent" size="lg" className="rounded-full px-8 shadow-sm">
