@@ -169,9 +169,16 @@ function ToolCatalog({
                       transition={{ delay: i * 0.02 }}
                     >
                       <Card
-                        className="group h-full cursor-pointer hover:border-primary/30 transition-colors"
+                        className="group h-full cursor-pointer hover:border-primary/30 transition-colors relative"
                         onClick={() => onSelect(tool.id)}
                       >
+                        <button
+                          className="absolute top-3 right-3 z-10 p-1 rounded-full hover:bg-muted transition-colors"
+                          onClick={(e) => { e.stopPropagation(); favorites.toggleFavorite(tool.id); }}
+                          aria-label={favorites.isFavorite(tool.id) ? "Remove from favorites" : "Add to favorites"}
+                        >
+                          <Star className={`h-4 w-4 ${favorites.isFavorite(tool.id) ? "fill-yellow-500 text-yellow-500" : "text-muted-foreground"}`} />
+                        </button>
                         <CardContent className="flex h-full flex-col p-5">
                           <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/15 transition-colors">
                             <tool.icon className="h-5 w-5 text-primary" />
