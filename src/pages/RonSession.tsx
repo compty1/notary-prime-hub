@@ -150,6 +150,9 @@ export default function RonSession() {
 
   const hasNativeKba = PLATFORMS_WITH_NATIVE_KBA.includes(signingPlatform);
 
+  // Recording consent gate — blocks session until consent given (Ohio ORC §147.66)
+  const consentGateBlocking = !recordingConsent && isAdminOrNotary && !!participantLink;
+
   // Compute current step
   const currentStep = (() => {
     if (!participantLink) return 0;
