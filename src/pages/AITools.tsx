@@ -112,6 +112,15 @@ function ToolCatalog({
             >
               All ({AI_TOOLS.length})
             </Badge>
+            {favorites.favorites.length > 0 && (
+              <Badge
+                variant={activeCategory === "all" ? "outline" : "outline"}
+                className="cursor-pointer gap-1 border-yellow-500/50 text-yellow-600"
+                onClick={() => setSearchQuery("")}
+              >
+                <Star className="h-3 w-3 fill-yellow-500" /> Favorites ({favorites.favorites.length})
+              </Badge>
+            )}
             {TOOL_CATEGORIES.map((cat) => {
               const Icon = CATEGORY_ICONS[cat];
               const count = AI_TOOLS.filter((t) => t.category === cat).length;
