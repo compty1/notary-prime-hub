@@ -19,7 +19,7 @@ export function CookieConsent() {
   }, []);
 
   const accept = () => {
-    localStorage.setItem(COOKIE_KEY, "true");
+    safeSetItem(COOKIE_KEY, "true");
     setVisible(false);
   };
 
