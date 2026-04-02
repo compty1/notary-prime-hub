@@ -23,7 +23,7 @@ export default function SignerRights() {
 
   return (
     <PageShell>
-      <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Signer Bill of Rights" }]} />
+      <Breadcrumbs />
       <div className="container mx-auto max-w-3xl px-4 py-12">
         <div className="text-center mb-10">
           <div className="flex items-center justify-center gap-2 mb-3">
