@@ -34,6 +34,16 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
   const [uploading, setUploading] = useState(false);
   const [deletingDocId, setDeletingDocId] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredDocuments = useMemo(() => {
+    if (!searchQuery.trim()) return documents;
+    const q = searchQuery.toLowerCase();
+    return documents.filter((d) =>
+      d.file_name?.toLowerCase().includes(q) ||
+      d.status?.toLowerCase().includes(q)
+    );
+  }, [documents, searchQuery]);
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
