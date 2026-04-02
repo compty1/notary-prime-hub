@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, AlertCircle, Loader2, Mail } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { usePageTitle } from "@/lib/usePageTitle";
 
 export default function Unsubscribe() {
