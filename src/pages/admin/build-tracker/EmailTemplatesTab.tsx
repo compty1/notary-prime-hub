@@ -64,6 +64,7 @@ type MasterTemplate = {
   fontFamily: string;
   logoUrl: string;
   footerText: string;
+  senderEmail: string;
 };
 
 const DEFAULT_MASTER: MasterTemplate = {
