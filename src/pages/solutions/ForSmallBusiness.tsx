@@ -28,7 +28,7 @@ const complianceItems = [
 ];
 
 export default function ForSmallBusiness() {
-  usePageTitle("For Small Business — Notary & Document Services", "Affordable notarization and document services for Ohio small businesses. Corporate documents, contracts, I-9 verification, and subscription plans.");
+  usePageMeta({ title: "For Small Business — Notary & Document Services", description: "Affordable notarization and document services for Ohio small businesses. Corporate documents, contracts, I-9 verification, and subscription plans." });
 
   return (
     <PageShell>

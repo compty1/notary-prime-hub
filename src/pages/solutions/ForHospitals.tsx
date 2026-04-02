@@ -41,7 +41,7 @@ const complianceItems = [
 ];
 
 export default function ForHospitals() {
-  usePageTitle("For Hospitals — Bedside Notary Services", "Professional bedside and facility notarization services for hospitals and healthcare facilities in Ohio. HIPAA-aware, ORC §147 compliant.");
+  usePageMeta({ title: "For Hospitals — Bedside Notary Services", description: "Professional bedside and facility notarization services for hospitals and healthcare facilities in Ohio. HIPAA-aware, ORC §147 compliant." });
 
   return (
     <PageShell>
