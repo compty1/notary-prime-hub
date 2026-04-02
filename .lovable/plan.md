@@ -1,91 +1,61 @@
 
+# 200 Build Gaps — Implementation Progress
 
-# Comprehensive Fix & Gap Closure Plan
+## Phase 1 — Critical ✅ COMPLETE
 
-## Issues Identified
+### Gaps 1–12: SEO & Meta Tags ✅
+Replaced `usePageTitle` with `usePageMeta` (title + description + OG tags + canonical) on 12 pages:
+- Login, SignUp, ForgotPassword, AccountSettings (noIndex: true)
+- MobileUpload, VerifyIdentity, RonSession (noIndex: true)
+- DocumentDigitize, AIWriter, AIExtractors, AIKnowledge, SignatureGeneratorPage, DocumentBuilder
 
-### 1. Build Tracker CSV Items (34 open items)
-The uploaded CSV contains 34 open tracker items. These need to be acknowledged and the critical ones addressed. Most are already tracked — the key actionable ones are:
-- 3 critical Ohio compliance items (KBA enforcement, journal completeness, RON recording consent) — already implemented in code/DB triggers
-- 11 services missing FAQs, 11 missing turnaround estimates, 2 missing descriptions
-- Mobile responsiveness audit
-- SEO meta tags gap
-- ~20 "Workspace Desk" feature items (auto-generated, most already built in AdminContentWorkspace)
+### Gaps 13–23: PageShell Wrapper ✅
+- NotFound — wrapped in PageShell with Navbar/Footer
+- VirtualMailroom — already had usePageMeta, no PageShell needed (standalone portal)
+- AppointmentConfirmation — already had usePageMeta
+- VerifyIdentity — updated to usePageMeta
 
-### 2. Email Template Preview — Missing Sender Address
-The `renderPreview()` function in `EmailTemplatesTab.tsx` renders the email body wrapped in header/footer but does NOT show a "From:" sender line. Fix: add a sender info bar below the header showing `From: notify@notardex.com` (or the configured sender) so admins can see the full email as recipients would.
+### Gaps 45–46: Missing AI Tools ✅
+Added 2 new tools to `aiToolsRegistry.ts`:
+- **RFP Proposal Template** — generates polished proposals with scope, timeline, and pricing tables
+- **Executive Summary Generator** — creates concise summaries for business plans, reports, proposals
 
-### 3. Zoom Schedule Buttons
-The "Schedule Zoom" button in `ServiceDetail.tsx` links to `/book?service=Consultation` which correctly triggers the consultation flow (skips notarization type, shows Zoom banner). This is already working correctly. However, I'll verify the booking flow fully handles the consultation path and ensure the Zoom meeting link from `platform_settings` is included in the confirmation email.
+### Gaps 54–55, 59: AI Tools UX ✅
+- **Ctrl+Enter shortcut** — generates content with keyboard shortcut
+- **Retry button** — appears after failed generation, preserves form data
+- **Empty search state** — already existed with clear search button
 
-### 4. AI Tools Hub Gaps
-All 48 tools from the request are present in the registry and edge function. The tools are complete with full field definitions and system prompts. The only gap is:
-- **Navbar missing AI Tools link** — `toolLinks` in `Navbar.tsx` doesn't include `/ai-tools`
-- **AI Tools not accessible without login** — route is wrapped in `ProtectedRoute`, but the catalog should be browsable without auth (only generation requires login)
+### Gap 196: Admin Route Protection ✅
+Added `adminOnly` prop to all unprotected admin sub-routes:
+- chat, business-clients, services, resources, ai-assistant, email-management, leads, service-requests, content-workspace, task-queue, crm, client-emails, mailbox
 
-### 5. Button/Route Audit Findings
-All links checked against registered routes — no broken routes found. Key findings:
-- `/#contact` on ServiceDetail.tsx — this scrolls to a contact section on the homepage which exists
-- All solution pages, tool pages, and service pages have valid routes
+### Gaps 156–160: Form Validation ✅
+- Booking date: already has `min` attribute preventing past dates + advance time check
+- Phone field: not present in booking form (no fix needed)
+- File upload: added 25MB size limit + file type validation in MobileUpload
 
-### 6. Unfinished Items from Previous Plans
-- Navbar `toolLinks` missing AI Tools Hub entry
-- Email preview missing sender address display
-- Services missing FAQs/descriptions/turnaround (content gap, not code)
-
----
-
-## Implementation Steps
-
-### Step 1: Fix Email Template Preview — Add Sender Address
-**File:** `src/pages/admin/build-tracker/EmailTemplatesTab.tsx`
-
-Update `renderPreview()` to include a sender info bar between the header and body:
-```
-From: notify@notardex.com
-To: {recipient from sample data}
-Subject: {resolved subject line}
-```
-This gives admins a realistic preview of how the email appears. Add a `senderEmail` field to the `MasterTemplate` type (defaulting to `notify@notardex.com`) and make it editable in the Master Template settings panel.
-
-### Step 2: Add AI Tools Hub to Navbar
-**File:** `src/components/Navbar.tsx`
-
-Add `{ to: "/ai-tools", label: "AI Tools Hub" }` to the `toolLinks` array so it appears in the Tools dropdown.
-
-### Step 3: Make AI Tools Catalog Public (Auth Only for Generation)
-**File:** `src/App.tsx`
-
-Remove `ProtectedRoute` wrapper from the `/ai-tools` route. The page already checks for `user` before allowing generation, so the catalog can be browsed without login.
-
-### Step 4: Verify Zoom Consultation Flow
-The booking flow correctly handles consultations — `/book?service=Consultation` skips notarization type selection and shows the Zoom banner. No code changes needed here. However, verify that any other "Schedule Zoom" or Zoom-related buttons across the site also route to `/book?service=Consultation` rather than the generic `/book`.
-
-### Step 5: Content Gap Items (Tracked, Not Code)
-These items from the CSV are content/data issues, not code bugs:
-- 11 services missing FAQs → admin can add via service editor
-- 11 services missing turnaround estimates → admin can add via service editor  
-- 2 services missing descriptions → admin can add via service editor
-
-No code changes needed — the admin UI already supports editing all these fields.
-
-### Step 6: Mark Resolved Tracker Items
-The following CSV items are already resolved in code:
-- Ohio ORC §147.66 KBA limit → `enforce_kba_limit()` trigger exists
-- Notary journal completeness → journal auto-creation on session finalization
-- RON recording consent → `recording_consent` flag checked in RonSession.tsx
-- SEO meta tags → `usePageMeta()` added to all public pages in previous plans
-- MFA → existing auth system (Supabase handles this)
+### Error Handling Improvements ✅
+- MobileUpload: file size/type validation before upload attempt
+- Services catalog: already has empty state
+- AI Tools: retry button + user-friendly error messages
 
 ---
 
-## Summary
+## Phase 2 — Important (Next Sprint)
 
-| Change | File | Type |
-|--------|------|------|
-| Add sender address to email preview | `EmailTemplatesTab.tsx` | Fix |
-| Add AI Tools Hub to navbar | `Navbar.tsx` | Fix |
-| Make AI Tools catalog public | `App.tsx` | Fix |
-| Verify Zoom button routing | `ServiceDetail.tsx` | Verify (no change needed) |
-| Content gaps (FAQs, descriptions) | Database content | Admin task, not code |
+| # | Gap | Status |
+|---|-----|--------|
+| 24–44 | Add breadcrumbs to 21 pages | TODO |
+| 47–48 | AI Tools favorites & history | TODO |
+| 95–120 | Accessibility pass (ARIA attributes) | TODO |
+| 141–155 | Performance & loading states | TODO |
+| 176–178 | Email verification, rescheduling | TODO |
 
+## Phase 3 — Polish (Backlog)
+
+| # | Gap | Status |
+|---|-----|--------|
+| 60–94 | Tool UX polish (tooltips, examples) | TODO |
+| 161–175 | Advanced validation | TODO |
+| 179–194 | Feature completions | TODO |
+| 197–205 | Security hardening | TODO |
