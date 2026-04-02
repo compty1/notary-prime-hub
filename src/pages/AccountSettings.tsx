@@ -233,6 +233,24 @@ export default function AccountSettings() {
           </CardContent>
         </Card>
 
+        {/* MFA Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Smartphone className="h-5 w-5 text-primary" /> Multi-Factor Authentication
+            </CardTitle>
+            <CardDescription>Add an extra layer of security to your account</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+              <p className="text-sm text-muted-foreground mb-2">
+                MFA adds a second verification step when signing in — typically a code from an authenticator app.
+              </p>
+              <Badge variant="secondary" className="text-xs">Available — Contact admin to enable</Badge>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Delete Account */}
         <Card className="border-destructive/30">
           <CardHeader>
