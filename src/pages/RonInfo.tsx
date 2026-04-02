@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { usePageTitle } from "@/lib/usePageTitle";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
