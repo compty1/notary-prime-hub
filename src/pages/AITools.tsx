@@ -47,12 +47,14 @@ function ToolCatalog({
   setSearchQuery,
   activeCategory,
   setActiveCategory,
+  favorites,
 }: {
   onSelect: (id: string) => void;
   searchQuery: string;
   setSearchQuery: (q: string) => void;
   activeCategory: ToolCategory | "all";
   setActiveCategory: (c: ToolCategory | "all") => void;
+  favorites: { isFavorite: (id: string) => boolean; toggleFavorite: (id: string) => void; favorites: string[] };
 }) {
   const filtered = AI_TOOLS.filter((t) => {
     const matchCat = activeCategory === "all" || t.category === activeCategory;
