@@ -425,3 +425,17 @@ button:active, a[role="button"]:active {
   transform: scale(0.97);
   transition: transform 0.1s ease;
 }
+
+/* Gap 186: Print stylesheet */
+@media print {
+  nav, footer, .cookie-consent, .mobile-fab, .back-to-top,
+  [data-radix-popper-content-wrapper], .chat-widget,
+  button:not([type="submit"]) { display: none !important; }
+  body { background: white !important; color: black !important; font-size: 12pt; }
+  .container { max-width: 100% !important; padding: 0 !important; }
+  a { text-decoration: underline; color: inherit !important; }
+  a[href]:after { content: " (" attr(href) ")"; font-size: 0.8em; }
+  .shadow, .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl { box-shadow: none !important; }
+  .border { border-color: #ccc !important; }
+  @page { margin: 1in; }
+}

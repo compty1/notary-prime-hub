@@ -15,13 +15,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft, Copy, Download, Loader2, Sparkles, Search, Eye, Code, Printer,
+  ArrowLeft, Copy, Download, Loader2, Sparkles, Search, Eye, Code, Printer, Star, Clock,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import {
   AI_TOOLS, TOOL_CATEGORIES, CATEGORY_ICONS, getToolById,
   type AITool, type ToolCategory,
 } from "@/lib/aiToolsRegistry";
+import { useFavoriteTools, useToolHistory } from "@/hooks/useFavoriteTools";
 
 /* ── SSE parser (reused pattern from AIWriter) ── */
 function parseSSEChunk(chunk: string): string {
@@ -46,12 +47,14 @@ function ToolCatalog({
   setSearchQuery,
   activeCategory,
   setActiveCategory,
+  favorites,
 }: {
   onSelect: (id: string) => void;
   searchQuery: string;
   setSearchQuery: (q: string) => void;
   activeCategory: ToolCategory | "all";
   setActiveCategory: (c: ToolCategory | "all") => void;
+  favorites: { isFavorite: (id: string) => boolean; toggleFavorite: (id: string) => void; favorites: string[] };
 }) {
   const filtered = AI_TOOLS.filter((t) => {
     const matchCat = activeCategory === "all" || t.category === activeCategory;
@@ -109,6 +112,15 @@ function ToolCatalog({
             >
               All ({AI_TOOLS.length})
             </Badge>
+            {favorites.favorites.length > 0 && (
+              <Badge
+                variant={activeCategory === "all" ? "outline" : "outline"}
+                className="cursor-pointer gap-1 border-yellow-500/50 text-yellow-600"
+                onClick={() => setSearchQuery("")}
+              >
+                <Star className="h-3 w-3 fill-yellow-500" /> Favorites ({favorites.favorites.length})
+              </Badge>
+            )}
             {TOOL_CATEGORIES.map((cat) => {
               const Icon = CATEGORY_ICONS[cat];
               const count = AI_TOOLS.filter((t) => t.category === cat).length;
@@ -157,9 +169,16 @@ function ToolCatalog({
                       transition={{ delay: i * 0.02 }}
                     >
                       <Card
-                        className="group h-full cursor-pointer hover:border-primary/30 transition-colors"
+                        className="group h-full cursor-pointer hover:border-primary/30 transition-colors relative"
                         onClick={() => onSelect(tool.id)}
                       >
+                        <button
+                          className="absolute top-3 right-3 z-10 p-1 rounded-full hover:bg-muted transition-colors"
+                          onClick={(e) => { e.stopPropagation(); favorites.toggleFavorite(tool.id); }}
+                          aria-label={favorites.isFavorite(tool.id) ? "Remove from favorites" : "Add to favorites"}
+                        >
+                          <Star className={`h-4 w-4 ${favorites.isFavorite(tool.id) ? "fill-yellow-500 text-yellow-500" : "text-muted-foreground"}`} />
+                        </button>
                         <CardContent className="flex h-full flex-col p-5">
                           <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/15 transition-colors">
                             <tool.icon className="h-5 w-5 text-primary" />
@@ -479,10 +498,13 @@ export default function AITools() {
   const toolParam = searchParams.get("tool");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<ToolCategory | "all">("all");
+  const favoritesHook = useFavoriteTools();
+  const { recordUsage } = useToolHistory();
 
   const selectedTool = toolParam ? getToolById(toolParam) : undefined;
 
   const handleSelectTool = (id: string) => {
+    recordUsage(id);
     setSearchParams({ tool: id }, { replace: true });
   };
 
@@ -501,6 +523,7 @@ export default function AITools() {
           setSearchQuery={setSearchQuery}
           activeCategory={activeCategory}
           setActiveCategory={setActiveCategory}
+          favorites={favoritesHook}
         />
       )}
     </PageShell>

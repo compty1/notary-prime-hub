@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,10 +6,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
+import { validatePasswordComplexity } from "@/lib/security";
+
+function getPasswordStrength(pw: string) {
+  let score = 0;
+  if (pw.length >= 8) score++;
+  if (pw.length >= 12) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  return score;
+}
+const strengthLabels = ["", "Very Weak", "Weak", "Fair", "Strong", "Very Strong"];
 
 export default function ResetPassword() {
   const { toast } = useToast();
@@ -54,18 +67,17 @@ export default function ResetPassword() {
     setSubmitting(false);
   };
 
+  const strength = useMemo(() => getPasswordStrength(password), [password]);
+
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       toast({ title: "Passwords don't match", variant: "destructive" });
       return;
     }
-    if (password.length < 8) {
-      toast({ title: "Password too short", description: "Minimum 8 characters.", variant: "destructive" });
-      return;
-    }
-    if (!/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
-      toast({ title: "Weak password", description: "Must contain at least one uppercase letter and one number.", variant: "destructive" });
+    const complexity = validatePasswordComplexity(password);
+    if (!complexity.valid) {
+      toast({ title: "Weak password", description: complexity.message, variant: "destructive" });
       return;
     }
     setSubmitting(true);
@@ -112,11 +124,21 @@ export default function ResetPassword() {
                 <div>
                   <Label htmlFor="password">New Password</Label>
                   <div className="relative">
-                    <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+                    <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" />
                     <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Hide password" : "Show password"}>
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
+                  {password.length > 0 && (
+                    <div className="mt-2 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Progress value={strength * 20} className="h-1.5 flex-1" />
+                        <span className={`text-xs font-medium ${strength <= 2 ? "text-destructive" : strength <= 3 ? "text-yellow-600" : "text-primary"}`}>
+                          {strengthLabels[strength]}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="confirm">Confirm Password</Label>

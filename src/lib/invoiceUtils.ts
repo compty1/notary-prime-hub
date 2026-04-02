@@ -30,9 +30,9 @@ export function generateInvoiceNumber(): string {
 
 /** Calculate invoice totals */
 export function calculateInvoiceTotals(items: InvoiceLineItem[], taxRate: number) {
-  const subtotal = items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
-  const tax = subtotal * (taxRate / 100);
-  const total = subtotal + tax;
+  const subtotal = items.reduce((sum, item) => sum + Math.round(item.quantity * item.unitPrice * 100) / 100, 0);
+  const tax = Math.round(subtotal * (taxRate / 100) * 100) / 100;
+  const total = Math.round((subtotal + tax) * 100) / 100;
   return { subtotal, tax, total };
 }
 

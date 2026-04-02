@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -76,6 +77,17 @@ export default function SignUp() {
     setSubmitting(false);
   };
 
+  const handleResendVerification = async () => {
+    setSubmitting(true);
+    const { error } = await supabase.auth.resend({ type: "signup", email });
+    if (error) {
+      toast({ title: "Failed to resend", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Verification email sent", description: "Check your inbox." });
+    }
+    setSubmitting(false);
+  };
+
   if (signupSuccess) {
     return (
       <div className="relative flex min-h-screen items-center justify-center bg-background px-4">
@@ -89,9 +101,12 @@ export default function SignUp() {
             <p className="text-muted-foreground mb-2">We sent a verification link to</p>
             <p className="font-medium text-foreground mb-4">{email}</p>
             <p className="text-sm text-muted-foreground mb-2">Click the link in the email to verify your account, then sign in.</p>
-            <p className="text-xs text-muted-foreground mb-6">Don't see it? Check your spam or junk folder.</p>
+            <p className="text-xs text-muted-foreground mb-4">Don't see it? Check your spam or junk folder.</p>
+            <Button variant="outline" size="sm" onClick={handleResendVerification} disabled={submitting} className="mb-4">
+              {submitting ? "Sending..." : "Resend Verification Email"}
+            </Button>
             <Link to="/login">
-              <Button className="">Go to Sign In</Button>
+              <Button>Go to Sign In</Button>
             </Link>
           </CardContent>
         </Card>

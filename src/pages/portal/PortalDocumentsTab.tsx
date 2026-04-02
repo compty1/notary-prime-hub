@@ -1,9 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Upload, Download, Eye, Sparkles, RefreshCw, Loader2, ShieldCheck } from "lucide-react";
+import { FileText, Upload, Download, Eye, Sparkles, RefreshCw, Loader2, ShieldCheck, Search } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -33,6 +34,16 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
   const [uploading, setUploading] = useState(false);
   const [deletingDocId, setDeletingDocId] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredDocuments = useMemo(() => {
+    if (!searchQuery.trim()) return documents;
+    const q = searchQuery.toLowerCase();
+    return documents.filter((d) =>
+      d.file_name?.toLowerCase().includes(q) ||
+      d.status?.toLowerCase().includes(q)
+    );
+  }, [documents, searchQuery]);
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -94,8 +105,8 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
     input.click();
   };
 
-  const notarizedDocs = documents.filter(d => d.status === "notarized");
-  const otherDocs = documents.filter(d => d.status !== "notarized");
+  const notarizedDocs = filteredDocuments.filter(d => d.status === "notarized");
+  const otherDocs = filteredDocuments.filter(d => d.status !== "notarized");
 
   return (
     <div className="space-y-6"
@@ -141,12 +152,21 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
         </div>
       )}
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="font-sans text-xl font-semibold">My Documents</h2>
-        <div>
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search documents..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 h-9 w-48"
+            />
+          </div>
           <input ref={fileInputRef} type="file" multiple accept={ACCEPTED_EXTENSIONS} className="hidden" onChange={handleFileUpload} />
           <Button size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
-            {uploading ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />} Upload Documents
+            {uploading ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />} Upload
           </Button>
         </div>
       </div>
