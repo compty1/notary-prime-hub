@@ -421,6 +421,38 @@ export default function RonSession() {
     toast({ title: "Session data saved", description: "Notes, oath, and verification status have been recorded." });
   };
 
+  // Session pause/resume handlers (item 591)
+  const togglePauseSession = async () => {
+    if (!appointmentId) return;
+    if (!isPaused) {
+      // Pause
+      await supabase.from("notarization_sessions").update({
+        paused_at: new Date().toISOString(),
+        pause_reason: pauseReason || "Manual pause",
+      } as any).eq("appointment_id", appointmentId);
+      setIsPaused(true);
+      await logAuditEvent("ron_session_paused", { entityType: "appointment", entityId: appointmentId, details: { reason: pauseReason } as Record<string, Json | undefined> });
+      toast({ title: "Session paused", description: "The session has been paused. Resume when ready." });
+    } else {
+      // Resume — calculate pause duration
+      const { data: session } = await supabase.from("notarization_sessions").select("paused_at, total_pause_duration_seconds").eq("appointment_id", appointmentId).single();
+      let additionalSeconds = 0;
+      if ((session as any)?.paused_at) {
+        additionalSeconds = Math.floor((Date.now() - new Date((session as any).paused_at).getTime()) / 1000);
+      }
+      const totalPause = ((session as any)?.total_pause_duration_seconds || 0) + additionalSeconds;
+      await supabase.from("notarization_sessions").update({
+        paused_at: null,
+        pause_reason: null,
+        total_pause_duration_seconds: totalPause,
+      } as any).eq("appointment_id", appointmentId);
+      setIsPaused(false);
+      setPauseReason("");
+      await logAuditEvent("ron_session_resumed", { entityType: "appointment", entityId: appointmentId, details: { pause_duration_seconds: additionalSeconds } as Record<string, Json | undefined> });
+      toast({ title: "Session resumed" });
+    }
+  };
+
   const completeAndFinalize = async () => {
     if (!appointmentId || !user || !appointment) return;
     if (!idVerified || !kbaCompleted) {
