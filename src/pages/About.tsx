@@ -31,17 +31,26 @@ const serviceAreas = [
 
 export default function About() {
   const [contactInfo, setContactInfo] = useState({ phone: "(614) 300-6890", email: "contact@notardex.com" });
+  const [commissionExp, setCommissionExp] = useState<string | null>(null);
+  const [eoStatus, setEoStatus] = useState<string | null>(null);
+  const [bondStatus, setBondStatus] = useState<string | null>(null);
   usePageTitle("About", "Learn about Notar — Ohio-commissioned notary team providing in-person and RON services in Franklin County, Columbus, Ohio.");
 
   useEffect(() => {
     supabase.from("platform_settings").select("setting_key, setting_value")
-      .in("setting_key", ["notary_phone", "notary_email"]).limit(10)
+      .in("setting_key", ["notary_phone", "notary_email", "commission_expiration_date", "eo_expiration_date", "bond_expiration_date"]).limit(10)
       .then(({ data }) => {
         if (data) {
           const phone = data.find(s => s.setting_key === "notary_phone")?.setting_value;
           const email = data.find(s => s.setting_key === "notary_email")?.setting_value;
+          const commExp = data.find(s => s.setting_key === "commission_expiration_date")?.setting_value;
+          const eoExp = data.find(s => s.setting_key === "eo_expiration_date")?.setting_value;
+          const bondExp = data.find(s => s.setting_key === "bond_expiration_date")?.setting_value;
           if (phone) setContactInfo(prev => ({ ...prev, phone }));
           if (email) setContactInfo(prev => ({ ...prev, email }));
+          if (commExp) setCommissionExp(commExp);
+          if (eoExp) setEoStatus(eoExp);
+          if (bondExp) setBondStatus(bondExp);
         }
       });
   }, []);
@@ -84,6 +93,37 @@ export default function About() {
                 </a>
               </div>
             </motion.div>
+          </motion.div>
+
+          {/* Commission & Insurance Status Badges */}
+          <motion.div variants={fadeUp} custom={2} className="mt-6 flex flex-wrap gap-3">
+            {commissionExp && (() => {
+              const days = Math.ceil((new Date(commissionExp).getTime() - Date.now()) / 86400000);
+              return (
+                <Badge variant={days > 90 ? "secondary" : days > 0 ? "outline" : "destructive"} className="text-xs">
+                  <Award className="mr-1 h-3 w-3" />
+                  Commission {days > 0 ? `expires ${new Date(commissionExp).toLocaleDateString("en-US", { month: "short", year: "numeric" })}` : "EXPIRED"}
+                </Badge>
+              );
+            })()}
+            {eoStatus && (() => {
+              const days = Math.ceil((new Date(eoStatus).getTime() - Date.now()) / 86400000);
+              return (
+                <Badge variant={days > 60 ? "secondary" : "outline"} className="text-xs">
+                  <Shield className="mr-1 h-3 w-3" />
+                  E&O Insurance {days > 0 ? "Active" : "Expired"}
+                </Badge>
+              );
+            })()}
+            {bondStatus && (() => {
+              const days = Math.ceil((new Date(bondStatus).getTime() - Date.now()) / 86400000);
+              return (
+                <Badge variant={days > 60 ? "secondary" : "outline"} className="text-xs">
+                  <Shield className="mr-1 h-3 w-3" />
+                  Surety Bond {days > 0 ? "Active" : "Expired"}
+                </Badge>
+              );
+            })()}
           </motion.div>
         </div>
       </section>

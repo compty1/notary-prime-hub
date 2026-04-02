@@ -34,6 +34,7 @@ const paymentStatusColors: Record<string, string> = {
   pending: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
   cancelled: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
   failed: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+  refunded: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
 };
 
 export default function AdminRevenue() {
@@ -432,11 +433,32 @@ export default function AdminRevenue() {
                           <td className="px-4 py-3 text-xs text-muted-foreground">{p.paid_at ? formatDate(p.paid_at) : "—"}</td>
                           <td className="px-4 py-3 text-xs text-muted-foreground max-w-[200px] truncate">{p.notes || "—"}</td>
                           <td className="px-4 py-3 text-right">
-                            {p.status === "pending" && (
-                              <Button size="sm" variant="outline" className="text-xs" onClick={() => markPaid(p.id)}>
-                                Mark Paid
-                              </Button>
-                            )}
+                            <div className="flex gap-1 justify-end">
+                              {p.status === "pending" && (
+                                <Button size="sm" variant="outline" className="text-xs" onClick={() => markPaid(p.id)}>
+                                  Mark Paid
+                                </Button>
+                              )}
+                              {p.status === "paid" && (
+                                <Button size="sm" variant="outline" className="text-xs text-destructive" onClick={async () => {
+                                  const reason = window.prompt("Refund reason:", "Requested by customer");
+                                  if (!reason) return;
+                                  try {
+                                    const { data, error } = await supabase.functions.invoke("process-refund", {
+                                      body: { payment_id: p.id, reason },
+                                    });
+                                    if (error) throw error;
+                                    toast({ title: "Refund processed", description: data?.stripe_refund_id ? `Stripe refund: ${data.stripe_refund_id}` : "Manual refund recorded" });
+                                    logAuditEvent("payment_refunded", { entityType: "payments", entityId: p.id, details: { reason } });
+                                    setPayments(prev => prev.map(pay => pay.id === p.id ? { ...pay, status: "refunded" } : pay));
+                                  } catch (e: any) {
+                                    toast({ title: "Refund failed", description: e.message, variant: "destructive" });
+                                  }
+                                }}>
+                                  Refund
+                                </Button>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       ))}

@@ -1,95 +1,354 @@
 import { usePageTitle } from "@/lib/usePageTitle";
 import { useEffect, useState } from "react";
+import { RichTextEditor } from "@/components/RichTextEditor";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Clock, CheckCircle, Send, Loader2, RefreshCw } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import { FileText, Clock, CheckCircle, Send, Loader2, RefreshCw, Plus, Search, Sparkles, Eye, Edit, Trash2, Image } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+// RichTextEditor imported above
 
 const STATUS_COLORS: Record<string, string> = {
-  submitted: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
-  in_progress: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-  review: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
-  completed: "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary",
-  delivered: "bg-primary/10 text-primary",
+  draft: "bg-muted text-muted-foreground",
+  published: "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary",
+  archived: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
 };
+
+const CATEGORIES = ["blog", "faq", "guide", "announcement", "case-study", "social"];
 
 export default function AdminContentWorkspace() {
   usePageTitle("Content Workspace");
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [posts, setPosts] = useState<any[]>([]);
   const [requests, setRequests] = useState<any[]>([]);
+  const [services, setServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
+  const [search, setSearch] = useState("");
+  const [tab, setTab] = useState("posts");
+
+  // Editor state
+  const [showEditor, setShowEditor] = useState(false);
+  const [editingPost, setEditingPost] = useState<any>(null);
+  const [form, setForm] = useState({ title: "", body: "", category: "blog", status: "draft", service_id: "", hero_image_url: "" });
+  const [saving, setSaving] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const contentServices = ["Blog & Article Writing", "Social Media Content", "Email Campaign Creation", "SEO Content Optimization", "Content Creation & Copywriting"];
 
   useEffect(() => {
-    const fetch = async () => {
-      const { data } = await supabase.from("service_requests").select("*, profiles!service_requests_client_id_fkey(full_name, email)").in("service_name", contentServices).order("created_at", { ascending: false });
-      if (data) setRequests(data);
+    const fetchAll = async () => {
+      const [{ data: postsData }, { data: reqData }, { data: svcData }] = await Promise.all([
+        supabase.from("content_posts").select("*").order("created_at", { ascending: false }),
+        supabase.from("service_requests").select("*, profiles!service_requests_client_id_fkey(full_name, email)").in("service_name", contentServices).order("created_at", { ascending: false }),
+        supabase.from("services").select("id, name").eq("is_active", true).order("name"),
+      ]);
+      if (postsData) setPosts(postsData);
+      if (reqData) setRequests(reqData);
+      if (svcData) setServices(svcData);
       setLoading(false);
     };
-    fetch();
+    fetchAll();
   }, []);
 
-  const filtered = filter === "all" ? requests : requests.filter(r => r.status === filter);
+  const filteredPosts = posts.filter(p => {
+    if (filter !== "all" && p.status !== filter) return false;
+    if (search && !p.title.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  });
+
+  const filteredRequests = requests.filter(r => {
+    if (filter !== "all" && r.status !== filter) return false;
+    return true;
+  });
+
+  const openNewPost = () => {
+    setEditingPost(null);
+    setForm({ title: "", body: "", category: "blog", status: "draft", service_id: "", hero_image_url: "" });
+    setShowEditor(true);
+  };
+
+  const openEditPost = (post: any) => {
+    setEditingPost(post);
+    setForm({ title: post.title, body: post.body || "", category: post.category, status: post.status, service_id: post.service_id || "", hero_image_url: post.hero_image_url || "" });
+    setShowEditor(true);
+  };
+
+  const savePost = async () => {
+    if (!form.title.trim()) { toast({ title: "Title required", variant: "destructive" }); return; }
+    setSaving(true);
+    const payload = {
+      title: form.title.trim(),
+      body: form.body,
+      category: form.category,
+      status: form.status,
+      service_id: form.service_id || null,
+      hero_image_url: form.hero_image_url || null,
+      published_at: form.status === "published" ? new Date().toISOString() : null,
+    };
+
+    if (editingPost) {
+      const { error } = await supabase.from("content_posts").update(payload).eq("id", editingPost.id);
+      if (error) { toast({ title: "Error saving", description: error.message, variant: "destructive" }); }
+      else {
+        toast({ title: "Post updated" });
+        setPosts(prev => prev.map(p => p.id === editingPost.id ? { ...p, ...payload } : p));
+      }
+    } else {
+      const { data, error } = await supabase.from("content_posts").insert({ ...payload, author_id: user?.id }).select().single();
+      if (error) { toast({ title: "Error creating", description: error.message, variant: "destructive" }); }
+      else {
+        toast({ title: "Post created" });
+        setPosts(prev => [data, ...prev]);
+      }
+    }
+    setSaving(false);
+    setShowEditor(false);
+  };
+
+  const deletePost = async (id: string) => {
+    const { error } = await supabase.from("content_posts").delete().eq("id", id);
+    if (!error) {
+      setPosts(prev => prev.filter(p => p.id !== id));
+      toast({ title: "Post deleted" });
+    }
+  };
+
+  const generateAI = async (prompt: string) => {
+    setGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("notary-assistant", {
+        body: { message: prompt, context: "content_generation" },
+      });
+      if (data?.reply) {
+        setForm(prev => ({ ...prev, body: prev.body + "\n\n" + data.reply }));
+        toast({ title: "AI content generated" });
+      }
+    } catch (e) {
+      toast({ title: "AI generation failed", variant: "destructive" });
+    }
+    setGenerating(false);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const path = `content/${Date.now()}_${file.name}`;
+    const { error } = await supabase.storage.from("documents").upload(path, file);
+    if (!error) {
+      const { data: urlData } = supabase.storage.from("documents").getPublicUrl(path);
+      setForm(prev => ({ ...prev, hero_image_url: urlData.publicUrl }));
+      toast({ title: "Image uploaded" });
+    }
+  };
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-sans text-2xl font-bold">Content Workspace</h1>
-        <Button variant="ghost" size="sm" onClick={() => window.location.reload()}><RefreshCw className="mr-1 h-3 w-3" /> Refresh</Button>
+        <div className="flex gap-2">
+          <Button size="sm" onClick={openNewPost}><Plus className="mr-1 h-3 w-3" /> New Post</Button>
+          <Button variant="ghost" size="sm" onClick={() => window.location.reload()}><RefreshCw className="mr-1 h-3 w-3" /> Refresh</Button>
+        </div>
       </div>
 
-      <Tabs value={filter} onValueChange={setFilter}>
+      <Tabs value={tab} onValueChange={setTab}>
         <TabsList>
-          <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="submitted">Queue</TabsTrigger>
-          <TabsTrigger value="in_progress">In Progress</TabsTrigger>
-          <TabsTrigger value="completed">Completed</TabsTrigger>
+          <TabsTrigger value="posts">Content Posts ({posts.length})</TabsTrigger>
+          <TabsTrigger value="requests">Service Requests ({requests.length})</TabsTrigger>
         </TabsList>
+
+        <div className="mt-4 flex gap-3 flex-wrap">
+          <div className="relative flex-1 min-w-[200px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Search content..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+          </div>
+          <Select value={filter} onValueChange={setFilter}>
+            <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="draft">Drafts</SelectItem>
+              <SelectItem value="published">Published</SelectItem>
+              <SelectItem value="archived">Archived</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <TabsContent value="posts" className="mt-4 space-y-3">
+          {loading ? (
+            <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-20 w-full" />)}</div>
+          ) : filteredPosts.length === 0 ? (
+            <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground"><FileText className="mx-auto mb-3 h-10 w-10 text-muted-foreground/50" /><p>No content posts yet</p><Button size="sm" className="mt-3" onClick={openNewPost}><Plus className="mr-1 h-3 w-3" /> Create First Post</Button></CardContent></Card>
+          ) : filteredPosts.map(post => (
+            <Card key={post.id} className="border-border/50">
+              <CardContent className="p-4 flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-medium text-sm">{post.title}</span>
+                    <Badge className={STATUS_COLORS[post.status] || "bg-muted text-muted-foreground"}>{post.status}</Badge>
+                    <Badge variant="outline" className="text-xs">{post.category}</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(post.created_at).toLocaleDateString()}
+                    {post.published_at && ` • Published ${new Date(post.published_at).toLocaleDateString()}`}
+                  </p>
+                </div>
+                <div className="flex gap-1">
+                  <Button size="sm" variant="ghost" onClick={() => { setEditingPost(post); setShowPreview(true); }}><Eye className="h-3 w-3" /></Button>
+                  <Button size="sm" variant="ghost" onClick={() => openEditPost(post)}><Edit className="h-3 w-3" /></Button>
+                  <Button size="sm" variant="ghost" className="text-destructive" onClick={() => deletePost(post.id)}><Trash2 className="h-3 w-3" /></Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </TabsContent>
+
+        <TabsContent value="requests" className="mt-4 space-y-3">
+          {loading ? (
+            <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+          ) : filteredRequests.length === 0 ? (
+            <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground"><FileText className="mx-auto mb-3 h-10 w-10 text-muted-foreground/50" /><p>No content requests</p></CardContent></Card>
+          ) : filteredRequests.map(req => (
+            <Card key={req.id} className="border-border/50">
+              <CardContent className="p-4 flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-medium text-sm">{req.service_name}</span>
+                    <Badge className={req.status === "completed" ? "bg-primary/10 text-primary" : req.status === "in_progress" ? "bg-blue-100 text-blue-800" : "bg-amber-100 text-amber-800"}>{req.status.replace(/_/g, " ")}</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Client: {req.profiles?.full_name || "Unknown"} • {new Date(req.created_at).toLocaleDateString()}</p>
+                </div>
+                <div className="flex gap-1">
+                  {req.status === "submitted" && (
+                    <Button size="sm" variant="outline" onClick={async () => {
+                      await supabase.from("service_requests").update({ status: "in_progress", client_visible_status: "In Progress" }).eq("id", req.id);
+                      setRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: "in_progress" } : r));
+                    }}><Clock className="mr-1 h-3 w-3" /> Start</Button>
+                  )}
+                  {req.status === "in_progress" && (
+                    <Button size="sm" variant="outline" onClick={async () => {
+                      await supabase.from("service_requests").update({ status: "completed", client_visible_status: "Completed" }).eq("id", req.id);
+                      setRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: "completed" } : r));
+                    }}><CheckCircle className="mr-1 h-3 w-3" /> Complete</Button>
+                  )}
+                  {req.status === "completed" && (
+                    <Button size="sm" onClick={async () => {
+                      await supabase.from("service_requests").update({ status: "delivered", client_visible_status: "Delivered" }).eq("id", req.id);
+                      setRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: "delivered" } : r));
+                    }}><Send className="mr-1 h-3 w-3" /> Deliver</Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </TabsContent>
       </Tabs>
 
-      <div className="mt-4 space-y-3">
-        {loading ? (
-          <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
-        ) : filtered.length === 0 ? (
-          <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground"><FileText className="mx-auto mb-3 h-10 w-10 text-muted-foreground/50" /><p>No content requests</p></CardContent></Card>
-        ) : filtered.map(req => (
-          <Card key={req.id} className="border-border/50">
-            <CardContent className="p-4 flex items-center justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-medium text-sm">{req.service_name}</span>
-                  <Badge className={STATUS_COLORS[req.status] || "bg-muted text-muted-foreground"}>{req.status.replace(/_/g, " ")}</Badge>
-                  {req.priority !== "normal" && <Badge variant="destructive" className="text-xs">{req.priority}</Badge>}
+      {/* Editor Dialog */}
+      <Dialog open={showEditor} onOpenChange={setShowEditor}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{editingPost ? "Edit Post" : "Create New Post"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label>Title</Label>
+                <Input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Post title..." maxLength={200} />
+                <p className="text-xs text-muted-foreground">{form.title.length}/200</p>
+              </div>
+              <div className="space-y-2">
+                <Label>Category</Label>
+                <Select value={form.category} onValueChange={v => setForm(p => ({ ...p, category: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label>Status</Label>
+                <Select value={form.status} onValueChange={v => setForm(p => ({ ...p, status: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="draft">Draft</SelectItem>
+                    <SelectItem value="published">Published</SelectItem>
+                    <SelectItem value="archived">Archived</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Link to Service</Label>
+                <Select value={form.service_id} onValueChange={v => setForm(p => ({ ...p, service_id: v }))}>
+                  <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">None</SelectItem>
+                    {services.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Hero Image</Label>
+              <div className="flex gap-2 items-center">
+                <Input value={form.hero_image_url} onChange={e => setForm(p => ({ ...p, hero_image_url: e.target.value }))} placeholder="Image URL..." className="flex-1" />
+                <label className="cursor-pointer">
+                  <Button variant="outline" size="sm" asChild><span><Image className="mr-1 h-3 w-3" /> Upload</span></Button>
+                  <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                </label>
+              </div>
+              {form.hero_image_url && <img src={form.hero_image_url} alt="Hero" className="h-24 rounded border border-border object-cover" />}
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label>Content</Label>
+                <div className="flex gap-1">
+                  <Button size="sm" variant="outline" disabled={generating} onClick={() => generateAI(`Write a professional blog post about: ${form.title || "notary services in Ohio"}`)}>
+                    <Sparkles className="mr-1 h-3 w-3" /> {generating ? "Generating..." : "AI Write"}
+                  </Button>
+                  <Button size="sm" variant="outline" disabled={generating} onClick={() => generateAI(`Generate 5 FAQ questions and answers about: ${form.title || "notary services"}`)}>
+                    <Sparkles className="mr-1 h-3 w-3" /> AI FAQ
+                  </Button>
                 </div>
-                <p className="text-xs text-muted-foreground">Client: {(req as any).profiles?.full_name || "Unknown"} • {new Date(req.created_at).toLocaleDateString()}</p>
               </div>
-              <div className="flex gap-1">
-                {req.status === "submitted" && (
-                  <Button size="sm" variant="outline" onClick={async () => {
-                    await supabase.from("service_requests").update({ status: "in_progress", client_visible_status: "In Progress" }).eq("id", req.id);
-                    setRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: "in_progress" } : r));
-                  }}><Clock className="mr-1 h-3 w-3" /> Start</Button>
-                )}
-                {req.status === "in_progress" && (
-                  <Button size="sm" variant="outline" onClick={async () => {
-                    await supabase.from("service_requests").update({ status: "completed", client_visible_status: "Completed" }).eq("id", req.id);
-                    setRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: "completed" } : r));
-                  }}><CheckCircle className="mr-1 h-3 w-3" /> Complete</Button>
-                )}
-                {req.status === "completed" && (
-                  <Button size="sm" onClick={async () => {
-                    await supabase.from("service_requests").update({ status: "delivered", client_visible_status: "Delivered" }).eq("id", req.id);
-                    setRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: "delivered" } : r));
-                  }}><Send className="mr-1 h-3 w-3" /> Deliver</Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              <RichTextEditor value={form.body} onChange={(v: string) => setForm(p => ({ ...p, body: v }))} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEditor(false)}>Cancel</Button>
+            <Button onClick={savePost} disabled={saving}>{saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}{editingPost ? "Update" : "Create"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Preview Dialog */}
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{editingPost?.title}</DialogTitle>
+          </DialogHeader>
+          {editingPost?.hero_image_url && <img src={editingPost.hero_image_url} alt="Hero" className="w-full h-48 object-cover rounded-lg" />}
+          <div className="flex gap-2 mb-4">
+            <Badge className={STATUS_COLORS[editingPost?.status] || "bg-muted"}>{editingPost?.status}</Badge>
+            <Badge variant="outline">{editingPost?.category}</Badge>
+          </div>
+          <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: editingPost?.body || "<p>No content</p>" }} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
