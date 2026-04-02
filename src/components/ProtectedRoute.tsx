@@ -10,7 +10,7 @@ interface ProtectedRouteProps {
   adminOnly?: boolean;
 }
 
-const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ children, requireAdmin = false, adminOnly = false }: ProtectedRouteProps) => {
   const { user, isAdmin, isNotary, loading } = useAuth();
 
   if (loading) {
@@ -26,6 +26,9 @@ const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps)
 
   // Email verification reminder (non-blocking)
   const emailConfirmed = user.email_confirmed_at || user.confirmed_at;
+
+  // Admin-only routes (item 503): restrict to admin role only
+  if (adminOnly && !isAdmin) return <Navigate to="/portal" replace />;
 
   // Allow both admin and notary roles to access admin dashboard
   if (requireAdmin && !isAdmin && !isNotary) return <Navigate to="/portal" replace />;
