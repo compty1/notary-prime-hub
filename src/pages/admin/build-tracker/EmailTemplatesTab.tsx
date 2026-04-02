@@ -64,6 +64,7 @@ type MasterTemplate = {
   fontFamily: string;
   logoUrl: string;
   footerText: string;
+  senderEmail: string;
 };
 
 const DEFAULT_MASTER: MasterTemplate = {
@@ -74,6 +75,7 @@ const DEFAULT_MASTER: MasterTemplate = {
   fontFamily: "'Space Grotesk', Arial, sans-serif",
   logoUrl: "",
   footerText: "NotaryDex · Ohio Online Notary Services · notify@notardex.com",
+  senderEmail: "notify@notardex.com",
 };
 
 function useEmailSettings() {
@@ -99,21 +101,32 @@ function useEmailSettings() {
   return { data, isLoading, save };
 }
 
-function renderPreview(bodyHtml: string, sampleData: Record<string, string>, master: MasterTemplate): string {
+function renderPreview(bodyHtml: string, sampleData: Record<string, string>, master: MasterTemplate, subject?: string): string {
   let html = bodyHtml;
+  let resolvedSubject = subject || "";
   for (const t of AVAILABLE_TAGS) {
     const key = t.tag.replace(/\{\{|\}\}/g, "");
     const value = sampleData[key] || t.sample;
     html = html.replace(new RegExp(t.tag.replace(/[{}]/g, "\\$&"), "g"), value);
+    resolvedSubject = resolvedSubject.replace(new RegExp(t.tag.replace(/[{}]/g, "\\$&"), "g"), value);
   }
+  const senderEmail = master.senderEmail || "notify@notardex.com";
+  const recipientEmail = sampleData["client_email"] || "jane.smith@example.com";
   return `
-    <div style="font-family:${master.fontFamily};max-width:600px;margin:0 auto;background:${master.bodyBg};">
-      <div style="background:${master.headerColor};padding:20px 24px;text-align:center;">
-        <h1 style="color:${master.accentColor};margin:0;font-size:20px;">NotaryDex</h1>
+    <div style="font-family:${master.fontFamily};max-width:600px;margin:0 auto;background:#f0f0f0;border-radius:8px;overflow:hidden;">
+      <div style="background:#e8e8e8;padding:12px 16px;font-size:12px;color:#444;border-bottom:1px solid #ddd;">
+        <div style="margin-bottom:4px;"><strong>From:</strong> NotaryDex &lt;${senderEmail}&gt;</div>
+        <div style="margin-bottom:4px;"><strong>To:</strong> ${sampleData["client_name"] || "Jane Smith"} &lt;${recipientEmail}&gt;</div>
+        ${resolvedSubject ? `<div><strong>Subject:</strong> ${resolvedSubject}</div>` : ""}
       </div>
-      <div style="padding:24px;">${html}</div>
-      <div style="background:${master.footerColor};padding:16px 24px;text-align:center;font-size:12px;color:#666;">
-        ${master.footerText}
+      <div style="background:${master.bodyBg};">
+        <div style="background:${master.headerColor};padding:20px 24px;text-align:center;">
+          <h1 style="color:${master.accentColor};margin:0;font-size:20px;">NotaryDex</h1>
+        </div>
+        <div style="padding:24px;">${html}</div>
+        <div style="background:${master.footerColor};padding:16px 24px;text-align:center;font-size:12px;color:#666;">
+          ${master.footerText}
+        </div>
       </div>
     </div>`;
 }
@@ -186,7 +199,7 @@ export default function EmailTemplatesTab() {
     setIsDirty(false);
   };
 
-  const preview = useMemo(() => renderPreview(currentBody, current.sampleData, master), [currentBody, current.sampleData, master]);
+  const preview = useMemo(() => renderPreview(currentBody, current.sampleData, master, currentSubject), [currentBody, current.sampleData, master, currentSubject]);
 
   const categoryColors: Record<string, string> = {
     auth: "bg-blue-500/10 text-blue-700",
@@ -244,6 +257,10 @@ export default function EmailTemplatesTab() {
               <div>
                 <Label className="text-xs">Font Family</Label>
                 <Input value={master.fontFamily} onChange={e => { setMaster(prev => ({ ...prev, fontFamily: e.target.value })); setIsDirty(true); }} className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">Sender Email</Label>
+                <Input value={master.senderEmail} onChange={e => { setMaster(prev => ({ ...prev, senderEmail: e.target.value })); setIsDirty(true); }} className="mt-1" placeholder="notify@notardex.com" />
               </div>
               <div>
                 <Label className="text-xs">Footer Text</Label>
