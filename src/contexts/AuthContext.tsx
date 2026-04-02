@@ -3,6 +3,7 @@ import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { logAuditEvent } from "@/lib/auditLog";
+import { safeGetJson, safeSetJson } from "@/lib/safeStorage";
 
 type UserRole = "admin" | "client" | "notary";
 
