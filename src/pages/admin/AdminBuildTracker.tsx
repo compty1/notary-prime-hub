@@ -250,7 +250,7 @@ export default function AdminBuildTracker() {
         <TabsContent value="themes">
           <TabErrorBoundary name="Themes">
             <Suspense fallback={<TabFallback />}>
-              <ThemeExplorerTab />
+              <ThemeExplorerTab onPreviewTheme={(colors) => { setThemeOverlay(colors); setActiveTab("preview"); }} />
             </Suspense>
           </TabErrorBoundary>
         </TabsContent>
