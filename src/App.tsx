@@ -51,6 +51,7 @@ const AIKnowledge = lazy(() => import("./pages/AIKnowledge"));
 const SignatureGeneratorPage = lazy(() => import("./pages/SignatureGeneratorPage"));
 const GrantDashboard = lazy(() => import("./pages/GrantDashboard"));
 const ResumeBuilder = lazy(() => import("./pages/ResumeBuilder"));
+const AITools = lazy(() => import("./pages/AITools"));
 
 // Admin pages
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
@@ -166,6 +167,7 @@ function AnimatedRoutes() {
         <Route path="/signature-generator" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Signature generator failed to load"><SignatureGeneratorPage /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/grants" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Grant generator failed to load"><GrantDashboard /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/resume-builder" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Resume builder failed to load"><ResumeBuilder /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/ai-tools" element={<ProtectedRoute><ErrorBoundary fallbackMessage="AI Tools failed to load"><AITools /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/account-settings" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Account settings failed to load"><AccountSettings /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/portal" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Portal failed to load"><ClientPortal /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/confirmation" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Confirmation failed to load"><AppointmentConfirmation /></ErrorBoundary></ProtectedRoute>} />

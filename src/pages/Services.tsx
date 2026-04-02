@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
-import { ChevronRight, FileText, Search, Sparkles, ArrowRight, Mail, Scan, FileEdit } from "lucide-react";
+import { ChevronRight, FileText, Search, Sparkles, ArrowRight, Mail, Scan, FileEdit, Wand2 } from "lucide-react";
 import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -21,6 +21,7 @@ import {
 } from "@/lib/serviceConstants";
 
 const aiTools = [
+  { icon: Wand2, title: "AI Tools Hub", description: "50+ professional AI tools — contracts, proposals, reports, analysis, compliance docs, and more.", link: "/ai-tools", cta: "Explore Tools" },
   { icon: Mail, title: "AI Writing Tools", description: "Generate professional emails, social media posts, and documents in seconds with AI.", link: "/ai-writer", cta: "Start Writing" },
   { icon: FileEdit, title: "Document Generator", description: "Build resumes, invoices, and contracts with beautiful templates and PDF export.", link: "/builder", cta: "Create Document" },
   { icon: Scan, title: "Document Digitization", description: "AI-powered OCR to convert paper documents and scans into editable, searchable text.", link: "/digitize", cta: "Digitize Now" },
