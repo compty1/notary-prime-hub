@@ -1,5 +1,6 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { PageShell } from "@/components/PageShell";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import SignatureGenerator from "@/components/SignatureGenerator";
 
 export default function SignatureGeneratorPage() {
