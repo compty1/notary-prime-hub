@@ -198,6 +198,7 @@ function ToolRunner({ tool, onBack }: { tool: AITool; onBack: () => void }) {
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
+  const [lastError, setLastError] = useState(false);
   const [showRendered, setShowRendered] = useState(true);
   const resultRef = useRef<HTMLDivElement>(null);
 
@@ -219,6 +220,7 @@ function ToolRunner({ tool, onBack }: { tool: AITool; onBack: () => void }) {
 
     setLoading(true);
     setResult("");
+    setLastError(false);
 
     try {
       const response = await callEdgeFunctionStream("ai-tools", {
@@ -254,7 +256,8 @@ function ToolRunner({ tool, onBack }: { tool: AITool; onBack: () => void }) {
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Generation failed";
-      toast({ title: "Error", description: msg, variant: "destructive" });
+      setLastError(true);
+      toast({ title: "Generation failed", description: "Something went wrong. Click Retry to try again.", variant: "destructive" });
     } finally {
       setLoading(false);
     }
