@@ -151,7 +151,7 @@ function generateLovablePrompt(theme: Theme): string {
   return `Update the theme to "${theme.name}": Use ${theme.colors.primary} as primary, ${theme.colors.accent} as accent, ${theme.colors.background} background. Heading font: ${theme.typography.heading}, body font: ${theme.typography.body}. Mood: ${theme.mood}. ${theme.description}`;
 }
 
-export default function ThemeExplorerTab() {
+export default function ThemeExplorerTab({ onPreviewTheme }: { onPreviewTheme?: (colors: ThemeColors) => void }) {
   const [themes, setThemes] = useState<Theme[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
