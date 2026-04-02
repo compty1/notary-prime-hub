@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
-import { ChevronRight, FileText, Search, Sparkles, ArrowRight, Mail, Scan, FileEdit } from "lucide-react";
+import { ChevronRight, FileText, Search, Sparkles, ArrowRight, Mail, Scan, FileEdit, Wand2 } from "lucide-react";
 import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
