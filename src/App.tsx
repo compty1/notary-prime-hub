@@ -178,7 +178,7 @@ function AnimatedRoutes() {
           <Route path="availability" element={<ErrorBoundary fallbackMessage="Availability failed to load"><AdminAvailability /></ErrorBoundary>} />
           <Route path="documents" element={<ErrorBoundary fallbackMessage="Documents failed to load"><AdminDocuments /></ErrorBoundary>} />
           <Route path="journal" element={<ErrorBoundary fallbackMessage="Journal failed to load"><AdminJournal /></ErrorBoundary>} />
-          <Route path="revenue" element={<ErrorBoundary fallbackMessage="Revenue failed to load"><AdminRevenue /></ErrorBoundary>} />
+          <Route path="revenue" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Revenue failed to load"><AdminRevenue /></ErrorBoundary></ProtectedRoute>} />
           <Route path="templates" element={<ErrorBoundary fallbackMessage="Templates failed to load"><AdminTemplates /></ErrorBoundary>} />
           <Route path="apostille" element={<ErrorBoundary fallbackMessage="Apostille failed to load"><AdminApostille /></ErrorBoundary>} />
           <Route path="chat" element={<ErrorBoundary fallbackMessage="Chat failed to load"><AdminChat /></ErrorBoundary>} />
@@ -186,18 +186,18 @@ function AnimatedRoutes() {
           <Route path="services" element={<ErrorBoundary fallbackMessage="Services failed to load"><AdminServices /></ErrorBoundary>} />
           <Route path="resources" element={<ErrorBoundary fallbackMessage="Resources failed to load"><AdminResources /></ErrorBoundary>} />
           <Route path="ai-assistant" element={<ErrorBoundary fallbackMessage="AI Assistant failed to load"><AdminAIAssistant /></ErrorBoundary>} />
-          <Route path="audit-log" element={<ErrorBoundary fallbackMessage="Audit log failed to load"><AdminAuditLog /></ErrorBoundary>} />
-          <Route path="team" element={<ErrorBoundary fallbackMessage="Team failed to load"><AdminTeam /></ErrorBoundary>} />
+          <Route path="audit-log" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Audit log failed to load"><AdminAuditLog /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="team" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Team failed to load"><AdminTeam /></ErrorBoundary></ProtectedRoute>} />
           <Route path="email-management" element={<ErrorBoundary fallbackMessage="Email management failed to load"><AdminEmailManagement /></ErrorBoundary>} />
           <Route path="leads" element={<ErrorBoundary fallbackMessage="Lead portal failed to load"><AdminLeadPortal /></ErrorBoundary>} />
-          <Route path="users" element={<ErrorBoundary fallbackMessage="User management failed to load"><AdminUsers /></ErrorBoundary>} />
+          <Route path="users" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="User management failed to load"><AdminUsers /></ErrorBoundary></ProtectedRoute>} />
           <Route path="service-requests" element={<ErrorBoundary fallbackMessage="Service requests failed to load"><AdminServiceRequests /></ErrorBoundary>} />
           <Route path="content-workspace" element={<ErrorBoundary fallbackMessage="Content workspace failed to load"><AdminContentWorkspace /></ErrorBoundary>} />
           <Route path="task-queue" element={<ErrorBoundary fallbackMessage="Task queue failed to load"><AdminTaskQueue /></ErrorBoundary>} />
           <Route path="crm" element={<ErrorBoundary fallbackMessage="CRM failed to load"><AdminCRM /></ErrorBoundary>} />
-          <Route path="build-tracker" element={<ErrorBoundary fallbackMessage="Build tracker failed to load"><AdminBuildTracker /></ErrorBoundary>} />
-          <Route path="settings" element={<ErrorBoundary fallbackMessage="Settings failed to load"><AdminSettings /></ErrorBoundary>} />
-          <Route path="integrations" element={<ErrorBoundary fallbackMessage="Integration testing failed to load"><AdminIntegrationTest /></ErrorBoundary>} />
+          <Route path="build-tracker" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Build tracker failed to load"><AdminBuildTracker /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="settings" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Settings failed to load"><AdminSettings /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="integrations" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Integration testing failed to load"><AdminIntegrationTest /></ErrorBoundary></ProtectedRoute>} />
           <Route path="client-emails" element={<ErrorBoundary fallbackMessage="Client emails failed to load"><AdminClientEmails /></ErrorBoundary>} />
           <Route path="mailbox" element={<ErrorBoundary fallbackMessage="Mailbox failed to load"><AdminMailbox /></ErrorBoundary>} />
           <Route path="*" element={<NotFound />} />
