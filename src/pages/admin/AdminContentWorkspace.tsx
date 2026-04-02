@@ -325,7 +325,7 @@ export default function AdminContentWorkspace() {
                 </div>
               </div>
               <Suspense fallback={<Skeleton className="h-64 w-full" />}>
-                <RichTextEditor content={form.body} onChange={v => setForm(p => ({ ...p, body: v }))} />
+                <RichTextEditor value={form.body} onChange={(v: string) => setForm(p => ({ ...p, body: v }))} />
               </Suspense>
             </div>
           </div>
