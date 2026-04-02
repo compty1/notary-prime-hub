@@ -412,3 +412,16 @@ button, a, [role="button"] {
   .shadow, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl { box-shadow: none !important; }
   .border { border-color: #ccc !important; }
 }
+
+/* Mobile responsive: admin tables horizontal scroll */
+@media (max-width: 768px) {
+  .admin-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .admin-table-wrap table { min-width: 640px; }
+  [role="dialog"] > div { max-width: calc(100vw - 2rem) !important; }
+}
+
+/* Active state transitions on CTA buttons */
+button:active, a[role="button"]:active {
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
+}
