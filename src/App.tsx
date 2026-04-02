@@ -94,6 +94,7 @@ const ForSmallBusiness = lazy(() => import("./pages/solutions/ForSmallBusiness")
 const ForIndividuals = lazy(() => import("./pages/solutions/ForIndividuals"));
 const Resources = lazy(() => import("./pages/Resources"));
 const HelpSupport = lazy(() => import("./pages/HelpSupport"));
+const SignerRights = lazy(() => import("./pages/SignerRights"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
