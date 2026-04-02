@@ -296,12 +296,14 @@ export default function AdminOverview() {
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {statCards.map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
-            <Card className="border-border/50">
-              <CardContent className="flex items-center gap-4 p-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted"><s.icon className={`h-5 w-5 ${s.color}`} /></div>
-                <div><p className="text-2xl font-bold text-foreground">{s.value}</p><p className="text-xs text-muted-foreground">{s.label}</p></div>
-              </CardContent>
-            </Card>
+            <Link to={s.link}>
+              <Card className="border-border/50 hover:border-primary/30 hover:shadow-sm transition-all cursor-pointer">
+                <CardContent className="flex items-center gap-4 p-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted"><s.icon className={`h-5 w-5 ${s.color}`} /></div>
+                  <div><p className="text-2xl font-bold text-foreground">{s.value}</p><p className="text-xs text-muted-foreground">{s.label}</p></div>
+                </CardContent>
+              </Card>
+            </Link>
           </motion.div>
         ))}
       </div>

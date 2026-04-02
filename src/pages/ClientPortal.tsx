@@ -30,6 +30,8 @@ import PortalChatTab from "./portal/PortalChatTab";
 import { PortalLoadingSkeleton } from "@/components/PortalLoadingSkeleton";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { usePageTitle } from "@/lib/usePageTitle";
+import { PortalOnboardingChecklist } from "@/components/PortalOnboardingChecklist";
+import { PortalQuickActions } from "@/components/PortalQuickActions";
 const pipelineSteps = [
   { key: "uploaded", label: "Intake", icon: Upload },
   { key: "pending_review", label: "Review", icon: FileText },
