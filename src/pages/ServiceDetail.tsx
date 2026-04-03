@@ -343,7 +343,7 @@ export default function ServiceDetail() {
   const [chatLoading, setChatLoading] = useState(false);
   const [lastChatSent, setLastChatSent] = useState(0);
   const [showPreQualifier, setShowPreQualifier] = useState(false);
-  usePageTitle(service?.name || "Service Details");
+  usePageMeta({ title: service?.name || "Service Details", description: service?.description || "Professional Ohio notary and document verification services." });
 
   useEffect(() => {
     if (!serviceId) {

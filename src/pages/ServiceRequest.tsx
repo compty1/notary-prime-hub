@@ -270,7 +270,7 @@ export default function ServiceRequest() {
   const [guestEmail, setGuestEmail] = useState("");
   const [guestPassword, setGuestPassword] = useState("");
 
-  usePageTitle(config.label);
+  usePageMeta({ title: config.label, description: `Submit a ${config.label} request — professional Ohio notary and document services.` });
 
   // Auto-save to localStorage every 5 seconds
   const AUTOSAVE_KEY = `sr-draft-${serviceName}`;

@@ -19,6 +19,10 @@ export default function WhatDoINeed() {
 
   const handleSubmit = async () => {
     if (!query.trim() || loading) return;
+    if (!user) {
+      toast({ title: "Sign in required", description: "Please sign in to use the AI assistant.", variant: "destructive" });
+      return;
+    }
     setLoading(true);
     setResult("");
     setShowResult(true);

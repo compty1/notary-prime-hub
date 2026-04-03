@@ -25,7 +25,7 @@ export default function VerifySeal() {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [record, setRecord] = useState<ESealRecord | null>(null);
-  usePageTitle("Verify E-Seal");
+  usePageMeta({ title: "Verify E-Seal", description: "Verify the authenticity of a notarized document's electronic seal and digital certificate." });
 
   useEffect(() => {
     const run = async () => {

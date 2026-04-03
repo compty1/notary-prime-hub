@@ -80,7 +80,7 @@ const partnerBenefits = [
 ];
 
 export default function SubscriptionPlans() {
-  usePageTitle("Subscription Plans");
+  usePageMeta({ title: "Subscription Plans", description: "Choose the right notary subscription plan for your business — Starter, Professional, and Enterprise tiers." });
   const { user } = useAuth();
   const navTo = useNavigate();
   const { toast } = useToast();

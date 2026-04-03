@@ -9,7 +9,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { usePageMeta } from "@/hooks/usePageMeta";
 
 export default function Unsubscribe() {
-  usePageTitle("Unsubscribe");
+  usePageMeta({ title: "Unsubscribe", description: "Manage your email preferences and unsubscribe from Notar communications.", noIndex: true });
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const [status, setStatus] = useState<"loading" | "success" | "error" | "no-token">("loading");
