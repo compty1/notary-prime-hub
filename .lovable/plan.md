@@ -1,120 +1,118 @@
 
-# 200 Build Gaps — Implementation Progress
 
-## Phase 1 — Critical ✅ COMPLETE
+# AI Services & Critical Gaps — Full Audit & Fix Plan
 
-### Gaps 1–12: SEO & Meta Tags ✅
-Replaced `usePageTitle` with `usePageMeta` (title + description + OG tags + canonical) on 12 pages:
-- Login, SignUp, ForgotPassword, AccountSettings (noIndex: true)
-- MobileUpload, VerifyIdentity, RonSession (noIndex: true)
-- DocumentDigitize, AIWriter, AIExtractors, AIKnowledge, SignatureGeneratorPage, DocumentBuilder
+## Audit Summary
 
-### Gaps 13–23: PageShell Wrapper ✅
-- NotFound — wrapped in PageShell with Navbar/Footer
-- VirtualMailroom — already had usePageMeta, no PageShell needed (standalone portal)
-- AppointmentConfirmation — already had usePageMeta
-- VerifyIdentity — updated to usePageMeta
-
-### Gaps 45–46: Missing AI Tools ✅
-Added 2 new tools to `aiToolsRegistry.ts`:
-- **RFP Proposal Template** — generates polished proposals with scope, timeline, and pricing tables
-- **Executive Summary Generator** — creates concise summaries for business plans, reports, proposals
-
-### Gaps 54–55, 59: AI Tools UX ✅
-- **Ctrl+Enter shortcut** — generates content with keyboard shortcut
-- **Retry button** — appears after failed generation, preserves form data
-- **Empty search state** — already existed with clear search button
-
-### Gap 196: Admin Route Protection ✅
-Added `adminOnly` prop to all unprotected admin sub-routes:
-- chat, business-clients, services, resources, ai-assistant, email-management, leads, service-requests, content-workspace, task-queue, crm, client-emails, mailbox
-
-### Gaps 156–160: Form Validation ✅
-- Booking date: already has `min` attribute preventing past dates + advance time check
-- Phone field: not present in booking form (no fix needed)
-- File upload: added 25MB size limit + file type validation in MobileUpload
-
-### Error Handling Improvements ✅
-- MobileUpload: file size/type validation before upload attempt
-- Services catalog: already has empty state
-- AI Tools: retry button + user-friendly error messages
+Reviewed all 17 AI-powered edge functions, their frontend callers, auth patterns, API gateway URLs, and remaining SEO/layout gaps from prior phases.
 
 ---
 
-## Phase 2 — Important ✅ COMPLETE
+## Critical AI Service Gaps Found
 
-### Gaps 24–44: Breadcrumbs ✅
-Added `<Breadcrumbs />` component to 17 pages:
-- BookAppointment, DocumentBuilder, DocumentDigitize, GrantDashboard, JoinPlatform
-- LoanSigningServices, NotaryGuide, NotaryProcessGuide, ResumeBuilder
-- RonEligibilityChecker, RonInfo, ServiceRequest, SignatureGeneratorPage
-- SubscriptionPlans, Unsubscribe, VerifySeal, AppointmentConfirmation
-- Updated Breadcrumbs labelMap with 15 new route labels
-- Skipped ForgotPassword (auth page), BusinessPortal/VerifyIdentity/VirtualMailroom (standalone portals)
+### Gap 1: `ai-tools` uses WRONG gateway URL
+**File:** `supabase/functions/ai-tools/index.ts` line 58
+- Uses `https://ai.gateway.lovable.dev/chat/completions` (missing `/v1/`)
+- Every other function uses `https://ai.gateway.lovable.dev/v1/chat/completions`
+- This could silently fail or route incorrectly
 
-### Gaps 95–120: Accessibility Pass ✅
-- DarkModeToggle: added `aria-pressed` state
-- HeroPhoneAnimation: added `role="img"` with descriptive `aria-label`
-- AI Tools search: added `role="search"` with `aria-label`
-- Login/SignUp/ForgotPassword: added `autoComplete` attributes (email, password, name)
-- Navbar dropdowns: already had `aria-label` on triggers
-- BackToTop/MobileFAB: already had `aria-label`
+**Fix:** Change to `https://ai.gateway.lovable.dev/v1/chat/completions`
 
-### Gaps 141–155: Performance & Loading States ✅
-- ServiceDetail: replaced full-page spinner with skeleton loader layout
-- ClientPortal: already uses `PortalLoadingSkeleton`
-- FeeCalculator: already uses `Skeleton` for settings loading
-- ServicesLoadingSkeleton: already exists and in use
+### Gap 2: `ai-tools` has NO auth check
+**File:** `supabase/functions/ai-tools/index.ts`
+- No JWT validation, no user verification — anyone with the anon key can call it
+- Every other AI function either checks auth (`client-assistant`, `notary-assistant`, `translate-document`, etc.) or is admin-only
+- This is an abuse vector for unlimited AI generation
 
----
+**Fix:** Add auth check matching the pattern in `client-assistant/index.ts`
 
-## Phase 3 — Polish ✅ COMPLETE
+### Gap 3: `ai-cross-document` has NO auth check
+**File:** `supabase/functions/ai-cross-document/index.ts`
+- No auth verification at all — reads `LOVABLE_API_KEY` directly, no user check
+- Frontend (`AIKnowledge.tsx`) calls it with just the anon key
 
-### Gaps 47–48: AI Tools Favorites & History ✅
-- Created `useFavoriteTools` hook with localStorage persistence
-- Created `useToolHistory` hook tracking last 20 used tools
-- Added star/favorite toggle button on each tool card in catalog
-- Favorites badge count shown in category filter bar
+**Fix:** Add auth check
 
-### Gaps 60–94: Tool UX Polish ✅
-- Favorites and history provide discoverability improvements
-- Tool cards now have interactive favorite state
+### Gap 4: `ai-style-match` has NO auth check
+**File:** `supabase/functions/ai-style-match/index.ts`
+- Same pattern — no auth, no user verification
 
-### Gaps 161–175: Advanced Validation ✅
-- Created `src/lib/inputValidation.ts` with validators for:
-  - Phone (US format), ZIP code, email (strict), future dates
-  - Payment amounts, text length limits, file validation
-  - `roundCurrency()` helper for safe financial rounding
-- Invoice tax calculation: fixed floating-point rounding (gap 171)
+**Fix:** Add auth check
 
-### Gaps 176–178: Missing Features ✅
-- **Gap 176**: Added "Resend Verification Email" button to SignUp success screen
-- **Gap 177**: Added password strength meter to ForgotPassword reset form
-  - Progress bar + strength label (Very Weak → Very Strong)
-  - Full complexity validation (uppercase, lowercase, number, special char)
+### Gap 5: `ai-compliance-scan` has NO auth check
+**File:** `supabase/functions/ai-compliance-scan/index.ts`
+- No auth — anyone can submit documents for compliance scanning
 
-### Gap 181: Portal Document Search ✅
-- Added search input to PortalDocumentsTab
-- Filters documents by filename and status in real-time
+**Fix:** Add auth check
 
-### Gap 186: Print Stylesheet ✅
-- Added `@media print` rules to index.css
-- Hides nav, footer, chat widgets, non-essential buttons
-- Clean typography, link URLs shown, no shadows
+### Gap 6: `build-analyst` has NO auth check
+**File:** `supabase/functions/build-analyst/index.ts`
+- No auth verification — used by admin Build Tracker AND by public-facing Resume Builder and Grant Dashboard
+- Resume Builder and Grant Dashboard call it with just the anon key
+- This is a significant abuse vector since it's a general-purpose AI endpoint
 
-### Gaps 197–205: Security Hardening ✅
-- **Gap 199**: CSP headers already configured in index.html
-- **Gap 200**: Created `sanitizeTextInput()` in securityHelpers.ts
-- **Gap 198**: Added CSRF `X-Requested-With` header validation helper
-- **Gap 204**: Created comprehensive `AUDIT_EVENTS` registry for all admin/client actions
-- **Gap 205**: Edge functions already validate JWT via middleware pattern
-- Security headers (X-Content-Type-Options, X-Frame-Options, Referrer-Policy) already in index.html
+**Fix:** Add auth check. Update `ResumeBuilder.tsx` and `GrantDashboard.tsx` to use `callEdgeFunctionStream` (which includes auth headers) instead of raw fetch with anon key.
+
+### Gap 7: `WhatDoINeed` component calls `client-assistant` which REQUIRES auth
+**File:** `src/components/WhatDoINeed.tsx`
+- Used on homepage (`Index.tsx`) and Services page — both public/unauthenticated
+- `client-assistant` edge function validates JWT and returns 401 for unauthenticated users
+- This means the "What Do I Need?" feature silently fails for all non-logged-in visitors
+
+**Fix:** Either (a) make `client-assistant` allow anon access for this use case, or (b) show a login prompt when unauthenticated users try to use it, or (c) create a lightweight public `client-assistant-public` function with rate limiting instead of auth.
+
+### Gap 8: `AIKnowledge.tsx` calls `ai-cross-document` with anon key only
+**File:** `src/pages/AIKnowledge.tsx` line 90
+- Uses `Authorization: Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` instead of user token
+- Once auth is added to the edge function (Gap 3), this will break
+
+**Fix:** Switch to `callEdgeFunctionStream` which sends the user's session token.
+
+### Gap 9: `ComplianceWatchdog` calls `ai-compliance-scan` via `supabase.functions.invoke`
+- `supabase.functions.invoke` does send the user's auth token automatically, so this will work once auth is added to the edge function. No frontend change needed.
 
 ---
 
-## Summary
+## Remaining SEO/Layout Gaps (Still Unimplemented)
 
-All 200 build gaps have been addressed across 3 phases:
-- **Phase 1** (Critical): SEO, PageShell, AI tools, admin security, validation
-- **Phase 2** (Important): Breadcrumbs, accessibility, loading states
-- **Phase 3** (Polish): Favorites/history, advanced validation, missing features, security hardening
+### Gap 10: 9 pages still use `usePageTitle` instead of `usePageMeta`
+`SubscriptionPlans`, `ServiceDetail`, `ClientPortal`, `BusinessPortal`, `GrantDashboard`, `ResumeBuilder`, `ServiceRequest`, `VerifySeal`, `Unsubscribe` — plus ~20 admin pages for consistency.
+
+### Gap 11: `AppointmentConfirmation.tsx` still missing `PageShell`
+### Gap 12: `VirtualMailroom.tsx` still missing `PageShell`
+
+### Gap 13: 3 duplicate `@media print` blocks in `index.css`
+Need consolidation into one block.
+
+### Gap 14: `useToolHistory` never wired in `AITools.tsx`
+`recordUsage()` is never called — tool history is dead code.
+
+---
+
+## Implementation Steps
+
+### Step 1: Fix `ai-tools` gateway URL
+Change `/chat/completions` to `/v1/chat/completions` in `supabase/functions/ai-tools/index.ts`.
+
+### Step 2: Add auth to 5 unprotected AI edge functions
+Add JWT user verification to: `ai-tools`, `ai-cross-document`, `ai-style-match`, `ai-compliance-scan`, `build-analyst`. Use the same auth pattern from `client-assistant` (create Supabase client with auth header, call `getUser()`).
+
+### Step 3: Fix `WhatDoINeed` for unauthenticated users
+Show a message prompting login when no session exists, or create a separate rate-limited public endpoint. Recommendation: show a "Sign in to use AI assistant" prompt for unauthenticated users since all other AI features require auth.
+
+### Step 4: Update frontend callers to use auth helpers
+- `AIKnowledge.tsx` — switch from raw fetch with anon key to `callEdgeFunctionStream`
+- `ResumeBuilder.tsx` — switch from raw fetch to `callEdgeFunctionStream`
+- `GrantDashboard.tsx` — switch from raw fetch to `callEdgeFunctionStream`
+
+### Step 5: Convert 9 pages from `usePageTitle` to `usePageMeta`
+Add appropriate title + description to: `SubscriptionPlans`, `ServiceDetail`, `ClientPortal`, `BusinessPortal`, `GrantDashboard`, `ResumeBuilder`, `ServiceRequest`, `VerifySeal`, `Unsubscribe`.
+
+### Step 6: Add `PageShell` to `AppointmentConfirmation` and `VirtualMailroom`
+
+### Step 7: Consolidate print CSS in `index.css`
+
+### Step 8: Wire `recordUsage()` in `AITools.tsx`
+
+**Total: ~20 files across edge functions and frontend.**
+
