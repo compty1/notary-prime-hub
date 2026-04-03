@@ -173,17 +173,7 @@ export default function AppointmentConfirmation() {
   const crossSells = getCrossSells(appointment);
 
   return (
-    <main aria-label="Appointment Confirmation" className="min-h-screen bg-muted/30">
-      <nav className="border-b border-border/50 bg-background/80 backdrop-blur-lg">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <Logo size="md" />
-            <span className="font-sans text-lg font-bold text-foreground">Notar</span>
-          </Link>
-          <Link to="/portal"><Button variant="outline" size="sm">My Portal</Button></Link>
-        </div>
-      </nav>
-
+    <PageShell>
       <div className="container mx-auto max-w-lg px-4 py-16 text-center">
         <Breadcrumbs />
         <div className="mb-6 flex justify-center">
