@@ -37,7 +37,7 @@ const GRANT_TYPES = [
 ];
 
 export default function GrantDashboard() {
-  usePageTitle("Grant Generator");
+  usePageMeta({ title: "Grant Generator", description: "Create and manage AI-assisted grant proposals for nonprofits, education, research, and community development." });
   const { user } = useAuth();
   const [grants, setGrants] = useState<Grant[]>([]);
   const [loading, setLoading] = useState(true);
