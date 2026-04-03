@@ -29,7 +29,7 @@ import PortalDocumentsTab from "./portal/PortalDocumentsTab";
 import PortalChatTab from "./portal/PortalChatTab";
 import { PortalLoadingSkeleton } from "@/components/PortalLoadingSkeleton";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { PortalOnboardingChecklist } from "@/components/PortalOnboardingChecklist";
 import { PortalQuickActions } from "@/components/PortalQuickActions";
 const pipelineSteps = [
