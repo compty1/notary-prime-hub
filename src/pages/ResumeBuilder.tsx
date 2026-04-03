@@ -163,11 +163,7 @@ export default function ResumeBuilder() {
         ? `Generate a professional resume in rich text format. Include sections for Summary, Experience, Education, and Skills. Use bullet points and strong action verbs. Template style: ${templateId}. Title: ${title || "Professional Resume"}.`
         : `Generate a professional cover letter for the role of "${jobTitle || "Professional"}" at "${company || "a leading company"}". Be persuasive, professional, and concise. Include: opening hook, relevant experience highlights, enthusiasm for the role, and strong closing.`;
 
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/build-analyst`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-        body: JSON.stringify({ messages: [{ role: "user", content: prompt }], context: `Type: ${editorType}` }),
-      });
+      const resp = await callEdgeFunctionStream("build-analyst", { messages: [{ role: "user", content: prompt }], context: `Type: ${editorType}` }, 120000);
       if (!resp.ok) throw new Error("AI generation failed");
       const reader = resp.body?.getReader();
       if (!reader) throw new Error("No body");
