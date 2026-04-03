@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, ShieldX, Calendar, FileText, User, Building2, Loader2, ArrowLeft, Scale } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 interface ESealRecord {
   id: string;
