@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
+import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
