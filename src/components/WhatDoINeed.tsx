@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Loader2, Sparkles, ArrowRight, Copy, Download, Printer } from "lucide-react";
+import { Loader2, Sparkles, ArrowRight, Copy, Download, Printer, LogIn } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
 
 export default function WhatDoINeed() {
