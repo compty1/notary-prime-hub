@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 import { SERVICE_ICON_MAP as iconMap, PRICING_SUFFIXES, NOTARY_CATEGORIES } from "@/lib/serviceConstants";
 
