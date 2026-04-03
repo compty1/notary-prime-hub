@@ -15,6 +15,7 @@ export default function WhatDoINeed() {
   const [loading, setLoading] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const handleSubmit = async () => {
     if (!query.trim() || loading) return;
