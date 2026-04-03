@@ -1,4 +1,5 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { PageShell } from "@/components/PageShell";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -149,18 +150,22 @@ export default function AppointmentConfirmation() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-muted/30">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" />
-      </div>
+      <PageShell>
+        <div className="flex min-h-[50vh] items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" />
+        </div>
+      </PageShell>
     );
   }
 
   if (!appointment) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-muted/30 px-4 text-center">
-        <p className="text-muted-foreground">Appointment not found.</p>
-        <Link to="/portal" className="mt-4"><Button>Go to Portal</Button></Link>
-      </div>
+      <PageShell>
+        <div className="flex min-h-[50vh] flex-col items-center justify-center px-4 text-center">
+          <p className="text-muted-foreground">Appointment not found.</p>
+          <Link to="/portal" className="mt-4"><Button>Go to Portal</Button></Link>
+        </div>
+      </PageShell>
     );
   }
 
@@ -168,17 +173,7 @@ export default function AppointmentConfirmation() {
   const crossSells = getCrossSells(appointment);
 
   return (
-    <main aria-label="Appointment Confirmation" className="min-h-screen bg-muted/30">
-      <nav className="border-b border-border/50 bg-background/80 backdrop-blur-lg">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <Logo size="md" />
-            <span className="font-sans text-lg font-bold text-foreground">Notar</span>
-          </Link>
-          <Link to="/portal"><Button variant="outline" size="sm">My Portal</Button></Link>
-        </div>
-      </nav>
-
+    <PageShell>
       <div className="container mx-auto max-w-lg px-4 py-16 text-center">
         <Breadcrumbs />
         <div className="mb-6 flex justify-center">
@@ -366,6 +361,6 @@ export default function AppointmentConfirmation() {
           </div>
         )}
       </div>
-    </main>
+    </PageShell>
   );
 }

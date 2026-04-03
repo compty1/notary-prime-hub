@@ -29,7 +29,7 @@ import PortalDocumentsTab from "./portal/PortalDocumentsTab";
 import PortalChatTab from "./portal/PortalChatTab";
 import { PortalLoadingSkeleton } from "@/components/PortalLoadingSkeleton";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { PortalOnboardingChecklist } from "@/components/PortalOnboardingChecklist";
 import { PortalQuickActions } from "@/components/PortalQuickActions";
 const pipelineSteps = [
@@ -47,7 +47,7 @@ export default function ClientPortal() {
   const initialTab = searchParams.get("tab") || window.location.hash?.slice(1) || "overview";
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
-  usePageTitle("Client Portal");
+  usePageMeta({ title: "Client Portal", description: "Manage your appointments, documents, and communications in one place.", noIndex: true });
   const [appointments, setAppointments] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);

@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, ShieldX, Calendar, FileText, User, Building2, Loader2, ArrowLeft, Scale } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 interface ESealRecord {
   id: string;
@@ -25,7 +25,7 @@ export default function VerifySeal() {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [record, setRecord] = useState<ESealRecord | null>(null);
-  usePageTitle("Verify E-Seal");
+  usePageMeta({ title: "Verify E-Seal", description: "Verify the authenticity of a notarized document's electronic seal and digital certificate." });
 
   useEffect(() => {
     const run = async () => {

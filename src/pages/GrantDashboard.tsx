@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
+import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,7 +37,7 @@ const GRANT_TYPES = [
 ];
 
 export default function GrantDashboard() {
-  usePageTitle("Grant Generator");
+  usePageMeta({ title: "Grant Generator", description: "Create and manage AI-assisted grant proposals for nonprofits, education, research, and community development." });
   const { user } = useAuth();
   const [grants, setGrants] = useState<Grant[]>([]);
   const [loading, setLoading] = useState(true);
@@ -126,17 +127,10 @@ export default function GrantDashboard() {
     if (!aiPrompt.trim()) { toast.error("Enter a prompt for AI generation"); return; }
     setGenerating(true);
     try {
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/build-analyst`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
-        body: JSON.stringify({
-          messages: [{ role: "user", content: `Generate a professional grant proposal about: ${aiPrompt}. Include these sections: Executive Summary, Statement of Need, Project Description, Goals and Objectives, Methods, Evaluation, Budget Summary, Sustainability Plan. Write in a formal, persuasive tone appropriate for grant applications. Format with Markdown headings.` }],
-          context: `Grant type: ${grantType}. Title: ${title || "Untitled"}`,
-        }),
-      });
+      const resp = await callEdgeFunctionStream("build-analyst", {
+        messages: [{ role: "user", content: `Generate a professional grant proposal about: ${aiPrompt}. Include these sections: Executive Summary, Statement of Need, Project Description, Goals and Objectives, Methods, Evaluation, Budget Summary, Sustainability Plan. Write in a formal, persuasive tone appropriate for grant applications. Format with Markdown headings.` }],
+        context: `Grant type: ${grantType}. Title: ${title || "Untitled"}`,
+      }, 120000);
       if (!resp.ok) throw new Error("AI generation failed");
       const reader = resp.body?.getReader();
       if (!reader) throw new Error("No response body");

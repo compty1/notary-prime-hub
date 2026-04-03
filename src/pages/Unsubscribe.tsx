@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, AlertCircle, Loader2, Mail } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 export default function Unsubscribe() {
-  usePageTitle("Unsubscribe");
+  usePageMeta({ title: "Unsubscribe", description: "Manage your email preferences and unsubscribe from Notar communications.", noIndex: true });
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const [status, setStatus] = useState<"loading" | "success" | "error" | "no-token">("loading");

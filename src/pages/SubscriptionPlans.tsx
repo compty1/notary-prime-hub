@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -80,7 +80,7 @@ const partnerBenefits = [
 ];
 
 export default function SubscriptionPlans() {
-  usePageTitle("Subscription Plans");
+  usePageMeta({ title: "Subscription Plans", description: "Choose the right notary subscription plan for your business — Starter, Professional, and Enterprise tiers." });
   const { user } = useAuth();
   const navTo = useNavigate();
   const { toast } = useToast();

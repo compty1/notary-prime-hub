@@ -15,6 +15,7 @@ import ReactMarkdown from "react-markdown";
 import {
   Brain, Upload, X, Send, Loader2, FileText, Sparkles, MessageSquare
 } from "lucide-react";
+import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
 
 interface Doc {
   name: string;
@@ -81,17 +82,7 @@ export default function AIKnowledge() {
     let assistantContent = "";
 
     try {
-      const resp = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-cross-document`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({ documents, query: userMsg.content }),
-        }
-      );
+      const resp = await callEdgeFunctionStream("ai-cross-document", { documents, query: userMsg.content }, 120000);
 
       if (!resp.ok || !resp.body) {
         const err = await resp.json().catch(() => ({ error: "Request failed" }));

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -270,7 +270,7 @@ export default function ServiceRequest() {
   const [guestEmail, setGuestEmail] = useState("");
   const [guestPassword, setGuestPassword] = useState("");
 
-  usePageTitle(config.label);
+  usePageMeta({ title: config.label, description: `Submit a ${config.label} request — professional Ohio notary and document services.` });
 
   // Auto-save to localStorage every 5 seconds
   const AUTOSAVE_KEY = `sr-draft-${serviceName}`;

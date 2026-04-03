@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Loader2, Sparkles, ArrowRight, Copy, Download, Printer } from "lucide-react";
+import { Loader2, Sparkles, ArrowRight, Copy, Download, Printer, LogIn } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
 
 export default function WhatDoINeed() {
@@ -14,9 +15,14 @@ export default function WhatDoINeed() {
   const [loading, setLoading] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const handleSubmit = async () => {
     if (!query.trim() || loading) return;
+    if (!user) {
+      toast({ title: "Sign in required", description: "Please sign in to use the AI assistant.", variant: "destructive" });
+      return;
+    }
     setLoading(true);
     setResult("");
     setShowResult(true);

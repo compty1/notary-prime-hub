@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 import { SERVICE_ICON_MAP as iconMap, PRICING_SUFFIXES, NOTARY_CATEGORIES } from "@/lib/serviceConstants";
 
@@ -343,7 +343,7 @@ export default function ServiceDetail() {
   const [chatLoading, setChatLoading] = useState(false);
   const [lastChatSent, setLastChatSent] = useState(0);
   const [showPreQualifier, setShowPreQualifier] = useState(false);
-  usePageTitle(service?.name || "Service Details");
+  usePageMeta({ title: service?.name || "Service Details", description: service?.description || "Professional Ohio notary and document verification services." });
 
   useEffect(() => {
     if (!serviceId) {

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { Link } from "react-router-dom";
+import { PageShell } from "@/components/PageShell";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -63,19 +64,7 @@ export default function VirtualMailroom() {
   const newCount = items.filter(i => i.status === "new").length;
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <nav className="border-b border-border/50 bg-background/80 backdrop-blur-lg">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <Logo size="md" />
-            <span className="font-sans text-lg font-bold text-foreground">Virtual Mailroom</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <Link to="/portal"><Button variant="outline" size="sm"><ChevronLeft className="mr-1 h-3 w-3" /> Portal</Button></Link>
-          </div>
-        </div>
-      </nav>
-
+    <PageShell>
       <div className="container mx-auto max-w-4xl px-4 py-8">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
           <div className="flex items-center gap-3 mb-2">
@@ -146,10 +135,6 @@ export default function VirtualMailroom() {
           </div>
         )}
       </div>
-
-      <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Notar — Ohio Notary & Document Services</p>
-      </footer>
-    </div>
+    </PageShell>
   );
 }
