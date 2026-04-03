@@ -15,6 +15,7 @@ import ReactMarkdown from "react-markdown";
 import {
   Brain, Upload, X, Send, Loader2, FileText, Sparkles, MessageSquare
 } from "lucide-react";
+import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
 
 interface Doc {
   name: string;

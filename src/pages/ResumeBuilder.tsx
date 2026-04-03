@@ -192,14 +192,10 @@ export default function ResumeBuilder() {
     if (!analyzeText.trim()) { toast.error("Paste your resume text to analyze"); return; }
     setGenerating(true);
     try {
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/build-analyst`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-        body: JSON.stringify({
-          messages: [{ role: "user", content: `Analyze this resume and provide a detailed score (1-100), strengths, weaknesses, and specific actionable recommendations for improvement. Format with clear headings.\n\nResume:\n${analyzeText.slice(0, 4000)}` }],
-          context: "Resume analysis mode",
-        }),
-      });
+      const resp = await callEdgeFunctionStream("build-analyst", {
+        messages: [{ role: "user", content: `Analyze this resume and provide a detailed score (1-100), strengths, weaknesses, and specific actionable recommendations for improvement. Format with clear headings.\n\nResume:\n${analyzeText.slice(0, 4000)}` }],
+        context: "Resume analysis mode",
+      }, 120000);
       if (!resp.ok) throw new Error("Analysis failed");
       const reader = resp.body?.getReader();
       if (!reader) throw new Error("No body");
