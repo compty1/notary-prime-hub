@@ -57,7 +57,7 @@ const DEFAULT_SECTIONS = {
 };
 
 export default function ResumeBuilder() {
-  usePageTitle("Resume Builder");
+  usePageMeta({ title: "Resume Builder", description: "Create, manage, and optimize professional resumes and cover letters with AI assistance." });
   const { user } = useAuth();
   const [tab, setTab] = useState("resumes");
   const [resumes, setResumes] = useState<Resume[]>([]);
