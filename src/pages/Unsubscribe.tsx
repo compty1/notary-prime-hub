@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, AlertCircle, Loader2, Mail } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 export default function Unsubscribe() {
   usePageTitle("Unsubscribe");
