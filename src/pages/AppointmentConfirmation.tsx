@@ -371,6 +371,6 @@ export default function AppointmentConfirmation() {
           </div>
         )}
       </div>
-    </main>
+    </PageShell>
   );
 }

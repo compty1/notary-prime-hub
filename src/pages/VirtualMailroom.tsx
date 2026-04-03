@@ -135,10 +135,6 @@ export default function VirtualMailroom() {
           </div>
         )}
       </div>
-
-      <footer className="border-t border-border/50 bg-muted/30 py-8 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Notar — Ohio Notary & Document Services</p>
-      </footer>
-    </div>
+    </PageShell>
   );
 }
