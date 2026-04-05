@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
+import { getEdgeFunctionHeaders } from "@/lib/edgeFunctionAuth";
 
 type SSEOptions = {
   onChunk?: (content: string, full: string) => void;
@@ -40,12 +41,10 @@ export function useSSEStream() {
     let fullContent = "";
 
     try {
+      const headers = await getEdgeFunctionHeaders();
       const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/build-analyst`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
+        headers,
         body: JSON.stringify({ messages, context }),
         signal: controller.signal,
       });
