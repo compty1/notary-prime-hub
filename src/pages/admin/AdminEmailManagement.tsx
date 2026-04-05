@@ -1,4 +1,5 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
+import { sanitizeHtml } from "@/lib/sanitize";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -168,7 +169,7 @@ function EmailSettings() {
                     </div>
                   </div>
                   {sig.signature_html && (
-                    <div className="text-xs text-muted-foreground border-t border-border/50 pt-2" dangerouslySetInnerHTML={{ __html: sig.signature_html }} />
+                    <div className="text-xs text-muted-foreground border-t border-border/50 pt-2" dangerouslySetInnerHTML={{ __html: sanitizeHtml(sig.signature_html) }} />
                   )}
                 </div>
               ))}

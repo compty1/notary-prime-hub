@@ -1,4 +1,5 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
+import { sanitizeHtml } from "@/lib/sanitize";
 import { useEffect, useState } from "react";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { supabase } from "@/integrations/supabase/client";
@@ -346,7 +347,7 @@ export default function AdminContentWorkspace() {
             <Badge className={STATUS_COLORS[editingPost?.status] || "bg-muted"}>{editingPost?.status}</Badge>
             <Badge variant="outline">{editingPost?.category}</Badge>
           </div>
-          <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: editingPost?.body || "<p>No content</p>" }} />
+          <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(editingPost?.body || "<p>No content</p>") }} />
         </DialogContent>
       </Dialog>
     </div>

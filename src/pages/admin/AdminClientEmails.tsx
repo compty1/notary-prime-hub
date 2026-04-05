@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
+import { sanitizeHtml } from "@/lib/sanitize";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -47,7 +48,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
 };
 
 export default function AdminClientEmails() {
-  usePageTitle("Client Emails");
+  usePageMeta({ title: "Client Emails", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -294,7 +295,7 @@ export default function AdminClientEmails() {
 
                 <div>
                   <p className="text-sm font-medium text-foreground mb-2">Message</p>
-                  <div className="rounded-md bg-muted/50 p-4 text-sm prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: selectedItem.body }} />
+                  <div className="rounded-md bg-muted/50 p-4 text-sm prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedItem.body) }} />
                 </div>
 
                 {selectedItem.notes && (

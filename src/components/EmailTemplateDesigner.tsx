@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { sanitizeHtml } from "@/lib/sanitize";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -228,7 +229,7 @@ export default function EmailTemplateDesigner({ settings, onSave }: EmailTemplat
         </div>
         <Card className="border-border/50 overflow-hidden">
           <CardContent className="p-4 bg-muted/30">
-            <div className="rounded-lg bg-background p-2 shadow-sm" dangerouslySetInnerHTML={{ __html: previewHtml }} />
+            <div className="rounded-lg bg-background p-2 shadow-sm" dangerouslySetInnerHTML={{ __html: sanitizeHtml(previewHtml) }} />
           </CardContent>
         </Card>
       </div>

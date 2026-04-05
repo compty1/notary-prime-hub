@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
+import { sanitizeHtml } from "@/lib/sanitize";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { callEdgeFunction } from "@/lib/edgeFunctionAuth";
@@ -532,7 +533,7 @@ export default function AdminMailbox() {
 
             <ScrollArea className="flex-1 p-4">
               {selectedEmail.body_html ? (
-                <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: selectedEmail.body_html }} />
+                <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedEmail.body_html) }} />
               ) : (
                 <pre className="whitespace-pre-wrap text-sm text-foreground font-sans">{selectedEmail.body_text || "No content"}</pre>
               )}
@@ -636,7 +637,7 @@ export default function AdminMailbox() {
                       <Button variant="ghost" size="sm" className="text-xs h-7 text-destructive" onClick={async () => { await supabase.from("email_signatures").delete().eq("id", sig.id); fetchSignatures(); }}>Delete</Button>
                     </div>
                   </div>
-                  <div className="prose prose-sm dark:prose-invert max-w-none text-xs" dangerouslySetInnerHTML={{ __html: sig.signature_html }} />
+                  <div className="prose prose-sm dark:prose-invert max-w-none text-xs" dangerouslySetInnerHTML={{ __html: sanitizeHtml(sig.signature_html) }} />
                 </CardContent>
               </Card>
             ))}
