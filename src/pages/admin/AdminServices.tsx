@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -103,7 +103,7 @@ const emptyForm: ServiceForm = {
 };
 
 export default function AdminServices() {
-  usePageTitle("Services");
+  usePageMeta({ title: "Services", noIndex: true });
   const { toast } = useToast();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);

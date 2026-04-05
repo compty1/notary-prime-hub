@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, lazy, Suspense } from "react";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -88,7 +88,7 @@ function QuickAddDialog({ open, onClose }: { open: boolean; onClose: () => void 
 
 /* ─── Main Page ─── */
 export default function AdminBuildTracker() {
-  usePageTitle("Build Tracker");
+  usePageMeta({ title: "Build Tracker", noIndex: true });
   const { data: items = [], isLoading, error, isFetching } = useTrackerItems();
   const { data: plans = [] } = usePlans();
   const [activeTab, setActiveTab] = useState("dashboard");

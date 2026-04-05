@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -65,7 +65,7 @@ const entityRoutes: Record<string, string> = {
 const PAGE_SIZE = 25;
 
 export default function AdminAuditLog() {
-  usePageTitle("Audit Log");
+  usePageMeta({ title: "Audit Log", noIndex: true });
   const [searchParams, setSearchParams] = useSearchParams();
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

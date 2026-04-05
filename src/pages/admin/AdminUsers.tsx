@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,7 +19,7 @@ interface ProfileRow {
 }
 
 export default function AdminUsers() {
-  usePageTitle("User Management");
+  usePageMeta({ title: "User Management", noIndex: true });
   const { user, isAdmin } = useAuth();
   const { toast } = useToast();
 
