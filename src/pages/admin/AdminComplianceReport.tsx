@@ -57,15 +57,23 @@ export default function AdminComplianceReport() {
 
   const handleExport = () => {
     const rows = appointments.map((a) => ({
-      "Confirmation #": a.confirmation_number || "",
-      "Date": a.scheduled_date,
-      "Time": a.scheduled_time,
-      "Status": a.status,
-      "Service Type": a.service_type,
-      "Recording Duration": a.session_recording_duration || "N/A",
-      "Signer Count": a.signer_count || 1,
+      confirmation: a.confirmation_number || "",
+      date: a.scheduled_date,
+      time: a.scheduled_time,
+      status: a.status,
+      serviceType: a.service_type,
+      recordingDuration: String(a.session_recording_duration || "N/A"),
+      signerCount: String(a.signer_count || 1),
     }));
-    const columns = Object.keys(rows[0] || {}).map((k) => ({ key: k, label: k }));
+    const columns: { key: keyof (typeof rows)[0]; label: string }[] = [
+      { key: "confirmation", label: "Confirmation #" },
+      { key: "date", label: "Date" },
+      { key: "time", label: "Time" },
+      { key: "status", label: "Status" },
+      { key: "serviceType", label: "Service Type" },
+      { key: "recordingDuration", label: "Recording Duration" },
+      { key: "signerCount", label: "Signer Count" },
+    ];
     exportToCSV(rows, columns, `ohio-ron-compliance-${selectedMonth}.csv`);
     toast({ title: "Exported", description: "CSV downloaded successfully." });
   };
