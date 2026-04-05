@@ -657,6 +657,33 @@ export type Database = {
         }
         Relationships: []
       }
+      compliance_reports: {
+        Row: {
+          created_at: string
+          data: Json
+          generated_by: string | null
+          id: string
+          report_month: string
+          report_type: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          generated_by?: string | null
+          id?: string
+          report_month: string
+          report_type?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          generated_by?: string | null
+          id?: string
+          report_month?: string
+          report_type?: string
+        }
+        Relationships: []
+      }
       compliance_rule_sets: {
         Row: {
           category: string
@@ -2380,6 +2407,39 @@ export type Database = {
           },
         ]
       }
+      referrals: {
+        Row: {
+          converted_at: string | null
+          created_at: string
+          id: string
+          referee_email: string
+          referral_code: string
+          referrer_id: string
+          reward_amount: number | null
+          status: string
+        }
+        Insert: {
+          converted_at?: string | null
+          created_at?: string
+          id?: string
+          referee_email: string
+          referral_code?: string
+          referrer_id: string
+          reward_amount?: number | null
+          status?: string
+        }
+        Update: {
+          converted_at?: string | null
+          created_at?: string
+          id?: string
+          referee_email?: string
+          referral_code?: string
+          referrer_id?: string
+          reward_amount?: number | null
+          status?: string
+        }
+        Relationships: []
+      }
       resumes: {
         Row: {
           content: Json | null
@@ -2678,6 +2738,36 @@ export type Database = {
           },
         ]
       }
+      service_upsells: {
+        Row: {
+          created_at: string
+          discount_percent: number | null
+          id: string
+          is_active: boolean
+          message: string
+          suggested_service: string
+          trigger_service: string
+        }
+        Insert: {
+          created_at?: string
+          discount_percent?: number | null
+          id?: string
+          is_active?: boolean
+          message?: string
+          suggested_service: string
+          trigger_service: string
+        }
+        Update: {
+          created_at?: string
+          discount_percent?: number | null
+          id?: string
+          is_active?: boolean
+          message?: string
+          suggested_service?: string
+          trigger_service?: string
+        }
+        Relationships: []
+      }
       service_workflows: {
         Row: {
           created_at: string
@@ -2788,6 +2878,44 @@ export type Database = {
         }
         Relationships: []
       }
+      session_tracking: {
+        Row: {
+          appointment_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          shareable_token: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          appointment_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          shareable_token?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          shareable_token?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_tracking_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -2839,6 +2967,39 @@ export type Database = {
           is_available?: boolean
           specific_date?: string | null
           start_time?: string
+        }
+        Relationships: []
+      }
+      tool_generations: {
+        Row: {
+          created_at: string
+          fields: Json
+          id: string
+          is_preset: boolean
+          preset_name: string | null
+          result: string
+          tool_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          fields?: Json
+          id?: string
+          is_preset?: boolean
+          preset_name?: string | null
+          result?: string
+          tool_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          fields?: Json
+          id?: string
+          is_preset?: boolean
+          preset_name?: string | null
+          result?: string
+          tool_id?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -2957,6 +3118,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      webhook_events: {
+        Row: {
+          created_at: string
+          error: string | null
+          event_type: string
+          id: string
+          payload: Json
+          processed_at: string | null
+          source: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          event_type: string
+          id?: string
+          payload?: Json
+          processed_at?: string | null
+          source: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          event_type?: string
+          id?: string
+          payload?: Json
+          processed_at?: string | null
+          source?: string
+          status?: string
+        }
+        Relationships: []
       }
       witnesses: {
         Row: {

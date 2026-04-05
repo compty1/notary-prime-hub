@@ -1986,6 +1986,189 @@ Use professional formatting, numbered sections, and clear markdown tables for pr
 Structure: Problem/Opportunity → Key Findings → Recommendations → Next Steps.`,
     maxTokens: 2000,
   },
+  // ═══════════════════════════════════════
+  // OHIO NOTARY TOOLS
+  // ═══════════════════════════════════════
+  {
+    id: "ohio-ron-certificate",
+    title: "Ohio RON Certificate Generator",
+    category: "Compliance & Legal",
+    description: "Generate Ohio-compliant Remote Online Notarization certificates with ORC §147.60–147.66 citations.",
+    icon: Landmark,
+    fields: [
+      { name: "certType", label: "Certificate Type", type: "select", required: true, options: [
+        { value: "acknowledgment", label: "Acknowledgment" },
+        { value: "jurat", label: "Jurat" },
+        { value: "copy_certification", label: "Copy Certification" },
+        { value: "signature_witnessing", label: "Signature Witnessing" },
+      ]},
+      { name: "signerName", label: "Signer Name", type: "text", required: true, placeholder: "John A. Smith" },
+      { name: "notaryName", label: "Notary Name", type: "text", required: true, placeholder: "Jane B. Doe" },
+      { name: "commissionNumber", label: "Commission Number", type: "text", required: true, placeholder: "2024-OH-12345" },
+      { name: "commissionExpiry", label: "Commission Expiration Date", type: "text", placeholder: "December 31, 2027" },
+      { name: "county", label: "County of Notarization", type: "text", placeholder: "Franklin County" },
+      { name: "documentDescription", label: "Document Description", type: "text", placeholder: "Deed of Trust" },
+    ],
+    systemPrompt: `You are an Ohio-commissioned notary public specialist. Generate a legally compliant RON notarial certificate following Ohio Revised Code §147.60–147.66.
+
+FORMAT REQUIREMENTS:
+- Include proper venue block: "STATE OF OHIO, COUNTY OF [county]"
+- Include the specific statutory language for the certificate type
+- Include notary block with name, commission number, commission expiration, and "Remote Online Notarization" designation
+- Cite applicable ORC sections (§147.60 for definitions, §147.63 for notarial acts, §147.64 for standards)
+- Include tamper-evident seal notation
+- Include audio-video recording retention notice (10-year requirement per §147.63)
+- Format as a professional legal certificate in markdown with clear sections`,
+    maxTokens: 3000,
+  },
+  {
+    id: "ohio-journal-drafter",
+    title: "Notary Journal Entry Drafter",
+    category: "Compliance & Legal",
+    description: "Draft Ohio-compliant notary journal entries per ORC §147.04 requirements.",
+    icon: BookOpen,
+    fields: [
+      { name: "notarizationType", label: "Type of Notarization", type: "select", required: true, options: [
+        { value: "acknowledgment", label: "Acknowledgment" },
+        { value: "jurat", label: "Jurat" },
+        { value: "oath", label: "Oath/Affirmation" },
+        { value: "copy_certification", label: "Copy Certification" },
+      ]},
+      { name: "signerName", label: "Signer Name", type: "text", required: true, placeholder: "Full legal name" },
+      { name: "documentType", label: "Document Type", type: "text", required: true, placeholder: "e.g., Power of Attorney, Deed" },
+      { name: "idType", label: "ID Verification Method", type: "select", required: true, options: [
+        { value: "drivers_license", label: "Driver's License" },
+        { value: "passport", label: "Passport" },
+        { value: "state_id", label: "State ID Card" },
+        { value: "military_id", label: "Military ID" },
+        { value: "kba", label: "Knowledge-Based Authentication (KBA)" },
+      ]},
+      { name: "sessionType", label: "Session Type", type: "select", required: true, options: [
+        { value: "ron", label: "Remote Online (RON)" },
+        { value: "in_person", label: "In-Person" },
+        { value: "mobile", label: "Mobile Notary" },
+      ]},
+      { name: "additionalNotes", label: "Additional Notes", type: "textarea", placeholder: "Any unusual circumstances, credible witnesses, etc." },
+    ],
+    systemPrompt: `You are an Ohio notary journal compliance expert. Generate a complete journal entry that meets ORC §147.04 requirements.
+
+REQUIRED FIELDS:
+- Date and time of notarization
+- Type of notarial act performed
+- Type, title, or description of document
+- Signer's printed name and signature line
+- Identity verification method with details
+- Fee charged (use standard Ohio notary fee of $5.00 per signature per ORC §147.08)
+- For RON sessions: technology platform used, KBA results, recording duration
+- Session unique identifier
+
+Format as a structured journal entry form in markdown with clear field labels and values.`,
+    maxTokens: 2000,
+  },
+  {
+    id: "ohio-acknowledgment-jurat",
+    title: "Ohio Acknowledgment/Jurat Formatter",
+    category: "Compliance & Legal",
+    description: "Format Ohio jurisdictional acknowledgment or jurat certificates with proper statutory language.",
+    icon: Scale,
+    fields: [
+      { name: "formType", label: "Form Type", type: "select", required: true, options: [
+        { value: "individual_ack", label: "Individual Acknowledgment" },
+        { value: "corporate_ack", label: "Corporate Acknowledgment" },
+        { value: "representative_ack", label: "Representative Acknowledgment" },
+        { value: "jurat", label: "Jurat (Verification on Oath/Affirmation)" },
+        { value: "attestation", label: "Attestation" },
+      ]},
+      { name: "signerName", label: "Signer Name", type: "text", required: true, placeholder: "Full legal name" },
+      { name: "capacity", label: "Signing Capacity", type: "text", placeholder: "e.g., individually, as CEO of XYZ Corp" },
+      { name: "county", label: "County", type: "text", required: true, placeholder: "Franklin" },
+      { name: "notaryName", label: "Notary Public Name", type: "text", required: true },
+      { name: "commissionNumber", label: "Commission Number", type: "text", required: true },
+    ],
+    systemPrompt: `You are an Ohio notarial certificate specialist. Generate the proper Ohio statutory form.
+
+REQUIREMENTS:
+- Use exact statutory language from ORC §147.55 (short form certificates)
+- Include proper venue: "STATE OF OHIO, COUNTY OF ___"
+- Include signer's capacity if applicable
+- Include notary signature block with commission details
+- For RON: add "This notarial act involved a remote online notarization" per Ohio rules
+- Reference applicable ORC sections
+
+Format as a clean, print-ready legal form in markdown.`,
+    maxTokens: 2000,
+  },
+  {
+    id: "ron-session-summary",
+    title: "RON Session Summary Report",
+    category: "Compliance & Legal",
+    description: "Generate comprehensive RON session summary reports for records retention and compliance.",
+    icon: ClipboardCheck,
+    fields: [
+      { name: "sessionId", label: "Session ID", type: "text", required: true, placeholder: "RON-20240101-abc123" },
+      { name: "signerName", label: "Signer Name", type: "text", required: true },
+      { name: "notaryName", label: "Notary Name", type: "text", required: true },
+      { name: "documentTypes", label: "Documents Notarized (comma-separated)", type: "textarea", required: true, placeholder: "Power of Attorney, Deed of Trust" },
+      { name: "kbaResult", label: "KBA Result", type: "select", required: true, options: [
+        { value: "pass", label: "Passed" },
+        { value: "fail_retry_pass", label: "Failed 1st, Passed 2nd" },
+        { value: "fail", label: "Failed (Session Terminated)" },
+      ]},
+      { name: "recordingDuration", label: "Recording Duration (minutes)", type: "number", placeholder: "15" },
+      { name: "additionalInfo", label: "Additional Information", type: "textarea", placeholder: "Credible witnesses, interpreter present, unusual circumstances" },
+    ],
+    systemPrompt: `You are an Ohio RON compliance documentation specialist. Generate a comprehensive session summary report.
+
+REQUIRED SECTIONS:
+1. **Session Header**: ID, date/time, participants
+2. **Identity Verification**: KBA results, ID type, credential analysis
+3. **Notarial Acts Performed**: Each document with act type
+4. **Technology Compliance**: Platform used, recording confirmation, tamper-evident seal applied
+5. **Ohio Compliance Checklist**:
+   - KBA within 2-attempt limit (ORC §147.66)
+   - Audio-video recording captured and stored
+   - 10-year retention period noted (ORC §147.63)
+   - Digital certificate applied
+   - Journal entry created
+6. **Signatures & Attestation**
+
+Format as a formal compliance report in markdown with tables for structured data.`,
+    maxTokens: 4000,
+  },
+  {
+    id: "notary-commission-checklist",
+    title: "Notary Commission Renewal Checklist",
+    category: "Compliance & Legal",
+    description: "Generate a comprehensive Ohio notary commission renewal checklist with deadlines and requirements.",
+    icon: ListChecks,
+    fields: [
+      { name: "notaryName", label: "Notary Name", type: "text", required: true },
+      { name: "currentExpiry", label: "Current Commission Expiration", type: "text", required: true, placeholder: "March 15, 2027" },
+      { name: "commissionTypes", label: "Commission Types", type: "select", required: true, options: [
+        { value: "traditional", label: "Traditional Notary Only" },
+        { value: "ron", label: "RON Endorsement Only" },
+        { value: "both", label: "Traditional + RON" },
+      ]},
+      { name: "county", label: "County of Commission", type: "text", required: true, placeholder: "Franklin" },
+    ],
+    systemPrompt: `You are an Ohio notary commission administration expert. Generate a detailed renewal checklist.
+
+INCLUDE:
+1. **Timeline**: Key dates working backward from expiration (90 days, 60 days, 30 days)
+2. **Application Requirements**: Forms, fees ($15 for traditional per ORC §147.04), background check
+3. **Bond Requirements**: $10,000 surety bond (ORC §147.01), E&O insurance recommendations
+4. **RON Endorsement** (if applicable):
+   - Additional $25 fee
+   - Approved technology provider registration
+   - Training/CE requirements
+5. **Continuing Education**: Hours required, approved providers
+6. **Document Checklist**: Everything needed for submission
+7. **Post-Renewal**: Update seal, notify clients, update technology platforms
+8. **Important Contacts**: Ohio Secretary of State office details
+
+Format as a clear, actionable checklist with checkbox-style items in markdown.`,
+    maxTokens: 3000,
+  },
 ];
 
 export const TOOL_CATEGORIES: ToolCategory[] = [

@@ -9,6 +9,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { lazy, Suspense } from "react";
 import ScrollToTop from "@/components/ScrollToTop";
 import { CommandPalette } from "@/components/CommandPalette";
+import { SignerFAQBot } from "@/components/SignerFAQBot";
 import { AnimatePresence } from "framer-motion";
 
 
@@ -52,6 +53,8 @@ const SignatureGeneratorPage = lazy(() => import("./pages/SignatureGeneratorPage
 const GrantDashboard = lazy(() => import("./pages/GrantDashboard"));
 const ResumeBuilder = lazy(() => import("./pages/ResumeBuilder"));
 const AITools = lazy(() => import("./pages/AITools"));
+const SessionTracker = lazy(() => import("./pages/SessionTracker"));
+const RescheduleAppointment = lazy(() => import("./pages/RescheduleAppointment"));
 
 // Admin pages
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
@@ -86,6 +89,9 @@ const AdminBuildTracker = lazy(() => import("./pages/admin/AdminBuildTracker"));
 const AdminClientEmails = lazy(() => import("./pages/admin/AdminClientEmails"));
 const AdminMailbox = lazy(() => import("./pages/admin/AdminMailbox"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
+const AdminWebhooks = lazy(() => import("./pages/admin/AdminWebhooks"));
+const AdminPerformance = lazy(() => import("./pages/admin/AdminPerformance"));
+const AdminComplianceReport = lazy(() => import("./pages/admin/AdminComplianceReport"));
 const Maintenance = lazy(() => import("./pages/Maintenance"));
 const ForNotaries = lazy(() => import("./pages/solutions/ForNotaries"));
 const ForHospitals = lazy(() => import("./pages/solutions/ForHospitals"));
@@ -168,6 +174,8 @@ function AnimatedRoutes() {
         <Route path="/grants" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Grant generator failed to load"><GrantDashboard /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/resume-builder" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Resume builder failed to load"><ResumeBuilder /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/ai-tools" element={<ErrorBoundary fallbackMessage="AI Tools failed to load"><AITools /></ErrorBoundary>} />
+        <Route path="/track/:token" element={<ErrorBoundary fallbackMessage="Session tracker failed to load"><SessionTracker /></ErrorBoundary>} />
+        <Route path="/reschedule/:confirmationNumber" element={<ErrorBoundary fallbackMessage="Reschedule failed to load"><RescheduleAppointment /></ErrorBoundary>} />
         <Route path="/account-settings" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Account settings failed to load"><AccountSettings /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/portal" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Portal failed to load"><ClientPortal /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/confirmation" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Confirmation failed to load"><AppointmentConfirmation /></ErrorBoundary></ProtectedRoute>} />
@@ -202,6 +210,9 @@ function AnimatedRoutes() {
           <Route path="integrations" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Integration testing failed to load"><AdminIntegrationTest /></ErrorBoundary></ProtectedRoute>} />
           <Route path="client-emails" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Client emails failed to load"><AdminClientEmails /></ErrorBoundary></ProtectedRoute>} />
           <Route path="mailbox" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Mailbox failed to load"><AdminMailbox /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="webhooks" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Webhooks failed to load"><AdminWebhooks /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="performance" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Performance failed to load"><AdminPerformance /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="compliance-report" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Compliance report failed to load"><AdminComplianceReport /></ErrorBoundary></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Route>
         <Route path="*" element={<NotFound />} />
@@ -219,6 +230,7 @@ const App = () => (
         <BrowserRouter>
           <ScrollToTop />
           <CommandPalette />
+          <SignerFAQBot />
           <Suspense fallback={<PageLoader />}>
             <AnimatedRoutes />
           </Suspense>

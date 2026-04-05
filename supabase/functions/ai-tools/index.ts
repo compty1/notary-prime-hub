@@ -17,6 +17,9 @@ const TOOL_IDS = new Set([
   "incident-report","brand-voice","market-research","strategic-plan","okr-generator",
   "value-proposition","ab-test-planner","user-persona","business-model-canvas",
   "swot-deep-dive","product-roadmap",
+  // Ohio Notary Tools
+  "ohio-ron-certificate","ohio-journal-drafter","ohio-acknowledgment-jurat",
+  "ron-session-summary","notary-commission-checklist",
 ]);
 
 Deno.serve(async (req) => {
@@ -25,7 +28,6 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Auth check
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -46,7 +48,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { tool_id, fields, systemPrompt } = await req.json();
+    const { tool_id, fields, systemPrompt, previousOutput, refinementPrompt } = await req.json();
 
     if (!tool_id || !TOOL_IDS.has(tool_id)) {
       return new Response(JSON.stringify({ error: "Invalid tool_id" }), {
@@ -65,7 +67,25 @@ Deno.serve(async (req) => {
       .map(([k, v]) => `**${k}**: ${v}`)
       .join("\n");
 
-    const userMessage = `Generate the document based on these inputs:\n\n${fieldEntries}`;
+    // Build messages array with multi-turn refinement support
+    const messages: Array<{ role: string; content: string }> = [
+      {
+        role: "system",
+        content: systemPrompt + "\n\nIMPORTANT: Output ONLY in markdown format. Use proper markdown tables, headers, bold, italic, lists, code blocks, and blockquotes. Ensure all tables are properly formatted with headers and alignment. Be thorough and complete — do not truncate or abbreviate sections.",
+      },
+      {
+        role: "user",
+        content: `Generate the document based on these inputs:\n\n${fieldEntries}`,
+      },
+    ];
+
+    // Multi-turn refinement: append previous output and refinement instruction
+    if (previousOutput && refinementPrompt) {
+      messages.push(
+        { role: "assistant", content: previousOutput },
+        { role: "user", content: `Please refine the above output with the following instruction:\n\n${refinementPrompt}` }
+      );
+    }
 
     const apiKey = Deno.env.get("LOVABLE_API_KEY");
     if (!apiKey) {
@@ -83,10 +103,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
         stream: true,
-        messages: [
-          { role: "system", content: systemPrompt + "\n\nIMPORTANT: Output ONLY in markdown format. Use proper markdown tables, headers, bold, italic, lists, code blocks, and blockquotes. Ensure all tables are properly formatted with headers and alignment. Be thorough and complete — do not truncate or abbreviate sections." },
-          { role: "user", content: userMessage },
-        ],
+        messages,
         max_tokens: 8000,
       }),
     });
@@ -94,11 +111,24 @@ Deno.serve(async (req) => {
     if (!response.ok) {
       const errText = await response.text();
       const status = response.status === 429 ? 429 : response.status === 402 ? 402 : 500;
-      return new Response(JSON.stringify({ error: `AI service error: ${response.status}`, details: errText }), {
+      const retryAfter = response.headers.get("retry-after");
+      const headers: Record<string, string> = { ...corsHeaders, "Content-Type": "application/json" };
+      if (retryAfter) headers["Retry-After"] = retryAfter;
+      return new Response(JSON.stringify({ error: `AI service error: ${response.status}`, details: errText, retryAfter }), {
         status,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers,
       });
     }
+
+    // Save generation to database (non-blocking)
+    const savePromise = supabase.from("tool_generations").insert({
+      user_id: user.id,
+      tool_id,
+      fields,
+      result: "[streaming]",
+      is_preset: false,
+    });
+    savePromise.catch(() => { /* ignore save errors */ });
 
     return new Response(response.body, {
       headers: {
