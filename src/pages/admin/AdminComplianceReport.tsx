@@ -65,7 +65,8 @@ export default function AdminComplianceReport() {
       "Recording Duration": a.session_recording_duration || "N/A",
       "Signer Count": a.signer_count || 1,
     }));
-    csvExport(rows, `ohio-ron-compliance-${selectedMonth}.csv`);
+    const columns = Object.keys(rows[0] || {}).map((k) => ({ key: k, label: k }));
+    exportToCSV(rows, columns, `ohio-ron-compliance-${selectedMonth}.csv`);
     toast({ title: "Exported", description: "CSV downloaded successfully." });
   };
 
