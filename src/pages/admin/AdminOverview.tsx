@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { OverviewSkeleton } from "@/components/AdminLoadingSkeleton";
 import { Link } from "react-router-dom";
@@ -23,7 +23,7 @@ const formatTime = (timeStr: string) => {
 const CHART_COLORS = ["hsl(224, 63%, 28%)", "hsl(168, 75%, 36%)", "hsl(42, 78%, 55%)", "hsl(0, 85%, 55%)", "hsl(261, 50%, 51%)", "hsl(190, 95%, 39%)", "hsl(30, 95%, 53%)", "hsl(140, 60%, 40%)"];
 
 export default function AdminOverview() {
-  usePageTitle("Overview");
+  usePageMeta({ title: "Overview", noIndex: true });
   const [appointments, setAppointments] = useState<any[]>([]);
   const [allAppointments, setAllAppointments] = useState<any[]>([]);
   const [journalEntries, setJournalEntries] = useState<any[]>([]);

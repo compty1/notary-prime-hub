@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCw, CheckCircle, Clock, ArrowRight } from "lucide-react";
 
 export default function AdminTaskQueue() {
-  usePageTitle("Task Queue");
+  usePageMeta({ title: "Task Queue", noIndex: true });
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 

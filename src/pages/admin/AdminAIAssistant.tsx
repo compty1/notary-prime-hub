@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
@@ -25,7 +25,7 @@ const quickQuestions = [
 // Edge function called via standardized helper
 
 export default function AdminAIAssistant() {
-  usePageTitle("AI Assistant");
+  usePageMeta({ title: "AI Assistant", noIndex: true });
   const [messages, setMessages] = useState<Message[]>(() => {
     try {
       const saved = localStorage.getItem(CHAT_STORAGE_KEY);

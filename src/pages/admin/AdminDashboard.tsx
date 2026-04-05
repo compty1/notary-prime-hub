@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -91,7 +91,7 @@ function AdminSidebar() {
 }
 
 export default function AdminDashboard() {
-  usePageTitle("Admin Dashboard");
+  usePageMeta({ title: "Admin Dashboard", noIndex: true });
   const { isAdmin } = useAuth();
   return (
     <SidebarProvider>

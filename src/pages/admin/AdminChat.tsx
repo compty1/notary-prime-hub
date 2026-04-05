@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useEffect, useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,7 +23,7 @@ const CANNED_RESPONSES = [
 ];
 
 export default function AdminChat() {
-  usePageTitle("Live Chat");
+  usePageMeta({ title: "Live Chat", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
   const [allMessages, setAllMessages] = useState<any[]>([]);

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { sanitizeHtml } from "@/lib/sanitize";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
 import { PageShell } from "@/components/PageShell";
@@ -391,7 +392,7 @@ export default function ResumeBuilder() {
               {analysisResult && (
                 <Card>
                   <CardContent className="p-4 prose prose-sm dark:prose-invert max-w-none">
-                    <div dangerouslySetInnerHTML={{ __html: analysisResult.replace(/\n/g, "<br/>") }} />
+                    <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(analysisResult.replace(/\n/g, "<br/>")) }} />
                   </CardContent>
                 </Card>
               )}
