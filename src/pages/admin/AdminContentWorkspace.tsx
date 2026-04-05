@@ -28,7 +28,7 @@ const STATUS_COLORS: Record<string, string> = {
 const CATEGORIES = ["blog", "faq", "guide", "announcement", "case-study", "social"];
 
 export default function AdminContentWorkspace() {
-  usePageTitle("Content Workspace");
+  usePageMeta({ title: "Content Workspace", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
   const [posts, setPosts] = useState<any[]>([]);

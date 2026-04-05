@@ -52,7 +52,7 @@ const FOLDERS = [
 ];
 
 export default function AdminMailbox() {
-  usePageTitle("Mailbox");
+  usePageMeta({ title: "Mailbox", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
 

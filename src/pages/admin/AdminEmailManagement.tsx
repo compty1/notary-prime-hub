@@ -192,7 +192,7 @@ function EmailSettings() {
 }
 
 export default function AdminEmailManagement() {
-  usePageTitle("Email Management");
+  usePageMeta({ title: "Email Management", noIndex: true });
 
   return (
     <div className="space-y-4">
