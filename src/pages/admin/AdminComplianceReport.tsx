@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Shield, CheckCircle2, AlertTriangle, Download, FileText } from "lucide-react";
-import { csvExport } from "@/lib/csvExport";
+import { exportToCSV } from "@/lib/csvExport";
 
 export default function AdminComplianceReport() {
   const { user } = useAuth();
