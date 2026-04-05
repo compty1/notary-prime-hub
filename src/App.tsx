@@ -9,6 +9,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { lazy, Suspense } from "react";
 import ScrollToTop from "@/components/ScrollToTop";
 import { CommandPalette } from "@/components/CommandPalette";
+import { SignerFAQBot } from "@/components/SignerFAQBot";
 import { AnimatePresence } from "framer-motion";
 
 
@@ -229,6 +230,7 @@ const App = () => (
         <BrowserRouter>
           <ScrollToTop />
           <CommandPalette />
+          <SignerFAQBot />
           <Suspense fallback={<PageLoader />}>
             <AnimatedRoutes />
           </Suspense>
