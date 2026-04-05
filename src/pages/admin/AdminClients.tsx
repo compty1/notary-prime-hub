@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -21,7 +21,7 @@ const formatDate = (dateStr: string) => new Date(dateStr + "T00:00:00").toLocale
 const PAGE_SIZE = 30;
 
 export default function AdminClients() {
-  usePageTitle("Clients");
+  usePageMeta({ title: "Clients", noIndex: true });
   const { toast } = useToast();
   const { user } = useAuth();
   const [profiles, setProfiles] = useState<any[]>([]);

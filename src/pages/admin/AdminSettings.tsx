@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -22,7 +22,7 @@ interface SettingItem {
 }
 
 export default function AdminSettings() {
-  usePageTitle("Settings");
+  usePageMeta({ title: "Settings", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
   const [settings, setSettings] = useState<Record<string, SettingItem>>({});

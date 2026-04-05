@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -140,7 +140,7 @@ const webhookStatusBadge = (status: string) => {
 /*  Main component                                                     */
 /* ------------------------------------------------------------------ */
 export default function AdminIntegrationTest() {
-  usePageTitle("Integrations");
+  usePageMeta({ title: "Integrations", noIndex: true });
   const { toast } = useToast();
 
   /* ---------- integration test results ---------- */

@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useEffect, useState, useRef } from "react";
 import { BRAND } from "@/lib/brand";
 import { supabase } from "@/integrations/supabase/client";
@@ -38,7 +38,7 @@ const CHECKLIST_ITEMS = [
 ];
 
 export default function AdminApostille() {
-  usePageTitle("Apostille Requests");
+  usePageMeta({ title: "Apostille Requests", noIndex: true });
   const { toast } = useToast();
   const [requests, setRequests] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);

@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,7 +27,7 @@ interface Certification {
 }
 
 export default function AdminTeam() {
-  usePageTitle("Team");
+  usePageMeta({ title: "Team", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
   const [inviteEmail, setInviteEmail] = useState("");

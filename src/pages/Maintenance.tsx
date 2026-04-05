@@ -1,10 +1,10 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Card, CardContent } from "@/components/ui/card";
 import { Wrench } from "lucide-react";
 import { Logo } from "@/components/Logo";
 
 export default function Maintenance() {
-  usePageTitle("Maintenance");
+  usePageMeta({ title: "Maintenance", noIndex: true });
   return (
     <main aria-label="Maintenance" className="flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md border-border/50">

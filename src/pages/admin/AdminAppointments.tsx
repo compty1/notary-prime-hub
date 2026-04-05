@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/lib/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -40,7 +40,7 @@ const formatTime = (timeStr: string) => {
 };
 
 export default function AdminAppointments() {
-  usePageTitle("Appointments");
+  usePageMeta({ title: "Appointments", noIndex: true });
   const [appointments, setAppointments] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
   const [services, setServices] = useState<any[]>([]);
