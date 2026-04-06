@@ -82,6 +82,7 @@ export function NotarizationCertificate({
           </div>
           <p class="compliance">This notarization was performed via communication technology in compliance with Ohio Revised Code §147.63 and §147.542.</p>
           <p class="compliance" style="margin-top:4px;">The signer appeared remotely via audio-video communication technology. Identity was verified through credential analysis and knowledge-based authentication (KBA) per ORC §147.66.</p>
+          ${verificationUrl ? `<p class="verify">Verify: ${verificationUrl}</p>` : ""}
         </div>
       </body>
       </html>
