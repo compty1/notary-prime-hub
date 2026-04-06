@@ -1,4 +1,5 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { RevenueForecast } from "@/components/RevenueForecast";
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
@@ -380,6 +381,7 @@ export default function AdminRevenue() {
         <TabsList>
           <TabsTrigger value="payments"><CreditCard className="mr-1 h-4 w-4" /> Payments ({payments.length})</TabsTrigger>
           <TabsTrigger value="journal"><Receipt className="mr-1 h-4 w-4" /> Journal Revenue</TabsTrigger>
+          <TabsTrigger value="forecast"><TrendingUp className="mr-1 h-4 w-4" /> Forecast</TabsTrigger>
         </TabsList>
 
         <TabsContent value="payments">
@@ -531,6 +533,10 @@ export default function AdminRevenue() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="forecast">
+          <RevenueForecast />
         </TabsContent>
       </Tabs>
 

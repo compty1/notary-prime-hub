@@ -131,6 +131,15 @@ Deno.serve(async (req) => {
       details: { event_type: event.type, livemode: event.livemode },
     });
 
+    // Log to webhook_events dashboard table
+    await supabase.from("webhook_events").insert({
+      source: "stripe",
+      event_type: event.type,
+      payload: event.data?.object || {},
+      status: "processed",
+      processed_at: new Date().toISOString(),
+    }).then(({ error }) => { if (error) console.warn("webhook_events log error:", error.message); });
+
     return new Response(JSON.stringify({ received: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

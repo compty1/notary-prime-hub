@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug, TrendingUp, ShieldCheck, Webhook } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { AdminNotificationCenter } from "@/components/AdminNotificationCenter";
 
@@ -30,6 +30,9 @@ const adminNavItems = [
   { title: "Live Chat", url: "/admin/chat", icon: MessageSquare, adminOnly: true },
   { title: "Journal", url: "/admin/journal", icon: BookMarked, adminOnly: false },
   { title: "Revenue", url: "/admin/revenue", icon: DollarSign, adminOnly: true },
+  { title: "Performance", url: "/admin/performance", icon: TrendingUp, adminOnly: true },
+  { title: "Compliance Report", url: "/admin/compliance-report", icon: ShieldCheck, adminOnly: true },
+  { title: "Webhooks", url: "/admin/webhooks", icon: Webhook, adminOnly: true },
   { title: "Team & Invites", url: "/admin/team", icon: UserPlus, adminOnly: true },
   { title: "Resources", url: "/admin/resources", icon: BookOpen, adminOnly: false },
   { title: "Process Guide", url: "/notary-guide-process", icon: GraduationCap, adminOnly: false },
