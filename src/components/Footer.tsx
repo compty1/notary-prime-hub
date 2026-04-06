@@ -11,7 +11,7 @@ interface FooterProps {
 export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com" }: FooterProps) {
   return (
     <footer className="border-t border-border bg-sidebar-background text-sidebar-foreground">
-      <div className="container mx-auto px-4 py-12 bg-secondary-foreground">
+      <div className="container mx-auto px-4 py-12 bg-sidebar-background">
         <div className="grid gap-8 md:grid-cols-5">
           <div className="md:col-span-1">
             <Logo size="sm" showText subtitle="Notary & Document Services" theme="dark" />
