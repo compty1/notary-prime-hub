@@ -1,6 +1,6 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { usePageMeta } from "@/hooks/usePageMeta";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
@@ -14,15 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { CheckCircle, Eye, EyeOff } from "lucide-react";
 import { Logo } from "@/components/Logo";
 
-function getPasswordStrength(pw: string) {
-  let score = 0;
-  if (pw.length >= 8) score++;
-  if (pw.length >= 12) score++;
-  if (/[A-Z]/.test(pw)) score++;
-  if (/[0-9]/.test(pw)) score++;
-  if (/[^A-Za-z0-9]/.test(pw)) score++;
-  return score;
-}
+import { getPasswordStrength } from "@/lib/utils";
 
 const strengthLabels = ["", "Very Weak", "Weak", "Fair", "Strong", "Very Strong"];
 
@@ -158,7 +150,7 @@ export default function SignUp() {
             </div>
             <div>
               <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input id="confirmPassword" type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} />
+              <Input id="confirmPassword" type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} />
               {confirmPassword && password !== confirmPassword && (
                 <p className="mt-1 text-xs text-destructive">Passwords don't match</p>
               )}

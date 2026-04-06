@@ -89,8 +89,7 @@
     <link rel="preconnect" href="https://js.stripe.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -119,6 +118,10 @@
 </head>
 
   <body>
+    <!-- Dark mode flash fix (Bug 183) — apply theme before React renders -->
+    <script>
+      (function(){try{var t=localStorage.getItem('theme');if(t==='dark'||((!t||t==='system')&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})();
+    </script>
     <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[9999] focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-md focus:text-sm focus:font-semibold">Skip to main content</a>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

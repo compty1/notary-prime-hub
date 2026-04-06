@@ -44,9 +44,15 @@ export function CookieConsent() {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <Button size="sm" onClick={accept}>
-                Accept
+                Accept All
               </Button>
-              <Button size="sm" variant="ghost" onClick={accept} aria-label="Dismiss">
+              <Button size="sm" variant="outline" onClick={() => {
+                safeSetItem(COOKIE_KEY, "essential-only");
+                setVisible(false);
+              }}>
+                Essential Only
+              </Button>
+              <Button size="sm" variant="ghost" onClick={() => setVisible(false)} aria-label="Dismiss">
                 <X className="h-4 w-4" />
               </Button>
             </div>

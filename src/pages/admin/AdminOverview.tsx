@@ -100,8 +100,10 @@ export default function AdminOverview() {
 
   useEffect(() => {
     fetchData();
-    // Auto-refresh every 60 seconds
-    const interval = setInterval(fetchData, 60000);
+    // Auto-refresh every 60 seconds, only when tab is visible (Bug 172)
+    const interval = setInterval(() => {
+      if (!document.hidden) fetchData();
+    }, 60000);
     return () => clearInterval(interval);
   }, [fetchData]);
 
@@ -168,11 +170,10 @@ export default function AdminOverview() {
     setCalendarWeekStart(prev => { const d = new Date(prev); d.setDate(d.getDate() + dir * 7); return d; });
   };
 
-  // Fetch Google Calendar events for the week
+  // Fetch Google Calendar events for the week (debounced — Bug 173)
   useEffect(() => {
-    const fetchGcal = async () => {
+    const timer = setTimeout(async () => {
       try {
-        const headers = await getEdgeFunctionHeaders();
         const timeMin = calendarWeekStart.toISOString();
         const end = new Date(calendarWeekStart); end.setDate(end.getDate() + 7);
         const res = await supabase.functions.invoke("google-calendar-sync", {
@@ -185,8 +186,8 @@ export default function AdminOverview() {
           setGcalConnected(false);
         }
       } catch { setGcalConnected(false); }
-    };
-    fetchGcal();
+    }, 500);
+    return () => clearTimeout(timer);
   }, [calendarWeekStart]);
 
   const getAppointmentsForDay = (date: Date) => {

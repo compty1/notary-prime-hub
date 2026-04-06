@@ -174,9 +174,9 @@ export default function BookingReviewStep(props: ReviewStepProps) {
           />
           <Label htmlFor="terms-accept" className="text-xs leading-relaxed cursor-pointer">
             I have read and agree to the{" "}
-            <Link to="/terms" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">Terms of Service</Link>{" "}
+            <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link>{" "}
             and{" "}
-            <Link to="/terms#privacy" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">Privacy Policy</Link>.
+            <Link to="/terms#privacy" className="text-primary hover:underline">Privacy Policy</Link>.
             I understand that notarization fees are non-refundable after the session begins.
           </Label>
         </div>
