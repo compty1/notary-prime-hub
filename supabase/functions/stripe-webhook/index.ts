@@ -26,24 +26,26 @@ Deno.serve(async (req) => {
     const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
     let event: Stripe.Event;
 
-    if (webhookSecret) {
-      const sig = req.headers.get("stripe-signature");
-      if (!sig) {
-        return new Response(JSON.stringify({ error: "Missing stripe-signature header" }), {
-          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      try {
-        event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
-      } catch (err: any) {
-        console.error("Webhook signature verification failed:", err.message);
-        return new Response(JSON.stringify({ error: `Webhook signature verification failed: ${err.message}` }), {
-          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-    } else {
-      console.warn("STRIPE_WEBHOOK_SECRET not configured — skipping signature verification");
-      event = JSON.parse(body) as Stripe.Event;
+    if (!webhookSecret) {
+      console.error("STRIPE_WEBHOOK_SECRET not configured — rejecting webhook");
+      return new Response(JSON.stringify({ error: "Webhook secret not configured" }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const sig = req.headers.get("stripe-signature");
+    if (!sig) {
+      return new Response(JSON.stringify({ error: "Missing stripe-signature header" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    try {
+      event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
+    } catch (err: any) {
+      console.error("Webhook signature verification failed:", err.message);
+      return new Response(JSON.stringify({ error: `Webhook signature verification failed: ${err.message}` }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const supabase = createClient(
