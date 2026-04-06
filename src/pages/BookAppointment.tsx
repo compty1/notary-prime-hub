@@ -141,7 +141,7 @@ export default function BookAppointment() {
         } else {
           await supabase.from("booking_drafts").insert({ user_id: user.id, draft_data: draftData as any, step });
         }
-      } catch {}
+      } catch (e) { console.error("Draft save error:", e); }
     };
     const timer = setTimeout(saveDraft, 2000);
     return () => clearTimeout(timer);
@@ -164,7 +164,7 @@ export default function BookAppointment() {
           sessionStorage.removeItem(BOOKING_STORAGE_KEY);
         }
       }
-    } catch { sessionStorage.removeItem(BOOKING_STORAGE_KEY); }
+    } catch (e) { console.error("Session restore error:", e); sessionStorage.removeItem(BOOKING_STORAGE_KEY); }
   }, []);
 
   useEffect(() => {
@@ -263,7 +263,7 @@ export default function BookAppointment() {
             toast({ title: "Session not ready", description: "Please try again.", variant: "destructive" });
           };
           waitForSession();
-        } catch { sessionStorage.removeItem(BOOKING_STORAGE_KEY); }
+        } catch (e) { console.error("Booking restore error:", e); sessionStorage.removeItem(BOOKING_STORAGE_KEY); }
       }
     }
   }, [user]);
