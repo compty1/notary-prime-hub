@@ -20,8 +20,11 @@ export function ReferralPortal() {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+
   useEffect(() => {
     if (!user) return;
+    // Load referrals
     supabase
       .from("referrals")
       .select("*")
@@ -29,7 +32,16 @@ export function ReferralPortal() {
       .order("created_at", { ascending: false })
       .then(({ data }) => {
         setReferrals(data || []);
+        // Get referral code from first referral or generate one
+        const code = data?.[0]?.referral_code;
+        if (code) setReferralCode(code);
         setLoading(false);
+      });
+
+    // Also check profile for referral code
+    supabase.from("profiles").select("referral_code").eq("user_id", user.id).maybeSingle()
+      .then(({ data }) => {
+        if (data?.referral_code) setReferralCode(data.referral_code);
       });
   }, [user]);
 
@@ -52,8 +64,9 @@ export function ReferralPortal() {
     setSubmitting(false);
   };
 
-  const referralLink = user
-    ? `${window.location.origin}/signup?ref=${referrals[0]?.referral_code || "loading"}`
+  // FC-2: Use resolved referral code, not loading placeholder
+  const referralLink = user && referralCode
+    ? `${window.location.origin}/signup?ref=${referralCode}`
     : "";
 
   const copyLink = () => {
@@ -97,7 +110,7 @@ export function ReferralPortal() {
           <CardTitle className="text-lg">Refer a Friend</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {referrals.length > 0 && (
+          {referralCode && (
             <div className="flex items-center gap-2">
               <Input value={referralLink} readOnly className="flex-1 bg-muted text-xs" />
               <Button size="sm" variant="outline" onClick={copyLink}>
