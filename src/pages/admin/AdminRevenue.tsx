@@ -1,4 +1,5 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { formatDate } from "@/lib/utils";
 import { RevenueForecast } from "@/components/RevenueForecast";
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,7 +22,7 @@ const getDateRange = (range: string) => {
   const now = new Date();
   const start = new Date();
   switch (range) {
-    case "week": start.setDate(now.getDate() - 7); break;
+    case "week": { const day = now.getDay(); start.setDate(now.getDate() - (day === 0 ? 6 : day - 1)); start.setHours(0, 0, 0, 0); break; }
     case "month": start.setMonth(now.getMonth() - 1); break;
     case "quarter": start.setMonth(now.getMonth() - 3); break;
     case "year": start.setFullYear(now.getFullYear() - 1); break;
@@ -121,7 +122,7 @@ export default function AdminRevenue() {
   const totalPaid = payments.filter(p => p.status === "paid").reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
   const totalPending = payments.filter(p => p.status === "pending").reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
 
-  const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  // Bug 481: Using shared formatDate from @/lib/utils (imported at top)
 
   const escapeCSV = (val: string | number) => {
     const str = String(val);
@@ -242,8 +243,14 @@ export default function AdminRevenue() {
     }
   };
 
+  // Bug 541: YTD calculations
+  const ytdStart = new Date(new Date().getFullYear(), 0, 1).toISOString();
+  const ytdRevenue = entries.filter(e => e.created_at >= ytdStart).reduce((sum, e) => sum + (parseFloat(e.fees_charged) || 0), 0);
+  const ytdPaid = payments.filter(p => p.status === "paid" && p.created_at >= ytdStart).reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+
   const statCards = [
     { label: "Total Revenue", value: `$${totalRevenue.toFixed(2)}`, icon: DollarSign, color: "text-blue-600" },
+    { label: "YTD Revenue", value: `$${ytdRevenue.toFixed(2)}`, icon: Calendar, color: "text-primary" },
     { label: "Signing Platform Fees", value: `$${totalSigningPlatformFees.toFixed(2)}`, icon: TrendingDown, color: "text-orange-500" },
     { label: "Total Expenses", value: `$${totalExpenses.toFixed(2)}`, icon: TrendingDown, color: "text-red-500" },
     { label: "Net Profit", value: `$${netProfit.toFixed(2)}`, icon: TrendingUp, color: netProfit >= 0 ? "text-primary" : "text-red-600" },
@@ -288,7 +295,7 @@ export default function AdminRevenue() {
         </div>
       </div>
 
-      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {statCards.map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
             <Card className="border-border/50">

@@ -36,6 +36,7 @@ const ACTIVITY_TYPES = [
   { key: "call", label: "Call", icon: Phone },
   { key: "email", label: "Email", icon: Mail },
   { key: "meeting", label: "Meeting", icon: Calendar },
+  { key: "task", label: "Task", icon: Target },
 ];
 
 type Deal = {
@@ -104,7 +105,7 @@ export default function AdminCRM() {
   const { data: profiles = [] } = useQuery({
     queryKey: ["crm-profiles"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("profiles").select("user_id, full_name, email, phone, city, state, created_at").order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("profiles").select("user_id, full_name, email, phone, city, state, created_at").order("created_at", { ascending: false }).limit(500);
       if (error) throw error;
       return data;
     },
@@ -195,7 +196,7 @@ export default function AdminCRM() {
               <DialogHeader><DialogTitle>Create Deal</DialogTitle></DialogHeader>
               <div className="space-y-3">
                 <div><Label>Title</Label><Input value={newDeal.title} onChange={e => setNewDeal(p => ({ ...p, title: e.target.value }))} placeholder="Deal title" /></div>
-                <div><Label>Value ($)</Label><Input type="number" value={newDeal.value} onChange={e => setNewDeal(p => ({ ...p, value: e.target.value }))} placeholder="0.00" /></div>
+                <div><Label>Value ($)</Label><Input type="number" min="0" step="0.01" value={newDeal.value} onChange={e => setNewDeal(p => ({ ...p, value: e.target.value }))} placeholder="0.00" /></div>
                 <div>
                   <Label>Link to Lead</Label>
                   <Select value={newDeal.lead_id} onValueChange={v => setNewDeal(p => ({ ...p, lead_id: v }))}>
@@ -220,7 +221,7 @@ export default function AdminCRM() {
                 <Button className="w-full" onClick={() => {
                   createDeal.mutate({
                     title: newDeal.title || "Untitled Deal",
-                    value: parseFloat(newDeal.value) || 0,
+                    value: Math.max(0, parseFloat(newDeal.value) || 0),
                     lead_id: newDeal.lead_id === "none" ? null : newDeal.lead_id || null,
                     stage: newDeal.stage,
                   });
@@ -414,6 +415,7 @@ export default function AdminCRM() {
                       <p className="font-medium truncate">{deal.title || "Untitled"}</p>
                       <p className="text-muted-foreground">${(deal.value || 0).toLocaleString()}</p>
                       {deal.expected_close && <p className="text-muted-foreground">Close: {format(new Date(deal.expected_close), "MMM d")}</p>}
+                      <p className="text-muted-foreground">{Math.floor((Date.now() - new Date(deal.created_at).getTime()) / 86400000)}d in pipeline</p>
                       <Select value={deal.stage} onValueChange={v => updateDealStage.mutate({ id: deal.id, stage: v })}>
                         <SelectTrigger className="mt-1 h-6 text-[10px]"><SelectValue /></SelectTrigger>
                         <SelectContent>
