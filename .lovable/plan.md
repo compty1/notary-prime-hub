@@ -167,26 +167,41 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS plan text NOT NULL DEFAULT 'free';
 
 ---
 
-## Unfinished Items from Previous Plans
+## Workstream 5: Email Mailbox Preview Fix ✅ DONE
 
-The following items from the 700-point gap analysis were documented as resolved but code was not fully implemented:
+Rewrote `parseEnvelope()` → `extractHeadersFromFetch()` + `parseHeaderBlock()` to handle contiguous IMAP header blocks. Cleared stale rows. Redeployed.
 
-1. **Phase 5 Accessibility** — Skip-to-content ✅ done. ARIA live ✅ done. But: form label audit (Gap 142), color contrast increase (Gap 143), keyboard nav fixes (Gaps 147-150) — NOT implemented
-2. **Phase 6 Performance** — N+1 query fix in AdminClients (Gap 202) — NOT implemented. `useMemo` wrapping in ClientPortal (Gap 203) — NOT implemented
-3. **Phase 7 UX/UI** — Standardized empty states, loading skeletons on remaining pages, mobile table scroll wrappers, confirmation dialogs — NOT implemented (only documented)
-4. **Phase 8** — Refund email notification (Gap 372) — NOT implemented
-5. **Phase 10** — Global error handler (`window.onerror`) — NOT implemented. JSDoc on lib exports — NOT implemented
+---
 
-All of these will be included in this plan's execution.
+## Workstream 6: Resolve All 760 Open/Deferred Build Tracker Gaps
+
+- **Batch 1 (Critical+High, ~62):** Compliance, security, RLS, edge functions
+- **Batch 2 (Medium, ~200):** Security, data integrity, accessibility
+- **Batch 3 (Medium Features/UX, ~246):** Feature completeness, skeletons, empty states
+- **Batch 4 (Low, ~251):** Documentation, SEO, polish
+
+---
+
+## Phase 1 Fixes Applied ✅
+
+1. Footer color — `bg-secondary-foreground` → `bg-sidebar-background`
+2. Document Wizard — moved to Dialog outside TabsContent
+3. Email sync parser — rewrote header parsing
+4. Stale email data — cleared + redeployed
 
 ---
 
 ## Execution Order
 
-1. Database migrations (new columns + version table)
-2. Generate & import 800 gaps into build tracker
-3. Fix build tracker bugs
-4. Build portal AI Tools tab with history + editing + versions
-5. Implement free plan cap in edge function + UI
-6. Fix remaining items from previous phases (accessibility, performance, UX)
+1. ~~Fix email sync~~ ✅
+2. ~~Fix Footer~~ ✅
+3. ~~Fix Document Wizard~~ ✅
+4. Database migrations (version table, plan column)
+5. Generate & import 800 gaps (Workstream 1)
+6. Fix build tracker bugs (Workstream 2)
+7. Portal AI Tools tab (Workstream 3)
+8. Free plan cap (Workstream 4)
+9. Batch 1 critical+high gaps (Workstream 6)
+10. Batch 2-4 remaining gaps (Workstream 6)
+11. Unfinished items from previous phases
 
