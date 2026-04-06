@@ -165,12 +165,10 @@ export default function ClientPortal() {
       if (updated.client_id === user.id) { setAppointments(prev => prev.map(a => a.id === updated.id ? updated : a)); toast({ title: "Appointment updated", description: `Status: ${updated.status.replace(/_/g, " ")}` }); }
     }).subscribe();
 
-    const paymentChannel = supabase.channel("client-payments").on("postgres_changes", { event: "*", schema: "public", table: "payments" }, (payload) => {
+    const paymentChannel = supabase.channel("client-payments").on("postgres_changes", { event: "*", schema: "public", table: "payments", filter: `client_id=eq.${user.id}` }, (payload) => {
       const record = (payload.new || payload.old) as any;
-      if (record?.client_id === user.id) {
-        if (payload.eventType === "INSERT") { setPayments(prev => [payload.new as any, ...prev]); toast({ title: "New payment request", description: `Amount: $${(payload.new as any).amount}` }); }
-        else if (payload.eventType === "UPDATE") setPayments(prev => prev.map(p => p.id === record.id ? payload.new as any : p));
-      }
+      if (payload.eventType === "INSERT") { setPayments(prev => [payload.new as any, ...prev]); toast({ title: "New payment request", description: `Amount: $${(payload.new as any).amount}` }); }
+      else if (payload.eventType === "UPDATE") setPayments(prev => prev.map(p => p.id === record.id ? payload.new as any : p));
     }).subscribe();
 
     const docChannel = supabase.channel("client-documents").on("postgres_changes", { event: "*", schema: "public", table: "documents", filter: `uploaded_by=eq.${user.id}` }, (payload) => {
