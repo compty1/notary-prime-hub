@@ -13,6 +13,7 @@ export default function AdminWebhooks() {
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
 
   useEffect(() => {
+    setLoading(true);
     const query = supabase
       .from("webhook_events")
       .select("*")

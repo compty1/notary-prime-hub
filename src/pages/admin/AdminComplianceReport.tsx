@@ -20,6 +20,7 @@ export default function AdminComplianceReport() {
   });
 
   useEffect(() => {
+    setLoading(true);
     supabase
       .from("appointments")
       .select("*")

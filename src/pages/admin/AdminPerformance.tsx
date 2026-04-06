@@ -13,7 +13,7 @@ export default function AdminPerformance() {
 
   useEffect(() => {
     Promise.all([
-      supabase.from("appointments").select("notary_id, status, appointment_duration_actual, scheduled_date").not("notary_id", "is", null),
+      supabase.from("appointments").select("id, notary_id, status, appointment_duration_actual, scheduled_date").not("notary_id", "is", null).limit(1000),
       supabase.from("client_feedback").select("*"),
     ]).then(([aptRes, fbRes]) => {
       setAppointments(aptRes.data || []);
