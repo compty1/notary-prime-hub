@@ -118,6 +118,7 @@ export default function AdminSettings() {
         } catch (auditErr) {
           console.error("Failed to log settings audit event:", auditErr);
         }
+      }
       await fetchSettings();
     }
     setSaving(false);
