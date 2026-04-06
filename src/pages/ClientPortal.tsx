@@ -630,6 +630,10 @@ export default function ClientPortal() {
             ))}</div>
           </TabsContent>
 
+          <TabsContent value="ai-tools" className="space-y-6">
+            <PortalAIToolsTab />
+          </TabsContent>
+
           <TabsContent value="referral" className="space-y-6">
             <ReferralPortal />
           </TabsContent>

@@ -62,6 +62,29 @@ Deno.serve(async (req) => {
       });
     }
 
+    // ─── Free plan usage cap: 2 free generations ───
+    const adminClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+    const { data: profileRow } = await adminClient
+      .from("profiles")
+      .select("plan")
+      .eq("user_id", user.id)
+      .single();
+    const userPlan = (profileRow as Record<string, unknown>)?.plan || "free";
+    if (userPlan === "free") {
+      const { count } = await adminClient
+        .from("tool_generations")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id);
+      if ((count ?? 0) >= 2) {
+        return new Response(JSON.stringify({ error: "Free plan limit reached. You've used your 2 free AI generations. Upgrade your plan to continue.", code: "USAGE_LIMIT" }), {
+          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
     const fieldEntries = Object.entries(fields as Record<string, string>)
       .filter(([, v]) => v && String(v).trim())
       .map(([k, v]) => `**${k}**: ${v}`)
