@@ -628,6 +628,10 @@ export default function ClientPortal() {
               <Card key={svc.id} className="border-border/50 hover:shadow-sm transition-shadow"><CardContent className="p-4"><div className="flex items-start justify-between"><div><h3 className="text-sm font-semibold text-foreground">{svc.name}</h3>{svc.short_description && <p className="text-xs text-muted-foreground mt-1">{svc.short_description}</p>}</div><Badge variant="outline" className="text-xs shrink-0 ml-2">{svc.pricing_model === "custom" ? "Quote" : svc.price_from ? `$${svc.price_from}${svc.price_to && svc.price_to > svc.price_from ? `–$${svc.price_to}` : ""}` : "Contact"}</Badge></div>{svc.description && <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{svc.description}</p>}<div className="flex gap-2 mt-3"><Link to={getServiceUrl(svc)}><Button size="sm" className="text-xs ">{getServiceCTA(svc)}</Button></Link><Link to={`/services/${svc.id}`}><Button size="sm" variant="outline" className="text-xs">View Details</Button></Link></div></CardContent></Card>
             ))}</div>
           </TabsContent>
+
+          <TabsContent value="referral" className="space-y-6">
+            <ReferralPortal />
+          </TabsContent>
         </Tabs>
       </div>
 
