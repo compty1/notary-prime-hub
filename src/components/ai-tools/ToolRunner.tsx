@@ -228,6 +228,29 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
         </div>
       </div>
 
+      {/* Usage indicator for free plan */}
+      {userPlan === "free" && usageCount !== null && (
+        <Card className={`mb-4 ${isAtLimit ? "border-destructive/50 bg-destructive/5" : "border-primary/30 bg-primary/5"}`}>
+          <CardContent className="p-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <CreditCard className={`h-4 w-4 ${isAtLimit ? "text-destructive" : "text-primary"}`} />
+              <span className="text-sm">
+                {isAtLimit
+                  ? "Free plan limit reached (2/2 used)"
+                  : `${usageCount} of ${freeLimit} free generations used`}
+              </span>
+            </div>
+            {isAtLimit && (
+              <Link to="/subscribe">
+                <Button size="sm" variant="default" className="text-xs">
+                  <Sparkles className="mr-1 h-3 w-3" /> Upgrade Plan
+                </Button>
+              </Link>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid gap-8 lg:grid-cols-2">
         <Card>
           <CardContent className="p-6 space-y-4">
