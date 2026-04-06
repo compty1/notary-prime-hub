@@ -103,6 +103,23 @@ export default function VerifySeal() {
                     <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1"><ShieldCheck className="h-3 w-3" /> Tamper-Evident Seal (SHA-256)</p>
                     <p className="font-mono text-xs text-foreground break-all">{record.document_hash}</p>
                     <p className="text-xs text-muted-foreground mt-1">This hash verifies document integrity per Ohio ORC §147.63.</p>
+                    <div className="mt-2">
+                      <label className="text-xs text-muted-foreground block mb-1">Verify a document hash:</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="Paste SHA-256 hash to compare..."
+                          className="flex-1 rounded-md border border-border bg-background px-2 py-1 font-mono text-xs text-foreground"
+                          onChange={(e) => {
+                            const input = e.target.value.trim().toLowerCase();
+                            const match = input === record.document_hash?.toLowerCase();
+                            const el = e.target.nextElementSibling;
+                            if (el) el.textContent = input.length >= 10 ? (match ? "✅ Match" : "❌ Mismatch") : "";
+                          }}
+                        />
+                        <span className="text-xs font-medium self-center min-w-[80px]"></span>
+                      </div>
+                    </div>
                   </div>
                 )}
 

@@ -153,6 +153,10 @@ export default function RonSession() {
   // Session pause/resume (item 591)
   const [isPaused, setIsPaused] = useState(false);
   const [pauseReason, setPauseReason] = useState("");
+  // Witness verification (Ohio RON compliance)
+  const [witnessVerified, setWitnessVerified] = useState(false);
+  const [witnessName, setWitnessName] = useState("");
+  const [witnessIdType, setWitnessIdType] = useState("");
 
   const hasNativeKba = PLATFORMS_WITH_NATIVE_KBA.includes(signingPlatform);
 
@@ -1297,6 +1301,58 @@ export default function RonSession() {
                 </p>
               </CardContent>
             </Card>
+
+            {/* Witness ID Verification — Ohio RON compliance */}
+            {(appointment?.signer_count || 1) > 1 && (
+              <Card className="border-border/50">
+                <CardContent className="p-4">
+                  <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
+                    <Shield className="h-4 w-4 text-primary" /> Witness Verification
+                  </h3>
+                  <p className="text-[10px] text-muted-foreground mb-2">
+                    Ohio ORC §147.66 requires identity verification for witnesses present during RON sessions.
+                  </p>
+                  <div className="space-y-2">
+                    <div>
+                      <Label className="text-xs">Witness Name</Label>
+                      <Input className="h-8 text-xs" placeholder="Full legal name" value={witnessName} onChange={e => setWitnessName(e.target.value)} />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Witness ID Type</Label>
+                      <Select value={witnessIdType} onValueChange={setWitnessIdType}>
+                        <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="drivers_license">Driver's License</SelectItem>
+                          <SelectItem value="passport">Passport</SelectItem>
+                          <SelectItem value="state_id">State ID</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Switch checked={witnessVerified} onCheckedChange={async (checked) => {
+                        setWitnessVerified(checked);
+                        if (checked && appointmentId) {
+                          await logAuditEvent("witness_id_verified", {
+                            entityType: "appointment",
+                            entityId: appointmentId,
+                            details: {
+                              witness_name: witnessName,
+                              witness_id_type: witnessIdType,
+                            } as Record<string, Json | undefined>,
+                          });
+                        }
+                      }} />
+                      <Label className="text-xs">Witness ID Verified</Label>
+                    </div>
+                    {witnessVerified && (
+                      <Badge variant="secondary" className="bg-primary/10 text-primary text-xs">
+                        <CheckCircle className="mr-1 h-3 w-3" /> Witness Verified
+                      </Badge>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Recording Consent */}
             <Card className="border-border/50">
