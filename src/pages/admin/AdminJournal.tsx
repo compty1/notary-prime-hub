@@ -113,8 +113,15 @@ export default function AdminJournal() {
   };
 
   const handleSubmit = async () => {
-    if (!form.signer_name || !form.document_type) {
-      toast({ title: "Missing fields", description: "Signer name and document type are required.", variant: "destructive" });
+    // Ohio ORC §147.551 journal completeness validation
+    const missing: string[] = [];
+    if (!form.signer_name) missing.push("Signer Name");
+    if (!form.document_type) missing.push("Document Type");
+    if (!form.id_type) missing.push("ID Type");
+    if (!form.service_performed) missing.push("Service Performed");
+    if (form.notarization_type === "ron" && !form.id_number) missing.push("ID Number (required for RON)");
+    if (missing.length > 0) {
+      toast({ title: "Incomplete journal entry", description: `Required: ${missing.join(", ")}`, variant: "destructive" });
       return;
     }
 
