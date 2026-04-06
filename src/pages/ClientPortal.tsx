@@ -327,7 +327,7 @@ export default function ClientPortal() {
             <PortalOnboardingChecklist profile={profile} documents={documents} appointments={appointments} onEditProfile={() => setEditProfileOpen(true)} />
             <PortalQuickActions />
             <ClientProgressTracker appointments={appointments} documents={documents} />
-            {upcoming.length > 0 && <DocumentReadinessScore appointmentId={upcoming[0].id} serviceType={upcoming[0].service_type} />}
+            {upcoming.length > 0 && <DocumentReadinessScore serviceType={upcoming[0].service_type} uploadedDocuments={documents.map((d: any) => ({ file_name: d.file_name, status: d.status }))} />}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <Card className="border-border/50">
                 <CardContent className="p-4 flex items-center gap-3">
