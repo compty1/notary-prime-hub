@@ -154,17 +154,17 @@ export default function BookAppointment() {
   }, []);
   usePageMeta({ title: "Book a Notary Appointment", description: "Schedule an in-person or remote online notarization appointment with an Ohio-commissioned notary. Same-day availability in Columbus, OH." });
 
-  // Expire stale bookings in localStorage (24h)
+  // Bug 33: Use sessionStorage for pending bookings (more secure on shared computers)
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(BOOKING_STORAGE_KEY);
+      const raw = sessionStorage.getItem(BOOKING_STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
         if (parsed._savedAt && Date.now() - parsed._savedAt > 24 * 60 * 60 * 1000) {
-          localStorage.removeItem(BOOKING_STORAGE_KEY);
+          sessionStorage.removeItem(BOOKING_STORAGE_KEY);
         }
       }
-    } catch { localStorage.removeItem(BOOKING_STORAGE_KEY); }
+    } catch { sessionStorage.removeItem(BOOKING_STORAGE_KEY); }
   }, []);
 
   useEffect(() => {
@@ -528,9 +528,9 @@ export default function BookAppointment() {
     setValidationErrors({});
 
     if (!user) {
-      localStorage.setItem(BOOKING_STORAGE_KEY, JSON.stringify({ notarizationType, serviceType, date, time, location, notes, documentCount, clientAddress, clientCity, clientState, clientZip, _savedAt: Date.now() }));
+      sessionStorage.setItem(BOOKING_STORAGE_KEY, JSON.stringify({ notarizationType, serviceType, date, time, location, notes, documentCount, clientAddress, clientCity, clientState, clientZip, signerCapacity, entityName, signerTitle, facilityName, facilityContact, facilityRoom, signerCount, _savedAt: Date.now() }));
       const { error } = await signUp(guestEmail, guestPassword, guestName);
-      if (error) { const { error: signInErr } = await signIn(guestEmail, guestPassword); if (signInErr) { localStorage.removeItem(BOOKING_STORAGE_KEY); toast({ title: "Account error", description: error.message, variant: "destructive" }); } return; }
+      if (error) { const { error: signInErr } = await signIn(guestEmail, guestPassword); if (signInErr) { sessionStorage.removeItem(BOOKING_STORAGE_KEY); toast({ title: "Account error", description: error.message, variant: "destructive" }); } return; }
       toast({ title: "Check your email", description: "We sent a verification link." }); navigate("/login"); return;
     }
     await submitBooking(user.id);
