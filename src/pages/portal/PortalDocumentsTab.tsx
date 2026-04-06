@@ -234,7 +234,7 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
         </CardContent></Card>
       ) : otherDocs.length === 0 ? null : (
         <div className="space-y-3">
-          {documents.map(doc => (
+          {otherDocs.map(doc => (
             <Card key={doc.id} className="border-border/50">
               <CardContent className="flex items-center justify-between p-4">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
