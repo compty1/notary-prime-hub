@@ -149,6 +149,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       logAuditEvent("login_failed", { details: { email, reason: error.message } });
+    } else {
+      // Gap 2: Rotate session token after sign-in to prevent session fixation
+      await supabase.auth.refreshSession();
     }
     return { error };
   };

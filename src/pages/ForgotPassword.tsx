@@ -27,6 +27,7 @@ export default function ResetPassword() {
   const [requestSent, setRequestSent] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
 
   usePageMeta({ title: "Reset Password", description: "Reset your Notar account password securely. Enter your email to receive a password reset link.", noIndex: true });
 
@@ -43,8 +44,16 @@ export default function ResetPassword() {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Cooldown timer effect
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setTimeout(() => setCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [cooldown]);
+
   const handleRequestReset = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (cooldown > 0) return;
     setSubmitting(true);
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
@@ -53,6 +62,7 @@ export default function ResetPassword() {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       setRequestSent(true);
+      setCooldown(30);
       toast({ title: "Check your email", description: "We sent a password reset link." });
     }
     setSubmitting(false);
@@ -150,8 +160,8 @@ export default function ResetPassword() {
                   <Label htmlFor="email">Email Address</Label>
                   <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" autoComplete="email" />
                 </div>
-                <Button type="submit" className="w-full " disabled={submitting}>
-                  {submitting ? "Sending..." : "Send Reset Link"}
+                <Button type="submit" className="w-full" disabled={submitting || cooldown > 0}>
+                  {submitting ? "Sending..." : cooldown > 0 ? `Wait ${cooldown}s` : "Send Reset Link"}
                 </Button>
                 <p className="text-center text-sm text-muted-foreground">
                   <Link to="/login" className="font-medium text-primary hover:underline">Back to Sign In</Link>
