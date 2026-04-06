@@ -637,6 +637,20 @@ export default function RonSession() {
       } as any).eq("appointment_id", appointmentId);
     }
 
+    // Log signer acknowledgment per document (Ohio compliance gap)
+    await logAuditEvent("signer_acknowledgment_recorded", {
+      entityType: "appointment",
+      entityId: appointmentId,
+      details: {
+        signer_name: clientProfile?.full_name || "Unknown",
+        document_name: documentName || appointment.service_type || "Unknown",
+        acknowledgment_type: oathType,
+        acknowledged_at: new Date().toISOString(),
+        notarization_type: "ron",
+        signing_platform: signingPlatform,
+      } as Record<string, Json | undefined>,
+    });
+
     await logAuditEvent("ron_session_completed", {
       entityType: "appointment",
       entityId: appointmentId,
