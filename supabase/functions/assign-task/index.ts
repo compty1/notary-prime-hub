@@ -45,7 +45,18 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { taskId, mode } = await req.json();
+    const { z } = await import("https://esm.sh/zod@3.23.8");
+    const BodySchema = z.object({
+      taskId: z.string().uuid().optional(),
+      mode: z.enum(["auto", "manual"]),
+    });
+    const parsed = BodySchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: "Invalid input", details: parsed.error.flatten().fieldErrors }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const { taskId, mode } = parsed.data;
 
     if (mode === "auto") {
       // Get unassigned tasks from appointments

@@ -24,9 +24,15 @@ Deno.serve(async (req) => {
 
     const { z } = await import("https://esm.sh/zod@3.23.8");
     const BodySchema = z.object({
-      imageBase64: z.string().min(1, "No image provided").max(10_000_000),
+      imageBase64: z.string().min(1, "No image provided").max(10_000_000, "Image exceeds 10MB limit"),
     });
-    const parsed = BodySchema.safeParse(await req.json());
+    const rawBody = await req.json();
+    // Server-side size check (Bug 131) — reject payloads > 10MB
+    const bodyStr = JSON.stringify(rawBody);
+    if (bodyStr.length > 15_000_000) {
+      return new Response(JSON.stringify({ error: "Payload too large" }), { status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const parsed = BodySchema.safeParse(rawBody);
     if (!parsed.success) {
       return new Response(JSON.stringify({ error: parsed.error.flatten().fieldErrors }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }

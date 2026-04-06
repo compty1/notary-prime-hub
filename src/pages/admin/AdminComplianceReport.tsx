@@ -45,13 +45,12 @@ export default function AdminComplianceReport() {
     const withRecording = appointments.filter((a) => a.session_recording_duration && a.session_recording_duration > 0).length;
     const avgDuration = appointments.filter((a) => a.appointment_duration_actual).reduce((s, a) => s + a.appointment_duration_actual, 0) / (completed || 1);
 
+    // Bug 22: Summarize compliance gaps instead of per-session listing
+    const missingRecordingCount = completed - withRecording;
     const gaps: string[] = [];
-    if (withRecording < completed) gaps.push(`${completed - withRecording} sessions missing recording data`);
-    appointments.forEach((a) => {
-      if (a.status === "completed" && !a.session_recording_duration) {
-        gaps.push(`Session ${a.confirmation_number || a.id} lacks recording duration`);
-      }
-    });
+    if (missingRecordingCount > 0) {
+      gaps.push(`${missingRecordingCount} completed session${missingRecordingCount > 1 ? "s" : ""} missing recording data`);
+    }
 
     return { total, completed, withRecording, avgDuration: Math.round(avgDuration), gaps };
   }, [appointments]);
@@ -172,12 +171,23 @@ export default function AdminComplianceReport() {
         </Card>
       )}
 
-      {report.gaps.length === 0 && (
+      {report.gaps.length === 0 && report.total > 0 && (
         <Card className="border-green-500/30">
           <CardContent className="p-6 text-center">
             <CheckCircle2 className="mx-auto mb-3 h-12 w-12 text-green-600" />
             <h3 className="font-semibold text-foreground">Fully Compliant</h3>
             <p className="text-sm text-muted-foreground">No compliance gaps detected for {selectedMonth}.</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Bug 86: Empty state for 0 RON sessions */}
+      {report.total === 0 && (
+        <Card className="border-border">
+          <CardContent className="p-6 text-center">
+            <FileText className="mx-auto mb-3 h-12 w-12 text-muted-foreground/30" />
+            <h3 className="font-semibold text-foreground">No RON Sessions</h3>
+            <p className="text-sm text-muted-foreground">No remote online notarization sessions recorded for {selectedMonth}.</p>
           </CardContent>
         </Card>
       )}

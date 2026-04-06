@@ -39,9 +39,11 @@ export default function AdminChat() {
   useEffect(() => {
     const fetchData = async () => {
       const [{ data: msgs }, { data: profs }] = await Promise.all([
-        supabase.from("chat_messages").select("*").order("created_at", { ascending: true }),
-        supabase.from("profiles").select("user_id, full_name"),
+        supabase.from("chat_messages").select("*").order("created_at", { ascending: false }).limit(500),
+        supabase.from("profiles").select("user_id, full_name").limit(1000),
       ]);
+      // Reverse to chronological for display
+      if (msgs) msgs.reverse();
       if (msgs) setAllMessages(msgs);
       if (profs) {
         const map: Record<string, string> = {};
