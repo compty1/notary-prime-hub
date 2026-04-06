@@ -94,6 +94,12 @@ export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com
             <Link to="/terms#privacy" className="transition-colors hover:text-primary">Privacy</Link>
             <span className="text-sidebar-border">·</span>
             <Link to="/resources" className="transition-colors hover:text-primary">Resources</Link>
+            <span className="text-sidebar-border">·</span>
+            <a href="https://www.facebook.com/notardex" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-primary" aria-label="Facebook">Facebook</a>
+            <span className="text-sidebar-border">·</span>
+            <a href="https://www.linkedin.com/company/notardex" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-primary" aria-label="LinkedIn">LinkedIn</a>
+            <span className="text-sidebar-border">·</span>
+            <a href="https://g.co/kgs/notardex" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-primary" aria-label="Google Business">Google</a>
           </div>
         </div>
       </div>
