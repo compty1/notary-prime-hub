@@ -36,10 +36,18 @@ Deno.serve(async (req) => {
     const userEmail = user.email || "";
 
     const body = await req.json();
-    const amount = Number(body.amount);
+    const rawAmount = Number(body.amount);
     const appointmentId = body.appointmentId || "";
     const description = body.description || "Notary service payment";
-    if (!amount || amount <= 0 || amount > 99999) throw new Error("Invalid amount");
+
+    // Validate amount: must be positive, max $50k, max 2 decimal places
+    if (!Number.isFinite(rawAmount) || rawAmount <= 0) {
+      return new Response(JSON.stringify({ error: "Amount must be greater than $0" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    if (rawAmount > 50000) {
+      return new Response(JSON.stringify({ error: "Amount exceeds maximum ($50,000)" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const amount = Math.round(rawAmount * 100) / 100; // round to 2 decimal places
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
 
@@ -95,7 +103,7 @@ Deno.serve(async (req) => {
   } catch (err: any) {
     console.error("create-payment-intent error:", err.message, err.stack);
     return new Response(
-      JSON.stringify({ error: err.message }),
+      JSON.stringify({ error: "Payment processing failed. Please try again." }),
       { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
