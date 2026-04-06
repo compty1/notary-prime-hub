@@ -115,6 +115,7 @@ export default function ClientPortal() {
   };
 
   const formatDate = (dateStr: string) => new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+  // Note: local formatDate used here for specific weekday format; shared utils formatDate used elsewhere
 
   useEffect(() => {
     if (!user) return;
