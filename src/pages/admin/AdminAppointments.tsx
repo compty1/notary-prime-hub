@@ -47,7 +47,7 @@ export default function AdminAppointments() {
   const [serviceTypeFilter, setServiceTypeFilter] = useState("all");
   const [notarizationTypeFilter, setNotarizationTypeFilter] = useState("all");
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
-  const [calendarMonth, setCalendarMonth] = useState(new Date());
+  
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true);
