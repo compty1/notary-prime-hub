@@ -199,7 +199,7 @@ export default function AdminMailbox() {
           setSelectedEmail(full);
           setEmails(prev => prev.map(e => e.id === email.id ? { ...e, is_read: true } : e));
         }
-      } catch {}
+      } catch (e) { console.error("Email read error:", e); }
     } else if (!email.is_read) {
       callEdgeFunction("ionos-email", { action: "mark_read", id: email.id }).catch(() => {});
       setEmails(prev => prev.map(e => e.id === email.id ? { ...e, is_read: true } : e));
@@ -210,7 +210,7 @@ export default function AdminMailbox() {
     e.stopPropagation();
     const action = email.is_starred ? "unstar" : "star";
     setEmails(prev => prev.map(em => em.id === email.id ? { ...em, is_starred: !em.is_starred } : em));
-    try { await callEdgeFunction("ionos-email", { action, id: email.id }); } catch {}
+    try { await callEdgeFunction("ionos-email", { action, id: email.id }); } catch (e) { console.error("Star toggle error:", e); }
   };
 
   const handleDelete = async (id: string) => {
