@@ -319,6 +319,7 @@ export default function ClientPortal() {
             <TabsTrigger value="reminders" aria-label="Document Reminders"><Bell className="mr-1 h-4 w-4 hidden sm:inline" /> Remind</TabsTrigger>
             <TabsTrigger value="reviews" aria-label="Reviews"><Star className="mr-1 h-4 w-4 hidden sm:inline" /> Reviews</TabsTrigger>
             <TabsTrigger value="services" aria-label="Available Services"><ShoppingBag className="mr-1 h-4 w-4 hidden sm:inline" /> Services</TabsTrigger>
+            <TabsTrigger value="ai-tools" aria-label="AI Tools"><Sparkles className="mr-1 h-4 w-4 hidden sm:inline" /> AI Tools</TabsTrigger>
             <TabsTrigger value="referral" aria-label="Refer a Friend"><Sparkles className="mr-1 h-4 w-4 hidden sm:inline" /> Refer</TabsTrigger>
           </TabsList>
 
