@@ -287,7 +287,7 @@ export default function RonSession() {
     }
     return () => {
       if (recognitionRef.current) {
-        try { recognitionRef.current.stop(); } catch {}
+        try { recognitionRef.current.stop(); } catch (e) { /* speech recognition stop is expected to throw if not started */ }
         recognitionRef.current = null;
       }
     };
