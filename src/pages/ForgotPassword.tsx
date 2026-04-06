@@ -12,16 +12,7 @@ import { CheckCircle, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
 import { validatePasswordComplexity } from "@/lib/security";
-
-function getPasswordStrength(pw: string) {
-  let score = 0;
-  if (pw.length >= 8) score++;
-  if (pw.length >= 12) score++;
-  if (/[A-Z]/.test(pw)) score++;
-  if (/[0-9]/.test(pw)) score++;
-  if (/[^A-Za-z0-9]/.test(pw)) score++;
-  return score;
-}
+import { getPasswordStrength } from "@/lib/utils";
 const strengthLabels = ["", "Very Weak", "Weak", "Fair", "Strong", "Very Strong"];
 
 export default function ResetPassword() {
