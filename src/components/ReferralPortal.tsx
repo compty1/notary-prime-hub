@@ -37,12 +37,6 @@ export function ReferralPortal() {
         if (code) setReferralCode(code);
         setLoading(false);
       });
-
-    // Also check profile for referral code
-    supabase.from("profiles").select("referral_code").eq("user_id", user.id).maybeSingle()
-      .then(({ data }) => {
-        if (data?.referral_code) setReferralCode(data.referral_code);
-      });
   }, [user]);
 
   const handleSubmit = async () => {
