@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { usePageMeta } from "@/hooks/usePageMeta";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useDebounce } from "@/lib/useDebounce";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -56,8 +57,12 @@ function formatPrice(s: Service) {
   return to > from ? `$${from}–$${to}${suffix}` : `$${from}${suffix}`;
 }
 
+const PROTECTED_PREFIXES = ["/request", "/subscribe", "/mailroom", "/digitize", "/builder", "/ai-writer", "/ai-extractors", "/ai-knowledge", "/signature-generator", "/grants", "/resume-builder", "/ai-tools", "/portal", "/verify-id", "/mobile-upload"];
+
 export default function Services() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const categoryParam = searchParams.get("category");
   const queryParam = searchParams.get("q") || "";
   const [activeCategory, setActiveCategory] = useState(
@@ -264,11 +269,18 @@ export default function Services() {
                               <Link to={`/services/${s.id}`} className="flex-1">
                                 <Button size="sm" variant="outline" className="w-full">More Info</Button>
                               </Link>
-                              <Link to={actionUrl} className="flex-1">
-                                <Button size="sm" variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                              {!user && PROTECTED_PREFIXES.some(p => actionUrl.startsWith(p)) ? (
+                                <Button size="sm" variant="outline" className="flex-1 group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                                  onClick={() => navigate(`/login?redirect=${encodeURIComponent(actionUrl)}`)}>
                                   {actionLabel} <ChevronRight className="ml-1 h-3 w-3" />
                                 </Button>
-                              </Link>
+                              ) : (
+                                <Link to={actionUrl} className="flex-1">
+                                  <Button size="sm" variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                                    {actionLabel} <ChevronRight className="ml-1 h-3 w-3" />
+                                  </Button>
+                                </Link>
+                              )}
                             </div>
                           </CardContent>
                         </Card>

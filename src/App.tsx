@@ -125,8 +125,8 @@ function AnimatedRoutes() {
   const routeKey = location.pathname;
 
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={routeKey}>
+    <AnimatePresence mode="popLayout" initial={false}>
+      <Routes location={location}>
         <Route path="/" element={<Index />} />
         <Route path="/coming-soon" element={<ComingSoon />} />
         <Route path="/login" element={<Login />} />

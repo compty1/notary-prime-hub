@@ -16,25 +16,25 @@ const ohioForms = [
   {
     category: "Notary Commission",
     forms: [
-      { title: "Application for Notary Public Commission", url: "https://www.ohiosos.gov/notary/forms/", desc: "Initial application to become a notary public in Ohio" },
-      { title: "Notary Public Renewal Application", url: "https://www.ohiosos.gov/notary/forms/", desc: "Renewal of existing notary commission" },
-      { title: "Change of Name/Address Form", url: "https://www.ohiosos.gov/notary/forms/", desc: "Update personal information on your commission" },
+      { title: "Application for Notary Public Commission", url: "https://notary.ohiosos.gov/", desc: "Initial application to become a notary public in Ohio" },
+      { title: "Notary Public Renewal Application", url: "https://notary.ohiosos.gov/", desc: "Renewal of existing notary commission" },
+      { title: "Change of Name/Address Form", url: "https://notary.ohiosos.gov/", desc: "Update personal information on your commission" },
     ],
   },
   {
     category: "Notarial Certificates",
     forms: [
-      { title: "Acknowledgment Certificate (Individual)", url: "https://www.ohiosos.gov/notary/forms/", desc: "Standard acknowledgment for individuals appearing before a notary (ORC §147.55)" },
-      { title: "Jurat Certificate", url: "https://www.ohiosos.gov/notary/forms/", desc: "Certificate for sworn statements / affidavits (ORC §147.53)" },
-      { title: "Copy Certification Certificate", url: "https://www.ohiosos.gov/notary/forms/", desc: "For certifying copies of documents (not vital records)" },
-      { title: "Signature Witnessing Certificate", url: "https://www.ohiosos.gov/notary/forms/", desc: "Certificate for witnessing a signature" },
+      { title: "Acknowledgment Certificate (Individual)", url: "https://www.ohiosos.gov/notary/information/", desc: "Standard acknowledgment for individuals appearing before a notary (ORC §147.55)" },
+      { title: "Jurat Certificate", url: "https://www.ohiosos.gov/notary/information/", desc: "Certificate for sworn statements / affidavits (ORC §147.53)" },
+      { title: "Copy Certification Certificate", url: "https://www.ohiosos.gov/notary/information/", desc: "For certifying copies of documents (not vital records)" },
+      { title: "Signature Witnessing Certificate", url: "https://www.ohiosos.gov/notary/information/", desc: "Certificate for witnessing a signature" },
     ],
   },
   {
     category: "RON (Remote Online Notarization)",
     forms: [
-      { title: "RON Commission Application", url: "https://www.ohiosos.gov/notary/remote-online-notarization/", desc: "Apply for authorization to perform remote online notarization" },
-      { title: "RON Technology Provider Registration", url: "https://www.ohiosos.gov/notary/remote-online-notarization/", desc: "Register your RON platform with Ohio SOS" },
+      { title: "RON Commission Application", url: "https://notary.ohiosos.gov/", desc: "Apply for authorization to perform remote online notarization" },
+      { title: "RON Technology Provider Registration", url: "https://www.ohiosos.gov/notary/", desc: "Register your RON platform with Ohio SOS" },
     ],
   },
 ];

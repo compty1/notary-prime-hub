@@ -491,10 +491,10 @@ const newNotaryGuide = [
 const externalResources = [
   { category: "Ohio Secretary of State", links: [
     { title: "Notary Public Main Page", url: "https://www.ohiosos.gov/notary/", desc: "Official Ohio SOS notary hub — forms, laws, FAQs" },
-    { title: "Notary Application & Forms", url: "https://www.ohiosos.gov/notary/forms/", desc: "All official notary application and certificate forms" },
-    { title: "Remote Online Notarization (RON)", url: "https://www.ohiosos.gov/notary/remote-online-notarization/", desc: "RON commission info, approved providers, regulations" },
-    { title: "Notary Education Providers", url: "https://www.ohiosos.gov/notary/education-providers/", desc: "State-approved notary education course providers" },
-    { title: "Notary Search / Lookup", url: "https://www.ohiosos.gov/notary/notary-search/", desc: "Verify any Ohio notary's commission status" },
+    { title: "Notary Application Portal", url: "https://notary.ohiosos.gov/", desc: "Online notary application and filing portal" },
+    { title: "Notary Resources & FAQs", url: "https://www.ohiosos.gov/notary/information/", desc: "Frequently asked questions and notary guidance" },
+    { title: "Application Requirements", url: "https://www.ohiosos.gov/notary/application-requirements/", desc: "Requirements to become a notary in Ohio" },
+    { title: "Notary Law Updates", url: "https://www.ohiosos.gov/notary/summary-of-notary-law-changes/", desc: "Summary of recent Ohio notary law changes" },
   ]},
   { category: "Ohio Revised Code", links: [
     { title: "ORC Chapter 147 — Notaries Public", url: "https://codes.ohio.gov/ohio-revised-code/chapter-147", desc: "Complete Ohio notary law chapter" },

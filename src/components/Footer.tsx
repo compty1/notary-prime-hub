@@ -63,7 +63,7 @@ export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com
               <Link to="/join" className="block transition-colors hover:text-primary">Join as Provider</Link>
               <Link to="/login" className="block transition-colors hover:text-primary">Client Portal</Link>
               <Link to="/signer-rights" className="block transition-colors hover:text-primary">Signer Bill of Rights</Link>
-              <a href="https://www.ohiosos.gov/businesses/notary-public/" target="_blank" rel="noopener noreferrer" className="block transition-colors hover:text-primary text-xs">Ohio SOS Notary Search ↗</a>
+              <a href="https://www.ohiosos.gov/notary/" target="_blank" rel="noopener noreferrer" className="block transition-colors hover:text-primary text-xs">Ohio SOS Notary Search ↗</a>
             </div>
           </div>
         </div>
@@ -95,11 +95,7 @@ export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com
             <span className="text-sidebar-border" aria-hidden="true">·</span>
             <Link to="/resources" className="transition-colors hover:text-primary">Resources</Link>
             <span className="text-sidebar-border" aria-hidden="true">·</span>
-            <a href="https://www.facebook.com/notardex" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-primary" aria-label="Facebook">Facebook</a>
-            <span className="text-sidebar-border" aria-hidden="true">·</span>
-            <a href="https://www.linkedin.com/company/notardex" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-primary" aria-label="LinkedIn">LinkedIn</a>
-            <span className="text-sidebar-border" aria-hidden="true">·</span>
-            <a href="https://g.co/kgs/notardex" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-primary" aria-label="Google Business">Google</a>
+            <a href="https://www.ohiosos.gov/notary/" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-primary" aria-label="Ohio SOS Notary">Ohio SOS ↗</a>
           </nav>
         </div>
       </div>
