@@ -5,11 +5,93 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// --- MIME Decoding Utilities ---
+
+function decodeQuotedPrintable(input: string): string {
+  return input
+    .replace(/=\r?\n/g, "") // soft line breaks
+    .replace(/=([0-9A-Fa-f]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+}
+
+function decodeBase64(input: string): string {
+  try {
+    const clean = input.replace(/\r?\n/g, "");
+    const bytes = Uint8Array.from(atob(clean), c => c.charCodeAt(0));
+    return new TextDecoder("utf-8").decode(bytes);
+  } catch {
+    return input;
+  }
+}
+
+function decodeContent(body: string, encoding: string): string {
+  const enc = (encoding || "").toLowerCase().trim();
+  if (enc === "quoted-printable") return decodeQuotedPrintable(body);
+  if (enc === "base64") return decodeBase64(body);
+  return body;
+}
+
 /**
- * Pure-Deno IMAP sync using Deno.connect + TLS.
- * Connects to IONOS IMAP, fetches new messages since last sync,
- * and stores them in email_cache.
+ * Parse a MIME multipart message and extract text/plain and text/html parts.
  */
+function parseMimeParts(rawBody: string): { textPlain: string; textHtml: string } {
+  let textPlain = "";
+  let textHtml = "";
+
+  // Find boundary from Content-Type header embedded in body
+  const boundaryMatch = rawBody.match(/boundary="?([^\s";\r\n]+)"?/i);
+  if (!boundaryMatch) {
+    // Not multipart — check if it looks like HTML
+    const stripped = rawBody.replace(/^Content-[^\r\n]+\r?\n/gim, "").replace(/^\r?\n/, "");
+    if (/<html|<div|<p|<table/i.test(stripped)) {
+      textHtml = stripped;
+      textPlain = stripped.replace(/<[^>]*>/g, "").substring(0, 10000);
+    } else {
+      textPlain = stripped.substring(0, 10000);
+    }
+    return { textPlain, textHtml };
+  }
+
+  const boundary = boundaryMatch[1];
+  const parts = rawBody.split(new RegExp(`--${boundary.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, "g"));
+
+  for (const part of parts) {
+    if (part.trim() === "--" || !part.trim()) continue;
+
+    const headerBodySplit = part.match(/^([\s\S]*?)\r?\n\r?\n([\s\S]*)$/);
+    if (!headerBodySplit) continue;
+
+    const headers = headerBodySplit[1];
+    let body = headerBodySplit[2];
+
+    const ctMatch = headers.match(/Content-Type:\s*([^\s;]+)/i);
+    const cteMatch = headers.match(/Content-Transfer-Encoding:\s*(\S+)/i);
+    const contentType = (ctMatch?.[1] || "").toLowerCase();
+    const encoding = cteMatch?.[1] || "";
+
+    // Handle nested multipart (e.g., multipart/alternative inside multipart/mixed)
+    if (contentType.startsWith("multipart/")) {
+      const nested = parseMimeParts(headers + "\r\n\r\n" + body);
+      if (!textPlain && nested.textPlain) textPlain = nested.textPlain;
+      if (!textHtml && nested.textHtml) textHtml = nested.textHtml;
+      continue;
+    }
+
+    body = decodeContent(body.trim(), encoding);
+
+    if (contentType === "text/plain" && !textPlain) {
+      textPlain = body.substring(0, 10000);
+    } else if (contentType === "text/html" && !textHtml) {
+      textHtml = body.substring(0, 50000);
+      if (!textPlain) {
+        textPlain = body.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().substring(0, 10000);
+      }
+    }
+  }
+
+  return { textPlain, textHtml };
+}
+
+// --- IMAP Utilities ---
 
 async function imapCommand(conn: Deno.TlsConn, command: string): Promise<string> {
   const encoder = new TextEncoder();
@@ -17,16 +99,15 @@ async function imapCommand(conn: Deno.TlsConn, command: string): Promise<string>
   await conn.write(encoder.encode(command + "\r\n"));
 
   let response = "";
-  const buf = new Uint8Array(8192);
+  const buf = new Uint8Array(16384);
   const tagMatch = command.match(/^(A\d+)\s/);
   const tag = tagMatch ? tagMatch[1] : null;
 
-  const deadline = Date.now() + 15000; // 15s timeout per command
+  const deadline = Date.now() + 15000;
   while (Date.now() < deadline) {
     const n = await conn.read(buf);
     if (n === null) break;
     response += decoder.decode(buf.subarray(0, n));
-    // Check if we got the tagged response or untagged OK
     if (tag && (response.includes(`${tag} OK`) || response.includes(`${tag} NO`) || response.includes(`${tag} BAD`))) break;
     if (!tag && (response.includes("OK") || response.includes("NO"))) break;
   }
@@ -34,7 +115,6 @@ async function imapCommand(conn: Deno.TlsConn, command: string): Promise<string>
 }
 
 function parseEnvelope(line: string) {
-  // Extract basic fields from FETCH response
   const subjectMatch = line.match(/BODY\[HEADER\.FIELDS \(SUBJECT\)\]\s*\{?\d*\}?\r?\n?Subject:\s*([^\r\n]*)/i);
   const fromMatch = line.match(/BODY\[HEADER\.FIELDS \(FROM\)\]\s*\{?\d*\}?\r?\n?From:\s*([^\r\n]*)/i);
   const toMatch = line.match(/BODY\[HEADER\.FIELDS \(TO\)\]\s*\{?\d*\}?\r?\n?To:\s*([^\r\n]*)/i);
@@ -106,17 +186,11 @@ Deno.serve(async (req) => {
 
     console.log(`Connecting to IMAP: ${imapHost} as ${emailAddress}`);
 
-    // Connect via TLS to IMAP
-    const conn = await Deno.connectTls({
-      hostname: imapHost,
-      port: 993,
-    });
+    const conn = await Deno.connectTls({ hostname: imapHost, port: 993 });
 
-    // Read greeting
     const greetBuf = new Uint8Array(4096);
     await conn.read(greetBuf);
 
-    // Login
     const loginResp = await imapCommand(conn, `A001 LOGIN "${emailAddress}" "${emailPassword}"`);
     if (!loginResp.includes("A001 OK")) {
       conn.close();
@@ -131,41 +205,32 @@ Deno.serve(async (req) => {
       const folderKey = folderName === "INBOX" ? "inbox" : folderName.toLowerCase();
 
       try {
-        // SELECT folder
         const selectResp = await imapCommand(conn, `A002 SELECT "${folderName}"`);
         if (!selectResp.includes("A002 OK")) {
           console.warn(`Could not select folder ${folderName}`);
           continue;
         }
 
-        // SEARCH for messages since last sync
         const searchResp = await imapCommand(conn, `A003 SEARCH SINCE ${sinceDateStr}`);
         const uidLine = searchResp.split("\r\n").find(l => l.startsWith("* SEARCH"));
-        if (!uidLine) {
-          console.log(`No new messages in ${folderName}`);
-          continue;
-        }
+        if (!uidLine) { console.log(`No new messages in ${folderName}`); continue; }
 
         const uids = uidLine.replace("* SEARCH", "").trim().split(/\s+/).filter(Boolean);
-        if (uids.length === 0) {
-          console.log(`No new messages in ${folderName}`);
-          continue;
-        }
+        if (uids.length === 0) { console.log(`No new messages in ${folderName}`); continue; }
 
         console.log(`Found ${uids.length} messages in ${folderName} since ${sinceDateStr}`);
 
-        // Fetch in batches of 20
         const batchSize = 20;
         for (let i = 0; i < uids.length && i < 100; i += batchSize) {
           const batch = uids.slice(i, i + batchSize);
           const uidRange = batch.join(",");
 
+          // Fetch full message (BODY[] instead of TEXT only) for proper MIME parsing
           const fetchResp = await imapCommand(
             conn,
-            `A004 FETCH ${uidRange} (BODY.PEEK[HEADER.FIELDS (SUBJECT FROM TO DATE MESSAGE-ID IN-REPLY-TO)] BODY.PEEK[TEXT] FLAGS)`
+            `A004 FETCH ${uidRange} (BODY.PEEK[HEADER.FIELDS (SUBJECT FROM TO DATE MESSAGE-ID IN-REPLY-TO CONTENT-TYPE)] BODY.PEEK[] FLAGS)`
           );
 
-          // Split response by message boundaries
           const messages = fetchResp.split(/\* \d+ FETCH/);
 
           for (const msgBlock of messages) {
@@ -176,7 +241,6 @@ Deno.serve(async (req) => {
 
             const messageId = parsed.messageId || `<${crypto.randomUUID()}@ionos-sync>`;
 
-            // Check if already cached
             const { data: existing } = await supabase
               .from("email_cache")
               .select("id")
@@ -190,14 +254,11 @@ Deno.serve(async (req) => {
             const toAddrs = extractAddresses(parsed.to);
             const date = parsed.date ? new Date(parsed.date).toISOString() : new Date().toISOString();
 
-            // Extract body text
-            const bodyTextMatch = msgBlock.match(/BODY\[TEXT\]\s*\{(\d+)\}\r?\n([\s\S]*?)(?:\)\r?\n|$)/);
-            let bodyText = bodyTextMatch ? bodyTextMatch[2].substring(0, 10000) : "";
-            let bodyHtml: string | null = null;
-            if (bodyText.includes("<html") || bodyText.includes("<div") || bodyText.includes("<p")) {
-              bodyHtml = bodyText.substring(0, 50000);
-              bodyText = bodyText.replace(/<[^>]*>/g, "").substring(0, 10000);
-            }
+            // Extract raw body and parse MIME parts
+            const bodyMatch = msgBlock.match(/BODY\[\]\s*\{(\d+)\}\r?\n([\s\S]*?)(?:\)\r?\n|$)/);
+            const rawBody = bodyMatch ? bodyMatch[2] : msgBlock;
+
+            const { textPlain, textHtml } = parseMimeParts(rawBody);
 
             const isRead = msgBlock.includes("\\Seen");
 
@@ -209,8 +270,8 @@ Deno.serve(async (req) => {
               to_addresses: toAddrs,
               cc_addresses: [],
               subject: parsed.subject,
-              body_text: bodyText || null,
-              body_html: bodyHtml,
+              body_text: textPlain || null,
+              body_html: textHtml || null,
               date,
               is_read: isRead || folderKey !== "inbox",
               has_attachments: false,
@@ -226,7 +287,6 @@ Deno.serve(async (req) => {
       }
     }
 
-    // LOGOUT
     try {
       await imapCommand(conn, "A099 LOGOUT");
       conn.close();
@@ -234,7 +294,6 @@ Deno.serve(async (req) => {
 
     console.log(`IMAP sync complete. Synced ${synced} new messages.`);
 
-    // Log sync
     await supabase.from("audit_log").insert({
       action: "email_sync_completed",
       entity_type: "email_cache",

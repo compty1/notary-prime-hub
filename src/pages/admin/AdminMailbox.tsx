@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { usePageMeta } from "@/hooks/usePageMeta";
-import { sanitizeHtml } from "@/lib/sanitize";
+import { sanitizeEmailHtml } from "@/lib/sanitize";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { callEdgeFunction } from "@/lib/edgeFunctionAuth";
@@ -19,8 +19,9 @@ import {
   Mail, Send, Archive, Loader2, Reply, Search, Star,
   Inbox, FileText, Trash2, PenLine, RefreshCw, MailOpen,
   ChevronLeft, Forward, ReplyAll, CheckSquare, Square, Paperclip,
-  Settings
+  Settings, AlertTriangle
 } from "lucide-react";
+import type { Json } from "@/integrations/supabase/types";
 
 type EmailItem = {
   id: string;
@@ -28,19 +29,59 @@ type EmailItem = {
   folder: string;
   from_address: string | null;
   from_name: string | null;
-  to_addresses: string[];
-  cc_addresses?: string[];
+  to_addresses: string[] | Json | null;
+  cc_addresses?: string[] | Json | null;
   subject: string | null;
-  body_html?: string;
-  body_text?: string;
+  body_html?: string | null;
+  body_text?: string | null;
   date: string | null;
-  is_read: boolean;
-  is_starred: boolean;
-  has_attachments: boolean;
+  is_read: boolean | null;
+  is_starred: boolean | null;
+  has_attachments: boolean | null;
   attachments?: any[];
-  in_reply_to?: string;
-  references?: string;
+  in_reply_to?: string | null;
+  references?: string | null;
 };
+
+/** Safely coerce Json/null to string[] */
+function toStringArray(val: string[] | Json | null | undefined): string[] {
+  if (!val) return [];
+  if (Array.isArray(val)) return val.map(String);
+  if (typeof val === "string") {
+    try { const parsed = JSON.parse(val); return Array.isArray(parsed) ? parsed.map(String) : []; } catch { return []; }
+  }
+  return [];
+}
+
+/** Format email date with relative time for recent messages */
+function formatEmailDate(dateStr: string | null): string {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return "";
+  const now = new Date();
+  const diffMs = now.getTime() - d.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  const diffHr = Math.floor(diffMs / 3600000);
+
+  if (diffMin < 1) return "Just now";
+  if (diffMin < 60) return `${diffMin}m ago`;
+  if (diffHr < 24 && d.toDateString() === now.toDateString()) return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  if (diffHr < 48) return "Yesterday";
+  return d.toLocaleDateString([], { month: "short", day: "numeric" });
+}
+
+/** Get a clean text snippet, stripping any residual MIME artifacts */
+function getSnippet(email: EmailItem): string {
+  const raw = email.body_text || "";
+  // Strip common MIME boundary artifacts
+  const cleaned = raw
+    .replace(/^--[^\r\n]+$/gm, "")
+    .replace(/^Content-[^\r\n]+$/gim, "")
+    .replace(/<[^>]*>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return cleaned.slice(0, 100);
+}
 
 const FOLDERS = [
   { key: "inbox", label: "Inbox", icon: Inbox },
@@ -64,6 +105,8 @@ export default function AdminMailbox() {
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isCachedMode, setIsCachedMode] = useState(false);
+  const [loadingBody, setLoadingBody] = useState(false);
 
   const [showCompose, setShowCompose] = useState(false);
   const [composeMode, setComposeMode] = useState<"new" | "reply" | "replyAll" | "forward">("new");
@@ -82,6 +125,25 @@ export default function AdminMailbox() {
 
   const [profiles, setProfiles] = useState<any[]>([]);
 
+  const fallbackQuery = useCallback(async () => {
+    let query = supabase
+      .from("email_cache")
+      .select("*")
+      .order("date", { ascending: false })
+      .limit(50);
+    if (activeFolder === "starred") {
+      query = query.eq("is_starred", true);
+    } else {
+      query = query.eq("folder", activeFolder);
+    }
+    if (searchTerm) {
+      query = query.or(`subject.ilike.%${searchTerm}%,from_address.ilike.%${searchTerm}%`);
+    }
+    const { data: cached } = await query;
+    setEmails((cached || []) as unknown as EmailItem[]);
+    setIsCachedMode(true);
+  }, [activeFolder, searchTerm]);
+
   const fetchEmails = useCallback(async () => {
     setLoading(true);
     try {
@@ -93,35 +155,16 @@ export default function AdminMailbox() {
       });
       const data = await resp.json();
       if (data.error) {
-        let query = supabase
-          .from("email_cache")
-          .select("*")
-          .order("date", { ascending: false })
-          .limit(50);
-        if (activeFolder === "starred") {
-          query = query.eq("is_starred", true);
-        } else {
-          query = query.eq("folder", activeFolder);
-        }
-        if (searchTerm) {
-          query = query.or(`subject.ilike.%${searchTerm}%,from_address.ilike.%${searchTerm}%`);
-        }
-        const { data: cached } = await query;
-        setEmails((cached || []) as unknown as EmailItem[]);
+        await fallbackQuery();
       } else {
         setEmails(data.emails || []);
+        setIsCachedMode(false);
       }
     } catch {
-      const { data: cached } = await supabase
-        .from("email_cache")
-        .select("*")
-        .eq("folder", activeFolder === "starred" ? "inbox" : activeFolder)
-        .order("date", { ascending: false })
-        .limit(50);
-      setEmails((cached || []) as unknown as EmailItem[]);
+      await fallbackQuery();
     }
     setLoading(false);
-  }, [activeFolder, searchTerm]);
+  }, [activeFolder, searchTerm, fallbackQuery]);
 
   const fetchFolderCounts = useCallback(async () => {
     try {
@@ -158,20 +201,14 @@ export default function AdminMailbox() {
     return () => clearInterval(interval);
   }, [fetchEmails, fetchFolderCounts]);
 
-  // Realtime subscription — auto-refresh when email_cache changes
   useEffect(() => {
     const channel = supabase
       .channel("email-cache-realtime")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "email_cache" },
-        () => {
-          fetchEmails();
-          fetchFolderCounts();
-        }
-      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "email_cache" }, () => {
+        fetchEmails();
+        fetchFolderCounts();
+      })
       .subscribe();
-
     return () => { supabase.removeChannel(channel); };
   }, [fetchEmails, fetchFolderCounts]);
 
@@ -192,6 +229,7 @@ export default function AdminMailbox() {
   const handleSelectEmail = async (email: EmailItem) => {
     setSelectedEmail(email);
     if (!email.body_html && !email.body_text) {
+      setLoadingBody(true);
       try {
         const resp = await callEdgeFunction("ionos-email", { action: "read", id: email.id });
         const full = await resp.json();
@@ -200,7 +238,8 @@ export default function AdminMailbox() {
           setEmails(prev => prev.map(e => e.id === email.id ? { ...e, is_read: true } : e));
         }
       } catch (e) { console.error("Email read error:", e); }
-    } else if (!email.is_read) {
+      setLoadingBody(false);
+    } else if (!(email.is_read ?? false)) {
       callEdgeFunction("ionos-email", { action: "mark_read", id: email.id }).catch(() => {});
       setEmails(prev => prev.map(e => e.id === email.id ? { ...e, is_read: true } : e));
     }
@@ -208,8 +247,9 @@ export default function AdminMailbox() {
 
   const handleStarToggle = async (email: EmailItem, e: React.MouseEvent) => {
     e.stopPropagation();
-    const action = email.is_starred ? "unstar" : "star";
-    setEmails(prev => prev.map(em => em.id === email.id ? { ...em, is_starred: !em.is_starred } : em));
+    const starred = email.is_starred ?? false;
+    const action = starred ? "unstar" : "star";
+    setEmails(prev => prev.map(em => em.id === email.id ? { ...em, is_starred: !starred } : em));
     try { await callEdgeFunction("ionos-email", { action, id: email.id }); } catch (e) { console.error("Star toggle error:", e); }
   };
 
@@ -252,6 +292,7 @@ export default function AdminMailbox() {
     if (mode === "new") {
       setComposeTo(""); setComposeCc(""); setComposeSubject(""); setComposeBody(""); setComposeInReplyTo("");
     } else if (email) {
+      const toArr = toStringArray(email.to_addresses);
       if (mode === "reply") {
         setComposeTo(email.from_address || "");
         setComposeCc("");
@@ -259,13 +300,15 @@ export default function AdminMailbox() {
         setComposeInReplyTo(email.message_id);
       } else if (mode === "replyAll") {
         setComposeTo(email.from_address || "");
-        setComposeCc((email.to_addresses || []).join(", "));
+        setComposeCc(toArr.join(", "));
         setComposeSubject(`Re: ${(email.subject || "").replace(/^Re:\s*/i, "")}`);
         setComposeInReplyTo(email.message_id);
       } else if (mode === "forward") {
         setComposeTo(""); setComposeCc("");
         setComposeSubject(`Fwd: ${(email.subject || "").replace(/^Fwd:\s*/i, "")}`);
-        setComposeBody(`<br/><br/>---------- Forwarded message ----------<br/>From: ${email.from_address}<br/>Date: ${email.date ? new Date(email.date).toLocaleString() : ""}<br/>Subject: ${email.subject}<br/><br/>${email.body_html || email.body_text || ""}`);
+        const fwdDate = email.date ? new Date(email.date) : null;
+        const dateStr = fwdDate && !isNaN(fwdDate.getTime()) ? fwdDate.toLocaleString() : "";
+        setComposeBody(`<br/><br/>---------- Forwarded message ----------<br/>From: ${email.from_address}<br/>Date: ${dateStr}<br/>Subject: ${email.subject}<br/><br/>${email.body_html || email.body_text || ""}`);
         setComposeInReplyTo("");
       }
       const defaultSig = signatures.find(s => s.is_default);
@@ -347,14 +390,6 @@ export default function AdminMailbox() {
     });
   };
 
-  const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return "";
-    const d = new Date(dateStr);
-    const now = new Date();
-    if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    return d.toLocaleDateString([], { month: "short", day: "numeric" });
-  };
-
   if (loading && emails.length === 0) {
     return (
       <div className="flex justify-center py-20">
@@ -365,6 +400,14 @@ export default function AdminMailbox() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-12rem)]">
+      {/* Cached mode banner */}
+      {isCachedMode && (
+        <div className="mb-2 flex items-center gap-2 rounded-md border border-amber-300/50 bg-amber-50 dark:bg-amber-950/20 px-3 py-2 text-xs text-amber-700 dark:text-amber-400">
+          <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+          Showing cached emails — live connection unavailable. Click Sync to refresh.
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <div>
@@ -444,48 +487,55 @@ export default function AdminMailbox() {
                   {selectedIds.size === emails.length ? <CheckSquare className="h-3.5 w-3.5" /> : <Square className="h-3.5 w-3.5" />}
                   Select all
                 </button>
-                {emails.map(email => (
-                  <button
-                    key={email.id}
-                    onClick={() => handleSelectEmail(email)}
-                    className={`flex w-full items-start gap-2 border-b border-border/50 px-3 py-2.5 text-left transition-colors hover:bg-muted/50 ${
-                      selectedEmail?.id === email.id ? "bg-primary/5" : ""
-                    } ${!email.is_read ? "bg-primary/[0.02]" : ""}`}
-                  >
-                    <div className="flex shrink-0 items-center gap-1.5 pt-0.5" onClick={e => toggleSelect(email.id, e)}>
-                      {selectedIds.has(email.id) ? <CheckSquare className="h-3.5 w-3.5 text-primary" /> : <Square className="h-3.5 w-3.5 text-muted-foreground" />}
-                    </div>
-                    <button onClick={e => handleStarToggle(email, e)} className="shrink-0 pt-0.5">
-                      {email.is_starred ? <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" /> : <Star className="h-3.5 w-3.5 text-muted-foreground/40 hover:text-amber-400" />}
-                    </button>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className={`truncate text-sm ${!email.is_read ? "font-semibold text-foreground" : "text-foreground/80"}`}>
-                          {activeFolder === "sent"
-                            ? `To: ${(email.to_addresses || []).join(", ") || "Unknown"}`
-                            : email.from_name || email.from_address || "Unknown"
-                          }
-                        </span>
-                        <span className="shrink-0 text-xs text-muted-foreground">{formatDate(email.date)}</span>
+                {emails.map(email => {
+                  const isRead = email.is_read ?? false;
+                  const isStarred = email.is_starred ?? false;
+                  const toArr = toStringArray(email.to_addresses);
+                  const senderDisplay = activeFolder === "sent"
+                    ? `To: ${toArr.join(", ") || "Unknown"}`
+                    : email.from_name || email.from_address || "Unknown";
+                  const snippet = getSnippet(email);
+
+                  return (
+                    <button
+                      key={email.id}
+                      onClick={() => handleSelectEmail(email)}
+                      className={`flex w-full items-start gap-2 border-b border-border/50 px-3 py-2.5 text-left transition-colors hover:bg-muted/50 ${
+                        selectedEmail?.id === email.id ? "bg-primary/5" : ""
+                      } ${!isRead ? "bg-primary/[0.02]" : ""}`}
+                    >
+                      <div className="flex shrink-0 items-center gap-1.5 pt-0.5" onClick={e => toggleSelect(email.id, e)}>
+                        {selectedIds.has(email.id) ? <CheckSquare className="h-3.5 w-3.5 text-primary" /> : <Square className="h-3.5 w-3.5 text-muted-foreground" />}
                       </div>
-                      <p className={`truncate text-sm ${!email.is_read ? "font-medium text-foreground" : "text-muted-foreground"}`}>
-                        {email.subject || "(no subject)"}
-                      </p>
-                      {email.body_text && (
-                        <p className="truncate text-xs text-muted-foreground mt-0.5">
-                          {email.body_text.slice(0, 80)}
+                      <button onClick={e => handleStarToggle(email, e)} className="shrink-0 pt-0.5">
+                        {isStarred ? <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" /> : <Star className="h-3.5 w-3.5 text-muted-foreground/40 hover:text-amber-400" />}
+                      </button>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className={`truncate text-sm ${!isRead ? "font-semibold text-foreground" : "text-foreground/80"}`}>
+                            {senderDisplay}
+                          </span>
+                          <span className="shrink-0 text-xs text-muted-foreground">{formatEmailDate(email.date)}</span>
+                        </div>
+                        <p className={`truncate text-sm ${!isRead ? "font-medium text-foreground" : "text-muted-foreground"}`}>
+                          {email.subject || "(no subject)"}
                         </p>
-                      )}
-                      <div className="flex items-center gap-1 mt-0.5">
-                        {email.has_attachments && <Paperclip className="h-3 w-3 text-muted-foreground" />}
-                        {!email.is_read && <span className="h-2 w-2 rounded-full bg-primary" />}
-                        {activeFolder === "inbox" && email.from_address && (
-                          <span className="text-[10px] text-muted-foreground">&lt;{email.from_address}&gt;</span>
+                        {snippet && (
+                          <p className="truncate text-xs text-muted-foreground mt-0.5">
+                            {snippet}
+                          </p>
                         )}
+                        <div className="flex items-center gap-1 mt-0.5">
+                          {(email.has_attachments ?? false) && <Paperclip className="h-3 w-3 text-muted-foreground" />}
+                          {!isRead && <span className="h-2 w-2 rounded-full bg-primary" />}
+                          {activeFolder === "inbox" && email.from_address && !email.from_name && (
+                            <span className="text-[10px] text-muted-foreground">&lt;{email.from_address}&gt;</span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  );
+                })}
               </div>
             )}
           </ScrollArea>
@@ -511,29 +561,33 @@ export default function AdminMailbox() {
               <div className="mt-2 space-y-1 text-sm">
                 <div className="flex gap-2">
                   <span className="text-muted-foreground w-12">From</span>
-                  <span className="font-medium text-foreground">{selectedEmail.from_name || selectedEmail.from_address}</span>
-                  {selectedEmail.from_name && <span className="text-muted-foreground">&lt;{selectedEmail.from_address}&gt;</span>}
+                  <span className="font-medium text-foreground">{selectedEmail.from_name || selectedEmail.from_address || "Unknown"}</span>
+                  {selectedEmail.from_name && selectedEmail.from_address && <span className="text-muted-foreground">&lt;{selectedEmail.from_address}&gt;</span>}
                 </div>
                 <div className="flex gap-2">
                   <span className="text-muted-foreground w-12">To</span>
-                  <span className="text-foreground">{(selectedEmail.to_addresses || []).join(", ")}</span>
+                  <span className="text-foreground">{toStringArray(selectedEmail.to_addresses).join(", ") || "—"}</span>
                 </div>
-                {selectedEmail.cc_addresses && selectedEmail.cc_addresses.length > 0 && (
+                {toStringArray(selectedEmail.cc_addresses).length > 0 && (
                   <div className="flex gap-2">
                     <span className="text-muted-foreground w-12">CC</span>
-                    <span className="text-foreground">{selectedEmail.cc_addresses.join(", ")}</span>
+                    <span className="text-foreground">{toStringArray(selectedEmail.cc_addresses).join(", ")}</span>
                   </div>
                 )}
                 <div className="flex gap-2">
                   <span className="text-muted-foreground w-12">Date</span>
-                  <span className="text-foreground">{selectedEmail.date ? new Date(selectedEmail.date).toLocaleString() : ""}</span>
+                  <span className="text-foreground">
+                    {selectedEmail.date ? (() => { const d = new Date(selectedEmail.date!); return isNaN(d.getTime()) ? "" : d.toLocaleString(); })() : ""}
+                  </span>
                 </div>
               </div>
             </div>
 
             <ScrollArea className="flex-1 p-4">
-              {selectedEmail.body_html ? (
-                <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedEmail.body_html) }} />
+              {loadingBody ? (
+                <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+              ) : selectedEmail.body_html ? (
+                <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeEmailHtml(selectedEmail.body_html) }} />
               ) : (
                 <pre className="whitespace-pre-wrap text-sm text-foreground font-sans">{selectedEmail.body_text || "No content"}</pre>
               )}
@@ -637,7 +691,7 @@ export default function AdminMailbox() {
                       <Button variant="ghost" size="sm" className="text-xs h-7 text-destructive" onClick={async () => { await supabase.from("email_signatures").delete().eq("id", sig.id); fetchSignatures(); }}>Delete</Button>
                     </div>
                   </div>
-                  <div className="prose prose-sm dark:prose-invert max-w-none text-xs" dangerouslySetInnerHTML={{ __html: sanitizeHtml(sig.signature_html) }} />
+                  <div className="prose prose-sm dark:prose-invert max-w-none text-xs" dangerouslySetInnerHTML={{ __html: sanitizeEmailHtml(sig.signature_html || "") }} />
                 </CardContent>
               </Card>
             ))}
