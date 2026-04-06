@@ -1,197 +1,673 @@
 
 
-# Implementation Plan — 475-Bug Fix Mega-Plan
+# Extended Bug Analysis + Feature Completion Plan — 500 Additional Issues (Bugs 476-975)
 
-This plan addresses all 475 identified bugs across 10 implementation batches. Given the scope, each batch groups related fixes to maximize impact per step.
-
----
-
-## Batch 1: Critical Widget Conflicts & Auth Fixes (Bugs 1, 2, 6, 7, 28, 38, 62, 167)
-
-**Files**: `App.tsx`, `PageShell.tsx`, `MobileFAB.tsx`, `SignerFAQBot.tsx`, `Navbar.tsx`
-
-- Remove `SignerFAQBot` from `App.tsx` (line 233) — `AILeadChatbot` in `PageShell` already serves this role (Bug 1)
-- Adjust `MobileFAB` bottom position to `bottom-28` to avoid overlap with chatbot (Bug 2, 167)
-- Wrap `/ai-tools` route in `ProtectedRoute` (Bug 6)
-- Make `SignerFAQBot` handle unauthenticated users gracefully — show login prompt instead of calling edge function (Bug 7)
-- Add CSRF header (`X-Requested-With`) to `AILeadChatbot` edge function call (Bug 28)
-- Fix Navbar "Tools" dropdown link from `/ai-writer` to `/ai-tools` (Bug 38)
-- Conditionally render `CommandPalette` only for authenticated users (Bug 62)
+All existing bugs 1-475 and the current 10-batch plan remain unchanged. This adds 500 more findings plus completion of missing features (AI Document Review, Referral Program, Real-Time Session Tracking, Compliance Report enhancements, and more).
 
 ---
 
-## Batch 2: Security & Data Protection (Bugs 5, 8, 9, 17, 18, 30, 31, 32, 33, 36, 40, 42, 45, 126-155)
+## FEATURE COMPLETIONS (FC-1 through FC-20)
 
-**Database migration** to fix foreign keys:
-- Change `referrals.referrer_id` FK from `auth.users(id)` to reference `profiles(user_id)` (Bug 8)
-- Change `tool_generations.user_id` FK from `auth.users(id)` to reference `profiles(user_id)` (Bug 9)
-- Tighten `session_tracking` RLS SELECT policy — restrict to matching `shareable_token` via request header or remove `USING (true)` (Bug 17, 31)
-- Add auth/cron-secret check to `send-sms-reminder` edge function (Bug 18)
+### FC-1: AI Document Review — Full Integration
+**Current state**: Edge function `ai-document-review` exists but is not wired into the client portal or admin UI.
+**Plan**: Add "AI Review" button to `PortalDocumentsTab.tsx` and `AdminDocuments.tsx` that invokes the edge function, displays findings inline with severity badges, and stores results in a `document_reviews` column or table.
 
-**File changes**:
-- `RescheduleAppointment.tsx`: Return generic "Not found" message for both email and confirmation mismatches (Bug 32); add attempt counter (max 5) via state (Bug 30); use `sessionStorage` instead of `localStorage` for `pendingBooking` (Bug 33)
-- Validate phone E.164 format in `send-sms-reminder` before Twilio call (Bug 36)
-- Add `.eq("client_id", user.id)` to appointment cancellation in `ClientPortal.tsx` (Bug 40)
-- Remove auto email capture from `AILeadChatbot` — require explicit consent (Bug 42)
-- Add CSP meta tag to `index.html` (Bug 45)
-- Sanitize admin notes before storage (Bug 137); validate file types on upload (Bug 134)
-- Add admin role check to `admin-create-user` edge function (Bug 133)
-- Add `style` removal from `sanitize.ts` ALLOWED_ATTR (Bug 153)
-- Add rate limiting to `submit-lead` edge function (Bug 155)
+### FC-2: Referral Program — End-to-End
+**Current state**: `ReferralPortal.tsx` shows `?ref=loading` (Bug 3). No referral tracking on signup. No reward system.
+**Plan**: Fix referral code generation (via DB trigger already added). Add `ref` param capture in `SignUp.tsx` to link referee to referrer. Add referral status tracking (pending → signed_up → converted). Add admin referral dashboard tab in `AdminLeadPortal.tsx`. Add reward notification when referral converts.
 
----
+### FC-3: Real-Time Session Tracking — Enhanced
+**Current state**: `SessionTracker.tsx` exists with basic status display. `session_tracking` table has overly permissive RLS.
+**Plan**: Add admin controls to create/update tracking tokens from `AdminAppointments.tsx`. Add SMS/email notification with tracking link to clients. Add estimated completion time. Add step-by-step progress (document upload → KBA → signing → complete). Fix RLS to restrict by token match.
 
-## Batch 3: Critical Logic Fixes (Bugs 3, 10, 11, 12, 13, 14, 15, 24, 25, 27, 37, 41, 47, 56, 58, 59, 71)
+### FC-4: Compliance Report — Full Ohio RON Audit
+**Current state**: `AdminComplianceReport.tsx` shows basic stats. Missing per-session audit trail.
+**Plan**: Add drill-down view per session showing KBA status, recording status, journal entry status, seal verification status. Add "Generate Monthly Report" button that saves to `compliance_reports` table. Add PDF export of compliance report. Add automated gap detection (completed sessions missing journal entries, missing recordings, expired commission at time of notarization).
 
-**`ReferralPortal.tsx`** (Bugs 3, 58, 59):
-- Generate a per-user referral code (crypto.randomUUID().slice(0,8)) on first load if none exists
-- Show referral link only when valid code available
+### FC-5: Admin Notification System — Real-Time
+**Current state**: `AdminNotificationCenter.tsx` exists but notifications may not be real-time.
+**Plan**: Add realtime subscription to `notification_queue` table. Add push notification support via browser Notification API. Add notification preferences (email, browser, SMS). Add "Mark All Read" functionality.
 
-**`AdminPerformance.tsx`** (Bugs 10, 11, 24):
-- Add `id` to appointments select query
-- Join `profiles` table to show notary names instead of UUIDs
-- Remove unused `Button` import
+### FC-6: Client Onboarding Flow — Guided
+**Current state**: `OnboardingWizard.tsx` and `PortalOnboardingChecklist.tsx` exist.
+**Plan**: Wire onboarding checklist completion to profile (store progress in `profiles.onboarding_complete`). Add first-login detection. Add progress persistence across sessions.
 
-**`DocumentReadinessScore.tsx`** (Bug 12):
-- Remove `|| uploadedDocuments.length > 0` short-circuit
-- Implement proper keyword matching per requirement type
+### FC-7: Document Wizard — Complete Flow
+**Current state**: `DocumentWizard.tsx` exists in portal.
+**Plan**: Add template selection step. Add field auto-fill from profile. Add preview before submission. Add integration with `ai-document-review` for pre-submission checks.
 
-**`RevenueForecast.tsx`** (Bug 13):
-- Guard division by zero: `const denom = n * sumX2 - sumX * sumX; if (denom === 0) return flatProjection;`
+### FC-8: Invoice Generator — PDF Output
+**Current state**: `InvoiceGenerator.tsx` exists as a component.
+**Plan**: Wire to admin revenue page. Add "Generate Invoice" button per payment. Add PDF generation via edge function. Add email delivery of invoices.
 
-**`AdminComplianceReport.tsx`** (Bug 14): Add `setLoading(true)` at start of useEffect
-**`AdminWebhooks.tsx`** (Bug 15): Add `setLoading(true)` at start of useEffect
+### FC-9: E-Seal Verification — Public Page
+**Current state**: `VerifySeal.tsx` and `ESealEmbed.tsx` exist. `e_seal_verifications` table exists.
+**Plan**: Verify the public verification flow works end-to-end. Add QR code on certificates linking to verification page. Add verification count tracking.
 
-**`BookAppointment.tsx`** (Bugs 27, 37, 47, 56, 71):
-- Fix pending booking restore to include all intake fields (Bug 27)
-- Add ref-based guard for double-submit prevention (Bug 37)
-- Clear form state before navigation after successful booking (Bug 47)
-- Replace `as any` casts with proper status types (Bug 56)
-- Remove inline rush fee addition (rely on pricingBreakdown.total) (Bug 71)
+### FC-10: Admin Build Tracker — Feature Completion
+**Current state**: Extensive build tracker with many tabs exists.
+**Plan**: Verify all tabs function (Dashboard, Todo, AI Analyst, Gap Analysis, etc.). Add completion percentage tracking. Wire "Verify Fixes" button to actual test runs.
 
-**`SignerFAQBot.tsx`** (Bug 41): Cap messages to last 20
+### FC-11: Stripe Payment Flow — End-to-End
+**Current state**: `PaymentForm.tsx`, `create-payment-intent`, `stripe-webhook` edge functions exist.
+**Plan**: Verify payment flow from booking through confirmation. Add receipt generation on successful payment. Add payment status webhook handling. Add refund UI in admin revenue.
 
----
+### FC-12: Email Queue System — Operational
+**Current state**: `process-email-queue` edge function exists with PGMQ integration.
+**Plan**: Verify queue processing works. Add dead letter queue monitoring in admin. Add email delivery status tracking. Add retry logic visualization.
 
-## Batch 4: UX & Navigation Fixes (Bugs 34, 38, 39, 46, 51, 53, 61, 67, 68, 69, 70, 87, 90, 101, 118)
+### FC-13: Google Calendar Sync — Bidirectional
+**Current state**: `google-calendar-sync` edge function exists. UI in AdminOverview.
+**Plan**: Add calendar event creation on appointment booking. Add calendar event updates on status changes. Add conflict detection.
 
-- Fix admin route access for notary role — audit `adminOnly` flags (Bug 34)
-- Fix Google OAuth redirect to `/portal` (Bug 39)
-- Fix admin sidebar active route highlighting — remove `end` prop for non-index items (Bug 46)
-- Client Portal: use controlled `value` + `onValueChange` for tabs (Bug 51)
-- Add pagination to webhook events (Bug 53)
-- Remove `target="_blank"` from internal `<Link>` in BookingReviewStep (Bug 61)
-- Add Tools section to mobile hamburger menu (Bug 67)
-- Add "Dark Mode" label to mobile toggle (Bug 68)
-- Replace `<Input type="time">` with slot-based selector in RescheduleAppointment (Bug 69)
-- Add PDF/DOCX export buttons to ToolRunner using window.print() (Bug 70)
-- Group Client Portal tabs — use "More" dropdown for secondary tabs (Bug 87)
-- Fix `confirmPassword` minLength to 8 in SignUp (Bug 90)
-- Filter past time slots when booking today's date (Bug 101)
-- Track user interaction dirty flag for beforeunload in BookAppointment (Bug 118)
+### FC-14: SignNow Integration — Webhook Processing
+**Current state**: `signnow-webhook` and `signnow` edge functions exist.
+**Plan**: Verify webhook event processing. Add document status sync. Add signing completion triggers (auto-update appointment status).
 
----
+### FC-15: SMS Reminders — Automated
+**Current state**: `send-sms-reminder` edge function exists (needs auth fix per Bug 18).
+**Plan**: Add scheduled trigger for upcoming appointments. Add opt-in/opt-out in client portal. Add SMS template customization in admin settings.
 
-## Batch 5: Performance & Data Optimization (Bugs 35, 48, 49, 50, 55, 66, 79, 116, 127, 128, 130, 156, 164, 165, 172, 174, 180)
+### FC-16: Appointment Email Lifecycle
+**Current state**: `send-appointment-emails` edge function exists.
+**Plan**: Verify all email types work (confirmation, reminder, cancellation, completion, follow-up). Add email delivery status tracking. Add re-send capability in admin.
 
-- Add `.limit(1000)` and pagination to all admin data queries (Bugs 35, 49, 66, 130, 156, 164, 165, 174, 180)
-- Include all payment statuses in RevenueForecast, annotate in UI (Bug 48)
-- Use Ohio timezone-aware dates in compliance report (Bug 50)
-- Pass payment data from AdminRevenue to RevenueForecast as props (Bug 55)
-- Add `filter: "client_id=eq.{userId}"` to ClientPortal realtime subscription (Bug 79)
-- Reduce `staleTime` to 60s for admin pages (Bug 116)
-- Paginate AdminChat messages per user (Bug 127)
-- Add user filter to AdminChat realtime channel (Bug 128)
-- Add visibility API check to AdminOverview auto-refresh (Bug 172)
+### FC-17: HubSpot CRM Sync
+**Current state**: `hubspot-sync` edge function exists.
+**Plan**: Verify contact sync. Add deal creation on appointment booking. Add activity logging on status changes.
+
+### FC-18: OCR Document Digitization
+**Current state**: `ocr-digitize` edge function and `DocumentDigitize.tsx` page exist.
+**Plan**: Verify OCR processing works. Add batch upload support. Add extracted text editing. Add save-to-documents flow.
+
+### FC-19: Translation Panel
+**Current state**: `TranslationPanel.tsx` and `translate-document` edge function exist.
+**Plan**: Verify translation works in admin appointments. Add language detection. Add translated document storage.
+
+### FC-20: Style Match AI
+**Current state**: `StyleMatchPanel.tsx` and `ai-style-match` edge function exist.
+**Plan**: Verify style analysis works. Add style profile management. Add "Write in this style" option in AI Writer.
 
 ---
 
-## Batch 6: Edge Function Hardening (Bugs 16, 20, 21, 131, 140, 142, 151)
+## CRITICAL BUGS (476-510)
 
-- Add Zod input validation to `ai-schedule-optimizer`, `assign-task`, `ai-batch-process`, `export-document` (Bug 21)
-- Add server-side file size validation to `scan-id` (Bug 131)
-- Strip sensitive headers from `discover-leads` responses (Bug 140)
-- Add platform_settings RLS for admin-only reads (Bug 142)
-- Truncate webhook payloads >50KB before storage (Bug 151)
-- Improve `export-document` to use browser print dialog with styled HTML (Bug 16)
-- Add History tab to AI Tools page querying `tool_generations` (Bug 20)
+### Bug 476: AuthenticatedCommandPalette Renders Without Auth Check
+`App.tsx` line 223-226: `AuthenticatedCommandPalette` wraps `CommandPalette` but doesn't actually check auth. The component renders for all users including anonymous visitors.
+
+### Bug 477: Admin Sidebar Shows All Nav Items to Notaries Including Sensitive Pages
+`AdminDashboard.tsx` line 51: Filter only checks `adminOnly` flag, but notaries can still see and access non-adminOnly pages like Documents, Templates, Journal, Resources, AI Assistant. Some of these expose data from all clients.
+
+### Bug 478: AdminOverview Fetches ALL Profiles Without Limit
+Line 57: `supabase.from("profiles").select("user_id, full_name, email")` — no `.limit()`, fetches every profile in the system.
+
+### Bug 479: AdminOverview Fetches 365 Days of Appointments Without Limit
+Line 58: Fetches a full year of appointment data into memory for charts.
+
+### Bug 480: AdminAppointments formatDate/formatTime Duplicated (Not Using Shared Utils)
+Lines 35-40: Local `formatDate` and `formatTime` functions defined despite shared utilities now existing in `lib/utils.ts`.
+
+### Bug 481: AdminOverview formatDate/formatTime Duplicated
+Lines 16-21: Same duplication as Bug 480.
+
+### Bug 482: AdminClients formatDate Duplicated
+Line 19: Same pattern.
+
+### Bug 483: AdminJournal Fetches ALL Journal Entries Without Limit
+Line 41: `supabase.from("notary_journal").select("*")` — no limit or pagination.
+
+### Bug 484: AdminJournal Hard-Deletes Entries (Compliance Violation)
+Line 163: `supabase.from("notary_journal").delete()` — violates ORC §147.551 requiring 5-year retention. The `archived` column was added in migration but the UI still uses hard delete.
+
+### Bug 485: AdminClients Fetches ALL Appointments Without Limit
+Line 74 area: Loads all appointments into memory for client appointment counts.
+
+### Bug 486: AdminClients Email Send Doesn't Check Suppression List
+Line 51: `sendClientMessage` sends emails without checking `suppressed_emails` table.
+
+### Bug 487: AdminSettings Console Warn Leaks Security Information
+Line ~99: `console.warn("KBA API keys...")` visible in browser console.
+
+### Bug 488: AdminRevenue getDateRange "week" Uses 7-Day Offset Not Week Start
+Lines 23-24: "This week" subtracts 7 days instead of calculating from Monday/Sunday.
+
+### Bug 489: AdminRevenue Payment Insert No Server-Side Amount Validation
+Line ~178: Manual payment recording accepts any amount from client-side.
+
+### Bug 490: AdminCRM Deal Value Can Be Negative
+No min={0} validation on deal value input.
+
+### Bug 491: AdminLeadPortal Discover Button Has No Debounce
+Line 46 area: Rapid clicks trigger multiple expensive AI discovery calls.
+
+### Bug 492: AdminAppointments Status Flow Allows no_show → scheduled
+Line 30: `no_show: "scheduled"` allows rescheduling from no-show without penalty check.
+
+### Bug 493: Unsubscribe Inserts "pending" Email — Never Resolves to Real Email
+Lines 20-23: Always inserts `email: "pending"` regardless of token. Suppression check will never match actual emails.
+
+### Bug 494: AdminChat Loads ALL Messages From ALL Users Into Memory
+No limit on chat_messages query — potential memory exhaustion with high volume.
+
+### Bug 495: 120+ Empty Catch Blocks Throughout Codebase
+17 files with `catch {}` — errors silently swallowed, making debugging impossible.
+
+### Bug 496: 354 Uses of `useState<any>` Across 40 Files
+No type safety on state variables. Any refactoring is error-prone.
+
+### Bug 497: Client Portal Realtime Subscription Too Broad (payments)
+Subscribes to ALL payment events, not just the current user's.
+
+### Bug 498: Session Tracking RLS USING(true) Exposes All Records
+Anonymous users can SELECT all session_tracking rows.
+
+### Bug 499: AdminAppointments 80+ State Variables in Single Component
+Lines 44-80: Extremely unmaintainable component.
+
+### Bug 500: RonSession 1400 Lines in Single Component
+Handles setup, KBA, oath, finalize, payment — should be split.
+
+### Bug 501: ServiceDetail 1061 Lines in Single Component
+Too large for maintainability.
+
+### Bug 502: BookAppointment 808 Lines With 50+ State Variables
+Should use reducer or context.
+
+### Bug 503: AdminLeadPortal 810 Lines in Single Component
+Should be split into sub-components.
+
+### Bug 504: AdminCRM 1096 Lines — Missing Type Safety
+545 lines of untyped state management with `any` everywhere.
+
+### Bug 505: AdminRevenue 632 Lines — Duplicate Payment Queries
+RevenueForecast makes its own payment query, duplicating parent's data.
+
+### Bug 506: AdminSettings 554 Lines — No Confirmation for Sensitive Changes
+Can change commission dates, API keys without re-authentication.
+
+### Bug 507: AdminClients 460 Lines — Client-Side Search Only
+All profiles fetched then filtered in-browser.
+
+### Bug 508: Footer Business Hours Hardcoded
+Don't sync with `platform_settings`.
+
+### Bug 509: Footer Missing Social Media Links
+No Facebook, LinkedIn, Google Business links.
+
+### Bug 510: Login.tsx Google OAuth Redirect Goes to Root Instead of /portal
+Line ~130: `redirectTo: window.location.origin` should be `/portal`.
 
 ---
 
-## Batch 7: Compliance & Ohio RON (Bugs 136, 143, 149, 196, 201, 243, 251)
+## HIGH SEVERITY (511-620)
 
-- Add explicit recording consent to RON session ESign consent text (Bug 136)
-- Implement soft delete for journal entries (archived flag) per ORC §147.551 (Bug 143)
-- Add signer location capture in RON session (Bug 149)
-- Make refusal reason required for appointment refusals (Bug 196)
-- Add vital records check to RON session (Bug 201)
-- Verify journal CSV export includes all ORC-required fields (Bug 243)
-- Display KBA attempt count in admin appointment view (Bug 251)
+### Bug 511: No `rel="noopener noreferrer"` consistency on external links
+### Bug 512: Index page AnimatedCounter aria-live announces every increment
+### Bug 513: Service page grid 3-col with 4 items creates asymmetry
+### Bug 514: Admin sidebar doesn't highlight active route for nested paths
+### Bug 515: Client Portal defaultValue tabs don't support controlled updates
+### Bug 516: No pagination on webhook events (max 100 shown)
+### Bug 517: BookingReviewStep terms link uses target="_blank" on internal Link
+### Bug 518: Mobile menu doesn't show AI Tools section
+### Bug 519: DarkModeToggle in mobile menu has no visible label
+### Bug 520: RescheduleAppointment uses arbitrary time Input, not slot picker
+### Bug 521: No PDF/DOCX export in ToolRunner (only markdown)
+### Bug 522: Client Portal 13 tabs cause horizontal overflow on mobile
+### Bug 523: SignUp confirmPassword minLength=6 instead of 8
+### Bug 524: Booking allows past time slots for today's date
+### Bug 525: beforeunload fires on pre-filled URL params in booking
+### Bug 526: SignUp redirects before role check completes
+### Bug 527: AdminAppointments calendar view loads all data regardless of month
+### Bug 528: AdminAppointments missing bulk select/actions
+### Bug 529: AdminAppointments filter state not URL-persisted
+### Bug 530: AdminAppointments missing "Book Again" for repeat clients
+### Bug 531: AdminAppointments missing Google Maps link for in-person
+### Bug 532: AdminAppointments missing color-coded calendar by status
+### Bug 533: AdminAppointments missing distance calculation for mobile notary
+### Bug 534: AdminAppointments missing batch email for filtered appointments
+### Bug 535: AdminAppointments missing wait list when fully booked
+### Bug 536: AdminAppointments missing status history tracking
+### Bug 537: AdminAppointments missing no-show pattern detection
+### Bug 538: AdminAppointments missing client satisfaction display
+### Bug 539: AdminAppointments missing batch print receipts
+### Bug 540: AdminAppointments missing recurring appointment support
+### Bug 541: AdminRevenue missing YTD summary card
+### Bug 542: AdminRevenue missing profit margin percentage
+### Bug 543: AdminRevenue missing Stripe fee calculation
+### Bug 544: AdminRevenue missing payment method breakdown chart
+### Bug 545: AdminRevenue missing refund processing UI
+### Bug 546: AdminRevenue missing late/overdue payment indicators
+### Bug 547: AdminRevenue missing invoice PDF generation integration
+### Bug 548: AdminRevenue missing period comparison mode
+### Bug 549: AdminRevenue missing payment link generation
+### Bug 550: AdminRevenue missing expense categories beyond platform/travel
+### Bug 551: AdminCRM missing activity "task" type
+### Bug 552: AdminCRM missing contact deduplication
+### Bug 553: AdminCRM missing lead-to-deal one-click conversion
+### Bug 554: AdminCRM missing follow-up reminders with dates
+### Bug 555: AdminCRM missing deal tags
+### Bug 556: AdminCRM missing pipeline drag-and-drop
+### Bug 557: AdminCRM missing deal age tracking (days in stage)
+### Bug 558: AdminCRM missing contact merge functionality
+### Bug 559: AdminCRM missing custom fields
+### Bug 560: AdminCRM missing CRM-specific reporting dashboard
+### Bug 561: AdminCRM missing import/export CSV
+### Bug 562: AdminCRM pipeline view not responsive on mobile
+### Bug 563: AdminLeadPortal missing lead scoring automation
+### Bug 564: AdminLeadPortal missing lead source analytics chart
+### Bug 565: AdminLeadPortal missing conversion funnel visualization
+### Bug 566: AdminLeadPortal missing email campaign trigger
+### Bug 567: AdminLeadPortal missing lead assignment to team members
+### Bug 568: AdminLeadPortal source_url not validated
+### Bug 569: AdminLeadPortal missing response time tracking
+### Bug 570: AdminJournal missing compliance dashboard visualization
+### Bug 571: AdminJournal missing bulk CSV import for migration
+### Bug 572: AdminJournal missing batch entry mode for multi-signer sessions
+### Bug 573: AdminJournal missing digital notary signature on entries
+### Bug 574: AdminJournal CSV export may miss ORC-required fields
+### Bug 575: AdminChat missing typing indicator
+### Bug 576: AdminChat missing file attachment completion
+### Bug 577: AdminChat missing message search implementation
+### Bug 578: AdminChat canned responses hardcoded (not customizable)
+### Bug 579: AdminChat missing offline status indicator
+### Bug 580: AdminChat missing unread count badge in sidebar
+### Bug 581: AdminSettings missing settings export/import for backup
+### Bug 582: AdminSettings missing health check page
+### Bug 583: AdminSettings missing notification configuration
+### Bug 584: AdminSettings missing API key rotation UI
+### Bug 585: AdminSettings missing re-authentication for sensitive changes
+### Bug 586: AdminTeam invite links may not expire
+### Bug 587: Client Portal missing account deletion (GDPR)
+### Bug 588: Client Portal missing notification preferences
+### Bug 589: Client Portal missing saved payment methods
+### Bug 590: Client Portal missing dark mode persistence from main site
+### Bug 591: Client Portal missing print-friendly styles
+### Bug 592: Client Portal missing document search/filter
+### Bug 593: Client Portal missing document versioning UI
+### Bug 594: Client Portal missing document co-signing
+### Bug 595: Client Portal missing document annotation
+### Bug 596: Client Portal missing drag-and-drop upload
+### Bug 597: Client Portal missing bulk document download
+### Bug 598: Client Portal missing session recording access per ORC §147.66
+### Bug 599: Client Portal missing pre-appointment tech check link
+### Bug 600: Client Portal missing appointment preparation checklist
+### Bug 601: Client Portal missing quick re-book from past appointment
+### Bug 602: Client Portal missing two-panel layout on desktop
+### Bug 603: Client Portal missing FAQ section inline
+### Bug 604: Client Portal missing security log (login history)
+### Bug 605: Client Portal missing profile photo upload
+### Bug 606: BookAppointment missing address pre-fill from profile
+### Bug 607: BookAppointment missing "Next Available" shortcut
+### Bug 608: BookAppointment missing group booking support
+### Bug 609: BookAppointment missing co-signer information fields
+### Bug 610: BookAppointment missing witness scheduling
+### Bug 611: BookAppointment missing promo/discount code field
+### Bug 612: BookAppointment step indicators not clickable for completed steps
+### Bug 613: BookAppointment missing price display on step 1
+### Bug 614: BookAppointment missing after-hours surcharge indicator on slots
+### Bug 615: BookAppointment missing returning client detection/pre-fill
+### Bug 616: Service Request missing confirmation email trigger
+### Bug 617: Service Request missing SLA/estimated completion display
+### Bug 618: Service Request missing auto-assignment integration
+### Bug 619: Service Request missing duplicate detection
+### Bug 620: Service Request missing priority selection (rush/standard)
 
 ---
 
-## Batch 8: Shared Utilities & Code Quality (Bugs 78, 91, 106, 107, 108, 109, 122, 157, 158, 236)
+## MEDIUM SEVERITY (621-800)
 
-- Create shared `formatDate`/`formatTime` utilities in `lib/utils.ts`, replace all duplicates (Bugs 78, 157, 158)
-- Extract `getPasswordStrength` to `lib/security.ts` (Bug 91)
-- Remove empty `className=""` props (Bug 106)
-- Remove unused `showSignup` state from BookAppointment (Bug 107)
-- Standardize Logo usage across pages (Bug 108)
-- Replace `any[]` with proper interfaces for top 50 occurrences (Bug 109)
-- Fix RevenueForecast to use actual month numbers as x-values (Bug 122)
-- Add `console.error` to all empty catch blocks (Bug 236, 120+ instances)
+### Bug 621-630: Index Page Issues
+- Missing OpenGraph image meta tag
+- Missing structured review data in JSON-LD
+- Testimonials don't show dates
+- Stats counter accessibility (aria-live announces every increment)
+- Contact form missing phone format validation
+- Contact form missing disposable email check
+- Hero animation delays mobile perceived load
+- FAQ items missing unique keys verification
+- Missing lazy loading on below-fold images
+- JSON-LD schema uses hardcoded coordinates
+
+### Bug 631-640: Service Pages Issues
+- ServiceDetail missing JSON-LD structured data per service
+- ServiceDetail missing print button
+- ServiceDetail missing social proof/reviews per service
+- ServiceDetail heading hierarchy issues (h1 → h3 without h2)
+- ServiceDetail checklist persists in localStorage forever
+- Services page category tabs missing scroll indicators on mobile
+- Services page missing service comparison table
+- ServiceDetail missing availability indicator
+- ServiceDetail missing video overview placeholder
+- ServiceDetail missing related/recommended services
+
+### Bug 641-650: About/Terms/Legal Pages
+- About page commission expiry uses client timezone instead of ET
+- About page hardcoded business description
+- About page missing team member profiles from database
+- Terms page version not tracked (hardcoded date)
+- Terms page missing version history
+- Signer Rights page needs link from booking flow
+- Notary Guide needs ORC citation updates
+- RON Info page missing state-by-state comparison feature
+- RON Eligibility Checker missing save/share results
+- Help/Support page missing ticket system
+
+### Bug 651-660: Solution Pages
+- ForHospitals missing CTA tracking analytics
+- ForRealEstate missing integration with loan signing flow
+- ForLawFirms missing case management mention
+- ForSmallBusiness missing volume discount info
+- ForNotaries missing commission renewal info
+- ForIndividuals missing pricing comparison
+- All solution pages missing testimonials per industry
+- All solution pages missing conversion tracking
+- All solution pages missing lead capture forms
+- Solution pages missing A/B test support for CTAs
+
+### Bug 661-680: Edge Function Issues
+- `ai-compliance-scan` missing input length limit (Bug 200 extension)
+- `ai-cross-document` missing document count limit
+- `ai-batch-process` missing batch size limit
+- `build-analyst` missing rate limiting
+- `client-assistant` missing conversation history limit
+- `notary-assistant` missing conversation history limit
+- `detect-document` missing file type validation
+- `explain-document` missing document size limit
+- `generate-lead-proposal` missing proposal template validation
+- `fetch-leads` missing pagination
+- `scrape-social-leads` missing URL validation
+- `extract-email-leads` missing batch size limit
+- `process-inbound-email` missing spam filtering
+- `ionos-email-sync` missing pagination for large mailboxes
+- `ionos-email` missing attachment size limit
+- `health-check` not returning component-level status
+- `create-payment-intent` missing amount validation
+- `get-stripe-config` caching Stripe key at module level
+- `process-refund` missing partial refund support
+- `send-correspondence` missing HTML sanitization
+
+### Bug 681-700: Database/RLS Issues
+- `platform_settings` readable by all authenticated users (should be admin-only)
+- `chat_messages` RLS allows notaries to see all admin messages
+- `webhook_events` table missing cleanup policy for old events
+- `booking_drafts` missing TTL/cleanup for abandoned drafts
+- `email_cache` no retention policy
+- `audit_log` no archival policy for old entries
+- `crm_activities` missing index on contact_id for performance
+- `appointments` missing composite index on (scheduled_date, status)
+- `documents` missing index on uploaded_by
+- `payments` missing index on client_id
+- `leads` missing index on status for pipeline queries
+- `notary_journal` missing index on created_at for date range queries
+- `session_tracking` missing index on shareable_token
+- `referrals` missing index on referrer_id
+- `tool_generations` missing index on user_id
+- `content_posts` missing index on status for published queries
+- `email_send_log` missing cleanup for old logs
+- `form_library` not accessible to clients (should be for templates page)
+- `document_versions` missing cascade delete when parent document deleted
+- `continuing_education` not linked from admin settings compliance check
+
+### Bug 701-720: Component Issues
+- `ErrorBoundary` doesn't report errors to audit log (only console.error)
+- `SessionTimeoutWarning` modal not keyboard accessible
+- `OfflineIndicator` shows but no service worker exists
+- `BackToTop` overlaps MobileFAB at same position
+- `Breadcrumbs` not rendered on all pages consistently
+- `ComplianceBanner` text not configurable from admin
+- `PreSigningChecklist` not linked from appointment flow
+- `SignerChecklist` not used in client-facing flow
+- `IDScanAssistant` not integrated with booking flow
+- `BulkDocumentUpload` not used in admin documents page
+- `NotarizationCertificate` missing download/print integration
+- `CalendarDownload` .ics file missing timezone
+- `CharCounter` not used on any textarea in production
+- `ClientFeedbackForm` missing validation for rating bounds
+- `ServicePreQualifier` not linked from services page
+- `OnboardingWizard` completion not persisted
+- `PortalQuickActions` missing customization
+- `EmptyState` component not used consistently
+- `AdminSavedFilters` not integrated into admin appointment filters
+- `ProgressTimeline` missing animation
+
+### Bug 721-750: Accessibility Issues
+- Missing skip-to-content link in Client Portal
+- Missing aria-describedby on form error messages
+- Missing focus visible styles on custom components
+- Missing prefers-reduced-motion support globally
+- Step indicators missing aria-labels ("Step 1 of 3: Select Service")
+- Tab panels missing aria-labelledby associations
+- Modal dialogs missing focus trap verification
+- Toast notifications not announced to screen readers
+- Loading spinners missing aria-busy on containers
+- Data tables missing proper thead/tbody semantics
+- Charts missing alternative text descriptions
+- Color-only status indicators (need icon + text alternatives)
+- Phone links missing aria-label with formatted number
+- External links missing visual indicator and aria-label
+- Pagination controls missing aria-label context
+- Search inputs missing associated label elements
+- Date picker keyboard navigation verification needed
+- File upload dropzone missing keyboard activation
+- Accordion items missing expanded/collapsed state
+- Mobile hamburger menu missing aria-expanded
+- Sidebar collapsed state missing accessible labels
+- Admin notification bell missing live region
+- Chat message list missing role="log"
+- Form submission success/error not announced
+- Tab order verification across all pages
+- High contrast mode support verification
+- Screen reader testing for Recharts visualizations
+- Focus management after dialog close
+- Focus management after page navigation
+- Landmark regions (main, nav, aside) verification
+
+### Bug 751-800: UX Polish & Missing Features
+- No PWA install prompt
+- No offline page content
+- No service worker registration
+- Manifest.json missing multiple icon sizes
+- robots.txt not blocking admin routes
+- sitemap.xml static (doesn't include dynamic service pages)
+- Missing favicon PNG sizes for iOS/Android
+- No performance budget defined
+- No bundle analyzer configured
+- No E2E tests written (Playwright config exists)
+- No WCAG 2.1 AA audit performed
+- No Lighthouse CI integration
+- Missing upgrade-insecure-requests meta tag
+- Cookie consent missing "Reject Non-Essential" (already noted, verify fix)
+- Dark mode flash on initial load (verify fix applied)
+- Footer year verification (already dynamic)
+- Missing console.warn removal in AdminSettings
+- Module-level caching in PageShell creates memory leak
+- QueryClient staleTime 5min may show stale admin data
+- Multiple Supabase realtime channels without proper cleanup
+- Booking draft persistence missing error handling
+- Service category filter uses object key lookup without fallback
+- AppointmentConfirmation lazy-loaded causing flash after booking
+- Admin Performance missing refresh button
+- Admin Overview missing calendar widget for daily view
+- No sitemap generation from services table
+- Email template designer HTML stored without sanitization
+- Webhook event payloads displayed as raw JSON (layout issues)
+- Admin CRM calendar integration missing
+- Admin task queue missing auto-assignment toggle
+- No form reset after admin apostille submission
+- Admin business clients missing revenue attribution
+- Admin appointments missing export to Google Calendar
+- Missing structured data for reviews on index page
+- Index page stats not sourced from database
+- Service request missing auto-save indicator
+- Service request file upload size unlimited
+- Booking confirmation missing share with co-signer
+- Admin revenue tax reporting missing
+- Client portal missing two-factor authentication option
+- Admin appointments missing client contact quick-actions
+- Admin overview missing revenue trend arrow
+- Admin overview missing quick stats drill-down
+- Client portal missing document template downloads
+- Booking page missing document upload pre-check for RON
+- Admin settings missing theme/brand customization
+- Admin revenue missing multi-notary revenue split
+- Admin appointments missing VoIP integration
+- Client portal missing language selector
+- Admin settings missing audit trail view for settings changes
 
 ---
 
-## Batch 9: UX Enhancements (Bugs 82-105 medium, 170-225 high, 226-375 medium)
+## LOW SEVERITY (801-975)
 
-Key items from medium/high severity:
-- Add debounce to ToolCatalog search (Bug 98)
-- Add Google Calendar debounce for AdminOverview (Bug 173)
-- Fix dark mode flash — add theme script to index.html `<head>` (Bug 183)
-- Add phone validation using existing `phoneValidation.ts` to Index contact form (Bug 170, 289)
-- Add geolocation request only for in-person bookings (Bug 171, 88)
-- Add `prefers-reduced-motion` support globally (Bug 226)
-- Fix Cookie Consent dismiss vs accept behavior (Bug 168, 169)
-- Add suppression list check before admin emails (Bug 208)
-- Add empty state for 0 RON sessions in compliance report (Bug 86)
-- Summarize compliance gaps instead of per-session listing (Bug 22)
-- Add admin 404 catch-all route (Bug 260) — already exists at line 216
-- Add step aria-labels for booking accessibility (Bug 306, 346)
+### Bug 801-850: Code Quality
+- 354 `useState<any>` across 40 files need proper interfaces
+- 120 empty catch blocks need at minimum `console.error`
+- `getPasswordStrength` duplicated in SignUp and ForgotPassword
+- Multiple `formatDate`/`formatTime` duplications (5+ files)
+- Empty `className=""` props in 10+ components
+- Unused `showSignup` state in BookAppointment
+- Logo `showText` prop inconsistently used
+- SEO schemas hardcoded instead of from database
+- Service detail multiple console.error on empty results
+- Tool categories missing Ohio-specific filter
+- AnimatePresence key causes full re-mount on navigation
+- Booking draft autosave dependency array too broad
+- Service autosave key collision for multiple tabs
+- Admin task queue uses window.location.reload()
+- Admin content workspace uses window.location.reload()
+- RevenueForecast linear regression assumes sequential months
+- PageShell module-level cache doesn't follow React patterns
+- No loading indicator for admin sidebar navigation (lazy load)
+- Admin appointments 37+ useState hooks (should be reducer)
+- AdminAppointments status flow allows invalid transitions
+
+### Bug 851-900: Missing Consistency
+- Date formatting varies across admin pages
+- Currency formatting inconsistent (.toFixed(2) vs raw)
+- Status badge colors not optimized for dark mode
+- Error messages not standardized (use errorMessages.ts)
+- Loading skeleton usage inconsistent
+- Empty state component not used uniformly
+- Toast duration varies across the app
+- Dialog close behavior inconsistent (some close on success, some don't)
+- Form validation patterns vary (some Zod, some manual)
+- Pagination controls differ between admin pages
+- Search input debounce inconsistent (some have it, some don't)
+- File upload patterns differ between components
+- Date picker component usage varies
+- Tab component controlled vs uncontrolled inconsistency
+- Avatar fallback text inconsistent
+- Card styling varies across admin pages
+- Button size/variant usage inconsistent
+- Icon usage from different sets (lucide mainly, but verify)
+- Spacing/padding inconsistent between admin sections
+- Mobile responsiveness not verified on all admin pages
+- Admin page title format inconsistent
+- Breadcrumb depth inconsistent
+- Error boundary messages generic
+- Loading state patterns vary (skeleton vs spinner vs text)
+- Data refetch patterns vary (manual vs react-query vs interval)
+- Realtime subscription patterns vary
+- Audit logging coverage inconsistent
+- Navigation patterns vary (Link vs navigate)
+- State management patterns vary (useState vs useReducer vs context)
+- TypeScript strictness varies (some files use `as any` heavily)
+
+### Bug 901-950: Performance Optimizations
+- Admin overview makes 10+ parallel Supabase calls on mount
+- Client portal makes 10+ parallel queries without error handling
+- No React.memo on expensive list item components
+- No useMemo on expensive filter/sort operations in some pages
+- No virtual scrolling for long lists (admin appointments, clients)
+- Image optimization missing (no next-gen formats)
+- Font loading not optimized (no font-display: swap verification)
+- CSS bundle not analyzed for dead code
+- JavaScript bundle not code-split optimally
+- No connection pooling awareness in Supabase client usage
+- Supabase query default limit (1000) not documented as constraint
+- Multiple components re-render on unrelated state changes
+- Admin chat re-renders entire message list on new message
+- Chart components re-render on every data change (no memoization)
+- Admin overview auto-refresh interval not cleared on hidden tab
+- Google Calendar sync debounce could be optimized
+- Large JSON payloads in webhook events stored without compression
+- Profile avatars not cached after first load
+- Seal preview URL regenerated on every settings page load
+- Email cache table has no TTL/cleanup mechanism
+
+### Bug 951-975: Testing & Documentation
+- No unit tests for critical business logic (pricingEngine has tests, but others missing)
+- No integration tests for edge functions
+- No E2E test scenarios written
+- No API documentation for edge functions
+- No component storybook or visual testing
+- No load testing performed
+- No security penetration test documented
+- No disaster recovery plan documented
+- No data backup procedure documented
+- No incident response plan
+- No compliance audit checklist documented
+- No user documentation/help center content
+- No admin user guide
+- No developer onboarding documentation
+- No changelog/release notes system
+- No feature flag system for gradual rollouts
+- No error monitoring integration (Sentry/etc.)
+- No performance monitoring (Web Vitals)
+- No uptime monitoring
+- No automated backup verification
+- No database migration rollback procedures documented
+- No API versioning strategy
+- No rate limiting documentation
+- No privacy impact assessment
+- No data retention policy documentation
 
 ---
 
-## Batch 10: Low Severity & Polish (Bugs 376-475)
+## Implementation Plan
 
-- Add PNG favicon sizes for iOS/Android (Bug 380)
-- Add `manifest.json` for PWA support (Bug 284)
-- Add `robots.txt` admin route blocking (Bug 393)
-- Add `loading="lazy"` to below-fold images (Bug 113)
-- Dynamic footer year (verify Bug 378 — already dynamic)
-- Add OpenGraph image meta tag (Bug 308)
-- Add structured review data to JSON-LD (Bug 419)
-- Add `upgrade-insecure-requests` meta tag (Bug 60)
-- Remove console.warn in AdminSettings (Bug 89)
-- Fix heading hierarchy in ServiceDetail (Bug 431)
+### Phase 1: Feature Completions (FC-1 through FC-8) — Priority Features
+1. **AI Document Review integration** — Wire edge function to portal + admin UI
+2. **Referral Program end-to-end** — Fix code generation, add signup tracking, admin dashboard
+3. **Session Tracking enhancement** — Admin controls, client notifications, progress steps
+4. **Compliance Report enhancement** — Drill-down, PDF export, automated gap detection
+5. **Invoice Generator** — Wire to revenue, add PDF output
+6. **Notification System** — Realtime subscriptions, browser push
+7. **Email Queue verification** — Ensure delivery pipeline works
+8. **Payment Flow verification** — End-to-end Stripe flow
 
----
+### Phase 2: Critical Bugs (476-510) — Security & Data Integrity
+- Fix CommandPalette auth check
+- Fix AdminOverview query limits
+- Fix AdminJournal hard-delete to soft-delete
+- Fix Unsubscribe to resolve actual email from token
+- Replace all duplicated formatDate/formatTime with shared utils
+- Fix Google OAuth redirect
 
-## Database Migration Summary
+### Phase 3: High Severity (511-620) — UX & Missing Admin Features
+- Admin appointment enhancements (bulk actions, status history, calendar colors)
+- Admin revenue enhancements (YTD, Stripe fees, refund UI, invoices)
+- Admin CRM enhancements (drag-drop, dedup, deal tags, reporting)
+- Client portal enhancements (account deletion, doc search, recording access)
+- Booking enhancements (pre-fill, next available, group booking)
 
-Single migration covering:
-1. Fix `referrals.referrer_id` FK → `profiles(user_id)`
-2. Fix `tool_generations.user_id` FK → `profiles(user_id)`
-3. Tighten `session_tracking` RLS policy
-4. Add `archived` column to `notary_journal` for soft delete
-5. Add `referral_code` generation trigger for referrals table
-6. Add check constraint on `payments.amount > 0`
+### Phase 4: Medium Severity (621-800) — Polish & Compliance
+- Fix accessibility issues (skip links, aria labels, focus management)
+- Fix edge function input validation across all functions
+- Add database indexes for performance
+- Fix RLS policies for platform_settings
+- Implement service worker and PWA
 
----
+### Phase 5: Low Severity (801-975) — Code Quality & Testing
+- Replace 354 `useState<any>` with proper types
+- Add console.error to 120 empty catch blocks
+- Add missing unit/integration tests
+- Add documentation
+- Performance optimizations
 
-## Estimated Scope
-
-- **10 implementation batches**
-- **~60-70 files modified**
-- **1 database migration**
-- **Priority**: Batches 1-3 are critical and should be done first
+### Estimated Scope
+- **20 feature completions**
+- **500 additional bug fixes**
+- **~120-150 implementation steps total**
+- **2-3 database migrations**
+- **Priority**: Feature completions and Phase 2 critical bugs first
 
