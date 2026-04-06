@@ -120,15 +120,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Save generation to database (non-blocking)
-    const savePromise = supabase.from("tool_generations").insert({
+    // Save generation to database (non-blocking, fire-and-forget)
+    supabase.from("tool_generations").insert({
       user_id: user.id,
       tool_id,
       fields,
       result: "[streaming]",
       is_preset: false,
-    });
-    savePromise.catch(() => { /* ignore save errors */ });
+    }).then(() => {}, () => {});
 
     return new Response(response.body, {
       headers: {
