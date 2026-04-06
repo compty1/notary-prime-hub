@@ -73,6 +73,7 @@ export default function AdminAppointments() {
   const [refuseAppt, setRefuseAppt] = useState<any>(null);
   const [refusalReason, setRefusalReason] = useState("");
   const [refusingAppt, setRefusingAppt] = useState(false);
+  const [cancelConfirm, setCancelConfirm] = useState<{ id: string; name: string } | null>(null);
   const [newAppt, setNewAppt] = useState({
     client_id: "",
     service_type: "",
@@ -470,10 +471,10 @@ export default function AdminAppointments() {
             </Select>
           )}
           <div className="flex rounded-md border border-border">
-            <Button size="sm" variant={viewMode === "list" ? "default" : "ghost"} className="rounded-r-none" onClick={() => setViewMode("list")}>
+            <Button size="sm" variant={viewMode === "list" ? "default" : "ghost"} className="rounded-r-none" onClick={() => setViewMode("list")} aria-label="List view">
               <List className="h-4 w-4" />
             </Button>
-            <Button size="sm" variant={viewMode === "calendar" ? "default" : "ghost"} className="rounded-l-none" onClick={() => setViewMode("calendar")}>
+            <Button size="sm" variant={viewMode === "calendar" ? "default" : "ghost"} className="rounded-l-none" onClick={() => setViewMode("calendar")} aria-label="Calendar view">
               <LayoutGrid className="h-4 w-4" />
             </Button>
           </div>
@@ -654,7 +655,13 @@ export default function AdminAppointments() {
                       <Ban className="mr-1 h-3 w-3" /> Refuse
                     </Button>
                   )}
-                  <Select value={appt.status} onValueChange={(v) => updateStatus(appt.id, v)}>
+                  <Select value={appt.status} onValueChange={(v) => {
+                    if (v === "cancelled" || v === "no_show") {
+                      setCancelConfirm({ id: appt.id, name: getClientName(appt.client_id) });
+                    } else {
+                      updateStatus(appt.id, v);
+                    }
+                  }}>
                     <SelectTrigger className="w-40">
                       <Badge className={statusColors[appt.status] || "bg-muted"}>{appt.status.replace(/_/g, " ")}</Badge>
                     </SelectTrigger>
@@ -1086,6 +1093,24 @@ export default function AdminAppointments() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Cancel Confirmation Dialog */}
+      <AlertDialog open={!!cancelConfirm} onOpenChange={() => setCancelConfirm(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Cancellation</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to cancel the appointment for <strong>{cancelConfirm?.name}</strong>? This action will notify the client and cannot be easily undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Go Back</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => { if (cancelConfirm) { updateStatus(cancelConfirm.id, "cancelled"); setCancelConfirm(null); } }}>
+              Yes, Cancel Appointment
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
