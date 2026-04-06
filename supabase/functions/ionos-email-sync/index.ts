@@ -227,7 +227,21 @@ Deno.serve(async (req) => {
 
     console.log(`Connecting to IMAP: ${imapHost} as ${emailAddress}`);
 
-    const conn = await Deno.connectTls({ hostname: imapHost, port: 993 });
+    // Connection timeout: abort if TLS connect takes > 15s
+    const connectController = new AbortController();
+    const connectTimeout = setTimeout(() => connectController.abort(), 15_000);
+    let conn: Deno.TlsConn;
+    try {
+      conn = await Deno.connectTls({ hostname: imapHost, port: 993 });
+      clearTimeout(connectTimeout);
+    } catch (connErr: any) {
+      clearTimeout(connectTimeout);
+      console.error("IMAP connection timeout/error:", connErr.message);
+      return new Response(
+        JSON.stringify({ error: "Email server connection timed out. Please try again.", synced: 0 }),
+        { status: 504, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     const greetBuf = new Uint8Array(4096);
     await conn.read(greetBuf);
@@ -402,7 +416,7 @@ Deno.serve(async (req) => {
   } catch (err: any) {
     console.error("Email sync error:", err.message, err.stack);
     return new Response(
-      JSON.stringify({ error: err.message }),
+      JSON.stringify({ error: "Internal server error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

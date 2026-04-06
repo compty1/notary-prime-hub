@@ -86,6 +86,15 @@ Deno.serve(async (req) => {
             }),
           });
 
+          // Handle 429 rate limits with exponential backoff
+          if (searchResp.status === 429) {
+            const retryAfter = parseInt(searchResp.headers.get("Retry-After") || "10", 10);
+            console.warn(`HubSpot 429 rate limit hit, waiting ${retryAfter}s`);
+            await new Promise(r => setTimeout(r, retryAfter * 1000));
+            errors++;
+            continue;
+          }
+
           const searchData = await searchResp.json();
           let contactId: string;
 
@@ -239,7 +248,7 @@ Deno.serve(async (req) => {
   } catch (err: any) {
     console.error("hubspot-sync error:", err);
     return new Response(
-      JSON.stringify({ error: err.message }),
+      JSON.stringify({ error: "Internal server error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

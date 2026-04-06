@@ -7,19 +7,28 @@ const corsHeaders = {
 
 const GOOGLE_API = "https://www.googleapis.com/calendar/v3";
 
-async function getAccessToken(): Promise<string | null> {
+async function getAccessToken(): Promise<{ token: string | null; error?: string }> {
   const clientId = Deno.env.get("GOOGLE_CALENDAR_CLIENT_ID");
   const clientSecret = Deno.env.get("GOOGLE_CALENDAR_CLIENT_SECRET");
   const refreshToken = Deno.env.get("GOOGLE_CALENDAR_REFRESH_TOKEN");
-  if (!clientId || !clientSecret || !refreshToken) return null;
+  if (!clientId || !clientSecret || !refreshToken) return { token: null };
 
-  const res = await fetch("https://oauth2.googleapis.com/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ client_id: clientId, client_secret: clientSecret, refresh_token: refreshToken, grant_type: "refresh_token" }),
-  });
-  const data = await res.json();
-  return data.access_token || null;
+  try {
+    const res = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ client_id: clientId, client_secret: clientSecret, refresh_token: refreshToken, grant_type: "refresh_token" }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.access_token) {
+      console.error("Google token refresh failed:", data.error || res.status);
+      return { token: null, error: data.error_description || "Token refresh failed. Please re-authorize Google Calendar." };
+    }
+    return { token: data.access_token };
+  } catch (e) {
+    console.error("Google token refresh error:", e.message);
+    return { token: null, error: "Failed to connect to Google OAuth" };
+  }
 }
 
 Deno.serve(async (req) => {
@@ -37,11 +46,11 @@ Deno.serve(async (req) => {
     const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
     if (!roles?.some(r => ["admin", "notary"].includes(r.role))) return new Response(JSON.stringify({ error: "Access denied" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
-    const accessToken = await getAccessToken();
+    const { token: accessToken, error: tokenError } = await getAccessToken();
     const { action, ...params } = await req.json();
 
     if (!accessToken) {
-      return new Response(JSON.stringify({ error: "Google Calendar not configured", connected: false }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ error: tokenError || "Google Calendar not configured", connected: false }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     const headers = { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" };
@@ -83,6 +92,7 @@ Deno.serve(async (req) => {
 
     return new Response(JSON.stringify({ error: "Unknown action" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    console.error("google-calendar-sync error:", e.message);
+    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 });
