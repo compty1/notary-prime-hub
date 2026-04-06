@@ -76,9 +76,12 @@ export function useBulkInsert() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (items: Partial<TrackerItem>[]) => {
-      if (items.length > 100) throw new Error("Bulk import limited to 100 items at a time");
-      const { error } = await supabase.from("build_tracker_items").insert(items as any[]);
-      if (error) throw error;
+      // Auto-chunk into batches of 100
+      for (let i = 0; i < items.length; i += 100) {
+        const batch = items.slice(i, i + 100);
+        const { error } = await supabase.from("build_tracker_items").insert(batch as any[]);
+        if (error) throw error;
+      }
     },
     onSuccess: () => { ALL_KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] })); toast.success("Bulk import complete"); },
     onError: (e: Error) => toast.error(e.message),
@@ -163,7 +166,7 @@ export function useReanalyze(items: TrackerItem[]) {
     const uncategorized = items.filter(i => i.category === "gap" && !i.impact_area);
     const toAutoUpdate: { id: string; fields: Partial<TrackerItem> }[] = [];
     if (uncategorized.length > 0) {
-      for (const item of uncategorized.slice(0, 50)) {
+      for (const item of uncategorized) {
         const auto = autoCategorize(item.title);
         if (auto.category !== "gap" || auto.impact_area) {
           toAutoUpdate.push({ id: item.id, fields: { category: auto.category, impact_area: auto.impact_area } });

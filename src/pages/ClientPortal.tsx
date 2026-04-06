@@ -34,6 +34,7 @@ import { PortalOnboardingChecklist } from "@/components/PortalOnboardingChecklis
 import { PortalQuickActions } from "@/components/PortalQuickActions";
 import { DocumentReadinessScore } from "@/components/DocumentReadinessScore";
 import { ReferralPortal } from "@/components/ReferralPortal";
+import PortalAIToolsTab from "./portal/PortalAIToolsTab";
 const pipelineSteps = [
   { key: "uploaded", label: "Intake", icon: Upload },
   { key: "pending_review", label: "Review", icon: FileText },
@@ -318,6 +319,7 @@ export default function ClientPortal() {
             <TabsTrigger value="reminders" aria-label="Document Reminders"><Bell className="mr-1 h-4 w-4 hidden sm:inline" /> Remind</TabsTrigger>
             <TabsTrigger value="reviews" aria-label="Reviews"><Star className="mr-1 h-4 w-4 hidden sm:inline" /> Reviews</TabsTrigger>
             <TabsTrigger value="services" aria-label="Available Services"><ShoppingBag className="mr-1 h-4 w-4 hidden sm:inline" /> Services</TabsTrigger>
+            <TabsTrigger value="ai-tools" aria-label="AI Tools"><Sparkles className="mr-1 h-4 w-4 hidden sm:inline" /> AI Tools</TabsTrigger>
             <TabsTrigger value="referral" aria-label="Refer a Friend"><Sparkles className="mr-1 h-4 w-4 hidden sm:inline" /> Refer</TabsTrigger>
           </TabsList>
 
@@ -626,6 +628,10 @@ export default function ClientPortal() {
             <div className="grid gap-4 sm:grid-cols-2">{services.map(svc => (
               <Card key={svc.id} className="border-border/50 hover:shadow-sm transition-shadow"><CardContent className="p-4"><div className="flex items-start justify-between"><div><h3 className="text-sm font-semibold text-foreground">{svc.name}</h3>{svc.short_description && <p className="text-xs text-muted-foreground mt-1">{svc.short_description}</p>}</div><Badge variant="outline" className="text-xs shrink-0 ml-2">{svc.pricing_model === "custom" ? "Quote" : svc.price_from ? `$${svc.price_from}${svc.price_to && svc.price_to > svc.price_from ? `–$${svc.price_to}` : ""}` : "Contact"}</Badge></div>{svc.description && <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{svc.description}</p>}<div className="flex gap-2 mt-3"><Link to={getServiceUrl(svc)}><Button size="sm" className="text-xs ">{getServiceCTA(svc)}</Button></Link><Link to={`/services/${svc.id}`}><Button size="sm" variant="outline" className="text-xs">View Details</Button></Link></div></CardContent></Card>
             ))}</div>
+          </TabsContent>
+
+          <TabsContent value="ai-tools" className="space-y-6">
+            <PortalAIToolsTab />
           </TabsContent>
 
           <TabsContent value="referral" className="space-y-6">
