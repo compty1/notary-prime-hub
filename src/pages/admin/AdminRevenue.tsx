@@ -1,4 +1,5 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { formatDate } from "@/lib/utils";
 import { RevenueForecast } from "@/components/RevenueForecast";
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -121,8 +122,7 @@ export default function AdminRevenue() {
   const totalPaid = payments.filter(p => p.status === "paid").reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
   const totalPending = payments.filter(p => p.status === "pending").reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
 
-  // Bug 481: Use shared formatDate from utils (already imported at top if needed)
-  const formatDateLocal = (dateStr: string) => new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  // Bug 481: Using shared formatDate from @/lib/utils (imported at top)
 
   const escapeCSV = (val: string | number) => {
     const str = String(val);
