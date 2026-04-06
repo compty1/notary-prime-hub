@@ -624,7 +624,6 @@ export default function ClientPortal() {
           <TabsContent value="services" className="space-y-6">
             <div className="flex items-center justify-between"><h2 className="font-sans text-xl font-semibold">Available Services</h2><Button variant="outline" size="sm" onClick={() => setShowWizard(!showWizard)}><Sparkles className="mr-1 h-3 w-3" /> {showWizard ? "Hide Guide" : "Not Sure What You Need?"}</Button></div>
             <Card className="border-primary/20 bg-primary/5"><CardContent className="flex items-center justify-between p-4"><div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/20"><FileText className="h-5 w-5 text-primary" /></div><div><h3 className="text-sm font-semibold text-foreground">Digitize Documents</h3><p className="text-xs text-muted-foreground">Upload scanned documents and convert them to editable digital formats with AI-powered OCR</p></div></div><Link to="/digitize"><Button size="sm" className=""><ArrowRight className="mr-1 h-3 w-3" /> Start</Button></Link></CardContent></Card>
-            {showWizard && <DocumentWizard onSelectService={svc => { setShowWizard(false); navigate(`/book?service=${encodeURIComponent(svc)}`); }} onClose={() => setShowWizard(false)} />}
             <div className="grid gap-4 sm:grid-cols-2">{services.map(svc => (
               <Card key={svc.id} className="border-border/50 hover:shadow-sm transition-shadow"><CardContent className="p-4"><div className="flex items-start justify-between"><div><h3 className="text-sm font-semibold text-foreground">{svc.name}</h3>{svc.short_description && <p className="text-xs text-muted-foreground mt-1">{svc.short_description}</p>}</div><Badge variant="outline" className="text-xs shrink-0 ml-2">{svc.pricing_model === "custom" ? "Quote" : svc.price_from ? `$${svc.price_from}${svc.price_to && svc.price_to > svc.price_from ? `–$${svc.price_to}` : ""}` : "Contact"}</Badge></div>{svc.description && <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{svc.description}</p>}<div className="flex gap-2 mt-3"><Link to={getServiceUrl(svc)}><Button size="sm" className="text-xs ">{getServiceCTA(svc)}</Button></Link><Link to={`/services/${svc.id}`}><Button size="sm" variant="outline" className="text-xs">View Details</Button></Link></div></CardContent></Card>
             ))}</div>
@@ -639,6 +638,16 @@ export default function ClientPortal() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Document Wizard — rendered outside Tabs so it works from any tab */}
+      {showWizard && (
+        <Dialog open={showWizard} onOpenChange={setShowWizard}>
+          <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto">
+            <DialogHeader><DialogTitle className="font-sans flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary" /> AI Document Wizard</DialogTitle></DialogHeader>
+            <DocumentWizard onSelectService={svc => { setShowWizard(false); navigate(`/book?service=${encodeURIComponent(svc)}`); }} onClose={() => setShowWizard(false)} />
+          </DialogContent>
+        </Dialog>
+      )}
 
       {/* Dialogs */}
       <Dialog open={explainDialogOpen} onOpenChange={setExplainDialogOpen}>

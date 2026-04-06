@@ -9,7 +9,7 @@ const corsHeaders = {
 
 function decodeQuotedPrintable(input: string): string {
   return input
-    .replace(/=\r?\n/g, "") // soft line breaks
+    .replace(/=\r?\n/g, "")
     .replace(/=([0-9A-Fa-f]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
 }
 
@@ -30,17 +30,12 @@ function decodeContent(body: string, encoding: string): string {
   return body;
 }
 
-/**
- * Parse a MIME multipart message and extract text/plain and text/html parts.
- */
 function parseMimeParts(rawBody: string): { textPlain: string; textHtml: string } {
   let textPlain = "";
   let textHtml = "";
 
-  // Find boundary from Content-Type header embedded in body
   const boundaryMatch = rawBody.match(/boundary="?([^\s";\r\n]+)"?/i);
   if (!boundaryMatch) {
-    // Not multipart — check if it looks like HTML
     const stripped = rawBody.replace(/^Content-[^\r\n]+\r?\n/gim, "").replace(/^\r?\n/, "");
     if (/<html|<div|<p|<table/i.test(stripped)) {
       textHtml = stripped;
@@ -68,7 +63,6 @@ function parseMimeParts(rawBody: string): { textPlain: string; textHtml: string 
     const contentType = (ctMatch?.[1] || "").toLowerCase();
     const encoding = cteMatch?.[1] || "";
 
-    // Handle nested multipart (e.g., multipart/alternative inside multipart/mixed)
     if (contentType.startsWith("multipart/")) {
       const nested = parseMimeParts(headers + "\r\n\r\n" + body);
       if (!textPlain && nested.textPlain) textPlain = nested.textPlain;
@@ -114,22 +108,70 @@ async function imapCommand(conn: Deno.TlsConn, command: string): Promise<string>
   return response;
 }
 
-function parseEnvelope(line: string) {
-  const subjectMatch = line.match(/BODY\[HEADER\.FIELDS \(SUBJECT\)\]\s*\{?\d*\}?\r?\n?Subject:\s*([^\r\n]*)/i);
-  const fromMatch = line.match(/BODY\[HEADER\.FIELDS \(FROM\)\]\s*\{?\d*\}?\r?\n?From:\s*([^\r\n]*)/i);
-  const toMatch = line.match(/BODY\[HEADER\.FIELDS \(TO\)\]\s*\{?\d*\}?\r?\n?To:\s*([^\r\n]*)/i);
-  const dateMatch = line.match(/BODY\[HEADER\.FIELDS \(DATE\)\]\s*\{?\d*\}?\r?\n?Date:\s*([^\r\n]*)/i);
-  const msgIdMatch = line.match(/BODY\[HEADER\.FIELDS \(MESSAGE-ID\)\]\s*\{?\d*\}?\r?\n?Message-ID?:\s*([^\r\n]*)/i);
-  const inReplyToMatch = line.match(/BODY\[HEADER\.FIELDS \(IN-REPLY-TO\)\]\s*\{?\d*\}?\r?\n?In-Reply-To:\s*([^\r\n]*)/i);
+/**
+ * Parse headers from a contiguous IMAP header block.
+ * Handles continuation lines (lines starting with whitespace).
+ */
+function parseHeaderBlock(block: string): Record<string, string> {
+  const headers: Record<string, string> = {};
+  const lines = block.split(/\r?\n/);
+  let currentKey = "";
+  let currentValue = "";
 
-  return {
-    subject: subjectMatch?.[1]?.trim() || "(no subject)",
-    from: fromMatch?.[1]?.trim() || "",
-    to: toMatch?.[1]?.trim() || "",
-    date: dateMatch?.[1]?.trim() || "",
-    messageId: msgIdMatch?.[1]?.trim() || "",
-    inReplyTo: inReplyToMatch?.[1]?.trim() || null,
-  };
+  for (const line of lines) {
+    if (/^\s+/.test(line) && currentKey) {
+      // Continuation line
+      currentValue += " " + line.trim();
+    } else {
+      // Save previous header
+      if (currentKey) {
+        headers[currentKey.toLowerCase()] = currentValue;
+      }
+      const colonIdx = line.indexOf(":");
+      if (colonIdx > 0) {
+        currentKey = line.substring(0, colonIdx).trim();
+        currentValue = line.substring(colonIdx + 1).trim();
+      } else {
+        currentKey = "";
+        currentValue = "";
+      }
+    }
+  }
+  if (currentKey) {
+    headers[currentKey.toLowerCase()] = currentValue;
+  }
+  return headers;
+}
+
+/**
+ * Extract the header block from a FETCH response segment.
+ * The IMAP server returns headers as a literal {N}\r\n<content> after the
+ * BODY[HEADER.FIELDS ...] specifier.
+ */
+function extractHeadersFromFetch(msgBlock: string): Record<string, string> {
+  // Try to find the header literal: BODY[HEADER.FIELDS ...] {N}\r\n<headers>\r\n\r\n
+  const headerLiteralMatch = msgBlock.match(
+    /BODY\[HEADER\.FIELDS\s*\([^\)]+\)\]\s*\{(\d+)\}\r?\n([\s\S]*?)(?:\r?\n\r?\n|\)\s*$)/i
+  );
+  if (headerLiteralMatch) {
+    return parseHeaderBlock(headerLiteralMatch[2]);
+  }
+
+  // Fallback: look for headers directly in the block (non-literal format)
+  const fallbackHeaders: Record<string, string> = {};
+  const headerPatterns = [
+    { key: "subject", regex: /^Subject:\s*(.*)$/mi },
+    { key: "from", regex: /^From:\s*(.*)$/mi },
+    { key: "to", regex: /^To:\s*(.*)$/mi },
+    { key: "date", regex: /^Date:\s*(.*)$/mi },
+    { key: "message-id", regex: /^Message-ID?:\s*(.*)$/mi },
+    { key: "in-reply-to", regex: /^In-Reply-To:\s*(.*)$/mi },
+  ];
+  for (const p of headerPatterns) {
+    const m = msgBlock.match(p.regex);
+    if (m) fallbackHeaders[p.key] = m[1].trim();
+  }
+  return fallbackHeaders;
 }
 
 function extractEmailAddress(headerValue: string): string {
@@ -172,7 +214,6 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Get last sync timestamp
     const { data: lastEmail } = await supabase
       .from("email_cache")
       .select("synced_at")
@@ -225,7 +266,6 @@ Deno.serve(async (req) => {
           const batch = uids.slice(i, i + batchSize);
           const uidRange = batch.join(",");
 
-          // Fetch full message (BODY[] instead of TEXT only) for proper MIME parsing
           const fetchResp = await imapCommand(
             conn,
             `A004 FETCH ${uidRange} (BODY.PEEK[HEADER.FIELDS (SUBJECT FROM TO DATE MESSAGE-ID IN-REPLY-TO CONTENT-TYPE)] BODY.PEEK[] FLAGS)`
@@ -236,10 +276,18 @@ Deno.serve(async (req) => {
           for (const msgBlock of messages) {
             if (!msgBlock.trim()) continue;
 
-            const parsed = parseEnvelope(msgBlock);
-            if (!parsed.messageId && !parsed.subject) continue;
+            // Use new contiguous header parser
+            const headers = extractHeadersFromFetch(msgBlock);
+            const subject = headers["subject"] || "(no subject)";
+            const from = headers["from"] || "";
+            const to = headers["to"] || "";
+            const dateStr = headers["date"] || "";
+            const messageIdRaw = headers["message-id"] || "";
+            const inReplyTo = headers["in-reply-to"] || null;
 
-            const messageId = parsed.messageId || `<${crypto.randomUUID()}@ionos-sync>`;
+            if (!messageIdRaw && !subject) continue;
+
+            const messageId = messageIdRaw || `<${crypto.randomUUID()}@ionos-sync>`;
 
             const { data: existing } = await supabase
               .from("email_cache")
@@ -249,12 +297,11 @@ Deno.serve(async (req) => {
 
             if (existing && existing.length > 0) continue;
 
-            const fromAddr = extractEmailAddress(parsed.from);
-            const fromName = extractEmailName(parsed.from);
-            const toAddrs = extractAddresses(parsed.to);
-            const date = parsed.date ? new Date(parsed.date).toISOString() : new Date().toISOString();
+            const fromAddr = extractEmailAddress(from);
+            const fromName = extractEmailName(from);
+            const toAddrs = extractAddresses(to);
+            const date = dateStr ? new Date(dateStr).toISOString() : new Date().toISOString();
 
-            // Extract raw body and parse MIME parts
             const bodyMatch = msgBlock.match(/BODY\[\]\s*\{(\d+)\}\r?\n([\s\S]*?)(?:\)\r?\n|$)/);
             const rawBody = bodyMatch ? bodyMatch[2] : msgBlock;
 
@@ -269,13 +316,13 @@ Deno.serve(async (req) => {
               from_name: fromName,
               to_addresses: toAddrs,
               cc_addresses: [],
-              subject: parsed.subject,
+              subject,
               body_text: textPlain || null,
               body_html: textHtml || null,
               date,
               is_read: isRead || folderKey !== "inbox",
               has_attachments: false,
-              in_reply_to: parsed.inReplyTo || null,
+              in_reply_to: inReplyTo,
               synced_at: new Date().toISOString(),
             });
 

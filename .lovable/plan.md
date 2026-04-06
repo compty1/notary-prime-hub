@@ -1,126 +1,207 @@
 
 
-# Updated Plan: Email Mailbox Preview Fix + All Open/Deferred Build Tracker Gap Remediation
+# Plan: 800-Point Gap Analysis Import, Build Tracker Bug Fixes, Client Portal AI Tools Integration & Usage Caps
 
-This plan adds the mailbox preview fix and full open/deferred gap remediation to the existing plan without removing anything.
+## Summary
 
----
-
-## NEW — Workstream 5: Email Mailbox Preview — Missing Sender, Subject, Date
-
-### Root Cause
-The `ionos-email-sync` edge function's `parseEnvelope()` (line 117) uses regex patterns like `BODY[HEADER.FIELDS (SUBJECT)]` to find each header field individually. However, the FETCH command (line 231) requests ALL headers in a single `BODY.PEEK[HEADER.FIELDS (SUBJECT FROM TO DATE MESSAGE-ID IN-REPLY-TO CONTENT-TYPE)]` block. IMAP returns this as one contiguous header block — not separate per-field responses. So every regex fails to match, and all fields return empty strings.
-
-**Evidence:** Every row in `email_cache` has empty `from_address`, `from_name`, and `subject = "(no subject)"` — confirmed via direct DB query.
-
-### Fix
-1. **Rewrite `parseEnvelope()`** in `ionos-email-sync/index.ts` to parse a standard multi-line header block instead of expecting per-field IMAP literals:
-   - Match `Subject: ...`, `From: ...`, `To: ...`, `Date: ...`, `Message-ID: ...`, `In-Reply-To: ...` as simple header lines within the response
-   - Handle header continuation lines (lines starting with whitespace)
-2. **Clear stale email_cache data** — the ~10+ rows with empty metadata need to be deleted so a re-sync populates them correctly
-3. **Redeploy `ionos-email-sync`** edge function
-4. **No UI changes needed** — `AdminMailbox.tsx` already renders `from_name`, `from_address`, `subject`, and `date` correctly (lines 494-518); the data was simply missing
-
-### Files Modified
-- `supabase/functions/ionos-email-sync/index.ts` — rewrite `parseEnvelope()` header parser
+This plan covers 4 major workstreams:
+1. Generate and import ~800 specific gaps into the build_tracker_items table
+2. Fix all build tracker component bugs
+3. Add AI Tools tab to Client Portal with generation history, editing, version tracking
+4. Implement 2-free-generation cap on the free plan
 
 ---
 
-## NEW — Workstream 6: Resolve All 760 Open/Deferred Build Tracker Gaps
+## Workstream 1: Generate & Import 800 Gaps into Build Tracker
 
-There are **750 open** and **10 deferred** items across 18 categories. This workstream addresses them in priority order (critical/high first).
+Run a comprehensive script that audits every page, component, edge function, DB table, RLS policy, and service flow to produce 800 specific, actionable gap items. These will be inserted directly into `build_tracker_items` via the database.
 
-### 6a. Critical Items (9 total)
-| Category | Count | Examples |
-|----------|-------|---------|
-| Compliance | 6 | Ohio RON journal credential_analysis not populated; witness ID verification; commission expiry auto-check; e-seal hash verification; recording duration validation; notary session timeout |
-| Security | 3 | Missing RLS DELETE policies; service role key exposed in client bundle check; CORS wildcard on edge functions |
+### Gap Categories & Approximate Counts
+- **Security & RLS** (~80): Missing DELETE policies on tables like `crm_activities`, `document_bundles`; missing UPDATE restrictions; CORS wildcards in remaining edge functions; CSP header gaps
+- **Ohio RON Compliance** (~60): Journal credential_analysis not populated on finalize; witness ID verification gaps; commission expiry auto-check; e-seal hash not verified on download; recording duration validation
+- **Accessibility** (~70): Missing `htmlFor`/`id` pairs in booking forms; color contrast on badge variants; keyboard navigation in custom dropdowns; focus indicators on cards; alt text on dynamic images
+- **Performance** (~60): N+1 queries in AdminClients, AdminAppointments; missing pagination on admin lists; unbounded `.select("*")` on large tables; missing `loading="lazy"` on images; unnecessary re-renders in ClientPortal
+- **UX/UI** (~120): Missing loading skeletons on ~15 admin pages; inconsistent empty states; missing confirmation dialogs for destructive actions; date format inconsistencies; mobile table overflow issues
+- **Feature Completeness** (~100): tool_generations not surfaced in portal; no usage caps; missing version history for AI outputs; no rich text editing of results; missing webhook signature verification on some endpoints
+- **Data Integrity** (~50): Orphaned FK references; missing cascade deletes; nullable columns that should have defaults; missing unique constraints
+- **SEO** (~40): Missing structured data on service pages; duplicate meta descriptions; missing canonical URLs on paginated content
+- **Testing** (~50): Zero test coverage for most components; missing edge function integration tests; no E2E tests for critical flows
+- **Integration** (~40): SignNow webhook handler incomplete; HubSpot sync one-directional; Google Calendar sync not tested; Stripe refund flow missing email notification
+- **Mobile** (~40): Admin dashboard unusable on mobile; portal tab bar overflow; touch target sizes below 44px; form inputs too small
+- **Documentation** (~40): Missing JSDoc on all `lib/` exports; no API documentation for edge functions; missing README sections
+- **DevOps/Infra** (~50): No global error handler; no structured logging; missing health checks on critical paths; no rate limiting on public endpoints
 
-**Fix approach:** Add missing RLS policies via migration; add journal population logic to RON session finalize flow; add commission expiry check to notary dashboard; verify CORS headers in all edge functions.
-
-### 6b. High Severity Items (53 total)
-| Category | Count |
-|----------|-------|
-| Compliance | 13 |
-| Feature | 15 |
-| UX | 16 |
-| Security | 6 |
-| DevOps | 5 |
-| Edge Function | 6 |
-| Integration | 3 |
-| Accessibility | 2 |
-| Performance | 3 |
-| Flow | 1 |
-| Component | 1 |
-| Mobile | 1 |
-| Bug | 1 |
-
-**Fix approach:** Batch by category — compliance items get DB triggers and validation; feature items get incremental implementation; UX items get loading skeletons, confirmation dialogs, empty states; security items get RLS and input validation.
-
-### 6c. Medium Severity Items (446 total)
-Largest categories:
-- Feature: 101 — missing functionality across portal, admin, AI tools
-- UX: 83 — inconsistent states, mobile issues, date formatting
-- Accessibility: 30 — form labels, focus traps, ARIA roles
-- Data Integrity: 30 — orphaned references, missing defaults
-- Testing: 30 — missing unit/integration tests
-- Security: 23 — input validation, rate limiting
-- Compliance: 17 — documentation gaps, audit trail completeness
-- Edge Function: 17 — error handling, timeout management
-- Performance: 16 — N+1 queries, missing pagination
-- DevOps: 12 — logging, monitoring, health checks
-- Mobile: 11 — responsive layouts, touch targets
-- Component: 10 — prop validation, error boundaries
-- Integration: 9 — SignNow, HubSpot, Google Calendar completion
-
-### 6d. Low Severity Items (251 total)
-- Documentation: 39 — JSDoc, README, API docs
-- SEO: 28 — structured data, canonical URLs
-- Security: 24 — best practices, CSP enhancements
-- UX: 68 — polish, micro-interactions
-- Feature: 47 — nice-to-have features
-- Others: 45
-
-### Execution Strategy
-Given the volume (760 items), these will be addressed in batches:
-1. **Batch 1 (Critical+High, ~62 items):** All critical and high-severity items — implemented directly with code changes, migrations, and edge function updates
-2. **Batch 2 (Medium Priority, ~200 items):** Security, compliance, data integrity, and accessibility mediums — systematic fixes with automated patterns (e.g., bulk htmlFor/id pairing, RLS policy generator)
-3. **Batch 3 (Medium Features/UX, ~246 items):** Feature completeness and UX consistency — loading skeletons, empty states, confirmation dialogs applied as reusable patterns
-4. **Batch 4 (Low, ~251 items):** Documentation, SEO, polish — documentation generation, structured data injection
-
-Each batch marks items as `resolved` in the tracker with `resolved_at` timestamp after implementation.
-
-### Items from Previous Plans Still Unfinished (included in Batch 1)
-- Form label audit (Gap 142) — add htmlFor/id pairs across 12+ forms
-- Color contrast increase (Gap 143) — update badge and muted text color tokens
-- Keyboard nav fixes (Gaps 147-150) — focus traps in modals, dropdown arrow key nav
-- N+1 query fix in AdminClients (Gap 202) — join queries instead of per-row fetches
-- useMemo wrapping in ClientPortal (Gap 203) — memoize expensive renders
-- Refund email notification (Gap 372) — add email trigger in process-refund
-- Global error handler (window.onerror) — add to main.tsx
-- JSDoc on lib exports — add to all lib/ files
+### Implementation
+- Generate the gaps programmatically using a script that analyzes the codebase structure
+- Batch insert into `build_tracker_items` (100 at a time via existing bulk insert)
+- Each item gets: title, description, category, severity, impact_area, suggested_fix, page_route
 
 ---
 
-## Updated Execution Order
+## Workstream 2: Build Tracker Bug Fixes
 
-1. Database migrations (from Workstream 3 — version table, plan column)
-2. **Fix email_cache header parsing + redeploy ionos-email-sync** (Workstream 5)
-3. Generate & import 800 gaps into build tracker (Workstream 1)
-4. Fix build tracker bugs (Workstream 2)
-5. Build portal AI Tools tab with history + editing + versions (Workstream 3)
-6. Implement free plan cap in edge function + UI (Workstream 4)
-7. **Resolve critical+high gaps — Batch 1** (Workstream 6)
-8. **Resolve medium priority gaps — Batch 2** (Workstream 6)
-9. **Resolve medium features/UX gaps — Batch 3** (Workstream 6)
-10. **Resolve low severity gaps — Batch 4** (Workstream 6)
-11. Fix remaining items from previous phases (accessibility, performance, UX)
+### Bugs Found
+
+1. **Bulk import limited to 100 items** — the `useBulkInsert` hook throws at >100. For 800 items, need to chunk automatically.
+
+2. **Re-analyze only checks 50 uncategorized items** — `useReanalyze` slices to 50 (`uncategorized.slice(0, 50)`), missing the rest.
+
+3. **Duplicate detection too aggressive** — title normalization strips all non-alphanumeric, causing false positives (e.g., "Add RLS to deals" and "Add RLS to documents" both normalize similarly).
+
+4. **GapAnalysisTab sort state not persisted** — switching tabs loses sort/filter state.
+
+5. **PlatformScanButton doesn't deduplicate against existing items** — running a scan can create duplicate entries if the same finding already exists.
+
+6. **CSV export doesn't include all new fields** — missing `page_route` in some exports.
+
+7. **TodoTab priority reordering fires excessive DB calls** — each arrow click triggers an immediate mutation without debouncing (the `moveDebounceRef` is declared but not used effectively).
+
+8. **Plan History tab doesn't show item count** — `plan_items` array length not displayed in the list view.
+
+### Fixes
+- Chunk bulk inserts into batches of 100 automatically in `useBulkInsert`
+- Remove the 50-item slice limit in `useReanalyze`
+- Improve duplicate detection with Levenshtein distance or longer normalization keys
+- Persist GapAnalysisTab filter state in URL search params
+- Add title-based deduplication in PlatformScanButton before inserting
+- Fix TodoTab to batch priority updates with a debounce timer
+- Show plan item counts in PlanHistoryTab
 
 ---
 
-## Files Modified (New additions only)
+## Workstream 3: Client Portal AI Tools Integration
 
-- `supabase/functions/ionos-email-sync/index.ts` — rewrite parseEnvelope() header parser
-- Multiple files across all categories per gap resolution batches
-- Database: delete stale email_cache rows with empty metadata
+### 3a. New "AI Tools" Tab in Client Portal
+
+Add a new tab to `ClientPortal.tsx` between "Services" and "Refer":
+- Tab icon: `Sparkles` with label "AI Tools"
+- Shows the user's generation history from `tool_generations` table
+- Quick-launch buttons for all 50+ tools
+- Search/filter by tool category
+
+### 3b. Generation History List
+- Fetch from `tool_generations` where `user_id = auth.uid()`, ordered by `created_at DESC`
+- Display: tool name (mapped from `tool_id`), date, truncated preview of result
+- Click to expand full result with rendered markdown view
+- "Re-use inputs" button that navigates to `/ai-tools?tool={tool_id}` with pre-filled fields
+
+### 3c. Rich Text Editing of Results
+- Add an "Edit" button on each generation that opens the `RichTextEditor` component (already exists)
+- Convert the markdown result to HTML for editing, save back to `tool_generations.result`
+- Track edit timestamp in a new `edited_at` column
+
+### 3d. Version History
+- Add a `tool_generation_versions` table to store previous versions when a result is edited
+- Schema: `id, generation_id (FK), result, created_at`
+- Before each edit save, insert the current result into versions
+- UI: "Version History" expandable showing previous versions with timestamps and restore button
+
+### 3e. Database Changes
+```sql
+-- Add edited_at to tool_generations
+ALTER TABLE tool_generations ADD COLUMN edited_at timestamptz;
+
+-- Version history table
+CREATE TABLE tool_generation_versions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  generation_id uuid NOT NULL REFERENCES tool_generations(id) ON DELETE CASCADE,
+  result text NOT NULL DEFAULT '',
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE tool_generation_versions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users view own generation versions"
+  ON tool_generation_versions FOR ALL TO authenticated
+  USING (EXISTS (SELECT 1 FROM tool_generations g WHERE g.id = generation_id AND g.user_id = auth.uid()));
+```
+
+---
+
+## Workstream 4: Free Plan Usage Cap (2 Free Generations)
+
+### 4a. Server-Side Enforcement
+In the `ai-tools` edge function, before calling the AI gateway:
+- Count existing generations: `SELECT count(*) FROM tool_generations WHERE user_id = $1`
+- If count >= 2 AND user has no paid subscription, return 402 with message "Free plan limit reached. Upgrade to continue."
+- Check subscription status via a `subscriptions` table or a `user_plan` field on profiles
+
+### 4b. Client-Side UX
+- In `ToolRunner.tsx`, before generating, check remaining free uses
+- Show a usage indicator: "1 of 2 free generations used"
+- When limit reached, show upgrade CTA with link to `/subscribe`
+- Handle 402 response gracefully with upgrade dialog
+
+### 4c. Subscription Check
+- Add a `plan` column to `profiles` table (default: `'free'`), or check against existing `subscriptions` table if present
+- The edge function checks this value to determine if the cap applies
+
+### 4d. Database Changes
+```sql
+-- Add plan column to profiles if not exists
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS plan text NOT NULL DEFAULT 'free';
+```
+
+---
+
+## Files Modified
+
+### New Files
+- `src/pages/portal/PortalAIToolsTab.tsx` — AI Tools tab for client portal
+- `src/components/GenerationHistoryCard.tsx` — Reusable generation history card with edit/version UI
+
+### Modified Files
+- `src/pages/ClientPortal.tsx` — Add AI Tools tab, fetch tool_generations
+- `src/components/ai-tools/ToolRunner.tsx` — Add usage cap UI, save result to DB after streaming
+- `src/pages/admin/build-tracker/hooks.ts` — Fix bulk insert chunking, re-analyze limit
+- `src/pages/admin/build-tracker/PlatformScanButton.tsx` — Deduplication before insert
+- `src/pages/admin/build-tracker/TodoTab.tsx` — Fix priority reorder debouncing
+- `src/pages/admin/build-tracker/GapAnalysisTab.tsx` — Persist filter state in URL
+- `supabase/functions/ai-tools/index.ts` — Add free plan usage cap check
+
+### Database Migrations
+- Add `edited_at` column to `tool_generations`
+- Create `tool_generation_versions` table with RLS
+- Add `plan` column to `profiles`
+
+### Gap Import Script
+- Generate 800 gaps and batch-insert via Supabase client
+
+---
+
+## Workstream 5: Email Mailbox Preview Fix ✅ DONE
+
+Rewrote `parseEnvelope()` → `extractHeadersFromFetch()` + `parseHeaderBlock()` to handle contiguous IMAP header blocks. Cleared stale rows. Redeployed.
+
+---
+
+## Workstream 6: Resolve All 760 Open/Deferred Build Tracker Gaps
+
+- **Batch 1 (Critical+High, ~62):** Compliance, security, RLS, edge functions
+- **Batch 2 (Medium, ~200):** Security, data integrity, accessibility
+- **Batch 3 (Medium Features/UX, ~246):** Feature completeness, skeletons, empty states
+- **Batch 4 (Low, ~251):** Documentation, SEO, polish
+
+---
+
+## Phase 1 Fixes Applied ✅
+
+1. Footer color — `bg-secondary-foreground` → `bg-sidebar-background`
+2. Document Wizard — moved to Dialog outside TabsContent
+3. Email sync parser — rewrote header parsing
+4. Stale email data — cleared + redeployed
+
+---
+
+## Execution Order
+
+1. ~~Fix email sync~~ ✅
+2. ~~Fix Footer~~ ✅
+3. ~~Fix Document Wizard~~ ✅
+4. Database migrations (version table, plan column)
+5. Generate & import 800 gaps (Workstream 1)
+6. Fix build tracker bugs (Workstream 2)
+7. Portal AI Tools tab (Workstream 3)
+8. Free plan cap (Workstream 4)
+9. Batch 1 critical+high gaps (Workstream 6)
+10. Batch 2-4 remaining gaps (Workstream 6)
+11. Unfinished items from previous phases
 
