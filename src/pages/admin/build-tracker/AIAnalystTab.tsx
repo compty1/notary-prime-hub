@@ -48,7 +48,7 @@ export default function AIAnalystTab({ items, plans }: Props) {
     try {
       const bounded = messages.slice(-MAX_CHAT_HISTORY);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(bounded));
-    } catch {}
+    } catch (e) { console.error("Chat history save error:", e); }
   }, [messages]);
 
   useEffect(() => {
