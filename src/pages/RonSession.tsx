@@ -463,6 +463,10 @@ export default function RonSession() {
       toast({ title: "Recording consent required", description: "Ohio ORC §147.66 requires explicit recording consent before finalizing a RON session.", variant: "destructive" });
       return;
     }
+    if (!recordingUrl || !recordingUrl.trim()) {
+      toast({ title: "Recording URL required", description: "A session recording URL must be provided before finalizing per Ohio ORC §147.66.", variant: "destructive" });
+      return;
+    }
     // Item 405: Confirmation dialog
     if (!window.confirm("Are you sure you want to finalize this session? This will mark the appointment as completed, create a journal entry, e-seal verification, and payment record. This action cannot be undone.")) {
       return;
@@ -528,7 +532,16 @@ export default function RonSession() {
       id_expiration: idExpiration || null,
       signer_address: clientProfile?.address ? `${clientProfile.address}, ${clientProfile.city || ""} ${clientProfile.state || ""} ${clientProfile.zip || ""}`.trim() : null,
       notes: journalNotes,
-    });
+      credential_analysis: {
+        id_type: idType || null,
+        id_number_last4: idNumber ? idNumber.slice(-4) : null,
+        id_expiration: idExpiration || null,
+        kba_completed: kbaCompleted,
+        kba_attempts: kbaAttempts,
+        id_verified: idVerified,
+        verified_at: new Date().toISOString(),
+      },
+    } as any);
 
     // e-seal: prefer uploaded doc, fall back to manual document_name
     const { data: docs } = await supabase.from("documents").select("id, file_name").eq("appointment_id", appointmentId).limit(1);

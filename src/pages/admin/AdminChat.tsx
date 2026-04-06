@@ -218,7 +218,7 @@ export default function AdminChat() {
                        <FileText className="h-3 w-3" /> Attachment
                      </a>
                    )}
-                   <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:m-0"><ReactMarkdown>{msg.message}</ReactMarkdown></div>
+                   <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:m-0"><ReactMarkdown>{typeof msg.message === 'string' ? msg.message.replace(/<[^>]*>/g, '') : ''}</ReactMarkdown></div>
                 </div>
               </div>
             ))}

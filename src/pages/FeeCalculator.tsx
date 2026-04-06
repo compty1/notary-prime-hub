@@ -122,11 +122,11 @@ export default function FeeCalculator() {
                   </div>
                   <div>
                     <Label>Number of Documents</Label>
-                    <Input type="number" min={1} max={50} value={documentCount} onChange={(e) => setDocumentCount(Math.max(1, parseInt(e.target.value) || 1))} />
+                    <Input type="number" min={1} max={50} value={documentCount} onChange={(e) => setDocumentCount(Math.max(1, Math.min(50, parseInt(e.target.value) || 1)))} />
                   </div>
                   <div>
                     <Label>Number of Signers</Label>
-                    <Input type="number" min={1} max={10} value={signerCount} onChange={(e) => setSignerCount(Math.max(1, parseInt(e.target.value) || 1))} />
+                    <Input type="number" min={1} max={10} value={signerCount} onChange={(e) => setSignerCount(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))} />
                     {signerCount > 1 && <p className="text-xs text-muted-foreground mt-1">Each signer requires a separate notarial act per Ohio law (ORC §147.04)</p>}
                   </div>
                   {notarizationType === "in_person" && (

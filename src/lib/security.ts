@@ -11,9 +11,22 @@ const DISPOSABLE_DOMAINS = new Set([
   "trashmail.com", "fakeinbox.com", "maildrop.cc",
 ]);
 
+/** IDN homograph normalization — convert punycode/lookalikes to ASCII (item 14) */
+function normalizeHomographs(domain: string): string {
+  try {
+    // Use URL API to decode punycode domains
+    const url = new URL(`https://${domain}`);
+    return url.hostname.toLowerCase();
+  } catch {
+    return domain.toLowerCase();
+  }
+}
+
 export function isDisposableEmail(email: string): boolean {
-  const domain = email.split("@")[1]?.toLowerCase();
-  return domain ? DISPOSABLE_DOMAINS.has(domain) : false;
+  const rawDomain = email.split("@")[1]?.toLowerCase();
+  if (!rawDomain) return false;
+  const domain = normalizeHomographs(rawDomain);
+  return DISPOSABLE_DOMAINS.has(domain);
 }
 
 /** Password complexity validation (item 514) */

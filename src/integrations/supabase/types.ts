@@ -1802,6 +1802,7 @@ export type Database = {
           recording_consent: boolean | null
           recording_consent_at: string | null
           recording_url: string | null
+          retention_expires_at: string | null
           session_mode: string
           session_timeout_minutes: number | null
           session_type: Database["public"]["Enums"]["notarization_type"]
@@ -1836,6 +1837,7 @@ export type Database = {
           recording_consent?: boolean | null
           recording_consent_at?: string | null
           recording_url?: string | null
+          retention_expires_at?: string | null
           session_mode?: string
           session_timeout_minutes?: number | null
           session_type?: Database["public"]["Enums"]["notarization_type"]
@@ -1870,6 +1872,7 @@ export type Database = {
           recording_consent?: boolean | null
           recording_consent_at?: string | null
           recording_url?: string | null
+          retention_expires_at?: string | null
           session_mode?: string
           session_timeout_minutes?: number | null
           session_type?: Database["public"]["Enums"]["notarization_type"]
@@ -1969,6 +1972,7 @@ export type Database = {
           certificate_photos: Json | null
           created_at: string
           created_by: string
+          credential_analysis: Json | null
           document_description: string | null
           document_type: string
           fees_charged: number | null
@@ -2001,6 +2005,7 @@ export type Database = {
           certificate_photos?: Json | null
           created_at?: string
           created_by: string
+          credential_analysis?: Json | null
           document_description?: string | null
           document_type: string
           fees_charged?: number | null
@@ -2033,6 +2038,7 @@ export type Database = {
           certificate_photos?: Json | null
           created_at?: string
           created_by?: string
+          credential_analysis?: Json | null
           document_description?: string | null
           document_type?: string
           fees_charged?: number | null

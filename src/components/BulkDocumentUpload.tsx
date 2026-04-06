@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const ACCEPTED_EXTENSIONS = ".pdf,.jpg,.jpeg,.png,.tiff,.doc,.docx";
-const MAX_FILE_SIZE = 20 * 1024 * 1024;
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 interface Props {
   userId: string;
@@ -61,7 +61,7 @@ export default function BulkDocumentUpload({ userId, onComplete }: Props) {
       if (f.file.size > MAX_FILE_SIZE) {
         setFiles((prev) =>
           prev.map((item, idx) =>
-            idx === i ? { ...item, status: "error", error: "Exceeds 20MB" } : item
+            idx === i ? { ...item, status: "error", error: "Exceeds 10MB limit" } : item
           )
         );
         continue;
@@ -125,7 +125,7 @@ export default function BulkDocumentUpload({ userId, onComplete }: Props) {
           Drag & drop multiple files here
         </p>
         <p className="mb-3 text-xs text-muted-foreground">
-          PDF, JPG, PNG, TIFF, DOC, DOCX — max 20MB each
+          PDF, JPG, PNG, TIFF, DOC, DOCX — max 10MB each
         </p>
         <Button
           variant="outline"

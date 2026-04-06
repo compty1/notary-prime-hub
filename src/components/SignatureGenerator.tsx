@@ -141,6 +141,7 @@ export default function SignatureGenerator() {
     try {
       const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
       if (!blob) throw new Error("Failed to create image");
+      if (blob.size > 2 * 1024 * 1024) throw new Error("Signature image exceeds 2MB limit");
       const fileName = `${user.id}/${Date.now()}.png`;
       const { error: uploadError } = await supabase.storage.from("signatures").upload(fileName, blob, { contentType: "image/png" });
       if (uploadError) throw uploadError;
