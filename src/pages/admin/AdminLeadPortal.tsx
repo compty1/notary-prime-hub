@@ -309,6 +309,7 @@ export default function AdminLeadPortal() {
   }, [leads]);
 
   const discoverLeads = async () => {
+    if (discovering) return; // Bug 491: debounce guard
     setDiscovering(true);
     try {
       const { data, error } = await supabase.functions.invoke("discover-leads", { body: { action: "discover" } });
