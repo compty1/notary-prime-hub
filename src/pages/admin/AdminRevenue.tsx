@@ -243,8 +243,14 @@ export default function AdminRevenue() {
     }
   };
 
+  // Bug 541: YTD calculations
+  const ytdStart = new Date(new Date().getFullYear(), 0, 1).toISOString();
+  const ytdRevenue = entries.filter(e => e.created_at >= ytdStart).reduce((sum, e) => sum + (parseFloat(e.fees_charged) || 0), 0);
+  const ytdPaid = payments.filter(p => p.status === "paid" && p.created_at >= ytdStart).reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+
   const statCards = [
     { label: "Total Revenue", value: `$${totalRevenue.toFixed(2)}`, icon: DollarSign, color: "text-blue-600" },
+    { label: "YTD Revenue", value: `$${ytdRevenue.toFixed(2)}`, icon: Calendar, color: "text-primary" },
     { label: "Signing Platform Fees", value: `$${totalSigningPlatformFees.toFixed(2)}`, icon: TrendingDown, color: "text-orange-500" },
     { label: "Total Expenses", value: `$${totalExpenses.toFixed(2)}`, icon: TrendingDown, color: "text-red-500" },
     { label: "Net Profit", value: `$${netProfit.toFixed(2)}`, icon: TrendingUp, color: netProfit >= 0 ? "text-primary" : "text-red-600" },
