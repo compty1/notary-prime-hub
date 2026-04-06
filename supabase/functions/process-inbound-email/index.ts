@@ -11,6 +11,19 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Verify shared secret to prevent unauthorized invocation
+    const authHeader = req.headers.get("Authorization");
+    const expectedToken = Deno.env.get("ONENOTARY_API_TOKEN");
+    if (expectedToken) {
+      const token = authHeader?.replace("Bearer ", "");
+      if (token !== expectedToken) {
+        console.error("process-inbound-email: invalid auth token");
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
@@ -73,7 +86,7 @@ Deno.serve(async (req) => {
   } catch (err) {
     console.error("Process inbound email error:", err);
     return new Response(
-      JSON.stringify({ error: (err as Error).message }),
+      JSON.stringify({ error: "Internal server error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

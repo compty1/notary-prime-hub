@@ -80,7 +80,8 @@ export function NotarizationCertificate({
             ${commissionNumber ? `<p style="font-size:11px;color:#666;">Commission #: ${commissionNumber}</p>` : ""}
             ${commissionExpiry ? `<p style="font-size:11px;color:#666;">Commission Expires: ${commissionExpiry}</p>` : ""}
           </div>
-          <p class="compliance">This notarization was performed in compliance with Ohio Revised Code §147.542.</p>
+          <p class="compliance">This notarization was performed via communication technology in compliance with Ohio Revised Code §147.63 and §147.542.</p>
+          <p class="compliance" style="margin-top:4px;">The signer appeared remotely via audio-video communication technology. Identity was verified through credential analysis and knowledge-based authentication (KBA) per ORC §147.66.</p>
           ${verificationUrl ? `<p class="verify">Verify: ${verificationUrl}</p>` : ""}
         </div>
       </body>
@@ -110,7 +111,8 @@ Notary Public, State of ${commissionState}
 ${commissionNumber ? `Commission #: ${commissionNumber}` : ""}
 ${commissionExpiry ? `Commission Expires: ${commissionExpiry}` : ""}
 
-This notarization was performed in compliance with Ohio Revised Code §147.542.
+This notarization was performed via communication technology in compliance with Ohio Revised Code §147.63 and §147.542.
+The signer appeared remotely via audio-video communication technology. Identity was verified through credential analysis and knowledge-based authentication (KBA) per ORC §147.66.
 ${verificationUrl ? `Verify: ${verificationUrl}` : ""}
     `.trim();
 
@@ -151,7 +153,7 @@ ${verificationUrl ? `Verify: ${verificationUrl}` : ""}
         </div>
 
         <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
-          <p className="text-xs text-muted-foreground">Ohio Revised Code §147.542 compliant</p>
+          <p className="text-xs text-muted-foreground">Ohio Revised Code §147.63 & §147.542 compliant • RON via communication technology</p>
           <div className="flex gap-2">
             <Button size="sm" variant="outline" onClick={printCertificate}>
               <Printer className="mr-1 h-3 w-3" /> Print PDF
