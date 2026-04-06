@@ -31,7 +31,18 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { serviceType, preferredDate } = await req.json();
+    const { z } = await import("https://esm.sh/zod@3.23.8");
+    const BodySchema = z.object({
+      serviceType: z.string().max(200).optional(),
+      preferredDate: z.string().max(20).optional(),
+    });
+    const parsed = BodySchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: "Invalid input", details: parsed.error.flatten().fieldErrors }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const { serviceType, preferredDate } = parsed.data;
 
     // Fetch historical appointment data
     const { data: appointments } = await supabase

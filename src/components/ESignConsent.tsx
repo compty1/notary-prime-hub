@@ -25,8 +25,10 @@ export function ESignConsent({ consented, onConsentChange, consentTimestamp }: E
         <ul className="list-disc pl-4 space-y-1">
           <li>You consent to conduct this transaction electronically.</li>
           <li>Your electronic signature has the same legal force as a handwritten signature.</li>
+          <li>You consent to the <strong>audio and video recording</strong> of this Remote Online Notarization session, as required by <strong>ORC §147.66</strong>.</li>
           <li>You have the right to withdraw this consent at any time before signing.</li>
           <li>You may request a paper copy of any electronically signed document.</li>
+          <li>Session recordings will be retained for a minimum of 10 years per Ohio law.</li>
         </ul>
       </div>
       <div className="flex items-start gap-2">
