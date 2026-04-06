@@ -29,7 +29,11 @@ export function CalendarDownload({
 
     const ics = [
       "BEGIN:VCALENDAR", "VERSION:2.0", `PRODID:${BRAND.calendarProdId}`,
-      "BEGIN:VEVENT", `DTSTART:${dtStart}`, `DTEND:${dtEnd}`,
+      "BEGIN:VTIMEZONE", "TZID:America/New_York",
+      "BEGIN:STANDARD", "DTSTART:19701101T020000", "RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU", "TZOFFSETFROM:-0400", "TZOFFSETTO:-0500", "TZNAME:EST", "END:STANDARD",
+      "BEGIN:DAYLIGHT", "DTSTART:19700308T020000", "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU", "TZOFFSETFROM:-0500", "TZOFFSETTO:-0400", "TZNAME:EDT", "END:DAYLIGHT",
+      "END:VTIMEZONE",
+      "BEGIN:VEVENT", `DTSTART;TZID=America/New_York:${dtStart}`, `DTEND;TZID=America/New_York:${dtEnd.replace(/Z$/, "")}`,
       `SUMMARY:Notarization — ${serviceType}`,
       `DESCRIPTION:${desc}`,
       `LOCATION:${loc}`,
