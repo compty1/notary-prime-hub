@@ -142,7 +142,7 @@ export function Navbar() {
           </DropdownNav>
 
           {/* Tools Dropdown */}
-          <DropdownNav label="Tools" linkTo="/ai-writer">
+          <DropdownNav label="Tools" linkTo="/ai-tools">
             <div className="space-y-1">
               {toolLinks.map((link) => (
                 <Link
@@ -229,6 +229,14 @@ export function Navbar() {
                 </div>
               )}
 
+              {/* Tools collapsible (Bug 67) */}
+              <Link
+                to="/ai-tools"
+                className="rounded-lg px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+              >
+                AI Tools Hub
+              </Link>
+
               {plainLinks.map((link) => (
                 <Link
                   key={link.to}
@@ -239,8 +247,9 @@ export function Navbar() {
                 </Link>
               ))}
               <hr className="my-3 border-border" />
-              <div className="px-4 py-2">
+              <div className="flex items-center gap-2 px-4 py-2">
                 <DarkModeToggle />
+                <span className="text-sm text-muted-foreground">Dark Mode</span>
               </div>
               {user ? (
                 <Link to={portalLink}>

@@ -2,8 +2,10 @@ import { useState, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { MessageCircle, X, Send, Loader2, Bot } from "lucide-react";
+import { MessageCircle, X, Send, Loader2, Bot, LogIn } from "lucide-react";
 import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
+import { useAuth } from "@/contexts/AuthContext";
+import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 
 interface Message {
@@ -22,9 +24,10 @@ export function SignerFAQBot() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
 
   const sendMessage = useCallback(async () => {
-    if (!input.trim() || loading) return;
+    if (!input.trim() || loading || !user) return;
     const userMsg: Message = { role: "user", content: input.trim() };
     const updatedMessages = [...messages, userMsg];
     setMessages(updatedMessages);
@@ -33,7 +36,7 @@ export function SignerFAQBot() {
 
     try {
       const response = await callEdgeFunctionStream("client-assistant", {
-        messages: updatedMessages.map((m) => ({ role: m.role, content: m.content })),
+        messages: updatedMessages.slice(-20).map((m) => ({ role: m.role, content: m.content })),
         context: "signer_faq",
       }, 60000);
 
@@ -136,21 +139,30 @@ export function SignerFAQBot() {
       </div>
 
       <div className="border-t border-border p-3">
-        <form
-          onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
-          className="flex gap-2"
-        >
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask a question..."
-            className="flex-1 text-sm"
-            disabled={loading}
-          />
-          <Button type="submit" size="icon" disabled={loading || !input.trim()} className="h-9 w-9">
-            <Send className="h-4 w-4" />
-          </Button>
-        </form>
+        {!user ? (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <LogIn className="h-4 w-4" />
+            <span>
+              <Link to="/login" className="text-primary underline">Sign in</Link> to chat with the assistant.
+            </span>
+          </div>
+        ) : (
+          <form
+            onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
+            className="flex gap-2"
+          >
+            <Input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask a question..."
+              className="flex-1 text-sm"
+              disabled={loading}
+            />
+            <Button type="submit" size="icon" disabled={loading || !input.trim()} className="h-9 w-9">
+              <Send className="h-4 w-4" />
+            </Button>
+          </form>
+        )}
       </div>
     </Card>
   );

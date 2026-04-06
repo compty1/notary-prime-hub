@@ -9,7 +9,6 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { lazy, Suspense } from "react";
 import ScrollToTop from "@/components/ScrollToTop";
 import { CommandPalette } from "@/components/CommandPalette";
-import { SignerFAQBot } from "@/components/SignerFAQBot";
 import { AnimatePresence } from "framer-motion";
 
 
@@ -173,7 +172,7 @@ function AnimatedRoutes() {
         <Route path="/signature-generator" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Signature generator failed to load"><SignatureGeneratorPage /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/grants" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Grant generator failed to load"><GrantDashboard /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/resume-builder" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Resume builder failed to load"><ResumeBuilder /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/ai-tools" element={<ErrorBoundary fallbackMessage="AI Tools failed to load"><AITools /></ErrorBoundary>} />
+        <Route path="/ai-tools" element={<ProtectedRoute><ErrorBoundary fallbackMessage="AI Tools failed to load"><AITools /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/track/:token" element={<ErrorBoundary fallbackMessage="Session tracker failed to load"><SessionTracker /></ErrorBoundary>} />
         <Route path="/reschedule/:confirmationNumber" element={<ErrorBoundary fallbackMessage="Reschedule failed to load"><RescheduleAppointment /></ErrorBoundary>} />
         <Route path="/account-settings" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Account settings failed to load"><AccountSettings /></ErrorBoundary></ProtectedRoute>} />
@@ -221,6 +220,12 @@ function AnimatedRoutes() {
   );
 }
 
+function AuthenticatedCommandPalette() {
+  const { user } = useAuth();
+  if (!user) return null;
+  return <CommandPalette />;
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -229,8 +234,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
-          <CommandPalette />
-          <SignerFAQBot />
+          <AuthenticatedCommandPalette />
           <Suspense fallback={<PageLoader />}>
             <AnimatedRoutes />
           </Suspense>
