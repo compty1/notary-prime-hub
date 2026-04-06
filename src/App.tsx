@@ -122,7 +122,7 @@ const PageLoader = () => (
 
 function AnimatedRoutes() {
   const location = useLocation();
-  const routeKey = location.pathname;
+  
 
   return (
       <Routes location={location}>
