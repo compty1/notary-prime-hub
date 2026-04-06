@@ -863,7 +863,7 @@ export default function AdminAppointments() {
                   forms.push({ title: "Ohio POA Statutes", url: "https://codes.ohio.gov/ohio-revised-code/chapter-1337" });
                 }
                 if (svc.includes("real estate") || svc.includes("deed") || svc.includes("closing")) {
-                  forms.push({ title: "Ohio Deed Forms", url: "https://www.ohiosos.gov/notary/forms/" });
+                  forms.push({ title: "Ohio Deed Forms", url: "https://www.ohiosos.gov/notary/information/" });
                 }
                 if (svc.includes("i-9") || svc.includes("employment")) {
                   forms.push({ title: "USCIS Form I-9", url: "https://www.uscis.gov/i-9" });
