@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
   } catch (err: any) {
     console.error("get-stripe-config error:", err.message);
     return new Response(
-      JSON.stringify({ error: err.message }),
+      JSON.stringify({ error: "Internal server error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
