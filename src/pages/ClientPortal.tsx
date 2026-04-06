@@ -319,6 +319,7 @@ export default function ClientPortal() {
             <TabsTrigger value="reminders" aria-label="Document Reminders"><Bell className="mr-1 h-4 w-4 hidden sm:inline" /> Remind</TabsTrigger>
             <TabsTrigger value="reviews" aria-label="Reviews"><Star className="mr-1 h-4 w-4 hidden sm:inline" /> Reviews</TabsTrigger>
             <TabsTrigger value="services" aria-label="Available Services"><ShoppingBag className="mr-1 h-4 w-4 hidden sm:inline" /> Services</TabsTrigger>
+            <TabsTrigger value="referral" aria-label="Refer a Friend"><Sparkles className="mr-1 h-4 w-4 hidden sm:inline" /> Refer</TabsTrigger>
           </TabsList>
 
           {/* DASHBOARD OVERVIEW TAB — Item 171 */}
@@ -326,6 +327,7 @@ export default function ClientPortal() {
             <PortalOnboardingChecklist profile={profile} documents={documents} appointments={appointments} onEditProfile={() => setEditProfileOpen(true)} />
             <PortalQuickActions />
             <ClientProgressTracker appointments={appointments} documents={documents} />
+            {upcoming.length > 0 && <DocumentReadinessScore appointmentId={upcoming[0].id} serviceType={upcoming[0].service_type} />}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <Card className="border-border/50">
                 <CardContent className="p-4 flex items-center gap-3">
