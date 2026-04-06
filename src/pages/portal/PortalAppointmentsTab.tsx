@@ -48,12 +48,41 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
     return diff <= 15 * 60 * 1000 && diff > -60 * 60 * 1000;
   };
 
+  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="font-sans text-xl font-semibold">Upcoming Appointments</h2>
-        <Link to="/book"><Button size="sm" className=""><Plus className="mr-1 h-4 w-4" /> New Appointment</Button></Link>
+        <div className="flex items-center gap-2">
+          <div className="flex rounded-md border border-border">
+            <Button size="sm" variant={viewMode === "list" ? "default" : "ghost"} className="rounded-r-none h-8" onClick={() => setViewMode("list")} aria-label="List view">
+              <List className="h-4 w-4" />
+            </Button>
+            <Button size="sm" variant={viewMode === "calendar" ? "default" : "ghost"} className="rounded-l-none h-8" onClick={() => setViewMode("calendar")} aria-label="Calendar view">
+              <LayoutGrid className="h-4 w-4" />
+            </Button>
+          </div>
+          <Link to="/book"><Button size="sm"><Plus className="mr-1 h-4 w-4" /> New Appointment</Button></Link>
+        </div>
       </div>
+
+      {/* Calendar View */}
+      {viewMode === "calendar" && !loading && appointments.length > 0 && (
+        <Suspense fallback={<div className="flex justify-center py-8"><div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" /></div>}>
+          <FullCalendarView
+            events={appointments.map(a => ({
+              id: a.id,
+              title: a.service_type,
+              start: `${a.scheduled_date}T${a.scheduled_time}`,
+              color: a.status === "completed" ? "hsl(var(--muted-foreground))" : a.notarization_type === "ron" ? "hsl(var(--accent))" : "hsl(var(--primary))",
+              extendedProps: a,
+            }))}
+            readOnly
+            height={450}
+          />
+        </Suspense>
+      )}
       {loading ? (
         <div className="flex justify-center py-12"><div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" /></div>
       ) : upcoming.length === 0 && inSession.length === 0 ? (
