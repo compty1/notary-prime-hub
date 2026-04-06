@@ -911,6 +911,24 @@ export default function RonSession() {
           }}
         />
 
+        {/* 15-minute inactivity lock overlay */}
+        {inactivityLocked && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-background/80 backdrop-blur-sm">
+            <Card className="max-w-md border-destructive">
+              <CardContent className="flex flex-col items-center py-10 text-center">
+                <AlertCircle className="h-12 w-12 text-destructive mb-4" />
+                <h2 className="font-sans text-xl font-bold mb-2">Session Paused — Inactivity</h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  This RON session has been locked after 15 minutes of inactivity per Ohio compliance requirements.
+                </p>
+                <Button onClick={() => { setInactivityLocked(false); setLastActivityAt(Date.now()); }}>
+                  Resume Session
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         {/* Ohio RON Compliance Banner */}
         {appointment?.notarization_type === "ron" && (
           <div className="mb-4">
