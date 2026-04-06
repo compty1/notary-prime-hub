@@ -84,8 +84,8 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
 
   const severityIcon = (severity: string) => {
     if (severity === "critical") return <AlertTriangle className="h-3 w-3 text-destructive" />;
-    if (severity === "warning") return <AlertTriangle className="h-3 w-3 text-yellow-500" />;
-    return <Info className="h-3 w-3 text-blue-500" />;
+    if (severity === "warning") return <AlertTriangle className="h-3 w-3 text-accent-foreground" />;
+    return <Info className="h-3 w-3 text-primary" />;
   };
 
   const filteredDocuments = useMemo(() => {
@@ -234,7 +234,7 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
         </CardContent></Card>
       ) : otherDocs.length === 0 ? null : (
         <div className="space-y-3">
-          {documents.map(doc => (
+          {otherDocs.map(doc => (
             <Card key={doc.id} className="border-border/50">
               <CardContent className="flex items-center justify-between p-4">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -252,7 +252,7 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
                   </Button>
                   {reviewResults[doc.id] && (
                     <Button size="sm" variant="ghost" onClick={() => setShowReviewDialog(doc.id)} title="View Review">
-                      {reviewResults[doc.id].overallStatus === "pass" ? <CheckCircle2 className="h-3 w-3 text-green-600" /> : <AlertTriangle className="h-3 w-3 text-yellow-500" />}
+                      {reviewResults[doc.id].overallStatus === "pass" ? <CheckCircle2 className="h-3 w-3 text-primary" /> : <AlertTriangle className="h-3 w-3 text-accent-foreground" />}
                     </Button>
                   )}
                   {!doc.appointment_id && upcomingAppointments.length > 0 && (

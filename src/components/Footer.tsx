@@ -88,19 +88,19 @@ export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com
 
         <div className="mt-4 border-t border-sidebar-border pt-4 text-center text-xs text-sidebar-foreground/50">
           <p>© {new Date().getFullYear()} Notar. All rights reserved. Ohio Notary & Document Services — Franklin County</p>
-          <div className="mt-2 flex items-center justify-center gap-3">
+          <nav className="mt-2 flex items-center justify-center gap-3" aria-label="Footer links">
             <Link to="/terms" className="transition-colors hover:text-primary">Terms</Link>
-            <span className="text-sidebar-border">·</span>
+            <span className="text-sidebar-border" aria-hidden="true">·</span>
             <Link to="/terms#privacy" className="transition-colors hover:text-primary">Privacy</Link>
-            <span className="text-sidebar-border">·</span>
+            <span className="text-sidebar-border" aria-hidden="true">·</span>
             <Link to="/resources" className="transition-colors hover:text-primary">Resources</Link>
-            <span className="text-sidebar-border">·</span>
+            <span className="text-sidebar-border" aria-hidden="true">·</span>
             <a href="https://www.facebook.com/notardex" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-primary" aria-label="Facebook">Facebook</a>
-            <span className="text-sidebar-border">·</span>
+            <span className="text-sidebar-border" aria-hidden="true">·</span>
             <a href="https://www.linkedin.com/company/notardex" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-primary" aria-label="LinkedIn">LinkedIn</a>
-            <span className="text-sidebar-border">·</span>
+            <span className="text-sidebar-border" aria-hidden="true">·</span>
             <a href="https://g.co/kgs/notardex" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-primary" aria-label="Google Business">Google</a>
-          </div>
+          </nav>
         </div>
       </div>
     </footer>

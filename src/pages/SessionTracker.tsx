@@ -15,13 +15,13 @@ const STEPS = [
 ];
 
 const STATUS_CONFIG: Record<string, { label: string; icon: typeof Clock; color: string }> = {
-  waiting: { label: "Waiting to Start", icon: Clock, color: "text-yellow-600" },
-  document_upload: { label: "Uploading Documents", icon: FileUp, color: "text-blue-600" },
-  in_progress: { label: "Session In Progress", icon: Play, color: "text-blue-600" },
-  kba_verification: { label: "Identity Verification", icon: Shield, color: "text-orange-600" },
-  signing: { label: "Document Signing", icon: PenTool, color: "text-blue-600" },
-  completed: { label: "Session Complete", icon: CheckCircle2, color: "text-green-600" },
-  cancelled: { label: "Session Cancelled", icon: AlertCircle, color: "text-red-600" },
+  waiting: { label: "Waiting to Start", icon: Clock, color: "text-accent-foreground" },
+  document_upload: { label: "Uploading Documents", icon: FileUp, color: "text-primary" },
+  in_progress: { label: "Session In Progress", icon: Play, color: "text-primary" },
+  kba_verification: { label: "Identity Verification", icon: Shield, color: "text-accent-foreground" },
+  signing: { label: "Document Signing", icon: PenTool, color: "text-primary" },
+  completed: { label: "Session Complete", icon: CheckCircle2, color: "text-primary" },
+  cancelled: { label: "Session Cancelled", icon: AlertCircle, color: "text-destructive" },
 };
 
 function getStepIndex(status: string): number {
