@@ -9,7 +9,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { lazy, Suspense } from "react";
 import ScrollToTop from "@/components/ScrollToTop";
 import { CommandPalette } from "@/components/CommandPalette";
-import { AnimatePresence } from "framer-motion";
+
 
 
 // Eager load critical pages
@@ -122,10 +122,9 @@ const PageLoader = () => (
 
 function AnimatedRoutes() {
   const location = useLocation();
-  const routeKey = location.pathname;
+  
 
   return (
-    <AnimatePresence mode="popLayout" initial={false}>
       <Routes location={location}>
         <Route path="/" element={<Index />} />
         <Route path="/coming-soon" element={<ComingSoon />} />
@@ -216,7 +215,6 @@ function AnimatedRoutes() {
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </AnimatePresence>
   );
 }
 
