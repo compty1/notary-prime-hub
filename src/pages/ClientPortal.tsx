@@ -639,6 +639,16 @@ export default function ClientPortal() {
         </Tabs>
       </div>
 
+      {/* Document Wizard — rendered outside Tabs so it works from any tab */}
+      {showWizard && (
+        <Dialog open={showWizard} onOpenChange={setShowWizard}>
+          <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto">
+            <DialogHeader><DialogTitle className="font-sans flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary" /> AI Document Wizard</DialogTitle></DialogHeader>
+            <DocumentWizard onSelectService={svc => { setShowWizard(false); navigate(`/book?service=${encodeURIComponent(svc)}`); }} onClose={() => setShowWizard(false)} />
+          </DialogContent>
+        </Dialog>
+      )}
+
       {/* Dialogs */}
       <Dialog open={explainDialogOpen} onOpenChange={setExplainDialogOpen}>
         <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
