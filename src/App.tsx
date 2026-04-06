@@ -221,7 +221,8 @@ function AnimatedRoutes() {
 }
 
 function AuthenticatedCommandPalette() {
-  // useAuth must be used inside AuthProvider, and CommandPalette already checks user internally
+  const { user } = useAuth();
+  if (!user) return null; // Bug 476: Only render for authenticated users
   return <CommandPalette />;
 }
 

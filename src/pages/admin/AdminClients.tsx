@@ -16,7 +16,7 @@ import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 
 import { appointmentStatusColors as statusColors } from "@/lib/statusColors";
 
-const formatDate = (dateStr: string) => new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+import { formatDate } from "@/lib/utils";
 
 const PAGE_SIZE = 30;
 
@@ -70,8 +70,8 @@ export default function AdminClients() {
 
   const fetchData = async () => {
     const [profileRes, apptRes] = await Promise.all([
-      supabase.from("profiles").select("*").order("created_at", { ascending: false }),
-      supabase.from("appointments").select("*").order("scheduled_date", { ascending: false }),
+      supabase.from("profiles").select("*").order("created_at", { ascending: false }).limit(500),
+      supabase.from("appointments").select("*").order("scheduled_date", { ascending: false }).limit(1000),
     ]);
     if (profileRes.data) {
       setProfiles(profileRes.data);
