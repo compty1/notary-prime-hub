@@ -45,9 +45,9 @@ export function SignerChecklist({ type = "in_person", className }: SignerCheckli
             </li>
           ))}
         </ul>
-        <div className="space-y-2 rounded-lg bg-amber-50 dark:bg-amber-900/20 p-3">
+        <div className="space-y-2 rounded-lg bg-destructive/5 p-3">
           {warnings.map((w, i) => (
-            <p key={i} className="flex items-start gap-2 text-xs text-amber-800 dark:text-amber-200">
+            <p key={i} className="flex items-start gap-2 text-xs text-destructive">
               <AlertTriangle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" />
               <span>{w}</span>
             </p>
