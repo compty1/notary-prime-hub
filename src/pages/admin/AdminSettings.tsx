@@ -115,8 +115,9 @@ export default function AdminSettings() {
         try {
           const { logAuditEvent } = await import("@/lib/auditLog");
           logAuditEvent("settings_updated", { entityType: "platform_settings", details: { changed_keys: changedKeys } });
-        } catch {}
-      }
+        } catch (auditErr) {
+          console.error("Failed to log settings audit event:", auditErr);
+        }
       await fetchSettings();
     }
     setSaving(false);

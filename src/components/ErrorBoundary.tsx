@@ -1,6 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Props {
   children: ReactNode;
@@ -22,6 +23,20 @@ export default class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("ErrorBoundary caught:", error, errorInfo);
+    // Bug 701: Report errors to audit log
+    try {
+      supabase.from("audit_log").insert({
+        action: "client_error",
+        entity_type: "error_boundary",
+        details: {
+          message: error.message,
+          stack: error.stack?.slice(0, 500),
+          componentStack: errorInfo.componentStack?.slice(0, 500),
+        },
+      }).then(() => {});
+    } catch {
+      // Never throw from error reporting
+    }
   }
 
   public render() {
