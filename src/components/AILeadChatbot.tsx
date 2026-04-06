@@ -3,8 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { MessageSquare, Send, X, Loader2, Bot } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { submitLead } from "@/lib/submitLead";
 
 interface Message {
   role: "user" | "assistant";
