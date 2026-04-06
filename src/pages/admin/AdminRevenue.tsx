@@ -380,6 +380,7 @@ export default function AdminRevenue() {
         <TabsList>
           <TabsTrigger value="payments"><CreditCard className="mr-1 h-4 w-4" /> Payments ({payments.length})</TabsTrigger>
           <TabsTrigger value="journal"><Receipt className="mr-1 h-4 w-4" /> Journal Revenue</TabsTrigger>
+          <TabsTrigger value="forecast"><TrendingUp className="mr-1 h-4 w-4" /> Forecast</TabsTrigger>
         </TabsList>
 
         <TabsContent value="payments">
