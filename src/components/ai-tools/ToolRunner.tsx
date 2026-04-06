@@ -345,6 +345,27 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
                   <Button size="sm" variant="outline" onClick={handlePrint} className="h-7 px-2">
                     <Printer className="h-3 w-3" />
                   </Button>
+                  <Button size="sm" variant="outline" onClick={async () => {
+                    if (!user || saving) return;
+                    setSaving(true);
+                    const { error } = await supabase.from("tool_generations").upsert({
+                      user_id: user.id,
+                      tool_id: tool.id,
+                      fields: fieldValues as any,
+                      result,
+                      is_preset: false,
+                    } as any);
+                    setSaving(false);
+                    if (error) {
+                      toast({ title: "Save failed", description: error.message, variant: "destructive" });
+                    } else {
+                      setUsageCount(prev => (prev ?? 0) + 1);
+                      toast({ title: "Saved to Portal", description: "View in your AI Tools tab." });
+                    }
+                  }} className="h-7 px-2 text-xs" disabled={saving}>
+                    {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3 mr-1" />}
+                    Save
+                  </Button>
                 </div>
               )}
             </div>
