@@ -19,10 +19,16 @@ export default function RescheduleAppointment() {
   const [newDate, setNewDate] = useState("");
   const [newTime, setNewTime] = useState("");
   const [rescheduled, setRescheduled] = useState(false);
+  const [attempts, setAttempts] = useState(0);
 
   const handleVerify = async () => {
     if (!email.trim() || !confirmationNumber) return;
+    if (attempts >= 5) {
+      toast({ title: "Too many attempts", description: "Please try again later or contact us directly.", variant: "destructive" });
+      return;
+    }
     setLoading(true);
+    setAttempts(prev => prev + 1);
 
     try {
       const { data: profile } = await supabase
@@ -32,7 +38,7 @@ export default function RescheduleAppointment() {
         .maybeSingle();
 
       if (!profile) {
-        toast({ title: "Not found", description: "No account found with that email.", variant: "destructive" });
+        toast({ title: "Not found", description: "No matching appointment found. Please check your email and confirmation number.", variant: "destructive" });
         return;
       }
 
@@ -45,7 +51,7 @@ export default function RescheduleAppointment() {
         .maybeSingle();
 
       if (!apt) {
-        toast({ title: "Not found", description: "No active appointment found with that confirmation number.", variant: "destructive" });
+        toast({ title: "Not found", description: "No matching appointment found. Please check your email and confirmation number.", variant: "destructive" });
         return;
       }
 

@@ -60,6 +60,10 @@ Deno.serve(async (req) => {
 
       if (!profile?.phone) continue;
 
+      // Bug 36: Validate E.164 phone format before sending to Twilio
+      const phoneDigits = profile.phone.replace(/\D/g, "");
+      if (phoneDigits.length < 10 || phoneDigits.length > 15) continue;
+      const e164Phone = phoneDigits.startsWith("1") ? `+${phoneDigits}` : `+1${phoneDigits}`;
       // Check if already sent for this appointment
       const { data: existing } = await supabase
         .from("appointment_emails")
@@ -88,7 +92,7 @@ Deno.serve(async (req) => {
             "Content-Type": "application/x-www-form-urlencoded",
           },
           body: new URLSearchParams({
-            To: profile.phone,
+            To: e164Phone,
             From: TWILIO_FROM_NUMBER,
             Body: message,
           }),

@@ -154,17 +154,17 @@ export default function BookAppointment() {
   }, []);
   usePageMeta({ title: "Book a Notary Appointment", description: "Schedule an in-person or remote online notarization appointment with an Ohio-commissioned notary. Same-day availability in Columbus, OH." });
 
-  // Expire stale bookings in localStorage (24h)
+  // Bug 33: Use sessionStorage for pending bookings (more secure on shared computers)
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(BOOKING_STORAGE_KEY);
+      const raw = sessionStorage.getItem(BOOKING_STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
         if (parsed._savedAt && Date.now() - parsed._savedAt > 24 * 60 * 60 * 1000) {
-          localStorage.removeItem(BOOKING_STORAGE_KEY);
+          sessionStorage.removeItem(BOOKING_STORAGE_KEY);
         }
       }
-    } catch { localStorage.removeItem(BOOKING_STORAGE_KEY); }
+    } catch { sessionStorage.removeItem(BOOKING_STORAGE_KEY); }
   }, []);
 
   useEffect(() => {
@@ -244,11 +244,11 @@ export default function BookAppointment() {
         if (data) { setProfile(data); if (data.address) setClientAddress(data.address); if (data.city) setClientCity(data.city); if (data.state) setClientState(data.state); if (data.zip) setClientZip(data.zip); }
       });
       supabase.from("appointments").select("*").eq("client_id", user.id).order("scheduled_date", { ascending: false }).limit(5).then(({ data }) => { if (data) setPastAppointments(data); });
-      const pendingBooking = localStorage.getItem(BOOKING_STORAGE_KEY);
+      const pendingBooking = sessionStorage.getItem(BOOKING_STORAGE_KEY);
       if (pendingBooking) {
         try {
           const booking = JSON.parse(pendingBooking);
-          localStorage.removeItem(BOOKING_STORAGE_KEY);
+          sessionStorage.removeItem(BOOKING_STORAGE_KEY);
           setNotarizationType(booking.notarizationType); setServiceType(booking.serviceType);
           setDate(booking.date); setTime(booking.time); setLocation(booking.location || ""); setNotes(booking.notes || "");
           setDocumentCount(booking.documentCount || 1); setClientAddress(booking.clientAddress || "");
@@ -263,7 +263,7 @@ export default function BookAppointment() {
             toast({ title: "Session not ready", description: "Please try again.", variant: "destructive" });
           };
           waitForSession();
-        } catch { localStorage.removeItem(BOOKING_STORAGE_KEY); }
+        } catch { sessionStorage.removeItem(BOOKING_STORAGE_KEY); }
       }
     }
   }, [user]);
@@ -487,10 +487,10 @@ export default function BookAppointment() {
       appointmentResultId = rebookingId;
     } else {
       const { data: insertedData, error } = await supabase.from("appointments").insert(payload).select("id").single();
-      if (error) { localStorage.removeItem(BOOKING_STORAGE_KEY); toast({ title: "Booking failed", description: error.message, variant: "destructive" }); setSubmitting(false); return; }
+      if (error) { sessionStorage.removeItem(BOOKING_STORAGE_KEY); toast({ title: "Booking failed", description: error.message, variant: "destructive" }); setSubmitting(false); return; }
       appointmentResultId = insertedData.id;
     }
-    localStorage.removeItem(BOOKING_STORAGE_KEY);
+    sessionStorage.removeItem(BOOKING_STORAGE_KEY);
     try { await supabase.functions.invoke("send-appointment-emails", { body: { appointmentId: appointmentResultId, emailType: "confirmation" } }); } catch (e) { console.error("Email error:", e); }
     if (user?.email && !rebookingId) { try { await supabase.from("leads").update({ status: "converted" }).ilike("email", user.email).in("status", ["new", "contacted", "qualified"]); } catch {} }
     toast({ title: rebookingId ? "Appointment rescheduled!" : "Appointment booked!", description: "You'll receive a confirmation email shortly." });
@@ -528,9 +528,9 @@ export default function BookAppointment() {
     setValidationErrors({});
 
     if (!user) {
-      localStorage.setItem(BOOKING_STORAGE_KEY, JSON.stringify({ notarizationType, serviceType, date, time, location, notes, documentCount, clientAddress, clientCity, clientState, clientZip, _savedAt: Date.now() }));
+      sessionStorage.setItem(BOOKING_STORAGE_KEY, JSON.stringify({ notarizationType, serviceType, date, time, location, notes, documentCount, clientAddress, clientCity, clientState, clientZip, signerCapacity, entityName, signerTitle, facilityName, facilityContact, facilityRoom, signerCount, _savedAt: Date.now() }));
       const { error } = await signUp(guestEmail, guestPassword, guestName);
-      if (error) { const { error: signInErr } = await signIn(guestEmail, guestPassword); if (signInErr) { localStorage.removeItem(BOOKING_STORAGE_KEY); toast({ title: "Account error", description: error.message, variant: "destructive" }); } return; }
+      if (error) { const { error: signInErr } = await signIn(guestEmail, guestPassword); if (signInErr) { sessionStorage.removeItem(BOOKING_STORAGE_KEY); toast({ title: "Account error", description: error.message, variant: "destructive" }); } return; }
       toast({ title: "Check your email", description: "We sent a verification link." }); navigate("/login"); return;
     }
     await submitBooking(user.id);

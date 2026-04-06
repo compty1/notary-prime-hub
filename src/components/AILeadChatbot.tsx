@@ -3,8 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { MessageSquare, Send, X, Loader2, Bot } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { submitLead } from "@/lib/submitLead";
 
 interface Message {
   role: "user" | "assistant";
@@ -21,7 +19,7 @@ export function AILeadChatbot() {
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [leadCaptured, setLeadCaptured] = useState(false);
+  
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
@@ -33,24 +31,23 @@ export function AILeadChatbot() {
     setInput("");
     setLoading(true);
 
-    // Check if user shared contact info for lead capture
-    const emailMatch = input.match(/[\w.-]+@[\w.-]+\.\w+/);
-    if (emailMatch && !leadCaptured) {
-      await submitLead({
-        email: emailMatch[0],
-        source: "chatbot",
-        notes: messages.map(m => `${m.role}: ${m.content}`).join("\n").slice(0, 1000),
-      });
-      setLeadCaptured(true);
-    }
-
     try {
-      const { data, error } = await supabase.functions.invoke("client-assistant", {
-        body: {
-          messages: [...messages, userMsg].map(m => ({ role: m.role, content: m.content })),
-        },
-      });
-      if (error) throw error;
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/client-assistant`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({
+            messages: [...messages, userMsg].slice(-20).map(m => ({ role: m.role, content: m.content })),
+          }),
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) throw new Error("Failed");
       const reply = data?.choices?.[0]?.message?.content || data?.reply || "I'm sorry, I couldn't process that. Please try again or call us directly.";
       setMessages(prev => [...prev, { role: "assistant", content: reply }]);
     } catch {

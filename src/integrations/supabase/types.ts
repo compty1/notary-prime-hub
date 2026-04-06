@@ -1924,6 +1924,7 @@ export type Database = {
       notary_journal: {
         Row: {
           appointment_id: string | null
+          archived: boolean
           certificate_photos: Json | null
           created_at: string
           created_by: string
@@ -1955,6 +1956,7 @@ export type Database = {
         }
         Insert: {
           appointment_id?: string | null
+          archived?: boolean
           certificate_photos?: Json | null
           created_at?: string
           created_by: string
@@ -1986,6 +1988,7 @@ export type Database = {
         }
         Update: {
           appointment_id?: string | null
+          archived?: boolean
           certificate_photos?: Json | null
           created_at?: string
           created_by?: string

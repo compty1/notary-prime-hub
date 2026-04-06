@@ -194,7 +194,7 @@ export default function ClientPortal() {
       return;
     }
     setCancelling(true);
-    const { error } = await supabase.from("appointments").update({ status: "cancelled" as any }).eq("id", id);
+    const { error } = await supabase.from("appointments").update({ status: "cancelled" as any }).eq("id", id).eq("client_id", user.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else { toast({ title: "Appointment cancelled" }); setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: "cancelled" } : a)); try { await supabase.functions.invoke("send-appointment-emails", { body: { appointmentId: id, emailType: "cancellation" } }); } catch {} }
     setCancelling(false); setCancelDialogId(null);

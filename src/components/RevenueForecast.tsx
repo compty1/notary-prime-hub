@@ -43,7 +43,13 @@ export function RevenueForecast() {
     const sumY = months.reduce((s, m) => s + m.revenue, 0);
     const sumXY = months.reduce((s, m) => s + m.index * m.revenue, 0);
     const sumX2 = months.reduce((s, m) => s + m.index * m.index, 0);
-    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    const denom = n * sumX2 - sumX * sumX;
+    // Bug 13: Guard against division by zero
+    if (denom === 0) {
+      const avg = sumY / n;
+      return { chartData: months.map((m) => ({ ...m, forecast: Math.round(avg) })), forecast: { next1: Math.round(avg), next2: Math.round(avg), next3: Math.round(avg) } };
+    }
+    const slope = (n * sumXY - sumX * sumY) / denom;
     const intercept = (sumY - slope * sumX) / n;
 
     const predict = (i: number) => Math.max(0, Math.round(intercept + slope * i));

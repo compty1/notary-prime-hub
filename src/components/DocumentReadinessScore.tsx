@@ -26,24 +26,46 @@ export function DocumentReadinessScore({ serviceType, uploadedDocuments }: Docum
     const met: string[] = [];
     const missing: string[] = [];
 
+    const idKeywords = ["id", "license", "passport", "identification", "driver"];
+    const docKeywords: Record<string, string[]> = {
+      "valid government-issued photo id": idKeywords,
+      "document to be notarized": ["document", "doc", "pdf", "contract", "agreement", "deed", "affidavit"],
+      "stable internet connection": [],
+      "webcam and microphone": [],
+      "loan documents package": ["loan", "closing", "mortgage"],
+      "secondary id (if required)": idKeywords,
+      "power of attorney document": ["poa", "power", "attorney"],
+      "witness identification (if required)": idKeywords,
+      "property deed or closing documents": ["deed", "title", "closing", "property"],
+      "title documents": ["title"],
+      "document requiring apostille": ["apostille", "document", "certificate"],
+      "destination country information": [],
+    };
+
     requirements.forEach((req) => {
       const reqLower = req.toLowerCase();
-      const hasMatch = docNames.some(
-        (name) => name.includes("id") || name.includes("license") || name.includes("passport")
-          ? reqLower.includes("id") || reqLower.includes("photo")
-          : name.includes(reqLower.split(" ")[0])
+      const keywords = docKeywords[reqLower] || [reqLower.split(" ")[0]];
+
+      // Non-document requirements (internet, webcam) are always considered met
+      if (keywords.length === 0) {
+        met.push(req);
+        return;
+      }
+
+      const hasMatch = docNames.some((name) =>
+        keywords.some((kw) => name.includes(kw))
       );
-      
-      if (hasMatch || uploadedDocuments.length > 0) {
+
+      if (hasMatch) {
         met.push(req);
       } else {
         missing.push(req);
       }
     });
 
-    // Always count at least uploaded docs as progress
-    const uploadProgress = Math.min(uploadedDocuments.length / Math.max(requirements.length, 1), 1);
-    const calculatedScore = Math.round(uploadProgress * 100);
+    const calculatedScore = requirements.length > 0
+      ? Math.round((met.length / requirements.length) * 100)
+      : 0;
 
     return { score: calculatedScore, metItems: met, missingItems: missing };
   }, [requirements, uploadedDocuments]);
