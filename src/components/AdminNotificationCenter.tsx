@@ -115,9 +115,18 @@ export function AdminNotificationCenter() {
     const interval = setInterval(() => {
       if (document.visibilityState === "visible") fetchNotifications();
     }, 30000);
+
+    // FC-5: Realtime subscription for instant notifications
+    const channel = supabase.channel("admin-notifications")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "appointments" }, () => fetchNotifications())
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages" }, () => fetchNotifications())
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "documents" }, () => fetchNotifications())
+      .subscribe();
+
     return () => {
       clearInterval(interval);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
+      supabase.removeChannel(channel);
     };
   }, [fetchNotifications]);
 
