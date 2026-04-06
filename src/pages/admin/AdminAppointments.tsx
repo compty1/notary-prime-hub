@@ -395,7 +395,7 @@ export default function AdminAppointments() {
         await supabase.functions.invoke("send-appointment-emails", {
           body: { appointment_id: insertedAppt?.id, emailType: "confirmation" },
         });
-      } catch {}
+      } catch (e) { console.error("Email notification error:", e); }
       setShowCreateDialog(false);
       setNewAppt({ client_id: "", service_type: "", notarization_type: "in_person", scheduled_date: "", scheduled_time: "", location: "", notes: "", estimated_price: "" });
       fetchData();

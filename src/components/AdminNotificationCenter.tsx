@@ -140,7 +140,7 @@ export function AdminNotificationCenter() {
           body: notifications.find(n => !n.read)?.title || "You have new notifications",
           icon: "/placeholder.svg",
         });
-      } catch {}
+      } catch (e) { console.error("Browser notification error:", e); }
     }
   }, [unreadCount, browserNotifs, notifications]);
 

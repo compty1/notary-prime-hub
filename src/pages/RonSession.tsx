@@ -220,7 +220,7 @@ export default function RonSession() {
             } as any).select("session_unique_id, signer_ip").single();
             if ((newSession as any)?.session_unique_id) setSessionUniqueId((newSession as any).session_unique_id);
           }
-        } catch {}
+        } catch (e) { console.error("Session init error:", e); }
       }
 
       // Check commission expiry (Ohio ORC §147.03)
