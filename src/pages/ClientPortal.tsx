@@ -34,7 +34,6 @@ import { PortalOnboardingChecklist } from "@/components/PortalOnboardingChecklis
 import { PortalQuickActions } from "@/components/PortalQuickActions";
 import { DocumentReadinessScore } from "@/components/DocumentReadinessScore";
 import { ReferralPortal } from "@/components/ReferralPortal";
-import { PortalQuickActions } from "@/components/PortalQuickActions";
 const pipelineSteps = [
   { key: "uploaded", label: "Intake", icon: Upload },
   { key: "pending_review", label: "Review", icon: FileText },
