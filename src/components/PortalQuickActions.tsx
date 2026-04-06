@@ -14,10 +14,10 @@ interface QuickAction {
 }
 
 const ACTIONS: QuickAction[] = [
-  { icon: Calendar, label: "Book Appointment", href: "/book", color: "text-blue-600" },
+  { icon: Calendar, label: "Book Appointment", href: "/book", color: "text-primary" },
   { icon: Upload, label: "Upload Document", href: "/mobile-upload", color: "text-primary" },
-  { icon: MessageSquare, label: "Message Us", href: "/portal?tab=chat", color: "text-purple-600" },
-  { icon: FileText, label: "View Documents", href: "/portal?tab=documents", color: "text-amber-600" },
+  { icon: MessageSquare, label: "Message Us", href: "/portal?tab=chat", color: "text-primary" },
+  { icon: FileText, label: "View Documents", href: "/portal?tab=documents", color: "text-primary" },
 ];
 
 export function PortalQuickActions() {
