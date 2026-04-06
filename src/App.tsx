@@ -215,7 +215,6 @@ function AnimatedRoutes() {
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </AnimatePresence>
   );
 }
 
