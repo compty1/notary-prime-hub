@@ -1,6 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { usePageMeta } from "@/hooks/usePageMeta";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
@@ -29,6 +29,8 @@ export default function SignUp() {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [signupSuccess, setSignupSuccess] = useState(false);
+  const [searchParams] = useSearchParams();
+  const refCode = searchParams.get("ref") || "";
 
   const strength = useMemo(() => getPasswordStrength(password), [password]);
 
@@ -64,6 +66,14 @@ export default function SignUp() {
       toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
     } else {
       setSignupSuccess(true);
+      // FC-2: Track referral code from URL param
+      if (refCode) {
+        try {
+          await supabase.from("referrals").update({ status: "signed_up" } as any)
+            .eq("referral_code", refCode)
+            .eq("status", "pending");
+        } catch (e) { console.error("Referral tracking error:", e); }
+      }
     }
     setSubmitting(false);
   };
