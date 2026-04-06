@@ -6,11 +6,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, ReactNode } from "react";
 import ScrollToTop from "@/components/ScrollToTop";
 import { CommandPalette } from "@/components/CommandPalette";
-
-
 
 // Eager load critical pages
 import ComingSoon from "./pages/ComingSoon";
@@ -18,89 +16,99 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import NotFound from "./pages/NotFound";
 
-// Lazy load everything else
-const Index = lazy(() => import("./pages/Index"));
-const ResetPassword = lazy(() => import("./pages/ForgotPassword"));
-const BookAppointment = lazy(() => import("./pages/BookAppointment"));
-const ClientPortal = lazy(() => import("./pages/ClientPortal"));
-const RonSession = lazy(() => import("./pages/RonSession"));
-const NotaryGuide = lazy(() => import("./pages/NotaryGuide"));
-const RonInfo = lazy(() => import("./pages/RonInfo"));
-const DocumentTemplates = lazy(() => import("./pages/DocumentTemplates"));
-const DocumentBuilder = lazy(() => import("./pages/DocumentBuilder"));
-const FeeCalculator = lazy(() => import("./pages/FeeCalculator"));
-const BusinessPortal = lazy(() => import("./pages/BusinessPortal"));
-const Services = lazy(() => import("./pages/Services"));
-const VerifySeal = lazy(() => import("./pages/VerifySeal"));
-const TermsPrivacy = lazy(() => import("./pages/TermsPrivacy"));
-const AppointmentConfirmation = lazy(() => import("./pages/AppointmentConfirmation"));
-const RonEligibilityChecker = lazy(() => import("./pages/RonEligibilityChecker"));
-const LoanSigningServices = lazy(() => import("./pages/LoanSigningServices"));
-const ServiceDetail = lazy(() => import("./pages/ServiceDetail"));
-const About = lazy(() => import("./pages/About"));
-const DocumentDigitize = lazy(() => import("./pages/DocumentDigitize"));
-const JoinPlatform = lazy(() => import("./pages/JoinPlatform"));
-const ServiceRequest = lazy(() => import("./pages/ServiceRequest"));
-const VirtualMailroom = lazy(() => import("./pages/VirtualMailroom"));
-const SubscriptionPlans = lazy(() => import("./pages/SubscriptionPlans"));
-const VerifyIdentity = lazy(() => import("./pages/VerifyIdentity"));
-const MobileUpload = lazy(() => import("./pages/MobileUpload"));
-const AIWriter = lazy(() => import("./pages/AIWriter"));
-const AIExtractors = lazy(() => import("./pages/AIExtractors"));
-const AIKnowledge = lazy(() => import("./pages/AIKnowledge"));
-const SignatureGeneratorPage = lazy(() => import("./pages/SignatureGeneratorPage"));
-const GrantDashboard = lazy(() => import("./pages/GrantDashboard"));
-const ResumeBuilder = lazy(() => import("./pages/ResumeBuilder"));
-const AITools = lazy(() => import("./pages/AITools"));
-const SessionTracker = lazy(() => import("./pages/SessionTracker"));
-const RescheduleAppointment = lazy(() => import("./pages/RescheduleAppointment"));
+// Lazy load everything else with retry
+function lazyRetry(factory: () => Promise<{ default: React.ComponentType<any> }>) {
+  return lazy(() =>
+    factory().catch(() =>
+      new Promise<{ default: React.ComponentType<any> }>(resolve =>
+        setTimeout(() => resolve(factory()), 200)
+      )
+    )
+  );
+}
+
+const Index = lazyRetry(() => import("./pages/Index"));
+const ResetPassword = lazyRetry(() => import("./pages/ForgotPassword"));
+const BookAppointment = lazyRetry(() => import("./pages/BookAppointment"));
+const ClientPortal = lazyRetry(() => import("./pages/ClientPortal"));
+const RonSession = lazyRetry(() => import("./pages/RonSession"));
+const NotaryGuide = lazyRetry(() => import("./pages/NotaryGuide"));
+const RonInfo = lazyRetry(() => import("./pages/RonInfo"));
+const DocumentTemplates = lazyRetry(() => import("./pages/DocumentTemplates"));
+const DocumentBuilder = lazyRetry(() => import("./pages/DocumentBuilder"));
+const FeeCalculator = lazyRetry(() => import("./pages/FeeCalculator"));
+const BusinessPortal = lazyRetry(() => import("./pages/BusinessPortal"));
+const Services = lazyRetry(() => import("./pages/Services"));
+const VerifySeal = lazyRetry(() => import("./pages/VerifySeal"));
+const TermsPrivacy = lazyRetry(() => import("./pages/TermsPrivacy"));
+const AppointmentConfirmation = lazyRetry(() => import("./pages/AppointmentConfirmation"));
+const RonEligibilityChecker = lazyRetry(() => import("./pages/RonEligibilityChecker"));
+const LoanSigningServices = lazyRetry(() => import("./pages/LoanSigningServices"));
+const ServiceDetail = lazyRetry(() => import("./pages/ServiceDetail"));
+const About = lazyRetry(() => import("./pages/About"));
+const DocumentDigitize = lazyRetry(() => import("./pages/DocumentDigitize"));
+const JoinPlatform = lazyRetry(() => import("./pages/JoinPlatform"));
+const ServiceRequest = lazyRetry(() => import("./pages/ServiceRequest"));
+const VirtualMailroom = lazyRetry(() => import("./pages/VirtualMailroom"));
+const SubscriptionPlans = lazyRetry(() => import("./pages/SubscriptionPlans"));
+const VerifyIdentity = lazyRetry(() => import("./pages/VerifyIdentity"));
+const MobileUpload = lazyRetry(() => import("./pages/MobileUpload"));
+const AIWriter = lazyRetry(() => import("./pages/AIWriter"));
+const AIExtractors = lazyRetry(() => import("./pages/AIExtractors"));
+const AIKnowledge = lazyRetry(() => import("./pages/AIKnowledge"));
+const SignatureGeneratorPage = lazyRetry(() => import("./pages/SignatureGeneratorPage"));
+const GrantDashboard = lazyRetry(() => import("./pages/GrantDashboard"));
+const ResumeBuilder = lazyRetry(() => import("./pages/ResumeBuilder"));
+const AITools = lazyRetry(() => import("./pages/AITools"));
+const SessionTracker = lazyRetry(() => import("./pages/SessionTracker"));
+const RescheduleAppointment = lazyRetry(() => import("./pages/RescheduleAppointment"));
 
 // Admin pages
-const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
-const AdminOverview = lazy(() => import("./pages/admin/AdminOverview"));
-const AdminAppointments = lazy(() => import("./pages/admin/AdminAppointments"));
-const AdminClients = lazy(() => import("./pages/admin/AdminClients"));
-const AdminAvailability = lazy(() => import("./pages/admin/AdminAvailability"));
-const AdminDocuments = lazy(() => import("./pages/admin/AdminDocuments"));
-const AdminJournal = lazy(() => import("./pages/admin/AdminJournal"));
-const AdminRevenue = lazy(() => import("./pages/admin/AdminRevenue"));
-const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
-const AdminResources = lazy(() => import("./pages/admin/AdminResources"));
-const AdminAIAssistant = lazy(() => import("./pages/admin/AdminAIAssistant"));
-const AdminAuditLog = lazy(() => import("./pages/admin/AdminAuditLog"));
-const AdminTemplates = lazy(() => import("./pages/admin/AdminTemplates"));
-const AdminApostille = lazy(() => import("./pages/admin/AdminApostille"));
-const AdminChat = lazy(() => import("./pages/admin/AdminChat"));
-const AdminBusinessClients = lazy(() => import("./pages/admin/AdminBusinessClients"));
-const AdminServices = lazy(() => import("./pages/admin/AdminServices"));
-const AdminTeam = lazy(() => import("./pages/admin/AdminTeam"));
-const AdminEmailManagement = lazy(() => import("./pages/admin/AdminEmailManagement"));
-const AdminLeadPortal = lazy(() => import("./pages/admin/AdminLeadPortal"));
-const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
-const NotaryProcessGuide = lazy(() => import("./pages/NotaryProcessGuide"));
-const AdminIntegrationTest = lazy(() => import("./pages/admin/AdminIntegrationTest"));
-const AdminServiceRequests = lazy(() => import("./pages/admin/AdminServiceRequests"));
-const AccountSettings = lazy(() => import("./pages/AccountSettings"));
-const AdminContentWorkspace = lazy(() => import("./pages/admin/AdminContentWorkspace"));
-const AdminTaskQueue = lazy(() => import("./pages/admin/AdminTaskQueue"));
-const AdminCRM = lazy(() => import("./pages/admin/AdminCRM"));
-const AdminBuildTracker = lazy(() => import("./pages/admin/AdminBuildTracker"));
-const AdminClientEmails = lazy(() => import("./pages/admin/AdminClientEmails"));
-const AdminMailbox = lazy(() => import("./pages/admin/AdminMailbox"));
-const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
-const AdminWebhooks = lazy(() => import("./pages/admin/AdminWebhooks"));
-const AdminPerformance = lazy(() => import("./pages/admin/AdminPerformance"));
-const AdminComplianceReport = lazy(() => import("./pages/admin/AdminComplianceReport"));
-const Maintenance = lazy(() => import("./pages/Maintenance"));
-const ForNotaries = lazy(() => import("./pages/solutions/ForNotaries"));
-const ForHospitals = lazy(() => import("./pages/solutions/ForHospitals"));
-const ForRealEstate = lazy(() => import("./pages/solutions/ForRealEstate"));
-const ForLawFirms = lazy(() => import("./pages/solutions/ForLawFirms"));
-const ForSmallBusiness = lazy(() => import("./pages/solutions/ForSmallBusiness"));
-const ForIndividuals = lazy(() => import("./pages/solutions/ForIndividuals"));
-const Resources = lazy(() => import("./pages/Resources"));
-const HelpSupport = lazy(() => import("./pages/HelpSupport"));
-const SignerRights = lazy(() => import("./pages/SignerRights"));
+const AdminDashboard = lazyRetry(() => import("./pages/admin/AdminDashboard"));
+const AdminOverview = lazyRetry(() => import("./pages/admin/AdminOverview"));
+const AdminAppointments = lazyRetry(() => import("./pages/admin/AdminAppointments"));
+const AdminClients = lazyRetry(() => import("./pages/admin/AdminClients"));
+const AdminAvailability = lazyRetry(() => import("./pages/admin/AdminAvailability"));
+const AdminDocuments = lazyRetry(() => import("./pages/admin/AdminDocuments"));
+const AdminJournal = lazyRetry(() => import("./pages/admin/AdminJournal"));
+const AdminRevenue = lazyRetry(() => import("./pages/admin/AdminRevenue"));
+const AdminSettings = lazyRetry(() => import("./pages/admin/AdminSettings"));
+const AdminResources = lazyRetry(() => import("./pages/admin/AdminResources"));
+const AdminAIAssistant = lazyRetry(() => import("./pages/admin/AdminAIAssistant"));
+const AdminAuditLog = lazyRetry(() => import("./pages/admin/AdminAuditLog"));
+const AdminTemplates = lazyRetry(() => import("./pages/admin/AdminTemplates"));
+const AdminApostille = lazyRetry(() => import("./pages/admin/AdminApostille"));
+const AdminChat = lazyRetry(() => import("./pages/admin/AdminChat"));
+const AdminBusinessClients = lazyRetry(() => import("./pages/admin/AdminBusinessClients"));
+const AdminServices = lazyRetry(() => import("./pages/admin/AdminServices"));
+const AdminTeam = lazyRetry(() => import("./pages/admin/AdminTeam"));
+const AdminEmailManagement = lazyRetry(() => import("./pages/admin/AdminEmailManagement"));
+const AdminLeadPortal = lazyRetry(() => import("./pages/admin/AdminLeadPortal"));
+const AdminUsers = lazyRetry(() => import("./pages/admin/AdminUsers"));
+const NotaryProcessGuide = lazyRetry(() => import("./pages/NotaryProcessGuide"));
+const AdminIntegrationTest = lazyRetry(() => import("./pages/admin/AdminIntegrationTest"));
+const AdminServiceRequests = lazyRetry(() => import("./pages/admin/AdminServiceRequests"));
+const AccountSettings = lazyRetry(() => import("./pages/AccountSettings"));
+const AdminContentWorkspace = lazyRetry(() => import("./pages/admin/AdminContentWorkspace"));
+const AdminTaskQueue = lazyRetry(() => import("./pages/admin/AdminTaskQueue"));
+const AdminCRM = lazyRetry(() => import("./pages/admin/AdminCRM"));
+const AdminBuildTracker = lazyRetry(() => import("./pages/admin/AdminBuildTracker"));
+const AdminClientEmails = lazyRetry(() => import("./pages/admin/AdminClientEmails"));
+const AdminMailbox = lazyRetry(() => import("./pages/admin/AdminMailbox"));
+const Unsubscribe = lazyRetry(() => import("./pages/Unsubscribe"));
+const AdminWebhooks = lazyRetry(() => import("./pages/admin/AdminWebhooks"));
+const AdminPerformance = lazyRetry(() => import("./pages/admin/AdminPerformance"));
+const AdminComplianceReport = lazyRetry(() => import("./pages/admin/AdminComplianceReport"));
+const Maintenance = lazyRetry(() => import("./pages/Maintenance"));
+const ForNotaries = lazyRetry(() => import("./pages/solutions/ForNotaries"));
+const ForHospitals = lazyRetry(() => import("./pages/solutions/ForHospitals"));
+const ForRealEstate = lazyRetry(() => import("./pages/solutions/ForRealEstate"));
+const ForLawFirms = lazyRetry(() => import("./pages/solutions/ForLawFirms"));
+const ForSmallBusiness = lazyRetry(() => import("./pages/solutions/ForSmallBusiness"));
+const ForIndividuals = lazyRetry(() => import("./pages/solutions/ForIndividuals"));
+const Resources = lazyRetry(() => import("./pages/Resources"));
+const HelpSupport = lazyRetry(() => import("./pages/HelpSupport"));
+const SignerRights = lazyRetry(() => import("./pages/SignerRights"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -120,107 +128,117 @@ const PageLoader = () => (
   </div>
 );
 
+/** Per-route Suspense + ErrorBoundary wrapper to prevent null dispatcher on lazy mount */
+function SR({ children, msg }: { children: ReactNode; msg?: string }) {
+  return (
+    <ErrorBoundary fallbackMessage={msg || "Page failed to load"}>
+      <Suspense fallback={<PageLoader />}>
+        {children}
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
+
 function AnimatedRoutes() {
   const location = useLocation();
-  
 
   return (
-      <Routes location={location}>
-        <Route path="/" element={<Index />} />
-        <Route path="/coming-soon" element={<ComingSoon />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/book" element={<ErrorBoundary fallbackMessage="Booking failed to load"><BookAppointment /></ErrorBoundary>} />
-        <Route path="/booking" element={<ErrorBoundary fallbackMessage="Booking failed to load"><BookAppointment /></ErrorBoundary>} />
-        <Route path="/schedule" element={<ErrorBoundary fallbackMessage="Booking failed to load"><BookAppointment /></ErrorBoundary>} />
-        <Route path="/notary-guide" element={<NotaryGuide />} />
-        <Route path="/ron-info" element={<RonInfo />} />
-        <Route path="/services" element={<ErrorBoundary fallbackMessage="Services failed to load"><Services /></ErrorBoundary>} />
-        <Route path="/services/:serviceId" element={<ErrorBoundary fallbackMessage="Service details failed to load"><ServiceDetail /></ErrorBoundary>} />
-        <Route path="/ron-check" element={<RonEligibilityChecker />} />
-        <Route path="/loan-signing" element={<LoanSigningServices />} />
-        <Route path="/verify/:id" element={<ErrorBoundary fallbackMessage="Verification failed to load"><VerifySeal /></ErrorBoundary>} />
-        <Route path="/terms" element={<TermsPrivacy />} />
-        <Route path="/templates" element={<DocumentTemplates />} />
-        <Route path="/about" element={<ErrorBoundary fallbackMessage="About page failed to load"><About /></ErrorBoundary>} />
-        <Route path="/join" element={<JoinPlatform />} />
-        <Route path="/notary-guide-process" element={<NotaryProcessGuide />} />
-        <Route path="/unsubscribe" element={<Unsubscribe />} />
-        <Route path="/maintenance" element={<Maintenance />} />
-        <Route path="/solutions/notaries" element={<ForNotaries />} />
-        <Route path="/resources" element={<Resources />} />
-        <Route path="/help" element={<HelpSupport />} />
-        <Route path="/signer-rights" element={<SignerRights />} />
-        <Route path="/solutions/hospitals" element={<ForHospitals />} />
-        <Route path="/solutions/real-estate" element={<ForRealEstate />} />
-        <Route path="/solutions/law-firms" element={<ForLawFirms />} />
-        <Route path="/solutions/small-business" element={<ForSmallBusiness />} />
-        <Route path="/solutions/individuals" element={<ForIndividuals />} />
-        <Route path="/digitize" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Document digitize failed to load"><DocumentDigitize /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/request" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Service request failed to load"><ServiceRequest /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/mailroom" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Mailroom failed to load"><VirtualMailroom /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/subscribe" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Subscription plans failed to load"><SubscriptionPlans /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/verify-id" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Identity verification failed to load"><VerifyIdentity /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/mobile-upload" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Mobile upload failed to load"><MobileUpload /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/builder" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Document builder failed to load"><DocumentBuilder /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/fee-calculator" element={<ErrorBoundary fallbackMessage="Fee calculator failed to load"><FeeCalculator /></ErrorBoundary>} />
-        <Route path="/ai-writer" element={<ProtectedRoute><ErrorBoundary fallbackMessage="AI Writer failed to load"><AIWriter /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/ai-extractors" element={<ProtectedRoute><ErrorBoundary fallbackMessage="AI Extractors failed to load"><AIExtractors /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/ai-knowledge" element={<ProtectedRoute><ErrorBoundary fallbackMessage="AI Knowledge failed to load"><AIKnowledge /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/signature-generator" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Signature generator failed to load"><SignatureGeneratorPage /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/grants" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Grant generator failed to load"><GrantDashboard /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/resume-builder" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Resume builder failed to load"><ResumeBuilder /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/ai-tools" element={<ProtectedRoute><ErrorBoundary fallbackMessage="AI Tools failed to load"><AITools /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/track/:token" element={<ErrorBoundary fallbackMessage="Session tracker failed to load"><SessionTracker /></ErrorBoundary>} />
-        <Route path="/reschedule/:confirmationNumber" element={<ErrorBoundary fallbackMessage="Reschedule failed to load"><RescheduleAppointment /></ErrorBoundary>} />
-        <Route path="/account-settings" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Account settings failed to load"><AccountSettings /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/portal" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Portal failed to load"><ClientPortal /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/confirmation" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Confirmation failed to load"><AppointmentConfirmation /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/ron-session" element={<ProtectedRoute><ErrorBoundary fallbackMessage="RON session failed to load"><RonSession /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/business-portal" element={<ProtectedRoute><ErrorBoundary fallbackMessage="Business portal failed to load"><BusinessPortal /></ErrorBoundary></ProtectedRoute>} />
-        <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>}>
-          <Route index element={<ErrorBoundary fallbackMessage="Overview failed to load"><AdminOverview /></ErrorBoundary>} />
-          <Route path="appointments" element={<ErrorBoundary fallbackMessage="Appointments failed to load"><AdminAppointments /></ErrorBoundary>} />
-          <Route path="clients" element={<ErrorBoundary fallbackMessage="Clients failed to load"><AdminClients /></ErrorBoundary>} />
-          <Route path="availability" element={<ErrorBoundary fallbackMessage="Availability failed to load"><AdminAvailability /></ErrorBoundary>} />
-          <Route path="documents" element={<ErrorBoundary fallbackMessage="Documents failed to load"><AdminDocuments /></ErrorBoundary>} />
-          <Route path="journal" element={<ErrorBoundary fallbackMessage="Journal failed to load"><AdminJournal /></ErrorBoundary>} />
-          <Route path="revenue" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Revenue failed to load"><AdminRevenue /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="templates" element={<ErrorBoundary fallbackMessage="Templates failed to load"><AdminTemplates /></ErrorBoundary>} />
-          <Route path="apostille" element={<ErrorBoundary fallbackMessage="Apostille failed to load"><AdminApostille /></ErrorBoundary>} />
-          <Route path="chat" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Chat failed to load"><AdminChat /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="business-clients" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Business clients failed to load"><AdminBusinessClients /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="services" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Services failed to load"><AdminServices /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="resources" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Resources failed to load"><AdminResources /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="ai-assistant" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="AI Assistant failed to load"><AdminAIAssistant /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="audit-log" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Audit log failed to load"><AdminAuditLog /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="team" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Team failed to load"><AdminTeam /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="email-management" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Email management failed to load"><AdminEmailManagement /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="leads" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Lead portal failed to load"><AdminLeadPortal /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="users" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="User management failed to load"><AdminUsers /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="service-requests" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Service requests failed to load"><AdminServiceRequests /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="content-workspace" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Content workspace failed to load"><AdminContentWorkspace /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="task-queue" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Task queue failed to load"><AdminTaskQueue /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="crm" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="CRM failed to load"><AdminCRM /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="build-tracker" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Build tracker failed to load"><AdminBuildTracker /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="settings" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Settings failed to load"><AdminSettings /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="integrations" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Integration testing failed to load"><AdminIntegrationTest /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="client-emails" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Client emails failed to load"><AdminClientEmails /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="mailbox" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Mailbox failed to load"><AdminMailbox /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="webhooks" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Webhooks failed to load"><AdminWebhooks /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="performance" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Performance failed to load"><AdminPerformance /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="compliance-report" element={<ProtectedRoute adminOnly><ErrorBoundary fallbackMessage="Compliance report failed to load"><AdminComplianceReport /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="*" element={<NotFound />} />
-        </Route>
+    <Routes location={location}>
+      <Route path="/" element={<SR><Index /></SR>} />
+      <Route path="/coming-soon" element={<ComingSoon />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<SignUp />} />
+      <Route path="/reset-password" element={<SR><ResetPassword /></SR>} />
+      <Route path="/book" element={<SR msg="Booking failed to load"><BookAppointment /></SR>} />
+      <Route path="/booking" element={<SR msg="Booking failed to load"><BookAppointment /></SR>} />
+      <Route path="/schedule" element={<SR msg="Booking failed to load"><BookAppointment /></SR>} />
+      <Route path="/notary-guide" element={<SR><NotaryGuide /></SR>} />
+      <Route path="/ron-info" element={<SR><RonInfo /></SR>} />
+      <Route path="/services" element={<SR msg="Services failed to load"><Services /></SR>} />
+      <Route path="/services/:serviceId" element={<SR msg="Service details failed to load"><ServiceDetail /></SR>} />
+      <Route path="/ron-check" element={<SR><RonEligibilityChecker /></SR>} />
+      <Route path="/loan-signing" element={<SR><LoanSigningServices /></SR>} />
+      <Route path="/verify/:id" element={<SR msg="Verification failed to load"><VerifySeal /></SR>} />
+      <Route path="/terms" element={<SR><TermsPrivacy /></SR>} />
+      <Route path="/templates" element={<SR><DocumentTemplates /></SR>} />
+      <Route path="/about" element={<SR msg="About page failed to load"><About /></SR>} />
+      <Route path="/join" element={<SR><JoinPlatform /></SR>} />
+      <Route path="/notary-guide-process" element={<SR><NotaryProcessGuide /></SR>} />
+      <Route path="/unsubscribe" element={<SR><Unsubscribe /></SR>} />
+      <Route path="/maintenance" element={<SR><Maintenance /></SR>} />
+      <Route path="/solutions/notaries" element={<SR><ForNotaries /></SR>} />
+      <Route path="/resources" element={<SR><Resources /></SR>} />
+      <Route path="/help" element={<SR><HelpSupport /></SR>} />
+      <Route path="/signer-rights" element={<SR><SignerRights /></SR>} />
+      <Route path="/solutions/hospitals" element={<SR><ForHospitals /></SR>} />
+      <Route path="/solutions/real-estate" element={<SR><ForRealEstate /></SR>} />
+      <Route path="/solutions/law-firms" element={<SR><ForLawFirms /></SR>} />
+      <Route path="/solutions/small-business" element={<SR><ForSmallBusiness /></SR>} />
+      <Route path="/solutions/individuals" element={<SR><ForIndividuals /></SR>} />
+      <Route path="/digitize" element={<ProtectedRoute><SR msg="Document digitize failed to load"><DocumentDigitize /></SR></ProtectedRoute>} />
+      <Route path="/request" element={<ProtectedRoute><SR msg="Service request failed to load"><ServiceRequest /></SR></ProtectedRoute>} />
+      <Route path="/mailroom" element={<ProtectedRoute><SR msg="Mailroom failed to load"><VirtualMailroom /></SR></ProtectedRoute>} />
+      <Route path="/subscribe" element={<ProtectedRoute><SR msg="Subscription plans failed to load"><SubscriptionPlans /></SR></ProtectedRoute>} />
+      <Route path="/verify-id" element={<ProtectedRoute><SR msg="Identity verification failed to load"><VerifyIdentity /></SR></ProtectedRoute>} />
+      <Route path="/mobile-upload" element={<ProtectedRoute><SR msg="Mobile upload failed to load"><MobileUpload /></SR></ProtectedRoute>} />
+      <Route path="/builder" element={<ProtectedRoute><SR msg="Document builder failed to load"><DocumentBuilder /></SR></ProtectedRoute>} />
+      <Route path="/fee-calculator" element={<SR msg="Fee calculator failed to load"><FeeCalculator /></SR>} />
+      <Route path="/ai-writer" element={<ProtectedRoute><SR msg="AI Writer failed to load"><AIWriter /></SR></ProtectedRoute>} />
+      <Route path="/ai-extractors" element={<ProtectedRoute><SR msg="AI Extractors failed to load"><AIExtractors /></SR></ProtectedRoute>} />
+      <Route path="/ai-knowledge" element={<ProtectedRoute><SR msg="AI Knowledge failed to load"><AIKnowledge /></SR></ProtectedRoute>} />
+      <Route path="/signature-generator" element={<ProtectedRoute><SR msg="Signature generator failed to load"><SignatureGeneratorPage /></SR></ProtectedRoute>} />
+      <Route path="/grants" element={<ProtectedRoute><SR msg="Grant generator failed to load"><GrantDashboard /></SR></ProtectedRoute>} />
+      <Route path="/resume-builder" element={<ProtectedRoute><SR msg="Resume builder failed to load"><ResumeBuilder /></SR></ProtectedRoute>} />
+      <Route path="/ai-tools" element={<ProtectedRoute><SR msg="AI Tools failed to load"><AITools /></SR></ProtectedRoute>} />
+      <Route path="/track/:token" element={<SR msg="Session tracker failed to load"><SessionTracker /></SR>} />
+      <Route path="/reschedule/:confirmationNumber" element={<SR msg="Reschedule failed to load"><RescheduleAppointment /></SR>} />
+      <Route path="/account-settings" element={<ProtectedRoute><SR msg="Account settings failed to load"><AccountSettings /></SR></ProtectedRoute>} />
+      <Route path="/portal" element={<ProtectedRoute><SR msg="Portal failed to load"><ClientPortal /></SR></ProtectedRoute>} />
+      <Route path="/confirmation" element={<ProtectedRoute><SR msg="Confirmation failed to load"><AppointmentConfirmation /></SR></ProtectedRoute>} />
+      <Route path="/ron-session" element={<ProtectedRoute><SR msg="RON session failed to load"><RonSession /></SR></ProtectedRoute>} />
+      <Route path="/business-portal" element={<ProtectedRoute><SR msg="Business portal failed to load"><BusinessPortal /></SR></ProtectedRoute>} />
+      <Route path="/admin" element={<ProtectedRoute requireAdmin><SR><AdminDashboard /></SR></ProtectedRoute>}>
+        <Route index element={<SR msg="Overview failed to load"><AdminOverview /></SR>} />
+        <Route path="appointments" element={<SR msg="Appointments failed to load"><AdminAppointments /></SR>} />
+        <Route path="clients" element={<SR msg="Clients failed to load"><AdminClients /></SR>} />
+        <Route path="availability" element={<SR msg="Availability failed to load"><AdminAvailability /></SR>} />
+        <Route path="documents" element={<SR msg="Documents failed to load"><AdminDocuments /></SR>} />
+        <Route path="journal" element={<SR msg="Journal failed to load"><AdminJournal /></SR>} />
+        <Route path="revenue" element={<ProtectedRoute adminOnly><SR msg="Revenue failed to load"><AdminRevenue /></SR></ProtectedRoute>} />
+        <Route path="templates" element={<SR msg="Templates failed to load"><AdminTemplates /></SR>} />
+        <Route path="apostille" element={<SR msg="Apostille failed to load"><AdminApostille /></SR>} />
+        <Route path="chat" element={<ProtectedRoute adminOnly><SR msg="Chat failed to load"><AdminChat /></SR></ProtectedRoute>} />
+        <Route path="business-clients" element={<ProtectedRoute adminOnly><SR msg="Business clients failed to load"><AdminBusinessClients /></SR></ProtectedRoute>} />
+        <Route path="services" element={<ProtectedRoute adminOnly><SR msg="Services failed to load"><AdminServices /></SR></ProtectedRoute>} />
+        <Route path="resources" element={<ProtectedRoute adminOnly><SR msg="Resources failed to load"><AdminResources /></SR></ProtectedRoute>} />
+        <Route path="ai-assistant" element={<ProtectedRoute adminOnly><SR msg="AI Assistant failed to load"><AdminAIAssistant /></SR></ProtectedRoute>} />
+        <Route path="audit-log" element={<ProtectedRoute adminOnly><SR msg="Audit log failed to load"><AdminAuditLog /></SR></ProtectedRoute>} />
+        <Route path="team" element={<ProtectedRoute adminOnly><SR msg="Team failed to load"><AdminTeam /></SR></ProtectedRoute>} />
+        <Route path="email-management" element={<ProtectedRoute adminOnly><SR msg="Email management failed to load"><AdminEmailManagement /></SR></ProtectedRoute>} />
+        <Route path="leads" element={<ProtectedRoute adminOnly><SR msg="Lead portal failed to load"><AdminLeadPortal /></SR></ProtectedRoute>} />
+        <Route path="users" element={<ProtectedRoute adminOnly><SR msg="User management failed to load"><AdminUsers /></SR></ProtectedRoute>} />
+        <Route path="service-requests" element={<ProtectedRoute adminOnly><SR msg="Service requests failed to load"><AdminServiceRequests /></SR></ProtectedRoute>} />
+        <Route path="content-workspace" element={<ProtectedRoute adminOnly><SR msg="Content workspace failed to load"><AdminContentWorkspace /></SR></ProtectedRoute>} />
+        <Route path="task-queue" element={<ProtectedRoute adminOnly><SR msg="Task queue failed to load"><AdminTaskQueue /></SR></ProtectedRoute>} />
+        <Route path="crm" element={<ProtectedRoute adminOnly><SR msg="CRM failed to load"><AdminCRM /></SR></ProtectedRoute>} />
+        <Route path="build-tracker" element={<ProtectedRoute adminOnly><SR msg="Build tracker failed to load"><AdminBuildTracker /></SR></ProtectedRoute>} />
+        <Route path="settings" element={<ProtectedRoute adminOnly><SR msg="Settings failed to load"><AdminSettings /></SR></ProtectedRoute>} />
+        <Route path="integrations" element={<ProtectedRoute adminOnly><SR msg="Integration testing failed to load"><AdminIntegrationTest /></SR></ProtectedRoute>} />
+        <Route path="client-emails" element={<ProtectedRoute adminOnly><SR msg="Client emails failed to load"><AdminClientEmails /></SR></ProtectedRoute>} />
+        <Route path="mailbox" element={<ProtectedRoute adminOnly><SR msg="Mailbox failed to load"><AdminMailbox /></SR></ProtectedRoute>} />
+        <Route path="webhooks" element={<ProtectedRoute adminOnly><SR msg="Webhooks failed to load"><AdminWebhooks /></SR></ProtectedRoute>} />
+        <Route path="performance" element={<ProtectedRoute adminOnly><SR msg="Performance failed to load"><AdminPerformance /></SR></ProtectedRoute>} />
+        <Route path="compliance-report" element={<ProtectedRoute adminOnly><SR msg="Compliance report failed to load"><AdminComplianceReport /></SR></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
-      </Routes>
+      </Route>
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
 
 function AuthenticatedCommandPalette() {
   const { user } = useAuth();
-  if (!user) return null; // Bug 476: Only render for authenticated users
+  if (!user) return null;
   return <CommandPalette />;
 }
 
@@ -233,9 +251,7 @@ const App = () => (
         <BrowserRouter>
           <ScrollToTop />
           <AuthenticatedCommandPalette />
-          <Suspense fallback={<PageLoader />}>
-            <AnimatedRoutes />
-          </Suspense>
+          <AnimatedRoutes />
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>
