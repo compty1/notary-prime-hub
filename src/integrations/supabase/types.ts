@@ -1042,6 +1042,47 @@ export type Database = {
           },
         ]
       }
+      document_reviews: {
+        Row: {
+          created_at: string
+          document_id: string
+          findings: Json
+          id: string
+          overall_status: string
+          reviewed_by: string
+          score: number
+          summary: string | null
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          findings?: Json
+          id?: string
+          overall_status?: string
+          reviewed_by: string
+          score?: number
+          summary?: string | null
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          findings?: Json
+          id?: string
+          overall_status?: string
+          reviewed_by?: string
+          score?: number
+          summary?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_reviews_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       document_tags: {
         Row: {
           created_at: string
