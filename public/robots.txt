@@ -14,5 +14,13 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /portal/
+Disallow: /login
+Disallow: /signup
+Disallow: /forgot-password
+Disallow: /verify-identity
+Disallow: /ron-session
+Disallow: /session-tracker
+Disallow: /account-settings
+Disallow: /mobile-upload
 
 Sitemap: https://notardex.com/sitemap.xml
