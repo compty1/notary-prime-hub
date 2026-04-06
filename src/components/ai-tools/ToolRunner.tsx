@@ -1,6 +1,7 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,9 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import {
-  ArrowLeft, Copy, Download, Loader2, Sparkles, Eye, Code, Printer, RefreshCw,
+  ArrowLeft, Copy, Download, Loader2, Sparkles, Eye, Code, Printer, RefreshCw, Save, CreditCard,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Link } from "react-router-dom";
@@ -47,7 +49,26 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
   const [refinementPrompt, setRefinementPrompt] = useState("");
   const [isRefining, setIsRefining] = useState(false);
   const [retryCountdown, setRetryCountdown] = useState(0);
+  const [usageCount, setUsageCount] = useState<number | null>(null);
+  const [userPlan, setUserPlan] = useState<string>("free");
+  const [saving, setSaving] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
+
+  // Fetch usage count and plan
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      const [{ count }, { data: profile }] = await Promise.all([
+        supabase.from("tool_generations").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("profiles").select("plan").eq("user_id", user.id).single(),
+      ]);
+      setUsageCount(count ?? 0);
+      setUserPlan((profile as any)?.plan || "free");
+    })();
+  }, [user]);
+
+  const freeLimit = 2;
+  const isAtLimit = userPlan === "free" && (usageCount ?? 0) >= freeLimit;
 
   const updateField = (name: string, value: string) => {
     setFieldValues((prev) => ({ ...prev, [name]: value }));
@@ -207,6 +228,29 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
         </div>
       </div>
 
+      {/* Usage indicator for free plan */}
+      {userPlan === "free" && usageCount !== null && (
+        <Card className={`mb-4 ${isAtLimit ? "border-destructive/50 bg-destructive/5" : "border-primary/30 bg-primary/5"}`}>
+          <CardContent className="p-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <CreditCard className={`h-4 w-4 ${isAtLimit ? "text-destructive" : "text-primary"}`} />
+              <span className="text-sm">
+                {isAtLimit
+                  ? "Free plan limit reached (2/2 used)"
+                  : `${usageCount} of ${freeLimit} free generations used`}
+              </span>
+            </div>
+            {isAtLimit && (
+              <Link to="/subscribe">
+                <Button size="sm" variant="default" className="text-xs">
+                  <Sparkles className="mr-1 h-3 w-3" /> Upgrade Plan
+                </Button>
+              </Link>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid gap-8 lg:grid-cols-2">
         <Card>
           <CardContent className="p-6 space-y-4">
@@ -300,6 +344,27 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
                   </Button>
                   <Button size="sm" variant="outline" onClick={handlePrint} className="h-7 px-2">
                     <Printer className="h-3 w-3" />
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={async () => {
+                    if (!user || saving) return;
+                    setSaving(true);
+                    const { error } = await supabase.from("tool_generations").upsert({
+                      user_id: user.id,
+                      tool_id: tool.id,
+                      fields: fieldValues as any,
+                      result,
+                      is_preset: false,
+                    } as any);
+                    setSaving(false);
+                    if (error) {
+                      toast({ title: "Save failed", description: error.message, variant: "destructive" });
+                    } else {
+                      setUsageCount(prev => (prev ?? 0) + 1);
+                      toast({ title: "Saved to Portal", description: "View in your AI Tools tab." });
+                    }
+                  }} className="h-7 px-2 text-xs" disabled={saving}>
+                    {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3 mr-1" />}
+                    Save
                   </Button>
                 </div>
               )}

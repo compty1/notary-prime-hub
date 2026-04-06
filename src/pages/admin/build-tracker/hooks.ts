@@ -185,12 +185,13 @@ export function useReanalyze(items: TrackerItem[]) {
       }
     }
 
-    // 3. Check for potential duplicate titles
+    // 3. Check for potential duplicate titles (use longer key + word overlap for accuracy)
     const titleMap = new Map<string, TrackerItem[]>();
     items.forEach(i => {
-      const key = i.title.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 30);
-      if (key.length >= 5) {
-        titleMap.set(key, [...(titleMap.get(key) || []), i]);
+      const key = i.title.toLowerCase().replace(/[^a-z0-9\s]/g, "").trim();
+      if (key.length >= 10) {
+        const normKey = key.split(/\s+/).sort().join(" ");
+        titleMap.set(normKey, [...(titleMap.get(normKey) || []), i]);
       }
     });
     const dupes = Array.from(titleMap.values()).filter(v => v.length > 1);

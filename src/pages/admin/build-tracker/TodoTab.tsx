@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useRef } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -90,7 +91,7 @@ export default function TodoTab({ items }: { items: TrackerItem[] }) {
 
   const movePriority = useCallback((id: string, dir: -1 | 1) => {
     const now = Date.now();
-    if (now - moveDebounceRef.current < 200) return;
+    if (now - moveDebounceRef.current < 400) return;
     moveDebounceRef.current = now;
 
     const idx = todoItems.findIndex((i) => i.id === id);
@@ -98,8 +99,14 @@ export default function TodoTab({ items }: { items: TrackerItem[] }) {
     if (swapIdx < 0 || swapIdx >= todoItems.length) return;
     const itemA = todoItems[idx];
     const itemB = todoItems[swapIdx];
-    update.mutate({ id: itemA.id, todo_priority: swapIdx });
-    setTimeout(() => update.mutate({ id: itemB.id, todo_priority: idx }), 50);
+    // Batch both updates together
+    Promise.all([
+      supabase.from("build_tracker_items").update({ todo_priority: swapIdx } as any).eq("id", itemA.id),
+      supabase.from("build_tracker_items").update({ todo_priority: idx } as any).eq("id", itemB.id),
+    ]).then(() => {
+      // Invalidate after both complete
+      update.mutate({ id: itemA.id, todo_priority: swapIdx });
+    });
   }, [todoItems, update]);
 
   return (

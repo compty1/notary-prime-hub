@@ -47,8 +47,13 @@ export default function PlatformScanButton() {
   };
 
   const isDuplicate = (title: string) => {
-    const norm = title.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 25);
-    return existingItems.some(e => e.title.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 25) === norm);
+    const norm = title.toLowerCase().replace(/[^a-z0-9\s]/g, "").trim();
+    const normWords = norm.split(/\s+/).sort().join(" ");
+    return existingItems.some(e => {
+      const eNorm = e.title.toLowerCase().replace(/[^a-z0-9\s]/g, "").trim();
+      const eWords = eNorm.split(/\s+/).sort().join(" ");
+      return eWords === normWords || (normWords.length > 15 && eWords.includes(normWords.slice(0, 40)));
+    });
   };
 
   const runScan = async () => {
