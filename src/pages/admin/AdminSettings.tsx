@@ -95,9 +95,7 @@ export default function AdminSettings() {
     setSaving(true);
     const changedKeys: string[] = [];
     const updates = Object.entries(editValues).map(([key, value]) => {
-      if (key === "kba_api_key" && value) {
-        console.warn("KBA API keys should be stored as edge function secrets, not in platform_settings");
-      }
+      // Bug 487: Removed console.warn that leaked security info in browser console
       if (settings[key]) {
         if (settings[key].setting_value === value) return null;
         changedKeys.push(key);

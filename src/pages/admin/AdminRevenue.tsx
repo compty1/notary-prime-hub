@@ -21,7 +21,7 @@ const getDateRange = (range: string) => {
   const now = new Date();
   const start = new Date();
   switch (range) {
-    case "week": start.setDate(now.getDate() - 7); break;
+    case "week": { const day = now.getDay(); start.setDate(now.getDate() - (day === 0 ? 6 : day - 1)); start.setHours(0, 0, 0, 0); break; }
     case "month": start.setMonth(now.getMonth() - 1); break;
     case "quarter": start.setMonth(now.getMonth() - 3); break;
     case "year": start.setFullYear(now.getFullYear() - 1); break;
@@ -121,7 +121,8 @@ export default function AdminRevenue() {
   const totalPaid = payments.filter(p => p.status === "paid").reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
   const totalPending = payments.filter(p => p.status === "pending").reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
 
-  const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  // Bug 481: Use shared formatDate from utils (already imported at top if needed)
+  const formatDateLocal = (dateStr: string) => new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
   const escapeCSV = (val: string | number) => {
     const str = String(val);

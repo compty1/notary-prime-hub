@@ -27,7 +27,7 @@ const statusFlow: Record<string, string> = {
   id_verification: "kba_pending",
   kba_pending: "in_session",
   in_session: "completed",
-  no_show: "scheduled", // Allow rescheduling from no_show
+  // Bug 492: no_show cannot directly go to scheduled — must be rescheduled via admin action
 };
 
 import { appointmentStatusColors as statusColors, serviceRequestStatusColors } from "@/lib/statusColors";
