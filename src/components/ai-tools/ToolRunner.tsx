@@ -1,6 +1,7 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,9 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import {
-  ArrowLeft, Copy, Download, Loader2, Sparkles, Eye, Code, Printer, RefreshCw,
+  ArrowLeft, Copy, Download, Loader2, Sparkles, Eye, Code, Printer, RefreshCw, Save, CreditCard,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Link } from "react-router-dom";
@@ -47,7 +49,26 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
   const [refinementPrompt, setRefinementPrompt] = useState("");
   const [isRefining, setIsRefining] = useState(false);
   const [retryCountdown, setRetryCountdown] = useState(0);
+  const [usageCount, setUsageCount] = useState<number | null>(null);
+  const [userPlan, setUserPlan] = useState<string>("free");
+  const [saving, setSaving] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
+
+  // Fetch usage count and plan
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      const [{ count }, { data: profile }] = await Promise.all([
+        supabase.from("tool_generations").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("profiles").select("plan").eq("user_id", user.id).single(),
+      ]);
+      setUsageCount(count ?? 0);
+      setUserPlan((profile as any)?.plan || "free");
+    })();
+  }, [user]);
+
+  const freeLimit = 2;
+  const isAtLimit = userPlan === "free" && (usageCount ?? 0) >= freeLimit;
 
   const updateField = (name: string, value: string) => {
     setFieldValues((prev) => ({ ...prev, [name]: value }));
