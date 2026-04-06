@@ -21,7 +21,6 @@ const strengthLabels = ["", "Very Weak", "Weak", "Fair", "Strong", "Very Strong"
 export default function SignUp() {
   const { user, signUp, isAdmin, isNotary, loading } = useAuth();
   const { toast } = useToast();
-  const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
