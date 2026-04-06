@@ -1,9 +1,12 @@
+import { lazy, Suspense, useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin, Monitor, Plus, Video, RefreshCw, Wifi, Star, Hash } from "lucide-react";
+import { Calendar, Clock, MapPin, Monitor, Plus, Video, RefreshCw, Wifi, Star, Hash, LayoutGrid, List } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
+
+const FullCalendarView = lazy(() => import("@/components/FullCalendarView"));
 
 const statusColors: Record<string, string> = {
   scheduled: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",

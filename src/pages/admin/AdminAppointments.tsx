@@ -17,6 +17,9 @@ import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, Chevro
 import { Link } from "react-router-dom";
 import TranslationPanel from "@/components/TranslationPanel";
 import KBAVerification from "@/components/KBAVerification";
+import { lazy, Suspense } from "react";
+
+const FullCalendarView = lazy(() => import("@/components/FullCalendarView"));
 
 const PAGE_SIZE = 20;
 const statuses = ["scheduled", "confirmed", "id_verification", "kba_pending", "in_session", "completed", "cancelled", "no_show"];
@@ -484,43 +487,27 @@ export default function AdminAppointments() {
       {/* Calendar View */}
       {viewMode === "calendar" && !loading && (
         <div className="mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <Button variant="outline" size="sm" onClick={() => setCalendarMonth(prev => { const d = new Date(prev); d.setMonth(d.getMonth() - 1); return d; })}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <h2 className="font-sans font-semibold">{calendarMonth.toLocaleDateString("en-US", { month: "long", year: "numeric" })}</h2>
-            <Button variant="outline" size="sm" onClick={() => setCalendarMonth(prev => { const d = new Date(prev); d.setMonth(d.getMonth() + 1); return d; })}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="grid grid-cols-7 gap-1 text-xs">
-            {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d => <div key={d} className="text-center font-medium text-muted-foreground py-1">{d}</div>)}
-            {(() => {
-              const year = calendarMonth.getFullYear();
-              const month = calendarMonth.getMonth();
-              const firstDay = new Date(year, month, 1).getDay();
-              const daysInMonth = new Date(year, month + 1, 0).getDate();
-              const cells = [];
-              for (let i = 0; i < firstDay; i++) cells.push(<div key={`e-${i}`} />);
-              for (let day = 1; day <= daysInMonth; day++) {
-                const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-                const dayAppts = appointments.filter(a => a.scheduled_date === dateStr);
-                const isToday = dateStr === new Date().toISOString().split("T")[0];
-                cells.push(
-                  <div key={day} className={`min-h-[60px] rounded border p-1 ${isToday ? "border-primary bg-primary/5" : "border-border/30"}`}>
-                    <div className="text-xs font-medium">{day}</div>
-                    {dayAppts.slice(0, 2).map(a => (
-                      <div key={a.id} className="text-[10px] truncate rounded bg-primary/10 px-1 mt-0.5 cursor-pointer" onClick={() => openDetail(a)}>
-                        {formatTime(a.scheduled_time)} {getClientName(a.client_id).split(" ")[0]}
-                      </div>
-                    ))}
-                    {dayAppts.length > 2 && <div className="text-[10px] text-muted-foreground">+{dayAppts.length - 2} more</div>}
-                  </div>
-                );
-              }
-              return cells;
-            })()}
-          </div>
+          <Suspense fallback={<div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
+            <FullCalendarView
+              events={appointments.map(a => ({
+                id: a.id,
+                title: `${getClientName(a.client_id)} — ${a.service_type}`,
+                start: `${a.scheduled_date}T${a.scheduled_time}`,
+                color: a.notarization_type === "ron" ? "hsl(var(--accent))" : "hsl(var(--primary))",
+                extendedProps: a,
+              }))}
+              onEventClick={(id, props) => {
+                const appt = appointments.find(a => a.id === id) || props;
+                if (appt) openDetail(appt);
+              }}
+              onDateSelect={(start) => {
+                const dateStr = start.toISOString().split("T")[0];
+                setNewAppt(prev => ({ ...prev, scheduled_date: dateStr }));
+                setShowCreateDialog(true);
+              }}
+              height={600}
+            />
+          </Suspense>
         </div>
       )}
 
