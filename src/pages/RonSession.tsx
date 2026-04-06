@@ -126,6 +126,9 @@ export default function RonSession() {
   // Session timeout
   const [sessionTimeoutMinutes, setSessionTimeoutMinutes] = useState(60);
   const [sessionStartedAt, setSessionStartedAt] = useState<string | null>(null);
+  const INACTIVITY_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes per Ohio RON compliance
+  const [lastActivityAt, setLastActivityAt] = useState<number>(Date.now());
+  const [inactivityLocked, setInactivityLocked] = useState(false);
 
   // Voice-to-notes
   const [notes, setNotes] = useState("");
@@ -292,6 +295,37 @@ export default function RonSession() {
       }
     };
   }, [isAdminOrNotary]);
+
+  // 15-minute inactivity timeout enforcement (Ohio RON compliance)
+  useEffect(() => {
+    if (!isAdminOrNotary || !participantLink || sessionStatus === "completed") return;
+    const resetActivity = () => {
+      setLastActivityAt(Date.now());
+      if (inactivityLocked) setInactivityLocked(false);
+      // Update last_activity_at in DB
+      if (appointmentId) {
+        supabase.from("notarization_sessions").update({
+          last_activity_at: new Date().toISOString(),
+        } as any).eq("appointment_id", appointmentId).then(() => {}, () => {});
+      }
+    };
+    const events = ["mousedown", "keydown", "scroll", "touchstart"];
+    events.forEach(e => window.addEventListener(e, resetActivity));
+    const checker = setInterval(() => {
+      if (Date.now() - lastActivityAt > INACTIVITY_TIMEOUT_MS) {
+        setInactivityLocked(true);
+        logAuditEvent("ron_session_inactivity_timeout", {
+          entityType: "appointment",
+          entityId: appointmentId || undefined,
+          details: { timeout_minutes: 15 } as Record<string, Json | undefined>,
+        });
+      }
+    }, 30_000);
+    return () => {
+      events.forEach(e => window.removeEventListener(e, resetActivity));
+      clearInterval(checker);
+    };
+  }, [isAdminOrNotary, participantLink, sessionStatus, lastActivityAt, inactivityLocked, appointmentId]);
 
   const toggleVoice = () => {
     if (!recognitionRef.current) {
@@ -1210,6 +1244,17 @@ export default function RonSession() {
                         await supabase.from("notarization_sessions").update({
                           kba_attempts: newAttempts,
                         } as any).eq("appointment_id", appointmentId);
+                        // Audit log KBA attempt per ORC §147.66
+                        await logAuditEvent("kba_attempt_recorded", {
+                          entityType: "appointment",
+                          entityId: appointmentId,
+                          details: {
+                            attempt_number: newAttempts,
+                            max_attempts: 2,
+                            signer_name: clientProfile?.full_name || "Unknown",
+                            platform: signingPlatform,
+                          } as Record<string, Json | undefined>,
+                        });
                       }
                       toast({
                         title: `KBA Attempt ${newAttempts} of 2`,
