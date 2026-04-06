@@ -244,11 +244,11 @@ export default function BookAppointment() {
         if (data) { setProfile(data); if (data.address) setClientAddress(data.address); if (data.city) setClientCity(data.city); if (data.state) setClientState(data.state); if (data.zip) setClientZip(data.zip); }
       });
       supabase.from("appointments").select("*").eq("client_id", user.id).order("scheduled_date", { ascending: false }).limit(5).then(({ data }) => { if (data) setPastAppointments(data); });
-      const pendingBooking = localStorage.getItem(BOOKING_STORAGE_KEY);
+      const pendingBooking = sessionStorage.getItem(BOOKING_STORAGE_KEY);
       if (pendingBooking) {
         try {
           const booking = JSON.parse(pendingBooking);
-          localStorage.removeItem(BOOKING_STORAGE_KEY);
+          sessionStorage.removeItem(BOOKING_STORAGE_KEY);
           setNotarizationType(booking.notarizationType); setServiceType(booking.serviceType);
           setDate(booking.date); setTime(booking.time); setLocation(booking.location || ""); setNotes(booking.notes || "");
           setDocumentCount(booking.documentCount || 1); setClientAddress(booking.clientAddress || "");
@@ -263,7 +263,7 @@ export default function BookAppointment() {
             toast({ title: "Session not ready", description: "Please try again.", variant: "destructive" });
           };
           waitForSession();
-        } catch { localStorage.removeItem(BOOKING_STORAGE_KEY); }
+        } catch { sessionStorage.removeItem(BOOKING_STORAGE_KEY); }
       }
     }
   }, [user]);
@@ -487,10 +487,10 @@ export default function BookAppointment() {
       appointmentResultId = rebookingId;
     } else {
       const { data: insertedData, error } = await supabase.from("appointments").insert(payload).select("id").single();
-      if (error) { localStorage.removeItem(BOOKING_STORAGE_KEY); toast({ title: "Booking failed", description: error.message, variant: "destructive" }); setSubmitting(false); return; }
+      if (error) { sessionStorage.removeItem(BOOKING_STORAGE_KEY); toast({ title: "Booking failed", description: error.message, variant: "destructive" }); setSubmitting(false); return; }
       appointmentResultId = insertedData.id;
     }
-    localStorage.removeItem(BOOKING_STORAGE_KEY);
+    sessionStorage.removeItem(BOOKING_STORAGE_KEY);
     try { await supabase.functions.invoke("send-appointment-emails", { body: { appointmentId: appointmentResultId, emailType: "confirmation" } }); } catch (e) { console.error("Email error:", e); }
     if (user?.email && !rebookingId) { try { await supabase.from("leads").update({ status: "converted" }).ilike("email", user.email).in("status", ["new", "contacted", "qualified"]); } catch {} }
     toast({ title: rebookingId ? "Appointment rescheduled!" : "Appointment booked!", description: "You'll receive a confirmation email shortly." });
