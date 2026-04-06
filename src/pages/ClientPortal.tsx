@@ -115,6 +115,7 @@ export default function ClientPortal() {
   };
 
   const formatDate = (dateStr: string) => new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+  // Note: local formatDate used here for specific weekday format; shared utils formatDate used elsewhere
 
   useEffect(() => {
     if (!user) return;
@@ -165,12 +166,10 @@ export default function ClientPortal() {
       if (updated.client_id === user.id) { setAppointments(prev => prev.map(a => a.id === updated.id ? updated : a)); toast({ title: "Appointment updated", description: `Status: ${updated.status.replace(/_/g, " ")}` }); }
     }).subscribe();
 
-    const paymentChannel = supabase.channel("client-payments").on("postgres_changes", { event: "*", schema: "public", table: "payments" }, (payload) => {
+    const paymentChannel = supabase.channel("client-payments").on("postgres_changes", { event: "*", schema: "public", table: "payments", filter: `client_id=eq.${user.id}` }, (payload) => {
       const record = (payload.new || payload.old) as any;
-      if (record?.client_id === user.id) {
-        if (payload.eventType === "INSERT") { setPayments(prev => [payload.new as any, ...prev]); toast({ title: "New payment request", description: `Amount: $${(payload.new as any).amount}` }); }
-        else if (payload.eventType === "UPDATE") setPayments(prev => prev.map(p => p.id === record.id ? payload.new as any : p));
-      }
+      if (payload.eventType === "INSERT") { setPayments(prev => [payload.new as any, ...prev]); toast({ title: "New payment request", description: `Amount: $${(payload.new as any).amount}` }); }
+      else if (payload.eventType === "UPDATE") setPayments(prev => prev.map(p => p.id === record.id ? payload.new as any : p));
     }).subscribe();
 
     const docChannel = supabase.channel("client-documents").on("postgres_changes", { event: "*", schema: "public", table: "documents", filter: `uploaded_by=eq.${user.id}` }, (payload) => {
@@ -196,7 +195,7 @@ export default function ClientPortal() {
     setCancelling(true);
     const { error } = await supabase.from("appointments").update({ status: "cancelled" as any }).eq("id", id).eq("client_id", user.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else { toast({ title: "Appointment cancelled" }); setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: "cancelled" } : a)); try { await supabase.functions.invoke("send-appointment-emails", { body: { appointmentId: id, emailType: "cancellation" } }); } catch {} }
+    else { toast({ title: "Appointment cancelled" }); setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: "cancelled" } : a)); try { await supabase.functions.invoke("send-appointment-emails", { body: { appointmentId: id, emailType: "cancellation" } }); } catch (e) { console.error("Cancellation email error:", e); } }
     setCancelling(false); setCancelDialogId(null);
   };
 

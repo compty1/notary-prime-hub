@@ -24,7 +24,7 @@ export function safeSetItem(key: string, value: string, storage: Storage = local
 export function safeRemoveItem(key: string, storage: Storage = localStorage): void {
   try {
     storage.removeItem(key);
-  } catch {}
+  } catch (e) { console.error("Storage remove error:", e); }
 }
 
 export function safeGetJson<T = unknown>(key: string, fallback: T, storage: Storage = localStorage): T {

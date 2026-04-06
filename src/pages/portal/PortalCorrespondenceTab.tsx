@@ -65,7 +65,7 @@ export default function PortalCorrespondenceTab({ userId, correspondence, setCor
       setComposeSubject("");
       setComposeBody("");
       // Also notify via edge function
-      try { await supabase.functions.invoke("send-correspondence", { body: { type: "new_client_message", clientId: userId, subject: composeSubject } }); } catch {}
+      try { await supabase.functions.invoke("send-correspondence", { body: { type: "new_client_message", clientId: userId, subject: composeSubject } }); } catch (e) { console.error("Correspondence notification error:", e); }
     }
     setSending(false);
   };

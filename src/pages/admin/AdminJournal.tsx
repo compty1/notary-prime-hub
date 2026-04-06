@@ -164,7 +164,7 @@ export default function AdminJournal() {
       try {
         const { logAuditEvent } = await import("@/lib/auditLog");
         logAuditEvent("journal_entry_deleted", { entityType: "notary_journal", entityId: id, details: { signer_name: entry?.signer_name, document_type: entry?.document_type } });
-      } catch {}
+      } catch (e) { console.error("Audit log error:", e); }
       fetchEntries();
     }
     setDeletingId(null);

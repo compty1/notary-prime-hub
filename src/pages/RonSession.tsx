@@ -220,7 +220,7 @@ export default function RonSession() {
             } as any).select("session_unique_id, signer_ip").single();
             if ((newSession as any)?.session_unique_id) setSessionUniqueId((newSession as any).session_unique_id);
           }
-        } catch {}
+        } catch (e) { console.error("Session init error:", e); }
       }
 
       // Check commission expiry (Ohio ORC §147.03)
@@ -287,7 +287,7 @@ export default function RonSession() {
     }
     return () => {
       if (recognitionRef.current) {
-        try { recognitionRef.current.stop(); } catch {}
+        try { recognitionRef.current.stop(); } catch (e) { /* speech recognition stop is expected to throw if not started */ }
         recognitionRef.current = null;
       }
     };
@@ -557,7 +557,7 @@ export default function RonSession() {
       const encoder = new TextEncoder();
       const hashBuffer = await crypto.subtle.digest("SHA-256", encoder.encode(hashInput));
       documentHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
-    } catch {}
+    } catch (e) { console.error("Hash generation error:", e); }
 
     await supabase.from("e_seal_verifications").insert({
       document_id: eSealDocId,
@@ -604,7 +604,7 @@ export default function RonSession() {
       await supabase.functions.invoke("send-appointment-emails", {
         body: { appointment_id: appointmentId, status_change: "completed" },
       });
-    } catch {}
+    } catch (e) { console.error("Completion email error:", e); }
 
     setCompleting(false);
     toast({ title: "Session finalized", description: "Appointment completed, journal entry & e-seal created, documents marked as notarized. Completion email sent to client." });
