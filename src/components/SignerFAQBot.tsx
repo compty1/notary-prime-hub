@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { MessageCircle, X, Send, Loader2, Bot, LogIn } from "lucide-react";
 import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
 import { useAuth } from "@/contexts/AuthContext";
-import ReactMarkdown from "react-markdown";
+import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 
 interface Message {
