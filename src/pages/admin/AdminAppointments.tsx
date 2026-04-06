@@ -32,12 +32,7 @@ const statusFlow: Record<string, string> = {
 
 import { appointmentStatusColors as statusColors, serviceRequestStatusColors } from "@/lib/statusColors";
 
-const formatDate = (dateStr: string) => new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-const formatTime = (timeStr: string) => {
-  const [h, m] = timeStr.split(":");
-  const hour = parseInt(h);
-  return `${hour > 12 ? hour - 12 : hour === 0 ? 12 : hour}:${m} ${hour >= 12 ? "PM" : "AM"}`;
-};
+import { formatDate, formatTime } from "@/lib/utils";
 
 export default function AdminAppointments() {
   usePageMeta({ title: "Appointments", noIndex: true });

@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { lazy, Suspense } from "react";
@@ -221,7 +221,8 @@ function AnimatedRoutes() {
 }
 
 function AuthenticatedCommandPalette() {
-  // useAuth must be used inside AuthProvider, and CommandPalette already checks user internally
+  const { user } = useAuth();
+  if (!user) return null; // Bug 476: Only render for authenticated users
   return <CommandPalette />;
 }
 

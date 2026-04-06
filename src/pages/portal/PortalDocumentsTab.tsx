@@ -4,10 +4,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Upload, Download, Eye, Sparkles, RefreshCw, Loader2, ShieldCheck, Search } from "lucide-react";
+import { FileText, Upload, Download, Eye, Sparkles, RefreshCw, Loader2, ShieldCheck, Search, ScanSearch, AlertTriangle, CheckCircle2, Info } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const docStatusColors: Record<string, string> = {
   uploaded: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
@@ -35,6 +36,57 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
   const [deletingDocId, setDeletingDocId] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [reviewingDocId, setReviewingDocId] = useState<string | null>(null);
+  const [reviewResults, setReviewResults] = useState<Record<string, any>>({});
+  const [showReviewDialog, setShowReviewDialog] = useState<string | null>(null);
+
+  // FC-1: AI Document Review handler
+  const handleAIReview = async (doc: any) => {
+    setReviewingDocId(doc.id);
+    try {
+      // Download document text (for PDFs/text files)
+      const { data: fileData, error: dlError } = await supabase.storage.from("documents").download(doc.file_path);
+      if (dlError) throw dlError;
+      
+      let documentText = "";
+      if (doc.file_name.endsWith(".pdf") || doc.file_name.endsWith(".txt") || doc.file_name.endsWith(".doc") || doc.file_name.endsWith(".docx")) {
+        documentText = await fileData.text();
+      } else {
+        documentText = `[Image file: ${doc.file_name}] — AI review of image-based documents requires OCR processing first.`;
+      }
+
+      const { data: session } = await supabase.auth.getSession();
+      const { data, error } = await supabase.functions.invoke("ai-document-review", {
+        headers: { Authorization: `Bearer ${session?.session?.access_token}` },
+        body: { documentText: documentText.substring(0, 15000), documentType: doc.file_name, checkType: "full" },
+      });
+      if (error) throw error;
+
+      // Store review result
+      await supabase.from("document_reviews" as any).insert({
+        document_id: doc.id,
+        reviewed_by: userId,
+        overall_status: data.overallStatus || "warning",
+        score: data.score || 50,
+        findings: data.findings || [],
+        summary: data.summary || "",
+      });
+
+      setReviewResults(prev => ({ ...prev, [doc.id]: data }));
+      setShowReviewDialog(doc.id);
+      toast({ title: "AI Review Complete", description: `Score: ${data.score}/100 — ${data.overallStatus}` });
+    } catch (err: any) {
+      console.error("AI Review error:", err);
+      toast({ title: "Review failed", description: err.message || "Could not complete document review", variant: "destructive" });
+    }
+    setReviewingDocId(null);
+  };
+
+  const severityIcon = (severity: string) => {
+    if (severity === "critical") return <AlertTriangle className="h-3 w-3 text-destructive" />;
+    if (severity === "warning") return <AlertTriangle className="h-3 w-3 text-yellow-500" />;
+    return <Info className="h-3 w-3 text-blue-500" />;
+  };
 
   const filteredDocuments = useMemo(() => {
     if (!searchQuery.trim()) return documents;
@@ -195,6 +247,14 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
                 <div className="flex items-center gap-2">
                   <Button size="sm" variant="ghost" onClick={async () => { const { data } = await supabase.storage.from("documents").createSignedUrl(doc.file_path, 300); if (data?.signedUrl) window.open(data.signedUrl, "_blank"); }} title="Preview"><Eye className="h-3 w-3" /></Button>
                   <Button size="sm" variant="ghost" onClick={() => onExplainDocument(doc)} title="AI Explain"><Sparkles className="h-3 w-3" /></Button>
+                  <Button size="sm" variant="ghost" onClick={() => handleAIReview(doc)} disabled={reviewingDocId === doc.id} title="AI Compliance Review">
+                    {reviewingDocId === doc.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <ScanSearch className="h-3 w-3" />}
+                  </Button>
+                  {reviewResults[doc.id] && (
+                    <Button size="sm" variant="ghost" onClick={() => setShowReviewDialog(doc.id)} title="View Review">
+                      {reviewResults[doc.id].overallStatus === "pass" ? <CheckCircle2 className="h-3 w-3 text-green-600" /> : <AlertTriangle className="h-3 w-3 text-yellow-500" />}
+                    </Button>
+                  )}
                   {!doc.appointment_id && upcomingAppointments.length > 0 && (
                     <Select onValueChange={async apptId => {
                       const { error } = await supabase.from("documents").update({ appointment_id: apptId }).eq("id", doc.id);
@@ -223,6 +283,46 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
             </Card>
           ))}
         </div>
+      )}
+
+      {/* FC-1: AI Review Results Dialog */}
+      {showReviewDialog && reviewResults[showReviewDialog] && (
+        <Dialog open={!!showReviewDialog} onOpenChange={() => setShowReviewDialog(null)}>
+          <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <ScanSearch className="h-5 w-5" /> AI Compliance Review
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Badge variant={reviewResults[showReviewDialog].overallStatus === "pass" ? "default" : "destructive"}>
+                  {reviewResults[showReviewDialog].overallStatus?.toUpperCase()}
+                </Badge>
+                <span className="text-2xl font-bold text-foreground">{reviewResults[showReviewDialog].score}/100</span>
+              </div>
+              {reviewResults[showReviewDialog].summary && (
+                <p className="text-sm text-muted-foreground">{reviewResults[showReviewDialog].summary}</p>
+              )}
+              {reviewResults[showReviewDialog].findings?.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-sm font-semibold">Findings</h4>
+                  {reviewResults[showReviewDialog].findings.map((f: any, i: number) => (
+                    <div key={i} className="rounded-lg border p-3 space-y-1">
+                      <div className="flex items-center gap-2">
+                        {severityIcon(f.severity)}
+                        <span className="text-sm font-medium capitalize">{f.severity}</span>
+                        <Badge variant="outline" className="text-xs">{f.category?.replace(/_/g, " ")}</Badge>
+                      </div>
+                      <p className="text-sm">{f.message}</p>
+                      {f.suggestion && <p className="text-xs text-muted-foreground">💡 {f.suggestion}</p>}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );

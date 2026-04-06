@@ -13,12 +13,7 @@ import { getEdgeFunctionHeaders } from "@/lib/edgeFunctionAuth";
 
 import { appointmentStatusColors as statusColors } from "@/lib/statusColors";
 
-const formatDate = (dateStr: string) => new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
-const formatTime = (timeStr: string) => {
-  const [h, m] = timeStr.split(":");
-  const hour = parseInt(h);
-  return `${hour > 12 ? hour - 12 : hour === 0 ? 12 : hour}:${m} ${hour >= 12 ? "PM" : "AM"}`;
-};
+import { formatDate, formatTime } from "@/lib/utils";
 
 const CHART_COLORS = ["hsl(224, 63%, 28%)", "hsl(168, 75%, 36%)", "hsl(42, 78%, 55%)", "hsl(0, 85%, 55%)", "hsl(261, 50%, 51%)", "hsl(190, 95%, 39%)", "hsl(30, 95%, 53%)", "hsl(140, 60%, 40%)"];
 
@@ -52,10 +47,10 @@ export default function AdminOverview() {
       supabase.from("appointments").select("id", { count: "exact", head: true }).eq("status", "completed"),
       supabase.from("profiles").select("id", { count: "exact", head: true }),
       supabase.from("appointments").select("id, client_id, scheduled_date, scheduled_time, status, service_type, notarization_type, confirmation_number").order("scheduled_date", { ascending: false }).limit(10),
-      supabase.from("notary_journal").select("fees_charged, created_at, notarization_type"),
+      supabase.from("notary_journal").select("fees_charged, created_at, notarization_type").limit(1000),
       supabase.from("platform_settings").select("setting_key, setting_value"),
-      supabase.from("profiles").select("user_id, full_name, email"),
-      supabase.from("appointments").select("scheduled_date, status, notarization_type").order("scheduled_date", { ascending: true }).gte("scheduled_date", new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]),
+      supabase.from("profiles").select("user_id, full_name, email").limit(500),
+      supabase.from("appointments").select("scheduled_date, status, notarization_type").order("scheduled_date", { ascending: true }).gte("scheduled_date", new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]).limit(1000),
     ]);
 
     // Fetch recent audit activity
