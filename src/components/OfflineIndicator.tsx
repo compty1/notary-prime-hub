@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef } from "react";
 import { WifiOff } from "lucide-react";
 
-export function OfflineIndicator() {
+export const OfflineIndicator = forwardRef<HTMLDivElement>((_, ref) => {
   const [offline, setOffline] = useState(!navigator.onLine);
 
   useEffect(() => {
@@ -18,9 +18,10 @@ export function OfflineIndicator() {
   if (!offline) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 z-50 flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-2 text-sm font-medium text-destructive shadow-lg backdrop-blur-sm" role="alert" aria-live="assertive">
+    <div ref={ref} className="fixed bottom-4 left-4 z-50 flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-2 text-sm font-medium text-destructive shadow-lg backdrop-blur-sm" role="alert" aria-live="assertive">
       <WifiOff className="h-4 w-4" />
       You're offline — changes may not save
     </div>
   );
-}
+});
+OfflineIndicator.displayName = "OfflineIndicator";
