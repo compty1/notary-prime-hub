@@ -168,6 +168,15 @@ Deno.serve(async (req) => {
       console.log("Unhandled SignNow event:", event);
     }
 
+    // Log to webhook_events dashboard table
+    await supabase.from("webhook_events").insert({
+      source: "signnow",
+      event_type: event || "unknown",
+      payload: body,
+      status: "processed",
+      processed_at: new Date().toISOString(),
+    }).then(({ error }: any) => { if (error) console.warn("webhook_events log error:", error.message); });
+
     return new Response(JSON.stringify({ ok: true }), {
       headers: responseHeaders,
     });
