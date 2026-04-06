@@ -2305,6 +2305,7 @@ export type Database = {
           full_name: string | null
           id: string
           phone: string | null
+          plan: string
           seal_file_path: string | null
           state: string | null
           stripe_customer_id: string | null
@@ -2329,6 +2330,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           phone?: string | null
+          plan?: string
           seal_file_path?: string | null
           state?: string | null
           stripe_customer_id?: string | null
@@ -2353,6 +2355,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           phone?: string | null
+          plan?: string
           seal_file_path?: string | null
           state?: string | null
           stripe_customer_id?: string | null
@@ -3020,9 +3023,39 @@ export type Database = {
         }
         Relationships: []
       }
+      tool_generation_versions: {
+        Row: {
+          created_at: string
+          generation_id: string
+          id: string
+          result: string
+        }
+        Insert: {
+          created_at?: string
+          generation_id: string
+          id?: string
+          result?: string
+        }
+        Update: {
+          created_at?: string
+          generation_id?: string
+          id?: string
+          result?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tool_generation_versions_generation_id_fkey"
+            columns: ["generation_id"]
+            isOneToOne: false
+            referencedRelation: "tool_generations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tool_generations: {
         Row: {
           created_at: string
+          edited_at: string | null
           fields: Json
           id: string
           is_preset: boolean
@@ -3033,6 +3066,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          edited_at?: string | null
           fields?: Json
           id?: string
           is_preset?: boolean
@@ -3043,6 +3077,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          edited_at?: string | null
           fields?: Json
           id?: string
           is_preset?: boolean
