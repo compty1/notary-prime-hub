@@ -5,7 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `You are an expert Ohio Notary Public assistant for the **Notar** team (NotarDex.com), specializing in Ohio Revised Code Chapter 147. You help notaries with:
+const SYSTEM_PROMPT = `You are an expert Ohio Notary Public assistant for the **NotarDex** team (NotarDex.com), specializing in Ohio Revised Code Chapter 147. You help notaries with:
 
 ## Your Expertise
 - Ohio notary law (ORC §147.01 through §147.66)
