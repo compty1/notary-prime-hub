@@ -1,7 +1,12 @@
-import { corsHeaders } from "@supabase/supabase-js/cors";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+};
 
 Deno.serve(async (req: Request) => {
+  const start = Date.now();
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
@@ -10,14 +15,19 @@ Deno.serve(async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { appointmentId, clientId } = await req.json();
-
-    if (!appointmentId || !clientId) {
-      return new Response(JSON.stringify({ error: "appointmentId and clientId required" }), {
+    const { z } = await import("https://esm.sh/zod@3.23.8");
+    const BodySchema = z.object({
+      appointmentId: z.string().uuid(),
+      clientId: z.string().uuid(),
+    });
+    const parsed = BodySchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: "Invalid input", details: parsed.error.flatten().fieldErrors }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    const { appointmentId, clientId } = parsed.data;
 
     const { data: profile } = await supabase
       .from("profiles")
@@ -41,6 +51,7 @@ Deno.serve(async (req: Request) => {
     const name = profile.full_name || "there";
     const svc = appointment?.service_type || "your session";
     const confNum = appointment?.confirmation_number || "";
+    const portalUrl = "https://notary-prime-hub.lovable.app";
 
     // Email 1: Thank you (immediate)
     await supabase.rpc("enqueue_email", {
@@ -51,14 +62,14 @@ Deno.serve(async (req: Request) => {
         html: `
           <h2>Thank You, ${name}!</h2>
           <p>Your ${svc} session${confNum ? ` (${confNum})` : ""} has been completed successfully.</p>
-          <p>Your notarized documents are available for download in your <a href="${Deno.env.get("SUPABASE_URL")?.replace(".supabase.co", ".lovable.app")}/portal?tab=documents">Client Portal</a>.</p>
+          <p>Your notarized documents are available for download in your <a href="${portalUrl}/portal?tab=documents">Client Portal</a>.</p>
           <p>Thank you for trusting NotarDex with your notarization needs.</p>
           <p>— The NotarDex Team</p>
         `,
       },
     });
 
-    // Email 2: Feedback request (delayed — handled by process-email-queue timing)
+    // Email 2: Feedback request (delayed)
     await supabase.rpc("enqueue_email", {
       queue_name: "followup_emails",
       payload: {
@@ -68,7 +79,7 @@ Deno.serve(async (req: Request) => {
           <h2>We'd Love Your Feedback</h2>
           <p>Hi ${name},</p>
           <p>Your recent ${svc} session is complete. We'd love to hear how it went!</p>
-          <p><a href="${Deno.env.get("SUPABASE_URL")?.replace(".supabase.co", ".lovable.app")}/portal?tab=appointments">Leave Feedback →</a></p>
+          <p><a href="${portalUrl}/portal?tab=appointments">Leave Feedback →</a></p>
           <p>Your feedback helps us improve our service and helps other clients make informed decisions.</p>
           <p>— NotarDex Team</p>
         `,
@@ -86,7 +97,7 @@ Deno.serve(async (req: Request) => {
           <h2>Refer a Friend to NotarDex</h2>
           <p>Hi ${name},</p>
           <p>Know someone who needs notarization services? Share your referral link and help them get started.</p>
-          <p><a href="${Deno.env.get("SUPABASE_URL")?.replace(".supabase.co", ".lovable.app")}/portal?tab=referrals">Get Your Referral Link →</a></p>
+          <p><a href="${portalUrl}/portal?tab=referrals">Get Your Referral Link →</a></p>
           <p>Thank you for being part of the NotarDex community!</p>
           <p>— NotarDex Team</p>
         `,
@@ -94,11 +105,13 @@ Deno.serve(async (req: Request) => {
       },
     });
 
+    console.log(`send-followup-sequence completed in ${Date.now() - start}ms`);
     return new Response(JSON.stringify({ success: true, emails_queued: 3 }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error(`send-followup-sequence error (${Date.now() - start}ms):`, (error as Error).message);
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
