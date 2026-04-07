@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Download, Plus, Trash2, FileText } from "lucide-react";
+import { Download, Plus, Trash2, FileText, Printer } from "lucide-react";
+import InvoicePDFExport from "@/components/InvoicePDFExport";
 
 interface LineItem {
   description: string;
@@ -100,9 +101,21 @@ Thank you for your business.
           </div>
         </div>
 
-        <Button onClick={downloadInvoice} disabled={subtotal <= 0} className="w-full">
-          <Download className="mr-2 h-4 w-4" /> Generate & Download Invoice
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={downloadInvoice} disabled={subtotal <= 0} className="flex-1">
+            <Download className="mr-2 h-4 w-4" /> Download Text Invoice
+          </Button>
+          <InvoicePDFExport
+            invoiceData={{
+              invoiceNumber: `INV-${Date.now().toString(36).toUpperCase()}`,
+              date: new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }),
+              clientName: clientName || "Client",
+              clientEmail: clientEmail || undefined,
+              items: items.map(i => ({ description: i.description || "Service", qty: i.quantity, rate: i.unitPrice })),
+              taxRate: taxRate > 0 ? taxRate : undefined,
+            }}
+          />
+        </div>
       </CardContent>
     </Card>
   );
