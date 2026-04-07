@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { logAuditEvent } from "@/lib/auditLog";
 import type { Json } from "@/integrations/supabase/types";
 import { NotarySessionGuide } from "@/components/NotarySessionGuide";
+import { NotaryAttestationPanel } from "@/components/NotaryAttestationPanel";
 import { ESignConsent } from "@/components/ESignConsent";
 import { SessionTimeoutWarning } from "@/components/SessionTimeoutWarning";
 import { ComplianceBanner } from "@/components/ComplianceBanner";
@@ -138,7 +139,7 @@ export default function RonSession() {
   const finalTranscriptRef = useRef("");
 
   const [sessionStatus, setSessionStatus] = useState<string>("scheduled");
-  const [showWaitingRoom, setShowWaitingRoom] = useState(false);
+  const [showWaitingRoom, setShowWaitingRoom] = useState(true);
   const [recordingUrl, setRecordingUrl] = useState("");
 
   // Client onboarding step (0=Welcome, 1=ID Guidance, 2=Biometric, 3=Active Session)
