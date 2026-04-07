@@ -109,6 +109,7 @@ const ForIndividuals = lazyRetry(() => import("./pages/solutions/ForIndividuals"
 const Resources = lazyRetry(() => import("./pages/Resources"));
 const HelpSupport = lazyRetry(() => import("./pages/HelpSupport"));
 const SignerRights = lazyRetry(() => import("./pages/SignerRights"));
+const NotaryCertificates = lazyRetry(() => import("./pages/NotaryCertificates"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -170,6 +171,7 @@ function AnimatedRoutes() {
       <Route path="/resources" element={<SR><Resources /></SR>} />
       <Route path="/help" element={<SR><HelpSupport /></SR>} />
       <Route path="/signer-rights" element={<SR><SignerRights /></SR>} />
+      <Route path="/notary-certificates" element={<SR><NotaryCertificates /></SR>} />
       <Route path="/solutions/hospitals" element={<SR><ForHospitals /></SR>} />
       <Route path="/solutions/real-estate" element={<SR><ForRealEstate /></SR>} />
       <Route path="/solutions/law-firms" element={<SR><ForLawFirms /></SR>} />
