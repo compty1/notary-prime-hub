@@ -515,7 +515,7 @@ export default function NotaryCertificates() {
                         return <div key={i} className="flex gap-2 my-1 ml-4"><span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary flex-shrink-0">{num}</span><p className="text-sm text-foreground">{trimmed.slice(3)}</p></div>;
                       }
                       if (trimmed.startsWith("**") && trimmed.endsWith("**")) return <p key={i} className="my-2 font-semibold text-foreground">{trimmed.slice(2, -2)}</p>;
-                      if (trimmed.startsWith("*\"") || trimmed.startsWith("*"")) return <blockquote key={i} className="border-l-4 border-primary/30 pl-4 my-3 italic text-sm text-muted-foreground">{trimmed.replace(/^\*"?|"?\*$/g, "").replace(/[""]/g, '"')}</blockquote>;
+                      if (trimmed.startsWith("*\"") || trimmed.startsWith("*\u201C")) return <blockquote key={i} className="border-l-4 border-primary/30 pl-4 my-3 italic text-sm text-muted-foreground">{trimmed.replace(/^\*"?/g, "").replace(/"?\*$/g, "").replace(/[\u201C\u201D]/g, '"')}</blockquote>;
                       if (trimmed.startsWith("|")) return null; // Skip table markup — handled separately
                       return <p key={i} className="my-2 text-sm text-foreground/90">{trimmed}</p>;
                     })}
