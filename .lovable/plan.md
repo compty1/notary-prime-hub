@@ -1,74 +1,109 @@
 
-# Plan: Feature Completeness (Gaps 156–200) — COMPLETED
 
-## Summary of Changes
+# Plan: Integration Setup Instructions + DocuDex Canva-Style Redesign
 
-### Batch 1: Real-time Appointments (Gap 158) ✅
-- Already implemented — ClientPortal.tsx subscribes to appointment updates via Supabase Realtime
+## Part 1: Integration Setup Guide in Automated Emails
 
-### Batch 2: Client Feedback + NPS (Gaps 173, 188) ✅
-- Added NPS score (0-10) to `ClientFeedbackForm` with color-coded buttons
-- DB migration: added `nps_score` column to `client_feedback` table
-- Integrated feedback form inline on completed appointments in `PortalAppointmentsTab`
+The Automated Emails hub currently has no documentation about how the email sending pipeline actually works — which secrets are needed, how edge functions connect, and how to verify the setup. Adding a fourth tab with detailed setup instructions for each integration.
 
-### Batch 3: Invoice-Payment Connection (Gaps 163, 164) ✅
-- Added `appointmentId` prop to `InvoiceGenerator` for appointment linking
+### File: `src/pages/admin/AdminAutomatedEmails.tsx`
 
-### Batch 4: Document Notifications + Follow-ups (Gaps 172, 187) ✅
-- Created `send-document-notification` edge function for status change emails
-- Created `send-followup-sequence` edge function (3-email post-session sequence)
+**Add a 4th tab: "Setup & Integrations"** after Service Templates.
 
-### Batch 5: Duration Estimates + Waitlist UI (Gaps 166, 170) ✅
-- Added estimated session duration display to `BookingScheduleStep`
-- Added "Join Waitlist" button when no slots available, writes to `waitlist` table
+Contents organized as expandable accordion sections:
 
-### Batch 6: Referral Analytics + Welcome Emails (Gaps 181, 195) ✅
-- Enhanced `ReferralPortal` with conversion rate, monthly trend, and 4-stat dashboard
-- Created `send-welcome-sequence` edge function (3-email onboarding series)
+1. **IONOS SMTP (Primary Email Provider)**
+   - Status indicator: check if `IONOS_EMAIL_ADDRESS`, `IONOS_EMAIL_PASSWORD`, `IONOS_SMTP_HOST` secrets exist (show green/red badges)
+   - Setup steps: IONOS account, SMTP credentials, sender address configuration
+   - How templates connect: `send-appointment-emails`, `send-correspondence`, `send-document-notification`, `send-followup-sequence`, `send-welcome-sequence` all use IONOS SMTP
+   - Test button: invoke `send-correspondence` with a dry-run flag
 
-### Batch 7: Bulk Upload + Templates in Portal (Gaps 168, 171) ✅
-- Integrated `BulkDocumentUpload` component into `PortalDocumentsTab`
-- Added "Templates" link button for client access to document templates
+2. **Stripe Payments (Invoicing & Receipts)**
+   - Status: check `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
+   - How it connects: `create-payment-intent` → `stripe-webhook` → triggers receipt email
+   - Webhook URL display + setup instructions
 
-### Batch 8: Geographic Enforcement (Gap 196) ✅
-- Already implemented — BookAppointment.tsx validates service area with haversineDistance
+3. **SignNow (E-Signing)**
+   - Status: check `SIGNNOW_API_KEY`, `SIGNNOW_API_TOKEN`, `SIGNNOW_WEBHOOK_SECRET`
+   - Connection: `signnow` + `signnow-webhook` edge functions
+   - Webhook setup guidance
+
+4. **HubSpot CRM (Lead Sync)**
+   - Status: check `HubSpot_Developer_Key`, `HubSpot_Service_Key`
+   - Connection: `hubspot-sync` edge function
+   - Field mapping documentation
+
+5. **Google Calendar (Scheduling Sync)**
+   - Connection: `google-calendar-sync` edge function
+   - OAuth setup guidance
+
+6. **OneNotary (Compliance)**
+   - Status: check `ONENOTARY_API_TOKEN`
+   - Purpose and data flow
+
+7. **Email Delivery Pipeline Overview**
+   - Visual flow: Template Hub → Edge Function → IONOS SMTP → Client Inbox
+   - Which edge functions handle which email types (mapping table)
+   - Retry logic explanation (exponential backoff)
+   - How master branding wraps all outgoing emails
+
+Each section shows a live status badge (configured/not configured) by checking secret existence via a health-check approach, and provides copy-pasteable webhook URLs.
+
+### Implementation approach
+- Add a new `IntegrationSetupTab` component within the same file
+- Use Accordion for each integration section
+- Status checks via `supabase.functions.invoke("health-check")` or display based on known secret names
+- Add the tab to the main TabsList (4 columns instead of 3)
 
 ---
 
-# Plan: API & Edge Functions Hardening (Gaps 131–155) — COMPLETED
+## Part 2: DocuDex Editor — Canva-Style Redesign
 
-## Summary of Changes
+The current editor uses raw `contentEditable` divs with `document.execCommand` (deprecated). It feels like a basic text editor, not a Canva-like design tool. Major UX overhaul needed.
 
-### CORS Fix (Gaps 131-related) ✅
-- Fixed broken `@supabase/supabase-js/cors` imports in `send-document-notification`, `send-followup-sequence`, and `send-welcome-sequence`
-- Replaced with manual corsHeaders per project convention
+### File: `src/components/DocuDexEditor.tsx` (full rewrite)
 
-### Input Validation (Gaps 148, 151, 155) ✅
-- `send-document-notification`: Added Zod schema validation for all inputs
-- `send-followup-sequence`: Added Zod UUID validation for appointmentId/clientId
-- `send-welcome-sequence`: Added Zod email/UUID validation
-- `admin-create-user` (Gap 151): Added Zod schema with disposable email domain blocking
-- `process-refund`: Added Zod validation with enum for refund reasons
+**Layout changes (Canva-inspired):**
 
-### Idempotency (Gap 149) ✅
-- `process-refund`: Added idempotency_key support — checks audit_log for duplicate refund attempts before processing
+1. **Left Panel (280px)** — Tool panels with icons-only tab bar along the left edge (like Canva's vertical icon strip):
+   - Templates (grid of visual template cards with thumbnails)
+   - AI Tools (generation, text actions, chat)
+   - Elements (tables, callouts, dividers, signature blocks, images)
+   - Design (fonts, colors, page size, margins)
+   - Translate
+   - History (version snapshots with timestamps)
 
-### Retry Logic (Gap 134) ✅
-- `send-appointment-emails`: Added exponential backoff retry (up to 2 retries) for failed email sends, skipping retries on 4xx client errors
+2. **Center Canvas** — The document editing area:
+   - Dark/neutral background with centered white page(s)
+   - Zoom controls (50%-200%) with a zoom slider in the bottom bar
+   - Page dimensions displayed (Letter 8.5×11" default)
+   - Floating formatting toolbar that appears on text selection (like Canva's)
+   - Page thumbnails strip along the bottom or right for multi-page navigation
 
-### Access Control (Gap 153) ✅
-- `build-analyst`: Restricted to admin-only access using `has_role` RPC check (was previously accessible to any authenticated user or anon key)
+3. **Right Panel (collapsible, 300px)** — AI Chat assistant (currently exists but cramped)
 
-### Execution Logging (Gap 147) ✅
-- Added timing logs (`Date.now()` start/end) to `send-document-notification`, `send-followup-sequence`, `send-welcome-sequence`, and `process-refund`
+4. **Top Bar** — Simplified:
+   - Document title (editable, prominent)
+   - File menu (Save, Export .DOC, Export PDF, Print)
+   - Share button
+   - Zoom percentage display
 
-### Error Sanitization ✅
-- All modified edge functions now return generic "Internal server error" instead of leaking error details to clients
+5. **Bottom Status Bar:**
+   - Page count, word count, character count, reading time
+   - Zoom slider
+   - Current page indicator
 
-## Already Addressed (no changes needed)
-- Gap 132 (Rate limiting): `build-analyst` already has in-memory rate limiter; AI gateway handles rate limiting for AI functions
-- Gap 133 (Token limit): `notary-assistant` already validates max 50 messages × 50k chars via Zod
-- Gap 138 (Stripe webhook): Already uses proper signature verification
-- Gap 140 (scan-id file size): Already has 10MB limit via Zod
-- Gap 146 (ai-batch-process concurrency): Already caps at 20 docs, processes sequentially
-- Gap 148 (create-payment-intent amount): Already validates positive, max $50k, 2 decimal places
+**Functional improvements:**
+- Replace `document.execCommand` with proper state-managed formatting (the toolbar buttons will update page HTML via controlled manipulation)
+- Zoom state: CSS `transform: scale()` on the canvas container
+- Floating selection toolbar: detect `selectionchange` events, position a toolbar near the selection with Bold/Italic/Underline/Heading/Color/AI actions
+- Page thumbnails: render scaled-down versions of each page for quick navigation
+- Drag-to-reorder pages via the thumbnail strip
+- Better template cards: show a mini preview of each template instead of text-only buttons
+
+### Files affected:
+| File | Change |
+|---|---|
+| `src/pages/admin/AdminAutomatedEmails.tsx` | Add 4th "Setup & Integrations" tab with accordion guide |
+| `src/components/DocuDexEditor.tsx` | Full Canva-style redesign with zoom, floating toolbar, vertical sidebar, page thumbnails |
+
