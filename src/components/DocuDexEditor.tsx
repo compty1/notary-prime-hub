@@ -303,11 +303,16 @@ export function DocuDexEditor({
 
   // Auto-save every 30 seconds (CE-006)
   useEffect(() => {
-    autoSaveTimer.current = setInterval(() => {
+    autoSaveTimer.current = setInterval(async () => {
       if (isDirty && onSave && user) {
         saveSnapshot("Auto-save");
+        try {
+          await onSave(title, pages);
+          setLastSaved(new Date().toLocaleTimeString());
+        } catch {
+          // Silently fail auto-save to avoid toast spam
+        }
         setIsDirty(false);
-        setLastSaved(new Date().toLocaleTimeString());
         announce("Document auto-saved");
       }
     }, 30000);
@@ -1115,10 +1120,21 @@ export function DocuDexEditor({
                       Underline
                     </button>
                     <div className="border-t border-border my-1" />
-                    <button className="w-full text-left text-xs px-3 py-1.5 hover:bg-muted" onClick={() => { document.execCommand("copy"); setContextMenu(null); }}>
+                    <button className="w-full text-left text-xs px-3 py-1.5 hover:bg-muted" onClick={async () => {
+                      const { from, to } = editor.state.selection;
+                      const text = editor.state.doc.textBetween(from, to);
+                      if (text) await navigator.clipboard.writeText(text);
+                      setContextMenu(null);
+                    }}>
                       Copy
                     </button>
-                    <button className="w-full text-left text-xs px-3 py-1.5 hover:bg-muted" onClick={() => { document.execCommand("paste"); setContextMenu(null); }}>
+                    <button className="w-full text-left text-xs px-3 py-1.5 hover:bg-muted" onClick={async () => {
+                      try {
+                        const text = await navigator.clipboard.readText();
+                        if (text) editor.chain().focus().insertContent(text).run();
+                      } catch { /* clipboard permission denied */ }
+                      setContextMenu(null);
+                    }}>
                       Paste
                     </button>
                     <button className="w-full text-left text-xs px-3 py-1.5 hover:bg-muted" onClick={() => { editor.chain().focus().selectAll().run(); setContextMenu(null); }}>
@@ -1234,7 +1250,7 @@ export function DocuDexEditor({
               {pages.map((page, i) => (
                 <div
                   key={page.id}
-                  className="bg-white text-black shadow-md mx-auto border"
+                  className="bg-white text-black shadow-md mx-auto border relative"
                   style={{
                     width: currentPageSize.width * 0.7,
                     minHeight: currentPageSize.height * 0.7,
@@ -1244,10 +1260,27 @@ export function DocuDexEditor({
                     lineHeight: lineSpacing,
                   }}
                 >
+                  {/* Watermark in preview */}
+                  {watermark !== "none" && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10" style={{ opacity: 0.06 }}>
+                      <span className="text-5xl font-bold transform -rotate-45 select-none text-gray-800">
+                        {watermark.toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                  {/* Header in preview */}
+                  {headerHtml && (
+                    <div className="text-[8px] text-gray-400 mb-2 border-b pb-1" dangerouslySetInnerHTML={{ __html: sanitizeHtml(headerHtml.replace("{{page}}", String(i + 1)).replace("{{total}}", String(pages.length))) }} />
+                  )}
                   <div className="prose prose-xs max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.html) }} />
-                  <div className="text-center text-[8px] text-gray-400 mt-4 pt-2 border-t">
-                    Page {i + 1} of {pages.length}
-                  </div>
+                  {/* Footer in preview */}
+                  {footerHtml ? (
+                    <div className="text-[8px] text-gray-400 mt-4 pt-2 border-t" dangerouslySetInnerHTML={{ __html: sanitizeHtml(footerHtml.replace("{{page}}", String(i + 1)).replace("{{total}}", String(pages.length))) }} />
+                  ) : (
+                    <div className="text-center text-[8px] text-gray-400 mt-4 pt-2 border-t">
+                      Page {i + 1} of {pages.length}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
