@@ -1,72 +1,132 @@
 
 
-# Plan: Resume Upload/Analyze in AI Tools + "Open in DocuDex" for All Tools
+# Plan: UI/UX Bug Fixes (Gaps 46–85)
 
-## Overview
+## Audit of Actual Status
 
-Two enhancements:
-1. **Resume Builder AI Tool**: Add a dedicated resume analysis tool to the AI Tools Hub that accepts file upload (PDF/DOCX), extracts content via `ai-extract-document`, and provides AI-powered scoring/recommendations with job description matching
-2. **"Open in DocuDex" button**: Add to the ToolRunner output panel for ALL AI tools, allowing users to send generated content directly to DocuDex for rich-text editing
+After code review, several items from the 200-gap list are **already fixed** and will be skipped:
+- Bug 49 (hamburger close): Already handled in Navbar.tsx line 89-91
+- Bug 50 (dark mode flash): Inline script in index.html line 123
+- Bug 72 (reduced motion): Handled in animations.ts + 3 CSS blocks
+- Bug 73 (portal tab URL): ClientPortal.tsx line 318-320 updates `searchParams`
+- Bug 75 (ErrorBoundary retry): Has "Try Again" button, lines 54-62
+- Bug 85 (print stylesheet): Exists in index.css lines 379-396
 
-## Changes
+**22 genuine fixes remain.** Grouped into 8 implementation batches:
 
-### 1. Add Resume Analyzer Tool to AI Tools Registry
+---
 
-**File**: `src/lib/aiToolsRegistry.ts`
+## Batch 1: Image & Loading Robustness (Bugs 46, 71)
 
-Add a new tool entry `resume-analyzer` in the "Analysis & Insights" category with fields:
-- `resumeText` (textarea, required) — paste resume text or populated by upload
-- `jobDescription` (textarea, optional) — target job description for scoring
-- `analysisType` (select) — "Full Analysis", "ATS Optimization", "Skills Gap", "Industry Match"
+**File: `src/pages/Index.tsx`**
+- Add `onError` fallbacks on `heroBackground` and `stepProcessImg` `<img>` tags — hide or swap to gradient placeholder
+- Add a loading skeleton wrapper for the Index page hero section
 
-System prompt engineered to return structured markdown: Score (1-100), ATS compatibility, strengths, weaknesses, keyword gaps, and actionable recommendations.
+---
 
-Also register the tool ID in the edge function's `TOOL_IDS` set.
+## Batch 2: Mobile Layout Fixes (Bugs 57, 78)
 
-### 2. Add File Upload Support to ToolRunner
+**File: `src/components/BackToTop.tsx`**
+- Increase bottom offset on mobile to avoid overlap with MobileFAB (currently `bottom-6 right-4`, MobileFAB is `bottom-[7.5rem] right-5`)
+- Change to `bottom-[11rem]` on mobile to stack above MobileFAB
 
-**File**: `src/components/ai-tools/ToolRunner.tsx`
+**File: `src/pages/RonSession.tsx`**
+- Add responsive classes to the 3-column layout so columns stack vertically below `lg` breakpoint instead of overflowing
 
-- Add a file upload zone (visible only for tools with `supportsUpload: true` — a new optional field on `AITool`)
-- When a file is uploaded, call `ai-extract-document` edge function with `extractor_type: "hr"` to parse the resume
-- Populate the `resumeText` field with extracted structured content
-- Show upload status (uploading spinner, success badge)
+---
 
-### 3. Add "Open in DocuDex" Button to ToolRunner Output
+## Batch 3: PageShell Conditional Chatbot (Bug 76)
 
-**File**: `src/components/ai-tools/ToolRunner.tsx`
+**File: `src/components/PageShell.tsx`**
+- Conditionally render `AILeadChatbot` only on public pages (not admin routes)
+- Check `useLocation().pathname` — skip chatbot if path starts with `/admin` or `/portal`
 
-- Add an "Open in DocuDex" button in the output action bar (next to Copy, Download, Print, Save)
-- On click, encode the generated markdown result into a URL parameter and navigate to `/docudex?content=...` (using sessionStorage for large content to avoid URL length limits)
-- Uses `useNavigate` from react-router-dom
+---
 
-### 4. DocuDex: Accept Incoming Content
+## Batch 4: Empty States & Skeletons (Bugs 52, 61, 77)
 
-**File**: `src/pages/DocuDex.tsx` (or `src/components/DocuDexEditor.tsx`)
+**File: `src/pages/ClientPortal.tsx`**
+- Add `<EmptyState>` component for zero-appointment overview tab with CTA to book
 
-- On mount, check for `ai_tools_content` key in sessionStorage
-- If present, load it as initial editor content and clear the key
-- This enables the seamless handoff from any AI tool
+**File: `src/pages/admin/AdminDashboard.tsx` or `AdminOverview.tsx`**
+- Make stat cards clickable links to their respective admin pages
 
-### 5. AI Tool Type Update
+**File: `src/pages/admin/AdminAppointments.tsx`**
+- Add `AdminLoadingSkeleton` while data is loading
 
-**File**: `src/lib/aiToolsRegistry.ts`
+---
 
-- Add optional `supportsUpload?: boolean` to `AITool` interface
-- Set `supportsUpload: true` on the new `resume-analyzer` tool
+## Batch 5: Form & Validation Fixes (Bugs 48, 59, 62, 63)
 
-### 6. Edge Function Update
+**File: `src/pages/booking/BookingIntakeFields.tsx`**
+- Add inline validation errors for required fields on blur (not just on submit)
 
-**File**: `supabase/functions/ai-tools/index.ts`
+**File: Various Select components**
+- Add `required` attribute and placeholder text like "Select an option" on required Select fields
 
-- Add `"resume-analyzer"` to the `TOOL_IDS` set
+**File: Various admin pages with delete actions**
+- Audit and add `AlertDialog` confirmation for any destructive button missing it
+
+**File: `src/components/ai-tools/ToolRunner.tsx` and other upload zones**
+- Add visual drag indicator (border color change, icon) during `onDragOver`
+
+---
+
+## Batch 6: Admin Search & Timezone (Bugs 83, 84)
+
+**File: `src/pages/admin/AdminClients.tsx`, `AdminAppointments.tsx`**
+- Normalize search to `.toLowerCase()` for case-insensitive matching
+
+**File: Various appointment display components**
+- Append timezone indicator (e.g., "EST") to scheduled time displays using `Intl.DateTimeFormat`
+
+---
+
+## Batch 7: QR Code Context & Breadcrumb Fix (Bugs 80, 82)
+
+**File: `src/pages/ClientPortal.tsx`**
+- Add description text below QR code explaining: "Scan to upload documents from your phone"
+
+**File: `src/components/Breadcrumbs.tsx`**
+- Add nested admin route labels: `docudex-pro`, `ai-assistant`, `build-tracker`, `overview`, `performance`, `webhooks`, `task-queue`, `process-flows`, `content-workspace`, `compliance-report`
+
+---
+
+## Batch 8: Misc UI Fixes (Bugs 53, 54, 56, 60, 70)
+
+**File: `src/index.css`**
+- Add admin sidebar scroll fix: ensure last nav items are accessible via `overflow-y: auto` + padding-bottom
+
+**File: `src/components/CommandPalette.tsx`**
+- Add a visible "Search" button in mobile navbar that opens the command palette (alternative to keyboard shortcut)
+
+**File: Toast configuration**
+- Set `visibleToasts` limit (e.g., 3) on the Toaster/Sonner provider
+
+**File: Document list displays**
+- Add status badge styling differentiation (draft = muted outline, uploaded = blue, approved = green, notarized = amber)
+
+**File: Upload components**
+- Show upload percentage via `XMLHttpRequest` progress events where Supabase storage upload is used
+
+---
 
 ## File Summary
 
-| File | Action |
+| File | Changes |
 |---|---|
-| `src/lib/aiToolsRegistry.ts` | Add `supportsUpload` to interface, add `resume-analyzer` tool |
-| `src/components/ai-tools/ToolRunner.tsx` | Add file upload for upload-enabled tools, add "Open in DocuDex" button for all tools |
-| `src/pages/DocuDex.tsx` | Accept content from sessionStorage on mount |
-| `supabase/functions/ai-tools/index.ts` | Add `resume-analyzer` to `TOOL_IDS` |
+| `src/pages/Index.tsx` | Image `onError` fallback, hero loading skeleton |
+| `src/components/BackToTop.tsx` | Mobile position adjustment |
+| `src/pages/RonSession.tsx` | Responsive 3-column stacking |
+| `src/components/PageShell.tsx` | Conditional chatbot rendering |
+| `src/pages/ClientPortal.tsx` | Empty state, QR description |
+| `src/pages/admin/AdminAppointments.tsx` | Loading skeleton, case-insensitive search |
+| `src/pages/admin/AdminClients.tsx` | Case-insensitive search |
+| `src/pages/admin/AdminOverview.tsx` | Clickable stat cards |
+| `src/pages/booking/BookingIntakeFields.tsx` | Inline field validation |
+| `src/components/Breadcrumbs.tsx` | Admin route labels |
+| `src/components/CommandPalette.tsx` | Mobile trigger button |
+| `src/components/ai-tools/ToolRunner.tsx` | Drag-and-drop indicator |
+| `src/index.css` | Admin sidebar scroll fix, toast limit |
+| `src/App.tsx` | Toast `visibleToasts` config |
 
