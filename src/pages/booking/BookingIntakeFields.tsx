@@ -186,15 +186,15 @@ export default function BookingIntakeFields(props: IntakeFieldsProps) {
 
       {showRealEstate && (
         <>
-          <div><Label>Property Address</Label><Input value={props.propertyAddress} onChange={e => props.setPropertyAddress(e.target.value)} placeholder="Address of the property" /></div>
+          <div><Label>Property Address *</Label><Input value={props.propertyAddress} onChange={e => props.setPropertyAddress(e.target.value)} onBlur={() => markTouched("propertyAddress")} placeholder="Address of the property" />{showError("propertyAddress", props.propertyAddress)}</div>
           <div><Label>Title Company (if applicable)</Label><Input value={props.titleCompany} onChange={e => props.setTitleCompany(e.target.value)} placeholder="Title company name" /></div>
         </>
       )}
 
       {showI9 && (
         <>
-          <div><Label>Employer Name</Label><Input value={props.employerName} onChange={e => props.setEmployerName(e.target.value)} placeholder="Hiring company name" /></div>
-          <div><Label>New Hire Start Date</Label><Input type="date" value={props.hireStartDate} onChange={e => props.setHireStartDate(e.target.value)} /></div>
+          <div><Label>Employer Name *</Label><Input value={props.employerName} onChange={e => props.setEmployerName(e.target.value)} onBlur={() => markTouched("employerName")} placeholder="Hiring company name" />{showError("employerName", props.employerName)}</div>
+          <div><Label>New Hire Start Date *</Label><Input type="date" value={props.hireStartDate} onChange={e => props.setHireStartDate(e.target.value)} onBlur={() => markTouched("hireStartDate")} />{showError("hireStartDate", props.hireStartDate)}</div>
           <div className="rounded-lg border border-blue-200 bg-blue-50/50 p-3 space-y-2">
             <p className="text-xs font-semibold text-blue-900 flex items-center gap-1"><Info className="h-3 w-3" /> Acceptable I-9 Documents — Bring ONE of the following:</p>
             <div className="text-xs text-blue-800 space-y-2">
@@ -379,7 +379,7 @@ export default function BookingIntakeFields(props: IntakeFieldsProps) {
       {/* Phase 12: Facility Signing */}
       {showFacility && (
         <>
-          <div><Label>Facility Name *</Label><Input value={props.facilityName} onChange={e => props.setFacilityName(e.target.value)} placeholder="e.g. OhioHealth Riverside Methodist" /></div>
+          <div><Label>Facility Name *</Label><Input value={props.facilityName} onChange={e => props.setFacilityName(e.target.value)} onBlur={() => markTouched("facilityName")} placeholder="e.g. OhioHealth Riverside Methodist" />{showError("facilityName", props.facilityName)}</div>
           <div className="grid grid-cols-2 gap-3">
             <div><Label>Room / Cell Number</Label><Input value={props.facilityRoom} onChange={e => props.setFacilityRoom(e.target.value)} placeholder="e.g. Room 412, Cell B-7" /></div>
             <div><Label>Facility Contact Person</Label><Input value={props.facilityContact} onChange={e => props.setFacilityContact(e.target.value)} placeholder="Nurse/guard name or ext." /></div>
