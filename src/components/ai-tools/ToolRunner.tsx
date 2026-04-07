@@ -13,10 +13,13 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import {
   ArrowLeft, Copy, Download, Loader2, Sparkles, Eye, Code, Printer, RefreshCw, Save, CreditCard,
+  Upload, FileText, CheckCircle, ExternalLink,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import type { AITool } from "@/lib/aiToolsRegistry";
+import { safeSetItem } from "@/lib/safeStorage";
+import { validateFile, ALLOWED_DOCUMENT_MIMES } from "@/lib/fileValidation";
 
 function parseSSEChunk(chunk: string): string {
   let text = "";
@@ -41,6 +44,7 @@ interface ToolRunnerProps {
 export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
@@ -52,6 +56,9 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
   const [usageCount, setUsageCount] = useState<number | null>(null);
   const [userPlan, setUserPlan] = useState<string>("free");
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
 
   // Fetch usage count and plan
