@@ -3,6 +3,11 @@ import App from "./App.tsx";
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
 import "./index.css";
 import { supabase } from "@/integrations/supabase/client";
+import { ensureSkipLink, initHighContrast } from "@/lib/a11yUtils";
+
+// Initialize accessibility features
+ensureSkipLink();
+initHighContrast();
 
 // Global unhandled error handler (Gap: missing global error handler)
 window.addEventListener("error", (event) => {

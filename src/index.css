@@ -405,3 +405,80 @@ button:active, a[role="button"]:active {
   transform: scale(0.97);
   transition: transform 0.1s ease;
 }
+
+/* High Contrast Mode */
+.high-contrast {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 0%;
+  --primary: 220 100% 30%;
+  --primary-foreground: 0 0% 100%;
+  --muted: 0 0% 90%;
+  --muted-foreground: 0 0% 20%;
+  --border: 0 0% 30%;
+  --accent: 0 100% 40%;
+  --accent-foreground: 0 0% 100%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 0%;
+}
+.dark.high-contrast {
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+  --primary: 180 100% 60%;
+  --primary-foreground: 0 0% 0%;
+  --muted: 0 0% 15%;
+  --muted-foreground: 0 0% 85%;
+  --border: 0 0% 70%;
+  --card: 0 0% 5%;
+  --card-foreground: 0 0% 100%;
+}
+
+/* Touch target enforcement (WCAG 2.5.8) */
+@media (pointer: coarse) {
+  button, a[role="button"], [role="tab"], [role="menuitem"],
+  input[type="checkbox"], input[type="radio"], .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Skip to main content */
+#skip-to-main {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+#skip-to-main:focus {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  width: auto;
+  height: auto;
+  padding: 8px 16px;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  z-index: 99999;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* Print styles */
+@media print {
+  nav, footer, .no-print, [role="banner"] { display: none !important; }
+  body { font-size: 12pt; color: #000; background: #fff; }
+}
