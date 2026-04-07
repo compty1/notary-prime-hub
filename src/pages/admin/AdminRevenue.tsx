@@ -13,10 +13,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { DollarSign, TrendingUp, TrendingDown, Calendar, Receipt, Download, CreditCard, Send, Loader2, Plus } from "lucide-react";
+import { DollarSign, TrendingUp, TrendingDown, Calendar, Receipt, Download, CreditCard, Send, Loader2, Plus, Printer } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { logAuditEvent } from "@/lib/auditLog";
+import { printReceipt } from "@/lib/receiptGenerator";
 
 const getDateRange = (range: string) => {
   const now = new Date();
@@ -448,6 +449,21 @@ export default function AdminRevenue() {
                               {p.status === "pending" && (
                                 <Button size="sm" variant="outline" className="text-xs" onClick={() => markPaid(p.id)}>
                                   Mark Paid
+                                </Button>
+                              )}
+                              {p.status === "paid" && (
+                                <Button size="sm" variant="ghost" className="text-xs" title="Print Receipt" onClick={() => {
+                                  printReceipt({
+                                    paymentId: p.id,
+                                    date: p.paid_at || p.created_at,
+                                    clientName: profiles[p.client_id] || "Client",
+                                    clientEmail: "",
+                                    amount: parseFloat(p.amount),
+                                    method: p.method || "card",
+                                    description: p.notes || undefined,
+                                  });
+                                }}>
+                                  <Printer className="h-3 w-3" />
                                 </Button>
                               )}
                               {p.status === "paid" && (

@@ -1,4 +1,5 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { ORGANIZATION_JSONLD } from "@/lib/seoHelpers";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
@@ -92,7 +93,7 @@ function AnimatedCounter({ value, suffix = "" }: {value: number;suffix?: string;
 }
 
 export default function Index() {
-  usePageMeta({ title: "Ohio Notary & Document Services", description: "Trusted Ohio notary services — in-person and remote online notarization (RON) in Franklin County, Columbus. Book online, get notarized today." });
+  usePageMeta({ title: "Ohio Notary & Document Services", description: "Trusted Ohio notary services — in-person and remote online notarization (RON) in Franklin County, Columbus. Book online, get notarized today.", schema: ORGANIZATION_JSONLD });
   const [serviceType, setServiceType] = useState<"in_person" | "ron">("in_person");
   const { toast } = useToast();
   const [contactForm, setContactForm] = useState({ name: "", email: "", phone: "", service: "", message: "" });
