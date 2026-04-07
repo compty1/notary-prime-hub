@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { sanitizeHtml } from "@/lib/sanitize";
+import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,7 +21,7 @@ import {
   Loader2, Save, Wand2, Mail, MailCheck, Clock, CheckCircle2,
   RefreshCw, Eye, Palette, FileEdit, Layout, Tag, Upload,
   Settings, CreditCard, PenTool, Users, Calendar, Shield,
-  ArrowRight, ExternalLink, Zap, AlertCircle, Server,
+  ArrowRight, ExternalLink, Zap, AlertCircle, Server, Copy,
 } from "lucide-react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
