@@ -66,6 +66,8 @@ export function DocuDexEditor({
   clientName,
   serviceName,
   compact,
+  appointmentId,
+  sessionId,
 }: DocuDexEditorProps) {
   const { user } = useAuth();
   const { toast } = useToast();
