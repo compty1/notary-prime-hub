@@ -23,6 +23,8 @@ import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
 import { fadeUp, blurIn, scaleReveal } from "@/lib/animations";
 import HeroPhoneAnimation from "@/components/HeroPhoneAnimation";
+import heroBackground from "@/assets/hero-background.jpg";
+import stepProcessImg from "@/assets/hero-4-step-process.jpg";
 
 const primaryServices = [
   {
@@ -226,6 +228,7 @@ export default function Index() {
     <PageShell>
       {/* ===== HERO — Dark Slate with Amber Accents ===== */}
       <section className="relative bg-sidebar-background text-white overflow-hidden">
+        <div className="absolute inset-0 opacity-30" style={{ backgroundImage: `url(${heroBackground})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary via-sidebar-background to-sidebar-background" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
