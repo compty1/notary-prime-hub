@@ -108,8 +108,18 @@ export function DocuDexEditor({
   const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
   const [altText, setAltText] = useState("");
   const [showOnboarding, setShowOnboarding] = useState(false);
-
-  const canvasRef = useRef<HTMLDivElement>(null);
+  const [watermark, setWatermark] = useState("none");
+  const [headerHtml, setHeaderHtml] = useState("");
+  const [footerHtml, setFooterHtml] = useState(DEFAULT_FOOTER);
+  const [showHeaderFooterEditor, setShowHeaderFooterEditor] = useState(false);
+  const [customTemplates, setCustomTemplates] = useState<CustomTemplate[]>(() => {
+    try { return JSON.parse(safeGetItem("docudex_custom_templates") || "[]"); } catch { return []; }
+  });
+  const [recentDocs, setRecentDocs] = useState<{ id: string; title: string; updatedAt: string }[]>([]);
+  const [showRecentDocs, setShowRecentDocs] = useState(false);
+  const [versionName, setVersionName] = useState("");
+  const [showVersionNameDialog, setShowVersionNameDialog] = useState(false);
+  const [pendingSnapshot, setPendingSnapshot] = useState<HistorySnapshot | null>(null);
   const autoSaveTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const announcerRef = useRef<HTMLDivElement>(null);
 
