@@ -223,6 +223,25 @@ export default function PortalServiceRequestsTab({ serviceRequests: initialReque
                       </a>
                     </div>
                   )}
+                  {/* ID 418: Client cancellation for pending requests */}
+                  {(req.status === "submitted" || req.status === "in_progress") && (
+                    <div className="mt-3 pt-3 border-t border-border/50 flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs text-destructive hover:text-destructive"
+                        onClick={async () => {
+                          if (!window.confirm("Are you sure you want to cancel this request? This cannot be undone.")) return;
+                          const { error } = await supabase.from("service_requests").update({ status: "cancelled" }).eq("id", req.id);
+                          if (error) return;
+                          setRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: "cancelled" } : r));
+                        }}
+                      >
+                        Cancel Request
+                      </Button>
+                      <span className="text-[10px] text-muted-foreground">You can cancel before work begins.</span>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             );

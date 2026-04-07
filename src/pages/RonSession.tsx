@@ -338,20 +338,34 @@ export default function RonSession() {
   }, [isAdminOrNotary]);
 
   // 15-minute inactivity timeout enforcement (Ohio RON compliance)
+  // ID 81: Use visibilitychange + requestIdleCallback for reliable timeout in backgrounded tabs
   useEffect(() => {
     if (!isAdminOrNotary || !participantLink || sessionStatus === "completed") return;
     const resetActivity = () => {
       setLastActivityAt(Date.now());
       if (inactivityLocked) setInactivityLocked(false);
-      // Update last_activity_at in DB
       if (appointmentId) {
         supabase.from("notarization_sessions").update({
           last_activity_at: new Date().toISOString(),
         } as any).eq("appointment_id", appointmentId).then(() => {}, () => {});
       }
     };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        // Check if timeout elapsed while tab was backgrounded
+        if (Date.now() - lastActivityAt > INACTIVITY_TIMEOUT_MS) {
+          setInactivityLocked(true);
+          logAuditEvent("ron_session_inactivity_timeout", {
+            entityType: "appointment",
+            entityId: appointmentId || undefined,
+            details: { timeout_minutes: 15, trigger: "visibilitychange" } as Record<string, Json | undefined>,
+          });
+        }
+      }
+    };
     const events = ["mousedown", "keydown", "scroll", "touchstart"];
     events.forEach(e => window.addEventListener(e, resetActivity));
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     const checker = setInterval(() => {
       if (Date.now() - lastActivityAt > INACTIVITY_TIMEOUT_MS) {
         setInactivityLocked(true);
@@ -364,6 +378,7 @@ export default function RonSession() {
     }, 30_000);
     return () => {
       events.forEach(e => window.removeEventListener(e, resetActivity));
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       clearInterval(checker);
     };
   }, [isAdminOrNotary, participantLink, sessionStatus, lastActivityAt, inactivityLocked, appointmentId]);

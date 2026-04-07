@@ -800,9 +800,32 @@ export default function BookAppointment() {
                         ))}
                       </SelectContent>
                     </Select>
+                    {/* ID 7: Only show RON toggle for services that support notarization */}
+                    {serviceType && !requiresNotarizationType(serviceType, serviceCategories) && (
+                      <p className="mt-1 text-xs text-muted-foreground flex items-center gap-1"><Info className="h-3 w-3" /> This service does not require a notarization type selection.</p>
+                    )}
+                    {/* ID 9: RON eligibility link */}
+                    {notarizationType === "ron" && serviceType && (
+                      <p className="mt-1 text-xs text-muted-foreground">Not sure if your document is RON-eligible? <Link to="/ron-check" className="text-primary underline">Check RON Eligibility</Link></p>
+                    )}
                   </div>
                   {serviceType === "Other" && <div><Label>Describe your document</Label><Input placeholder="What type of document do you need notarized?" value={notes} onChange={e => setNotes(e.target.value)} /></div>}
+                  {/* ID 2: Show service description */}
                   {serviceType && serviceDescriptions[serviceType] && <p className="text-xs text-muted-foreground bg-muted/50 rounded p-2">{serviceDescriptions[serviceType]}</p>}
+                  {/* ID 4: Show estimated duration */}
+                  {serviceType && serviceDurations[serviceType] && (
+                    <p className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" /> Estimated duration: {serviceDurations[serviceType]} minutes</p>
+                  )}
+                  {/* ID 192/320: Auto-suggest witness count for estate planning / wills */}
+                  {serviceType && (serviceType.toLowerCase().includes("will") || serviceType.toLowerCase().includes("estate planning") || serviceType.toLowerCase().includes("testament")) && (
+                    <div className="rounded-lg bg-accent/10 border border-accent/20 p-3 text-xs text-muted-foreground flex items-start gap-2">
+                      <AlertTriangle className="h-4 w-4 text-accent-foreground mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-foreground">Ohio law requires 2 disinterested witnesses for wills (ORC §2107.03)</p>
+                        <p>Witness count has been set to 2 automatically.</p>
+                      </div>
+                    </div>
+                  )}
                   <BookingIntakeFields {...intakeFieldsProps} />
 
                   {/* Document Auto-Detect */}
@@ -855,9 +878,17 @@ export default function BookAppointment() {
 
               {/* Sticky cost estimator */}
               {estimatedPrice !== null && step !== lastStep && (
-                <div className="rounded-lg bg-primary/5 border border-accent/20 p-3 flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground flex items-center gap-1"><DollarSign className="h-4 w-4 text-primary" /> Estimated total</span>
-                  <span className="font-semibold text-primary">${(estimatedPrice + (urgencyLevel === "rush" ? 50 : urgencyLevel === "same_day" ? 100 : 0)).toFixed(2)}</span>
+                <div className="rounded-lg bg-primary/5 border border-accent/20 p-3 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground flex items-center gap-1"><DollarSign className="h-4 w-4 text-primary" /> Estimated total</span>
+                    <span className="font-semibold text-primary">${(estimatedPrice + (urgencyLevel === "rush" ? 50 : urgencyLevel === "same_day" ? 100 : 0)).toFixed(2)}</span>
+                  </div>
+                  {/* ID 28: Deposit explanation */}
+                  <p className="text-[10px] text-muted-foreground">A 25% deposit (${((estimatedPrice * 0.25)).toFixed(2)}) is required at booking. The remaining balance is due at your appointment.</p>
+                  {/* ID 26: Price comparison between RON and in-person */}
+                  {requiresNotarizationType(serviceType, serviceCategories) && pricingBreakdown && (
+                    <p className="text-[10px] text-muted-foreground flex items-center gap-1"><Info className="h-3 w-3" /> {notarizationType === "ron" ? "RON sessions include a $25 technology fee." : "In-person sessions may include travel fees based on distance."}</p>
+                  )}
                 </div>
               )}
 
