@@ -7,10 +7,10 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `You are a professional proposal writer for Notar, an Ohio-based notary and document services company. Generate polished, persuasive lead outreach proposals.
+const SYSTEM_PROMPT = `You are a professional proposal writer for NotarDex, an Ohio-based notary and document services company. Generate polished, persuasive lead outreach proposals.
 
 Company info:
-- Name: Notar (NotarDex.com)
+- Name: NotarDex (NotarDex.com)
 - Location: Columbus, Ohio — serves Franklin County and surrounding areas
 - Services: In-Person Notarization, Remote Online Notarization (RON), Mobile Notary, Loan Signing, Apostille, Document Drafting, I-9 Verification, Certified Copies
 - Lead Notary: Shane Goble, NNA Certified Notary Signing Agent
