@@ -413,7 +413,11 @@ export default function AdminSettings() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">Auto-detected compliance with Ohio Revised Code §147.65-.66 requirements for Remote Online Notarization.</p>
+            <p className="text-sm text-muted-foreground mb-2">Auto-detected compliance with Ohio Revised Code §147.65-.66 requirements for Remote Online Notarization.</p>
+            {/* AS-006: Secretary of State verification link */}
+            <a href="https://www.ohiosos.gov/notary/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-primary hover:underline mb-4">
+              <ExternalLink className="h-3 w-3" /> Verify on Ohio Secretary of State
+            </a>
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {[
                 { label: "Commission Number", ok: !!editValues.commission_number, detail: editValues.commission_number || "Not configured" },
