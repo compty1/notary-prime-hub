@@ -35,8 +35,9 @@ function ToolBtn({ active, onClick, children, title, disabled }: {
           disabled={disabled}
           aria-label={title}
           className={cn(
-            "h-7 w-7 rounded flex items-center justify-center transition-colors",
+            "h-7 w-7 rounded flex items-center justify-center transition-colors shrink-0",
             "hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             active && "bg-primary/10 text-primary"
           )}
         >
@@ -67,7 +68,7 @@ function ColorPicker({ colors, activeColor, onSelect, icon: Icon, title }: {
         <button
           type="button"
           aria-label={title}
-          className="h-7 w-7 rounded flex items-center justify-center hover:bg-muted transition-colors relative"
+          className="h-7 w-7 rounded flex items-center justify-center hover:bg-muted transition-colors relative shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <Icon className="h-3.5 w-3.5" />
           {activeColor && (
@@ -86,7 +87,7 @@ function ColorPicker({ colors, activeColor, onSelect, icon: Icon, title }: {
               onClick={() => onSelect(c.value)}
               className={cn(
                 "h-6 w-6 rounded border transition-all hover:scale-110",
-                activeColor === c.value ? "border-foreground ring-1 ring-primary" : "border-border"
+                activeColor === c.value ? "border-foreground ring-1 ring-primary" : "border-border dark:border-muted-foreground/30"
               )}
               style={{ backgroundColor: c.value }}
               title={c.label}
@@ -123,7 +124,6 @@ function ColorPicker({ colors, activeColor, onSelect, icon: Icon, title }: {
 }
 
 export function DocuDexToolbar({ editor, brandFont, onBrandFontChange, onImageUpload, onFindReplace }: ToolbarProps) {
-  // All hooks must be called before any conditional returns
   const addLink = useCallback(() => {
     if (!editor) return;
     const url = window.prompt("Enter URL:", "https://");
@@ -144,7 +144,7 @@ export function DocuDexToolbar({ editor, brandFont, onBrandFontChange, onImageUp
 
   return (
     <div
-      className="flex flex-wrap items-center gap-0.5 border-b border-border bg-card px-2 py-1 shrink-0"
+      className="flex items-center gap-0.5 border-b border-border bg-card px-2 py-1 shrink-0 overflow-x-auto"
       role="toolbar"
       aria-label="Formatting toolbar"
     >
@@ -160,7 +160,7 @@ export function DocuDexToolbar({ editor, brandFont, onBrandFontChange, onImageUp
 
       {/* Font family */}
       <Select value={brandFont} onValueChange={onBrandFontChange}>
-        <SelectTrigger className="h-7 w-28 text-xs border-none shadow-none" aria-label="Font family">
+        <SelectTrigger className="h-7 w-20 md:w-28 text-xs border-none shadow-none shrink-0" aria-label="Font family">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -177,7 +177,7 @@ export function DocuDexToolbar({ editor, brandFont, onBrandFontChange, onImageUp
           (editor.chain().focus() as any).setMark("textStyle", { fontSize: `${v}px` }).run();
         }}
       >
-        <SelectTrigger className="h-7 w-16 text-xs border-none shadow-none" aria-label="Font size">
+        <SelectTrigger className="h-7 w-14 md:w-16 text-xs border-none shadow-none shrink-0" aria-label="Font size">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -305,7 +305,7 @@ export function DocuDexToolbar({ editor, brandFont, onBrandFontChange, onImageUp
       <ToolBtn title="Clear Formatting" onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()}>
         <Eraser className="h-3.5 w-3.5" />
       </ToolBtn>
-      <ToolBtn title="Find & Replace (Ctrl+H)" onClick={onFindReplace}>
+      <ToolBtn title="Find & Replace (Ctrl+F)" onClick={onFindReplace}>
         <Search className="h-3.5 w-3.5" />
       </ToolBtn>
     </div>
