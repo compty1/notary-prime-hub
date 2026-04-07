@@ -419,12 +419,17 @@ export default function ResumeBuilder() {
               </div>
 
               <Card className="bg-muted/50">
-                <CardContent className="p-3 flex items-center gap-2">
+                <CardContent className="p-3 flex items-center gap-2 flex-wrap">
                   <Button size="sm" onClick={generateWithAI} disabled={generating}>
                     {generating ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Sparkles className="h-4 w-4 mr-1.5" />}
                     AI Generate
                   </Button>
-                  <span className="text-xs text-muted-foreground">Generate professional content with AI</span>
+                  <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={handleFileUpload} />
+                  <Button size="sm" variant="outline" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
+                    {uploading ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Upload className="h-4 w-4 mr-1.5" />}
+                    Upload Resume
+                  </Button>
+                  <span className="text-xs text-muted-foreground">Generate content or upload a PDF/DOCX to parse</span>
                 </CardContent>
               </Card>
 
@@ -435,7 +440,9 @@ export default function ResumeBuilder() {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-2 flex-wrap">
+                <Button variant="outline" onClick={handleExportDoc} disabled={!content}><Download className="h-4 w-4 mr-1.5" /> Export .DOC</Button>
+                <Button variant="outline" onClick={handlePrint} disabled={!content}><Printer className="h-4 w-4 mr-1.5" /> Print / PDF</Button>
                 <Button variant="outline" onClick={() => setEditorOpen(false)}>Cancel</Button>
                 <Button onClick={save} disabled={saving}>
                   {saving ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <FileText className="h-4 w-4 mr-1.5" />}
