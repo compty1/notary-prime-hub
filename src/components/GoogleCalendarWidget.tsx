@@ -19,10 +19,10 @@ export default function GoogleCalendarWidget() {
         const { data, error } = await supabase.functions.invoke("google-calendar-sync", {
           body: { action: "status" },
         });
-        if (error) return { connected: false, error: error.message };
-        return data as { connected: boolean; calendar?: { id: string; summary: string }; error?: string };
+        if (error) return { connected: false, error: error.message, calendar: null };
+        return data as { connected: boolean; calendar?: { id: string; summary: string } | null; error?: string };
       } catch {
-        return { connected: false, error: "Failed to check status" };
+        return { connected: false, error: "Failed to check status", calendar: null };
       }
     },
     staleTime: 60_000,
@@ -100,7 +100,7 @@ export default function GoogleCalendarWidget() {
         ) : connected ? (
           <>
             <div className="flex items-center gap-2 text-sm">
-              <CheckCircle className="h-3 w-3 text-green-500" />
+              <CheckCircle className="h-3 w-3 text-primary" />
               <span className="text-muted-foreground">{calStatus?.calendar?.summary || "Primary Calendar"}</span>
             </div>
             <Button

@@ -12,11 +12,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface Subscription {
   id: string;
-  plan_name: string;
   status: string;
-  current_period_end: string;
   amount: number;
-  stripe_subscription_id: string | null;
+  method: string | null;
+  notes: string | null;
+  created_at: string;
+  stripe_payment_intent_id: string | null;
 }
 
 export default function SubscriptionManager() {
@@ -37,7 +38,7 @@ export default function SubscriptionManager() {
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
-      return data as Subscription | null;
+      return data as unknown as Subscription | null;
     },
     enabled: !!user,
   });
@@ -95,19 +96,17 @@ export default function SubscriptionManager() {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-semibold">{subscription.plan_name || "Subscription Plan"}</p>
+              <p className="font-semibold">{subscription.notes || "Subscription Plan"}</p>
               <p className="text-sm text-muted-foreground">
-                ${(subscription.amount || 0).toFixed(2)}/month
+                ${(subscription.amount || 0).toFixed(2)}
               </p>
             </div>
             <CreditCard className="h-8 w-8 text-muted-foreground/40" />
           </div>
 
-          {subscription.current_period_end && (
-            <p className="text-xs text-muted-foreground">
-              Next billing: {new Date(subscription.current_period_end).toLocaleDateString()}
-            </p>
-          )}
+          <p className="text-xs text-muted-foreground">
+            Last payment: {new Date(subscription.created_at).toLocaleDateString()}
+          </p>
 
           <div className="flex gap-2 pt-2">
             <Button variant="outline" size="sm" onClick={() => setUpgradeDialog(true)}>
