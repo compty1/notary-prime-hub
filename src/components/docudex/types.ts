@@ -1,7 +1,27 @@
 import type { Editor } from "@tiptap/react";
 
-export interface PageData { id: string; html: string; }
-export interface HistorySnapshot { timestamp: string; pages: PageData[]; label: string; }
+export interface PageData {
+  id: string;
+  html: string;
+  headerHtml?: string;
+  footerHtml?: string;
+}
+
+export interface HistorySnapshot {
+  timestamp: string;
+  pages: PageData[];
+  label: string;
+  name?: string;
+}
+
+export interface CustomTemplate {
+  id: string;
+  label: string;
+  icon: string;
+  category: string;
+  content: string;
+  createdAt: string;
+}
 
 export interface DocuDexEditorProps {
   initialPages?: PageData[];
@@ -11,6 +31,8 @@ export interface DocuDexEditorProps {
   clientName?: string;
   serviceName?: string;
   compact?: boolean;
+  appointmentId?: string;
+  sessionId?: string;
 }
 
 export interface PageSize { value: string; label: string; width: number; height: number; }
