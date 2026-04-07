@@ -439,20 +439,18 @@ export default function AdminSettings() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-xs text-muted-foreground">
-              Two-way sync between leads and HubSpot contacts. Configure your HubSpot Private App token below.
-            </p>
-            <div>
-              <Label>HubSpot API Key</Label>
-              <Input
-                type="password"
-                value={editValues.hubspot_api_key || ""}
-                onChange={(e) => updateValue("hubspot_api_key", e.target.value)}
-                placeholder="pat-na1-••••••••"
-              />
-              <p className="mt-1 text-xs text-muted-foreground">Create a Private App in HubSpot → Settings → Integrations → API</p>
+            <div className="rounded-lg border border-border/50 p-3 flex items-start gap-3">
+              <CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />
+              <div>
+                <p className="text-sm font-medium">HubSpot Service Key</p>
+                <p className="text-xs text-muted-foreground">Configured as a server secret (<code className="text-foreground">HubSpot_Service_Key</code>). Manage in Lovable Cloud settings.</p>
+              </div>
+              <Badge className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary text-xs ml-auto flex-shrink-0">Configured</Badge>
             </div>
-            <div className="flex gap-2">
+            <p className="text-xs text-muted-foreground">
+              Two-way sync between platform leads and HubSpot contacts. Use the buttons below to test, push, or pull data.
+            </p>
+            <div className="flex flex-wrap gap-2">
               <Button variant="outline" size="sm" onClick={async () => {
                 const { data, error } = await supabase.functions.invoke("hubspot-sync", { body: { action: "test" } });
                 if (error || !data?.connected) toast({ title: "HubSpot connection failed", description: data?.error || error?.message, variant: "destructive" });
