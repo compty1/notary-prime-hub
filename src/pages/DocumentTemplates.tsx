@@ -909,10 +909,216 @@ export default function DocumentTemplates() {
     setChatLoading(false);
   };
 
+  // ── Document Studio editor ──
+  const studioEditor = useEditor({
+    extensions: [
+      StarterKit,
+      UnderlineExt,
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
+    ],
+    content: "<p>Start writing your document here...</p>",
+    editorProps: {
+      attributes: { class: "prose prose-sm max-w-none focus:outline-none min-h-[500px] p-6 font-serif" },
+    },
+  });
+
+  const studioHandlePrint = () => {
+    if (!studioEditor) return;
+    const html = studioEditor.getHTML();
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(`<html><head><title>${studioTitle}</title><style>body{font-family:serif;padding:2rem;line-height:1.8;max-width:800px;margin:0 auto}h1,h2,h3{margin-top:1em}</style></head><body>${html}</body></html>`);
+      printWindow.document.close();
+      printWindow.print();
+    }
+  };
+
+  const studioHandleExport = () => {
+    if (!studioEditor) return;
+    const html = studioEditor.getHTML();
+    const blob = new Blob([`<html><head><meta charset="utf-8"></head><body>${html}</body></html>`], { type: "application/vnd.ms-word;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${studioTitle || "document"}.doc`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const studioHandleSave = async () => {
+    if (!user || !studioEditor) {
+      toast({ title: "Sign in required", description: "Please sign in to save documents.", variant: "destructive" });
+      return;
+    }
+    setStudioSaving(true);
+    try {
+      const html = studioEditor.getHTML();
+      const fileName = `${studioTitle || "document"}_${Date.now()}.html`;
+      const filePath = `${user.id}/${fileName}`;
+      const blob = new Blob([html], { type: "text/html" });
+      const { error: uploadError } = await supabase.storage.from("documents").upload(filePath, blob);
+      if (uploadError) throw uploadError;
+      const { error: insertError } = await supabase.from("documents").insert({
+        uploaded_by: user.id,
+        file_name: fileName,
+        file_path: filePath,
+        status: "uploaded" as any,
+      });
+      if (insertError) throw insertError;
+      toast({ title: "Saved to Vault", description: "Document saved to your portal." });
+    } catch (e: any) {
+      toast({ title: "Save failed", description: e.message, variant: "destructive" });
+    }
+    setStudioSaving(false);
+  };
+
+  const studioReviewDocument = async () => {
+    if (!studioEditor) return;
+    const docText = studioEditor.getText();
+    if (docText.trim().length < 20) {
+      toast({ title: "Not enough content", description: "Write more content before reviewing.", variant: "destructive" });
+      return;
+    }
+    setStudioReviewing(true);
+    setStudioReviewResult("");
+    try {
+      const resp = await callEdgeFunctionStream("build-analyst", {
+        messages: [{ role: "user", content: `Review this document for completeness, tone, legal accuracy, and formatting. Provide scores, strengths, weaknesses, and actionable suggestions.\n\nDocument Title: ${studioTitle}\n\n${docText.slice(0, 5000)}` }],
+        context: "Document review mode",
+      }, 120000);
+      if (!resp.ok) throw new Error("Review failed");
+      const reader = resp.body?.getReader();
+      if (!reader) throw new Error("No body");
+      const decoder = new TextDecoder();
+      let result = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        for (const line of decoder.decode(value, { stream: true }).split("\n")) {
+          if (!line.startsWith("data: ")) continue;
+          const json = line.slice(6).trim();
+          if (json === "[DONE]") break;
+          try { const p = JSON.parse(json); const c = p.choices?.[0]?.delta?.content; if (c) { result += c; setStudioReviewResult(result); } } catch {}
+        }
+      }
+    } catch (err: any) {
+      toast({ title: "Review failed", description: err.message, variant: "destructive" });
+    }
+    setStudioReviewing(false);
+  };
+
+  const aiInlineAction = async (action: string) => {
+    if (!studioEditor) return;
+    const { from, to } = studioEditor.state.selection;
+    const selectedText = studioEditor.state.doc.textBetween(from, to, " ");
+    if (!selectedText.trim()) { toast({ title: "Select text first" }); return; }
+    setAiInlineLoading(true);
+    try {
+      const promptMap: Record<string, string> = {
+        rewrite: `Rewrite this text to be clearer and more professional. Return ONLY the rewritten text:\n\n${selectedText}`,
+        expand: `Expand this text with more detail while maintaining the same tone. Return ONLY the expanded text:\n\n${selectedText}`,
+        summarize: `Summarize this text concisely. Return ONLY the summary:\n\n${selectedText}`,
+        grammar: `Fix any grammar, spelling, or punctuation errors. Return ONLY the corrected text:\n\n${selectedText}`,
+        formal: `Rewrite this text in a more formal, professional tone. Return ONLY the formal version:\n\n${selectedText}`,
+      };
+      const resp = await callEdgeFunctionStream("build-analyst", {
+        messages: [{ role: "user", content: promptMap[action] || promptMap.rewrite }],
+        context: "Inline document editing",
+      }, 60000);
+      if (!resp.ok) throw new Error("AI action failed");
+      const reader = resp.body?.getReader();
+      if (!reader) throw new Error("No body");
+      const decoder = new TextDecoder();
+      let result = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        for (const line of decoder.decode(value, { stream: true }).split("\n")) {
+          if (!line.startsWith("data: ")) continue;
+          const json = line.slice(6).trim();
+          if (json === "[DONE]") break;
+          try { const p = JSON.parse(json); const c = p.choices?.[0]?.delta?.content; if (c) result += c; } catch {}
+        }
+      }
+      if (result.trim()) {
+        studioEditor.chain().focus().deleteRange({ from, to }).insertContentAt(from, result.trim()).run();
+        toast({ title: `${action.charAt(0).toUpperCase() + action.slice(1)} applied` });
+      }
+    } catch (err: any) {
+      toast({ title: "AI action failed", description: err.message, variant: "destructive" });
+    }
+    setAiInlineLoading(false);
+  };
+
+  // Studio AI Chat
+  const sendStudioChat = async () => {
+    if (!studioChatInput.trim() || studioChatLoading) return;
+    const userMsg = { role: "user" as const, content: studioChatInput.trim() };
+    const msgs = [...studioChatMessages, userMsg];
+    setStudioChatMessages(msgs);
+    setStudioChatInput("");
+    setStudioChatLoading(true);
+    let assistantSoFar = "";
+    try {
+      const docContext = studioEditor ? studioEditor.getText().slice(0, 2000) : "";
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/client-assistant`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        body: JSON.stringify({ messages: msgs, template_context: { title: studioTitle, description: "User is creating a document from scratch in the Document Studio.", currentContent: docContext } }),
+      });
+      if (!resp.ok) throw new Error("AI unavailable");
+      const reader = resp.body?.getReader();
+      if (!reader) throw new Error("No stream");
+      const decoder = new TextDecoder();
+      let buffer = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let idx;
+        while ((idx = buffer.indexOf("\n")) !== -1) {
+          let line = buffer.slice(0, idx);
+          buffer = buffer.slice(idx + 1);
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (!line.startsWith("data: ")) continue;
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") break;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const c = parsed.choices?.[0]?.delta?.content;
+            if (c) {
+              assistantSoFar += c;
+              setStudioChatMessages(prev => {
+                const last = prev[prev.length - 1];
+                if (last?.role === "assistant") return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantSoFar } : m);
+                return [...prev, { role: "assistant", content: assistantSoFar }];
+              });
+            }
+          } catch {}
+        }
+      }
+    } catch (e: any) {
+      setStudioChatMessages(prev => [...prev, { role: "assistant", content: `Error: ${e.message}` }]);
+    }
+    setStudioChatLoading(false);
+  };
+
+  const startFromTemplate = (t: Template) => {
+    const body = t.sampleData ? (() => {
+      let b = t.body;
+      Object.entries(t.sampleData).forEach(([k, v]) => { b = b.replace(new RegExp(`\\{\\{${k}\\}\\}`, "g"), v); });
+      return b;
+    })() : t.body;
+    setStudioTitle(t.title);
+    studioEditor?.commands.setContent(plainTextToHtml(body));
+    setMainTab("studio");
+    toast({ title: "Template loaded", description: `"${t.title}" loaded into the editor.` });
+  };
+
   return (
     <PageShell>
 
-      <div className="container mx-auto max-w-5xl px-4 py-8">
+      <div className="container mx-auto max-w-6xl px-4 py-8">
         <Breadcrumbs />
         <div className="mb-8 text-center">
           <h1 className="font-sans text-3xl font-bold text-foreground mb-2">Document Templates Library</h1>
