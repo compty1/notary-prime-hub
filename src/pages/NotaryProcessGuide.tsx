@@ -31,10 +31,10 @@ export default function NotaryProcessGuide() {
           <Badge className="mb-4 border-primary/20 bg-primary/10 text-primary">
             <BookOpen className="mr-1 h-3 w-3" /> Provider Reference
           </Badge>
-          <h1 className="mb-3 font-sans text-3xl font-bold text-primary-foreground md:text-4xl">
+          <h1 className="mb-3 font-sans text-3xl font-bold text-white md:text-4xl">
             Notary Process Guide
           </h1>
-          <p className="mx-auto max-w-2xl text-primary-foreground/70">
+          <p className="mx-auto max-w-2xl text-white/70">
             Comprehensive reference for notaries covering seal placement, signer deliverables, step-by-step procedures, and Ohio compliance requirements.
           </p>
         </div>

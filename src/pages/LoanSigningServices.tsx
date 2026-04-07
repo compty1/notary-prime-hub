@@ -104,10 +104,10 @@ export default function LoanSigningServices() {
           <Badge className="mb-4 border-primary/20 bg-primary/10 text-primary">
             <Building2 className="mr-1 h-3 w-3" /> For Title Companies & Lenders
           </Badge>
-          <h1 className="mb-4 font-sans text-3xl font-bold text-primary-foreground md:text-5xl">
+          <h1 className="mb-4 font-sans text-3xl font-bold text-white md:text-5xl">
             Loan Signing Agent Services
           </h1>
-          <p className="mx-auto max-w-2xl text-lg text-primary-foreground/70">
+          <p className="mx-auto max-w-2xl text-lg text-white/70">
             Reliable, certified loan signing services for title companies, lenders, and signing services in the Columbus, Ohio area 
             and nationwide via RON.
           </p>
