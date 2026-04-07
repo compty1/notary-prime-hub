@@ -165,5 +165,6 @@ export function CommandPalette() {
         )}
       </CommandList>
     </CommandDialog>
+    </>
   );
 }
