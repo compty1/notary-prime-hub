@@ -90,18 +90,17 @@ Deno.serve(async (req) => {
     let streaming = true;
 
     if (body.messages && Array.isArray(body.messages)) {
-      const { z } = await import("https://esm.sh/zod@3.23.8");
-      const BodySchema = z.object({
-        messages: z.array(z.object({
-          role: z.enum(["user", "assistant", "system"]),
-          content: z.string().min(1).max(50000),
-        })).min(1).max(50),
-      });
-      const parsed = BodySchema.safeParse(body);
-      if (!parsed.success) {
-        return new Response(JSON.stringify({ error: parsed.error.flatten().fieldErrors }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      // Filter out empty assistant messages (from streaming state) and validate
+      const cleaned = body.messages.filter(
+        (m: any) => m && typeof m.content === "string" && m.content.trim().length > 0
+      );
+      if (cleaned.length === 0) {
+        return new Response(JSON.stringify({ error: "At least one non-empty message is required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
-      messages = parsed.data.messages;
+      messages = cleaned.slice(-50).map((m: any) => ({
+        role: ["user", "assistant", "system"].includes(m.role) ? m.role : "user",
+        content: String(m.content).slice(0, 50000),
+      }));
     } else if (body.prompt || body.message) {
       const text = (body.prompt || body.message || "").toString().slice(0, 50000);
       if (!text.trim()) {
