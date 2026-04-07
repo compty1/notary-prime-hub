@@ -40,6 +40,7 @@ const adminNavItems = [
   { title: "Audit Log", url: "/admin/audit-log", icon: ScrollText, adminOnly: true },
   { title: "Build Tracker", url: "/admin/build-tracker", icon: Bug, adminOnly: true },
   { title: "Integration Testing", url: "/admin/integrations", icon: Plug, adminOnly: true },
+  { title: "User Management", url: "/admin/users", icon: Shield, adminOnly: true },
   { title: "Settings", url: "/admin/settings", icon: Settings, adminOnly: true },
 ];
 
