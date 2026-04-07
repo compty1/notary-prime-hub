@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { MapPin, Monitor, CheckCircle, ChevronLeft, ChevronRight, Camera, Loader2, Sparkles, AlertTriangle, DollarSign, Info } from "lucide-react";
+import { MapPin, Monitor, CheckCircle, ChevronLeft, ChevronRight, Camera, Loader2, Sparkles, AlertTriangle, DollarSign, Info, Clock } from "lucide-react";
 import { haversineDistance, getAfterHoursFee, DEFAULT_OFFICE_LAT, DEFAULT_OFFICE_LON } from "@/lib/geoUtils";
 import { NOTARIAL_ACT_MAP } from "@/lib/serviceConstants";
 import { calculatePrice, parseSettings, type PricingBreakdown } from "@/lib/pricingEngine";
