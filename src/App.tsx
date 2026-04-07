@@ -60,6 +60,7 @@ const SignatureGeneratorPage = lazyRetry(() => import("./pages/SignatureGenerato
 const GrantDashboard = lazyRetry(() => import("./pages/GrantDashboard"));
 const ResumeBuilder = lazyRetry(() => import("./pages/ResumeBuilder"));
 const AITools = lazyRetry(() => import("./pages/AITools"));
+const DocuDex = lazyRetry(() => import("./pages/DocuDex"));
 const SessionTracker = lazyRetry(() => import("./pages/SessionTracker"));
 const RescheduleAppointment = lazyRetry(() => import("./pages/RescheduleAppointment"));
 
@@ -93,6 +94,7 @@ const AdminContentWorkspace = lazyRetry(() => import("./pages/admin/AdminContent
 const AdminTaskQueue = lazyRetry(() => import("./pages/admin/AdminTaskQueue"));
 const AdminCRM = lazyRetry(() => import("./pages/admin/AdminCRM"));
 const AdminBuildTracker = lazyRetry(() => import("./pages/admin/AdminBuildTracker"));
+const AdminDocuDexPro = lazyRetry(() => import("./pages/admin/AdminDocuDexPro"));
 const AdminClientEmails = lazyRetry(() => import("./pages/admin/AdminClientEmails"));
 const AdminMailbox = lazyRetry(() => import("./pages/admin/AdminMailbox"));
 const Unsubscribe = lazyRetry(() => import("./pages/Unsubscribe"));
@@ -197,6 +199,7 @@ function AnimatedRoutes() {
       <Route path="/grants" element={<ProtectedRoute><SR msg="Grant generator failed to load"><GrantDashboard /></SR></ProtectedRoute>} />
       <Route path="/resume-builder" element={<ProtectedRoute><SR msg="Resume builder failed to load"><ResumeBuilder /></SR></ProtectedRoute>} />
       <Route path="/ai-tools" element={<ProtectedRoute><SR msg="AI Tools failed to load"><AITools /></SR></ProtectedRoute>} />
+      <Route path="/docudex" element={<ProtectedRoute><SR msg="DocuDex failed to load"><DocuDex /></SR></ProtectedRoute>} />
       <Route path="/track/:token" element={<SR msg="Session tracker failed to load"><SessionTracker /></SR>} />
       <Route path="/reschedule/:confirmationNumber" element={<SR msg="Reschedule failed to load"><RescheduleAppointment /></SR>} />
       <Route path="/account-settings" element={<ProtectedRoute><SR msg="Account settings failed to load"><AccountSettings /></SR></ProtectedRoute>} />
@@ -229,6 +232,7 @@ function AnimatedRoutes() {
         <Route path="task-queue" element={<ProtectedRoute adminOnly><SR msg="Task queue failed to load"><AdminTaskQueue /></SR></ProtectedRoute>} />
         <Route path="crm" element={<ProtectedRoute adminOnly><SR msg="CRM failed to load"><AdminCRM /></SR></ProtectedRoute>} />
         <Route path="build-tracker" element={<ProtectedRoute adminOnly><SR msg="Build tracker failed to load"><AdminBuildTracker /></SR></ProtectedRoute>} />
+        <Route path="docudex-pro" element={<SR msg="DocuDex Pro failed to load"><AdminDocuDexPro /></SR>} />
         <Route path="settings" element={<ProtectedRoute adminOnly><SR msg="Settings failed to load"><AdminSettings /></SR></ProtectedRoute>} />
         <Route path="integrations" element={<ProtectedRoute adminOnly><SR msg="Integration testing failed to load"><AdminIntegrationTest /></SR></ProtectedRoute>} />
         <Route path="client-emails" element={<ProtectedRoute adminOnly><SR msg="Client emails failed to load"><AdminClientEmails /></SR></ProtectedRoute>} />
