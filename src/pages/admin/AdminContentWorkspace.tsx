@@ -418,10 +418,10 @@ export default function AdminContentWorkspace() {
               </div>
               <div className="space-y-2">
                 <Label>Link to Service</Label>
-                <Select value={form.service_id} onValueChange={v => setForm(p => ({ ...p, service_id: v }))}>
+                <Select value={form.service_id || "none"} onValueChange={v => setForm(p => ({ ...p, service_id: v === "none" ? "" : v }))}>
                   <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">None</SelectItem>
+                    <SelectItem value="none">None</SelectItem>
                     {services.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
                   </SelectContent>
                 </Select>
