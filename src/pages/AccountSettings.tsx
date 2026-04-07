@@ -80,13 +80,14 @@ export default function AccountSettings() {
       setCurrentPassword(""); setNewPassword(""); setConfirmPassword("");
       // Revoke all other sessions on password change (Rec #6)
       await supabase.auth.signOut({ scope: "others" }).catch(() => {});
-      // Log to audit
-      await supabase.from("audit_log").insert({
-        action: "password_changed",
-        entity_type: "user",
-        user_id: user?.id,
-        details: { timestamp: new Date().toISOString() },
-      } as any).catch(() => {});
+      try {
+        await supabase.from("audit_log").insert({
+          action: "password_changed",
+          entity_type: "user",
+          user_id: user?.id,
+          details: { timestamp: new Date().toISOString() },
+        } as any);
+      } catch { /* non-critical */ }
     }
     setChangingPassword(false);
   };
