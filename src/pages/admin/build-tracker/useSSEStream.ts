@@ -41,7 +41,17 @@ export function useSSEStream() {
     let fullContent = "";
 
     try {
-      const headers = await getEdgeFunctionHeaders();
+      let headers: Record<string, string>;
+      try {
+        headers = await getEdgeFunctionHeaders();
+      } catch {
+        // Fallback if session fetch fails (e.g. preview environment)
+        headers = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        };
+      }
       const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/build-analyst`, {
         method: "POST",
         headers,
@@ -96,9 +106,8 @@ export function useSSEStream() {
               options?.onChunk?.(chunk, fullContent);
             }
           } catch {
-            // Incomplete JSON chunk — prepend back and wait for more data
-            textBuffer = line + "\n" + textBuffer;
-            break;
+            // Malformed JSON — skip this line rather than looping forever
+            continue;
           }
         }
       }
