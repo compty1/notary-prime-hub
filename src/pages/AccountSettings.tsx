@@ -12,7 +12,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from "@/hooks/use-toast";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { Shield, Trash2, Download, Key, Eye, EyeOff, Bell, Smartphone, Contrast } from "lucide-react";
+import { Shield, Trash2, Download, Key, Eye, EyeOff, Bell, Contrast } from "lucide-react";
 import { getHighContrast, setHighContrast } from "@/lib/a11yUtils";
 import SubscriptionManager from "@/components/SubscriptionManager";
 import MFASetup from "@/components/MFASetup";
