@@ -1031,21 +1031,38 @@ export function DocuDexEditor({
                   )}
                 </div>
 
-                {/* Editor Canvas (DM-001: dark mode aware) */}
+                {/* Editor Canvas (DM-001: dark mode aware, OC-006: watermark, PM-005: header/footer) */}
                 <div style={{ transform: `scale(${zoom / 100})`, transformOrigin: "top center" }}>
                   <div
                     className={cn(
-                      "docudex-canvas shadow-lg rounded border border-border/50",
+                      "docudex-canvas shadow-lg rounded border border-border/50 relative",
                       "outline-none focus-within:shadow-xl transition-shadow ring-2 ring-primary/30"
                     )}
                     style={{
                       width: currentPageSize.width,
                       minHeight: currentPageSize.height,
                       backgroundColor: pageBgColor,
+                      color: pageBgColor === "#1E293B" || pageBgColor === "#111827" ? "#e2e8f0" : undefined,
                       padding: `${pageMargins.top}px ${pageMargins.right}px ${pageMargins.bottom}px ${pageMargins.left}px`,
                     }}
                   >
+                    {/* Watermark overlay (OC-006) */}
+                    {watermark !== "none" && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10" style={{ opacity: 0.06 }}>
+                        <span className="text-7xl font-bold transform -rotate-45 select-none" style={{ color: pageBgColor === "#1E293B" || pageBgColor === "#111827" ? "#fff" : "#000" }}>
+                          {watermark.toUpperCase()}
+                        </span>
+                      </div>
+                    )}
+                    {/* Header (PM-005) */}
+                    {headerHtml && (
+                      <div className="text-[10px] text-muted-foreground mb-2 border-b border-border/30 pb-1" dangerouslySetInnerHTML={{ __html: sanitizeHtml(headerHtml.replace("{{page}}", String(activePageIdx + 1)).replace("{{total}}", String(pages.length))) }} />
+                    )}
                     <EditorContent editor={editor} />
+                    {/* Footer (PM-005) */}
+                    {footerHtml && (
+                      <div className="text-[10px] text-muted-foreground mt-2 border-t border-border/30 pt-1" dangerouslySetInnerHTML={{ __html: sanitizeHtml(footerHtml.replace("{{page}}", String(activePageIdx + 1)).replace("{{total}}", String(pages.length))) }} />
+                    )}
                   </div>
 
                   {/* Page break indicator (PM-006) */}
