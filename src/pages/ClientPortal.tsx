@@ -462,6 +462,42 @@ export default function ClientPortal() {
                   </div>
                 </div>
 
+                {/* Session Prep Checklist — for upcoming RON appointments */}
+                {appointments.some((a: any) => a.notarization_type === "ron" && ["scheduled", "confirmed"].includes(a.status)) && (() => {
+                  const ronAppt = appointments.find((a: any) => a.notarization_type === "ron" && ["scheduled", "confirmed"].includes(a.status));
+                  const hasDocuments = documents.length > 0;
+                  return (
+                    <Card className="rounded-2xl border-primary/20 bg-primary/5">
+                      <CardContent className="p-5">
+                        <h4 className="font-bold text-sm text-foreground flex items-center gap-2 mb-3">
+                          <Shield className="h-4 w-4 text-primary" /> Session Prep Checklist
+                        </h4>
+                        <p className="text-xs text-muted-foreground mb-3">
+                          Your RON session is{" "}
+                          {ronAppt ? new Date(ronAppt.scheduled_date + "T" + ronAppt.scheduled_time).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "soon"}.
+                        </p>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 text-xs">
+                            {hasDocuments ? <CheckCircle className="h-3.5 w-3.5 text-primary" /> : <AlertCircle className="h-3.5 w-3.5 text-muted-foreground" />}
+                            <span className={hasDocuments ? "text-foreground" : "text-muted-foreground"}>Documents uploaded</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs">
+                            <CheckCircle className="h-3.5 w-3.5 text-primary" />
+                            <span className="text-foreground">Government photo ID ready</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs">
+                            <CheckCircle className="h-3.5 w-3.5 text-primary" />
+                            <span className="text-foreground">Camera & microphone access</span>
+                          </div>
+                        </div>
+                        <Link to={`/ron-session?id=${ronAppt?.id}`}>
+                          <Button size="sm" className="w-full mt-3 text-xs">Go to Session</Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  );
+                })()}
+
                 {/* Need Help Card */}
                 <Card className="rounded-2xl bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800/30">
                   <CardContent className="p-5">

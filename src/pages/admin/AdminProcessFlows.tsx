@@ -88,14 +88,42 @@ export default function AdminProcessFlows() {
     if (!editingTemplate) return;
     setSaving(true);
     if (editingTemplate.scope === "global") {
+      // Template sync confirmation: offer to propagate to per-service templates
+      const matchingServices = services.filter(svc => {
+        if (!svc.email_templates) return false;
+        const templates = typeof svc.email_templates === "object" ? svc.email_templates : {};
+        return Object.keys(templates).some(k => k === editingTemplate.key.replace("email_template_", ""));
+      });
+
+      let propagate = false;
+      if (matchingServices.length > 0) {
+        propagate = window.confirm(
+          `${matchingServices.length} service(s) use a matching template key. Apply this update to all of them?`
+        );
+      }
+
       const { error } = await supabase.from("platform_settings").upsert({
         setting_key: editingTemplate.key,
         setting_value: editingTemplate.value,
       }, { onConflict: "setting_key" });
-      if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-      else {
+
+      if (error) {
+        toast({ title: "Error", description: error.message, variant: "destructive" });
+      } else {
         setGlobalTemplates(prev => ({ ...prev, [editingTemplate.key]: editingTemplate.value }));
-        toast({ title: "Template saved" });
+
+        // Propagate to matching per-service templates if confirmed
+        if (propagate) {
+          const templateKey = editingTemplate.key.replace("email_template_", "");
+          for (const svc of matchingServices) {
+            const templates = typeof svc.email_templates === "object" ? { ...svc.email_templates } : {};
+            templates[templateKey] = editingTemplate.value;
+            await supabase.from("services").update({ email_templates: templates }).eq("id", svc.id);
+          }
+          toast({ title: "Template saved & propagated", description: `Updated ${matchingServices.length} service template(s).` });
+        } else {
+          toast({ title: "Template saved" });
+        }
       }
     }
     setSaving(false);
