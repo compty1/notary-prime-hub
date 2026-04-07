@@ -1120,10 +1120,18 @@ export default function DocumentTemplates() {
 
       <div className="container mx-auto max-w-6xl px-4 py-8">
         <Breadcrumbs />
-        <div className="mb-8 text-center">
-          <h1 className="font-sans text-3xl font-bold text-foreground mb-2">Document Templates Library</h1>
-          <p className="text-muted-foreground mb-4">Ready-to-use templates for common notarized documents</p>
+        <div className="mb-6 text-center">
+          <h1 className="font-sans text-3xl font-bold text-foreground mb-2">Document Studio</h1>
+          <p className="text-muted-foreground mb-4">Create from scratch or use ready-made templates</p>
         </div>
+
+        <Tabs value={mainTab} onValueChange={setMainTab} className="mb-6">
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+            <TabsTrigger value="templates" className="gap-1.5"><FileText className="h-4 w-4" /> Template Library</TabsTrigger>
+            <TabsTrigger value="studio" className="gap-1.5"><PenTool className="h-4 w-4" /> Create New</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="templates" className="mt-6">
 
         {/* Legal Disclaimer */}
         <div className="mb-8 space-y-3">
