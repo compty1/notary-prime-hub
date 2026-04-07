@@ -1,7 +1,12 @@
-import { corsHeaders } from "@supabase/supabase-js/cors";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+};
 
 Deno.serve(async (req: Request) => {
+  const start = Date.now();
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
@@ -10,14 +15,21 @@ Deno.serve(async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { documentId, newStatus, clientId, fileName } = await req.json();
-
-    if (!documentId || !newStatus || !clientId) {
-      return new Response(JSON.stringify({ error: "documentId, newStatus, and clientId are required" }), {
+    const { z } = await import("https://esm.sh/zod@3.23.8");
+    const BodySchema = z.object({
+      documentId: z.string().uuid(),
+      newStatus: z.string().max(50),
+      clientId: z.string().uuid(),
+      fileName: z.string().max(500).optional(),
+    });
+    const parsed = BodySchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: "Invalid input", details: parsed.error.flatten().fieldErrors }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    const { documentId, newStatus, clientId, fileName } = parsed.data;
 
     // Get client email
     const { data: profile } = await supabase
@@ -55,7 +67,7 @@ Deno.serve(async (req: Request) => {
           <p>${message}</p>
           <p><strong>Document:</strong> ${fileName || "N/A"}</p>
           <p><strong>New Status:</strong> ${newStatus.replace(/_/g, " ")}</p>
-          <p><a href="${Deno.env.get("SUPABASE_URL")?.replace(".supabase.co", ".lovable.app")}/portal?tab=documents">View in Portal →</a></p>
+          <p><a href="https://notary-prime-hub.lovable.app/portal?tab=documents">View in Portal →</a></p>
           <p>— NotarDex Team</p>
         `,
       },
@@ -72,11 +84,13 @@ Deno.serve(async (req: Request) => {
       to_address: profile.email,
     });
 
+    console.log(`send-document-notification completed in ${Date.now() - start}ms`);
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error(`send-document-notification error (${Date.now() - start}ms):`, (error as Error).message);
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

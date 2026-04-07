@@ -33,14 +33,42 @@
 ### Batch 8: Geographic Enforcement (Gap 196) ✅
 - Already implemented — BookAppointment.tsx validates service area with haversineDistance
 
-## Files Modified
-- `src/components/ClientFeedbackForm.tsx` — NPS score field
-- `src/pages/portal/PortalAppointmentsTab.tsx` — Feedback form on completed appointments
-- `src/pages/portal/PortalDocumentsTab.tsx` — Bulk upload + template access
-- `src/pages/booking/BookingScheduleStep.tsx` — Duration estimates + waitlist UI
-- `src/pages/BookAppointment.tsx` — Waitlist join handler
-- `src/components/InvoiceGenerator.tsx` — appointmentId prop
-- `src/components/ReferralPortal.tsx` — Analytics dashboard
-- `supabase/functions/send-document-notification/index.ts` — NEW
-- `supabase/functions/send-followup-sequence/index.ts` — NEW
-- `supabase/functions/send-welcome-sequence/index.ts` — NEW
+---
+
+# Plan: API & Edge Functions Hardening (Gaps 131–155) — COMPLETED
+
+## Summary of Changes
+
+### CORS Fix (Gaps 131-related) ✅
+- Fixed broken `@supabase/supabase-js/cors` imports in `send-document-notification`, `send-followup-sequence`, and `send-welcome-sequence`
+- Replaced with manual corsHeaders per project convention
+
+### Input Validation (Gaps 148, 151, 155) ✅
+- `send-document-notification`: Added Zod schema validation for all inputs
+- `send-followup-sequence`: Added Zod UUID validation for appointmentId/clientId
+- `send-welcome-sequence`: Added Zod email/UUID validation
+- `admin-create-user` (Gap 151): Added Zod schema with disposable email domain blocking
+- `process-refund`: Added Zod validation with enum for refund reasons
+
+### Idempotency (Gap 149) ✅
+- `process-refund`: Added idempotency_key support — checks audit_log for duplicate refund attempts before processing
+
+### Retry Logic (Gap 134) ✅
+- `send-appointment-emails`: Added exponential backoff retry (up to 2 retries) for failed email sends, skipping retries on 4xx client errors
+
+### Access Control (Gap 153) ✅
+- `build-analyst`: Restricted to admin-only access using `has_role` RPC check (was previously accessible to any authenticated user or anon key)
+
+### Execution Logging (Gap 147) ✅
+- Added timing logs (`Date.now()` start/end) to `send-document-notification`, `send-followup-sequence`, `send-welcome-sequence`, and `process-refund`
+
+### Error Sanitization ✅
+- All modified edge functions now return generic "Internal server error" instead of leaking error details to clients
+
+## Already Addressed (no changes needed)
+- Gap 132 (Rate limiting): `build-analyst` already has in-memory rate limiter; AI gateway handles rate limiting for AI functions
+- Gap 133 (Token limit): `notary-assistant` already validates max 50 messages × 50k chars via Zod
+- Gap 138 (Stripe webhook): Already uses proper signature verification
+- Gap 140 (scan-id file size): Already has 10MB limit via Zod
+- Gap 146 (ai-batch-process concurrency): Already caps at 20 docs, processes sequentially
+- Gap 148 (create-payment-intent amount): Already validates positive, max $50k, 2 decimal places

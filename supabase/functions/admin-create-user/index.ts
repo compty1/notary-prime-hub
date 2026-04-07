@@ -51,15 +51,35 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body = await req.json();
-    const { email, password, full_name, phone, address, city, state, zip, commission_number, commission_expiration, eo_policy_number, eo_expiration, bond_company, bond_amount, role } = body;
-
-    if (!email || !password || !full_name) {
-      return new Response(JSON.stringify({ error: "Email, password, and full name are required" }), {
+    const { z } = await import("https://esm.sh/zod@3.23.8");
+    const BodySchema = z.object({
+      email: z.string().email().max(255).refine(
+        (e) => !e.match(/@(mailinator|guerrillamail|tempmail|throwaway|yopmail|sharklasers|grr\.la)\./i),
+        { message: "Disposable email addresses are not allowed" }
+      ),
+      password: z.string().min(8).max(128),
+      full_name: z.string().min(1).max(200),
+      phone: z.string().max(20).optional(),
+      address: z.string().max(500).optional(),
+      city: z.string().max(100).optional(),
+      state: z.string().max(2).optional(),
+      zip: z.string().max(10).optional(),
+      commission_number: z.string().max(50).optional(),
+      commission_expiration: z.string().max(20).optional(),
+      eo_policy_number: z.string().max(50).optional(),
+      eo_expiration: z.string().max(20).optional(),
+      bond_company: z.string().max(200).optional(),
+      bond_amount: z.string().max(20).optional(),
+      role: z.enum(["admin", "notary", "client"]).optional().default("notary"),
+    });
+    const parsed = BodySchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: "Invalid input", details: parsed.error.flatten().fieldErrors }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    const { email, password, full_name, phone, address, city, state, zip, commission_number, commission_expiration, eo_policy_number, eo_expiration, bond_company, bond_amount, role } = parsed.data;
 
     const { data: newUser, error: createError } = await serviceClient.auth.admin.createUser({
       email,

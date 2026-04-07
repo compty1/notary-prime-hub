@@ -1,7 +1,12 @@
-import { corsHeaders } from "@supabase/supabase-js/cors";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+};
 
 Deno.serve(async (req: Request) => {
+  const start = Date.now();
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
@@ -10,17 +15,23 @@ Deno.serve(async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { userId, email, fullName } = await req.json();
-
-    if (!userId || !email) {
-      return new Response(JSON.stringify({ error: "userId and email required" }), {
+    const { z } = await import("https://esm.sh/zod@3.23.8");
+    const BodySchema = z.object({
+      userId: z.string().uuid(),
+      email: z.string().email().max(255),
+      fullName: z.string().max(200).optional(),
+    });
+    const parsed = BodySchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: "Invalid input", details: parsed.error.flatten().fieldErrors }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    const { userId, email, fullName } = parsed.data;
 
     const name = fullName || "there";
-    const portalUrl = Deno.env.get("SUPABASE_URL")?.replace(".supabase.co", ".lovable.app");
+    const portalUrl = "https://notary-prime-hub.lovable.app";
 
     // Email 1: Welcome (immediate)
     await supabase.rpc("enqueue_email", {
@@ -89,11 +100,13 @@ Deno.serve(async (req: Request) => {
       },
     });
 
+    console.log(`send-welcome-sequence completed in ${Date.now() - start}ms`);
     return new Response(JSON.stringify({ success: true, emails_queued: 3 }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error(`send-welcome-sequence error (${Date.now() - start}ms):`, (error as Error).message);
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

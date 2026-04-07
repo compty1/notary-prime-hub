@@ -6,6 +6,7 @@ const corsHeaders = {
 };
 
 Deno.serve(async (req) => {
+  const start = Date.now();
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
@@ -25,12 +26,41 @@ Deno.serve(async (req) => {
     const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
     if (!roles?.some(r => r.role === "admin")) return new Response(JSON.stringify({ error: "Admin access required" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
-    const { payment_id, reason } = await req.json();
-    if (!payment_id) return new Response(JSON.stringify({ error: "payment_id required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    // Validate input with Zod
+    const { z } = await import("https://esm.sh/zod@3.23.8");
+    const BodySchema = z.object({
+      payment_id: z.string().uuid(),
+      reason: z.enum(["duplicate", "fraudulent", "requested_by_customer"]).optional().default("requested_by_customer"),
+      idempotency_key: z.string().max(100).optional(),
+    });
+    const parsed = BodySchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: "Invalid input", details: parsed.error.flatten().fieldErrors }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const { payment_id, reason, idempotency_key } = parsed.data;
+
+    // Idempotency check — prevent duplicate refunds (Gap 149)
+    if (idempotency_key) {
+      const { data: existingLog } = await supabase
+        .from("audit_log")
+        .select("id")
+        .eq("action", "payment_refunded")
+        .eq("entity_id", payment_id)
+        .contains("details", { idempotency_key })
+        .limit(1);
+      if (existingLog && existingLog.length > 0) {
+        return new Response(JSON.stringify({ success: true, message: "Refund already processed (idempotent)" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
 
     // Get payment record
     const { data: payment, error: payErr } = await supabase.from("payments").select("*").eq("id", payment_id).single();
     if (payErr || !payment) return new Response(JSON.stringify({ error: "Payment not found" }), { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    if (payment.status === "refunded") return new Response(JSON.stringify({ success: true, message: "Already refunded" }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     if (payment.status !== "paid") return new Response(JSON.stringify({ error: "Only paid payments can be refunded" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
     // If Stripe payment, attempt Stripe refund
@@ -39,7 +69,7 @@ Deno.serve(async (req) => {
       const refundRes = await fetch("https://api.stripe.com/v1/refunds", {
         method: "POST",
         headers: { "Authorization": `Bearer ${stripeKey}`, "Content-Type": "application/x-www-form-urlencoded" },
-        body: `payment_intent=${payment.stripe_payment_intent_id}&reason=${reason === "duplicate" ? "duplicate" : reason === "fraudulent" ? "fraudulent" : "requested_by_customer"}`,
+        body: `payment_intent=${payment.stripe_payment_intent_id}&reason=${reason}`,
       });
       const refundData = await refundRes.json();
       if (!refundRes.ok) return new Response(JSON.stringify({ error: "Stripe refund failed", details: refundData }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -49,20 +79,21 @@ Deno.serve(async (req) => {
     // Update payment status
     await supabase.from("payments").update({
       status: "refunded",
-      notes: `${payment.notes || ""}\nRefunded: ${reason || "Admin-initiated"}${stripeRefundId ? ` (Stripe: ${stripeRefundId})` : " (Manual)"}`.trim(),
+      notes: `${payment.notes || ""}\nRefunded: ${reason}${stripeRefundId ? ` (Stripe: ${stripeRefundId})` : " (Manual)"}`.trim(),
     }).eq("id", payment_id);
 
-    // Audit log
+    // Audit log with idempotency key
     await supabase.rpc("log_audit_event", {
       _action: "payment_refunded",
       _entity_type: "payments",
       _entity_id: payment_id,
-      _details: { amount: payment.amount, reason, stripe_refund_id: stripeRefundId },
+      _details: { amount: payment.amount, reason, stripe_refund_id: stripeRefundId, idempotency_key: idempotency_key || null },
     });
 
+    console.log(`process-refund completed in ${Date.now() - start}ms | payment=${payment_id}`);
     return new Response(JSON.stringify({ success: true, stripe_refund_id: stripeRefundId }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
-    console.error("process-refund error:", e.message);
+    console.error(`process-refund error (${Date.now() - start}ms):`, (e as Error).message);
     return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 });
