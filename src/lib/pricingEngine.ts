@@ -86,6 +86,10 @@ export function calculatePrice(input: PricingInput, settings: PricingSettings): 
   if (totalActs >= 20) volumeRate = settings.base_fee_per_signature * 0.8;
   else if (totalActs >= 10) volumeRate = settings.base_fee_per_signature * 0.9;
 
+  // Ohio fee cap enforcement (ORC §147.08) — $5 max per notarial act for standard notarization
+  const OHIO_MAX_FEE_PER_ACT = 5;
+  volumeRate = Math.min(volumeRate, OHIO_MAX_FEE_PER_ACT);
+
   // Each signer × each document = one notarial act (Ohio ORC §147.04)
   const notarizationFees = volumeRate * totalActs;
 
