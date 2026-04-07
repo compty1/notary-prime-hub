@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { Phone, Mail, ShieldCheck, Lock } from "lucide-react";
+import { BRAND } from "@/lib/brand";
 
 interface FooterProps {
   phone?: string;
   email?: string;
 }
 
-export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com" }: FooterProps) {
+export function Footer({ phone = BRAND.defaultPhone, email = BRAND.defaultEmail }: FooterProps) {
   return (
     <footer className="border-t border-sidebar-border bg-[hsl(222_47%_4%)] text-slate-400">
       <div className="container mx-auto px-4 py-12">
