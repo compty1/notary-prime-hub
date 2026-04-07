@@ -186,7 +186,7 @@ export default function BookAppointment() {
       if (data) { const s: Record<string, string> = {}; data.forEach((r: any) => { s[r.setting_key] = r.setting_value; }); setPricingSettings(s); }
     });
     const NON_BOOKABLE = ["admin_support","content_creation","research","customer_service","technical_support","ux_testing"];
-    supabase.from("services").select("name, short_description, category, duration_minutes, is_popular, supports_ron").eq("is_active", true).order("display_order").limit(100).then(({ data }) => {
+    supabase.from("services").select("name, short_description, category, duration_minutes, is_popular").eq("is_active", true).order("display_order").limit(100).then(({ data }) => {
       if (data && data.length > 0) {
         const bookable = data.filter((s: any) => !NON_BOOKABLE.includes(s.category));
         // Sort popular services to top (ID 5)
