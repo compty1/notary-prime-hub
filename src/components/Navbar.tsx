@@ -30,6 +30,7 @@ const solutionLinks = [
 ];
 
 const toolLinks = [
+  { to: "/docudex", label: "DocuDex Editor" },
   { to: "/ai-tools", label: "AI Tools Hub" },
   { to: "/ai-writer", label: "AI Writer" },
   { to: "/grants", label: "Grant Generator" },
