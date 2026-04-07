@@ -14,7 +14,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Clock, Plus, LogOut, Shield, FileText, CheckCircle, User, Pencil, Save, Loader2, Upload, FolderOpen, QrCode, ArrowRight, MessageSquare, Send, Sparkles, Eye, DollarSign, Star, ShoppingBag, Mail, Package, CreditCard, Bell, XCircle, Home } from "lucide-react";
+import { Calendar, Clock, Plus, LogOut, Shield, FileText, CheckCircle, User, Pencil, Save, Loader2, Upload, FolderOpen, QrCode, ArrowRight, MessageSquare, Send, Sparkles, Eye, DollarSign, Star, ShoppingBag, Mail, Package, CreditCard, Bell, XCircle, Home, Search, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { QRCodeSVG } from "qrcode.react";
@@ -275,26 +275,43 @@ export default function ClientPortal() {
 
   return (
     <div className="min-h-screen bg-muted/30">
-      <nav className="border-b border-border/50 bg-background/80 backdrop-blur-lg">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-2"><Logo size="md" /><span className="font-sans text-lg font-bold text-foreground">Client Portal</span></Link>
-          <div className="flex items-center gap-3">
-            {isAdmin && <Link to="/admin"><Button variant="outline" size="sm">Admin Dashboard</Button></Link>}
-            <Button variant="ghost" size="sm" onClick={() => setLogoutDialogOpen(true)}><LogOut className="mr-1 h-4 w-4" /> Sign Out</Button>
+      <nav className="h-16 border-b border-border/50 bg-background/95 backdrop-blur-lg flex items-center justify-between px-8 shrink-0">
+        <Link to="/" className="flex items-center gap-2"><Logo size="md" /><span className="font-sans text-lg font-bold text-foreground">Client Portal</span></Link>
+        <div className="flex items-center gap-4">
+          <div className="hidden md:flex items-center bg-muted rounded-full px-3 py-1.5 w-80">
+            <Search className="h-4 w-4 text-muted-foreground mr-2" />
+            <input type="text" placeholder="Search appointments or documents..." className="bg-transparent border-none outline-none text-sm w-full text-foreground placeholder:text-muted-foreground" />
           </div>
+          <button className="p-2 text-muted-foreground hover:bg-muted rounded-full relative" aria-label="Notifications">
+            <Bell className="h-5 w-5" />
+            {(payments.filter(p => p.status === "pending").length + unreadCount) > 0 && (
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full border-2 border-background" />
+            )}
+          </button>
+          <div className="flex items-center gap-3 pl-4 border-l border-border">
+            <div className="text-right hidden sm:block">
+              <p className="text-sm font-semibold text-foreground">{profile?.full_name || "User"}</p>
+              <p className="text-xs text-muted-foreground">Client Portal</p>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20 text-sm">
+              {(profile?.full_name || "U").split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase()}
+            </div>
+          </div>
+          {isAdmin && <Link to="/admin"><Button variant="outline" size="sm">Admin</Button></Link>}
+          <Button variant="ghost" size="sm" onClick={() => setLogoutDialogOpen(true)}><LogOut className="mr-1 h-4 w-4" /> Sign Out</Button>
         </div>
       </nav>
 
-      <div className="container mx-auto max-w-5xl px-4 py-8">
+      <div className="container mx-auto max-w-6xl px-4 py-8">
         <Breadcrumbs />
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 flex items-start justify-between mt-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 mt-4">
           <div>
-            <h1 className="font-sans text-3xl font-bold text-foreground">Welcome{profile?.full_name ? `, ${profile.full_name}` : ""}</h1>
-            <p className="text-muted-foreground">Manage your documents, appointments, and notarization status</p>
+            <h1 className="font-sans text-2xl font-bold text-foreground">Welcome back{profile?.full_name ? `, ${profile.full_name}` : ""}! 👋</h1>
+            <p className="text-muted-foreground text-sm">Manage your documents, appointments, and notarization status.</p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={() => setQrDialogOpen(true)}><QrCode className="mr-1 h-3 w-3" /> Mobile Upload</Button>
-            <Button variant="outline" size="sm" onClick={() => setEditProfileOpen(true)}><Pencil className="mr-1 h-3 w-3" /> Edit Profile</Button>
+            <Link to="/book"><Button size="sm"><Plus className="mr-1 h-4 w-4" /> Book Appointment</Button></Link>
           </div>
         </motion.div>
 
@@ -325,88 +342,149 @@ export default function ClientPortal() {
 
           {/* DASHBOARD OVERVIEW TAB — Item 171 */}
           <TabsContent value="overview" className="space-y-6">
-            <PortalOnboardingChecklist profile={profile} documents={documents} appointments={appointments} onEditProfile={() => setEditProfileOpen(true)} />
-            <PortalQuickActions />
-            <ClientProgressTracker appointments={appointments} documents={documents} />
-            {upcoming.length > 0 && <DocumentReadinessScore serviceType={upcoming[0].service_type} uploadedDocuments={documents.map((d: any) => ({ file_name: d.file_name, status: d.status }))} />}
+            {/* Active Session Banner */}
+            {appointments.some(a => a.status === "in_session") && (
+              <Card className="rounded-2xl border-primary/30 bg-primary/5">
+                <CardContent className="p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-xl bg-primary/20 animate-pulse"><Shield className="h-5 w-5 text-primary" /></div>
+                    <div>
+                      <p className="font-bold text-sm text-foreground">Your notarization session is active</p>
+                      <p className="text-xs text-muted-foreground">Join now to complete your notarization</p>
+                    </div>
+                  </div>
+                  <Link to={`/ron-session?id=${appointments.find(a => a.status === "in_session")?.id}`}>
+                    <Button size="sm">Join Session <ArrowRight className="ml-1 h-3 w-3" /></Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Stat Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card className="border-border/50">
-                <CardContent className="p-4 flex items-center gap-3">
-                  <div className="rounded-lg bg-primary/10 p-2"><Calendar className="h-5 w-5 text-primary" /></div>
-                  <div><p className="text-2xl font-bold">{upcoming.length}</p><p className="text-xs text-muted-foreground">Upcoming Appts</p></div>
-                </CardContent>
-              </Card>
-              <Card className="border-border/50">
-                <CardContent className="p-4 flex items-center gap-3">
-                  <div className="rounded-lg bg-accent/10 p-2"><FileText className="h-5 w-5 text-accent-foreground" /></div>
-                  <div><p className="text-2xl font-bold">{documents.length}</p><p className="text-xs text-muted-foreground">Documents</p></div>
-                </CardContent>
-              </Card>
-              <Card className="border-border/50">
-                <CardContent className="p-4 flex items-center gap-3">
-                  <div className="rounded-lg bg-primary/10 p-2"><DollarSign className="h-5 w-5 text-primary" /></div>
-                  <div><p className="text-2xl font-bold">${payments.filter(p => p.status === "paid").reduce((s, p) => s + Number(p.amount), 0).toFixed(2)}</p><p className="text-xs text-muted-foreground">Total Paid</p></div>
-                </CardContent>
-              </Card>
-              <Card className="border-border/50">
-                <CardContent className="p-4 flex items-center gap-3">
-                  <div className="rounded-lg bg-destructive/10 p-2"><Bell className="h-5 w-5 text-destructive" /></div>
-                  <div><p className="text-2xl font-bold">{payments.filter(p => p.status === "pending").length + unreadCount}</p><p className="text-xs text-muted-foreground">Action Needed</p></div>
-                </CardContent>
-              </Card>
+              <Card className="rounded-2xl border-border/50"><CardContent className="p-5 flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"><Calendar className="h-6 w-6" /></div>
+                <div><p className="text-xs text-muted-foreground uppercase tracking-wider font-bold">Upcoming Appts</p><p className="text-xl font-bold text-foreground">{upcoming.length}</p></div>
+              </CardContent></Card>
+              <Card className="rounded-2xl border-border/50"><CardContent className="p-5 flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"><FileText className="h-6 w-6" /></div>
+                <div><p className="text-xs text-muted-foreground uppercase tracking-wider font-bold">Documents</p><p className="text-xl font-bold text-foreground">{documents.length}</p></div>
+              </CardContent></Card>
+              <Card className="rounded-2xl border-border/50"><CardContent className="p-5 flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"><DollarSign className="h-6 w-6" /></div>
+                <div><p className="text-xs text-muted-foreground uppercase tracking-wider font-bold">Total Paid</p><p className="text-xl font-bold text-foreground">${payments.filter(p => p.status === "paid").reduce((s, p) => s + Number(p.amount), 0).toFixed(2)}</p></div>
+              </CardContent></Card>
+              <Card className="rounded-2xl border-border/50"><CardContent className="p-5 flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400"><Bell className="h-6 w-6" /></div>
+                <div><p className="text-xs text-muted-foreground uppercase tracking-wider font-bold">Action Needed</p><p className="text-xl font-bold text-foreground">{payments.filter(p => p.status === "pending").length + unreadCount}</p></div>
+              </CardContent></Card>
             </div>
 
-            {/* Quick actions */}
-            <div className="flex flex-wrap gap-2">
-              <Link to="/book"><Button size="sm"><Plus className="mr-1 h-4 w-4" /> Book Appointment</Button></Link>
-              <Button size="sm" variant="outline" onClick={() => setShowWizard(true)}><Sparkles className="mr-1 h-4 w-4" /> AI Document Wizard</Button>
-              <Button size="sm" variant="outline" onClick={() => setQrDialogOpen(true)}><QrCode className="mr-1 h-4 w-4" /> Mobile Upload</Button>
-            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Left Column: Onboarding + Appointments */}
+              <div className="lg:col-span-2 space-y-6">
+                <PortalOnboardingChecklist profile={profile} documents={documents} appointments={appointments} onEditProfile={() => setEditProfileOpen(true)} />
 
-            {/* Upcoming appointments preview */}
-            {upcoming.length > 0 && (
-              <div>
-                <h3 className="font-semibold text-sm mb-2">Next Appointments</h3>
-                <div className="space-y-2">
-                  {upcoming.slice(0, 3).map(a => (
-                    <Card key={a.id} className="border-border/50">
-                      <CardContent className="p-3 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Calendar className="h-4 w-4 text-muted-foreground" />
+                {/* Upcoming appointments */}
+                <Card className="rounded-2xl border-border/50">
+                  <div className="p-6 border-b border-border/50 flex justify-between items-center">
+                    <h3 className="font-bold text-sm text-foreground">Upcoming Appointments</h3>
+                    <button onClick={() => { const el = document.querySelector('[value="appointments"]') as HTMLButtonElement; el?.click(); }} className="text-primary text-sm font-semibold hover:underline">View Calendar</button>
+                  </div>
+                  <div className="divide-y divide-border/50">
+                    {upcoming.length === 0 ? (
+                      <div className="p-6 text-center text-muted-foreground text-sm">No upcoming appointments</div>
+                    ) : upcoming.slice(0, 3).map(a => (
+                      <div key={a.id} className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 hover:bg-muted/20 transition-colors">
+                        <div className="flex items-start gap-4">
+                          <div className="w-12 h-12 bg-muted rounded-xl flex items-center justify-center border border-border/50">
+                            <Calendar className="h-5 w-5 text-muted-foreground" />
+                          </div>
                           <div>
-                            <p className="text-sm font-medium">{a.service_type}</p>
-                            <p className="text-xs text-muted-foreground">{formatDate(a.scheduled_date)} at {a.scheduled_time} ET</p>
+                            <h4 className="font-bold text-sm text-foreground">{a.service_type}</h4>
+                            <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                              <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {formatDate(a.scheduled_date)}</span>
+                              <span>{a.scheduled_time} ET</span>
+                            </div>
                           </div>
                         </div>
-                        <Badge variant="outline" className="text-xs">{a.status.replace(/_/g, " ")}</Badge>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Pending payments */}
-            {payments.filter(p => p.status === "pending").length > 0 && (
-              <div>
-                <h3 className="font-semibold text-sm mb-2">Pending Payments</h3>
-                <div className="space-y-2">
-                  {payments.filter(p => p.status === "pending").slice(0, 3).map(p => (
-                    <Card key={p.id} className="border-border/50 border-l-4 border-l-destructive">
-                      <CardContent className="p-3 flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium">${Number(p.amount).toFixed(2)}</p>
-                          <p className="text-xs text-muted-foreground">{p.notes || "Payment due"}</p>
+                        <div className="flex items-center gap-3">
+                          <Badge className={`text-xs font-bold uppercase tracking-tight ${
+                            ["scheduled", "confirmed"].includes(a.status) ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300" : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
+                          }`}>{a.status.replace(/_/g, " ")}</Badge>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
                         </div>
-                        <Button size="sm" variant="default" onClick={() => { setPayingPaymentId(p.id); setShowPaymentForm(true); }}>
-                          <CreditCard className="mr-1 h-3 w-3" /> Pay Now
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+
+                {/* Pending payments */}
+                {payments.filter(p => p.status === "pending").length > 0 && (
+                  <Card className="rounded-2xl border-border/50 border-l-4 border-l-destructive">
+                    <CardContent className="p-4 space-y-3">
+                      <h3 className="font-bold text-sm text-foreground">Pending Payments</h3>
+                      {payments.filter(p => p.status === "pending").slice(0, 3).map(p => (
+                        <div key={p.id} className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-foreground">${Number(p.amount).toFixed(2)}</p>
+                            <p className="text-xs text-muted-foreground">{p.notes || "Payment due"}</p>
+                          </div>
+                          <Button size="sm" onClick={() => { setPayingPaymentId(p.id); setShowPaymentForm(true); }}>
+                            <CreditCard className="mr-1 h-3 w-3" /> Pay Now
+                          </Button>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
               </div>
-            )}
+
+              {/* Right Column: Readiness + AI Wizard + Help */}
+              <div className="space-y-6">
+                {upcoming.length > 0 && <DocumentReadinessScore serviceType={upcoming[0].service_type} uploadedDocuments={documents.map((d: any) => ({ file_name: d.file_name, status: d.status }))} />}
+
+                {/* AI Document Wizard Card */}
+                <div className="bg-gradient-to-br from-primary to-primary/70 rounded-2xl p-6 text-primary-foreground relative overflow-hidden group cursor-pointer" onClick={() => setShowWizard(true)}>
+                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+                    <Sparkles className="h-24 w-24" />
+                  </div>
+                  <div className="relative z-10">
+                    <h3 className="text-lg font-bold mb-2 flex items-center gap-2">
+                      <Sparkles className="h-5 w-5" /> AI Document Wizard
+                    </h3>
+                    <p className="text-sm opacity-80 mb-4 leading-relaxed">
+                      Have our AI review your documents for common errors before your appointment.
+                    </p>
+                    <Button variant="secondary" size="sm" className="font-bold text-primary" onClick={e => { e.stopPropagation(); setShowWizard(true); }}>
+                      Start AI Review
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Need Help Card */}
+                <Card className="rounded-2xl bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800/30">
+                  <CardContent className="p-5">
+                    <div className="flex gap-4">
+                      <div className="shrink-0 text-amber-600 dark:text-amber-400"><Eye className="h-6 w-6" /></div>
+                      <div>
+                        <h4 className="font-bold text-sm text-amber-900 dark:text-amber-200">Need Help?</h4>
+                        <p className="text-xs text-amber-800 dark:text-amber-300 mt-1 leading-relaxed">
+                          Our support team is available 24/7 to help with your technical setup or notary questions.
+                        </p>
+                        <button onClick={() => { const el = document.querySelector('[value="chat"]') as HTMLButtonElement; el?.click(); }} className="mt-3 text-amber-700 dark:text-amber-300 text-xs font-bold underline">
+                          Message Support
+                        </button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <PortalQuickActions />
+              </div>
+            </div>
+
+            <ClientProgressTracker appointments={appointments} documents={documents} />
           </TabsContent>
 
           <TabsContent value="appointments">

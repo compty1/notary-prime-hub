@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { CheckCircle2, AlertCircle, FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CheckCircle2, Clock, FileText } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface DocumentReadinessProps {
   serviceType: string;
@@ -20,7 +20,7 @@ const SERVICE_REQUIREMENTS: Record<string, string[]> = {
 
 export function DocumentReadinessScore({ serviceType, uploadedDocuments }: DocumentReadinessProps) {
   const requirements = SERVICE_REQUIREMENTS[serviceType] || SERVICE_REQUIREMENTS["General Notarization"];
-  
+
   const { score, metItems, missingItems } = useMemo(() => {
     const docNames = uploadedDocuments.map((d) => d.file_name.toLowerCase());
     const met: string[] = [];
@@ -45,65 +45,59 @@ export function DocumentReadinessScore({ serviceType, uploadedDocuments }: Docum
     requirements.forEach((req) => {
       const reqLower = req.toLowerCase();
       const keywords = docKeywords[reqLower] || [reqLower.split(" ")[0]];
-
-      // Non-document requirements (internet, webcam) are always considered met
-      if (keywords.length === 0) {
-        met.push(req);
-        return;
-      }
-
-      const hasMatch = docNames.some((name) =>
-        keywords.some((kw) => name.includes(kw))
-      );
-
-      if (hasMatch) {
-        met.push(req);
-      } else {
-        missing.push(req);
-      }
+      if (keywords.length === 0) { met.push(req); return; }
+      const hasMatch = docNames.some((name) => keywords.some((kw) => name.includes(kw)));
+      if (hasMatch) met.push(req);
+      else missing.push(req);
     });
 
-    const calculatedScore = requirements.length > 0
-      ? Math.round((met.length / requirements.length) * 100)
-      : 0;
-
+    const calculatedScore = requirements.length > 0 ? Math.round((met.length / requirements.length) * 100) : 0;
     return { score: calculatedScore, metItems: met, missingItems: missing };
   }, [requirements, uploadedDocuments]);
 
-  const color = score >= 80 ? "text-green-600" : score >= 50 ? "text-yellow-600" : "text-red-600";
+  const color = score >= 80 ? "text-emerald-600 dark:text-emerald-400" : score >= 50 ? "text-primary" : "text-destructive";
 
   return (
-    <Card>
-      <CardContent className="p-5 space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-primary" />
-            <h3 className="font-semibold text-foreground text-sm">Document Readiness</h3>
+    <Card className="rounded-2xl border-border/50">
+      <CardContent className="p-6 space-y-4">
+        <div className="flex justify-between items-start">
+          <div>
+            <h3 className="font-bold text-sm text-foreground">Document Readiness</h3>
+            <p className="text-xs text-muted-foreground">Requirements for notarization</p>
           </div>
-          <span className={`text-2xl font-bold ${color}`}>{score}%</span>
+          <div className={`text-2xl font-bold ${color}`}>{score}%</div>
         </div>
 
-        <Progress value={score} className="h-2" />
+        <div className="relative pt-1">
+          <div className="overflow-hidden h-3 text-xs flex rounded-full bg-muted">
+            <div
+              className="shadow-none flex flex-col text-center whitespace-nowrap text-primary-foreground justify-center bg-primary transition-all duration-700 rounded-full"
+              style={{ width: `${score}%` }}
+            />
+          </div>
+        </div>
 
-        <div className="space-y-2">
+        <ul className="space-y-3">
           {uploadedDocuments.length > 0 && (
-            <div className="flex items-center gap-2 text-xs text-green-600">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              <span>{uploadedDocuments.length} document(s) uploaded</span>
-            </div>
+            <li className="flex items-center gap-3">
+              <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+              <span className="text-sm text-foreground font-medium">{uploadedDocuments.length} document(s) uploaded</span>
+            </li>
           )}
           {missingItems.map((item) => (
-            <div key={item} className="flex items-center gap-2 text-xs text-muted-foreground">
-              <AlertCircle className="h-3.5 w-3.5 text-yellow-500" />
-              <span>{item}</span>
-            </div>
+            <li key={item} className="flex items-center gap-3">
+              <Clock className="h-4 w-4 text-muted-foreground/50 shrink-0" />
+              <span className="text-sm text-muted-foreground">{item}</span>
+            </li>
           ))}
-        </div>
+        </ul>
 
         {score < 100 && (
-          <Badge variant="outline" className="text-xs">
-            Upload remaining documents to improve readiness
-          </Badge>
+          <Link to="/mobile-upload">
+            <Button variant="secondary" className="w-full rounded-xl text-sm font-bold">
+              Upload Remaining Docs
+            </Button>
+          </Link>
         )}
       </CardContent>
     </Card>

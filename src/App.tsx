@@ -95,6 +95,7 @@ const AdminTaskQueue = lazyRetry(() => import("./pages/admin/AdminTaskQueue"));
 const AdminCRM = lazyRetry(() => import("./pages/admin/AdminCRM"));
 const AdminBuildTracker = lazyRetry(() => import("./pages/admin/AdminBuildTracker"));
 const AdminDocuDexPro = lazyRetry(() => import("./pages/admin/AdminDocuDexPro"));
+const AdminProcessFlows = lazyRetry(() => import("./pages/admin/AdminProcessFlows"));
 const AdminClientEmails = lazyRetry(() => import("./pages/admin/AdminClientEmails"));
 const AdminMailbox = lazyRetry(() => import("./pages/admin/AdminMailbox"));
 const Unsubscribe = lazyRetry(() => import("./pages/Unsubscribe"));
@@ -233,6 +234,7 @@ function AnimatedRoutes() {
         <Route path="crm" element={<ProtectedRoute adminOnly><SR msg="CRM failed to load"><AdminCRM /></SR></ProtectedRoute>} />
         <Route path="build-tracker" element={<ProtectedRoute adminOnly><SR msg="Build tracker failed to load"><AdminBuildTracker /></SR></ProtectedRoute>} />
         <Route path="docudex-pro" element={<SR msg="DocuDex Pro failed to load"><AdminDocuDexPro /></SR>} />
+        <Route path="process-flows" element={<ProtectedRoute adminOnly><SR msg="Process flows failed to load"><AdminProcessFlows /></SR></ProtectedRoute>} />
         <Route path="settings" element={<ProtectedRoute adminOnly><SR msg="Settings failed to load"><AdminSettings /></SR></ProtectedRoute>} />
         <Route path="integrations" element={<ProtectedRoute adminOnly><SR msg="Integration testing failed to load"><AdminIntegrationTest /></SR></ProtectedRoute>} />
         <Route path="client-emails" element={<ProtectedRoute adminOnly><SR msg="Client emails failed to load"><AdminClientEmails /></SR></ProtectedRoute>} />
