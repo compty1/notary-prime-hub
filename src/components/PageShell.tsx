@@ -1,4 +1,5 @@
 import { ReactNode, useEffect, useState, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { BackToTop } from "@/components/BackToTop";
@@ -23,6 +24,8 @@ interface PageShellProps {
 }
 
 export function PageShell({ children, hideNav = false, hideFooter = false }: PageShellProps) {
+  const { pathname } = useLocation();
+  const isInternalRoute = pathname.startsWith("/admin") || pathname.startsWith("/portal");
   const [contactInfo, setContactInfo] = useState(_cachedContact || { phone: "(614) 300-6890", email: "contact@notardex.com" });
 
   useEffect(() => {
@@ -61,7 +64,7 @@ export function PageShell({ children, hideNav = false, hideFooter = false }: Pag
       {!hideFooter && <Footer phone={contactInfo.phone} email={contactInfo.email} />}
       <BackToTop />
       <MobileFAB />
-      <AILeadChatbot />
+      {!isInternalRoute && <AILeadChatbot />}
       <CookieConsent />
       <OfflineIndicator />
     </div>

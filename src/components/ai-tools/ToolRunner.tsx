@@ -46,6 +46,7 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
+  const [isDragOver, setIsDragOver] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
   const [lastError, setLastError] = useState(false);
@@ -369,8 +370,25 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Upload Resume (PDF, DOCX, TXT)</Label>
                 <div
-                  className="relative flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/30 p-6 transition-colors hover:border-primary/50 hover:bg-muted/50 cursor-pointer"
+                  className={`relative flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-6 transition-colors cursor-pointer ${
+                    isDragOver
+                      ? "border-primary bg-primary/10"
+                      : "border-muted-foreground/25 bg-muted/30 hover:border-primary/50 hover:bg-muted/50"
+                  }`}
                   onClick={() => fileInputRef.current?.click()}
+                  onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+                  onDragLeave={() => setIsDragOver(false)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setIsDragOver(false);
+                    const file = e.dataTransfer.files?.[0];
+                    if (file && fileInputRef.current) {
+                      const dt = new DataTransfer();
+                      dt.items.add(file);
+                      fileInputRef.current.files = dt.files;
+                      fileInputRef.current.dispatchEvent(new Event("change", { bubbles: true }));
+                    }
+                  }}
                 >
                   <input
                     ref={fileInputRef}
@@ -389,12 +407,17 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
                     <>
                       <CheckCircle className="h-8 w-8 text-green-500" />
                       <span className="text-sm text-green-600 dark:text-green-400 font-medium">Resume uploaded & parsed!</span>
-                      <span className="text-xs text-muted-foreground">Click to upload a different file</span>
+                      <span className="text-xs text-muted-foreground">Click or drag to upload a different file</span>
+                    </>
+                  ) : isDragOver ? (
+                    <>
+                      <Upload className="h-8 w-8 text-primary animate-bounce" />
+                      <span className="text-sm text-primary font-medium">Drop your file here</span>
                     </>
                   ) : (
                     <>
                       <Upload className="h-8 w-8 text-muted-foreground/50" />
-                      <span className="text-sm text-muted-foreground">Click to upload your resume</span>
+                      <span className="text-sm text-muted-foreground">Click or drag to upload your resume</span>
                       <span className="text-xs text-muted-foreground">PDF, DOCX, or TXT (max 10MB)</span>
                     </>
                   )}

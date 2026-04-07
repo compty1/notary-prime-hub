@@ -60,6 +60,22 @@ const labelMap: Record<string, string> = {
   unsubscribe: "Unsubscribe",
   "business-portal": "Business Portal",
   "forgot-password": "Reset Password",
+  "docudex-pro": "DocuDex Pro",
+  "build-tracker": "Build Tracker",
+  overview: "Overview",
+  performance: "Performance",
+  webhooks: "Webhooks",
+  "task-queue": "Task Queue",
+  "process-flows": "Process Flows",
+  "content-workspace": "Content Workspace",
+  "compliance-report": "Compliance Report",
+  "automated-emails": "Automated Emails",
+  "integration-test": "Integration Test",
+  "session-tracker": "Session Tracker",
+  "ai-tools": "AI Tools",
+  mailbox: "Mailbox",
+  crm: "CRM",
+  users: "Users",
 };
 
 export function Breadcrumbs() {
