@@ -599,6 +599,7 @@ export type Database = {
           comment: string | null
           created_at: string
           id: string
+          nps_score: number | null
           rating: number
         }
         Insert: {
@@ -607,6 +608,7 @@ export type Database = {
           comment?: string | null
           created_at?: string
           id?: string
+          nps_score?: number | null
           rating: number
         }
         Update: {
@@ -615,6 +617,7 @@ export type Database = {
           comment?: string | null
           created_at?: string
           id?: string
+          nps_score?: number | null
           rating?: number
         }
         Relationships: [
