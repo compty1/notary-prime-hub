@@ -19,6 +19,7 @@ import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import FontFamily from "@tiptap/extension-font-family";
 import { FontSize } from "./docudex/FontSizeExtension";
 import DOMPurify from "dompurify";
+import mammoth from "mammoth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -37,7 +38,7 @@ import { safeGetItem, safeSetItem } from "@/lib/safeStorage";
 import {
   FileText, Save, FileDown, Printer, Loader2, MessageSquare,
   ZoomIn, ZoomOut, Send, X, Sparkles, Plus, Maximize2, Minimize2,
-  Eye, Copy, Trash2, MoveUp, MoveDown,
+  Eye, Copy, Trash2, MoveUp, MoveDown, Upload,
 } from "lucide-react";
 import { DocuDexToolbar } from "./docudex/DocuDexToolbar";
 import { DocuDexSidebar } from "./docudex/DocuDexSidebar";
@@ -205,6 +206,8 @@ export function DocuDexEditor({
           Array.from(files).forEach(file => {
             if (file.type.startsWith("image/")) {
               promptAltText(file);
+            } else if (file.name.endsWith(".docx") || file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+              importDocx(file);
             }
           });
           return true;
