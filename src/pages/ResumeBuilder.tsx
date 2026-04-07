@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
@@ -12,12 +12,13 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Plus, FileText, Sparkles, Loader2, Trash2, Edit, Search, Download, Eye, Briefcase, GraduationCap, User } from "lucide-react";
+import { Plus, FileText, Sparkles, Loader2, Trash2, Edit, Search, Download, Eye, Briefcase, GraduationCap, User, Upload, Printer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { RichTextEditor } from "@/components/RichTextEditor";
+import { validateFile, ALLOWED_DOCUMENT_MIMES } from "@/lib/fileValidation";
 
 type Resume = {
   id: string;
