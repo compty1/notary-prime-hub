@@ -127,7 +127,7 @@ Deno.serve(async (req) => {
           { role: "system", content: SYSTEM_PROMPT },
           ...messages,
         ],
-        stream: true,
+        stream: streaming,
       }),
     });
 
@@ -149,8 +149,18 @@ Deno.serve(async (req) => {
       });
     }
 
-    return new Response(response.body, {
-      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+    // Streaming mode: return SSE stream directly
+    if (streaming) {
+      return new Response(response.body, {
+        headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+      });
+    }
+
+    // Non-streaming (legacy) mode: parse and return JSON
+    const aiResult = await response.json();
+    const reply = aiResult.choices?.[0]?.message?.content || "";
+    return new Response(JSON.stringify({ reply, text: reply, response: reply }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
     console.error("notary-assistant error:", e);
