@@ -168,11 +168,3 @@ export function injectJsonLd(schema: Record<string, unknown> | null): () => void
   document.head.appendChild(script);
   return () => script.remove();
 }
-  if (!schema) return () => {};
-  const script = document.createElement("script");
-  script.type = "application/ld+json";
-  script.textContent = JSON.stringify(schema);
-  script.dataset.seo = "jsonld";
-  document.head.appendChild(script);
-  return () => script.remove();
-}
