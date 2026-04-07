@@ -20,6 +20,7 @@ import KBAVerification from "@/components/KBAVerification";
 import { lazy, Suspense } from "react";
 
 const FullCalendarView = lazy(() => import("@/components/FullCalendarView"));
+import { isValidStatusTransition } from "@/lib/ohioCompliance";
 
 const PAGE_SIZE = 20;
 const statuses = ["scheduled", "confirmed", "id_verification", "kba_pending", "in_session", "completed", "cancelled", "no_show"];
