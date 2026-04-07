@@ -363,6 +363,45 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
         <Card>
           <CardContent className="p-6 space-y-4">
             <h2 className="font-semibold text-foreground">Input Details</h2>
+
+            {/* File Upload Zone for tools that support it */}
+            {tool.supportsUpload && (
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Upload Resume (PDF, DOCX, TXT)</Label>
+                <div
+                  className="relative flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/30 p-6 transition-colors hover:border-primary/50 hover:bg-muted/50 cursor-pointer"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf,.doc,.docx,.txt"
+                    className="hidden"
+                    onChange={handleFileUpload}
+                    disabled={uploading}
+                  />
+                  {uploading ? (
+                    <>
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                      <span className="text-sm text-muted-foreground">Extracting resume content...</span>
+                    </>
+                  ) : uploadSuccess ? (
+                    <>
+                      <CheckCircle className="h-8 w-8 text-green-500" />
+                      <span className="text-sm text-green-600 dark:text-green-400 font-medium">Resume uploaded & parsed!</span>
+                      <span className="text-xs text-muted-foreground">Click to upload a different file</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-8 w-8 text-muted-foreground/50" />
+                      <span className="text-sm text-muted-foreground">Click to upload your resume</span>
+                      <span className="text-xs text-muted-foreground">PDF, DOCX, or TXT (max 10MB)</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
             {tool.fields.map((field) => (
               <div key={field.name} className="space-y-1.5">
                 <Label className="text-sm">
@@ -473,6 +512,9 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
                   }} className="h-7 px-2 text-xs" disabled={saving}>
                     {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3 mr-1" />}
                     Save
+                   </Button>
+                  <Button size="sm" variant="outline" onClick={handleOpenInDocuDex} className="h-7 px-2 text-xs gap-1" title="Open in DocuDex editor">
+                    <ExternalLink className="h-3 w-3" /> DocuDex
                   </Button>
                 </div>
               )}
