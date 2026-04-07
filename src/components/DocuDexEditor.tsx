@@ -373,10 +373,10 @@ export function DocuDexEditor({
     input.click();
   }, []);
 
-  // Save snapshot (HV-001)
-  const saveSnapshot = useCallback((label: string = "Manual save") => {
+  // Save snapshot (HV-001, HV-003: with optional name)
+  const saveSnapshot = useCallback((label: string = "Manual save", name?: string) => {
     setHistory(prev => [
-      { timestamp: new Date().toISOString(), pages: pages.map(p => ({ ...p })), label },
+      { timestamp: new Date().toISOString(), pages: pages.map(p => ({ ...p })), label, name },
       ...prev.slice(0, 49),
     ]);
   }, [pages]);
