@@ -907,10 +907,21 @@ export default function RonSession() {
       </nav>
 
       <div className="container mx-auto max-w-5xl px-4 py-8">
+        {/* Session Metadata Bar */}
+        <div className="mb-4 flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-2 text-xs flex-wrap">
+          {sessionUniqueId && <span className="font-mono text-muted-foreground">Session: <strong className="text-foreground">{sessionUniqueId}</strong></span>}
+          <span className="text-muted-foreground">•</span>
+          <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400"><Shield className="h-3 w-3" /> AES-256 Encrypted</span>
+          <span className="text-muted-foreground">•</span>
+          <span>Provider: <strong>{SIGNING_PLATFORMS.find(p => p.value === signingPlatform)?.label || signingPlatform}</strong></span>
+          <span className="text-muted-foreground">•</span>
+          <Badge variant="outline" className="text-[10px] capitalize">{sessionStatus}</Badge>
+        </div>
+
         {appointment && (
           <Card className="mb-4 border-primary/20 bg-primary/5">
             <CardContent className="flex items-center gap-4 p-3 text-sm">
-              <Badge className="bg-primary/20 text-primary-foreground">{appointment.notarization_type === "ron" ? "RON" : "In-Person"}</Badge>
+              <Badge className="bg-primary/20 text-foreground">{appointment.notarization_type === "ron" ? "RON" : "In-Person"}</Badge>
               <span>{appointment.service_type}</span>
               <span className="text-muted-foreground">•</span>
               <span className="text-muted-foreground">
@@ -1152,6 +1163,47 @@ export default function RonSession() {
 
           {/* Sidebar tools */}
           <div className="space-y-4">
+            {/* Guardian Eye — Session Security Panel */}
+            <Card className="border-border/50">
+              <CardContent className="p-4">
+                <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
+                  <Shield className="h-4 w-4 text-primary" /> Guardian Eye — Session Security
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between rounded-md border border-border p-2">
+                    <span className="text-[10px] text-muted-foreground">Session Encryption</span>
+                    <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 text-[10px]">
+                      <CheckCircle className="mr-1 h-3 w-3" /> AES-256
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between rounded-md border border-border p-2">
+                    <span className="text-[10px] text-muted-foreground">Participant Verified</span>
+                    <Badge variant="secondary" className={cn("text-[10px]", idVerified ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300" : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300")}>
+                      {idVerified ? <><CheckCircle className="mr-1 h-3 w-3" /> Verified</> : <><AlertCircle className="mr-1 h-3 w-3" /> Pending</>}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between rounded-md border border-border p-2">
+                    <span className="text-[10px] text-muted-foreground">KBA Status</span>
+                    <Badge variant="secondary" className={cn("text-[10px]", kbaCompleted ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300" : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300")}>
+                      {kbaCompleted ? <><CheckCircle className="mr-1 h-3 w-3" /> Passed</> : <><AlertCircle className="mr-1 h-3 w-3" /> Pending</>}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between rounded-md border border-border p-2">
+                    <span className="text-[10px] text-muted-foreground">Recording Consent</span>
+                    <Badge variant="secondary" className={cn("text-[10px]", recordingConsent ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300" : "bg-destructive/10 text-destructive")}>
+                      {recordingConsent ? <><CheckCircle className="mr-1 h-3 w-3" /> Granted</> : <><AlertCircle className="mr-1 h-3 w-3" /> Required</>}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between rounded-md border border-border p-2">
+                    <span className="text-[10px] text-muted-foreground">Liveness Detection</span>
+                    <Badge variant="secondary" className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 text-[10px]">
+                      <Monitor className="mr-1 h-3 w-3" /> Via {SIGNING_PLATFORMS.find(p => p.value === signingPlatform)?.label || "Platform"}
+                    </Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Notary Session Guide - Phase 2 */}
             <NotarySessionGuide
               documentType={documentName || appointment?.service_type || ""}
