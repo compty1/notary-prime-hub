@@ -416,6 +416,12 @@ button, a, [role="button"] {
   [role="dialog"] > div { max-width: calc(100vw - 2rem) !important; }
 }
 
+/* Admin sidebar scroll fix */
+[data-sidebar="sidebar"] {
+  overflow-y: auto;
+  padding-bottom: 2rem;
+}
+
 /* Active state transitions on CTA buttons */
 button:active, a[role="button"]:active {
   transform: scale(0.97);
