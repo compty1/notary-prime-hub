@@ -199,14 +199,27 @@ export default function AdminSettings() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="font-sans text-2xl font-bold text-foreground">Platform Settings</h1>
           <p className="text-sm text-muted-foreground">Configure pricing, credentials, platform integrations, and compliance reminders</p>
         </div>
-        <Button onClick={handleSave} disabled={saving} className="">
-          {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />} Save Changes
-        </Button>
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* AS-008: Environment indicator */}
+          <Badge variant="outline" className="text-xs gap-1">
+            <Server className="h-3 w-3" />
+            {import.meta.env.VITE_SUPABASE_URL?.includes("localhost") ? "Local" : import.meta.env.DEV ? "Development" : "Production"}
+          </Badge>
+          {/* AS-004: Backup/Restore */}
+          <Button variant="outline" size="sm" onClick={handleExportSettings}><Download className="mr-1 h-3 w-3" /> Export</Button>
+          <label className="cursor-pointer">
+            <input type="file" accept=".json" className="hidden" onChange={handleImportSettings} />
+            <Button variant="outline" size="sm" asChild><span><UploadCloud className="mr-1 h-3 w-3" /> Import</span></Button>
+          </label>
+          <Button onClick={handleSave} disabled={saving}>
+            {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />} Save Changes
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
