@@ -90,9 +90,8 @@ interface IntakeFieldsProps {
 
 export default function BookingIntakeFields(props: IntakeFieldsProps) {
   const { serviceType, currentCategory: cat, serviceCategories } = props;
-  if (!serviceType) return null;
-
   const { markTouched, showError } = useFieldValidation();
+  if (!serviceType) return null;
 
   const svcLower = serviceType.toLowerCase();
   if (cat === "business_services") return null;
