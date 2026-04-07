@@ -75,12 +75,12 @@ export default function ComingSoon() {
           </div>
 
           {/* Headline */}
-          <h1 className="font-heading text-4xl font-extrabold tracking-tight text-primary-foreground sm:text-5xl md:text-6xl">
+          <h1 className="font-heading text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl">
             Professional Notary.{" "}
             <span className="text-gradient-primary">Launching Soon.</span>
           </h1>
 
-          <p className="mx-auto mt-5 max-w-lg text-lg text-primary-foreground/70">
+          <p className="mx-auto mt-5 max-w-lg text-lg text-white/70">
             Ohio's modern notary & document services platform. In-person, mobile, and Remote Online Notarization — all in one place.
           </p>
 
