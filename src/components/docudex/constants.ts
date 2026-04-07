@@ -110,12 +110,14 @@ export const LINE_SPACINGS = [
   { value: "2.5", label: "2.5" },
 ] as const;
 
-export const MARGIN_PRESETS = [
+export type MarginPreset = { value: string; label: string; top: number; right: number; bottom: number; left: number };
+
+export const MARGIN_PRESETS: MarginPreset[] = [
   { value: "normal", label: "Normal", top: 48, right: 48, bottom: 48, left: 48 },
   { value: "narrow", label: "Narrow", top: 24, right: 24, bottom: 24, left: 24 },
   { value: "wide", label: "Wide", top: 48, right: 72, bottom: 48, left: 72 },
   { value: "none", label: "None", top: 12, right: 12, bottom: 12, left: 12 },
-] as const;
+];
 
 export const SPECIAL_CHARACTERS = [
   { char: "§", label: "Section" },

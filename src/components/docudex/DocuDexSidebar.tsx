@@ -20,6 +20,7 @@ import {
   TEMPLATES, TEMPLATE_CATEGORIES, BRAND_FONTS, ACCENT_COLORS,
   LANGUAGES, PAGE_SIZES, LINE_SPACINGS, MARGIN_PRESETS,
   SPECIAL_CHARACTERS, LEGAL_CLAUSES, PAGE_BACKGROUND_COLORS,
+  type MarginPreset,
 } from "./constants";
 import type { Editor } from "@tiptap/react";
 import type { HistorySnapshot } from "./types";
