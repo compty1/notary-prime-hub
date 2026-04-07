@@ -148,7 +148,7 @@ Deno.serve(async (req) => {
           message_id: `<${crypto.randomUUID()}@notar.local>`,
           folder: "sent",
           from_address: emailAddress,
-          from_name: "Notar",
+          from_name: "NotarDex",
           to_addresses: [to],
           cc_addresses: cc ? [cc] : [],
           subject,

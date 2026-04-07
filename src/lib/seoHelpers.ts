@@ -58,7 +58,7 @@ export function serviceJsonLd(name: string, description: string, price?: string)
     "@type": "Service",
     name,
     description,
-    provider: { "@type": "LocalBusiness", name: "Notar" },
+    provider: { "@type": "LocalBusiness", name: "NotarDex" },
     areaServed: { "@type": "State", name: "Ohio" },
     ...(price ? { offers: { "@type": "Offer", price, priceCurrency: "USD" } } : {}),
   };

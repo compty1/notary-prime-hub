@@ -95,7 +95,7 @@ export default function BookingScheduleStep(props: ScheduleStepProps) {
           <div className="flex items-center justify-between">
             <Label>Available Time Slots</Label>
             <span className="text-xs text-muted-foreground flex items-center gap-1">
-              <Clock className="h-3 w-3" /> All times shown in Eastern Time (ET)
+              <Clock className="h-3 w-3" /> All times Eastern (ET){(() => { try { const tz = Intl.DateTimeFormat().resolvedOptions().timeZone; return tz && !tz.includes("America/New_York") ? ` · Your timezone: ${tz}` : ""; } catch { return ""; } })()}
             </span>
           </div>
           <div className="mt-1 flex flex-wrap gap-2">

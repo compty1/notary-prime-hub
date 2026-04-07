@@ -17,7 +17,7 @@ import { getHighContrast, setHighContrast } from "@/lib/a11yUtils";
 import SubscriptionManager from "@/components/SubscriptionManager";
 
 export default function AccountSettings() {
-  usePageMeta({ title: "Account Settings", description: "Manage your Notar account — update password, notification preferences, and security settings.", noIndex: true });
+  usePageMeta({ title: "Account Settings", description: "Manage your NotarDex account — update password, notification preferences, and security settings.", noIndex: true });
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   const [currentPassword, setCurrentPassword] = useState("");
