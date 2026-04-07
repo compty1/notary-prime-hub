@@ -218,4 +218,17 @@ export const PAGE_BACKGROUND_COLORS = [
   { value: "#F5F3FF", label: "Purple Tint" },
   { value: "#FAFAF9", label: "Stone" },
   { value: "#F8FAFC", label: "Slate" },
+  { value: "#1E293B", label: "Dark Slate" },
+  { value: "#111827", label: "Dark" },
 ];
+
+export const COMPLIANCE_WATERMARKS = [
+  { value: "none", label: "None" },
+  { value: "draft", label: "DRAFT" },
+  { value: "copy", label: "COPY" },
+  { value: "original", label: "ORIGINAL" },
+  { value: "confidential", label: "CONFIDENTIAL" },
+] as const;
+
+export const DEFAULT_HEADER = "";
+export const DEFAULT_FOOTER = '<p style="text-align:center;font-size:10px;color:#999;">Page {{page}} of {{total}}</p>';

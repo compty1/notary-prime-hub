@@ -17,6 +17,7 @@ import SuperScript from "@tiptap/extension-superscript";
 import ImageExt from "@tiptap/extension-image";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import FontFamily from "@tiptap/extension-font-family";
+import DOMPurify from "dompurify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +32,7 @@ import { logAuditEvent } from "@/lib/auditLog";
 import { AIContentPreview } from "@/components/AIContentPreview";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { safeGetItem, safeSetItem } from "@/lib/safeStorage";
 import {
   FileText, Save, FileDown, Printer, Loader2, MessageSquare,
   ZoomIn, ZoomOut, Send, X, Sparkles, Plus, Maximize2, Minimize2,
@@ -40,9 +42,9 @@ import { DocuDexToolbar } from "./docudex/DocuDexToolbar";
 import { DocuDexSidebar } from "./docudex/DocuDexSidebar";
 import { DocuDexPageList } from "./docudex/DocuDexPageList";
 import { DocuDexFindReplace } from "./docudex/DocuDexFindReplace";
-import { TEMPLATES, BRAND_FONTS, LANGUAGES, PAGE_SIZES, MARGIN_PRESETS } from "./docudex/constants";
+import { TEMPLATES, BRAND_FONTS, LANGUAGES, PAGE_SIZES, MARGIN_PRESETS, COMPLIANCE_WATERMARKS, DEFAULT_FOOTER } from "./docudex/constants";
 import { uid, wordCount, charCount, readTime, readabilityScore } from "./docudex/helpers";
-import type { PageData, HistorySnapshot, DocuDexEditorProps } from "./docudex/types";
+import type { PageData, HistorySnapshot, DocuDexEditorProps, CustomTemplate } from "./docudex/types";
 
 export type { DocuDexEditorProps };
 export { type PageData };
