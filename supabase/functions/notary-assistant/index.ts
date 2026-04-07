@@ -83,18 +83,35 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { z } = await import("https://esm.sh/zod@3.23.8");
-    const BodySchema = z.object({
-      messages: z.array(z.object({
-        role: z.enum(["user", "assistant", "system"]),
-        content: z.string().min(1).max(50000),
-      })).min(1).max(50),
-    });
-    const parsed = BodySchema.safeParse(await req.json());
-    if (!parsed.success) {
-      return new Response(JSON.stringify({ error: parsed.error.flatten().fieldErrors }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    const body = await req.json();
+
+    // Support both { messages: [...] } and legacy { prompt/message: "..." } formats
+    let messages: { role: string; content: string }[];
+    let streaming = true;
+
+    if (body.messages && Array.isArray(body.messages)) {
+      const { z } = await import("https://esm.sh/zod@3.23.8");
+      const BodySchema = z.object({
+        messages: z.array(z.object({
+          role: z.enum(["user", "assistant", "system"]),
+          content: z.string().min(1).max(50000),
+        })).min(1).max(50),
+      });
+      const parsed = BodySchema.safeParse(body);
+      if (!parsed.success) {
+        return new Response(JSON.stringify({ error: parsed.error.flatten().fieldErrors }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      messages = parsed.data.messages;
+    } else if (body.prompt || body.message) {
+      const text = (body.prompt || body.message || "").toString().slice(0, 50000);
+      if (!text.trim()) {
+        return new Response(JSON.stringify({ error: "prompt or message is required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      messages = [{ role: "user", content: text }];
+      streaming = false; // Legacy callers expect JSON, not streaming
+    } else {
+      return new Response(JSON.stringify({ error: "messages, prompt, or message is required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
-    const { messages } = parsed.data;
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -110,7 +127,7 @@ Deno.serve(async (req) => {
           { role: "system", content: SYSTEM_PROMPT },
           ...messages,
         ],
-        stream: true,
+        stream: streaming,
       }),
     });
 
@@ -132,8 +149,18 @@ Deno.serve(async (req) => {
       });
     }
 
-    return new Response(response.body, {
-      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+    // Streaming mode: return SSE stream directly
+    if (streaming) {
+      return new Response(response.body, {
+        headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+      });
+    }
+
+    // Non-streaming (legacy) mode: parse and return JSON
+    const aiResult = await response.json();
+    const reply = aiResult.choices?.[0]?.message?.content || "";
+    return new Response(JSON.stringify({ reply, text: reply, response: reply }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
     console.error("notary-assistant error:", e);
