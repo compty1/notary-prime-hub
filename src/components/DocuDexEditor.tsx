@@ -574,8 +574,74 @@ export function DocuDexEditor({
     setPages(snapshot.pages.map(p => ({ ...p })));
     setActivePageIdx(0);
     if (editor) editor.commands.setContent(snapshot.pages[0]?.html || "");
-    toast({ title: "Restored", description: `Reverted to ${new Date(snapshot.timestamp).toLocaleTimeString()}` });
+    toast({ title: "Restored", description: `Reverted to ${snapshot.name || new Date(snapshot.timestamp).toLocaleTimeString()}` });
     announce("Version restored");
+  };
+
+  // Name a snapshot (HV-003)
+  const nameSnapshot = (label: string) => {
+    saveSnapshot(label, label);
+    setShowVersionNameDialog(false);
+    setVersionName("");
+    toast({ title: "Version saved", description: `"${label}" snapshot created.` });
+    announce(`Version "${label}" saved`);
+  };
+
+  // Save as custom template (TP-002)
+  const saveAsTemplate = () => {
+    const templateName = window.prompt("Template name:", title || "Custom Template");
+    if (!templateName) return;
+    const newTemplate: CustomTemplate = {
+      id: `custom-${Date.now()}`,
+      label: templateName,
+      icon: "⭐",
+      category: "personal",
+      content: pages.map(p => p.html).join("\n<!-- page-break -->\n"),
+      createdAt: new Date().toISOString(),
+    };
+    const updated = [...customTemplates, newTemplate];
+    setCustomTemplates(updated);
+    safeSetItem("docudex_custom_templates", JSON.stringify(updated));
+    toast({ title: "Template saved", description: `"${templateName}" added to your templates.` });
+    announce("Custom template saved");
+  };
+
+  // Delete custom template
+  const deleteCustomTemplate = (id: string) => {
+    const updated = customTemplates.filter(t => t.id !== id);
+    setCustomTemplates(updated);
+    safeSetItem("docudex_custom_templates", JSON.stringify(updated));
+    toast({ title: "Template deleted" });
+  };
+
+  // Load recent documents (UX-004)
+  useEffect(() => {
+    if (!user) return;
+    const loadRecent = async () => {
+      const { data } = await supabase
+        .from("documents")
+        .select("id, file_name, updated_at")
+        .eq("uploaded_by", user.id)
+        .order("updated_at", { ascending: false })
+        .limit(10);
+      if (data) {
+        setRecentDocs(data.map(d => ({ id: d.id, title: d.file_name, updatedAt: d.updated_at })));
+      }
+    };
+    loadRecent();
+  }, [user]);
+
+  // Build export HTML with headers/footers/watermark (PM-005, OC-006)
+  const buildExportHtml = (forPrint = false) => {
+    const watermarkStyle = watermark !== "none"
+      ? `position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-45deg);font-size:100px;opacity:0.08;font-weight:bold;color:#888;pointer-events:none;z-index:9999;`
+      : "";
+    const watermarkDiv = watermark !== "none" ? `<div style="${watermarkStyle}">${watermark.toUpperCase()}</div>` : "";
+    return pages.map((p, i) => {
+      const hdr = (headerHtml || "").replace("{{page}}", String(i + 1)).replace("{{total}}", String(pages.length));
+      const ftr = (footerHtml || "").replace("{{page}}", String(i + 1)).replace("{{total}}", String(pages.length));
+      return `<div style="page-break-after:${i < pages.length - 1 ? "always" : "auto"};position:relative;">${watermarkDiv}${hdr ? `<div style="margin-bottom:12px;">${hdr}</div>` : ""}${p.html}${ftr ? `<div style="margin-top:12px;">${ftr}</div>` : ""}</div>`;
+    }).join("");
   };
 
   // Save with document hash (OC-003)
