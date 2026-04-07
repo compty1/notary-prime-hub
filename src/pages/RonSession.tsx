@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Shield, Monitor, ArrowLeft, CheckCircle, AlertCircle, Mic, MicOff, BookOpen, Save, Loader2, XCircle, FileCheck, CreditCard, ExternalLink, Video, Link2, Info, Wifi, WifiOff, RefreshCw } from "lucide-react";
+import { Shield, Monitor, ArrowLeft, CheckCircle, AlertCircle, Mic, MicOff, BookOpen, Save, Loader2, XCircle, FileCheck, CreditCard, ExternalLink, Video, Link2, Info, Wifi, WifiOff, RefreshCw, Lock, ArrowRight, Fingerprint, UserCheck, Clock, Users, Zap, PenTool } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { callEdgeFunction } from "@/lib/edgeFunctionAuth";
 import { cn } from "@/lib/utils";
@@ -140,6 +140,15 @@ export default function RonSession() {
   const [sessionStatus, setSessionStatus] = useState<string>("scheduled");
   const [showWaitingRoom, setShowWaitingRoom] = useState(false);
   const [recordingUrl, setRecordingUrl] = useState("");
+
+  // Client onboarding step (0=Welcome, 1=ID Guidance, 2=Biometric, 3=Active Session)
+  const [clientOnboardingStep, setClientOnboardingStep] = useState(0);
+  const [clientJournal, setClientJournal] = useState<Array<{ id: number; msg: string }>>([]);
+  const [sessionElapsed, setSessionElapsed] = useState("00:00");
+
+  const addClientJournalEntry = (msg: string) => {
+    setClientJournal(prev => [{ id: Date.now(), msg }, ...prev].slice(0, 20));
+  };
 
   // Webhook status
   const [webhookStatus, setWebhookStatus] = useState<string | null>(null);
