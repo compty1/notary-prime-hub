@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { Search } from "lucide-react";
 import {
   CommandDialog,
   CommandEmpty,
@@ -95,7 +96,18 @@ export function CommandPalette() {
     setOpen(false);
   }, [navigate]);
 
+  const openPalette = useCallback(() => setOpen(true), []);
+
   return (
+    <>
+      {/* Mobile search trigger */}
+      <button
+        onClick={openPalette}
+        className="md:hidden fixed bottom-[7.5rem] left-4 z-40 flex h-10 w-10 items-center justify-center rounded-full bg-muted shadow-lg border border-border"
+        aria-label="Search"
+      >
+        <Search className="h-4 w-4 text-muted-foreground" />
+      </button>
     <CommandDialog open={open} onOpenChange={setOpen}>
       <CommandInput placeholder="Search pages, tools, actions..." />
       <CommandList>
@@ -153,5 +165,6 @@ export function CommandPalette() {
         )}
       </CommandList>
     </CommandDialog>
+    </>
   );
 }

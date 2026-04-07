@@ -576,8 +576,22 @@ export default function AdminAppointments() {
       )}
 
       {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" />
+        <div className="space-y-3">
+          {[1, 2, 3, 4].map(i => (
+            <Card key={i} className="border-border/50">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-4">
+                  <div className="h-10 w-10 rounded-lg bg-muted animate-pulse" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-40 rounded bg-muted animate-pulse" />
+                    <div className="h-3 w-24 rounded bg-muted animate-pulse" />
+                    <div className="h-3 w-56 rounded bg-muted animate-pulse" />
+                  </div>
+                  <div className="h-6 w-20 rounded bg-muted animate-pulse" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       ) : appointments.length === 0 ? (
         <Card className="border-border/50">
@@ -597,7 +611,7 @@ export default function AdminAppointments() {
                     <p className="text-xs text-muted-foreground">{getClientName(appt.client_id)}</p>
                     <div className="flex items-center gap-3 text-sm text-muted-foreground">
                       <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {formatDate(appt.scheduled_date)}</span>
-                      <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {formatTime(appt.scheduled_time)}</span>
+                      <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {formatTime(appt.scheduled_time)} ET</span>
                     </div>
                     {appt.location && appt.location !== "Remote" && (
                       <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
