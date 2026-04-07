@@ -199,6 +199,12 @@ export default function AdminAppointments() {
   };
 
   const updateStatus = async (id: string, newStatus: string) => {
+    // ID 150: Validate status transition to prevent skipping verification steps
+    const currentAppt = appointments.find(a => a.id === id);
+    if (currentAppt && !isValidStatusTransition(currentAppt.status, newStatus)) {
+      toast({ title: "Invalid status transition", description: `Cannot move from "${currentAppt.status.replace(/_/g, " ")}" to "${newStatus.replace(/_/g, " ")}". Follow the proper workflow sequence.`, variant: "destructive" });
+      return;
+    }
     setUpdatingId(id);
     const { error } = await supabase.from("appointments").update({ status: newStatus as any }).eq("id", id);
     if (error) {
