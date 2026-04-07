@@ -27,7 +27,7 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [rateLimitEnd, setRateLimitEnd] = useState<number | null>(null);
 
-  usePageMeta({ title: forgotMode ? "Reset Password" : "Sign In", description: "Sign in to your Notar account to access notarization services, document management, and your client portal.", noIndex: true });
+  usePageMeta({ title: forgotMode ? "Reset Password" : "Sign In", description: "Sign in to your NotarDex account to access notarization services, document management, and your client portal.", noIndex: true });
 
   useEffect(() => {
     if (!loading && user) {
