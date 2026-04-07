@@ -193,12 +193,58 @@ export default function ResumeBuilder() {
     }
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const err = validateFile(file, { allowedMimes: new Set(["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]), maxBytes: 10 * 1024 * 1024 });
+    if (err) { toast.error(err); return; }
+    setUploading(true);
+    try {
+      const text = await file.text();
+      const { data, error } = await supabase.functions.invoke("ai-extract-document", {
+        body: { document_text: text.slice(0, 50000), extractor_type: "hr" },
+      });
+      if (error) throw error;
+      const ext = data?.extraction;
+      if (ext?.results) {
+        const parts: string[] = [];
+        if (ext.results.candidate_name) parts.push(`<h1>${ext.results.candidate_name}</h1>`);
+        if (ext.results.summary) parts.push(`<p>${ext.results.summary}</p>`);
+        if (ext.results.experience?.length) {
+          parts.push("<h2>Experience</h2>");
+          ext.results.experience.forEach((exp: any) => parts.push(`<p><strong>${exp.title || exp.role}</strong> at ${exp.company} (${exp.dates})</p><p>${exp.key_achievements || exp.description || ""}</p>`));
+        }
+        if (ext.results.education?.length) {
+          parts.push("<h2>Education</h2>");
+          ext.results.education.forEach((edu: any) => parts.push(`<p><strong>${edu.degree}</strong> — ${edu.institution} (${edu.year || edu.dates})</p>`));
+        }
+        if (ext.results.skills?.length) {
+          parts.push("<h2>Skills</h2><p>" + ext.results.skills.map((s: any) => typeof s === "string" ? s : s.name || s).join(", ") + "</p>");
+        }
+        setContent(parts.join("\n"));
+        setAnalyzeText(text.slice(0, 4000));
+        toast.success("Resume parsed and loaded!");
+      } else {
+        setAnalyzeText(text.slice(0, 4000));
+        toast.info("File text extracted — paste into editor or analyze.");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to parse file");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   const analyzeResume = async () => {
     if (!analyzeText.trim()) { toast.error("Paste your resume text to analyze"); return; }
     setGenerating(true);
     try {
+      const jobContext = analyzeJobDesc.trim()
+        ? `\n\nScore this resume against the following job description:\n${analyzeJobDesc.slice(0, 2000)}`
+        : "";
       const resp = await callEdgeFunctionStream("build-analyst", {
-        messages: [{ role: "user", content: `Analyze this resume and provide a detailed score (1-100), strengths, weaknesses, and specific actionable recommendations for improvement. Format with clear headings.\n\nResume:\n${analyzeText.slice(0, 4000)}` }],
+        messages: [{ role: "user", content: `Analyze this resume and provide a detailed score (1-100), strengths, weaknesses, and specific actionable recommendations for improvement. Format with clear headings.${jobContext}\n\nResume:\n${analyzeText.slice(0, 4000)}` }],
         context: "Resume analysis mode",
       }, 120000);
       if (!resp.ok) throw new Error("Analysis failed");
@@ -222,6 +268,25 @@ export default function ResumeBuilder() {
     } finally {
       setGenerating(false);
     }
+  };
+
+  const handlePrint = () => {
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(`<html><head><title>${title || "Resume"}</title><style>body{font-family:sans-serif;padding:2rem;line-height:1.6;max-width:800px;margin:0 auto}h1,h2,h3{margin-top:1em}</style></head><body>${content}</body></html>`);
+      printWindow.document.close();
+      printWindow.print();
+    }
+  };
+
+  const handleExportDoc = () => {
+    const blob = new Blob([`<html><head><meta charset="utf-8"></head><body>${content}</body></html>`], { type: "application/vnd.ms-word;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${title || "resume"}.doc`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const filteredResumes = resumes.filter((r) => !searchQuery || r.title.toLowerCase().includes(searchQuery.toLowerCase()));
