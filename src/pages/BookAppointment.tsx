@@ -865,6 +865,26 @@ export default function BookAppointment() {
             </CardContent>
           </Card>
         </motion.div>
+
+        {/* ID 34: Confirmation dialog */}
+        <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Confirm Your Booking</AlertDialogTitle>
+              <AlertDialogDescription>
+                You are about to book a {notarizationType === "ron" ? "Remote Online Notarization" : "notarization"} appointment for {serviceType} on {date ? new Date(date + "T00:00:00").toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }) : ""} at {time}.
+                {estimatedPrice ? ` Estimated cost: $${estimatedPrice.toFixed(2)}.` : ""}
+                {" "}Are you sure you want to proceed?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Go Back</AlertDialogCancel>
+              <AlertDialogAction onClick={handleConfirmedSubmit}>
+                {submitting ? "Booking..." : "Yes, Confirm Booking"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </PageShell>
   );
