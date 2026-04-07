@@ -209,6 +209,28 @@ export function DocuDexEditor({
         return false;
       },
       handlePaste: (view, event) => {
+        // SC-001: Sanitize pasted HTML content with DOMPurify
+        const html = event.clipboardData?.getData("text/html");
+        if (html) {
+          event.preventDefault();
+          const clean = DOMPurify.sanitize(html, {
+            ALLOWED_TAGS: ["p", "br", "strong", "b", "em", "i", "u", "s", "a", "ul", "ol", "li", "h1", "h2", "h3", "h4", "h5", "h6", "table", "tr", "td", "th", "thead", "tbody", "blockquote", "hr", "img", "span", "sub", "sup", "code", "pre"],
+            ALLOWED_ATTR: ["href", "src", "alt", "style", "class", "target", "colspan", "rowspan"],
+            FORBID_TAGS: ["script", "iframe", "object", "embed", "form", "input"],
+            FORBID_ATTR: ["onerror", "onload", "onclick", "onmouseover"],
+          });
+          view.dispatch(view.state.tr.replaceSelectionWith(
+            view.state.schema.nodes.doc.content.size === 0
+              ? view.state.schema.nodeFromJSON({ type: "paragraph", content: [{ type: "text", text: "" }] })
+              : view.state.schema.nodes.doc.content.firstChild!
+          ).scrollIntoView());
+          // Use TipTap's insertContent which handles HTML properly
+          const editorInstance = (view as any).__tiptapEditor;
+          if (editorInstance) {
+            editorInstance.chain().focus().insertContent(clean).run();
+          }
+          return true;
+        }
         const items = event.clipboardData?.items;
         if (items) {
           for (const item of Array.from(items)) {
