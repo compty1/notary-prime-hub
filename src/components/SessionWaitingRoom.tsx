@@ -1,13 +1,16 @@
 /**
  * Real-time waiting room for RON session participants.
  * Shows party status and readiness before session begins.
+ * Uses Supabase Realtime on session_tracking — no simulations.
  */
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Circle, Loader2, Users, Shield, Wifi } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface Party {
   role: string;
@@ -32,25 +35,42 @@ const statusConfig: Record<string, { label: string; color: string; icon: typeof 
 };
 
 export function SessionWaitingRoom({ appointmentId, signerName, notaryName, witnessRequired, onAllReady }: SessionWaitingRoomProps) {
+  const { user, isAdmin, isNotary } = useAuth();
   const [parties, setParties] = useState<Party[]>([
     { role: "Notary", name: notaryName || "Notary Public", status: "connecting" },
     { role: "Signer", name: signerName || "Signer", status: "connecting" },
     ...(witnessRequired ? [{ role: "Witness", name: "Witness", status: "connecting" as const }] : []),
   ]);
-
   const [countdown, setCountdown] = useState<number | null>(null);
+  const [markingReady, setMarkingReady] = useState(false);
 
-  // Simulate parties becoming ready (in production, this would use realtime DB)
-  useEffect(() => {
-    const t1 = setTimeout(() => setParties(prev => prev.map(p => p.role === "Notary" ? { ...p, status: "in_lobby" } : p)), 1500);
-    const t2 = setTimeout(() => setParties(prev => prev.map(p => p.role === "Signer" ? { ...p, status: "in_lobby" } : p)), 2500);
-    const t3 = witnessRequired ? setTimeout(() => setParties(prev => prev.map(p => p.role === "Witness" ? { ...p, status: "in_lobby" } : p)), 3500) : undefined;
-    return () => { clearTimeout(t1); clearTimeout(t2); if (t3) clearTimeout(t3); };
-  }, [witnessRequired]);
+  // Determine current user's role
+  const myRole = isAdmin || isNotary ? "Notary" : "Signer";
 
-  // Subscribe to session_tracking realtime
+  // Subscribe to session_tracking realtime for party status updates
   useEffect(() => {
     if (!appointmentId) return;
+
+    // On mount, also fetch current tracking rows
+    const fetchCurrent = async () => {
+      const { data } = await supabase
+        .from("session_tracking" as any)
+        .select("*")
+        .eq("appointment_id", appointmentId);
+      if (data && Array.isArray(data)) {
+        data.forEach((row: any) => {
+          if (row?.party_role && row?.party_status) {
+            setParties(prev => prev.map(p =>
+              p.role.toLowerCase() === row.party_role.toLowerCase()
+                ? { ...p, status: row.party_status, name: row.party_name || p.name }
+                : p
+            ));
+          }
+        });
+      }
+    };
+    fetchCurrent();
+
     const channel = supabase
       .channel(`waiting-${appointmentId}`)
       .on("postgres_changes", {
@@ -72,6 +92,23 @@ export function SessionWaitingRoom({ appointmentId, signerName, notaryName, witn
     return () => { supabase.removeChannel(channel); };
   }, [appointmentId]);
 
+  // Mark the current user as "in_lobby" on mount
+  useEffect(() => {
+    if (!appointmentId || !user) return;
+    const markInLobby = async () => {
+      await supabase.from("session_tracking" as any).upsert({
+        appointment_id: appointmentId,
+        party_role: myRole.toLowerCase(),
+        party_name: myRole === "Signer" ? (signerName || "Signer") : (notaryName || "Notary Public"),
+        party_status: "in_lobby",
+        user_id: user.id,
+      } as any, { onConflict: "appointment_id,party_role" }).then(() => {}, () => {});
+      // Update local state immediately
+      setParties(prev => prev.map(p => p.role === myRole ? { ...p, status: "in_lobby" } : p));
+    };
+    markInLobby();
+  }, [appointmentId, user]);
+
   const allReady = parties.every(p => p.status === "ready" || p.status === "in_session");
 
   useEffect(() => {
@@ -87,8 +124,18 @@ export function SessionWaitingRoom({ appointmentId, signerName, notaryName, witn
     return () => clearTimeout(timer);
   }, [countdown, onAllReady]);
 
-  const markReady = (role: string) => {
+  const markReady = async (role: string) => {
+    setMarkingReady(true);
+    // Write to DB so other participants see the update via Realtime
+    await supabase.from("session_tracking" as any).upsert({
+      appointment_id: appointmentId,
+      party_role: role.toLowerCase(),
+      party_status: "ready",
+      user_id: user?.id,
+    } as any, { onConflict: "appointment_id,party_role" }).then(() => {}, () => {});
+    // Update local state immediately
     setParties(prev => prev.map(p => p.role === role ? { ...p, status: "ready" } : p));
+    setMarkingReady(false);
   };
 
   return (
@@ -108,28 +155,40 @@ export function SessionWaitingRoom({ appointmentId, signerName, notaryName, witn
           {parties.map((party) => {
             const cfg = statusConfig[party.status];
             const StatusIcon = cfg.icon;
+            const isMe = party.role === myRole;
             return (
               <div
                 key={party.role}
-                className="flex items-center justify-between p-4 rounded-xl border border-border/50 bg-background"
+                className={cn(
+                  "flex items-center justify-between p-4 rounded-xl border border-border/50 bg-background",
+                  isMe && "ring-1 ring-primary/20"
+                )}
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-sm font-bold text-muted-foreground">
                     {party.name.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-foreground">{party.name}</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {party.name} {isMe && <span className="text-xs text-muted-foreground">(You)</span>}
+                    </p>
                     <p className="text-xs text-muted-foreground">{party.role}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge className={cfg.color}>
-                    <StatusIcon className={`h-3 w-3 mr-1 ${party.status === "connecting" ? "animate-spin" : ""}`} />
+                    <StatusIcon className={cn("h-3 w-3 mr-1", party.status === "connecting" && "animate-spin")} />
                     {cfg.label}
                   </Badge>
-                  {party.status === "in_lobby" && (
-                    <Button size="sm" variant="outline" className="text-xs h-7" onClick={() => markReady(party.role)}>
-                      Mark Ready
+                  {party.status === "in_lobby" && isMe && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-xs h-7"
+                      disabled={markingReady}
+                      onClick={() => markReady(party.role)}
+                    >
+                      {markingReady ? "..." : "Mark Ready"}
                     </Button>
                   )}
                 </div>
@@ -139,7 +198,7 @@ export function SessionWaitingRoom({ appointmentId, signerName, notaryName, witn
         </div>
 
         <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50">
-          <Wifi className="h-4 w-4 text-emerald-500" />
+          <Wifi className="h-4 w-4 text-primary" />
           <Shield className="h-4 w-4 text-primary" />
           <span className="text-xs text-muted-foreground">End-to-end encrypted • AES-256 • Ohio RON Compliant</span>
         </div>

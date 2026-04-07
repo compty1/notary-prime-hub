@@ -173,8 +173,22 @@ export default function VirtualMailroom() {
                       <span className="text-[10px] text-muted-foreground">{new Date(item.received_date).toLocaleDateString()}</span>
                     </div>
                     <p className="text-sm text-foreground truncate">{item.subject}</p>
-                    <div className="flex items-center gap-2 mt-2">
+                    <div className="flex items-center gap-2 mt-2 flex-wrap">
                       <Badge className={`text-[10px] ${statusColors[item.status] || "bg-muted"}`}>{item.status}</Badge>
+                      {/* Urgency badge based on subject keywords */}
+                      {/urgent|asap|immediate|rush/i.test(item.subject || "") && (
+                        <Badge className="text-[10px] bg-destructive/10 text-destructive">High</Badge>
+                      )}
+                      {/follow.?up|reminder|pending/i.test(item.subject || "") && !(/urgent|asap/i.test(item.subject || "")) && (
+                        <Badge className="text-[10px] bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">Medium</Badge>
+                      )}
+                      {/* Type badge based on sender/subject */}
+                      {/law|legal|attorney|court|subpoena/i.test((item.sender || "") + " " + (item.subject || "")) && (
+                        <Badge className="text-[10px] bg-primary/10 text-primary">Legal</Badge>
+                      )}
+                      {/invoice|payment|bill|receipt/i.test((item.sender || "") + " " + (item.subject || "")) && (
+                        <Badge className="text-[10px] bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">Invoice</Badge>
+                      )}
                     </div>
                   </button>
                 ))}

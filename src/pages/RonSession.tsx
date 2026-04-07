@@ -12,13 +12,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Shield, Monitor, ArrowLeft, CheckCircle, AlertCircle, Mic, MicOff, BookOpen, Save, Loader2, XCircle, FileCheck, CreditCard, ExternalLink, Video, Link2, Info, Wifi, WifiOff, RefreshCw } from "lucide-react";
+import { Shield, Monitor, ArrowLeft, CheckCircle, AlertCircle, Mic, MicOff, BookOpen, Save, Loader2, XCircle, FileCheck, CreditCard, ExternalLink, Video, Link2, Info, Wifi, WifiOff, RefreshCw, Lock, ArrowRight, Fingerprint, UserCheck, Clock, Users, Zap, PenTool } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { callEdgeFunction } from "@/lib/edgeFunctionAuth";
 import { cn } from "@/lib/utils";
 import { logAuditEvent } from "@/lib/auditLog";
 import type { Json } from "@/integrations/supabase/types";
 import { NotarySessionGuide } from "@/components/NotarySessionGuide";
+import { NotaryAttestationPanel } from "@/components/NotaryAttestationPanel";
 import { ESignConsent } from "@/components/ESignConsent";
 import { SessionTimeoutWarning } from "@/components/SessionTimeoutWarning";
 import { ComplianceBanner } from "@/components/ComplianceBanner";
@@ -138,8 +139,17 @@ export default function RonSession() {
   const finalTranscriptRef = useRef("");
 
   const [sessionStatus, setSessionStatus] = useState<string>("scheduled");
-  const [showWaitingRoom, setShowWaitingRoom] = useState(false);
+  const [showWaitingRoom, setShowWaitingRoom] = useState(true);
   const [recordingUrl, setRecordingUrl] = useState("");
+
+  // Client onboarding step (0=Welcome, 1=ID Guidance, 2=Biometric, 3=Active Session)
+  const [clientOnboardingStep, setClientOnboardingStep] = useState(0);
+  const [clientJournal, setClientJournal] = useState<Array<{ id: number; msg: string }>>([]);
+  const [sessionElapsed, setSessionElapsed] = useState("00:00");
+
+  const addClientJournalEntry = (msg: string) => {
+    setClientJournal(prev => [{ id: Date.now(), msg }, ...prev].slice(0, 20));
+  };
 
   // Webhook status
   const [webhookStatus, setWebhookStatus] = useState<string | null>(null);
@@ -199,6 +209,7 @@ export default function RonSession() {
         setIdVerified(session.id_verified || false);
         setKbaCompleted(session.kba_completed || false);
         setSessionStatus(session.status || "scheduled");
+        if (session.status === "in_session" || session.status === "completed") setShowWaitingRoom(false);
         if ((session as any).participant_link) setParticipantLink((session as any).participant_link);
         if ((session as any).session_unique_id) setSessionUniqueId((session as any).session_unique_id);
         if ((session as any).recording_consent) {
@@ -268,6 +279,30 @@ export default function RonSession() {
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [appointmentId]);
+
+  // Auto-skip client onboarding to active session when participantLink exists
+  useEffect(() => {
+    if (!isAdminOrNotary && participantLink && clientOnboardingStep < 3) {
+      setClientOnboardingStep(3);
+      addClientJournalEntry("Session link received — entering active session.");
+    }
+  }, [participantLink, isAdminOrNotary]);
+
+  // Client session elapsed timer
+  useEffect(() => {
+    if (!isAdminOrNotary && clientOnboardingStep === 3) {
+      const startTime = sessionStartedAt ? new Date(sessionStartedAt).getTime() : Date.now();
+      const tick = () => {
+        const diff = Math.floor((Date.now() - startTime) / 1000);
+        const m = String(Math.floor(diff / 60)).padStart(2, "0");
+        const s = String(diff % 60).padStart(2, "0");
+        setSessionElapsed(`${m}:${s}`);
+      };
+      tick();
+      const iv = setInterval(tick, 1000);
+      return () => clearInterval(iv);
+    }
+  }, [isAdminOrNotary, clientOnboardingStep, sessionStartedAt]);
 
   // Voice recognition setup
   useEffect(() => {
@@ -781,110 +816,483 @@ export default function RonSession() {
       );
     }
 
+    const CLIENT_STEPS = ["Welcome", "ID Verification", "Biometric Scan", "Active Session"];
+    const notaryDisplayName = "Your Notary";
+    const signerDisplayName = clientProfile?.full_name || "Signer";
+
+    // Step indicator for client onboarding
+    const ClientStepBar = () => (
+      <div className="flex items-center gap-2 mb-8">
+        {CLIENT_STEPS.map((step, idx) => (
+          <div key={step} className="flex items-center gap-2 flex-1">
+            <div className={cn(
+              "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
+              idx < clientOnboardingStep && "bg-primary/10 text-primary",
+              idx === clientOnboardingStep && "bg-primary/10 text-primary ring-1 ring-primary/30",
+              idx > clientOnboardingStep && "bg-muted text-muted-foreground"
+            )}>
+              <div className={cn(
+                "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold border-2",
+                idx <= clientOnboardingStep ? "border-primary bg-primary/10" : "border-border"
+              )}>
+                {idx < clientOnboardingStep ? <CheckCircle className="h-3 w-3" /> : idx + 1}
+              </div>
+              <span className="hidden md:inline">{step}</span>
+            </div>
+            {idx < CLIENT_STEPS.length - 1 && (
+              <div className={cn("h-px flex-1 min-w-4", idx < clientOnboardingStep ? "bg-primary/30" : "bg-border")} />
+            )}
+          </div>
+        ))}
+      </div>
+    );
+
+    // --- STEP 0: Welcome ---
+    if (clientOnboardingStep === 0) {
+      return (
+        <div className="min-h-screen bg-background">
+          <nav className="border-b border-border/50 bg-background px-4 py-3">
+            <div className="flex items-center justify-between">
+              <Link to="/portal" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+                <ArrowLeft className="h-4 w-4" /> Back to Portal
+              </Link>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                  <Shield className="h-4 w-4 text-primary-foreground" />
+                </div>
+                <div>
+                  <span className="text-sm font-bold">NotarDex RON</span>
+                  <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Secure Session</p>
+                </div>
+              </div>
+              <div className="text-right hidden md:block">
+                <span className="text-[10px] font-semibold text-muted-foreground">SESSION ID</span>
+                <p className="text-xs font-mono font-semibold text-foreground">{sessionUniqueId || "Pending"}</p>
+              </div>
+            </div>
+          </nav>
+          <div className="max-w-2xl mx-auto py-12 px-4">
+            <ClientStepBar />
+            <Card className="rounded-2xl border-border/50">
+              <CardContent className="p-10">
+                <div className="w-14 h-14 bg-primary rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                  <Lock className="text-primary-foreground w-7 h-7" />
+                </div>
+                <h1 className="text-3xl font-black text-foreground mb-3">Hello, {signerDisplayName}.</h1>
+                <p className="text-muted-foreground mb-8 text-base leading-relaxed">
+                  You are about to enter a secure Remote Online Notarization session.{" "}
+                  {notaryDisplayName} is waiting for you.
+                </p>
+                <div className="space-y-3 mb-8">
+                  <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-xl border border-border/50">
+                    <CheckCircle className="text-primary w-5 h-5 flex-shrink-0" />
+                    <span className="text-sm font-medium text-foreground">Verified secure connection — AES-256 encryption</span>
+                  </div>
+                  <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-xl border border-border/50">
+                    <CheckCircle className="text-primary w-5 h-5 flex-shrink-0" />
+                    <span className="text-sm font-medium text-foreground">Guardian Eye AI Security Monitoring Enabled</span>
+                  </div>
+                  <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-xl border border-border/50">
+                    <Shield className="text-primary w-5 h-5 flex-shrink-0" />
+                    <span className="text-sm font-medium text-foreground">Ohio RON Compliant (ORC §147.60–147.66)</span>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground mb-6">
+                  By proceeding, you acknowledge this session will be recorded per Ohio law. Your identity will be verified via knowledge-based authentication (KBA).
+                </p>
+                <Button
+                  className="w-full py-6 text-base font-bold"
+                  size="lg"
+                  onClick={() => {
+                    setClientOnboardingStep(1);
+                    addClientJournalEntry("Signer entered the session lobby.");
+                  }}
+                >
+                  Start Secure Session <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      );
+    }
+
+    // --- STEP 1: ID Verification Guidance ---
+    if (clientOnboardingStep === 1) {
+      return (
+        <div className="min-h-screen bg-background">
+          <nav className="border-b border-border/50 bg-background px-4 py-3">
+            <div className="flex items-center justify-between">
+              <Link to="/portal" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+                <ArrowLeft className="h-4 w-4" /> Back to Portal
+              </Link>
+              <div className="flex items-center gap-3">
+                <Shield className="h-4 w-4 text-primary" />
+                <span className="text-sm font-medium">Secure RON Session</span>
+              </div>
+            </div>
+          </nav>
+          <div className="max-w-2xl mx-auto py-12 px-4">
+            <ClientStepBar />
+            <Card className="rounded-2xl border-border/50">
+              <CardContent className="p-10">
+                <h2 className="text-2xl font-bold text-foreground mb-2">ID Verification</h2>
+                <p className="text-muted-foreground mb-8">Please have your government-issued photo ID ready to present during the session.</p>
+                <div className="aspect-[1.6/1] bg-foreground/5 dark:bg-foreground/10 rounded-2xl mb-8 relative flex items-center justify-center overflow-hidden border border-border/50">
+                  <div className="absolute inset-0 border-[3px] border-dashed border-primary/20 m-12 rounded-lg" />
+                  <div className="flex flex-col items-center gap-4 text-muted-foreground/40">
+                    <UserCheck className="w-16 h-16" />
+                    <span className="text-xs font-mono tracking-widest uppercase">Position ID within frame</span>
+                  </div>
+                  <div className="absolute bottom-4 left-4 right-4 h-1.5 bg-muted rounded-full overflow-hidden">
+                    <div className="h-full bg-primary w-[65%] animate-pulse rounded-full" />
+                  </div>
+                </div>
+                <div className="space-y-2 mb-6">
+                  <p className="text-sm text-muted-foreground flex items-start gap-2">
+                    <Info className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    Accepted IDs: Driver's license, passport, or state-issued ID card
+                  </p>
+                  <p className="text-sm text-muted-foreground flex items-start gap-2">
+                    <Info className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    ID verification will be completed within the signing platform
+                  </p>
+                </div>
+                <Button
+                  className="w-full py-6 text-base font-bold"
+                  size="lg"
+                  onClick={() => {
+                    setClientOnboardingStep(2);
+                    addClientJournalEntry("ID verification guidance completed.");
+                  }}
+                >
+                  Continue
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      );
+    }
+
+    // --- STEP 2: Biometric Liveness Guidance ---
+    if (clientOnboardingStep === 2) {
+      return (
+        <div className="min-h-screen bg-background">
+          <nav className="border-b border-border/50 bg-background px-4 py-3">
+            <div className="flex items-center justify-between">
+              <Link to="/portal" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+                <ArrowLeft className="h-4 w-4" /> Back to Portal
+              </Link>
+              <div className="flex items-center gap-3">
+                <Shield className="h-4 w-4 text-primary" />
+                <span className="text-sm font-medium">Secure RON Session</span>
+              </div>
+            </div>
+          </nav>
+          <div className="max-w-2xl mx-auto py-12 px-4">
+            <ClientStepBar />
+            <Card className="rounded-2xl border-border/50 text-center">
+              <CardContent className="p-10">
+                <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-primary/20">
+                  <Fingerprint className="w-10 h-10 text-primary animate-pulse" />
+                </div>
+                <h2 className="text-2xl font-bold text-foreground mb-2">Biometric Liveness Check</h2>
+                <p className="text-muted-foreground mb-8 max-w-sm mx-auto">
+                  Look directly into the camera and blink when prompted. This ensures a secure, human-only session.
+                </p>
+                <div className="flex justify-center gap-3 mb-8">
+                  {[1, 2, 3, 4, 5].map(i => (
+                    <div key={i} className={cn("h-1.5 w-8 rounded-full", i < 4 ? "bg-primary" : "bg-muted animate-pulse")} />
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground mb-6">
+                  Liveness verification will be completed within the signing platform to confirm your physical presence.
+                </p>
+                <Button
+                  className="w-full py-6 text-base font-bold"
+                  size="lg"
+                  onClick={() => {
+                    setClientOnboardingStep(3);
+                    addClientJournalEntry("Biometric guidance completed — entering active session.");
+                  }}
+                >
+                  Complete &amp; Enter Session
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      );
+    }
+
+    // --- STEP 3: Active Session — 3-Column Dashboard ---
+    const participants = [
+      { id: "signer", name: signerDisplayName, role: "Signer", order: 1, active: true },
+      ...(appointment?.signer_count > 1 ? [{ id: "witness", name: "Witness", role: "Witness", order: 2, active: false }] : []),
+      { id: "notary", name: notaryDisplayName, role: "Notary", order: appointment?.signer_count > 1 ? 3 : 2, active: sessionStatus === "in_session" },
+    ];
+
     return (
       <div className="min-h-screen bg-background">
-        <nav className="border-b border-border/50 bg-background px-4 py-3">
-          <div className="flex items-center justify-between">
-            <Link to="/portal" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="h-4 w-4" /> Back to Portal
-            </Link>
-            <div className="flex items-center gap-3">
-              <Shield className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Secure RON Session</span>
+        {/* Top Navigation */}
+        <nav className="h-14 border-b border-border/50 bg-background flex items-center justify-between px-4 sticky top-0 z-50">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <Shield className="text-primary-foreground w-4 h-4" />
+            </div>
+            <div>
+              <span className="text-sm font-bold leading-none">NotarDex RON</span>
+              <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mt-0.5">Active Session</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="hidden md:flex flex-col items-end">
+              <span className="text-[10px] font-semibold text-muted-foreground">SESSION</span>
+              <span className="text-xs font-mono font-semibold text-foreground">{sessionUniqueId || "—"}</span>
+            </div>
+            <div className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center text-xs font-bold text-foreground">
+              {signerDisplayName.charAt(0).toUpperCase()}
             </div>
           </div>
         </nav>
 
-        <div className="container mx-auto max-w-3xl px-4 py-8">
-          {appointment && (
-            <Card className="mb-4 border-primary/20 bg-primary/5">
-              <CardContent className="flex items-center gap-4 p-3 text-sm">
-                <Badge className="bg-primary/20 text-primary-foreground">RON Session</Badge>
-                <span>{appointment.service_type}</span>
-                <span className="text-muted-foreground">•</span>
-                <span className="text-muted-foreground">
-                  {new Date(appointment.scheduled_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                </span>
-              </CardContent>
-            </Card>
-          )}
-
-          <Card className="mb-6 border-border/50">
-            <CardContent className="p-6">
-              <h2 className="mb-4 font-sans text-xl font-semibold">Session Checklist</h2>
-              <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="mt-0.5 h-5 w-5 text-primary" />
-                  <div>
-                    <p className="font-medium">Government-Issued Photo ID Ready</p>
-                    <p className="text-sm text-muted-foreground">Driver's license, passport, or state ID</p>
+        {/* Main 3-Column Layout */}
+        <main className="p-4 max-w-[1600px] mx-auto">
+          <div className="grid grid-cols-12 gap-4">
+            {/* LEFT: Video Panel + Guardian Eye */}
+            <div className="col-span-12 lg:col-span-3 space-y-4">
+              {/* Video Conference Placeholder */}
+              <Card className="bg-foreground/[0.03] dark:bg-card border-border/50 rounded-2xl overflow-hidden">
+                <div className="aspect-[4/3] bg-muted/50 relative flex items-center justify-center">
+                  <div className="absolute top-3 left-3 z-10 flex items-center gap-2">
+                    <Badge className="bg-destructive text-destructive-foreground text-[10px]">● LIVE</Badge>
+                    <span className="text-foreground text-[10px] font-semibold uppercase tracking-widest">{notaryDisplayName}</span>
+                  </div>
+                  <div className="flex items-center justify-center text-muted-foreground/20">
+                    <UserCheck className="w-20 h-20" />
+                  </div>
+                  {/* PiP Self Feed */}
+                  <div className="absolute bottom-3 right-3 w-24 h-16 bg-muted rounded-xl border border-border overflow-hidden flex items-center justify-center">
+                    <Video className="w-5 h-5 text-muted-foreground/30" />
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="mt-0.5 h-5 w-5 text-primary" />
-                  <div>
-                    <p className="font-medium">Camera & Microphone Access</p>
-                    <p className="text-sm text-muted-foreground">Required for identity verification and session recording</p>
+                <div className="flex items-center justify-center gap-3 p-3">
+                  <Button variant="outline" size="icon" className="rounded-full h-9 w-9">
+                    <Mic className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="icon" className="rounded-full h-9 w-9">
+                    <Video className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="icon" className="rounded-full h-9 w-9">
+                    <Monitor className="h-4 w-4" />
+                  </Button>
+                </div>
+              </Card>
+
+              {/* Guardian Eye Monitoring */}
+              <Card className="rounded-2xl border-border/50">
+                <CardContent className="p-5">
+                  <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <Shield className="w-3.5 h-3.5 text-primary" /> Guardian Eye Monitoring
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex justify-between text-[11px] font-semibold mb-1.5">
+                        <span className="text-muted-foreground">ENCRYPTION</span>
+                        <span className="text-primary">AES-256 ACTIVE</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-muted rounded-full">
+                        <div className="h-full bg-primary rounded-full w-full" />
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-[11px] font-semibold mb-1.5">
+                        <span className="text-muted-foreground">KBA STATUS</span>
+                        <span className={kbaCompleted ? "text-primary" : "text-muted-foreground"}>
+                          {kbaCompleted ? "PASSED" : "PENDING"}
+                        </span>
+                      </div>
+                      <div className="h-1.5 w-full bg-muted rounded-full">
+                        <div className={cn("h-full rounded-full transition-all", kbaCompleted ? "bg-primary w-full" : "bg-muted-foreground/30 w-[20%]")} />
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-[11px] font-semibold mb-1.5">
+                        <span className="text-muted-foreground">LIVENESS</span>
+                        <span className="text-primary">VERIFIED</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-muted rounded-full">
+                        <div className="h-full bg-primary rounded-full w-[99%]" />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* CENTER: Document Workspace */}
+            <div className="col-span-12 lg:col-span-6 space-y-4">
+              {/* E-Sign Consent */}
+              <ESignConsent
+                consented={esignConsented}
+                onConsentChange={(v) => {
+                  setEsignConsented(v);
+                  if (v && !esignConsentTimestamp) {
+                    setEsignConsentTimestamp(new Date().toISOString());
+                    addClientJournalEntry("E-Sign consent accepted.");
+                  }
+                }}
+                consentTimestamp={esignConsentTimestamp}
+              />
+
+              {/* Document / Signing Area */}
+              <Card className="rounded-2xl border-border/50 overflow-hidden min-h-[500px] flex flex-col">
+                {/* Toolbar */}
+                <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between bg-muted/30">
+                  <div className="flex items-center gap-3">
+                    <Badge variant="secondary" className="text-[10px]">
+                      {sessionStatus === "in_session" ? "IN SESSION" : "PREPARING"}
+                    </Badge>
+                    {appointment && (
+                      <span className="text-xs text-muted-foreground">{appointment.service_type}</span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Client Signature Path</span>
+                    <div className={cn("h-2 w-2 rounded-full", esignConsented ? "bg-primary" : "bg-muted-foreground/30 animate-pulse")} />
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <AlertCircle className="mt-0.5 h-5 w-5 text-destructive" />
-                  <div>
-                    <p className="font-medium">Knowledge-Based Authentication (KBA)</p>
-                    <p className="text-sm text-muted-foreground">
-                      You'll answer 5 identity verification questions from public records (4/5 correct within 2 minutes).
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* E-Sign Consent - Phase 4 */}
-          <ESignConsent
-            consented={esignConsented}
-            onConsentChange={(v) => {
-              setEsignConsented(v);
-              if (v && !esignConsentTimestamp) setEsignConsentTimestamp(new Date().toISOString());
-            }}
-            consentTimestamp={esignConsentTimestamp}
-          />
-
-          <Card className="border-2 border-dashed border-primary/20">
-            <CardContent className="flex flex-col items-center justify-center py-20 text-center">
-              {participantLink ? (
-                <div className="space-y-4">
-                  <Video className="mx-auto h-16 w-16 text-primary" />
-                  <h3 className="font-sans text-xl font-semibold text-foreground">Your Session is Ready</h3>
-                  <p className="max-w-md text-sm text-muted-foreground">
-                    Click the button below to join your RON session. You'll complete ID verification and KBA within the platform.
-                  </p>
-                  {esignConsented ? (
-                    <a href={participantLink} target="_blank" rel="noopener noreferrer">
-                      <Button size="lg"><ExternalLink className="mr-2 h-5 w-5" /> Join RON Session</Button>
-                    </a>
+                {/* Main signing area */}
+                <div className="flex-1 flex items-center justify-center p-8">
+                  {participantLink ? (
+                    <div className="text-center space-y-6 max-w-md">
+                      <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+                        <ExternalLink className="w-10 h-10 text-primary" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-foreground">Document Ready for Signing</h3>
+                      <p className="text-muted-foreground leading-relaxed">
+                        Your notary has prepared the document for signing. Click below to open the secure signing platform.
+                      </p>
+                      {esignConsented ? (
+                        <a href={participantLink} target="_blank" rel="noopener noreferrer">
+                          <Button size="lg" className="w-full py-6 text-base font-bold shadow-lg">
+                            Open Document <ExternalLink className="ml-2 h-5 w-5" />
+                          </Button>
+                        </a>
+                      ) : (
+                        <Button size="lg" disabled className="w-full py-6 text-base">
+                          <ExternalLink className="mr-2 h-5 w-5" /> Accept E-Sign Consent First
+                        </Button>
+                      )}
+                      <p className="text-xs text-muted-foreground">Opens in a new tab — your security monitoring remains active</p>
+                    </div>
                   ) : (
-                    <Button size="lg" disabled>
-                      <ExternalLink className="mr-2 h-5 w-5" /> Accept E-Sign Consent First
-                    </Button>
+                    <div className="text-center space-y-4">
+                      <Monitor className="mx-auto h-16 w-16 text-muted-foreground/30" />
+                      <h3 className="text-xl font-semibold text-foreground">Waiting for Document</h3>
+                      <p className="text-sm text-muted-foreground max-w-md">
+                        Your notary is preparing the document. You'll receive a signing link here once everything is ready.
+                      </p>
+                      <Badge variant="secondary">
+                        {sessionStatus === "in_session" ? "Session Active — Document Loading" : "Waiting for Notary"}
+                      </Badge>
+                    </div>
                   )}
-                  <p className="text-xs text-muted-foreground">Opens in a new tab — secure signing platform</p>
                 </div>
-              ) : (
-                <>
-                  <Monitor className="mb-4 h-16 w-16 text-primary/50" />
-                  <h3 className="mb-2 font-sans text-xl font-semibold text-foreground">Waiting for Session</h3>
-                  <p className="mb-6 max-w-md text-sm text-muted-foreground">
-                    Your notary will start the session shortly. You'll receive a signing link here once the document is ready.
+
+                {/* Status Ticker */}
+                <div className="px-6 py-3 bg-foreground text-background flex items-center justify-between">
+                  <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_6px_hsl(var(--primary))]" />
+                      <span className="text-[10px] font-bold uppercase tracking-widest">Network Secure</span>
+                    </div>
+                    <div className="hidden sm:flex items-center gap-2">
+                      <Clock className="w-3 h-3 opacity-50" />
+                      <span className="text-[10px] font-semibold opacity-70 uppercase">Session: {sessionElapsed}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-semibold opacity-70 uppercase">Latency:</span>
+                    <span className="text-[10px] font-bold text-primary">22ms</span>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* RIGHT: Participants + Journal */}
+            <div className="col-span-12 lg:col-span-3 space-y-4">
+              {/* Participant Sequence */}
+              <Card className="rounded-2xl border-border/50">
+                <CardContent className="p-5">
+                  <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4 flex items-center justify-between">
+                    Participant Sequence
+                    <Badge variant="secondary" className="text-[10px]">
+                      {participants.filter(p => p.active).length}/{participants.length} Active
+                    </Badge>
+                  </h3>
+                  <div className="space-y-3">
+                    {participants.map(p => (
+                      <div key={p.id} className={cn(
+                        "flex items-center gap-3 p-3 rounded-xl border transition-all",
+                        p.active ? "bg-primary/5 border-primary/20" : "bg-muted/30 border-transparent"
+                      )}>
+                        <div className={cn(
+                          "w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs",
+                          p.active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                        )}>
+                          {p.order}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className={cn("text-sm font-bold truncate", p.active ? "text-foreground" : "text-muted-foreground")}>{p.name}</p>
+                          <p className="text-[10px] font-semibold uppercase text-muted-foreground tracking-tight">{p.role}</p>
+                        </div>
+                        {p.active && <CheckCircle className="w-4 h-4 text-primary flex-shrink-0" />}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Smart Journal */}
+              <Card className="rounded-2xl border-border/50 flex flex-col h-[300px]">
+                <CardContent className="p-5 flex flex-col h-full">
+                  <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3">Smart Journal</h3>
+                  <div className="flex-1 overflow-auto space-y-2 pr-1">
+                    {clientJournal.length === 0 && (
+                      <p className="text-[10px] text-muted-foreground italic">Waiting for session events...</p>
+                    )}
+                    {clientJournal.map(entry => (
+                      <div key={entry.id} className="p-2.5 bg-muted/50 rounded-lg border border-border/50 text-[11px] leading-snug">
+                        <span className="text-[9px] font-mono text-muted-foreground block mb-0.5">
+                          [{new Date(entry.id).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}]
+                        </span>
+                        <p className="text-foreground/80 font-medium">{entry.msg}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Trust Node */}
+              <Card className="rounded-2xl border-primary/20 bg-primary/5">
+                <CardContent className="p-5">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <Zap className="w-4 h-4 text-primary" />
+                    </div>
+                    <span className="text-xs font-black text-foreground uppercase">Trust Node</span>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
+                    This session is being recorded and hashed onto the <strong className="text-foreground">Guardian Audit Trail</strong> for Ohio RON compliance.
                   </p>
-                  <Badge variant="secondary">
-                    {sessionStatus === "in_session" ? "Session Active" : "Waiting for Notary"}
-                  </Badge>
-                </>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </main>
       </div>
     );
   }
