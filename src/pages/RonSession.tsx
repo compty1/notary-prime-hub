@@ -209,6 +209,7 @@ export default function RonSession() {
         setIdVerified(session.id_verified || false);
         setKbaCompleted(session.kba_completed || false);
         setSessionStatus(session.status || "scheduled");
+        if (session.status === "in_session" || session.status === "completed") setShowWaitingRoom(false);
         if ((session as any).participant_link) setParticipantLink((session as any).participant_link);
         if ((session as any).session_unique_id) setSessionUniqueId((session as any).session_unique_id);
         if ((session as any).recording_consent) {
