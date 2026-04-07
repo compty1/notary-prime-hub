@@ -131,7 +131,7 @@ export default function Security() {
                 <Lock className="mr-1 h-3 w-3" /> Enterprise Security
               </Badge>
               <h1 className="text-4xl font-bold mb-4">Platform Security</h1>
-              <p className="text-lg text-slate-300 max-w-xl">
+              <p className="text-lg text-muted-foreground max-w-xl">
                 NotarDex employs enterprise-grade security measures to protect your documents,
                 identity information, and notarial records at every layer.
               </p>

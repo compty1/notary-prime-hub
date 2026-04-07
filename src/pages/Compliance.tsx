@@ -101,7 +101,7 @@ export default function Compliance() {
                 <ShieldCheck className="mr-1 h-3 w-3" /> Ohio Compliant
               </Badge>
               <h1 className="text-4xl font-bold mb-4">Compliance & Legal Standards</h1>
-              <p className="text-lg text-slate-300 max-w-xl">
+              <p className="text-lg text-muted-foreground max-w-xl">
                 NotarDex is fully compliant with Ohio Revised Code §147.60–147.66 and maintains
                 the highest standards of identity verification, data security, and notarial recordkeeping.
               </p>

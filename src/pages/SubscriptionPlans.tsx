@@ -114,7 +114,7 @@ export default function SubscriptionPlans() {
         <section className="bg-sidebar-background py-16">
           <div className="container mx-auto px-4 text-center">
             <h1 className="mb-4 font-sans text-4xl font-bold text-white">{selectedPlan.name} Plan</h1>
-            <p className="mx-auto max-w-2xl text-lg text-slate-300">Complete your subscription payment below.</p>
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">Complete your subscription payment below.</p>
           </div>
         </section>
         <div className="container mx-auto max-w-lg px-4 py-16">
@@ -136,7 +136,7 @@ export default function SubscriptionPlans() {
         <div className="container mx-auto px-4 text-center">
           <Breadcrumbs />
           <h1 className="mb-4 font-sans text-4xl font-bold">Transparent Pricing</h1>
-          <p className="mx-auto max-w-2xl text-lg text-slate-300">
+          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
             Simple, transparent pricing for individuals and businesses. No hidden fees.
           </p>
         </div>
