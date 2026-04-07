@@ -282,9 +282,21 @@ export default function Index() {
       {/* ===== 4-Step Process ===== */}
       <section id="how-it-works" className="py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-foreground mb-4">The 4-Step Process</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Complete your notarization online quickly and securely from anywhere in the world.</p>
+          </div>
+
+          {/* Branded infographic */}
+          <div className="mb-12">
+            <img
+              src={stepProcessImg}
+              alt="NotarDex 4-Step Digital Notary Process: Upload Document, Identity Verification, Live Notary Session, Download Document"
+              className="w-full rounded-2xl shadow-lg"
+              loading="lazy"
+              width={1920}
+              height={640}
+            />
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
