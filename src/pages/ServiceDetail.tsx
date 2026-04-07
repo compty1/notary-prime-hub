@@ -598,9 +598,9 @@ export default function ServiceDetail() {
               <h1 className="mb-2 font-sans text-3xl font-bold text-white md:text-4xl">{service.name}</h1>
               <p className="text-white/70">{service.description || service.short_description}</p>
               <div className="mt-4 flex items-center gap-3">
-                <Badge variant="outline" className="text-primary-foreground/80 border-primary-foreground/20 text-base px-3 py-1">{formatPrice(service)}</Badge>
+                <Badge variant="outline" className="text-white/80 border-white/20 text-base px-3 py-1">{formatPrice(service)}</Badge>
                 {/* Gap #44: Share button */}
-                <Button size="sm" variant="outline" className="border-primary-foreground/20 text-primary-foreground/80 hover:bg-primary-foreground/10" onClick={handleShare}>
+                <Button size="sm" variant="outline" className="border-white/20 text-white/80 hover:bg-white/10" onClick={handleShare}>
                   <ExternalLink className="mr-1 h-3 w-3" /> Share
                 </Button>
               </div>
