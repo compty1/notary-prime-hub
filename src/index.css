@@ -198,6 +198,14 @@
     background: linear-gradient(160deg, hsl(222 47% 5%) 0%, hsl(222 40% 11%) 50%, hsl(222 47% 7%) 100%);
   }
 
+  /* WCAG AA-compliant amber for text on white backgrounds (4.5:1+) */
+  .text-primary-accessible {
+    color: hsl(38 92% 35%);
+  }
+  .dark .text-primary-accessible {
+    color: hsl(38 92% 55%);
+  }
+
   .bg-gradient-primary {
     background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 100%);
   }

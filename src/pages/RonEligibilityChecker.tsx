@@ -274,10 +274,10 @@ export default function RonEligibilityChecker() {
           <Badge className="mb-4 border-primary/20 bg-primary/10 text-primary">
             <Monitor className="mr-1 h-3 w-3" /> RON Eligibility Tool
           </Badge>
-          <h1 className="mb-3 font-sans text-3xl font-bold text-primary-foreground md:text-4xl">
+          <h1 className="mb-3 font-sans text-3xl font-bold text-white md:text-4xl">
             Will Remote Notarization Work for You?
           </h1>
-          <p className="mx-auto max-w-2xl text-primary-foreground/70">
+          <p className="mx-auto max-w-2xl text-white/70">
             Answer four questions to find out if your document can be notarized remotely. Based on Ohio RON law (ORC §147.65-.66), 
             Full Faith & Credit Clause, and known entity-specific requirements.
           </p>

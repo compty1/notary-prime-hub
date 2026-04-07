@@ -13,9 +13,10 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { getEdgeFunctionHeaders } from "@/lib/edgeFunctionAuth";
-import { Inbox, Users, Settings, CheckCircle, XCircle, Loader2, Mail, Save, RefreshCw } from "lucide-react";
+import { Inbox, Users, Settings, CheckCircle, XCircle, Loader2, Mail, Save, RefreshCw, Zap } from "lucide-react";
 import AdminMailbox from "./AdminMailbox";
 import AdminClientEmails from "./AdminClientEmails";
+import AdminAutomatedEmails from "./AdminAutomatedEmails";
 
 function EmailSettings() {
   const { toast } = useToast();
@@ -202,7 +203,7 @@ export default function AdminEmailManagement() {
       </div>
 
       <Tabs defaultValue="mailbox" className="w-full">
-        <TabsList className="grid w-full max-w-lg grid-cols-3">
+        <TabsList className="grid w-full max-w-2xl grid-cols-4">
           <TabsTrigger value="mailbox" className="flex items-center gap-2">
             <Inbox className="h-4 w-4" />
             Mailbox
@@ -210,6 +211,10 @@ export default function AdminEmailManagement() {
           <TabsTrigger value="clients" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
             Client Emails
+          </TabsTrigger>
+          <TabsTrigger value="automated" className="flex items-center gap-2">
+            <Zap className="h-4 w-4" />
+            Automated Emails
           </TabsTrigger>
           <TabsTrigger value="settings" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
@@ -223,6 +228,10 @@ export default function AdminEmailManagement() {
 
         <TabsContent value="clients" className="mt-4">
           <AdminClientEmails />
+        </TabsContent>
+
+        <TabsContent value="automated" className="mt-4">
+          <AdminAutomatedEmails />
         </TabsContent>
 
         <TabsContent value="settings" className="mt-4">

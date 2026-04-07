@@ -227,10 +227,10 @@ export default function NotaryGuide() {
                 <FileText className="mr-1 h-3 w-3" /> Comprehensive Notary Guide
               </Badge>
             </motion.div>
-            <motion.h1 variants={fadeUp} custom={1} className="mb-4 font-sans text-3xl font-bold text-primary-foreground md:text-5xl">
+            <motion.h1 variants={fadeUp} custom={1} className="mb-4 font-sans text-3xl font-bold text-white md:text-5xl">
               What You Need to Know
             </motion.h1>
-            <motion.p variants={fadeUp} custom={2} className="mx-auto max-w-2xl text-primary-foreground/70">
+            <motion.p variants={fadeUp} custom={2} className="mx-auto max-w-2xl text-white/70">
               Everything about notarization requirements, document types, ID requirements, and what to expect — all compliant with Ohio Revised Code §147.
             </motion.p>
           </motion.div>

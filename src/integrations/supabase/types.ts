@@ -2871,6 +2871,7 @@ export type Database = {
           description: string | null
           display_order: number
           duration_minutes: number | null
+          email_templates: Json | null
           estimated_turnaround: string | null
           hero_image_url: string | null
           icon: string | null
@@ -2893,6 +2894,7 @@ export type Database = {
           description?: string | null
           display_order?: number
           duration_minutes?: number | null
+          email_templates?: Json | null
           estimated_turnaround?: string | null
           hero_image_url?: string | null
           icon?: string | null
@@ -2915,6 +2917,7 @@ export type Database = {
           description?: string | null
           display_order?: number
           duration_minutes?: number | null
+          email_templates?: Json | null
           estimated_turnaround?: string | null
           hero_image_url?: string | null
           icon?: string | null

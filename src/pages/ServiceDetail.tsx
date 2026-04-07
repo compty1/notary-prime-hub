@@ -586,21 +586,21 @@ export default function ServiceDetail() {
             <div>
               <div className="mb-2 flex flex-wrap items-center gap-2">
                 <Badge className="border-primary/30 bg-primary/10 text-primary">{service.category.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}</Badge>
-                <Badge variant="outline" className="text-primary-foreground/90 border-primary-foreground/40 text-xs">
+                <Badge variant="outline" className="text-white/90 border-white/40 text-xs">
                    <Clock className="mr-1 h-3 w-3" /> {timeline}
                  </Badge>
-                 <Badge variant="outline" className={`text-xs border-primary-foreground/40 ${
+                 <Badge variant="outline" className={`text-xs border-white/40 ${
                   complexity.level === "Simple" ? "text-primary" : complexity.level === "Complex" ? "text-amber-300" : "text-blue-300"
                 }`}>
                   {complexity.level} · {complexity.duration}
                 </Badge>
               </div>
-              <h1 className="mb-2 font-sans text-3xl font-bold text-primary-foreground md:text-4xl">{service.name}</h1>
-              <p className="text-primary-foreground/70">{service.description || service.short_description}</p>
+              <h1 className="mb-2 font-sans text-3xl font-bold text-white md:text-4xl">{service.name}</h1>
+              <p className="text-white/70">{service.description || service.short_description}</p>
               <div className="mt-4 flex items-center gap-3">
-                <Badge variant="outline" className="text-primary-foreground/80 border-primary-foreground/20 text-base px-3 py-1">{formatPrice(service)}</Badge>
+                <Badge variant="outline" className="text-white/80 border-white/20 text-base px-3 py-1">{formatPrice(service)}</Badge>
                 {/* Gap #44: Share button */}
-                <Button size="sm" variant="outline" className="border-primary-foreground/20 text-primary-foreground/80 hover:bg-primary-foreground/10" onClick={handleShare}>
+                <Button size="sm" variant="outline" className="border-white/20 text-white/80 hover:bg-white/10" onClick={handleShare}>
                   <ExternalLink className="mr-1 h-3 w-3" /> Share
                 </Button>
               </div>

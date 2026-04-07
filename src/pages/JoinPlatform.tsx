@@ -129,10 +129,10 @@ export default function JoinPlatform() {
                 <Users className="mr-1 h-3 w-3" /> Now Accepting Applications
               </Badge>
             </motion.div>
-            <motion.h1 variants={fadeUp} custom={1} className="mb-4 font-sans text-4xl font-bold text-primary-foreground md:text-5xl">
+            <motion.h1 variants={fadeUp} custom={1} className="mb-4 font-sans text-4xl font-bold text-white md:text-5xl">
               Join Our Notary Network
             </motion.h1>
-            <motion.p variants={fadeUp} custom={2} className="mx-auto max-w-2xl text-lg text-primary-foreground/70">
+            <motion.p variants={fadeUp} custom={2} className="mx-auto max-w-2xl text-lg text-white/70">
               Partner with us to grow your notary business. Get pre-qualified clients, professional tools, 
               and the support you need to deliver exceptional notarization and document services across Ohio.
             </motion.p>
