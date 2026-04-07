@@ -894,6 +894,9 @@ export function DocuDexEditor({
             <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 hidden md:flex" onClick={() => setShowPrintPreview(true)}>
               <Eye className="h-3.5 w-3.5" /> <span className="hidden lg:inline">Preview</span>
             </Button>
+            <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={handleImportFile}>
+              <Upload className="h-3.5 w-3.5" /> <span className="hidden md:inline">Import</span>
+            </Button>
           </div>
 
           <div className="flex-1" />
