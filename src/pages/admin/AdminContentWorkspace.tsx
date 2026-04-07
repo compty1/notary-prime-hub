@@ -1,6 +1,6 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { sanitizeHtml } from "@/lib/sanitize";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,10 +14,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FileText, Clock, CheckCircle, Send, Loader2, RefreshCw, Plus, Search, Sparkles, Eye, Edit, Trash2, Image } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { FileText, Clock, CheckCircle, Send, Loader2, RefreshCw, Plus, Search, Sparkles, Eye, Edit, Trash2, Image, BarChart3, Lightbulb, AlertTriangle, Target } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
-// RichTextEditor imported above
 
 const STATUS_COLORS: Record<string, string> = {
   draft: "bg-muted text-muted-foreground",
@@ -26,6 +25,51 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const CATEGORIES = ["blog", "faq", "guide", "announcement", "case-study", "social"];
+
+// Service-specific templates with industry-standard formatting
+const SERVICE_TEMPLATES = [
+  { name: "Blog Article", category: "blog", minWords: 800, maxWords: 2000, prompt: "Write a professional blog article about", structure: "H1 title, intro paragraph, 3-5 H2 sections with 2-3 paragraphs each, conclusion with CTA" },
+  { name: "FAQ Page", category: "faq", minWords: 500, maxWords: 1500, prompt: "Generate 8-10 FAQ questions and detailed answers about", structure: "H2 questions with paragraph answers, include relevant Ohio law citations" },
+  { name: "Service Guide", category: "guide", minWords: 1200, maxWords: 3000, prompt: "Write a comprehensive service guide for", structure: "Overview, requirements, step-by-step process, pricing info, FAQs, next steps CTA" },
+  { name: "Case Study", category: "case-study", minWords: 600, maxWords: 1500, prompt: "Write a client success case study about", structure: "Challenge, solution, results with metrics, client quote, CTA" },
+  { name: "Social Media Post", category: "social", minWords: 50, maxWords: 300, prompt: "Write an engaging social media post about", structure: "Hook, value proposition, CTA, 3-5 relevant hashtags" },
+  { name: "Email Campaign", category: "announcement", minWords: 200, maxWords: 600, prompt: "Write a marketing email about", structure: "Subject line, preview text, greeting, 2-3 body paragraphs, CTA button text, footer" },
+  { name: "SEO Landing Page", category: "guide", minWords: 1000, maxWords: 2500, prompt: "Write SEO-optimized landing page content for", structure: "H1 with keyword, intro, benefits section, features, social proof, FAQ schema, CTA" },
+  { name: "Press Release", category: "announcement", minWords: 400, maxWords: 800, prompt: "Write a press release about", structure: "Headline, dateline, lead paragraph, body quotes, boilerplate, contact info" },
+];
+
+function getWordCount(html: string): number {
+  const text = html.replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+  return text ? text.split(" ").length : 0;
+}
+
+function getReadabilityScore(html: string): { score: number; label: string } {
+  const text = html.replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").trim();
+  const sentences = text.split(/[.!?]+/).filter(Boolean).length || 1;
+  const words = text.split(/\s+/).filter(Boolean).length || 1;
+  const avgWordsPerSentence = words / sentences;
+  if (avgWordsPerSentence <= 15) return { score: 90, label: "Easy" };
+  if (avgWordsPerSentence <= 20) return { score: 70, label: "Moderate" };
+  if (avgWordsPerSentence <= 25) return { score: 50, label: "Difficult" };
+  return { score: 30, label: "Very Difficult" };
+}
+
+function analyzeContent(html: string): { issues: string[]; suggestions: string[] } {
+  const text = html.replace(/<[^>]*>/g, " ").trim();
+  const wordCount = getWordCount(html);
+  const issues: string[] = [];
+  const suggestions: string[] = [];
+
+  if (wordCount < 100) issues.push("Content is very short — aim for at least 300 words for SEO value");
+  if (!html.includes("<h2") && !html.includes("<h3")) suggestions.push("Add subheadings (H2/H3) to improve readability and SEO");
+  if (!html.includes("<a ")) suggestions.push("Add internal or external links for better SEO");
+  if (!html.includes("<ul") && !html.includes("<ol")) suggestions.push("Use bullet/numbered lists to break up text");
+  if (wordCount > 300 && !text.toLowerCase().includes("ohio") && !text.toLowerCase().includes("notary")) suggestions.push("Include relevant keywords like 'Ohio notary' for SEO");
+  if (!html.includes("<strong") && !html.includes("<b")) suggestions.push("Use bold text to highlight key points");
+  if (wordCount > 500 && !html.includes("<blockquote")) suggestions.push("Consider adding a client quote or callout");
+
+  return { issues, suggestions };
+}
 
 export default function AdminContentWorkspace() {
   usePageMeta({ title: "Content Workspace", noIndex: true });
@@ -46,8 +90,13 @@ export default function AdminContentWorkspace() {
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
 
   const contentServices = ["Blog & Article Writing", "Social Media Content", "Email Campaign Creation", "SEO Content Optimization", "Content Creation & Copywriting"];
+
+  const wordCount = useMemo(() => getWordCount(form.body), [form.body]);
+  const readability = useMemo(() => getReadabilityScore(form.body), [form.body]);
+  const contentAnalysis = useMemo(() => analyzeContent(form.body), [form.body]);
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -85,6 +134,11 @@ export default function AdminContentWorkspace() {
     setEditingPost(post);
     setForm({ title: post.title, body: post.body || "", category: post.category, status: post.status, service_id: post.service_id || "", hero_image_url: post.hero_image_url || "" });
     setShowEditor(true);
+  };
+
+  const applyTemplate = (template: typeof SERVICE_TEMPLATES[0]) => {
+    setForm(prev => ({ ...prev, category: template.category, title: prev.title || `New ${template.name}` }));
+    toast({ title: `${template.name} template applied`, description: `Target: ${template.minWords}-${template.maxWords} words. Structure: ${template.structure}` });
   };
 
   const savePost = async () => {
@@ -143,6 +197,22 @@ export default function AdminContentWorkspace() {
     setGenerating(false);
   };
 
+  const analyzeWithAI = async () => {
+    if (!form.body.trim()) { toast({ title: "No content to analyze", variant: "destructive" }); return; }
+    setAnalyzing(true);
+    try {
+      const { data } = await supabase.functions.invoke("notary-assistant", {
+        body: { message: `Analyze this content and provide specific improvement recommendations. Include SEO suggestions, readability improvements, missing elements, and enhancement opportunities. Content title: "${form.title}". Content: ${form.body.replace(/<[^>]*>/g, " ").slice(0, 3000)}`, context: "content_analysis" },
+      });
+      if (data?.reply) {
+        toast({ title: "AI Analysis Complete", description: data.reply.slice(0, 200) + "..." });
+      }
+    } catch {
+      toast({ title: "Analysis failed", variant: "destructive" });
+    }
+    setAnalyzing(false);
+  };
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -155,6 +225,11 @@ export default function AdminContentWorkspace() {
     }
   };
 
+  // Stats
+  const publishedCount = posts.filter(p => p.status === "published").length;
+  const draftCount = posts.filter(p => p.status === "draft").length;
+  const totalWords = posts.reduce((sum, p) => sum + getWordCount(p.body || ""), 0);
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -165,9 +240,30 @@ export default function AdminContentWorkspace() {
         </div>
       </div>
 
+      {/* Stats Row */}
+      <div className="grid gap-3 grid-cols-2 md:grid-cols-4 mb-6">
+        <Card className="border-border/50"><CardContent className="p-4 text-center">
+          <p className="text-2xl font-bold text-foreground">{posts.length}</p>
+          <p className="text-xs text-muted-foreground">Total Posts</p>
+        </CardContent></Card>
+        <Card className="border-border/50"><CardContent className="p-4 text-center">
+          <p className="text-2xl font-bold text-primary">{publishedCount}</p>
+          <p className="text-xs text-muted-foreground">Published</p>
+        </CardContent></Card>
+        <Card className="border-border/50"><CardContent className="p-4 text-center">
+          <p className="text-2xl font-bold text-foreground">{draftCount}</p>
+          <p className="text-xs text-muted-foreground">Drafts</p>
+        </CardContent></Card>
+        <Card className="border-border/50"><CardContent className="p-4 text-center">
+          <p className="text-2xl font-bold text-foreground">{totalWords.toLocaleString()}</p>
+          <p className="text-xs text-muted-foreground">Total Words</p>
+        </CardContent></Card>
+      </div>
+
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList>
           <TabsTrigger value="posts">Content Posts ({posts.length})</TabsTrigger>
+          <TabsTrigger value="templates">Service Templates</TabsTrigger>
           <TabsTrigger value="requests">Service Requests ({requests.length})</TabsTrigger>
         </TabsList>
 
@@ -200,6 +296,7 @@ export default function AdminContentWorkspace() {
                     <span className="font-medium text-sm">{post.title}</span>
                     <Badge className={STATUS_COLORS[post.status] || "bg-muted text-muted-foreground"}>{post.status}</Badge>
                     <Badge variant="outline" className="text-xs">{post.category}</Badge>
+                    <span className="text-xs text-muted-foreground">{getWordCount(post.body || "")} words</span>
                   </div>
                   <p className="text-xs text-muted-foreground">
                     {new Date(post.created_at).toLocaleDateString()}
@@ -216,6 +313,33 @@ export default function AdminContentWorkspace() {
           ))}
         </TabsContent>
 
+        {/* Service Templates Tab */}
+        <TabsContent value="templates" className="mt-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {SERVICE_TEMPLATES.map((template) => (
+              <Card key={template.name} className="border-border/50 hover:border-primary/30 transition-colors">
+                <CardContent className="p-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <FileText className="h-4 w-4 text-primary" />
+                    <h3 className="font-semibold text-sm">{template.name}</h3>
+                  </div>
+                  <Badge variant="outline" className="text-xs mb-3">{template.category}</Badge>
+                  <p className="text-xs text-muted-foreground mb-2"><strong>Target:</strong> {template.minWords}–{template.maxWords} words</p>
+                  <p className="text-xs text-muted-foreground mb-3"><strong>Structure:</strong> {template.structure}</p>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" onClick={() => { openNewPost(); applyTemplate(template); }}>
+                      <Plus className="mr-1 h-3 w-3" /> Use Template
+                    </Button>
+                    <Button size="sm" variant="ghost" disabled={generating} onClick={() => { openNewPost(); applyTemplate(template); generateAI(`${template.prompt} Ohio notary services. Follow this structure: ${template.structure}. Target ${template.minWords}-${template.maxWords} words.`); }}>
+                      <Sparkles className="mr-1 h-3 w-3" /> AI Generate
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
         <TabsContent value="requests" className="mt-4 space-y-3">
           {loading ? (
             <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
@@ -227,7 +351,7 @@ export default function AdminContentWorkspace() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-medium text-sm">{req.service_name}</span>
-                    <Badge className={req.status === "completed" ? "bg-primary/10 text-primary" : req.status === "in_progress" ? "bg-blue-100 text-blue-800" : "bg-amber-100 text-amber-800"}>{req.status.replace(/_/g, " ")}</Badge>
+                    <Badge className={req.status === "completed" ? "bg-primary/10 text-primary" : req.status === "in_progress" ? "bg-accent/10 text-accent" : "bg-muted text-muted-foreground"}>{req.status.replace(/_/g, " ")}</Badge>
                   </div>
                   <p className="text-xs text-muted-foreground">Client: {req.profiles?.full_name || "Unknown"} • {new Date(req.created_at).toLocaleDateString()}</p>
                 </div>
@@ -259,7 +383,7 @@ export default function AdminContentWorkspace() {
 
       {/* Editor Dialog */}
       <Dialog open={showEditor} onOpenChange={setShowEditor}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingPost ? "Edit Post" : "Create New Post"}</DialogTitle>
           </DialogHeader>
@@ -324,9 +448,54 @@ export default function AdminContentWorkspace() {
                   <Button size="sm" variant="outline" disabled={generating} onClick={() => generateAI(`Generate 5 FAQ questions and answers about: ${form.title || "notary services"}`)}>
                     <Sparkles className="mr-1 h-3 w-3" /> AI FAQ
                   </Button>
+                  <Button size="sm" variant="outline" disabled={analyzing} onClick={analyzeWithAI}>
+                    <Lightbulb className="mr-1 h-3 w-3" /> {analyzing ? "Analyzing..." : "AI Analyze"}
+                  </Button>
                 </div>
               </div>
               <RichTextEditor value={form.body} onChange={(v: string) => setForm(p => ({ ...p, body: v }))} />
+
+              {/* Content Metrics Bar */}
+              <div className="flex flex-wrap items-center gap-4 mt-2 p-3 rounded-lg bg-muted/50">
+                <div className="flex items-center gap-2">
+                  <BarChart3 className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-xs font-medium">{wordCount} words</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Target className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-xs">Readability: <Badge variant="outline" className="text-xs ml-1">{readability.label}</Badge></span>
+                </div>
+                {contentAnalysis.issues.length > 0 && (
+                  <div className="flex items-center gap-1 text-destructive">
+                    <AlertTriangle className="h-3.5 w-3.5" />
+                    <span className="text-xs">{contentAnalysis.issues.length} issue{contentAnalysis.issues.length > 1 ? "s" : ""}</span>
+                  </div>
+                )}
+                {contentAnalysis.suggestions.length > 0 && (
+                  <div className="flex items-center gap-1 text-primary">
+                    <Lightbulb className="h-3.5 w-3.5" />
+                    <span className="text-xs">{contentAnalysis.suggestions.length} suggestion{contentAnalysis.suggestions.length > 1 ? "s" : ""}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Issues & Suggestions */}
+              {(contentAnalysis.issues.length > 0 || contentAnalysis.suggestions.length > 0) && wordCount > 0 && (
+                <div className="space-y-2 mt-2">
+                  {contentAnalysis.issues.map((issue, i) => (
+                    <div key={`i${i}`} className="flex items-start gap-2 text-xs text-destructive bg-destructive/5 rounded p-2">
+                      <AlertTriangle className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                      <span>{issue}</span>
+                    </div>
+                  ))}
+                  {contentAnalysis.suggestions.map((sug, i) => (
+                    <div key={`s${i}`} className="flex items-start gap-2 text-xs text-primary bg-primary/5 rounded p-2">
+                      <Lightbulb className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                      <span>{sug}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           <DialogFooter>
@@ -346,6 +515,7 @@ export default function AdminContentWorkspace() {
           <div className="flex gap-2 mb-4">
             <Badge className={STATUS_COLORS[editingPost?.status] || "bg-muted"}>{editingPost?.status}</Badge>
             <Badge variant="outline">{editingPost?.category}</Badge>
+            <span className="text-xs text-muted-foreground">{getWordCount(editingPost?.body || "")} words</span>
           </div>
           <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(editingPost?.body || "<p>No content</p>") }} />
         </DialogContent>
