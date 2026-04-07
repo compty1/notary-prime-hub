@@ -172,9 +172,13 @@ export function DocuDexToolbar({ editor, brandFont, onBrandFontChange, onImageUp
 
       {/* Font size */}
       <Select
-        value="14"
+        value={(() => {
+          const fs = editor.getAttributes("textStyle")?.fontSize;
+          if (fs) return fs.replace("px", "");
+          return "14";
+        })()}
         onValueChange={v => {
-          (editor.chain().focus() as any).setMark("textStyle", { fontSize: `${v}px` }).run();
+          (editor.chain().focus() as any).setFontSize(`${v}px`).run();
         }}
       >
         <SelectTrigger className="h-7 w-14 md:w-16 text-xs border-none shadow-none shrink-0" aria-label="Font size">
