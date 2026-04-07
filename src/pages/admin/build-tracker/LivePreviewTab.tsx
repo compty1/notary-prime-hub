@@ -155,7 +155,7 @@ export default function LivePreviewTab({ themeOverlay }: Props) {
             Refresh
           </Button>
           <Button variant="outline" size="sm" asChild>
-            <a href={PREVIEW_URL} target="_blank" rel="noopener noreferrer">
+            <a href={PUBLISHED_URL} target="_blank" rel="noopener noreferrer">
               <ExternalLink className="h-3.5 w-3.5 mr-1" />
               Open
             </a>
