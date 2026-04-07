@@ -4,9 +4,10 @@ import { Progress } from "@/components/ui/progress";
 import { Upload, CheckCircle, XCircle, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { validateFile, ALLOWED_DOCUMENT_MIMES, DOCUMENT_ACCEPT, MAX_FILE_SIZE_BYTES } from "@/lib/fileValidation";
 
-const ACCEPTED_EXTENSIONS = ".pdf,.jpg,.jpeg,.png,.tiff,.doc,.docx";
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const ACCEPTED_EXTENSIONS = DOCUMENT_ACCEPT;
+const MAX_FILE_SIZE = MAX_FILE_SIZE_BYTES;
 
 interface Props {
   userId: string;
@@ -28,10 +29,14 @@ export default function BulkDocumentUpload({ userId, onComplete }: Props) {
   const [dragOver, setDragOver] = useState(false);
 
   const addFiles = useCallback((newFiles: FileList | File[]) => {
-    const arr = Array.from(newFiles).map((file) => ({
-      file,
-      status: "pending" as const,
-    }));
+    const arr = Array.from(newFiles).map((file) => {
+      const validationError = validateFile(file, { allowedMimes: ALLOWED_DOCUMENT_MIMES });
+      return {
+        file,
+        status: validationError ? "error" as const : "pending" as const,
+        error: validationError || undefined,
+      };
+    });
     setFiles((prev) => [...prev, ...arr]);
   }, []);
 
