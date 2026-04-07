@@ -17,7 +17,9 @@ import SuperScript from "@tiptap/extension-superscript";
 import ImageExt from "@tiptap/extension-image";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import FontFamily from "@tiptap/extension-font-family";
+import { FontSize } from "./docudex/FontSizeExtension";
 import DOMPurify from "dompurify";
+import mammoth from "mammoth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -36,12 +38,13 @@ import { safeGetItem, safeSetItem } from "@/lib/safeStorage";
 import {
   FileText, Save, FileDown, Printer, Loader2, MessageSquare,
   ZoomIn, ZoomOut, Send, X, Sparkles, Plus, Maximize2, Minimize2,
-  Eye, Copy, Trash2, MoveUp, MoveDown,
+  Eye, Copy, Trash2, MoveUp, MoveDown, Upload,
 } from "lucide-react";
 import { DocuDexToolbar } from "./docudex/DocuDexToolbar";
 import { DocuDexSidebar } from "./docudex/DocuDexSidebar";
 import { DocuDexPageList } from "./docudex/DocuDexPageList";
 import { DocuDexFindReplace } from "./docudex/DocuDexFindReplace";
+import { DocuDexTableToolbar } from "./docudex/DocuDexTableToolbar";
 import { TEMPLATES, BRAND_FONTS, LANGUAGES, PAGE_SIZES, MARGIN_PRESETS, COMPLIANCE_WATERMARKS, DEFAULT_FOOTER } from "./docudex/constants";
 import { uid, wordCount, charCount, readTime, readabilityScore } from "./docudex/helpers";
 import type { PageData, HistorySnapshot, DocuDexEditorProps, CustomTemplate } from "./docudex/types";
@@ -164,6 +167,7 @@ export function DocuDexEditor({
       TextStyle,
       Color,
       FontFamily,
+      FontSize,
       Highlight.configure({ multicolor: true }),
       LinkExt.configure({ openOnClick: false }),
       TableExt.configure({ resizable: true }),
@@ -202,6 +206,8 @@ export function DocuDexEditor({
           Array.from(files).forEach(file => {
             if (file.type.startsWith("image/")) {
               promptAltText(file);
+            } else if (file.name.endsWith(".docx") || file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+              importDocx(file);
             }
           });
           return true;
@@ -300,11 +306,16 @@ export function DocuDexEditor({
 
   // Auto-save every 30 seconds (CE-006)
   useEffect(() => {
-    autoSaveTimer.current = setInterval(() => {
+    autoSaveTimer.current = setInterval(async () => {
       if (isDirty && onSave && user) {
         saveSnapshot("Auto-save");
+        try {
+          await onSave(title, pages);
+          setLastSaved(new Date().toLocaleTimeString());
+        } catch {
+          // Silently fail auto-save to avoid toast spam
+        }
         setIsDirty(false);
-        setLastSaved(new Date().toLocaleTimeString());
         announce("Document auto-saved");
       }
     }, 30000);
@@ -372,6 +383,37 @@ export function DocuDexEditor({
     };
     input.click();
   }, []);
+
+  // DOCX import via mammoth (IM-001)
+  const importDocx = useCallback(async (file: File) => {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const result = await mammoth.convertToHtml({ arrayBuffer });
+      const cleanHtml = DOMPurify.sanitize(result.value, {
+        ALLOWED_TAGS: ["p", "br", "strong", "b", "em", "i", "u", "s", "a", "ul", "ol", "li", "h1", "h2", "h3", "h4", "h5", "h6", "table", "tr", "td", "th", "thead", "tbody", "blockquote", "hr", "img", "span", "sub", "sup"],
+        ALLOWED_ATTR: ["href", "src", "alt", "style", "class", "target", "colspan", "rowspan"],
+      });
+      saveSnapshot("Before DOCX import");
+      setPages(prev => prev.map((p, i) => i === activePageIdx ? { ...p, html: cleanHtml } : p));
+      if (editor) editor.commands.setContent(cleanHtml);
+      setTitle(file.name.replace(/\.docx$/i, ""));
+      toast({ title: "DOCX imported", description: `"${file.name}" loaded successfully.` });
+      announce("DOCX file imported");
+    } catch (e: any) {
+      toast({ title: "Import failed", description: e.message || "Could not read DOCX file.", variant: "destructive" });
+    }
+  }, [editor, activePageIdx, toast, announce]);
+
+  const handleImportFile = useCallback(() => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".docx,.doc";
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) importDocx(file);
+    };
+    input.click();
+  }, [importDocx]);
 
   // Save snapshot (HV-001, HV-003: with optional name)
   const saveSnapshot = useCallback((label: string = "Manual save", name?: string) => {
@@ -852,6 +894,9 @@ export function DocuDexEditor({
             <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 hidden md:flex" onClick={() => setShowPrintPreview(true)}>
               <Eye className="h-3.5 w-3.5" /> <span className="hidden lg:inline">Preview</span>
             </Button>
+            <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={handleImportFile}>
+              <Upload className="h-3.5 w-3.5" /> <span className="hidden md:inline">Import</span>
+            </Button>
           </div>
 
           <div className="flex-1" />
@@ -907,6 +952,9 @@ export function DocuDexEditor({
           onImageUpload={handleImageUpload}
           onFindReplace={() => setShowFindReplace(f => !f)}
         />
+
+        {/* Table Context Toolbar (EL-002) */}
+        {editor && <DocuDexTableToolbar editor={editor} />}
 
         {/* Find & Replace (FR-001, FR-002) */}
         {showFindReplace && (
@@ -1112,10 +1160,21 @@ export function DocuDexEditor({
                       Underline
                     </button>
                     <div className="border-t border-border my-1" />
-                    <button className="w-full text-left text-xs px-3 py-1.5 hover:bg-muted" onClick={() => { document.execCommand("copy"); setContextMenu(null); }}>
+                    <button className="w-full text-left text-xs px-3 py-1.5 hover:bg-muted" onClick={async () => {
+                      const { from, to } = editor.state.selection;
+                      const text = editor.state.doc.textBetween(from, to);
+                      if (text) await navigator.clipboard.writeText(text);
+                      setContextMenu(null);
+                    }}>
                       Copy
                     </button>
-                    <button className="w-full text-left text-xs px-3 py-1.5 hover:bg-muted" onClick={() => { document.execCommand("paste"); setContextMenu(null); }}>
+                    <button className="w-full text-left text-xs px-3 py-1.5 hover:bg-muted" onClick={async () => {
+                      try {
+                        const text = await navigator.clipboard.readText();
+                        if (text) editor.chain().focus().insertContent(text).run();
+                      } catch { /* clipboard permission denied */ }
+                      setContextMenu(null);
+                    }}>
                       Paste
                     </button>
                     <button className="w-full text-left text-xs px-3 py-1.5 hover:bg-muted" onClick={() => { editor.chain().focus().selectAll().run(); setContextMenu(null); }}>
@@ -1231,7 +1290,7 @@ export function DocuDexEditor({
               {pages.map((page, i) => (
                 <div
                   key={page.id}
-                  className="bg-white text-black shadow-md mx-auto border"
+                  className="bg-white text-black shadow-md mx-auto border relative"
                   style={{
                     width: currentPageSize.width * 0.7,
                     minHeight: currentPageSize.height * 0.7,
@@ -1241,10 +1300,27 @@ export function DocuDexEditor({
                     lineHeight: lineSpacing,
                   }}
                 >
+                  {/* Watermark in preview */}
+                  {watermark !== "none" && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10" style={{ opacity: 0.06 }}>
+                      <span className="text-5xl font-bold transform -rotate-45 select-none text-gray-800">
+                        {watermark.toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                  {/* Header in preview */}
+                  {headerHtml && (
+                    <div className="text-[8px] text-gray-400 mb-2 border-b pb-1" dangerouslySetInnerHTML={{ __html: sanitizeHtml(headerHtml.replace("{{page}}", String(i + 1)).replace("{{total}}", String(pages.length))) }} />
+                  )}
                   <div className="prose prose-xs max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.html) }} />
-                  <div className="text-center text-[8px] text-gray-400 mt-4 pt-2 border-t">
-                    Page {i + 1} of {pages.length}
-                  </div>
+                  {/* Footer in preview */}
+                  {footerHtml ? (
+                    <div className="text-[8px] text-gray-400 mt-4 pt-2 border-t" dangerouslySetInnerHTML={{ __html: sanitizeHtml(footerHtml.replace("{{page}}", String(i + 1)).replace("{{total}}", String(pages.length))) }} />
+                  ) : (
+                    <div className="text-center text-[8px] text-gray-400 mt-4 pt-2 border-t">
+                      Page {i + 1} of {pages.length}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

@@ -72,11 +72,33 @@ export function DocuDexFindReplace({ editor, onClose, pageContents }: FindReplac
 
   const replaceAll = () => {
     if (!editor || !query) return;
-    const content = editor.getHTML();
     const regex = buildRegex(query);
     if (!regex) return;
-    const newContent = content.replace(regex, replaceText);
-    editor.commands.setContent(newContent);
+    // Traverse text nodes only to avoid corrupting HTML tags (FR-002)
+    const { doc } = editor.state;
+    let replacements: { from: number; to: number; text: string }[] = [];
+    doc.descendants((node, pos) => {
+      if (node.isText && node.text) {
+        let match: RegExpExecArray | null;
+        const r = buildRegex(query);
+        if (!r) return;
+        while ((match = r.exec(node.text)) !== null) {
+          replacements.push({
+            from: pos + match.index,
+            to: pos + match.index + match[0].length,
+            text: replaceText,
+          });
+        }
+      }
+    });
+    // Apply replacements in reverse order to maintain positions
+    const tr = editor.state.tr;
+    replacements.reverse().forEach(({ from, to, text }) => {
+      tr.replaceWith(from, to, text ? editor.state.schema.text(text) : editor.state.schema.text(""));
+    });
+    if (replacements.length > 0) {
+      editor.view.dispatch(tr);
+    }
     setMatchCount(0);
     setCurrentMatch(0);
   };

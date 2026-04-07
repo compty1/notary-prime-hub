@@ -504,3 +504,28 @@ button:active, a[role="button"]:active {
   nav, footer, .no-print, [role="banner"] { display: none !important; }
   body { font-size: 12pt; color: #000; background: #fff; }
 }
+
+/* High Contrast / Forced Colors Mode (A11-004) */
+@media (forced-colors: active) {
+  .docudex-canvas {
+    border: 2px solid CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+  }
+  .docudex-canvas-area {
+    background: Canvas !important;
+  }
+  .docudex-editor-content {
+    color: CanvasText !important;
+    forced-color-adjust: none;
+  }
+  .docudex-canvas button,
+  .docudex-canvas [role="toolbar"] button {
+    border: 1px solid ButtonText !important;
+    background: ButtonFace !important;
+    color: ButtonText !important;
+  }
+  .docudex-canvas [role="toolbar"] {
+    border-bottom: 2px solid CanvasText !important;
+  }
+}
