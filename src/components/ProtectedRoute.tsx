@@ -2,6 +2,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -10,10 +11,19 @@ interface ProtectedRouteProps {
   adminOnly?: boolean;
 }
 
+const AUTH_TIMEOUT_MS = 15000;
+
 const ProtectedRoute = ({ children, requireAdmin = false, adminOnly = false }: ProtectedRouteProps) => {
   const { user, isAdmin, isNotary, loading } = useAuth();
+  const [timedOut, setTimedOut] = useState(false);
 
-  if (loading) {
+  useEffect(() => {
+    if (!loading) return;
+    const timer = setTimeout(() => setTimedOut(true), AUTH_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [loading]);
+
+  if (loading && !timedOut) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-background gap-3">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" />
@@ -22,12 +32,16 @@ const ProtectedRoute = ({ children, requireAdmin = false, adminOnly = false }: P
     );
   }
 
+  if (timedOut && !user) {
+    return <Navigate to="/login" replace />;
+  }
+
   if (!user) return <Navigate to="/login" replace />;
 
   // Email verification reminder (non-blocking)
   const emailConfirmed = user.email_confirmed_at || user.confirmed_at;
 
-  // Admin-only routes (item 503): restrict to admin role only
+  // Admin-only routes: restrict to admin role only
   if (adminOnly && !isAdmin) return <Navigate to="/portal" replace />;
 
   // Allow both admin and notary roles to access admin dashboard
