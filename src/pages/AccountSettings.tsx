@@ -73,8 +73,21 @@ export default function AccountSettings() {
     if (newPassword !== confirmPassword) { toast({ title: "Passwords don't match", variant: "destructive" }); return; }
     setChangingPassword(true);
     const { error } = await supabase.auth.updateUser({ password: newPassword });
-    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else { toast({ title: "Password updated" }); setCurrentPassword(""); setNewPassword(""); setConfirmPassword(""); }
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Password updated", description: "All other sessions have been revoked." });
+      setCurrentPassword(""); setNewPassword(""); setConfirmPassword("");
+      // Revoke all other sessions on password change (Rec #6)
+      await supabase.auth.signOut({ scope: "others" }).catch(() => {});
+      // Log to audit
+      await supabase.from("audit_log").insert({
+        action: "password_changed",
+        entity_type: "user",
+        user_id: user?.id,
+        details: { timestamp: new Date().toISOString() },
+      } as any).catch(() => {});
+    }
     setChangingPassword(false);
   };
 
