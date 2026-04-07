@@ -1,4 +1,5 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
+import DOMPurify from "dompurify";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -133,7 +134,7 @@ export default function Compliance() {
               </div>
               <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
                 {section.content.map((paragraph, i) => (
-                  <p key={i} dangerouslySetInnerHTML={{ __html: paragraph.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground">$1</strong>') }} />
+                  <p key={i} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(paragraph.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground">$1</strong>'), { ALLOWED_TAGS: ["strong"], ALLOWED_ATTR: ["class"] }) }} />
                 ))}
               </div>
               {section.links && (
