@@ -52,15 +52,15 @@ function DropdownNav({ label, linkTo, children }: { label: string; linkTo?: stri
         {linkTo ? (
           <Link
             to={linkTo}
-            className="relative px-3 py-2 text-sm font-medium text-white/70 transition-colors hover:text-white"
+            className="relative px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:text-white"
           >
             {label}
           </Link>
         ) : (
-          <span className="px-3 py-2 text-sm font-medium text-white/70 cursor-default">{label}</span>
+          <span className="px-3 py-2 text-sm font-medium text-slate-300 cursor-default">{label}</span>
         )}
         <PopoverTrigger asChild>
-          <button className="-ml-2 p-1 text-white/70 hover:text-white transition-colors" aria-label={`${label} menu`}>
+          <button className="-ml-2 p-1 text-slate-300 hover:text-white transition-colors" aria-label={`${label} menu`}>
             <ChevronDown className="h-3 w-3" />
           </button>
         </PopoverTrigger>
@@ -93,11 +93,12 @@ export function Navbar() {
   const portalLabel = isAdmin || isNotary ? "Dashboard" : "Portal";
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-white/10 bg-[hsl(216_79%_15%)]" aria-label="Main navigation">
+    <nav className="sticky top-0 z-50 border-b border-white/10 bg-sidebar-background shadow-lg" aria-label="Main navigation">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
-        <Link to="/" className="flex items-center">
-          <span className="font-heading text-lg font-bold tracking-tight text-white">
-            Notar<span className="text-accent">.</span>
+        <Link to="/" className="flex items-center gap-2">
+          <Logo size="sm" />
+          <span className="font-heading text-xl font-bold tracking-tight text-white">
+            NotarDex<span className="text-primary">.com</span>
           </span>
         </Link>
 
@@ -160,7 +161,7 @@ export function Navbar() {
             <Link
               key={link.to}
               to={link.to}
-              className="relative px-3 py-2 text-sm font-medium text-white/70 transition-colors hover:text-white after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:scale-x-0 after:bg-primary after:transition-transform after:duration-200 hover:after:scale-x-100"
+              className="relative px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:text-white after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:scale-x-0 after:bg-primary after:transition-transform after:duration-200 hover:after:scale-x-100"
             >
               {link.label}
             </Link>
@@ -169,15 +170,15 @@ export function Navbar() {
             <DarkModeToggle />
             {user ? (
               <Link to={portalLink}>
-                <Button variant="ghost" size="sm" className="text-sm text-white/80 hover:text-white hover:bg-white/10">{portalLabel}</Button>
+                <Button variant="ghost" size="sm" className="text-sm text-slate-300 hover:text-white hover:bg-white/10">{portalLabel}</Button>
               </Link>
             ) : (
               <Link to="/login">
-                <Button size="sm" className="rounded-full bg-accent text-accent-foreground hover:bg-accent/90 text-sm">Sign In</Button>
+                <Button size="sm" variant="outline" className="rounded-full border-slate-600 text-slate-300 hover:text-white hover:bg-slate-800 text-sm">Sign In</Button>
               </Link>
             )}
             <Link to="/book">
-              <Button variant="accent" size="sm">
+              <Button size="sm" className="rounded-full glow-amber font-semibold">
                 Notarize Now
               </Button>
             </Link>
@@ -186,7 +187,7 @@ export function Navbar() {
 
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild className="md:hidden">
-            <Button variant="ghost" size="icon" aria-label="Open menu">
+            <Button variant="ghost" size="icon" aria-label="Open menu" className="text-slate-300 hover:text-white">
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
@@ -229,7 +230,6 @@ export function Navbar() {
                 </div>
               )}
 
-              {/* Tools collapsible (Bug 67) */}
               <Link
                 to="/ai-tools"
                 className="rounded-lg px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
@@ -261,7 +261,7 @@ export function Navbar() {
                 </Link>
               )}
               <Link to="/book">
-                <Button variant="accent" className="w-full">Notarize Now</Button>
+                <Button className="w-full font-semibold">Notarize Now</Button>
               </Link>
             </div>
           </SheetContent>

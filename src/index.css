@@ -6,113 +6,113 @@
 
 @layer base {
   :root {
-    /* Notar Brand: Light mode */
-    --background: 0 0% 100%;
-    --foreground: 216 79% 30%;
+    /* NotarDex Brand: Slate/Amber — Light mode */
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 216 79% 30%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 216 79% 30%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 181 71% 41%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 38 92% 50%;
+    --primary-foreground: 222 47% 11%;
 
-    --secondary: 160 36% 76%;
-    --secondary-foreground: 216 79% 30%;
+    --secondary: 215 20% 65%;
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 210 20% 96%;
-    --muted-foreground: 220 12% 40%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 0 100% 71%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 38 92% 50%;
+    --accent-foreground: 222 47% 11%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 15% 89%;
-    --input: 210 15% 89%;
-    --ring: 181 71% 41%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 38 92% 50%;
 
     --radius: 0.625rem;
 
-    --primary-glow: 181 71% 50%;
-    --primary-light: 160 36% 94%;
-    --mint: 160 36% 76%;
+    --primary-glow: 38 92% 58%;
+    --primary-light: 43 96% 95%;
+    --mint: 38 60% 80%;
     --surface-elevated: 0 0% 100%;
-    --light-gray: 0 0% 93%;
+    --light-gray: 220 14% 96%;
 
-    --sidebar-background: 216 79% 15%;
-    --sidebar-foreground: 210 20% 90%;
-    --sidebar-primary: 181 71% 41%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 216 60% 20%;
-    --sidebar-accent-foreground: 210 20% 90%;
-    --sidebar-border: 216 50% 22%;
-    --sidebar-ring: 181 71% 41%;
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 215 20% 85%;
+    --sidebar-primary: 38 92% 50%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 222 40% 18%;
+    --sidebar-accent-foreground: 215 20% 85%;
+    --sidebar-border: 222 30% 20%;
+    --sidebar-ring: 38 92% 50%;
 
-    --accent-warm: 30 80% 55%;
-    --accent-warm-foreground: 0 0% 100%;
+    --accent-warm: 38 92% 50%;
+    --accent-warm-foreground: 222 47% 11%;
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
+    --warning-foreground: 222 47% 11%;
     --info: 210 100% 52%;
     --info-foreground: 0 0% 100%;
   }
 
   .dark {
-    /* Notar Brand: Dark mode — Deep navy base */
-    --background: 216 79% 7%;
-    --foreground: 210 20% 95%;
+    /* NotarDex Brand: Dark mode — Deep slate base */
+    --background: 222 47% 7%;
+    --foreground: 215 20% 95%;
 
-    --card: 216 60% 11%;
-    --card-foreground: 210 20% 95%;
+    --card: 222 40% 11%;
+    --card-foreground: 215 20% 95%;
 
-    --popover: 216 60% 11%;
-    --popover-foreground: 210 20% 95%;
+    --popover: 222 40% 11%;
+    --popover-foreground: 215 20% 95%;
 
-    --primary: 181 71% 41%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 38 92% 50%;
+    --primary-foreground: 222 47% 11%;
 
-    --secondary: 216 40% 18%;
-    --secondary-foreground: 210 20% 95%;
+    --secondary: 222 30% 20%;
+    --secondary-foreground: 215 20% 95%;
 
-    --muted: 216 40% 16%;
-    --muted-foreground: 220 12% 50%;
+    --muted: 222 30% 16%;
+    --muted-foreground: 215 16% 55%;
 
-    --accent: 0 100% 71%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 38 92% 50%;
+    --accent-foreground: 222 47% 11%;
 
     --destructive: 0 62% 35%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 216 35% 20%;
-    --input: 216 35% 20%;
-    --ring: 181 71% 41%;
+    --border: 222 25% 20%;
+    --input: 222 25% 20%;
+    --ring: 38 92% 50%;
 
-    --primary-glow: 181 71% 50%;
-    --primary-light: 181 40% 18%;
-    --mint: 160 36% 40%;
-    --surface-elevated: 216 45% 14%;
-    --light-gray: 216 40% 12%;
+    --primary-glow: 38 92% 58%;
+    --primary-light: 38 40% 18%;
+    --mint: 38 40% 30%;
+    --surface-elevated: 222 35% 14%;
+    --light-gray: 222 30% 12%;
 
-    --sidebar-background: 216 79% 5%;
-    --sidebar-foreground: 210 20% 90%;
-    --sidebar-primary: 181 71% 41%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 216 50% 14%;
-    --sidebar-accent-foreground: 210 20% 90%;
-    --sidebar-border: 216 40% 14%;
-    --sidebar-ring: 181 71% 41%;
+    --sidebar-background: 222 47% 5%;
+    --sidebar-foreground: 215 20% 85%;
+    --sidebar-primary: 38 92% 50%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 222 40% 14%;
+    --sidebar-accent-foreground: 215 20% 85%;
+    --sidebar-border: 222 30% 14%;
+    --sidebar-ring: 38 92% 50%;
 
-    --accent-warm: 30 70% 50%;
-    --accent-warm-foreground: 0 0% 100%;
+    --accent-warm: 38 80% 50%;
+    --accent-warm-foreground: 222 47% 11%;
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
     --warning: 38 80% 50%;
-    --warning-foreground: 0 0% 100%;
+    --warning-foreground: 222 47% 11%;
     --info: 210 80% 55%;
     --info-foreground: 0 0% 100%;
   }
@@ -123,18 +123,18 @@
     @apply border-border;
   }
 
-  /* Phase 6: WCAG 2.1 AA — Visible focus indicators */
+  /* WCAG 2.1 AA — Visible focus indicators */
   *:focus-visible {
     @apply outline-2 outline-offset-2 outline-ring;
     outline-style: solid;
   }
 
-  /* Phase 6: Skip navigation link */
+  /* Skip navigation link */
   .skip-to-main {
     @apply sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-md focus:bg-primary focus:text-primary-foreground focus:text-sm focus:font-medium;
   }
 
-  /* Phase 6: Ensure minimum touch targets on mobile */
+  /* Minimum touch targets on mobile */
   @media (pointer: coarse) {
     button, a, [role="button"], input, select, textarea {
       min-height: 44px;
@@ -153,12 +153,12 @@
     letter-spacing: -0.03em;
   }
 
-  /* Phase 6: ARIA live region styling */
+  /* ARIA live region styling */
   [aria-live] {
     @apply sr-only;
   }
 
-  /* Phase 6: Reduced motion support */
+  /* Reduced motion support */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
@@ -168,7 +168,7 @@
     }
   }
 
-  /* Phase 6: High contrast mode improvements */
+  /* High contrast mode improvements */
   @media (forced-colors: active) {
     .bg-primary {
       forced-color-adjust: none;
@@ -187,15 +187,15 @@
 
   .text-gradient-primary {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 100%);
+    background-image: linear-gradient(135deg, hsl(38 92% 50%) 0%, hsl(38 92% 70%) 100%);
   }
 
   .bg-gradient-hero {
-    background: linear-gradient(160deg, hsl(216 79% 15%) 0%, hsl(216 60% 20%) 40%, hsl(var(--background)) 100%);
+    background: linear-gradient(160deg, hsl(222 47% 11%) 0%, hsl(222 40% 15%) 40%, hsl(222 47% 11%) 100%);
   }
 
   .dark .bg-gradient-hero {
-    background: linear-gradient(160deg, hsl(216 79% 5%) 0%, hsl(216 60% 11%) 50%, hsl(216 79% 7%) 100%);
+    background: linear-gradient(160deg, hsl(222 47% 5%) 0%, hsl(222 40% 11%) 50%, hsl(222 47% 7%) 100%);
   }
 
   .bg-gradient-primary {
@@ -205,32 +205,40 @@
   .glass {
     @apply backdrop-blur-xl border;
     background: hsla(0, 0%, 100%, 0.92);
-    border-color: hsla(210, 15%, 89%, 0.6);
+    border-color: hsla(220, 13%, 91%, 0.6);
   }
 
   .dark .glass {
-    background: hsla(224, 55%, 11%, 0.88);
-    border-color: hsla(224, 35%, 20%, 0.6);
+    background: hsla(222, 40%, 11%, 0.88);
+    border-color: hsla(222, 25%, 20%, 0.6);
   }
 
   .glass-card {
     background: hsla(0, 0%, 100%, 0.95);
     backdrop-filter: blur(12px);
-    border: 1px solid hsla(210, 15%, 89%, 0.6);
+    border: 1px solid hsla(220, 13%, 91%, 0.6);
     box-shadow: 0 1px 3px 0 hsla(0, 0%, 0%, 0.03);
   }
 
   .dark .glass-card {
-    background: hsla(224, 55%, 11%, 0.8);
-    border-color: hsla(224, 35%, 20%, 0.6);
+    background: hsla(222, 40%, 11%, 0.8);
+    border-color: hsla(222, 25%, 20%, 0.6);
   }
 
   .glow-primary {
-    box-shadow: 0 0 20px -5px hsl(var(--primary) / 0.2), 0 0 40px -10px hsl(var(--primary) / 0.1);
+    box-shadow: 0 0 20px -5px hsl(var(--primary) / 0.3), 0 0 40px -10px hsl(var(--primary) / 0.15);
   }
 
   .glow-sm {
-    box-shadow: 0 0 10px -3px hsl(var(--primary) / 0.15);
+    box-shadow: 0 0 10px -3px hsl(var(--primary) / 0.2);
+  }
+
+  .glow-amber {
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+  }
+
+  .glow-amber-lg {
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
   }
 
   .geo-pattern {
@@ -275,7 +283,7 @@ button, a, [role="button"] {
 
 .hover-lift:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px -2px hsl(var(--primary) / 0.1);
+  box-shadow: 0 4px 12px -2px hsl(var(--primary) / 0.15);
 }
 
 /* Interactive card hover */
@@ -285,22 +293,22 @@ button, a, [role="button"] {
 .interactive-card:hover {
   transform: translateY(-4px);
   border-color: hsl(var(--primary) / 0.3);
-  box-shadow: 0 12px 20px -4px hsl(168 72% 35% / 0.08);
+  box-shadow: 0 12px 20px -4px hsl(38 92% 50% / 0.1);
 }
 
-/* Gradient mesh background — teal accents */
+/* Gradient mesh background — amber accents */
 .gradient-mesh {
   background:
-    radial-gradient(ellipse at 20% 50%, hsl(168 72% 35% / 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, hsl(174 63% 45% / 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, hsl(168 72% 35% / 0.02) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, hsl(38 92% 50% / 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, hsl(38 92% 60% / 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, hsl(38 92% 50% / 0.02) 0%, transparent 50%);
 }
 
 /* Grid pattern overlay */
 .grid-pattern {
   background-image:
-    linear-gradient(hsl(210 15% 89% / 0.4) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(210 15% 89% / 0.4) 1px, transparent 1px);
+    linear-gradient(hsl(220 13% 91% / 0.4) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(220 13% 91% / 0.4) 1px, transparent 1px);
   background-size: 60px 60px;
 }
 
@@ -410,12 +418,12 @@ button:active, a[role="button"]:active {
 .high-contrast {
   --background: 0 0% 100%;
   --foreground: 0 0% 0%;
-  --primary: 220 100% 30%;
+  --primary: 38 100% 40%;
   --primary-foreground: 0 0% 100%;
   --muted: 0 0% 90%;
   --muted-foreground: 0 0% 20%;
   --border: 0 0% 30%;
-  --accent: 0 100% 40%;
+  --accent: 38 100% 40%;
   --accent-foreground: 0 0% 100%;
   --card: 0 0% 100%;
   --card-foreground: 0 0% 0%;
@@ -423,7 +431,7 @@ button:active, a[role="button"]:active {
 .dark.high-contrast {
   --background: 0 0% 0%;
   --foreground: 0 0% 100%;
-  --primary: 180 100% 60%;
+  --primary: 38 100% 60%;
   --primary-foreground: 0 0% 0%;
   --muted: 0 0% 15%;
   --muted-foreground: 0 0% 85%;

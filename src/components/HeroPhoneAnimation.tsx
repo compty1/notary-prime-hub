@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ShieldCheck, CheckCircle2, ScanFace, ListChecks, Lock, Fingerprint, CreditCard } from "lucide-react";
+import { ShieldCheck, CheckCircle2, ScanFace, ListChecks, Lock, Fingerprint } from "lucide-react";
 
 export default function HeroPhoneAnimation() {
   const [step, setStep] = useState(0);
@@ -41,9 +41,9 @@ export default function HeroPhoneAnimation() {
           animation: floatUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         @keyframes pulseShield {
-          0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(30, 174, 178, 0.4); }
-          70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(30, 174, 178, 0); }
-          100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(30, 174, 178, 0); }
+          0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+          70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(245, 158, 11, 0); }
+          100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
         }
         .animate-shield {
           animation: pulseShield 2s infinite;
@@ -54,7 +54,7 @@ export default function HeroPhoneAnimation() {
       <div
         className="relative w-[280px] h-[560px] rounded-[40px] p-[10px] shadow-2xl"
         style={{
-          background: "linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%)",
+          background: "linear-gradient(145deg, hsl(222 47% 11%) 0%, hsl(222 40% 15%) 50%, hsl(222 47% 7%) 100%)",
           boxShadow: "0 25px 60px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05)",
         }}
       >
@@ -67,12 +67,12 @@ export default function HeroPhoneAnimation() {
         {/* Screen */}
         <div
           className="w-full h-full rounded-[30px] overflow-hidden flex flex-col"
-          style={{ background: "linear-gradient(180deg, hsl(216 79% 7%) 0%, hsl(216 60% 11%) 100%)" }}
+          style={{ background: "linear-gradient(180deg, hsl(222 47% 7%) 0%, hsl(222 40% 11%) 100%)" }}
         >
           {/* Header */}
           <div className="flex items-center justify-between px-5 pt-12 pb-3">
             <span className="font-heading text-base font-bold text-white tracking-tight">
-              Notar<span className="text-accent">.</span>
+              NotarDex<span className="text-primary">.com</span>
             </span>
             <Lock className="w-3.5 h-3.5 text-primary" />
           </div>
@@ -81,7 +81,7 @@ export default function HeroPhoneAnimation() {
           {step === 0 && (
             <div className="animate-float-up flex-1 flex flex-col items-center justify-center gap-4 px-6">
               <div className="w-10 h-10 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-              <p className="text-xs text-white/60 font-body">Establishing Session...</p>
+              <p className="text-xs text-white/60 font-body">Establishing Secure Session...</p>
             </div>
           )}
 
@@ -97,7 +97,7 @@ export default function HeroPhoneAnimation() {
               </div>
 
               {/* ID Card */}
-              <div className="relative mx-auto w-[200px] h-[130px] rounded-xl overflow-hidden border border-white/10" style={{ background: "linear-gradient(135deg, hsl(216 60% 15%), hsl(216 60% 20%))" }}>
+              <div className="relative mx-auto w-[200px] h-[130px] rounded-xl overflow-hidden border border-white/10" style={{ background: "linear-gradient(135deg, hsl(222 40% 15%), hsl(222 40% 20%))" }}>
                 <div className="p-3 flex gap-3">
                   <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
                     <Fingerprint className="w-5 h-5 text-primary" />
@@ -122,7 +122,7 @@ export default function HeroPhoneAnimation() {
 
               <div className="text-center mt-2">
                 <span className={`text-xs font-body font-medium ${step === 2 ? "text-primary" : "text-white/40"}`}>
-                  {step === 2 ? "ID Confirmed" : "Align ID in frame..."}
+                  {step === 2 ? "ID Confirmed ✓" : "Align ID in frame..."}
                 </span>
               </div>
             </div>
@@ -132,8 +132,8 @@ export default function HeroPhoneAnimation() {
           {(step === 3 || step === 4) && (
             <div className="animate-float-up flex-1 flex flex-col px-5 py-4 gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
-                  <ListChecks className="w-4 h-4 text-accent" />
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <ListChecks className="w-4 h-4 text-primary" />
                 </div>
                 <div>
                   <p className="text-sm font-heading font-bold text-white">Knowledge-Based Auth</p>
@@ -161,7 +161,7 @@ export default function HeroPhoneAnimation() {
                   }`}
                 >
                   <div className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors duration-500 ${step === 4 ? "border-primary bg-primary" : "border-white/20"}`}>
-                    {step === 4 && <CheckCircle2 className="w-2.5 h-2.5 text-white" />}
+                    {step === 4 && <CheckCircle2 className="w-2.5 h-2.5 text-slate-900" />}
                   </div>
                   <span className="text-[11px] text-white/70 font-body flex-1">7800 Westheimer Rd</span>
                   {step === 4 && <CheckCircle2 className="w-4 h-4 text-primary" />}
@@ -187,8 +187,8 @@ export default function HeroPhoneAnimation() {
               </p>
               <div className="flex items-center gap-3 mt-2">
                 <div className="w-8 h-1 rounded-full bg-primary" />
-                <div className="w-8 h-1 rounded-full bg-accent" />
-                <div className="w-8 h-1 rounded-full bg-secondary" />
+                <div className="w-8 h-1 rounded-full bg-emerald-500" />
+                <div className="w-8 h-1 rounded-full bg-slate-500" />
               </div>
             </div>
           )}
