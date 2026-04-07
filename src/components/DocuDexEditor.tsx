@@ -17,6 +17,7 @@ import SuperScript from "@tiptap/extension-superscript";
 import ImageExt from "@tiptap/extension-image";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import FontFamily from "@tiptap/extension-font-family";
+import DOMPurify from "dompurify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +32,7 @@ import { logAuditEvent } from "@/lib/auditLog";
 import { AIContentPreview } from "@/components/AIContentPreview";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { safeGetItem, safeSetItem } from "@/lib/safeStorage";
 import {
   FileText, Save, FileDown, Printer, Loader2, MessageSquare,
   ZoomIn, ZoomOut, Send, X, Sparkles, Plus, Maximize2, Minimize2,
@@ -40,9 +42,9 @@ import { DocuDexToolbar } from "./docudex/DocuDexToolbar";
 import { DocuDexSidebar } from "./docudex/DocuDexSidebar";
 import { DocuDexPageList } from "./docudex/DocuDexPageList";
 import { DocuDexFindReplace } from "./docudex/DocuDexFindReplace";
-import { TEMPLATES, BRAND_FONTS, LANGUAGES, PAGE_SIZES, MARGIN_PRESETS } from "./docudex/constants";
+import { TEMPLATES, BRAND_FONTS, LANGUAGES, PAGE_SIZES, MARGIN_PRESETS, COMPLIANCE_WATERMARKS, DEFAULT_FOOTER } from "./docudex/constants";
 import { uid, wordCount, charCount, readTime, readabilityScore } from "./docudex/helpers";
-import type { PageData, HistorySnapshot, DocuDexEditorProps } from "./docudex/types";
+import type { PageData, HistorySnapshot, DocuDexEditorProps, CustomTemplate } from "./docudex/types";
 
 export type { DocuDexEditorProps };
 export { type PageData };
@@ -64,6 +66,8 @@ export function DocuDexEditor({
   clientName,
   serviceName,
   compact,
+  appointmentId,
+  sessionId,
 }: DocuDexEditorProps) {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -104,6 +108,18 @@ export function DocuDexEditor({
   const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
   const [altText, setAltText] = useState("");
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [watermark, setWatermark] = useState("none");
+  const [headerHtml, setHeaderHtml] = useState("");
+  const [footerHtml, setFooterHtml] = useState(DEFAULT_FOOTER);
+  const [showHeaderFooterEditor, setShowHeaderFooterEditor] = useState(false);
+  const [customTemplates, setCustomTemplates] = useState<CustomTemplate[]>(() => {
+    try { return JSON.parse(safeGetItem("docudex_custom_templates") || "[]"); } catch { return []; }
+  });
+  const [recentDocs, setRecentDocs] = useState<{ id: string; title: string; updatedAt: string }[]>([]);
+  const [showRecentDocs, setShowRecentDocs] = useState(false);
+  const [versionName, setVersionName] = useState("");
+  const [showVersionNameDialog, setShowVersionNameDialog] = useState(false);
+  const [pendingSnapshot, setPendingSnapshot] = useState<HistorySnapshot | null>(null);
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const autoSaveTimer = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -192,7 +208,8 @@ export function DocuDexEditor({
         }
         return false;
       },
-      handlePaste: (view, event) => {
+      handlePaste: (_view, event) => {
+        // SC-001: Sanitize pasted HTML content with DOMPurify
         const items = event.clipboardData?.items;
         if (items) {
           for (const item of Array.from(items)) {
@@ -203,6 +220,22 @@ export function DocuDexEditor({
               return true;
             }
           }
+        }
+        // Sanitize any HTML being pasted
+        const html = event.clipboardData?.getData("text/html");
+        if (html) {
+          event.preventDefault();
+          const clean = DOMPurify.sanitize(html, {
+            ALLOWED_TAGS: ["p", "br", "strong", "b", "em", "i", "u", "s", "a", "ul", "ol", "li", "h1", "h2", "h3", "h4", "h5", "h6", "table", "tr", "td", "th", "thead", "tbody", "blockquote", "hr", "img", "span", "sub", "sup", "code", "pre"],
+            ALLOWED_ATTR: ["href", "src", "alt", "style", "class", "target", "colspan", "rowspan"],
+            FORBID_TAGS: ["script", "iframe", "object", "embed", "form", "input"],
+            FORBID_ATTR: ["onerror", "onload", "onclick", "onmouseover"],
+          });
+          // Insert via TipTap's safe content insertion
+          if (editor) {
+            editor.chain().focus().insertContent(clean).run();
+          }
+          return true;
         }
         return false;
       },
@@ -340,10 +373,10 @@ export function DocuDexEditor({
     input.click();
   }, []);
 
-  // Save snapshot (HV-001)
-  const saveSnapshot = useCallback((label: string = "Manual save") => {
+  // Save snapshot (HV-001, HV-003: with optional name)
+  const saveSnapshot = useCallback((label: string = "Manual save", name?: string) => {
     setHistory(prev => [
-      { timestamp: new Date().toISOString(), pages: pages.map(p => ({ ...p })), label },
+      { timestamp: new Date().toISOString(), pages: pages.map(p => ({ ...p })), label, name },
       ...prev.slice(0, 49),
     ]);
   }, [pages]);
@@ -541,11 +574,77 @@ export function DocuDexEditor({
     setPages(snapshot.pages.map(p => ({ ...p })));
     setActivePageIdx(0);
     if (editor) editor.commands.setContent(snapshot.pages[0]?.html || "");
-    toast({ title: "Restored", description: `Reverted to ${new Date(snapshot.timestamp).toLocaleTimeString()}` });
+    toast({ title: "Restored", description: `Reverted to ${snapshot.name || new Date(snapshot.timestamp).toLocaleTimeString()}` });
     announce("Version restored");
   };
 
-  // Save with document hash (OC-003)
+  // Name a snapshot (HV-003)
+  const nameSnapshot = (label: string) => {
+    saveSnapshot(label, label);
+    setShowVersionNameDialog(false);
+    setVersionName("");
+    toast({ title: "Version saved", description: `"${label}" snapshot created.` });
+    announce(`Version "${label}" saved`);
+  };
+
+  // Save as custom template (TP-002)
+  const saveAsTemplate = () => {
+    const templateName = window.prompt("Template name:", title || "Custom Template");
+    if (!templateName) return;
+    const newTemplate: CustomTemplate = {
+      id: `custom-${Date.now()}`,
+      label: templateName,
+      icon: "⭐",
+      category: "personal",
+      content: pages.map(p => p.html).join("\n<!-- page-break -->\n"),
+      createdAt: new Date().toISOString(),
+    };
+    const updated = [...customTemplates, newTemplate];
+    setCustomTemplates(updated);
+    safeSetItem("docudex_custom_templates", JSON.stringify(updated));
+    toast({ title: "Template saved", description: `"${templateName}" added to your templates.` });
+    announce("Custom template saved");
+  };
+
+  // Delete custom template
+  const deleteCustomTemplate = (id: string) => {
+    const updated = customTemplates.filter(t => t.id !== id);
+    setCustomTemplates(updated);
+    safeSetItem("docudex_custom_templates", JSON.stringify(updated));
+    toast({ title: "Template deleted" });
+  };
+
+  // Load recent documents (UX-004)
+  useEffect(() => {
+    if (!user) return;
+    const loadRecent = async () => {
+      const { data } = await supabase
+        .from("documents")
+        .select("id, file_name, updated_at")
+        .eq("uploaded_by", user.id)
+        .order("updated_at", { ascending: false })
+        .limit(10);
+      if (data) {
+        setRecentDocs(data.map(d => ({ id: d.id, title: d.file_name, updatedAt: d.updated_at })));
+      }
+    };
+    loadRecent();
+  }, [user]);
+
+  // Build export HTML with headers/footers/watermark (PM-005, OC-006)
+  const buildExportHtml = (forPrint = false) => {
+    const watermarkStyle = watermark !== "none"
+      ? `position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-45deg);font-size:100px;opacity:0.08;font-weight:bold;color:#888;pointer-events:none;z-index:9999;`
+      : "";
+    const watermarkDiv = watermark !== "none" ? `<div style="${watermarkStyle}">${watermark.toUpperCase()}</div>` : "";
+    return pages.map((p, i) => {
+      const hdr = (headerHtml || "").replace("{{page}}", String(i + 1)).replace("{{total}}", String(pages.length));
+      const ftr = (footerHtml || "").replace("{{page}}", String(i + 1)).replace("{{total}}", String(pages.length));
+      return `<div style="page-break-after:${i < pages.length - 1 ? "always" : "auto"};position:relative;">${watermarkDiv}${hdr ? `<div style="margin-bottom:12px;">${hdr}</div>` : ""}${p.html}${ftr ? `<div style="margin-top:12px;">${ftr}</div>` : ""}</div>`;
+    }).join("");
+  };
+
+  // Save with document hash (OC-003, OC-004, OC-005)
   const handleSave = async () => {
     if (!onSave) return;
     setSaving(true);
@@ -559,7 +658,7 @@ export function DocuDexEditor({
       const combinedContent = pages.map(p => p.html).join("");
       const docHash = await hashContent(combinedContent);
 
-      // Log save to audit trail (SC-003, EX-009)
+      // Log save to audit trail (SC-003, EX-009) with compliance linking (OC-004/005)
       logAuditEvent("document_save", {
         entityType: "docudex_document",
         details: {
@@ -567,6 +666,9 @@ export function DocuDexEditor({
           pageCount: pages.length,
           charCount: charCount(pages),
           documentHash: docHash,
+          ...(appointmentId ? { appointmentId } : {}),
+          ...(sessionId ? { ronSessionId: sessionId } : {}),
+          watermark: watermark !== "none" ? watermark : undefined,
         },
       });
 
@@ -579,9 +681,9 @@ export function DocuDexEditor({
     }
   };
 
-  // Export .DOC (EX-001 - improved with proper styling)
+  // Export .DOC (EX-001 - with headers/footers/watermark)
   const exportDoc = () => {
-    const allHtml = pages.map((p, i) => `<div style="page-break-after:${i < pages.length - 1 ? "always" : "auto"};">${p.html}</div>`).join("");
+    const allHtml = buildExportHtml();
     const full = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]--><style>body{font-family:${fontFamily};font-size:14px;line-height:${lineSpacing};color:#1a1a1a;max-width:700px;margin:0 auto;padding:${pageMargins.top}px ${pageMargins.right}px ${pageMargins.bottom}px ${pageMargins.left}px;}h1{font-size:24px;}h2{font-size:20px;}h3{font-size:17px;}table{border-collapse:collapse;width:100%;}td,th{border:1px solid #ccc;padding:8px;}@page{margin:1in;}</style></head><body>${allHtml}</body></html>`;
     const blob = new Blob([full], { type: "application/msword" });
     const url = URL.createObjectURL(blob);
@@ -598,9 +700,9 @@ export function DocuDexEditor({
     announce("Document exported as DOC");
   };
 
-  // Print/PDF (EX-002)
+  // Print/PDF (EX-002 - with headers/footers/watermark)
   const printDoc = () => {
-    const allHtml = pages.map((p, i) => `<div style="page-break-after:${i < pages.length - 1 ? "always" : "auto"};">${p.html}</div>`).join("");
+    const allHtml = buildExportHtml(true);
     const win = window.open("", "_blank");
     if (!win) return;
     win.document.write(`<html><head><title>${title || "DocuDex"}</title><style>body{font-family:${fontFamily};font-size:14px;line-height:${lineSpacing};color:#1a1a1a;max-width:700px;margin:0 auto;padding:${pageMargins.top}px ${pageMargins.right}px ${pageMargins.bottom}px ${pageMargins.left}px;}h1{font-size:24px;}h2{font-size:20px;}h3{font-size:17px;}table{border-collapse:collapse;width:100%;}td,th{border:1px solid #ccc;padding:8px;}@media print{body{padding:0;}@page{margin:1in;}}</style></head><body>${allHtml}</body></html>`);
@@ -839,13 +941,23 @@ export function DocuDexEditor({
               setPageBgColor={setPageBgColor}
               wordCountGoal={wordCountGoal}
               setWordCountGoal={setWordCountGoal}
+              watermark={watermark}
+              setWatermark={setWatermark}
+              headerHtml={headerHtml}
+              setHeaderHtml={setHeaderHtml}
+              footerHtml={footerHtml}
+              setFooterHtml={setFooterHtml}
               history={history}
+              customTemplates={customTemplates}
               onApplyTemplate={applyTemplate}
               onInsertElement={insertElement}
               onAiGenerate={aiGenerateFullPage}
               onAiTextAction={aiTextAction}
               onTranslate={translatePage}
               onRestoreSnapshot={restoreSnapshot}
+              onSaveAsTemplate={saveAsTemplate}
+              onDeleteCustomTemplate={deleteCustomTemplate}
+              onNameSnapshot={() => setShowVersionNameDialog(true)}
               aiLoading={aiLoading}
               maxChars={maxChars}
               compact={compact}
@@ -919,21 +1031,38 @@ export function DocuDexEditor({
                   )}
                 </div>
 
-                {/* Editor Canvas (DM-001: dark mode aware) */}
+                {/* Editor Canvas (DM-001: dark mode aware, OC-006: watermark, PM-005: header/footer) */}
                 <div style={{ transform: `scale(${zoom / 100})`, transformOrigin: "top center" }}>
                   <div
                     className={cn(
-                      "docudex-canvas shadow-lg rounded border border-border/50",
+                      "docudex-canvas shadow-lg rounded border border-border/50 relative",
                       "outline-none focus-within:shadow-xl transition-shadow ring-2 ring-primary/30"
                     )}
                     style={{
                       width: currentPageSize.width,
                       minHeight: currentPageSize.height,
                       backgroundColor: pageBgColor,
+                      color: pageBgColor === "#1E293B" || pageBgColor === "#111827" ? "#e2e8f0" : undefined,
                       padding: `${pageMargins.top}px ${pageMargins.right}px ${pageMargins.bottom}px ${pageMargins.left}px`,
                     }}
                   >
+                    {/* Watermark overlay (OC-006) */}
+                    {watermark !== "none" && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10" style={{ opacity: 0.06 }}>
+                        <span className="text-7xl font-bold transform -rotate-45 select-none" style={{ color: pageBgColor === "#1E293B" || pageBgColor === "#111827" ? "#fff" : "#000" }}>
+                          {watermark.toUpperCase()}
+                        </span>
+                      </div>
+                    )}
+                    {/* Header (PM-005) */}
+                    {headerHtml && (
+                      <div className="text-[10px] text-muted-foreground mb-2 border-b border-border/30 pb-1" dangerouslySetInnerHTML={{ __html: sanitizeHtml(headerHtml.replace("{{page}}", String(activePageIdx + 1)).replace("{{total}}", String(pages.length))) }} />
+                    )}
                     <EditorContent editor={editor} />
+                    {/* Footer (PM-005) */}
+                    {footerHtml && (
+                      <div className="text-[10px] text-muted-foreground mt-2 border-t border-border/30 pt-1" dangerouslySetInnerHTML={{ __html: sanitizeHtml(footerHtml.replace("{{page}}", String(activePageIdx + 1)).replace("{{total}}", String(pages.length))) }} />
+                    )}
                   </div>
 
                   {/* Page break indicator (PM-006) */}
@@ -1147,7 +1276,26 @@ export function DocuDexEditor({
           </DialogContent>
         </Dialog>
 
-        {/* Mobile sidebar trigger */}
+        {/* Version Name Dialog (HV-003) */}
+        <Dialog open={showVersionNameDialog} onOpenChange={setShowVersionNameDialog}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle>Name This Version</DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground">Give this snapshot a descriptive name for easy identification.</p>
+            <Input
+              value={versionName}
+              onChange={e => setVersionName(e.target.value)}
+              placeholder="e.g. Final Draft, After Review..."
+              autoFocus
+              onKeyDown={e => { if (e.key === "Enter" && versionName.trim()) nameSnapshot(versionName.trim()); }}
+            />
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowVersionNameDialog(false)}>Cancel</Button>
+              <Button onClick={() => { if (versionName.trim()) nameSnapshot(versionName.trim()); }} disabled={!versionName.trim()}>Save Version</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         {isMobile && (
           <Button
             variant="outline"
@@ -1184,13 +1332,23 @@ export function DocuDexEditor({
                 setPageBgColor={setPageBgColor}
                 wordCountGoal={wordCountGoal}
                 setWordCountGoal={setWordCountGoal}
+                watermark={watermark}
+                setWatermark={setWatermark}
+                headerHtml={headerHtml}
+                setHeaderHtml={setHeaderHtml}
+                footerHtml={footerHtml}
+                setFooterHtml={setFooterHtml}
                 history={history}
+                customTemplates={customTemplates}
                 onApplyTemplate={applyTemplate}
                 onInsertElement={insertElement}
                 onAiGenerate={aiGenerateFullPage}
                 onAiTextAction={aiTextAction}
                 onTranslate={translatePage}
                 onRestoreSnapshot={restoreSnapshot}
+                onSaveAsTemplate={saveAsTemplate}
+                onDeleteCustomTemplate={deleteCustomTemplate}
+                onNameSnapshot={() => setShowVersionNameDialog(true)}
                 aiLoading={aiLoading}
                 maxChars={maxChars}
                 compact={false}

@@ -7,23 +7,23 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import {
   LayoutTemplate, Wand2, Table, Palette, Languages, History,
   X, Sparkles, Loader2, Quote, SeparatorHorizontal, PenLine, Image,
   QrCode, FileSignature, Calendar, Clock, CheckSquare, Hash,
-  Scale, BookOpen, Search, Eye, ChevronRight,
-  Stamp, Users, Type as TypeIcon,
+  Scale, BookOpen, Search, Eye, ChevronRight, Save, Trash2,
+  Stamp, Users, Type as TypeIcon, Tag,
 } from "lucide-react";
 import {
   TEMPLATES, TEMPLATE_CATEGORIES, BRAND_FONTS, ACCENT_COLORS,
   LANGUAGES, PAGE_SIZES, LINE_SPACINGS, MARGIN_PRESETS,
   SPECIAL_CHARACTERS, LEGAL_CLAUSES, PAGE_BACKGROUND_COLORS,
+  COMPLIANCE_WATERMARKS,
   type MarginPreset,
 } from "./constants";
 import type { Editor } from "@tiptap/react";
-import type { HistorySnapshot } from "./types";
+import type { HistorySnapshot, CustomTemplate } from "./types";
 
 const SIDEBAR_TABS = [
   { id: "templates", icon: LayoutTemplate, label: "Templates" },
@@ -54,13 +54,23 @@ interface SidebarProps {
   setPageBgColor: (color: string) => void;
   wordCountGoal: number | null;
   setWordCountGoal: (goal: number | null) => void;
+  watermark: string;
+  setWatermark: (wm: string) => void;
+  headerHtml: string;
+  setHeaderHtml: (html: string) => void;
+  footerHtml: string;
+  setFooterHtml: (html: string) => void;
   history: HistorySnapshot[];
+  customTemplates: CustomTemplate[];
   onApplyTemplate: (id: string) => void;
   onInsertElement: (type: string) => void;
   onAiGenerate: (prompt: string) => void;
   onAiTextAction: (action: string) => void;
   onTranslate: (lang: string) => void;
   onRestoreSnapshot: (snap: HistorySnapshot) => void;
+  onSaveAsTemplate: () => void;
+  onDeleteCustomTemplate: (id: string) => void;
+  onNameSnapshot: () => void;
   aiLoading: boolean;
   maxChars: number;
   compact?: boolean;
@@ -73,8 +83,11 @@ export function DocuDexSidebar({
   pageSize, setPageSize, lineSpacing, setLineSpacing,
   pageMargins, setPageMargins, pageBgColor, setPageBgColor,
   wordCountGoal, setWordCountGoal,
-  history, onApplyTemplate, onInsertElement, onAiGenerate, onAiTextAction,
-  onTranslate, onRestoreSnapshot, aiLoading, maxChars, compact, isMobile,
+  watermark, setWatermark,
+  headerHtml, setHeaderHtml, footerHtml, setFooterHtml,
+  history, customTemplates, onApplyTemplate, onInsertElement, onAiGenerate, onAiTextAction,
+  onTranslate, onRestoreSnapshot, onSaveAsTemplate, onDeleteCustomTemplate,
+  onNameSnapshot, aiLoading, maxChars, compact, isMobile,
 }: SidebarProps) {
   const [aiPrompt, setAiPrompt] = useState("");
   const [targetLength, setTargetLength] = useState<number[]>([5000]);
@@ -83,7 +96,6 @@ export function DocuDexSidebar({
   const [showSpecialChars, setShowSpecialChars] = useState(false);
   const [showLegalClauses, setShowLegalClauses] = useState(false);
   const [legalClauseCategory, setLegalClauseCategory] = useState("all");
-  const [templatePreview, setTemplatePreview] = useState<string | null>(null);
 
   const scrollRefs = useRef<Record<string, number>>({});
 
@@ -97,8 +109,12 @@ export function DocuDexSidebar({
 
   if (compact && !isMobile) return null;
 
-  // Filtered templates (TP-003)
-  const filteredTemplates = TEMPLATES.filter(t => {
+  // Filtered templates (TP-003) — include custom templates
+  const allTemplates = [
+    ...TEMPLATES,
+    ...customTemplates.map(ct => ({ ...ct, icon: ct.icon || "⭐" })),
+  ];
+  const filteredTemplates = allTemplates.filter(t => {
     const matchCategory = templateCategory === "all" || t.category === templateCategory;
     const matchSearch = !templateSearch || t.label.toLowerCase().includes(templateSearch.toLowerCase());
     return matchCategory && matchSearch;
@@ -174,9 +190,13 @@ export function DocuDexSidebar({
           </div>
           <ScrollArea className="flex-1" data-sidebar-scroll="">
             <div className="p-3">
-              {/* ═══ Templates (TP-001, TP-003) ═══ */}
+              {/* ═══ Templates (TP-001, TP-002, TP-003) ═══ */}
               {sidebarTab === "templates" && (
                 <div className="space-y-2">
+                  {/* Save as Template (TP-002) */}
+                  <Button variant="outline" size="sm" className="w-full text-xs gap-1.5 mb-2" onClick={onSaveAsTemplate}>
+                    <Save className="h-3 w-3" /> Save Current as Template
+                  </Button>
                   {/* Search bar */}
                   <div className="relative">
                     <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
@@ -206,29 +226,40 @@ export function DocuDexSidebar({
                   </div>
                   {/* Template list */}
                   <div className="grid grid-cols-2 gap-2">
-                    {filteredTemplates.map(t => (
-                      <Popover key={t.id}>
-                        <PopoverTrigger asChild>
-                          <button
-                            className="flex flex-col items-center gap-1.5 rounded-lg border border-border p-3 text-xs hover:bg-muted hover:border-primary/30 transition-all group relative"
-                          >
-                            <span className="text-2xl group-hover:scale-110 transition-transform">{t.icon}</span>
-                            <span className="text-[10px] text-center font-medium leading-tight">{t.label}</span>
-                            <Eye className="h-2.5 w-2.5 absolute top-1 right-1 opacity-0 group-hover:opacity-50 transition-opacity" />
-                          </button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-72 p-2" side="right">
-                          <div className="text-[10px] font-semibold mb-1">{t.label} Preview</div>
-                          <div
-                            className="prose prose-xs max-w-none max-h-48 overflow-auto border rounded p-2 text-[9px] bg-white text-black"
-                            dangerouslySetInnerHTML={{ __html: t.content.slice(0, 500) }}
-                          />
-                          <Button size="sm" className="w-full text-xs mt-2 h-7" onClick={() => onApplyTemplate(t.id)}>
-                            Apply Template
-                          </Button>
-                        </PopoverContent>
-                      </Popover>
-                    ))}
+                    {filteredTemplates.map(t => {
+                      const isCustom = "createdAt" in t;
+                      return (
+                        <Popover key={t.id}>
+                          <PopoverTrigger asChild>
+                            <button
+                              className="flex flex-col items-center gap-1.5 rounded-lg border border-border p-3 text-xs hover:bg-muted hover:border-primary/30 transition-all group relative"
+                            >
+                              <span className="text-2xl group-hover:scale-110 transition-transform">{t.icon}</span>
+                              <span className="text-[10px] text-center font-medium leading-tight">{t.label}</span>
+                              {isCustom && <span className="absolute top-1 left-1 text-[8px] text-primary">★</span>}
+                              <Eye className="h-2.5 w-2.5 absolute top-1 right-1 opacity-0 group-hover:opacity-50 transition-opacity" />
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-72 p-2" side="right">
+                            <div className="text-[10px] font-semibold mb-1">{t.label} Preview</div>
+                            <div
+                              className="prose prose-xs max-w-none max-h-48 overflow-auto border rounded p-2 text-[9px] bg-card"
+                              dangerouslySetInnerHTML={{ __html: t.content.slice(0, 500) }}
+                            />
+                            <div className="flex gap-1 mt-2">
+                              <Button size="sm" className="flex-1 text-xs h-7" onClick={() => onApplyTemplate(t.id)}>
+                                Apply
+                              </Button>
+                              {isCustom && (
+                                <Button size="sm" variant="destructive" className="h-7 w-7 p-0" onClick={() => onDeleteCustomTemplate(t.id)}>
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              )}
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      );
+                    })}
                   </div>
                   {filteredTemplates.length === 0 && (
                     <p className="text-[10px] text-muted-foreground text-center py-4">No templates match your search.</p>
@@ -390,7 +421,7 @@ export function DocuDexSidebar({
                 </div>
               )}
 
-              {/* ═══ Design (CS-002, PM-004, etc.) ═══ */}
+              {/* ═══ Design (CS-002, PM-004, PM-005, OC-006) ═══ */}
               {sidebarTab === "design" && (
                 <div className="space-y-4">
                   <div>
@@ -468,7 +499,7 @@ export function DocuDexSidebar({
                     </div>
                   </div>
 
-                  {/* Page Background Color (CS-002) */}
+                  {/* Page Background Color (CS-002, DM-004) */}
                   <div>
                     <label className="text-[10px] text-muted-foreground mb-1.5 block font-medium">Page Background</label>
                     <div className="flex gap-1.5 flex-wrap">
@@ -478,13 +509,47 @@ export function DocuDexSidebar({
                           onClick={() => setPageBgColor(c.value)}
                           className={cn(
                             "h-7 w-7 rounded border-2 transition-all",
-                            pageBgColor === c.value ? "border-primary ring-1 ring-primary" : "border-border hover:scale-105"
+                            pageBgColor === c.value ? "border-primary ring-1 ring-primary" : "border-border dark:border-muted-foreground/30 hover:scale-105"
                           )}
                           style={{ backgroundColor: c.value }}
                           title={c.label}
                         />
                       ))}
                     </div>
+                  </div>
+
+                  {/* Compliance Watermark (OC-006) */}
+                  <div>
+                    <label className="text-[10px] text-muted-foreground mb-1.5 block font-medium">Compliance Watermark</label>
+                    <Select value={watermark} onValueChange={setWatermark}>
+                      <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {COMPLIANCE_WATERMARKS.map(w => (
+                          <SelectItem key={w.value} value={w.value}>{w.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Headers & Footers (PM-005) */}
+                  <div>
+                    <label className="text-[10px] text-muted-foreground mb-1.5 block font-medium">Header</label>
+                    <Input
+                      className="h-7 text-xs"
+                      placeholder="Header HTML (use {{page}}, {{total}})"
+                      value={headerHtml}
+                      onChange={e => setHeaderHtml(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] text-muted-foreground mb-1.5 block font-medium">Footer</label>
+                    <Input
+                      className="h-7 text-xs"
+                      placeholder="Footer HTML (use {{page}}, {{total}})"
+                      value={footerHtml}
+                      onChange={e => setFooterHtml(e.target.value)}
+                    />
+                    <p className="text-[9px] text-muted-foreground mt-0.5">Use {"{{page}}"} and {"{{total}}"} for page numbers</p>
                   </div>
 
                   {/* Word Count Goal (CE-010) */}
@@ -523,7 +588,12 @@ export function DocuDexSidebar({
               {/* ═══ History (HV-001 to HV-003) ═══ */}
               {sidebarTab === "history" && (
                 <div className="space-y-1.5">
-                  <p className="text-[10px] text-muted-foreground mb-2">Version snapshots</p>
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <p className="text-[10px] text-muted-foreground flex-1">Version snapshots</p>
+                    <Button variant="outline" size="sm" className="h-6 text-[10px] gap-1" onClick={onNameSnapshot}>
+                      <Tag className="h-2.5 w-2.5" /> Name Version
+                    </Button>
+                  </div>
                   {history.length === 0 ? (
                     <p className="text-[10px] text-muted-foreground italic text-center py-6">No snapshots yet. Changes auto-save periodically.</p>
                   ) : (
@@ -533,7 +603,10 @@ export function DocuDexSidebar({
                         onClick={() => onRestoreSnapshot(snap)}
                         className="w-full text-left rounded-lg border border-border p-2.5 text-[10px] hover:bg-muted hover:border-primary/30 transition-all"
                       >
-                        <div className="font-medium">{snap.label}</div>
+                        <div className="font-medium">
+                          {snap.name || snap.label}
+                          {snap.name && <span className="ml-1 text-primary">★</span>}
+                        </div>
                         <div className="text-muted-foreground mt-0.5">
                           {new Date(snap.timestamp).toLocaleString(undefined, {
                             dateStyle: "short",
