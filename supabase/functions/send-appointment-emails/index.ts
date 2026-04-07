@@ -186,7 +186,7 @@ async function getCustomTemplate(
   return wrapInEmailLayout(headingMap[type] || "Notification", htmlBody);
 }
 
-async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
+async function sendEmail(to: string, subject: string, html: string, maxRetries = 2): Promise<boolean> {
   const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
   if (!RESEND_API_KEY) {
@@ -197,28 +197,47 @@ async function sendEmail(to: string, subject: string, html: string): Promise<boo
 
   const fromEmail = Deno.env.get("FROM_EMAIL") || "notifications@resend.dev";
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${RESEND_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: `Notar <${fromEmail}>`,
-      to: [to],
-      subject,
-      html,
-    }),
-  });
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${RESEND_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: `Notar <${fromEmail}>`,
+          to: [to],
+          subject,
+          html,
+        }),
+      });
 
-  if (!response.ok) {
-    const errBody = await response.text();
-    console.error(`Resend API error [${response.status}]: ${errBody}`);
-    return false;
+      if (response.ok) {
+        console.log(`✅ Email sent to ${to}: ${subject}`);
+        return true;
+      }
+
+      const errBody = await response.text();
+      console.error(`Resend API error [${response.status}] attempt ${attempt + 1}: ${errBody}`);
+
+      // Don't retry on 4xx client errors (except 429 rate limit)
+      if (response.status >= 400 && response.status < 500 && response.status !== 429) {
+        return false;
+      }
+
+      // Wait before retry with exponential backoff
+      if (attempt < maxRetries) {
+        await new Promise(r => setTimeout(r, 1000 * Math.pow(2, attempt)));
+      }
+    } catch (err) {
+      console.error(`Email send attempt ${attempt + 1} failed:`, (err as Error).message);
+      if (attempt < maxRetries) {
+        await new Promise(r => setTimeout(r, 1000 * Math.pow(2, attempt)));
+      }
+    }
   }
-
-  console.log(`✅ Email sent to ${to}: ${subject}`);
-  return true;
+  return false;
 }
 
 Deno.serve(async (req) => {
