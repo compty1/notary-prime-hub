@@ -700,9 +700,9 @@ export function DocuDexEditor({
     announce("Document exported as DOC");
   };
 
-  // Print/PDF (EX-002)
+  // Print/PDF (EX-002 - with headers/footers/watermark)
   const printDoc = () => {
-    const allHtml = pages.map((p, i) => `<div style="page-break-after:${i < pages.length - 1 ? "always" : "auto"};">${p.html}</div>`).join("");
+    const allHtml = buildExportHtml(true);
     const win = window.open("", "_blank");
     if (!win) return;
     win.document.write(`<html><head><title>${title || "DocuDex"}</title><style>body{font-family:${fontFamily};font-size:14px;line-height:${lineSpacing};color:#1a1a1a;max-width:700px;margin:0 auto;padding:${pageMargins.top}px ${pageMargins.right}px ${pageMargins.bottom}px ${pageMargins.left}px;}h1{font-size:24px;}h2{font-size:20px;}h3{font-size:17px;}table{border-collapse:collapse;width:100%;}td,th{border:1px solid #ccc;padding:8px;}@media print{body{padding:0;}@page{margin:1in;}}</style></head><body>${allHtml}</body></html>`);
