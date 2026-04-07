@@ -34,7 +34,7 @@ function generateICS(appt: any): string {
     "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Notar//NotarDex.com//EN",
     "BEGIN:VEVENT", `DTSTART:${dtStart}`, `DTEND:${dtEnd}`,
     `SUMMARY:Notarization — ${appt.service_type}`,
-    `DESCRIPTION:${appt.notarization_type === "ron" ? "Remote Online Notarization (RON) session" : "In-person notarization appointment"} with Notar`,
+    `DESCRIPTION:${appt.notarization_type === "ron" ? "Remote Online Notarization (RON) session" : "In-person notarization appointment"} with NotarDex`,
     `LOCATION:${appt.location || (appt.notarization_type === "ron" ? "Online — Video Call" : "TBD")}`,
     "STATUS:CONFIRMED", "END:VEVENT", "END:VCALENDAR",
   ].join("\r\n");
@@ -110,7 +110,7 @@ const getCrossSells = (appt: any) => {
 };
 
 export default function AppointmentConfirmation() {
-  usePageMeta({ title: "Appointment Confirmed — Notar", description: "Your notarization appointment has been confirmed. Review your session details, download a calendar invite, and prepare for your appointment." });
+  usePageMeta({ title: "Appointment Confirmed — NotarDex", description: "Your notarization appointment has been confirmed. Review your session details, download a calendar invite, and prepare for your appointment." });
   const [searchParams] = useSearchParams();
   const appointmentId = searchParams.get("id");
   const { user } = useAuth();
