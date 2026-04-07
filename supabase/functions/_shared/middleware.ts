@@ -4,6 +4,8 @@
  */
 
 const ALLOWED_ORIGINS = [
+  "https://notardex.com",
+  "https://www.notardex.com",
   "https://notary-prime-hub.lovable.app",
   "https://id-preview--b6d1b88a-ed8c-42c3-98a9-3a2517fa9990.lovable.app",
   "http://localhost:5173",

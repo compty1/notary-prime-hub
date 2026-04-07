@@ -1,6 +1,6 @@
 {
-  "name": "Notar — Ohio Notary & Document Services",
-  "short_name": "Notar",
+  "name": "NotarDex — Ohio Notary & Document Services",
+  "short_name": "NotarDex",
   "description": "Professional notary and document services in Ohio. In-person and Remote Online Notarization (RON).",
   "start_url": "/",
   "display": "standalone",

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { injectJsonLd } from "@/lib/seoSchemas";
 
-const BASE_TITLE = "Notar — Ohio Notary Public | In-Person & RON";
+const BASE_TITLE = "NotarDex — Ohio Notary Public | In-Person & RON";
 const DOMAIN = "https://notardex.com";
 const DEFAULT_OG_IMAGE = `${DOMAIN}/og-default.jpg`;
 
@@ -23,7 +23,7 @@ export function usePageMeta(
 
   useEffect(() => {
     // Title
-    const pageTitle = opts.title ? `${opts.title} — Notar` : BASE_TITLE;
+    const pageTitle = opts.title ? `${opts.title} — NotarDex` : BASE_TITLE;
     document.title = pageTitle;
 
     // Meta description
