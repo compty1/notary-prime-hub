@@ -48,12 +48,12 @@ function wrapInEmailLayout(heading: string, bodyContent: string): string {
     <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
     <body style="margin:0;padding:0;background-color:#f8f7f4;font-family:'Inter',Arial,sans-serif;">
       <div style="max-width:600px;margin:0 auto;padding:32px 16px;">
-        <div style="background-color:#1a2744;padding:24px;text-align:center;border-radius:8px 8px 0 0;">
-          <h1 style="color:#e8d5a3;margin:0;font-size:24px;font-family:Georgia,serif;">Notar</h1>
+        <div style="background-color:#0f172a;padding:24px;text-align:center;border-radius:8px 8px 0 0;">
+          <h1 style="color:#f59e0b;margin:0;font-size:24px;font-family:Georgia,serif;">NotarDex</h1>
           <p style="color:#b8c5d6;margin:4px 0 0;font-size:14px;">Ohio Commissioned Notary Public</p>
         </div>
         <div style="background-color:#ffffff;padding:32px 24px;border-radius:0 0 8px 8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-          <h2 style="color:#1a2744;margin:0 0 16px;font-size:20px;font-family:Georgia,serif;">${heading}</h2>
+          <h2 style="color:#0f172a;margin:0 0 16px;font-size:20px;font-family:Georgia,serif;">${heading}</h2>
           ${bodyContent}
           <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;">
           <p style="color:#9ca3af;font-size:12px;text-align:center;margin:0;">
