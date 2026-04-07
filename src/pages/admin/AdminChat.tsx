@@ -226,7 +226,7 @@ export default function AdminChat() {
           {selectedUser && (
             <div className="border-t p-3 space-y-1">
               <div className="flex gap-2">
-                <input type="file" ref={fileRef} className="hidden" onChange={handleFileUpload} />
+                <input type="file" ref={fileRef} className="hidden" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.webp" onChange={handleFileUpload} />
                 <Button size="sm" variant="ghost" onClick={() => fileRef.current?.click()} title="Attach file" aria-label="Attach file">
                   <Paperclip className="h-4 w-4" />
                 </Button>
