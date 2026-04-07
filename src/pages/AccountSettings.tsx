@@ -12,7 +12,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from "@/hooks/use-toast";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { Shield, Trash2, Download, Key, Eye, EyeOff, Bell, Smartphone } from "lucide-react";
+import { Shield, Trash2, Download, Key, Eye, EyeOff, Bell, Smartphone, Contrast } from "lucide-react";
+import { getHighContrast, setHighContrast } from "@/lib/a11yUtils";
 
 export default function AccountSettings() {
   usePageMeta({ title: "Account Settings", description: "Manage your Notar account — update password, notification preferences, and security settings.", noIndex: true });
@@ -25,6 +26,7 @@ export default function AccountSettings() {
   const [changingPassword, setChangingPassword] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [highContrast, setHC] = useState(getHighContrast);
 
   // Notification preferences
   const NOTIF_EVENTS = [
@@ -231,6 +233,21 @@ export default function AccountSettings() {
           </CardHeader>
           <CardContent>
             <Button variant="outline" onClick={handleExportData} disabled={exporting}>{exporting ? "Exporting..." : "Download Data"}</Button>
+          </CardContent>
+        </Card>
+
+        {/* Accessibility */}
+        <Card className="mb-6 border-border/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg"><Contrast className="h-5 w-5 text-primary" /> Accessibility</CardTitle>
+            <CardDescription>Visual and interaction preferences</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="high-contrast">High contrast mode</Label>
+              <Switch id="high-contrast" checked={highContrast} onCheckedChange={(v) => { setHC(v); setHighContrast(v); }} />
+            </div>
+            <p className="text-xs text-muted-foreground">Increases color contrast for better visibility. Reduced motion is automatically respected from your OS settings.</p>
           </CardContent>
         </Card>
 
