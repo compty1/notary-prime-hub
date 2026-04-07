@@ -106,9 +106,8 @@ export function useSSEStream() {
               options?.onChunk?.(chunk, fullContent);
             }
           } catch {
-            // Incomplete JSON chunk — prepend back and wait for more data
-            textBuffer = line + "\n" + textBuffer;
-            break;
+            // Malformed JSON — skip this line rather than looping forever
+            continue;
           }
         }
       }
