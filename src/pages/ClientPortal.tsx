@@ -393,7 +393,12 @@ export default function ClientPortal() {
                   </div>
                   <div className="divide-y divide-border/50">
                     {upcoming.length === 0 ? (
-                      <div className="p-6 text-center text-muted-foreground text-sm">No upcoming appointments</div>
+                      <div className="p-6 text-center">
+                        <Calendar className="mx-auto mb-3 h-10 w-10 text-muted-foreground/40" />
+                        <p className="text-sm font-medium text-foreground mb-1">No upcoming appointments</p>
+                        <p className="text-xs text-muted-foreground mb-3">Schedule your first notarization to get started.</p>
+                        <Link to="/book"><Button size="sm"><Plus className="mr-1 h-3 w-3" /> Book Appointment</Button></Link>
+                      </div>
                     ) : upcoming.slice(0, 3).map(a => (
                       <div key={a.id} className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 hover:bg-muted/20 transition-colors">
                         <div className="flex items-start gap-4">
@@ -824,7 +829,7 @@ export default function ClientPortal() {
       </Dialog>
 
       <Dialog open={qrDialogOpen} onOpenChange={setQrDialogOpen}>
-        <DialogContent className="sm:max-w-sm text-center"><DialogHeader><DialogTitle className="font-sans">Scan to Upload from Mobile</DialogTitle></DialogHeader><div className="flex justify-center py-4"><QRCodeSVG value={qrUrl} size={200} level="H" /></div><p className="text-sm text-muted-foreground">Scan this QR code with your phone to upload documents or join a session.</p></DialogContent>
+        <DialogContent className="sm:max-w-sm text-center"><DialogHeader><DialogTitle className="font-sans">Scan to Upload from Mobile</DialogTitle></DialogHeader><div className="flex justify-center py-4"><QRCodeSVG value={qrUrl} size={200} level="H" /></div><p className="text-sm text-muted-foreground">Scan this QR code with your phone camera to upload documents or join a notarization session directly from your mobile device.</p></DialogContent>
       </Dialog>
 
       <Dialog open={techCheckOpen} onOpenChange={setTechCheckOpen}>
