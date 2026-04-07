@@ -14,6 +14,7 @@ import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Shield, Trash2, Download, Key, Eye, EyeOff, Bell, Smartphone, Contrast } from "lucide-react";
 import { getHighContrast, setHighContrast } from "@/lib/a11yUtils";
+import SubscriptionManager from "@/components/SubscriptionManager";
 
 export default function AccountSettings() {
   usePageMeta({ title: "Account Settings", description: "Manage your Notar account — update password, notification preferences, and security settings.", noIndex: true });
@@ -300,6 +301,9 @@ export default function AccountSettings() {
             </AlertDialog>
           </CardContent>
         </Card>
+
+        {/* Subscription Management */}
+        <SubscriptionManager />
       </div>
     </PageShell>
   );
