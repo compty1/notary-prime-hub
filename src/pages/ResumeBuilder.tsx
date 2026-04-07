@@ -457,14 +457,32 @@ export default function ResumeBuilder() {
         <Dialog open={analyzeOpen} onOpenChange={setAnalyzeOpen}>
           <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="font-display">Paste & Analyze Resume</DialogTitle>
+              <DialogTitle className="font-display">Analyze Resume</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <Textarea value={analyzeText} onChange={(e) => setAnalyzeText(e.target.value)} placeholder="Paste your resume text here for AI analysis..." className="min-h-[200px]" />
-              <Button onClick={analyzeResume} disabled={generating}>
-                {generating ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Sparkles className="h-4 w-4 mr-1.5" />}
-                Analyze
-              </Button>
+              <div>
+                <Label>Resume Text</Label>
+                <Textarea value={analyzeText} onChange={(e) => setAnalyzeText(e.target.value)} placeholder="Paste your resume text here for AI analysis..." className="min-h-[150px] mt-1" />
+              </div>
+              <div>
+                <Label>Job Description <span className="text-muted-foreground font-normal">(optional — for targeted scoring)</span></Label>
+                <Textarea value={analyzeJobDesc} onChange={(e) => setAnalyzeJobDesc(e.target.value)} placeholder="Paste the job description to score your resume against..." className="min-h-[100px] mt-1" />
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={analyzeResume} disabled={generating}>
+                  {generating ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Sparkles className="h-4 w-4 mr-1.5" />}
+                  Analyze
+                </Button>
+                <input type="file" accept=".pdf,.doc,.docx" className="hidden" id="analyze-upload" onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  try { const text = await file.text(); setAnalyzeText(text.slice(0, 4000)); toast.success("File text loaded!"); } catch { toast.error("Could not read file"); }
+                  e.target.value = "";
+                }} />
+                <Button variant="outline" onClick={() => document.getElementById("analyze-upload")?.click()}>
+                  <Upload className="h-4 w-4 mr-1.5" /> Upload File
+                </Button>
+              </div>
               {analysisResult && (
                 <Card>
                   <CardContent className="p-4 prose prose-sm dark:prose-invert max-w-none">
