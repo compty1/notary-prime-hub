@@ -1,10 +1,13 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin, Monitor, Plus, Video, RefreshCw, Wifi, Star, Hash, LayoutGrid, List } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
+import { ClientFeedbackForm } from "@/components/ClientFeedbackForm";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const FullCalendarView = lazy(() => import("@/components/FullCalendarView"));
 
