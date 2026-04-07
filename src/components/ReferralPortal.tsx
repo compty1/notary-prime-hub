@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Users, Gift, Copy, CheckCircle2, Clock } from "lucide-react";
+import { Loader2, Users, Gift, Copy, CheckCircle2, Clock, TrendingUp, Percent } from "lucide-react";
 
 export default function AdminReferrals() {
   return null; // Placeholder — rendered inside client portal
@@ -24,7 +24,6 @@ export function ReferralPortal() {
 
   useEffect(() => {
     if (!user) return;
-    // Load referrals
     supabase
       .from("referrals")
       .select("*")
@@ -32,7 +31,6 @@ export function ReferralPortal() {
       .order("created_at", { ascending: false })
       .then(({ data }) => {
         setReferrals(data || []);
-        // Get referral code from first referral or generate one
         const code = data?.[0]?.referral_code;
         if (code) setReferralCode(code);
         setLoading(false);
@@ -58,7 +56,6 @@ export function ReferralPortal() {
     setSubmitting(false);
   };
 
-  // FC-2: Use resolved referral code, not loading placeholder
   const referralLink = user && referralCode
     ? `${window.location.origin}/signup?ref=${referralCode}`
     : "";
@@ -68,14 +65,30 @@ export function ReferralPortal() {
     toast({ title: "Copied!" });
   };
 
+  // Analytics calculations
   const converted = referrals.filter((r) => r.status === "converted").length;
   const pending = referrals.filter((r) => r.status === "pending").length;
+  const conversionRate = referrals.length > 0 ? ((converted / referrals.length) * 100).toFixed(1) : "0.0";
+
+  // Monthly trend
+  const thisMonthReferrals = useMemo(() => {
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+    return referrals.filter(r => r.created_at >= monthStart).length;
+  }, [referrals]);
+
+  const lastMonthReferrals = useMemo(() => {
+    const now = new Date();
+    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
+    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+    return referrals.filter(r => r.created_at >= lastMonthStart && r.created_at < thisMonthStart).length;
+  }, [referrals]);
 
   if (loading) return <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin" /></div>;
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardContent className="p-4 text-center">
             <Users className="mx-auto mb-2 h-8 w-8 text-primary" />
@@ -85,19 +98,47 @@ export function ReferralPortal() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <Clock className="mx-auto mb-2 h-8 w-8 text-yellow-600" />
+            <Clock className="mx-auto mb-2 h-8 w-8 text-accent-foreground" />
             <div className="text-2xl font-bold">{pending}</div>
             <div className="text-xs text-muted-foreground">Pending</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <Gift className="mx-auto mb-2 h-8 w-8 text-green-600" />
+            <Gift className="mx-auto mb-2 h-8 w-8 text-primary" />
             <div className="text-2xl font-bold">{converted}</div>
             <div className="text-xs text-muted-foreground">Converted</div>
           </CardContent>
         </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <Percent className="mx-auto mb-2 h-8 w-8 text-primary" />
+            <div className="text-2xl font-bold">{conversionRate}%</div>
+            <div className="text-xs text-muted-foreground">Conversion Rate</div>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Monthly Trend */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">This Month</p>
+              <p className="text-2xl font-bold">{thisMonthReferrals} referrals</p>
+            </div>
+            <div className="flex items-center gap-1 text-sm">
+              <TrendingUp className={`h-4 w-4 ${thisMonthReferrals >= lastMonthReferrals ? "text-primary" : "text-destructive"}`} />
+              <span className={thisMonthReferrals >= lastMonthReferrals ? "text-primary" : "text-destructive"}>
+                {lastMonthReferrals > 0
+                  ? `${thisMonthReferrals >= lastMonthReferrals ? "+" : ""}${((thisMonthReferrals - lastMonthReferrals) / lastMonthReferrals * 100).toFixed(0)}%`
+                  : thisMonthReferrals > 0 ? "New" : "—"}
+              </span>
+              <span className="text-muted-foreground ml-1">vs last month ({lastMonthReferrals})</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

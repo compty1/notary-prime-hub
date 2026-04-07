@@ -1,0 +1,1 @@
+ALTER TABLE public.client_feedback ADD COLUMN IF NOT EXISTS nps_score integer CHECK (nps_score >= 0 AND nps_score <= 10);

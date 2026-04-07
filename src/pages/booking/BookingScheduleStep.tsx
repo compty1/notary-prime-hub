@@ -20,7 +20,6 @@ interface ScheduleStepProps {
   suggestedSlots: any[];
   loadingSlots: boolean;
   leadTimeWarning: string | null;
-  // Location
   clientAddress: string; setClientAddress: (v: string) => void;
   clientCity: string; setClientCity: (v: string) => void;
   clientState: string; setClientState: (v: string) => void;
@@ -32,6 +31,10 @@ interface ScheduleStepProps {
   onUseLocation: () => void;
   outsideServiceArea?: boolean;
   travelDistance?: number | null;
+  // Waitlist
+  onJoinWaitlist?: () => void;
+  joiningWaitlist?: boolean;
+  waitlistJoined?: boolean;
 }
 
 export default function BookingScheduleStep(props: ScheduleStepProps) {
@@ -54,8 +57,26 @@ export default function BookingScheduleStep(props: ScheduleStepProps) {
     return null;
   }, [date, time]);
 
+  // Estimated session duration based on service type
+  const estimatedDuration = useMemo(() => {
+    const cat = props.serviceCategories[serviceType] || "";
+    if (cat === "ron" || serviceType.toLowerCase().includes("remote")) return "30–45 min";
+    if (cat === "real_estate" || serviceType.toLowerCase().includes("loan") || serviceType.toLowerCase().includes("closing")) return "45–90 min";
+    if (cat === "apostille") return "15–20 min";
+    if (serviceType.toLowerCase().includes("witness")) return "20–30 min";
+    return "15–30 min";
+  }, [serviceType, props.serviceCategories]);
+
   return (
     <div className="space-y-4">
+      {/* Duration estimate */}
+      {serviceType && (
+        <div className="rounded-lg border border-border bg-muted/30 p-3 text-sm flex items-center gap-2">
+          <Clock className="h-4 w-4 text-primary flex-shrink-0" />
+          <span className="text-muted-foreground">Estimated session duration: <strong className="text-foreground">{estimatedDuration}</strong></span>
+        </div>
+      )}
+
       <div>
         <Label htmlFor="date">Date</Label>
         <Input id="date" type="date" value={date} onChange={e => setDate(e.target.value)} min={new Date().toISOString().split("T")[0]} />
@@ -87,6 +108,23 @@ export default function BookingScheduleStep(props: ScheduleStepProps) {
               </Button>
             ))}
           </div>
+          {/* Waitlist option */}
+          {props.onJoinWaitlist && !props.waitlistJoined && (
+            <div className="mt-3 pt-3 border-t border-border">
+              <Button variant="secondary" size="sm" className="w-full" onClick={props.onJoinWaitlist} disabled={props.joiningWaitlist}>
+                {props.joiningWaitlist ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Clock className="mr-1 h-3 w-3" />}
+                Join Waitlist for {new Date(date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+              </Button>
+              <p className="text-[10px] text-muted-foreground mt-1 text-center">We'll notify you if a slot opens up</p>
+            </div>
+          )}
+          {props.waitlistJoined && (
+            <div className="mt-3 pt-3 border-t border-border text-center">
+              <p className="text-sm text-primary font-medium flex items-center justify-center gap-1">
+                <Info className="h-3 w-3" /> You're on the waitlist! We'll email you if a slot opens.
+              </p>
+            </div>
+          )}
         </div>
       )}
 

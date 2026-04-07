@@ -16,10 +16,11 @@ interface LineItem {
 interface InvoiceGeneratorProps {
   clientName?: string;
   clientEmail?: string;
+  appointmentId?: string;
   onGenerate?: (invoice: { items: LineItem[]; total: number; tax: number }) => void;
 }
 
-export function InvoiceGenerator({ clientName = "", clientEmail = "", onGenerate }: InvoiceGeneratorProps) {
+export function InvoiceGenerator({ clientName = "", clientEmail = "", appointmentId, onGenerate }: InvoiceGeneratorProps) {
   const [items, setItems] = useState<LineItem[]>([{ description: "", quantity: 1, unitPrice: 0 }]);
   const [taxRate, setTaxRate] = useState(0);
 
