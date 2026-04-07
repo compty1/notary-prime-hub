@@ -48,8 +48,8 @@ interface SidebarProps {
   setPageSize: (size: string) => void;
   lineSpacing: string;
   setLineSpacing: (spacing: string) => void;
-  pageMargins: typeof MARGIN_PRESETS[number];
-  setPageMargins: (margins: typeof MARGIN_PRESETS[number]) => void;
+  pageMargins: MarginPreset;
+  setPageMargins: (margins: MarginPreset) => void;
   pageBgColor: string;
   setPageBgColor: (color: string) => void;
   wordCountGoal: number | null;
