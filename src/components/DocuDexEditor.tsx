@@ -384,6 +384,37 @@ export function DocuDexEditor({
     input.click();
   }, []);
 
+  // DOCX import via mammoth (IM-001)
+  const importDocx = useCallback(async (file: File) => {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const result = await mammoth.convertToHtml({ arrayBuffer });
+      const cleanHtml = DOMPurify.sanitize(result.value, {
+        ALLOWED_TAGS: ["p", "br", "strong", "b", "em", "i", "u", "s", "a", "ul", "ol", "li", "h1", "h2", "h3", "h4", "h5", "h6", "table", "tr", "td", "th", "thead", "tbody", "blockquote", "hr", "img", "span", "sub", "sup"],
+        ALLOWED_ATTR: ["href", "src", "alt", "style", "class", "target", "colspan", "rowspan"],
+      });
+      saveSnapshot("Before DOCX import");
+      setPages(prev => prev.map((p, i) => i === activePageIdx ? { ...p, html: cleanHtml } : p));
+      if (editor) editor.commands.setContent(cleanHtml);
+      setTitle(file.name.replace(/\.docx$/i, ""));
+      toast({ title: "DOCX imported", description: `"${file.name}" loaded successfully.` });
+      announce("DOCX file imported");
+    } catch (e: any) {
+      toast({ title: "Import failed", description: e.message || "Could not read DOCX file.", variant: "destructive" });
+    }
+  }, [editor, activePageIdx, toast, announce]);
+
+  const handleImportFile = useCallback(() => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".docx,.doc";
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) importDocx(file);
+    };
+    input.click();
+  }, [importDocx]);
+
   // Save snapshot (HV-001, HV-003: with optional name)
   const saveSnapshot = useCallback((label: string = "Manual save", name?: string) => {
     setHistory(prev => [
