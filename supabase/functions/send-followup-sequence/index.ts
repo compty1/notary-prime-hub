@@ -51,7 +51,7 @@ Deno.serve(async (req: Request) => {
     const name = profile.full_name || "there";
     const svc = appointment?.service_type || "your session";
     const confNum = appointment?.confirmation_number || "";
-    const portalUrl = "https://notary-prime-hub.lovable.app";
+    const portalUrl = "https://notardex.com";
 
     // Email 1: Thank you (immediate)
     await supabase.rpc("enqueue_email", {

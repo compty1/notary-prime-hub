@@ -31,7 +31,7 @@ Deno.serve(async (req: Request) => {
     const { userId, email, fullName } = parsed.data;
 
     const name = fullName || "there";
-    const portalUrl = "https://notary-prime-hub.lovable.app";
+    const portalUrl = "https://notardex.com";
 
     // Email 1: Welcome (immediate)
     await supabase.rpc("enqueue_email", {

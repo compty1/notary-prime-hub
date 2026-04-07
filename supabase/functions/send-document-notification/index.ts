@@ -67,7 +67,7 @@ Deno.serve(async (req: Request) => {
           <p>${message}</p>
           <p><strong>Document:</strong> ${fileName || "N/A"}</p>
           <p><strong>New Status:</strong> ${newStatus.replace(/_/g, " ")}</p>
-          <p><a href="https://notary-prime-hub.lovable.app/portal?tab=documents">View in Portal →</a></p>
+          <p><a href="https://notardex.com/portal?tab=documents">View in Portal →</a></p>
           <p>— NotarDex Team</p>
         `,
       },

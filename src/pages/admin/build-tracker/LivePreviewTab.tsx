@@ -6,8 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Monitor, Tablet, Smartphone, RefreshCw, ExternalLink, AlertTriangle, Navigation } from "lucide-react";
 
-const PUBLISHED_URL = "https://notary-prime-hub.lovable.app";
-const PREVIEW_URL = PUBLISHED_URL; // Use published URL — preview URLs require Lovable login and block iframe embedding
+const PUBLISHED_URL = "https://notardex.com";
+const PREVIEW_URL = PUBLISHED_URL;
 
 const VIEWPORTS = [
   { label: "Desktop", icon: Monitor, width: 1280, height: 800 },
