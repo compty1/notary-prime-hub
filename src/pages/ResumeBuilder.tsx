@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
@@ -12,12 +12,13 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Plus, FileText, Sparkles, Loader2, Trash2, Edit, Search, Download, Eye, Briefcase, GraduationCap, User } from "lucide-react";
+import { Plus, FileText, Sparkles, Loader2, Trash2, Edit, Search, Download, Eye, Briefcase, GraduationCap, User, Upload, Printer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { RichTextEditor } from "@/components/RichTextEditor";
+import { validateFile, ALLOWED_DOCUMENT_MIMES } from "@/lib/fileValidation";
 
 type Resume = {
   id: string;
@@ -78,8 +79,11 @@ export default function ResumeBuilder() {
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [analyzeText, setAnalyzeText] = useState("");
+  const [analyzeJobDesc, setAnalyzeJobDesc] = useState("");
   const [analyzeOpen, setAnalyzeOpen] = useState(false);
   const [analysisResult, setAnalysisResult] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchData = useCallback(async () => {
     if (!user) return;
@@ -189,12 +193,58 @@ export default function ResumeBuilder() {
     }
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const err = validateFile(file, { allowedMimes: new Set(["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]), maxBytes: 10 * 1024 * 1024 });
+    if (err) { toast.error(err); return; }
+    setUploading(true);
+    try {
+      const text = await file.text();
+      const { data, error } = await supabase.functions.invoke("ai-extract-document", {
+        body: { document_text: text.slice(0, 50000), extractor_type: "hr" },
+      });
+      if (error) throw error;
+      const ext = data?.extraction;
+      if (ext?.results) {
+        const parts: string[] = [];
+        if (ext.results.candidate_name) parts.push(`<h1>${ext.results.candidate_name}</h1>`);
+        if (ext.results.summary) parts.push(`<p>${ext.results.summary}</p>`);
+        if (ext.results.experience?.length) {
+          parts.push("<h2>Experience</h2>");
+          ext.results.experience.forEach((exp: any) => parts.push(`<p><strong>${exp.title || exp.role}</strong> at ${exp.company} (${exp.dates})</p><p>${exp.key_achievements || exp.description || ""}</p>`));
+        }
+        if (ext.results.education?.length) {
+          parts.push("<h2>Education</h2>");
+          ext.results.education.forEach((edu: any) => parts.push(`<p><strong>${edu.degree}</strong> — ${edu.institution} (${edu.year || edu.dates})</p>`));
+        }
+        if (ext.results.skills?.length) {
+          parts.push("<h2>Skills</h2><p>" + ext.results.skills.map((s: any) => typeof s === "string" ? s : s.name || s).join(", ") + "</p>");
+        }
+        setContent(parts.join("\n"));
+        setAnalyzeText(text.slice(0, 4000));
+        toast.success("Resume parsed and loaded!");
+      } else {
+        setAnalyzeText(text.slice(0, 4000));
+        toast.info("File text extracted — paste into editor or analyze.");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to parse file");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   const analyzeResume = async () => {
     if (!analyzeText.trim()) { toast.error("Paste your resume text to analyze"); return; }
     setGenerating(true);
     try {
+      const jobContext = analyzeJobDesc.trim()
+        ? `\n\nScore this resume against the following job description:\n${analyzeJobDesc.slice(0, 2000)}`
+        : "";
       const resp = await callEdgeFunctionStream("build-analyst", {
-        messages: [{ role: "user", content: `Analyze this resume and provide a detailed score (1-100), strengths, weaknesses, and specific actionable recommendations for improvement. Format with clear headings.\n\nResume:\n${analyzeText.slice(0, 4000)}` }],
+        messages: [{ role: "user", content: `Analyze this resume and provide a detailed score (1-100), strengths, weaknesses, and specific actionable recommendations for improvement. Format with clear headings.${jobContext}\n\nResume:\n${analyzeText.slice(0, 4000)}` }],
         context: "Resume analysis mode",
       }, 120000);
       if (!resp.ok) throw new Error("Analysis failed");
@@ -218,6 +268,25 @@ export default function ResumeBuilder() {
     } finally {
       setGenerating(false);
     }
+  };
+
+  const handlePrint = () => {
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(`<html><head><title>${title || "Resume"}</title><style>body{font-family:sans-serif;padding:2rem;line-height:1.6;max-width:800px;margin:0 auto}h1,h2,h3{margin-top:1em}</style></head><body>${content}</body></html>`);
+      printWindow.document.close();
+      printWindow.print();
+    }
+  };
+
+  const handleExportDoc = () => {
+    const blob = new Blob([`<html><head><meta charset="utf-8"></head><body>${content}</body></html>`], { type: "application/vnd.ms-word;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${title || "resume"}.doc`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const filteredResumes = resumes.filter((r) => !searchQuery || r.title.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -350,12 +419,17 @@ export default function ResumeBuilder() {
               </div>
 
               <Card className="bg-muted/50">
-                <CardContent className="p-3 flex items-center gap-2">
+                <CardContent className="p-3 flex items-center gap-2 flex-wrap">
                   <Button size="sm" onClick={generateWithAI} disabled={generating}>
                     {generating ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Sparkles className="h-4 w-4 mr-1.5" />}
                     AI Generate
                   </Button>
-                  <span className="text-xs text-muted-foreground">Generate professional content with AI</span>
+                  <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={handleFileUpload} />
+                  <Button size="sm" variant="outline" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
+                    {uploading ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Upload className="h-4 w-4 mr-1.5" />}
+                    Upload Resume
+                  </Button>
+                  <span className="text-xs text-muted-foreground">Generate content or upload a PDF/DOCX to parse</span>
                 </CardContent>
               </Card>
 
@@ -366,7 +440,9 @@ export default function ResumeBuilder() {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-2 flex-wrap">
+                <Button variant="outline" onClick={handleExportDoc} disabled={!content}><Download className="h-4 w-4 mr-1.5" /> Export .DOC</Button>
+                <Button variant="outline" onClick={handlePrint} disabled={!content}><Printer className="h-4 w-4 mr-1.5" /> Print / PDF</Button>
                 <Button variant="outline" onClick={() => setEditorOpen(false)}>Cancel</Button>
                 <Button onClick={save} disabled={saving}>
                   {saving ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <FileText className="h-4 w-4 mr-1.5" />}
@@ -381,14 +457,32 @@ export default function ResumeBuilder() {
         <Dialog open={analyzeOpen} onOpenChange={setAnalyzeOpen}>
           <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="font-display">Paste & Analyze Resume</DialogTitle>
+              <DialogTitle className="font-display">Analyze Resume</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <Textarea value={analyzeText} onChange={(e) => setAnalyzeText(e.target.value)} placeholder="Paste your resume text here for AI analysis..." className="min-h-[200px]" />
-              <Button onClick={analyzeResume} disabled={generating}>
-                {generating ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Sparkles className="h-4 w-4 mr-1.5" />}
-                Analyze
-              </Button>
+              <div>
+                <Label>Resume Text</Label>
+                <Textarea value={analyzeText} onChange={(e) => setAnalyzeText(e.target.value)} placeholder="Paste your resume text here for AI analysis..." className="min-h-[150px] mt-1" />
+              </div>
+              <div>
+                <Label>Job Description <span className="text-muted-foreground font-normal">(optional — for targeted scoring)</span></Label>
+                <Textarea value={analyzeJobDesc} onChange={(e) => setAnalyzeJobDesc(e.target.value)} placeholder="Paste the job description to score your resume against..." className="min-h-[100px] mt-1" />
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={analyzeResume} disabled={generating}>
+                  {generating ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Sparkles className="h-4 w-4 mr-1.5" />}
+                  Analyze
+                </Button>
+                <input type="file" accept=".pdf,.doc,.docx" className="hidden" id="analyze-upload" onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  try { const text = await file.text(); setAnalyzeText(text.slice(0, 4000)); toast.success("File text loaded!"); } catch { toast.error("Could not read file"); }
+                  e.target.value = "";
+                }} />
+                <Button variant="outline" onClick={() => document.getElementById("analyze-upload")?.click()}>
+                  <Upload className="h-4 w-4 mr-1.5" /> Upload File
+                </Button>
+              </div>
               {analysisResult && (
                 <Card>
                   <CardContent className="p-4 prose prose-sm dark:prose-invert max-w-none">

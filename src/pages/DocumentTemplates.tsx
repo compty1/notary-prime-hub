@@ -1,5 +1,5 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, FileText, Download, Eye, Printer, ChevronLeft, AlertTriangle, Save, MessageSquare, Sparkles, Send, Loader2, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, AlignLeft, AlignCenter, AlignRight, Heading1, Heading2, Heart, RotateCcw, HelpCircle } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Search, FileText, Download, Eye, Printer, ChevronLeft, AlertTriangle, Save, MessageSquare, Sparkles, Send, Loader2, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, AlignLeft, AlignCenter, AlignRight, Heading1, Heading2, Heart, RotateCcw, HelpCircle, PenTool, Plus, CheckCircle, PanelRightOpen } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { motion } from "framer-motion";
@@ -16,6 +17,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useEditor, EditorContent } from "@tiptap/react";
+import BubbleMenu from "@tiptap/extension-bubble-menu";
 import StarterKit from "@tiptap/starter-kit";
 import UnderlineExt from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
@@ -23,6 +25,7 @@ import ReactMarkdown from "react-markdown";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { callEdgeFunctionStream } from "@/lib/edgeFunctionAuth";
 
 interface TemplateField {
   name: string;
@@ -636,7 +639,8 @@ function EditorToolbar({ editor }: { editor: any }) {
 }
 
 export default function DocumentTemplates() {
-  usePageMeta({ title: "Notary Document Templates", description: "Free Ohio notary document templates — affidavits, acknowledgments, jurats, and more. Download and customize for your needs." });
+  usePageMeta({ title: "Document Studio — Templates & Builder", description: "Create documents from scratch or use Ohio notary templates. AI-powered editing, review, and export." });
+  const [mainTab, setMainTab] = useState("templates");
   const [search, setSearch] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [formData, setFormData] = useState<Record<string, string>>({});
@@ -653,6 +657,17 @@ export default function DocumentTemplates() {
   const [chatMessages, setChatMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+
+  // Document Studio states
+  const [studioTitle, setStudioTitle] = useState("Untitled Document");
+  const [studioChatOpen, setStudioChatOpen] = useState(false);
+  const [studioChatMessages, setStudioChatMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
+  const [studioChatInput, setStudioChatInput] = useState("");
+  const [studioChatLoading, setStudioChatLoading] = useState(false);
+  const [studioSaving, setStudioSaving] = useState(false);
+  const [studioReviewing, setStudioReviewing] = useState(false);
+  const [studioReviewResult, setStudioReviewResult] = useState("");
+  const [aiInlineLoading, setAiInlineLoading] = useState(false);
 
   // Load favorites from DB
   useEffect(() => {
@@ -894,15 +909,229 @@ export default function DocumentTemplates() {
     setChatLoading(false);
   };
 
+  // ── Document Studio editor ──
+  const studioEditor = useEditor({
+    extensions: [
+      StarterKit,
+      UnderlineExt,
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
+    ],
+    content: "<p>Start writing your document here...</p>",
+    editorProps: {
+      attributes: { class: "prose prose-sm max-w-none focus:outline-none min-h-[500px] p-6 font-serif" },
+    },
+  });
+
+  const studioHandlePrint = () => {
+    if (!studioEditor) return;
+    const html = studioEditor.getHTML();
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(`<html><head><title>${studioTitle}</title><style>body{font-family:serif;padding:2rem;line-height:1.8;max-width:800px;margin:0 auto}h1,h2,h3{margin-top:1em}</style></head><body>${html}</body></html>`);
+      printWindow.document.close();
+      printWindow.print();
+    }
+  };
+
+  const studioHandleExport = () => {
+    if (!studioEditor) return;
+    const html = studioEditor.getHTML();
+    const blob = new Blob([`<html><head><meta charset="utf-8"></head><body>${html}</body></html>`], { type: "application/vnd.ms-word;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${studioTitle || "document"}.doc`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const studioHandleSave = async () => {
+    if (!user || !studioEditor) {
+      toast({ title: "Sign in required", description: "Please sign in to save documents.", variant: "destructive" });
+      return;
+    }
+    setStudioSaving(true);
+    try {
+      const html = studioEditor.getHTML();
+      const fileName = `${studioTitle || "document"}_${Date.now()}.html`;
+      const filePath = `${user.id}/${fileName}`;
+      const blob = new Blob([html], { type: "text/html" });
+      const { error: uploadError } = await supabase.storage.from("documents").upload(filePath, blob);
+      if (uploadError) throw uploadError;
+      const { error: insertError } = await supabase.from("documents").insert({
+        uploaded_by: user.id,
+        file_name: fileName,
+        file_path: filePath,
+        status: "uploaded" as any,
+      });
+      if (insertError) throw insertError;
+      toast({ title: "Saved to Vault", description: "Document saved to your portal." });
+    } catch (e: any) {
+      toast({ title: "Save failed", description: e.message, variant: "destructive" });
+    }
+    setStudioSaving(false);
+  };
+
+  const studioReviewDocument = async () => {
+    if (!studioEditor) return;
+    const docText = studioEditor.getText();
+    if (docText.trim().length < 20) {
+      toast({ title: "Not enough content", description: "Write more content before reviewing.", variant: "destructive" });
+      return;
+    }
+    setStudioReviewing(true);
+    setStudioReviewResult("");
+    try {
+      const resp = await callEdgeFunctionStream("build-analyst", {
+        messages: [{ role: "user", content: `Review this document for completeness, tone, legal accuracy, and formatting. Provide scores, strengths, weaknesses, and actionable suggestions.\n\nDocument Title: ${studioTitle}\n\n${docText.slice(0, 5000)}` }],
+        context: "Document review mode",
+      }, 120000);
+      if (!resp.ok) throw new Error("Review failed");
+      const reader = resp.body?.getReader();
+      if (!reader) throw new Error("No body");
+      const decoder = new TextDecoder();
+      let result = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        for (const line of decoder.decode(value, { stream: true }).split("\n")) {
+          if (!line.startsWith("data: ")) continue;
+          const json = line.slice(6).trim();
+          if (json === "[DONE]") break;
+          try { const p = JSON.parse(json); const c = p.choices?.[0]?.delta?.content; if (c) { result += c; setStudioReviewResult(result); } } catch {}
+        }
+      }
+    } catch (err: any) {
+      toast({ title: "Review failed", description: err.message, variant: "destructive" });
+    }
+    setStudioReviewing(false);
+  };
+
+  const aiInlineAction = async (action: string) => {
+    if (!studioEditor) return;
+    const { from, to } = studioEditor.state.selection;
+    const selectedText = studioEditor.state.doc.textBetween(from, to, " ");
+    if (!selectedText.trim()) { toast({ title: "Select text first" }); return; }
+    setAiInlineLoading(true);
+    try {
+      const promptMap: Record<string, string> = {
+        rewrite: `Rewrite this text to be clearer and more professional. Return ONLY the rewritten text:\n\n${selectedText}`,
+        expand: `Expand this text with more detail while maintaining the same tone. Return ONLY the expanded text:\n\n${selectedText}`,
+        summarize: `Summarize this text concisely. Return ONLY the summary:\n\n${selectedText}`,
+        grammar: `Fix any grammar, spelling, or punctuation errors. Return ONLY the corrected text:\n\n${selectedText}`,
+        formal: `Rewrite this text in a more formal, professional tone. Return ONLY the formal version:\n\n${selectedText}`,
+      };
+      const resp = await callEdgeFunctionStream("build-analyst", {
+        messages: [{ role: "user", content: promptMap[action] || promptMap.rewrite }],
+        context: "Inline document editing",
+      }, 60000);
+      if (!resp.ok) throw new Error("AI action failed");
+      const reader = resp.body?.getReader();
+      if (!reader) throw new Error("No body");
+      const decoder = new TextDecoder();
+      let result = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        for (const line of decoder.decode(value, { stream: true }).split("\n")) {
+          if (!line.startsWith("data: ")) continue;
+          const json = line.slice(6).trim();
+          if (json === "[DONE]") break;
+          try { const p = JSON.parse(json); const c = p.choices?.[0]?.delta?.content; if (c) result += c; } catch {}
+        }
+      }
+      if (result.trim()) {
+        studioEditor.chain().focus().deleteRange({ from, to }).insertContentAt(from, result.trim()).run();
+        toast({ title: `${action.charAt(0).toUpperCase() + action.slice(1)} applied` });
+      }
+    } catch (err: any) {
+      toast({ title: "AI action failed", description: err.message, variant: "destructive" });
+    }
+    setAiInlineLoading(false);
+  };
+
+  // Studio AI Chat
+  const sendStudioChat = async () => {
+    if (!studioChatInput.trim() || studioChatLoading) return;
+    const userMsg = { role: "user" as const, content: studioChatInput.trim() };
+    const msgs = [...studioChatMessages, userMsg];
+    setStudioChatMessages(msgs);
+    setStudioChatInput("");
+    setStudioChatLoading(true);
+    let assistantSoFar = "";
+    try {
+      const docContext = studioEditor ? studioEditor.getText().slice(0, 2000) : "";
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/client-assistant`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        body: JSON.stringify({ messages: msgs, template_context: { title: studioTitle, description: "User is creating a document from scratch in the Document Studio.", currentContent: docContext } }),
+      });
+      if (!resp.ok) throw new Error("AI unavailable");
+      const reader = resp.body?.getReader();
+      if (!reader) throw new Error("No stream");
+      const decoder = new TextDecoder();
+      let buffer = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let idx;
+        while ((idx = buffer.indexOf("\n")) !== -1) {
+          let line = buffer.slice(0, idx);
+          buffer = buffer.slice(idx + 1);
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (!line.startsWith("data: ")) continue;
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") break;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const c = parsed.choices?.[0]?.delta?.content;
+            if (c) {
+              assistantSoFar += c;
+              setStudioChatMessages(prev => {
+                const last = prev[prev.length - 1];
+                if (last?.role === "assistant") return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantSoFar } : m);
+                return [...prev, { role: "assistant", content: assistantSoFar }];
+              });
+            }
+          } catch {}
+        }
+      }
+    } catch (e: any) {
+      setStudioChatMessages(prev => [...prev, { role: "assistant", content: `Error: ${e.message}` }]);
+    }
+    setStudioChatLoading(false);
+  };
+
+  const startFromTemplate = (t: Template) => {
+    const body = t.sampleData ? (() => {
+      let b = t.body;
+      Object.entries(t.sampleData).forEach(([k, v]) => { b = b.replace(new RegExp(`\\{\\{${k}\\}\\}`, "g"), v); });
+      return b;
+    })() : t.body;
+    setStudioTitle(t.title);
+    studioEditor?.commands.setContent(plainTextToHtml(body));
+    setMainTab("studio");
+    toast({ title: "Template loaded", description: `"${t.title}" loaded into the editor.` });
+  };
+
   return (
     <PageShell>
 
-      <div className="container mx-auto max-w-5xl px-4 py-8">
+      <div className="container mx-auto max-w-6xl px-4 py-8">
         <Breadcrumbs />
-        <div className="mb-8 text-center">
-          <h1 className="font-sans text-3xl font-bold text-foreground mb-2">Document Templates Library</h1>
-          <p className="text-muted-foreground mb-4">Ready-to-use templates for common notarized documents</p>
+        <div className="mb-6 text-center">
+          <h1 className="font-sans text-3xl font-bold text-foreground mb-2">Document Studio</h1>
+          <p className="text-muted-foreground mb-4">Create from scratch or use ready-made templates</p>
         </div>
+
+        <Tabs value={mainTab} onValueChange={setMainTab} className="mb-6">
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+            <TabsTrigger value="templates" className="gap-1.5"><FileText className="h-4 w-4" /> Template Library</TabsTrigger>
+            <TabsTrigger value="studio" className="gap-1.5"><PenTool className="h-4 w-4" /> Create New</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="templates" className="mt-6">
 
         {/* Legal Disclaimer */}
         <div className="mb-8 space-y-3">
@@ -971,9 +1200,125 @@ export default function DocumentTemplates() {
             </motion.div>
           ))}
         </div>
+          </TabsContent>
+
+          {/* ── Document Studio Tab ── */}
+          <TabsContent value="studio" className="mt-6">
+            <div className="flex flex-col gap-4">
+              {/* Title + Actions Bar */}
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <Input
+                  value={studioTitle}
+                  onChange={(e) => setStudioTitle(e.target.value)}
+                  className="max-w-md text-lg font-semibold"
+                  placeholder="Document Title"
+                />
+                <div className="flex gap-2 flex-wrap">
+                  <Button variant="outline" size="sm" onClick={() => setStudioChatOpen(!studioChatOpen)}>
+                    <PanelRightOpen className="h-4 w-4 mr-1.5" /> AI Chat
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={studioReviewDocument} disabled={studioReviewing}>
+                    {studioReviewing ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <CheckCircle className="h-4 w-4 mr-1.5" />}
+                    Review
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={studioHandleExport}><Download className="h-4 w-4 mr-1.5" /> Export .DOC</Button>
+                  <Button variant="outline" size="sm" onClick={studioHandlePrint}><Printer className="h-4 w-4 mr-1.5" /> Print / PDF</Button>
+                  <Button size="sm" onClick={studioHandleSave} disabled={studioSaving || !user}>
+                    {studioSaving ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Save className="h-4 w-4 mr-1.5" />}
+                    Save to Vault
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                {/* Main Editor */}
+                <div className="flex-1 border rounded-lg overflow-hidden bg-background">
+                  <EditorToolbar editor={studioEditor} />
+                  {/* AI Inline Actions Bar */}
+                  <div className="flex gap-1 border-b border-border p-1.5 bg-muted/20 flex-wrap">
+                    <span className="text-xs text-muted-foreground self-center mr-1">AI Actions:</span>
+                    {["rewrite", "expand", "summarize", "grammar", "formal"].map((action) => (
+                      <Button key={action} variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => aiInlineAction(action)} disabled={aiInlineLoading}>
+                        {aiInlineLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : action.charAt(0).toUpperCase() + action.slice(1)}
+                      </Button>
+                    ))}
+                    <span className="text-xs text-muted-foreground self-center ml-auto italic">Select text first</span>
+                  </div>
+                  <EditorContent editor={studioEditor} />
+                </div>
+
+                {/* AI Chat Sidebar */}
+                {studioChatOpen && (
+                  <div className="w-80 shrink-0 border rounded-lg flex flex-col bg-background">
+                    <div className="p-3 border-b flex items-center justify-between">
+                      <h3 className="text-sm font-semibold flex items-center gap-1.5"><Sparkles className="h-4 w-4 text-primary" /> AI Assistant</h3>
+                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => setStudioChatOpen(false)}>×</Button>
+                    </div>
+                    <div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-[300px] max-h-[500px]">
+                      {studioChatMessages.length === 0 && (
+                        <div className="text-center text-xs text-muted-foreground py-8 space-y-2">
+                          <p>Ask me to help draft, edit, or review your document.</p>
+                          <div className="flex flex-wrap gap-1 justify-center">
+                            {["Help me draft a letter", "Add a section about...", "Make this more formal"].map((q) => (
+                              <Button key={q} variant="outline" size="sm" className="text-xs h-auto py-1" onClick={() => { setStudioChatInput(q); }}>
+                                {q}
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {studioChatMessages.map((msg, i) => (
+                        <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                          <div className={`max-w-[90%] rounded-lg px-3 py-2 text-sm ${msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}>
+                            {msg.role === "assistant" ? (
+                              <div className="prose prose-sm max-w-none dark:prose-invert"><ReactMarkdown>{msg.content}</ReactMarkdown></div>
+                            ) : <p>{msg.content}</p>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="p-3 border-t flex gap-2">
+                      <Input value={studioChatInput} onChange={(e) => setStudioChatInput(e.target.value)} placeholder="Ask AI..." onKeyDown={(e) => { if (e.key === "Enter") sendStudioChat(); }} className="text-sm" />
+                      <Button size="sm" onClick={sendStudioChat} disabled={studioChatLoading || !studioChatInput.trim()}>
+                        {studioChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Review Results */}
+              {studioReviewResult && (
+                <Card>
+                  <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Document Review</CardTitle></CardHeader>
+                  <CardContent className="prose prose-sm dark:prose-invert max-w-none">
+                    <ReactMarkdown>{studioReviewResult}</ReactMarkdown>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Quick Start Templates */}
+              <div className="mt-4">
+                <h3 className="text-sm font-semibold mb-3">Quick Start from Template</h3>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  {templates.slice(0, 4).map((t) => (
+                    <Card key={t.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => startFromTemplate(t)}>
+                      <CardContent className="p-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <FileText className="h-4 w-4 text-primary" />
+                          <Badge variant="outline" className="text-xs">{t.category}</Badge>
+                        </div>
+                        <p className="text-sm font-medium">{t.title}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
 
-      {/* Quick Preview Dialog */}
       <Dialog open={!!quickPreviewTemplate} onOpenChange={() => setQuickPreviewTemplate(null)}>
         <DialogContent className="sm:max-w-2xl max-h-[85vh] flex flex-col">
           <DialogHeader>

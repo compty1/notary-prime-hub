@@ -452,7 +452,7 @@ export default function Index() {
       <section className="bg-gradient-to-br from-primary to-primary-glow py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-primary-foreground mb-6">Ready to Notarize Your Document?</h2>
-          <p className="text-primary-foreground/80 text-lg mb-8">Join thousands of users who have securely notarized their documents online.</p>
+          <p className="text-primary-foreground/90 text-lg mb-8">Join thousands of users who have securely notarized their documents online.</p>
           <Link to="/book">
             <Button size="lg" className="bg-sidebar-background text-white px-10 py-4 rounded-lg font-bold text-lg hover:bg-sidebar-accent transition shadow-xl hover:-translate-y-1">
               Book a Session Now

@@ -137,7 +137,7 @@ export default function ComingSoon() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-primary-foreground/10 py-6 text-center text-xs text-primary-foreground/50">
+      <footer className="relative z-10 border-t border-white/10 py-6 text-center text-xs text-white/50">
         <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-6">
           <a href="tel:6143006890" className="flex items-center gap-1.5 transition-colors hover:text-primary">
             <Phone className="h-3.5 w-3.5" /> (614) 300-6890
@@ -147,7 +147,7 @@ export default function ComingSoon() {
           </a>
           <Link to="/terms" className="transition-colors hover:text-primary">Terms & Privacy</Link>
         </div>
-        <p className="mt-3">© {new Date().getFullYear()} Notar. Ohio Notary & Document Services.</p>
+        <p className="mt-3">© {new Date().getFullYear()} NotarDex. Ohio Notary & Document Services.</p>
       </footer>
       <AILeadChatbot />
     </main>
@@ -160,8 +160,8 @@ function FeatureCard({ icon, title, desc }: { icon: React.ReactNode; title: stri
       <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
         {icon}
       </div>
-      <h3 className="font-heading text-sm font-semibold text-primary-foreground">{title}</h3>
-      <p className="mt-1 text-xs text-primary-foreground/60">{desc}</p>
+      <h3 className="font-heading text-sm font-semibold text-white">{title}</h3>
+      <p className="mt-1 text-xs text-white/60">{desc}</p>
     </div>
   );
 }
