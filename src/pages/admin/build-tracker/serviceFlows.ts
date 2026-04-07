@@ -1,3 +1,9 @@
+export type FlowStepAutomation = {
+  type: "email" | "trigger" | "cron" | "webhook";
+  name: string;
+  description: string;
+};
+
 export type FlowStep = {
   name: string;
   description: string;
@@ -5,6 +11,8 @@ export type FlowStep = {
   component?: string;
   implemented: boolean;
   issues?: string[];
+  automations?: FlowStepAutomation[];
+  emailTemplateKey?: string;
 };
 
 export type ServiceFlow = {
@@ -30,10 +38,10 @@ export const SERVICE_FLOWS: ServiceFlow[] = [
       { name: "Review & Confirm", description: "Review all details before submission", route: "/book", component: "BookingReviewStep", implemented: true },
       { name: "Payment Processing", description: "Stripe payment intent creation and collection", route: "/book", component: "PaymentForm", implemented: true },
       { name: "Confirmation Page", description: "Show confirmation number, calendar download, next steps", route: "/confirmation", component: "AppointmentConfirmation", implemented: true },
-      { name: "Confirmation Email", description: "Automated email sent to client and admin", route: undefined, component: "send-appointment-emails", implemented: true },
-      { name: "Reminder Emails", description: "Automated 24h/1h reminders before appointment", route: undefined, component: "send-appointment-reminders", implemented: true },
-      { name: "Double-booking Prevention", description: "DB trigger prevents same time slot overlap", route: undefined, component: "prevent_double_booking", implemented: true },
-      { name: "Past Date Validation", description: "DB trigger blocks past-date bookings", route: undefined, component: "validate_appointment_date", implemented: true },
+      { name: "Confirmation Email", description: "Automated email sent to client and admin", route: undefined, component: "send-appointment-emails", implemented: true, automations: [{ type: "email", name: "send-appointment-emails", description: "Sends booking confirmation" }], emailTemplateKey: "booking_confirmation" },
+      { name: "Reminder Emails", description: "Automated 24h/1h reminders before appointment", route: undefined, component: "send-appointment-reminders", implemented: true, automations: [{ type: "cron", name: "send-appointment-reminders", description: "Scheduled 24h and 30min reminders" }], emailTemplateKey: "reminder" },
+      { name: "Double-booking Prevention", description: "DB trigger prevents same time slot overlap", route: undefined, component: "prevent_double_booking", implemented: true, automations: [{ type: "trigger", name: "prevent_double_booking", description: "Database trigger" }] },
+      { name: "Past Date Validation", description: "DB trigger blocks past-date bookings", route: undefined, component: "validate_appointment_date", implemented: true, automations: [{ type: "trigger", name: "validate_appointment_date", description: "Database trigger" }] },
       { name: "Booking Draft Persistence", description: "Save in-progress booking for authenticated users", route: "/book", component: "booking_drafts", implemented: true },
     ],
   },
@@ -46,7 +54,7 @@ export const SERVICE_FLOWS: ServiceFlow[] = [
       { name: "Tech Check", description: "Camera, mic, browser compatibility check", route: "/ron-session", component: "TechCheck", implemented: true },
       { name: "ID Scan", description: "AI-powered ID document scanning", route: "/ron-session", component: "IDScanAssistant", implemented: true },
       { name: "Identity Verification", description: "ID scan and credential-based verification", route: "/verify-id", component: "VerifyIdentity", implemented: true },
-      { name: "KBA Challenge", description: "Knowledge-Based Authentication (max 2 attempts per Ohio law)", route: "/ron-session", component: "KBAVerification", implemented: true },
+      { name: "KBA Challenge", description: "Knowledge-Based Authentication (max 2 attempts per Ohio law)", route: "/ron-session", component: "KBAVerification", implemented: true, automations: [{ type: "trigger", name: "enforce_kba_limit", description: "Enforces max 2 KBA attempts" }] },
       { name: "Recording Consent", description: "Audio/video recording consent capture with timestamp", route: "/ron-session", component: "ESignConsent", implemented: true },
       { name: "Compliance Watchdog Check", description: "Real-time compliance validation during session", route: "/ron-session", component: "ComplianceWatchdog", implemented: true },
       { name: "Sign Preview Wizard", description: "Preview and prepare signing flow", route: "/ron-session", component: "SignPreviewWizard", implemented: true },
@@ -61,6 +69,8 @@ export const SERVICE_FLOWS: ServiceFlow[] = [
       { name: "Session Timeout (60 min)", description: "Auto-timeout inactive sessions", route: "/ron-session", implemented: true },
       { name: "Session Timeout Warning", description: "UI warning before session timeout", route: "/ron-session", component: "SessionTimeoutWarning", implemented: true },
       { name: "Ohio Vital Records Block", description: "Prevent notarization of birth/death certificates", route: undefined, component: "ohioDocumentEligibility", implemented: true },
+      { name: "Completion Email", description: "Send completion notification to client", route: undefined, component: "send-appointment-emails", implemented: true, automations: [{ type: "email", name: "send-appointment-emails", description: "Sends completion notification" }], emailTemplateKey: "completion" },
+      { name: "Status Change CRM Log", description: "Auto-log appointment status changes to CRM", route: undefined, implemented: true, automations: [{ type: "trigger", name: "crm_log_appointment_status", description: "Trigger logs to crm_activities" }] },
     ],
   },
   {
@@ -68,7 +78,7 @@ export const SERVICE_FLOWS: ServiceFlow[] = [
     name: "Client Portal Flow",
     description: "Authenticated client dashboard for managing notary services",
     steps: [
-      { name: "Login / Signup", description: "Email/password authentication", route: "/login", implemented: true },
+      { name: "Login / Signup", description: "Email/password authentication", route: "/login", implemented: true, automations: [{ type: "email", name: "auth-email-hook", description: "Sends custom signup verification email" }], emailTemplateKey: "signup" },
       { name: "Onboarding Wizard", description: "Guide new clients through setup", route: "/portal", component: "OnboardingWizard", implemented: true },
       { name: "Dashboard Overview", description: "Summary cards for appointments, documents, messages", route: "/portal", component: "ClientPortal", implemented: true },
       { name: "Documents Tab", description: "Upload, view, download documents", route: "/portal", component: "PortalDocumentsTab", implemented: true },
@@ -123,7 +133,7 @@ export const SERVICE_FLOWS: ServiceFlow[] = [
       { name: "AI Chatbot Lead Capture", description: "Conversational chatbot collects lead info", route: "/", component: "AILeadChatbot", implemented: true },
       { name: "Loan Signing Inquiry", description: "Business lead form for loan signing services", route: "/loan-signing", implemented: true },
       { name: "Provider Application", description: "Notary application form", route: "/join", implemented: true },
-      { name: "Email Lead Extraction", description: "Extract leads from inbound emails", route: undefined, component: "extract-email-leads", implemented: true },
+      { name: "Email Lead Extraction", description: "Extract leads from inbound emails", route: undefined, component: "extract-email-leads", implemented: true, automations: [{ type: "email", name: "extract-email-leads", description: "Parses inbound emails for lead data" }] },
       { name: "Social Media Lead Scraping", description: "Discover leads from social sources", route: undefined, component: "scrape-social-leads", implemented: true },
       { name: "Lead Source Management", description: "Configure and manage lead sources", route: "/admin/leads", implemented: true },
       { name: "Lead Portal (Admin)", description: "Admin view of all leads with filtering", route: "/admin/leads", component: "AdminLeadPortal", implemented: true },
@@ -144,7 +154,7 @@ export const SERVICE_FLOWS: ServiceFlow[] = [
       { name: "Revenue Tracking", description: "Financial dashboard with payouts and fees", route: "/admin/revenue", component: "AdminRevenue", implemented: true },
       { name: "Document Management", description: "Review, approve, reject client documents", route: "/admin/documents", component: "AdminDocuments", implemented: true },
       { name: "Chat System", description: "Real-time admin-to-client messaging", route: "/admin/chat", component: "AdminChat", implemented: true },
-      { name: "Email Management", description: "IONOS email sync, compose, drafts", route: "/admin/email-management", component: "AdminEmailManagement", implemented: true },
+      { name: "Email Management", description: "IONOS email sync, compose, drafts", route: "/admin/email-management", component: "AdminEmailManagement", implemented: true, automations: [{ type: "email", name: "ionos-email-sync", description: "Syncs IMAP inbox" }, { type: "email", name: "ionos-email", description: "Sends via SMTP" }] },
       { name: "Availability Calendar", description: "Set notary availability windows", route: "/admin/availability", component: "AdminAvailability", implemented: true },
       { name: "Team Management", description: "Invite notaries, manage roles", route: "/admin/team", component: "AdminTeam", implemented: true },
       { name: "Audit Log", description: "Complete audit trail of all system actions", route: "/admin/audit-log", component: "AdminAuditLog", implemented: true },
@@ -156,6 +166,7 @@ export const SERVICE_FLOWS: ServiceFlow[] = [
       { name: "Task Queue", description: "Prioritized task management", route: "/admin/task-queue", component: "AdminTaskQueue", implemented: true },
       { name: "User Management", description: "Admin user management", route: "/admin/users", component: "AdminUsers", implemented: true },
       { name: "Continuing Education", description: "Track notary CE credits", route: "/admin", implemented: true },
+      { name: "Process Flows Hub", description: "Centralized process flow and email automation management", route: "/admin/process-flows", component: "AdminProcessFlows", implemented: true },
     ],
   },
 ];
