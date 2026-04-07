@@ -78,8 +78,20 @@ export default function AdminSettings() {
     run();
   }, [loading, editValues.id_expiration_reminder_days]);
 
+  // AS-002: URL validation
+  const urlKeys = ["kba_platform_url", "zoom_meeting_link"];
+  const validateUrl = (val: string) => !val || /^https?:\/\/.+\..+/.test(val);
+
   const handleSave = async () => {
     if (saving) return;
+
+    // Validate URLs
+    for (const key of urlKeys) {
+      if (editValues[key] && !validateUrl(editValues[key])) {
+        toast({ title: "Invalid URL", description: `${key.replace(/_/g, " ")} must start with http:// or https://`, variant: "destructive" });
+        return;
+      }
+    }
 
     // Item 351/367: Validate numeric settings
     const numericKeys = ["base_fee_per_signature", "travel_fee_per_mile", "travel_fee_minimum", "ron_platform_fee", "kba_fee", "travel_radius_miles", "max_appointments_per_day", "min_booking_lead_hours"];
@@ -93,14 +105,16 @@ export default function AdminSettings() {
 
     setSaving(true);
     const changedKeys: string[] = [];
+    const beforeValues: Record<string, string> = {};
     const updates = Object.entries(editValues).map(([key, value]) => {
-      // Bug 487: Removed console.warn that leaked security info in browser console
       if (settings[key]) {
         if (settings[key].setting_value === value) return null;
         changedKeys.push(key);
+        beforeValues[key] = settings[key].setting_value;
         return supabase.from("platform_settings").update({ setting_value: value, updated_at: new Date().toISOString(), updated_by: user?.id }).eq("setting_key", key);
       }
       changedKeys.push(key);
+      beforeValues[key] = "";
       return supabase.from("platform_settings").insert({ setting_key: key, setting_value: value, updated_by: user?.id });
     }).filter(Boolean);
 
@@ -109,18 +123,44 @@ export default function AdminSettings() {
     if (hasError) toast({ title: "Error saving some settings", variant: "destructive" });
     else {
       toast({ title: "Settings saved", description: "All changes have been applied." });
-      // Item 352: Audit log for settings changes
+      // AS-003: Audit log with before/after diff
       if (changedKeys.length > 0) {
         try {
           const { logAuditEvent } = await import("@/lib/auditLog");
-          logAuditEvent("settings_updated", { entityType: "platform_settings", details: { changed_keys: changedKeys } });
-        } catch (auditErr) {
-          console.error("Failed to log settings audit event:", auditErr);
-        }
+          const diff: Record<string, { from: string; to: string }> = {};
+          changedKeys.forEach(k => { diff[k] = { from: beforeValues[k] || "", to: editValues[k] || "" }; });
+          logAuditEvent("settings_updated", { entityType: "platform_settings", details: { changed_keys: changedKeys, diff } });
+        } catch { /* never block on audit */ }
       }
       await fetchSettings();
     }
     setSaving(false);
+  };
+
+  // AS-004: Settings backup/restore
+  const handleExportSettings = () => {
+    const json = JSON.stringify(editValues, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = `platform-settings-${new Date().toISOString().slice(0, 10)}.json`; a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: "Settings exported" });
+  };
+
+  const handleImportSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const imported = JSON.parse(ev.target?.result as string);
+        if (typeof imported !== "object" || Array.isArray(imported)) throw new Error("Invalid format");
+        setEditValues(prev => ({ ...prev, ...imported }));
+        toast({ title: "Settings imported", description: "Review and click Save to apply." });
+      } catch { toast({ title: "Invalid file", description: "Please upload a valid settings JSON.", variant: "destructive" }); }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
   };
 
   const updateValue = (key: string, value: string) => setEditValues((prev) => ({ ...prev, [key]: value }));
