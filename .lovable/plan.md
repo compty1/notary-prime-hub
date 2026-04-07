@@ -1,124 +1,79 @@
 
 
-# Plan: Automated Emails Tab, FAQ Formatting, Contrast Fixes, and Brand Audit Remediation
+# Plan: AI Services Audit, Document Studio, and Contrast Fixes
 
-## Problem Summary
+## Part 1: AI Services Audit — Missing Features
 
-1. **Navbar contrast failure**: "NotarDex" text uses `text-foreground` (dark slate) on a dark `bg-sidebar-background` navbar — invisible
-2. **`--primary-foreground` is dark slate** (`222 47% 11%`), but it's used as text color on dark hero sections (RonInfo, BookAppointment, etc.) creating white-on-dark failures across ~31 files
-3. **No "Automated Emails" tab** in Admin — services don't have per-service email template controls
-4. **FAQ accordion titles** have default spacing from the accordion component that causes random word gaps in long titles
-5. **Footer email** shows `shane@notardex.com` instead of `contact@notardex.com` (passed as prop)
-6. **Multiple gaps from previous waves** remain unimplemented (service flow testing, brand consistency)
+### Resume Builder (`ResumeBuilder.tsx`)
+**Missing:**
+- **Resume file upload & parse**: No way to upload a PDF/DOCX resume — only manual text paste for analysis. Add a file upload button that sends the file to the `ai-extract-document` edge function for extraction, then populates the editor.
+- **Job description matching**: The analyze feature doesn't accept a job description to score against. Add a "Job Description" textarea field to the analyze dialog.
+- **PDF/DOCX export**: No export functionality — only save to DB. Add export buttons (Print/PDF via browser, .DOC via HTML blob — same pattern as DocumentTemplates).
+- **Download as formatted resume**: No visual preview of the resume in template format.
 
----
+**Fix**: Add file upload input (accept `.pdf,.doc,.docx`) → call `ai-extract-document` → populate content. Add job description field to analyze dialog. Add export buttons to the editor dialog.
 
-## Part 1: Fix Global Contrast Issues
-
-### 1A. Fix `--primary-foreground` token conflict
-
-The root issue: `--primary-foreground` is meant for text ON amber buttons (dark on amber = correct), but it's also wrongly used on dark hero backgrounds where white text is needed. The fix:
-
-- Keep `--primary-foreground: 222 47% 11%` (correct for amber button text)
-- **Search-and-replace** all instances where `text-primary-foreground` is used on dark backgrounds (`bg-gradient-hero`, `bg-sidebar-background`, dark sections) to use `text-white` instead
-- Key files: `RonInfo.tsx` (hero h1/p), `AppointmentConfirmation.tsx`, and ~10 other pages where `bg-primary text-primary-foreground` badges are used (these are fine — amber bg + dark text is correct)
-
-### 1B. Fix Navbar logo text contrast
-
-In `Navbar.tsx` line 100: the inline `<span>` already uses `text-white` — correct. But the `Logo` component's `textColorClass` defaults to `text-foreground` when no theme prop is passed. The navbar doesn't pass `theme="dark"`.
-
-**Fix**: In `Navbar.tsx`, the Logo is only used as an icon (no text), and the adjacent `<span>` correctly uses `text-white`. However, the Logo `showText` instances elsewhere may have this issue. Audit all `<Logo showText ...>` usages.
-
-### 1C. Fix hero sections using dark text on dark backgrounds
-
-Files to fix:
-- `RonInfo.tsx`: Change `text-primary-foreground` to `text-white` in hero h1/p (lines 143, 146)
-- `NotaryProcessGuide.tsx`, `NotaryGuide.tsx`: Audit hero sections
-- `LoanSigningServices.tsx`, `ForHospitals.tsx`, `ForLawFirms.tsx`, `ForRealEstate.tsx`, `ForSmallBusiness.tsx`, `ForNotaries.tsx`, `ForIndividuals.tsx`: Audit all pages with `bg-gradient-hero`
-
-### 1D. Fix CTA banner section
-
-In `Index.tsx` line 454: `text-primary-foreground` on `bg-gradient-to-br from-primary to-primary-glow` (amber background) — this one is actually correct (dark text on amber). Verify contrast ratio is sufficient.
+### Other AI Services (confirmed working)
+- **AI Tools Hub**: 50+ tools, generation, save, history — complete
+- **Document Templates**: TipTap editor, AI chat, save to vault, print/export — complete
+- **Grant Generator, Signature Generator**: Functional as-is
 
 ---
 
-## Part 2: Automated Emails Tab in Admin Email Management
+## Part 2: Document Studio — "Canva for Documents"
 
-Add a 4th tab "Automated Emails" to `AdminEmailManagement.tsx`.
+Transform the existing `/templates` page into a full **Document Studio** by adding a "Create from Scratch" mode alongside the template library.
 
-### Features
-- **Service-linked email templates list**: Query `services` table, display each service with its email template config (from `email_templates` jsonb column)
-- **Bulk selection**: Checkbox per row + "Select All" header checkbox
-- **Per-service email controls**: Toggle on/off for booking confirmation, reminder, follow-up, and completion emails
-- **Rich text editing**: Integrate a simplified rich-text editor (reuse existing `RichTextEditor.tsx` component) for editing email body templates per service
-- **AI auto-generation**: "Generate with AI" button that calls the `notary-assistant` edge function to generate email template content based on service name/description. Works with bulk selection (generate for all selected services)
-- **Bulk actions bar**: When items are selected, show a floating bar with: "Enable All", "Disable All", "Generate All", "Reset to Default"
-- **Save/preview**: Save button persists to `services.email_templates` jsonb column; preview button renders a sample
+### New Tab Structure
+Add tabs to DocumentTemplates: **"Templates"** (existing grid) | **"Create New"** (blank document studio)
+
+### "Create New" Tab Features
+- **Blank document**: Opens TipTap editor directly with a document title input
+- **AI Chat sidebar**: Reuse existing chat panel but contextualized for freeform editing — "Help me draft a...", "Rewrite this paragraph", "Add a section about..."
+- **AI inline actions**: Select text → floating toolbar with "Rewrite", "Expand", "Summarize", "Fix Grammar", "Make Formal"
+- **Document review/analysis**: "Review Document" button calls AI to provide feedback on completeness, tone, legal accuracy
+- **Full toolbar**: Already exists (bold, italic, underline, headings, lists, alignment)
+- **Save/Export**: Already exists (Save to Vault, Export .DOC, Print/PDF)
+- **Version history**: Track edits with timestamp snapshots stored in `document_versions` table
 
 ### Implementation
-- New component: `AdminAutomatedEmails.tsx` within the email management page
-- Queries `services` table for all services with their `email_templates` column
-- Updates via `supabase.from("services").update({ email_templates: {...} }).eq("id", id)`
-- Uses `RichTextEditor` for body editing
-- AI generation via `supabase.functions.invoke("notary-assistant", { body: { prompt: ... } })`
+- Modify `DocumentTemplates.tsx` to add a Tabs wrapper: "Template Library" and "Document Studio"
+- The Studio tab renders the TipTap editor full-width with an AI chat panel on the right (resizable via existing `ResizablePanel` components)
+- AI inline actions use a floating menu on text selection (TipTap BubbleMenu extension)
+- Document review calls `build-analyst` edge function with the document content
+
+### Template Start
+- Add "Start from template" cards within the Studio tab that pre-populate the editor with template content (bridging both modes)
 
 ---
 
-## Part 3: Fix FAQ Formatting
+## Part 3: Remaining Contrast Fixes
 
-### Issue
-AccordionTrigger titles in FAQ sections show unnatural word spacing on some browsers/screen sizes.
+### Still broken:
+1. **ComingSoon.tsx** `FeatureCard` — `text-primary-foreground` (dark slate) on dark `bg-gradient-hero` background. Fix: change to `text-white` for title, `text-white/60` for desc
+2. **ComingSoon.tsx footer** — `text-primary-foreground/50` and `text-primary-foreground/10` on dark bg. Fix: change to `text-white/50` and `text-white/10`
+3. **ComingSoon.tsx** line 150 — still says "Notar" not "NotarDex"
+4. **Index.tsx CTA section** (line 454) — `text-primary-foreground` on amber gradient — this is actually correct (dark text on amber), but verify contrast ratio. The `/80` opacity variant may be too light — change to `text-primary-foreground/90` for better readability.
+5. **RonSession.tsx** badges — `bg-primary/20 text-primary-foreground` — primary/20 is very light amber, primary-foreground is dark slate — this is correct contrast.
 
-### Fix
-- In the `AccordionTrigger` component (`accordion.tsx`), the default `justify-between` layout combined with `flex-1` can cause text to stretch. Add `text-left` and ensure proper `gap` between text and chevron.
-- In all FAQ usages (`Index.tsx`, `RonInfo.tsx`, `HelpSupport.tsx`, etc.), ensure question text is wrapped properly with no extra whitespace in the data strings.
-- Add `whitespace-normal break-words` to AccordionTrigger className defaults.
-
----
-
-## Part 4: Brand & Design Audit
-
-### Confirmed issues to fix:
-1. **Navbar "NotarDex" invisible** — dark text on dark bg (Part 1B above)
-2. **RonInfo hero** — dark text on dark gradient (Part 1C)
-3. **Footer email** defaults to `contact@notardex.com` in props but the actual footer in the screenshot shows `shane@notardex.com` — check if `platform_settings` is overriding it. The Footer component default is correct. This is likely a data issue in the `platform_settings` table.
-4. **Amber text on white** — `text-primary` (amber-500) on white background has ~3.0:1 contrast ratio, below WCAG AA (4.5:1). For small text labels, darken to amber-600/700 or use amber as accent only with dark body text.
-5. **Link colors** — amber links on white may fail contrast. Add `hover:text-amber-600` and ensure base link color is sufficiently dark.
-
-### Recommendations (to implement):
-- Add a `.text-primary-dark` utility for contexts where amber needs to be used on white — maps to amber-700 (`38 92% 35%`)
-- Update all "Learn more" / inline links to use `text-primary-dark` instead of `text-primary` for WCAG AA compliance
-- Ensure all Badge components with `bg-primary/10 text-primary` have sufficient contrast (currently borderline)
+### Header darker
+The navbar already uses `bg-sidebar-background` (222 47% 11% = very dark slate). If user wants it even darker, change to `bg-[hsl(222,47%,5%)]` or add a new token. The `text-white` on this dark bg is correct.
 
 ---
 
-## Part 5: Remaining Gap Verification
+## Part 4: Execution Order
 
-### Service flow testing
-- AdminServices already has full CRUD. Add a "Test Flow" button per service that opens the booking page filtered to that service, verifying the complete funnel.
-
-### Service email template integration
-- The `services` table has an `email_templates` jsonb column (from memory). The new Automated Emails tab (Part 2) addresses this.
-
----
+1. Fix remaining contrast issues in ComingSoon.tsx (quick wins)
+2. Add resume upload + export to ResumeBuilder.tsx
+3. Add Document Studio tab to DocumentTemplates.tsx with blank editor + AI sidebar
+4. Add TipTap BubbleMenu for inline AI actions
 
 ## Files Modified
 
 | File | Change |
 |---|---|
-| `src/index.css` | Add `.text-primary-dark` utility |
-| `src/components/ui/accordion.tsx` | Fix trigger text spacing |
-| `src/components/Navbar.tsx` | Verify logo text contrast |
-| `src/components/Logo.tsx` | No changes needed (theme prop works) |
-| `src/pages/RonInfo.tsx` | Fix hero text from `text-primary-foreground` to `text-white` |
-| `src/pages/admin/AdminEmailManagement.tsx` | Add "Automated Emails" tab |
-| New: `src/pages/admin/AdminAutomatedEmails.tsx` | Full automated email management component |
-| ~10 solution/guide pages | Audit and fix dark-hero contrast classes |
-| `src/components/Footer.tsx` | No code change needed (data issue) |
-
-## Execution Order
-1. Global contrast fixes (immediate visual impact)
-2. AccordionTrigger spacing fix
-3. Automated Emails tab (new feature)
-4. Brand audit remaining items
+| `src/pages/ComingSoon.tsx` | Fix `text-primary-foreground` → `text-white`, fix "Notar" branding |
+| `src/pages/ResumeBuilder.tsx` | Add file upload, job description matching, export buttons |
+| `src/pages/DocumentTemplates.tsx` | Add "Document Studio" tab with blank editor + AI chat sidebar |
+| `src/components/Navbar.tsx` | Darken header background if needed |
 
