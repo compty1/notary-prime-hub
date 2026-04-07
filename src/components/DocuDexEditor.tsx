@@ -166,6 +166,7 @@ export function DocuDexEditor({
       TextStyle,
       Color,
       FontFamily,
+      FontSize,
       Highlight.configure({ multicolor: true }),
       LinkExt.configure({ openOnClick: false }),
       TableExt.configure({ resizable: true }),
