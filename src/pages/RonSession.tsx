@@ -1557,6 +1557,74 @@ export default function RonSession() {
               </CardContent>
             </Card>
 
+            {/* Smart Seal Visualization */}
+            {oathAdministered && (
+              <Card className="border-border/50">
+                <CardContent className="p-4">
+                  <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
+                    <Shield className="h-4 w-4 text-primary" /> Smart Seal Preview
+                  </h3>
+                  <div className="mx-auto w-40 h-40 rounded-full border-4 border-primary/30 flex items-center justify-center bg-primary/5 relative">
+                    <div className="text-center">
+                      <Shield className="h-8 w-8 text-primary mx-auto mb-1" />
+                      <p className="text-[9px] font-bold text-primary uppercase">Notary Public</p>
+                      <p className="text-[8px] text-muted-foreground">State of Ohio</p>
+                      <p className="text-[8px] font-mono text-muted-foreground mt-1">SHA-256 Anchored</p>
+                    </div>
+                    <div className="absolute inset-0 rounded-full border-2 border-dashed border-primary/20 animate-[spin_30s_linear_infinite]" />
+                  </div>
+                  <p className="text-center text-[10px] text-muted-foreground mt-2">Digital seal will be applied upon finalization with tamper-evident hash anchoring.</p>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Real-Time Session Journal */}
+            <Card className="border-border/50">
+              <CardContent className="p-4">
+                <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
+                  <BookOpen className="h-4 w-4 text-primary" /> Session Journal
+                </h3>
+                <div className="space-y-1.5 max-h-32 overflow-auto text-[10px]">
+                  {sessionStartedAt && (
+                    <div className="flex items-start gap-2 text-muted-foreground">
+                      <span className="font-mono shrink-0">{new Date(sessionStartedAt).toLocaleTimeString()}</span>
+                      <span>Session initiated</span>
+                    </div>
+                  )}
+                  {participantLink && (
+                    <div className="flex items-start gap-2 text-muted-foreground">
+                      <span className="font-mono shrink-0">{new Date().toLocaleTimeString()}</span>
+                      <span>Signing link shared via {SIGNING_PLATFORMS.find(p => p.value === signingPlatform)?.label}</span>
+                    </div>
+                  )}
+                  {recordingConsent && recordingConsentAt && (
+                    <div className="flex items-start gap-2 text-emerald-600 dark:text-emerald-400">
+                      <span className="font-mono shrink-0">{new Date(recordingConsentAt).toLocaleTimeString()}</span>
+                      <span>Recording consent granted</span>
+                    </div>
+                  )}
+                  {idVerified && (
+                    <div className="flex items-start gap-2 text-emerald-600 dark:text-emerald-400">
+                      <span className="font-mono shrink-0">{new Date().toLocaleTimeString()}</span>
+                      <span>ID verified — {idType || "Government ID"}</span>
+                    </div>
+                  )}
+                  {kbaCompleted && (
+                    <div className="flex items-start gap-2 text-emerald-600 dark:text-emerald-400">
+                      <span className="font-mono shrink-0">{new Date().toLocaleTimeString()}</span>
+                      <span>KBA passed (attempt {kbaAttempts}/2)</span>
+                    </div>
+                  )}
+                  {oathAdministered && oathTimestamp && (
+                    <div className="flex items-start gap-2 text-primary">
+                      <span className="font-mono shrink-0">{new Date(oathTimestamp).toLocaleTimeString()}</span>
+                      <span>Oath administered ({oathType})</span>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Complete & Finalize */}
             <Card className="border-border/50 border-primary/20 dark:border-primary/20 bg-primary/5">
               <CardContent className="p-4">

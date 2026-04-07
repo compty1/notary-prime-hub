@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug, TrendingUp, ShieldCheck, Webhook } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug, TrendingUp, ShieldCheck, Webhook, FileEdit } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { AdminNotificationCenter } from "@/components/AdminNotificationCenter";
 
@@ -18,6 +18,7 @@ const adminNavItems = [
   { title: "Business Clients", url: "/admin/business-clients", icon: Building2, adminOnly: true },
   { title: "Service Requests", url: "/admin/service-requests", icon: ClipboardList, adminOnly: true },
   { title: "Content Workspace", url: "/admin/content-workspace", icon: PenTool, adminOnly: true },
+  { title: "DocuDex Pro", url: "/admin/docudex-pro", icon: FileEdit, adminOnly: false },
   { title: "Task Queue", url: "/admin/task-queue", icon: ListChecks, adminOnly: true },
   { title: "Services Catalog", url: "/admin/services", icon: ShoppingBag, adminOnly: true },
   { title: "Availability", url: "/admin/availability", icon: Clock, adminOnly: true },
