@@ -112,7 +112,7 @@ Notes: ${leadData.notes || "None"}
 
 Create a complete, ready-to-send proposal that includes:
 1. Professional greeting
-2. Introduction of Notar and our qualifications
+2. Introduction of NotarDex and our qualifications
 3. Recommended services based on their needs
 4. Pricing estimates
 5. Ohio compliance assurance (ORC §147)
