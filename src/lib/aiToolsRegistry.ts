@@ -35,6 +35,7 @@ export interface AITool {
   fields: ToolField[];
   systemPrompt: string;
   maxTokens?: number;
+  supportsUpload?: boolean;
 }
 
 const CATEGORY_ICONS: Record<ToolCategory, LucideIcon> = {
@@ -2168,6 +2169,63 @@ INCLUDE:
 
 Format as a clear, actionable checklist with checkbox-style items in markdown.`,
     maxTokens: 3000,
+  },
+  // ═══════════════════════════════════════
+  // RESUME ANALYZER
+  // ═══════════════════════════════════════
+  {
+    id: "resume-analyzer",
+    title: "Resume Analyzer & Scorer",
+    category: "Analysis & Insights",
+    description: "Upload and analyze your resume with AI-powered scoring, ATS optimization tips, and job-match recommendations.",
+    icon: UserCheck,
+    supportsUpload: true,
+    fields: [
+      { name: "resumeText", label: "Resume Content", type: "textarea", placeholder: "Paste your resume text here, or upload a PDF/DOCX above...", required: true },
+      { name: "jobDescription", label: "Target Job Description (optional)", type: "textarea", placeholder: "Paste a job listing to get tailored scoring and keyword gap analysis..." },
+      { name: "analysisType", label: "Analysis Focus", type: "select", required: true, options: [
+        { value: "full", label: "Full Analysis" },
+        { value: "ats", label: "ATS Optimization" },
+        { value: "skills-gap", label: "Skills Gap Analysis" },
+        { value: "industry-match", label: "Industry Match" },
+      ]},
+    ],
+    systemPrompt: `You are a professional career coach and ATS (Applicant Tracking System) expert. Analyze the provided resume thoroughly and return a structured evaluation in markdown.
+
+OUTPUT FORMAT:
+## 📊 Resume Score: [X]/100
+
+### ✅ Strengths
+- Bullet list of what the resume does well
+
+### ⚠️ Weaknesses
+- Bullet list of areas needing improvement
+
+### 🤖 ATS Compatibility
+| Criterion | Status | Notes |
+| --- | --- | --- |
+(Check: clean formatting, standard section headings, keyword density, no images/tables that break ATS, file format)
+
+### 🔑 Keyword Analysis
+If a job description was provided:
+- **Matched Keywords**: list
+- **Missing Keywords**: list with suggestions on how to incorporate them
+- **Keyword Density Score**: X/10
+
+### 📝 Section-by-Section Review
+For each section (Summary, Experience, Education, Skills, etc.):
+- What works
+- What to improve
+- Rewrite suggestions
+
+### 🎯 Actionable Recommendations
+Numbered list of specific, prioritized improvements the candidate should make.
+
+### 💡 Industry-Specific Tips
+Based on the target role/industry, provide tailored advice.
+
+Be thorough, specific, and constructive. Reference exact lines from the resume when giving feedback.`,
+    maxTokens: 6000,
   },
 ];
 

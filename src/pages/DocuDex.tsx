@@ -1,5 +1,5 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -7,6 +7,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { DocuDexEditor } from "@/components/DocuDexEditor";
 import { stripHtml } from "@/lib/sanitize";
+import { safeGetItem, safeRemoveItem } from "@/lib/safeStorage";
 
 export default function DocuDex() {
   usePageMeta({
@@ -15,6 +16,29 @@ export default function DocuDex() {
   });
   const { user } = useAuth();
   const { toast } = useToast();
+
+  // Check for content passed from AI Tools Hub via sessionStorage
+  const [incomingContent, setIncomingContent] = useState<string | null>(null);
+  useEffect(() => {
+    const content = safeGetItem("ai_tools_content", sessionStorage);
+    if (content) {
+      setIncomingContent(content);
+      safeRemoveItem("ai_tools_content", sessionStorage);
+    }
+  }, []);
+
+  // Convert markdown to simple HTML for the editor
+  const initialPages = incomingContent
+    ? [{ id: "incoming-1", html: incomingContent.split("\n").map(line => {
+        if (line.startsWith("### ")) return `<h3>${line.slice(4)}</h3>`;
+        if (line.startsWith("## ")) return `<h2>${line.slice(3)}</h2>`;
+        if (line.startsWith("# ")) return `<h1>${line.slice(2)}</h1>`;
+        if (line.startsWith("- ")) return `<li>${line.slice(2)}</li>`;
+        if (line.startsWith("**") && line.endsWith("**")) return `<p><strong>${line.slice(2, -2)}</strong></p>`;
+        if (line.trim() === "") return "<p><br></p>";
+        return `<p>${line}</p>`;
+      }).join("") }]
+    : undefined;
 
   const handleSave = async (title: string, pages: { id: string; html: string }[]) => {
     if (!user) {
@@ -49,6 +73,8 @@ export default function DocuDex() {
         <DocuDexEditor
           onSave={handleSave}
           maxChars={500000}
+          initialPages={initialPages}
+          initialTitle={incomingContent ? "AI Generated Document" : undefined}
         />
       </div>
     </div>
