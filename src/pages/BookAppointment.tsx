@@ -183,18 +183,21 @@ export default function BookAppointment() {
       if (data) { const s: Record<string, string> = {}; data.forEach((r: any) => { s[r.setting_key] = r.setting_value; }); setPricingSettings(s); }
     });
     const NON_BOOKABLE = ["admin_support","content_creation","research","customer_service","technical_support","ux_testing"];
-    supabase.from("services").select("name, short_description, category").eq("is_active", true).order("display_order").limit(100).then(({ data }) => {
+    supabase.from("services").select("name, short_description, category, duration_minutes, is_popular").eq("is_active", true).order("display_order").limit(100).then(({ data }) => {
       if (data && data.length > 0) {
         const bookable = data.filter((s: any) => !NON_BOOKABLE.includes(s.category));
-        setServiceTypes([...new Set(bookable.map((s: any) => s.name))]);
+        // Sort popular services to top (ID 5)
+        const sorted = [...bookable].sort((a: any, b: any) => (b.is_popular ? 1 : 0) - (a.is_popular ? 1 : 0));
+        setServiceTypes([...new Set(sorted.map((s: any) => s.name))]);
         const descs: Record<string, string> = {}, cats: Record<string, string> = {};
         bookable.forEach((s: any) => { if (s.short_description) descs[s.name] = s.short_description; cats[s.name] = s.category; });
         setServiceDescriptions(descs);
         setServiceCategories(cats);
+        // ID 1: Validate URL param against NON_BOOKABLE before pre-filling
         const preService = new URLSearchParams(window.location.search).get("service");
         if (preService) {
-          const match = data.find((s: any) => s.name.toLowerCase() === preService.toLowerCase());
-          if (match) setServiceType(match.name);
+          const match = bookable.find((s: any) => s.name.toLowerCase() === preService.toLowerCase());
+          if (match && !NON_BOOKABLE.includes(match.category)) setServiceType(match.name);
         }
       }
     });
@@ -503,6 +506,7 @@ export default function BookAppointment() {
   };
 
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   const handleSubmit = async () => {
     const errors: Record<string, string> = {};
@@ -515,6 +519,35 @@ export default function BookAppointment() {
     if (!time) errors.time = "Time is required.";
     // Validate document count
     if (documentCount < 1) errors.documentCount = "At least 1 document is required.";
+
+    // ID 16: Minimum age validation (18+ for signer)
+    if (signerDob) {
+      const dob = new Date(signerDob);
+      const age = Math.floor((Date.now() - dob.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+      if (age < 18) errors.signerDob = "Signer must be at least 18 years old. Minor signers require a legal guardian.";
+    }
+
+    // ID 17: Ohio vital records blocking
+    if (serviceType) {
+      const { checkDocumentEligibility } = await import("@/lib/ohioDocumentEligibility");
+      const eligibility = checkDocumentEligibility(serviceType);
+      if (!eligibility.eligible) {
+        errors.serviceType = eligibility.reason || "This document cannot be notarized under Ohio law.";
+        toast({ title: "Document Not Eligible", description: eligibility.reason, variant: "destructive" });
+      }
+    }
+
+    // ID 18: Validate additional signer emails
+    if (additionalSignerEmails.trim()) {
+      const emails = additionalSignerEmails.split(/[,;\s]+/).filter(Boolean);
+      const invalidEmails = emails.filter(e => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim()));
+      if (invalidEmails.length > 0) errors.additionalSignerEmails = `Invalid email(s): ${invalidEmails.join(", ")}`;
+    }
+
+    // ID 19: Entity name required for representative capacity
+    if (signerCapacity !== "individual" && !entityName.trim()) {
+      errors.entityName = "Entity name is required when signing in a representative capacity.";
+    }
 
     if (!user) {
       if (!guestName.trim()) errors.guestName = "Full name is required.";
@@ -530,6 +563,13 @@ export default function BookAppointment() {
       return;
     }
     setValidationErrors({});
+
+    // ID 34: Show confirmation dialog before final submit
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmedSubmit = async () => {
+    setShowConfirmDialog(false);
 
     if (!user) {
       sessionStorage.setItem(BOOKING_STORAGE_KEY, JSON.stringify({ notarizationType, serviceType, date, time, location, notes, documentCount, clientAddress, clientCity, clientState, clientZip, signerCapacity, entityName, signerTitle, facilityName, facilityContact, facilityRoom, signerCount, _savedAt: Date.now() }));
