@@ -17,10 +17,10 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const HUBSPOT_API_KEY = Deno.env.get("HUBSPOT_API_KEY");
+    const HUBSPOT_API_KEY = Deno.env.get("HubSpot_Service_Key") || Deno.env.get("HUBSPOT_API_KEY");
     if (!HUBSPOT_API_KEY) {
       return new Response(
-        JSON.stringify({ error: "HubSpot API key not configured. Add it in Admin Settings." }),
+        JSON.stringify({ error: "HubSpot API key not configured. Add HubSpot_Service_Key in Lovable Cloud secrets." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
