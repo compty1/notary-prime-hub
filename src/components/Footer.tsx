@@ -10,7 +10,7 @@ interface FooterProps {
 
 export function Footer({ phone = BRAND.defaultPhone, email = BRAND.defaultEmail }: FooterProps) {
   return (
-    <footer className="border-t border-sidebar-border bg-[hsl(222_47%_4%)] text-slate-400">
+    <footer className="border-t border-sidebar-border bg-[hsl(222_47%_4%)] text-slate-400" role="contentinfo" aria-label="Site footer">
       <div className="container mx-auto px-4 py-12">
         <div className="grid gap-8 md:grid-cols-5">
           <div className="md:col-span-1">

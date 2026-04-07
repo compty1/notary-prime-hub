@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import { findDefinition, buildGlossaryRegex } from "@/lib/legalGlossary";
+import DOMPurify from "dompurify";
 
 /**
  * LegalGlossaryProvider scans rendered text for legal terms and adds
@@ -33,7 +34,7 @@ export default function LegalGlossaryProvider({ children }: { children: React.Re
     if (!def) return;
     const tip = createTooltip();
     const term = target.textContent || "";
-    tip.innerHTML = `<strong style="color:hsl(var(--primary))">${term}</strong><br/>${def}`;
+    tip.innerHTML = DOMPurify.sanitize(`<strong style="color:hsl(var(--primary))">${term}</strong><br/>${def}`, { ALLOWED_TAGS: ["strong", "br"], ALLOWED_ATTR: ["style"] });
     tip.style.opacity = "1";
     const rect = target.getBoundingClientRect();
     tip.style.left = `${Math.min(rect.left, window.innerWidth - 300)}px`;
