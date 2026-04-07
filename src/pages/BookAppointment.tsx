@@ -76,6 +76,10 @@ export default function BookAppointment() {
   const [serviceDescriptions, setServiceDescriptions] = useState<Record<string, string>>({});
   const [serviceCategories, setServiceCategories] = useState<Record<string, string>>({});
 
+  // Waitlist state
+  const [joiningWaitlist, setJoiningWaitlist] = useState(false);
+  const [waitlistJoined, setWaitlistJoined] = useState(false);
+
   // Category-specific intake fields
   const [destinationCountry, setDestinationCountry] = useState("");
   const [urgencyLevel, setUrgencyLevel] = useState("standard");
