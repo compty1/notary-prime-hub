@@ -639,7 +639,8 @@ function EditorToolbar({ editor }: { editor: any }) {
 }
 
 export default function DocumentTemplates() {
-  usePageMeta({ title: "Notary Document Templates", description: "Free Ohio notary document templates — affidavits, acknowledgments, jurats, and more. Download and customize for your needs." });
+  usePageMeta({ title: "Document Studio — Templates & Builder", description: "Create documents from scratch or use Ohio notary templates. AI-powered editing, review, and export." });
+  const [mainTab, setMainTab] = useState("templates");
   const [search, setSearch] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [formData, setFormData] = useState<Record<string, string>>({});
@@ -656,6 +657,17 @@ export default function DocumentTemplates() {
   const [chatMessages, setChatMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+
+  // Document Studio states
+  const [studioTitle, setStudioTitle] = useState("Untitled Document");
+  const [studioChatOpen, setStudioChatOpen] = useState(false);
+  const [studioChatMessages, setStudioChatMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
+  const [studioChatInput, setStudioChatInput] = useState("");
+  const [studioChatLoading, setStudioChatLoading] = useState(false);
+  const [studioSaving, setStudioSaving] = useState(false);
+  const [studioReviewing, setStudioReviewing] = useState(false);
+  const [studioReviewResult, setStudioReviewResult] = useState("");
+  const [aiInlineLoading, setAiInlineLoading] = useState(false);
 
   // Load favorites from DB
   useEffect(() => {
