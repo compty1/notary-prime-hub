@@ -10,6 +10,7 @@ import { Calendar as CalendarIcon, Users, CheckCircle, Clock, DollarSign, Plus, 
 import { motion } from "framer-motion";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { getEdgeFunctionHeaders } from "@/lib/edgeFunctionAuth";
+import GoogleCalendarWidget from "@/components/GoogleCalendarWidget";
 
 import { appointmentStatusColors as statusColors } from "@/lib/statusColors";
 
@@ -355,6 +356,11 @@ export default function AdminOverview() {
             ) : <p className="py-10 text-center text-sm text-muted-foreground">No data yet</p>}
           </CardContent>
         </Card>
+      </div>
+
+      {/* Google Calendar Integration Widget */}
+      <div className="mb-8">
+        <GoogleCalendarWidget />
       </div>
 
       {/* Recent Activity Feed */}
