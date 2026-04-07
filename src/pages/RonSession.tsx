@@ -513,7 +513,7 @@ export default function RonSession() {
 
     // Fetch notary name from settings (Item 353, 422)
     const { data: notaryNameData } = await supabase.from("platform_settings").select("setting_value").eq("setting_key", "notary_name").single();
-    const notaryNameSetting = notaryNameData?.setting_value || "Notar";
+    const notaryNameSetting = notaryNameData?.setting_value || "NotarDex";
 
     // Item 406: Capture signer location state
     const signerLocationState = clientProfile?.state || null;
@@ -616,7 +616,7 @@ export default function RonSession() {
       appointment_id: appointmentId,
       created_by: user.id,
       signer_name: clientProfile?.full_name || null,
-      notary_name: notaryNameSetting || "Notar",
+      notary_name: notaryNameSetting || "NotarDex",
       commissioned_state: "OH",
       status: "valid",
       document_hash: documentHash,

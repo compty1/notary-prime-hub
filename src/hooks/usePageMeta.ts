@@ -50,7 +50,7 @@ export function usePageMeta(
     setMeta("og:type", "website", "property");
     setMeta("og:image", opts.ogImage || DEFAULT_OG_IMAGE, "property");
     setMeta("og:locale", "en_US", "property");
-    setMeta("og:site_name", "Notar", "property");
+    setMeta("og:site_name", "NotarDex", "property");
 
     // Twitter card tags (item 454)
     setMeta("twitter:card", "summary_large_image", "name");
