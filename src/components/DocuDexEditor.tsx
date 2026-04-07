@@ -1296,13 +1296,23 @@ export function DocuDexEditor({
                 setPageBgColor={setPageBgColor}
                 wordCountGoal={wordCountGoal}
                 setWordCountGoal={setWordCountGoal}
+                watermark={watermark}
+                setWatermark={setWatermark}
+                headerHtml={headerHtml}
+                setHeaderHtml={setHeaderHtml}
+                footerHtml={footerHtml}
+                setFooterHtml={setFooterHtml}
                 history={history}
+                customTemplates={customTemplates}
                 onApplyTemplate={applyTemplate}
                 onInsertElement={insertElement}
                 onAiGenerate={aiGenerateFullPage}
                 onAiTextAction={aiTextAction}
                 onTranslate={translatePage}
                 onRestoreSnapshot={restoreSnapshot}
+                onSaveAsTemplate={saveAsTemplate}
+                onDeleteCustomTemplate={deleteCustomTemplate}
+                onNameSnapshot={() => setShowVersionNameDialog(true)}
                 aiLoading={aiLoading}
                 maxChars={maxChars}
                 compact={false}
