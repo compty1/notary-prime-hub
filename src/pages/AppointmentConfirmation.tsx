@@ -34,7 +34,7 @@ function generateICS(appt: any): string {
     "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Notar//NotarDex.com//EN",
     "BEGIN:VEVENT", `DTSTART:${dtStart}`, `DTEND:${dtEnd}`,
     `SUMMARY:Notarization — ${appt.service_type}`,
-    `DESCRIPTION:${appt.notarization_type === "ron" ? "Remote Online Notarization (RON) session" : "In-person notarization appointment"} with Notar`,
+    `DESCRIPTION:${appt.notarization_type === "ron" ? "Remote Online Notarization (RON) session" : "In-person notarization appointment"} with NotarDex`,
     `LOCATION:${appt.location || (appt.notarization_type === "ron" ? "Online — Video Call" : "TBD")}`,
     "STATUS:CONFIRMED", "END:VEVENT", "END:VCALENDAR",
   ].join("\r\n");
@@ -110,7 +110,7 @@ const getCrossSells = (appt: any) => {
 };
 
 export default function AppointmentConfirmation() {
-  usePageMeta({ title: "Appointment Confirmed — Notar", description: "Your notarization appointment has been confirmed. Review your session details, download a calendar invite, and prepare for your appointment." });
+  usePageMeta({ title: "Appointment Confirmed — NotarDex", description: "Your notarization appointment has been confirmed. Review your session details, download a calendar invite, and prepare for your appointment." });
   const [searchParams] = useSearchParams();
   const appointmentId = searchParams.get("id");
   const { user } = useAuth();
@@ -244,17 +244,24 @@ export default function AppointmentConfirmation() {
             notarizationType={appointment.notarization_type}
             location={appointment.location}
           />
-          {/* Phase 5.3: Upload documents button */}
+          {/* ID 42: Upload documents prompt */}
           <Link to="/portal?tab=documents">
             <Button variant="outline" className="w-full gap-2 sm:w-auto">
-              <Upload className="h-4 w-4" /> Upload Documents
+              <Upload className="h-4 w-4" /> Upload Documents Now
             </Button>
           </Link>
+          {/* ID 239: Portal access CTA */}
           <Link to="/portal">
             <Button className="w-full sm:w-auto">
-              Go to Portal
+              Access Your Portal
             </Button>
           </Link>
+        </div>
+
+        {/* ID 239: Portal access reminder for new users */}
+        <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-4 text-left text-sm">
+          <p className="font-medium text-foreground flex items-center gap-2"><User className="h-4 w-4 text-primary" /> Your Portal is Ready</p>
+          <p className="text-muted-foreground mt-1">Log in to your Client Portal to track your appointment, upload documents, and communicate with your notary. Use the email address you provided during booking.</p>
         </div>
 
         {/* Pay Now Section */}

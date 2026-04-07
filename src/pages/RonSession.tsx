@@ -390,9 +390,15 @@ export default function RonSession() {
     setOathTimestamp(timestamp);
     toast({ title: "Oath recorded", description: `Oath administered at ${new Date(timestamp).toLocaleTimeString()}` });
 
+    // ID 67: Persist oath timestamp to DB immediately
     if (appointmentId) {
       const oathNote = `\n[Oath: ${oathType} administered at ${new Date(timestamp).toLocaleTimeString()}]`;
       await supabase.from("appointments").update({ admin_notes: (notes || "") + oathNote }).eq("id", appointmentId);
+      await supabase.from("notarization_sessions").update({
+        oath_administered: true,
+        oath_timestamp: timestamp,
+        oath_type: oathType,
+      } as any).eq("appointment_id", appointmentId);
     }
   };
 
