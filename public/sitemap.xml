@@ -7,19 +7,24 @@
   <url><loc>https://notardex.com/ron-info</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://notardex.com/ron-check</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://notardex.com/loan-signing</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://notardex.com/compliance</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://notardex.com/security</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://notardex.com/pricing</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://notardex.com/fee-calculator</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://notardex.com/notary-guide</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://notardex.com/notary-guide-process</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://notardex.com/templates</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://notardex.com/resources</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://notardex.com/join</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://notardex.com/signer-rights</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://notardex.com/solutions/notaries</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://notardex.com/solutions/hospitals</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://notardex.com/solutions/real-estate</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://notardex.com/solutions/law-firms</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://notardex.com/solutions/small-business</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://notardex.com/solutions/individuals</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://notardex.com/ai-tools</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://notardex.com/signature-generator</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
   <url><loc>https://notardex.com/verify</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
   <url><loc>https://notardex.com/terms</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://notardex.com/login</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://notardex.com/signup</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>

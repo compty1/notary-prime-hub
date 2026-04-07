@@ -30,15 +30,15 @@ export const EmailChangeEmail = ({
 }: EmailChangeEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Confirm your email change for Notar</Preview>
+    <Preview>Confirm your email change for NotarDex</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={logoSection}>
-          <Text style={logoText}>N<span style={logoDot}>.</span></Text>
+          <Text style={logoText}>Notar<span style={logoDex}>Dex</span></Text>
         </Section>
         <Heading style={h1}>Confirm email change</Heading>
         <Text style={text}>
-          You requested to change your Notar email from{' '}
+          You requested to change your NotarDex email from{' '}
           <Link href={`mailto:${email}`} style={link}>{email}</Link>{' '}
           to{' '}
           <Link href={`mailto:${newEmail}`} style={link}>{newEmail}</Link>.
@@ -56,17 +56,17 @@ export const EmailChangeEmail = ({
 
 export default EmailChangeEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: "'Space Grotesk', 'Lato', Arial, sans-serif" }
-const container = { padding: '40px 25px', maxWidth: '480px', margin: '0 auto' }
+const main = { backgroundColor: '#0f172a', fontFamily: "'Space Grotesk', 'Lato', Arial, sans-serif" }
+const container = { padding: '40px 25px', maxWidth: '480px', margin: '0 auto', backgroundColor: '#1e293b', borderRadius: '16px' }
 const logoSection = { textAlign: 'center' as const, marginBottom: '24px' }
-const logoText = { fontSize: '36px', fontWeight: 'bold' as const, color: '#103b87', margin: '0', display: 'inline' }
-const logoDot = { color: '#ff6b6b' }
-const h1 = { fontSize: '22px', fontWeight: 'bold' as const, color: '#103b87', margin: '0 0 16px' }
-const text = { fontSize: '14px', color: '#555f6d', lineHeight: '1.6', margin: '0 0 24px' }
-const link = { color: '#14a3a3', textDecoration: 'underline' }
+const logoText = { fontSize: '28px', fontWeight: 'bold' as const, color: '#f8fafc', margin: '0', display: 'inline' }
+const logoDex = { color: '#f59e0b' }
+const h1 = { fontSize: '22px', fontWeight: 'bold' as const, color: '#f8fafc', margin: '0 0 16px' }
+const text = { fontSize: '14px', color: '#94a3b8', lineHeight: '1.6', margin: '0 0 24px' }
+const link = { color: '#f59e0b', textDecoration: 'underline' }
 const button = {
-  backgroundColor: '#14a3a3',
-  color: '#ffffff',
+  backgroundColor: '#f59e0b',
+  color: '#0f172a',
   fontSize: '14px',
   fontWeight: '600' as const,
   borderRadius: '10px',
@@ -75,4 +75,4 @@ const button = {
   display: 'block' as const,
   textAlign: 'center' as const,
 }
-const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0', textAlign: 'center' as const }
+const footer = { fontSize: '12px', color: '#64748b', margin: '30px 0 0', textAlign: 'center' as const }

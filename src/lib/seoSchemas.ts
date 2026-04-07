@@ -4,7 +4,7 @@
  */
 
 const DOMAIN = "https://notardex.com";
-const BUSINESS_NAME = "Notar — Ohio Notary Public";
+const BUSINESS_NAME = "NotarDex — Ohio Notary Public";
 const PHONE = "(614) 300-6890";
 const EMAIL = "contact@notardex.com";
 
@@ -138,6 +138,22 @@ export function reviewSchema(reviews: { author: string; rating: number; body: st
       reviewRating: { "@type": "Rating", ratingValue: r.rating },
       reviewBody: r.body,
       ...(r.date ? { datePublished: r.date } : {}),
+    })),
+  };
+}
+
+/** Inject a JSON-LD script tag into <head> and return cleanup function */
+export function howToSchema(steps: { name: string; text: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "How to Get a Document Notarized Online with NotarDex",
+    description: "Complete guide to remote online notarization in Ohio via NotarDex.",
+    step: steps.map((s, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      name: s.name,
+      text: s.text,
     })),
   };
 }
