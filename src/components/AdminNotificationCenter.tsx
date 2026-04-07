@@ -136,9 +136,9 @@ export function AdminNotificationCenter() {
   useEffect(() => {
     if (browserNotifs && unreadCount > 0 && document.visibilityState === "hidden") {
       try {
-        new Notification("Notar — New Notification", {
+        new Notification("NotarDex — New Notification", {
           body: notifications.find(n => !n.read)?.title || "You have new notifications",
-          icon: "/placeholder.svg",
+          icon: "/favicon.svg",
         });
       } catch (e) { console.error("Browser notification error:", e); }
     }

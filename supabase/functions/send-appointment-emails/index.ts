@@ -57,11 +57,11 @@ function wrapInEmailLayout(heading: string, bodyContent: string): string {
           ${bodyContent}
           <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;">
           <p style="color:#9ca3af;font-size:12px;text-align:center;margin:0;">
-            Notar Notary Services · Franklin County, Ohio<br>
+            NotarDex Notary Services · Franklin County, Ohio<br>
             Commissioned per Ohio Revised Code Chapter 147
           </p>
           <p style="color:#9ca3af;font-size:11px;text-align:center;margin:8px 0 0;">
-            <a href="https://notary-prime-hub.lovable.app/unsubscribe" style="color:#9ca3af;text-decoration:underline;">Unsubscribe</a> from future emails
+            <a href="https://notardex.com/unsubscribe" style="color:#9ca3af;text-decoration:underline;">Unsubscribe</a> from future emails
           </p>
         </div>
       </div>
@@ -122,7 +122,7 @@ function buildDefaultEmailHtml(clientName: string, appt: Appointment, type: stri
       break;
     case "status_completed":
       heading = "Notarization Complete";
-      body = `<p>Hello ${clientName},</p><p>Your notarization for <strong>${appt.service_type}</strong> has been completed successfully!</p><p>Your notarized documents are now available in your client portal. Please log in to download them.</p><p style="margin:20px 0;"><a href="https://notary-prime-hub.lovable.app/portal" style="display:inline-block;padding:14px 28px;background-color:#1a2744;color:#e8d5a3;text-decoration:none;border-radius:6px;font-weight:600;">Download Documents</a></p><p>If you were satisfied with the service, we'd appreciate you leaving a review in your portal.</p>`;
+      body = `<p>Hello ${clientName},</p><p>Your notarization for <strong>${appt.service_type}</strong> has been completed successfully!</p><p>Your notarized documents are now available in your client portal. Please log in to download them.</p><p style="margin:20px 0;"><a href="https://notardex.com/portal" style="display:inline-block;padding:14px 28px;background-color:#1a2744;color:#e8d5a3;text-decoration:none;border-radius:6px;font-weight:600;">Download Documents</a></p><p>If you were satisfied with the service, we'd appreciate you leaving a review in your portal.</p>`;
       break;
     case "status_cancelled":
       heading = "Appointment Cancelled";
@@ -130,7 +130,7 @@ function buildDefaultEmailHtml(clientName: string, appt: Appointment, type: stri
       break;
     case "completion":
       heading = "Your Notarized Document is Ready";
-      body = `<p>Hello ${clientName},</p><p>Great news! Your notarization session for <strong>${appt.service_type}</strong> on <strong>${dateFormatted}</strong> has been completed.</p><p>Your notarized documents and certificate of notarization are now available for download in your client portal.</p><p style="margin:20px 0;"><a href="https://notary-prime-hub.lovable.app/portal" style="display:inline-block;padding:14px 28px;background-color:#1a2744;color:#e8d5a3;text-decoration:none;border-radius:6px;font-weight:600;font-family:Georgia,serif;">Access Your Documents</a></p><p><strong>What's included:</strong></p><ul style="margin:8px 0 16px 20px;"><li>Notarized document(s)</li><li>Certificate of Notarization</li><li>Digital e-seal verification</li></ul><p style="font-size:13px;color:#6b7280;">Per Ohio ORC §147.542, your electronic notarization carries the same legal validity as a traditional wet-ink notarization.</p>`;
+      body = `<p>Hello ${clientName},</p><p>Great news! Your notarization session for <strong>${appt.service_type}</strong> on <strong>${dateFormatted}</strong> has been completed.</p><p>Your notarized documents and certificate of notarization are now available for download in your client portal.</p><p style="margin:20px 0;"><a href="https://notardex.com/portal" style="display:inline-block;padding:14px 28px;background-color:#1a2744;color:#e8d5a3;text-decoration:none;border-radius:6px;font-weight:600;font-family:Georgia,serif;">Access Your Documents</a></p><p><strong>What's included:</strong></p><ul style="margin:8px 0 16px 20px;"><li>Notarized document(s)</li><li>Certificate of Notarization</li><li>Digital e-seal verification</li></ul><p style="font-size:13px;color:#6b7280;">Per Ohio ORC §147.542, your electronic notarization carries the same legal validity as a traditional wet-ink notarization.</p>`;
       break;
   }
 

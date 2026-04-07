@@ -312,7 +312,7 @@ export default function Index() {
                 <div className="absolute -top-4 -left-4 w-10 h-10 bg-sidebar-background text-white rounded-full flex items-center justify-center font-bold text-lg border-4 border-background shadow-sm z-10 group-hover:bg-primary group-hover:text-primary-foreground transition">
                   {step.num}
                 </div>
-                <div className="w-14 h-14 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform dark:bg-blue-900/30 dark:text-blue-400">
+                <div className="w-14 h-14 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform dark:bg-primary/20 dark:text-primary">
                   <step.icon className="w-7 h-7" />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">{step.title}</h3>

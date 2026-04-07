@@ -29,7 +29,7 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
         : "text-foreground";
 
     return (
-      <div ref={ref} className={cn("flex items-center", s.gap, className)}>
+      <div ref={ref} className={cn("flex items-center", s.gap, className)} aria-label="NotarDex logo">
         {/* Amber gradient icon badge */}
         <div
           className={cn(

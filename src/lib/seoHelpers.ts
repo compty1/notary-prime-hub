@@ -2,9 +2,11 @@
  * SEO helpers — canonical URLs, JSON-LD structured data
  */
 
+const SITE_DOMAIN = "https://notardex.com";
+
 /** Set canonical URL for the current page */
 export function setCanonical(path: string) {
-  const url = `https://notary-prime-hub.lovable.app${path}`;
+  const url = `${SITE_DOMAIN}${path}`;
   let link = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
   if (!link) {
     link = document.createElement("link");
@@ -31,8 +33,8 @@ export function setJsonLd(data: Record<string, any>) {
 export const ORGANIZATION_JSONLD = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
-  name: "Notar — Ohio Notary & Document Services",
-  url: "https://notary-prime-hub.lovable.app",
+  name: "NotarDex — Ohio Notary & Document Services",
+  url: SITE_DOMAIN,
   telephone: "+16143006890",
   email: "contact@notardex.com",
   address: {

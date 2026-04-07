@@ -212,12 +212,12 @@ function AnimatedRoutes() {
         <Route index element={<SR msg="Overview failed to load"><AdminOverview /></SR>} />
         <Route path="appointments" element={<SR msg="Appointments failed to load"><AdminAppointments /></SR>} />
         <Route path="clients" element={<SR msg="Clients failed to load"><AdminClients /></SR>} />
-        <Route path="availability" element={<SR msg="Availability failed to load"><AdminAvailability /></SR>} />
+        <Route path="availability" element={<ProtectedRoute adminOnly><SR msg="Availability failed to load"><AdminAvailability /></SR></ProtectedRoute>} />
         <Route path="documents" element={<SR msg="Documents failed to load"><AdminDocuments /></SR>} />
         <Route path="journal" element={<SR msg="Journal failed to load"><AdminJournal /></SR>} />
         <Route path="revenue" element={<ProtectedRoute adminOnly><SR msg="Revenue failed to load"><AdminRevenue /></SR></ProtectedRoute>} />
-        <Route path="templates" element={<SR msg="Templates failed to load"><AdminTemplates /></SR>} />
-        <Route path="apostille" element={<SR msg="Apostille failed to load"><AdminApostille /></SR>} />
+        <Route path="templates" element={<ProtectedRoute adminOnly><SR msg="Templates failed to load"><AdminTemplates /></SR></ProtectedRoute>} />
+        <Route path="apostille" element={<ProtectedRoute adminOnly><SR msg="Apostille failed to load"><AdminApostille /></SR></ProtectedRoute>} />
         <Route path="chat" element={<ProtectedRoute adminOnly><SR msg="Chat failed to load"><AdminChat /></SR></ProtectedRoute>} />
         <Route path="business-clients" element={<ProtectedRoute adminOnly><SR msg="Business clients failed to load"><AdminBusinessClients /></SR></ProtectedRoute>} />
         <Route path="services" element={<ProtectedRoute adminOnly><SR msg="Services failed to load"><AdminServices /></SR></ProtectedRoute>} />
@@ -233,7 +233,7 @@ function AnimatedRoutes() {
         <Route path="task-queue" element={<ProtectedRoute adminOnly><SR msg="Task queue failed to load"><AdminTaskQueue /></SR></ProtectedRoute>} />
         <Route path="crm" element={<ProtectedRoute adminOnly><SR msg="CRM failed to load"><AdminCRM /></SR></ProtectedRoute>} />
         <Route path="build-tracker" element={<ProtectedRoute adminOnly><SR msg="Build tracker failed to load"><AdminBuildTracker /></SR></ProtectedRoute>} />
-        <Route path="docudex-pro" element={<SR msg="DocuDex Pro failed to load"><AdminDocuDexPro /></SR>} />
+        <Route path="docudex-pro" element={<ProtectedRoute adminOnly><SR msg="DocuDex Pro failed to load"><AdminDocuDexPro /></SR></ProtectedRoute>} />
         <Route path="process-flows" element={<ProtectedRoute adminOnly><SR msg="Process flows failed to load"><AdminProcessFlows /></SR></ProtectedRoute>} />
         <Route path="settings" element={<ProtectedRoute adminOnly><SR msg="Settings failed to load"><AdminSettings /></SR></ProtectedRoute>} />
         <Route path="integrations" element={<ProtectedRoute adminOnly><SR msg="Integration testing failed to load"><AdminIntegrationTest /></SR></ProtectedRoute>} />
