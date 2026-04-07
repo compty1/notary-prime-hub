@@ -79,8 +79,11 @@ export default function ResumeBuilder() {
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [analyzeText, setAnalyzeText] = useState("");
+  const [analyzeJobDesc, setAnalyzeJobDesc] = useState("");
   const [analyzeOpen, setAnalyzeOpen] = useState(false);
   const [analysisResult, setAnalysisResult] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchData = useCallback(async () => {
     if (!user) return;
