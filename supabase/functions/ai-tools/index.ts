@@ -20,6 +20,8 @@ const TOOL_IDS = new Set([
   // Ohio Notary Tools
   "ohio-ron-certificate","ohio-journal-drafter","ohio-acknowledgment-jurat",
   "ron-session-summary","notary-commission-checklist",
+  // Resume
+  "resume-analyzer",
 ]);
 
 Deno.serve(async (req) => {
