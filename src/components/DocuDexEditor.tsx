@@ -120,6 +120,8 @@ export function DocuDexEditor({
   const [versionName, setVersionName] = useState("");
   const [showVersionNameDialog, setShowVersionNameDialog] = useState(false);
   const [pendingSnapshot, setPendingSnapshot] = useState<HistorySnapshot | null>(null);
+
+  const canvasRef = useRef<HTMLDivElement>(null);
   const autoSaveTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const announcerRef = useRef<HTMLDivElement>(null);
 
