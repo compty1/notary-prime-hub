@@ -589,7 +589,7 @@ export default function AdminMailbox() {
               ) : selectedEmail.body_html ? (
                 <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeEmailHtml(selectedEmail.body_html) }} />
               ) : (
-                <pre className="whitespace-pre-wrap text-sm text-foreground font-sans">{selectedEmail.body_text || "No content"}</pre>
+                <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap font-sans text-foreground">{selectedEmail.body_text || "No content"}</div>
               )}
               {selectedEmail.attachments && selectedEmail.attachments.length > 0 && (
                 <div className="mt-6 border-t border-border pt-4">
