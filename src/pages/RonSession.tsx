@@ -278,6 +278,30 @@ export default function RonSession() {
     return () => { supabase.removeChannel(channel); };
   }, [appointmentId]);
 
+  // Auto-skip client onboarding to active session when participantLink exists
+  useEffect(() => {
+    if (!isAdminOrNotary && participantLink && clientOnboardingStep < 3) {
+      setClientOnboardingStep(3);
+      addClientJournalEntry("Session link received — entering active session.");
+    }
+  }, [participantLink, isAdminOrNotary]);
+
+  // Client session elapsed timer
+  useEffect(() => {
+    if (!isAdminOrNotary && clientOnboardingStep === 3) {
+      const startTime = sessionStartedAt ? new Date(sessionStartedAt).getTime() : Date.now();
+      const tick = () => {
+        const diff = Math.floor((Date.now() - startTime) / 1000);
+        const m = String(Math.floor(diff / 60)).padStart(2, "0");
+        const s = String(diff % 60).padStart(2, "0");
+        setSessionElapsed(`${m}:${s}`);
+      };
+      tick();
+      const iv = setInterval(tick, 1000);
+      return () => clearInterval(iv);
+    }
+  }, [isAdminOrNotary, clientOnboardingStep, sessionStartedAt]);
+
   // Voice recognition setup
   useEffect(() => {
     if (!isAdminOrNotary) return;
