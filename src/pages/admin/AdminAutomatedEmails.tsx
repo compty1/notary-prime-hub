@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { sanitizeHtml } from "@/lib/sanitize";
+import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,8 @@ import {
 import {
   Loader2, Save, Wand2, Mail, MailCheck, Clock, CheckCircle2,
   RefreshCw, Eye, Palette, FileEdit, Layout, Tag, Upload,
+  Settings, CreditCard, PenTool, Users, Calendar, Shield,
+  ArrowRight, ExternalLink, Zap, AlertCircle, Server, Copy,
 } from "lucide-react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
@@ -720,6 +723,473 @@ function ServiceTemplatesTab() {
 }
 
 /* ═══════════════════════════════════════════
+   TAB 4: SETUP & INTEGRATIONS
+   ═══════════════════════════════════════════ */
+
+const SUPABASE_URL_DISPLAY = "https://svrebvbcsxaoluafblnq.supabase.co";
+
+interface IntegrationSection {
+  id: string;
+  title: string;
+  icon: React.ElementType;
+  description: string;
+  requiredSecrets: string[];
+  secretLabels: Record<string, string>;
+  edgeFunctions: string[];
+  setupSteps: string[];
+  webhookUrl?: string;
+  notes?: string[];
+}
+
+const INTEGRATIONS: IntegrationSection[] = [
+  {
+    id: "ionos",
+    title: "IONOS SMTP — Primary Email Provider",
+    icon: Mail,
+    description: "All outgoing platform emails (appointment confirmations, reminders, follow-ups, document notifications, correspondence) are sent through IONOS SMTP. This is the primary email delivery channel.",
+    requiredSecrets: ["IONOS_EMAIL_ADDRESS", "IONOS_EMAIL_PASSWORD", "IONOS_SMTP_HOST"],
+    secretLabels: {
+      IONOS_EMAIL_ADDRESS: "Sender email address (e.g. notify@notardex.com)",
+      IONOS_EMAIL_PASSWORD: "SMTP password from IONOS account settings",
+      IONOS_SMTP_HOST: "SMTP server hostname (typically smtp.ionos.com)",
+    },
+    edgeFunctions: [
+      "send-appointment-emails — Sends booking confirmations & reminders",
+      "send-correspondence — Admin-to-client direct emails",
+      "send-document-notification — Document status change alerts",
+      "send-followup-sequence — Post-appointment follow-up series (3 emails)",
+      "send-welcome-sequence — New user onboarding series (3 emails)",
+      "send-appointment-reminders — Automated 24hr/30min reminders",
+      "ionos-email — Direct IONOS email sending utility",
+      "ionos-email-sync — IMAP inbox sync for the Mailbox tab",
+    ],
+    setupSteps: [
+      "1. Log in to your IONOS account at https://my.ionos.com",
+      "2. Navigate to Email → Email Accounts → Settings",
+      "3. Note your email address and create an app-specific password if available",
+      "4. SMTP Host: smtp.ionos.com (default) | IMAP Host: imap.ionos.com",
+      "5. SMTP Port: 587 (TLS) | IMAP Port: 993 (SSL)",
+      "6. Add the 3 secrets listed above with correct values",
+      "7. Optionally add IONOS_IMAP_HOST for Mailbox sync functionality",
+    ],
+    notes: [
+      "If IONOS SMTP fails, the system automatically falls back to Resend API (if configured)",
+      "The IMAP sync powers the Admin Mailbox (/admin/mailbox) for viewing incoming emails",
+      "All emails are wrapped with the Master Branding template before sending",
+    ],
+  },
+  {
+    id: "stripe",
+    title: "Stripe — Payments & Invoicing",
+    icon: CreditCard,
+    description: "Handles client payments for notary services, generates receipts, and processes refunds. Stripe webhooks track payment status changes and trigger automated receipt emails.",
+    requiredSecrets: ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"],
+    secretLabels: {
+      STRIPE_SECRET_KEY: "Secret key from Stripe Dashboard → Developers → API Keys",
+      STRIPE_WEBHOOK_SECRET: "Webhook signing secret from Stripe Dashboard → Webhooks",
+    },
+    edgeFunctions: [
+      "create-payment-intent — Creates Stripe PaymentIntents for client checkout",
+      "stripe-webhook — Receives payment.succeeded, payment.failed events",
+      "process-refund — Initiates refunds via Stripe Refunds API",
+      "get-stripe-config — Returns publishable key to the frontend",
+    ],
+    webhookUrl: `${SUPABASE_URL_DISPLAY}/functions/v1/stripe-webhook`,
+    setupSteps: [
+      "1. Log in to Stripe Dashboard → https://dashboard.stripe.com",
+      "2. Navigate to Developers → API Keys → Copy Secret Key",
+      "3. Navigate to Developers → Webhooks → Add Endpoint",
+      "4. Set the endpoint URL to the webhook URL shown below",
+      "5. Select events: payment_intent.succeeded, payment_intent.payment_failed, charge.refunded",
+      "6. Copy the Webhook Signing Secret after creating the endpoint",
+      "7. Add both secrets listed above",
+    ],
+    notes: [
+      "The publishable key (STRIPE_PUBLISHABLE_KEY) is stored as a secret but is safe to expose in the frontend",
+      "Payment flow: Client fills PaymentForm → create-payment-intent → Stripe checkout → stripe-webhook → receipt email",
+      "Refunds are processed via the Admin Revenue page and call the process-refund edge function",
+    ],
+  },
+  {
+    id: "signnow",
+    title: "SignNow — E-Signing & Document Workflow",
+    icon: PenTool,
+    description: "Enables electronic signature collection on documents. SignNow handles document uploads, signing invitations, and completion tracking with automated webhook notifications.",
+    requiredSecrets: ["SIGNNOW_API_KEY", "SIGNNOW_API_TOKEN", "SIGNNOW_WEBHOOK_SECRET"],
+    secretLabels: {
+      SIGNNOW_API_KEY: "API Key from SignNow Developer Portal → Apps",
+      SIGNNOW_API_TOKEN: "Bearer token for API authentication",
+      SIGNNOW_WEBHOOK_SECRET: "HMAC-SHA256 secret for webhook validation",
+    },
+    edgeFunctions: [
+      "signnow — Document upload, invite creation, and status queries",
+      "signnow-webhook — Receives document.complete, document.update, invite events",
+    ],
+    webhookUrl: `${SUPABASE_URL_DISPLAY}/functions/v1/signnow-webhook`,
+    setupSteps: [
+      "1. Create a SignNow Developer account at https://www.signnow.com/developers",
+      "2. Create an Application to get your API Key and Token",
+      "3. Configure webhook subscriptions for your application",
+      "4. Set the callback URL to the webhook URL shown below",
+      "5. Enable events: document.complete, document.update, document.delete, invite.sent, invite.signed",
+      "6. Copy the webhook secret for HMAC signature validation",
+      "7. Add all 3 secrets listed above",
+    ],
+    notes: [
+      "Document-level webhooks are automatically registered during upload for session integrity",
+      "The admin Integration Hub (/admin/integrations) shows real-time SignNow diagnostic status",
+      "HMAC-SHA256 signature verification ensures webhook authenticity",
+    ],
+  },
+  {
+    id: "hubspot",
+    title: "HubSpot — CRM & Lead Sync",
+    icon: Users,
+    description: "Synchronizes leads, contacts, and deals between the platform and HubSpot CRM. Enables two-way data flow for pipeline management and marketing automation.",
+    requiredSecrets: ["HubSpot_Developer_Key", "HubSpot_Service_Key"],
+    secretLabels: {
+      HubSpot_Developer_Key: "Developer API Key from HubSpot Settings → Integrations → API Key",
+      HubSpot_Service_Key: "Private App access token from HubSpot Settings → Integrations → Private Apps",
+    },
+    edgeFunctions: [
+      "hubspot-sync — Bidirectional contact/deal synchronization",
+      "discover-leads — Uses HubSpot data for lead scoring",
+    ],
+    setupSteps: [
+      "1. Log in to HubSpot at https://app.hubspot.com",
+      "2. Navigate to Settings → Integrations → API Key → Generate if needed",
+      "3. For enhanced access: Settings → Integrations → Private Apps → Create Private App",
+      "4. Grant scopes: crm.objects.contacts.read/write, crm.objects.deals.read/write",
+      "5. Copy the access token as the Service Key",
+      "6. Add both secrets listed above",
+    ],
+    notes: [
+      "Lead sync maps: full_name → firstname/lastname, email → email, phone → phone, service_type → dealname",
+      "Deals are synced with the pipeline stage mapping defined in the hubspot-sync function",
+      "The CRM Activities table logs all sync operations for audit compliance",
+    ],
+  },
+  {
+    id: "google-calendar",
+    title: "Google Calendar — Scheduling Sync",
+    icon: Calendar,
+    description: "Syncs confirmed appointments to Google Calendar for scheduling visibility. Enables real-time availability checks and calendar event creation.",
+    requiredSecrets: [],
+    secretLabels: {},
+    edgeFunctions: [
+      "google-calendar-sync — Creates/updates/deletes calendar events for appointments",
+    ],
+    setupSteps: [
+      "1. Go to Google Cloud Console → https://console.cloud.google.com",
+      "2. Create a project or select existing → Enable Google Calendar API",
+      "3. Create OAuth 2.0 credentials (Web Application type)",
+      "4. Add authorized redirect URI for your domain",
+      "5. Configure the OAuth consent screen with calendar scopes",
+      "6. Store the client ID and client secret as secrets if implementing server-side sync",
+      "7. Currently uses client-side OAuth flow via the Google Calendar widget",
+    ],
+    notes: [
+      "The platform includes a Google Calendar widget on the admin dashboard for quick viewing",
+      "Appointment status changes (confirmed/cancelled/rescheduled) trigger calendar event updates",
+      "Currently uses a link-only integration — notaries can manually add events via .ICS downloads",
+    ],
+  },
+  {
+    id: "onenotary",
+    title: "OneNotary — Compliance & RON Verification",
+    icon: Shield,
+    description: "Connects to OneNotary for Remote Online Notarization compliance checks, notary credential verification, and session audit trail reporting per Ohio ORC §147.66.",
+    requiredSecrets: ["ONENOTARY_API_TOKEN"],
+    secretLabels: {
+      ONENOTARY_API_TOKEN: "API Token from OneNotary platform settings",
+    },
+    edgeFunctions: [
+      "ai-compliance-scan — Uses OneNotary data for compliance verification",
+    ],
+    setupSteps: [
+      "1. Log in to your OneNotary account",
+      "2. Navigate to Settings → API Access → Generate Token",
+      "3. Copy the API token and add it as the secret listed above",
+      "4. Ensure your notary commission details are up to date in OneNotary",
+    ],
+    notes: [
+      "Compliance data supplements the platform's built-in Ohio RON compliance checks",
+      "The Compliance Report page (/admin/compliance) aggregates OneNotary data",
+      "All compliance checks are logged to the audit_log table for record retention",
+    ],
+  },
+];
+
+const EMAIL_PIPELINE_MAP = [
+  { emailType: "Booking Confirmation", trigger: "New appointment created", edgeFunction: "send-appointment-emails", provider: "IONOS SMTP" },
+  { emailType: "24hr Reminder", trigger: "Scheduled (cron)", edgeFunction: "send-appointment-reminders", provider: "IONOS SMTP" },
+  { emailType: "30min Reminder", trigger: "Scheduled (cron)", edgeFunction: "send-appointment-reminders", provider: "IONOS SMTP" },
+  { emailType: "Completion / Thank You", trigger: "Appointment status → completed", edgeFunction: "send-followup-sequence", provider: "IONOS SMTP" },
+  { emailType: "Feedback Request (NPS)", trigger: "Completion +2 days", edgeFunction: "send-followup-sequence", provider: "IONOS SMTP" },
+  { emailType: "Referral Invitation", trigger: "Completion +5 days", edgeFunction: "send-followup-sequence", provider: "IONOS SMTP" },
+  { emailType: "Welcome Onboarding (3-part)", trigger: "New user signup", edgeFunction: "send-welcome-sequence", provider: "IONOS SMTP" },
+  { emailType: "Document Status Update", trigger: "Document status change", edgeFunction: "send-document-notification", provider: "IONOS SMTP" },
+  { emailType: "Direct Correspondence", trigger: "Admin sends from CRM", edgeFunction: "send-correspondence", provider: "IONOS SMTP → Resend fallback" },
+  { emailType: "Auth Emails (OTP, Recovery)", trigger: "Auth events", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue" },
+  { emailType: "Payment Receipt", trigger: "Stripe payment.succeeded", edgeFunction: "stripe-webhook", provider: "IONOS SMTP" },
+  { emailType: "Lead Confirmation", trigger: "Contact form submission", edgeFunction: "submit-lead", provider: "IONOS SMTP" },
+];
+
+function IntegrationSetupTab() {
+  const [healthChecks, setHealthChecks] = useState<Record<string, boolean> | null>(null);
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+
+  const checkHealth = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("health-check");
+      if (error) throw error;
+      setHealthChecks(data?.checks || {});
+    } catch (e: any) {
+      toast({ title: "Health check failed", description: e.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { checkHealth(); }, []);
+
+  const getSecretStatus = (secretName: string): "configured" | "unknown" => {
+    if (!healthChecks) return "unknown";
+    const keyMap: Record<string, string> = {
+      STRIPE_SECRET_KEY: "stripe_configured",
+      IONOS_EMAIL_ADDRESS: "ionos_configured",
+    };
+    const healthKey = keyMap[secretName];
+    if (healthKey && healthChecks[healthKey] !== undefined) {
+      return healthChecks[healthKey] ? "configured" : "unknown";
+    }
+    return "unknown";
+  };
+
+  const testCorrespondence = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke("send-correspondence", {
+        body: { dry_run: true },
+      });
+      if (error) throw error;
+      toast({ title: "Connection test passed", description: "Correspondence function is responding correctly." });
+    } catch (e: any) {
+      toast({ title: "Test failed", description: e.message, variant: "destructive" });
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-semibold">Integration Setup & Configuration Guide</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">Detailed instructions for configuring all API connections and verifying they work correctly.</p>
+        </div>
+        <Button size="sm" variant="outline" onClick={checkHealth} disabled={loading}>
+          {loading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <RefreshCw className="h-3 w-3 mr-1" />}
+          Refresh Status
+        </Button>
+      </div>
+
+      {/* Integration Sections */}
+      <Accordion type="multiple" className="w-full space-y-2">
+        {INTEGRATIONS.map(integration => {
+          const Icon = integration.icon;
+          const allConfigured = integration.requiredSecrets.length === 0 || integration.requiredSecrets.every(s => getSecretStatus(s) === "configured");
+
+          return (
+            <AccordionItem key={integration.id} value={integration.id} className="border rounded-lg px-4">
+              <AccordionTrigger className="py-3 hover:no-underline">
+                <div className="flex items-center gap-3 flex-1">
+                  <div className={cn(
+                    "h-8 w-8 rounded-lg flex items-center justify-center",
+                    allConfigured ? "bg-green-500/10 text-green-600" : "bg-amber-500/10 text-amber-600"
+                  )}>
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-sm font-medium">{integration.title}</div>
+                    <div className="text-[10px] text-muted-foreground">
+                      {integration.requiredSecrets.length > 0
+                        ? `${integration.requiredSecrets.length} secret${integration.requiredSecrets.length !== 1 ? "s" : ""} required`
+                        : "No secrets required"
+                      }
+                    </div>
+                  </div>
+                  <div className="ml-auto mr-2">
+                    {integration.requiredSecrets.length === 0 ? (
+                      <Badge className="bg-blue-500/10 text-blue-700 text-[10px]">Client-side</Badge>
+                    ) : allConfigured ? (
+                      <Badge className="bg-green-500/10 text-green-700 text-[10px]"><CheckCircle2 className="h-3 w-3 mr-1" /> Configured</Badge>
+                    ) : (
+                      <Badge className="bg-amber-500/10 text-amber-700 text-[10px]"><AlertCircle className="h-3 w-3 mr-1" /> Check Secrets</Badge>
+                    )}
+                  </div>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-4 pb-2">
+                  {/* Description */}
+                  <p className="text-xs text-muted-foreground">{integration.description}</p>
+
+                  {/* Required Secrets */}
+                  {integration.requiredSecrets.length > 0 && (
+                    <div>
+                      <h4 className="text-xs font-semibold mb-2 flex items-center gap-1"><Shield className="h-3 w-3" /> Required Secrets</h4>
+                      <div className="space-y-1.5">
+                        {integration.requiredSecrets.map(secret => (
+                          <div key={secret} className="flex items-center gap-2 rounded-md border border-border bg-muted/30 px-3 py-1.5">
+                            <code className="text-[11px] font-mono font-medium">{secret}</code>
+                            <span className="text-[10px] text-muted-foreground flex-1">— {integration.secretLabels[secret]}</span>
+                            {getSecretStatus(secret) === "configured" ? (
+                              <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
+                            ) : (
+                              <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Edge Functions */}
+                  <div>
+                    <h4 className="text-xs font-semibold mb-2 flex items-center gap-1"><Zap className="h-3 w-3" /> Connected Backend Functions</h4>
+                    <div className="space-y-1">
+                      {integration.edgeFunctions.map((fn, i) => (
+                        <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <ArrowRight className="h-3 w-3 shrink-0 text-primary/60" />
+                          <span>{fn}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Webhook URL */}
+                  {integration.webhookUrl && (
+                    <div>
+                      <h4 className="text-xs font-semibold mb-1 flex items-center gap-1"><ExternalLink className="h-3 w-3" /> Webhook Endpoint</h4>
+                      <div className="flex items-center gap-2">
+                        <code className="text-[11px] font-mono bg-muted px-2 py-1 rounded border border-border flex-1 break-all">{integration.webhookUrl}</code>
+                        <Button variant="ghost" size="sm" className="h-7 shrink-0" onClick={() => { navigator.clipboard.writeText(integration.webhookUrl!); toast({ title: "Copied to clipboard" }); }}>
+                          <Copy className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Setup Steps */}
+                  <div>
+                    <h4 className="text-xs font-semibold mb-2 flex items-center gap-1"><Settings className="h-3 w-3" /> Setup Instructions</h4>
+                    <ol className="space-y-1">
+                      {integration.setupSteps.map((step, i) => (
+                        <li key={i} className="text-xs text-muted-foreground pl-1">{step}</li>
+                      ))}
+                    </ol>
+                  </div>
+
+                  {/* Notes */}
+                  {integration.notes && integration.notes.length > 0 && (
+                    <div className="rounded-md bg-blue-500/5 border border-blue-500/10 p-3">
+                      <h4 className="text-xs font-semibold mb-1.5 text-blue-700 dark:text-blue-400">Important Notes</h4>
+                      <ul className="space-y-1">
+                        {integration.notes.map((note, i) => (
+                          <li key={i} className="text-[11px] text-muted-foreground flex items-start gap-1.5">
+                            <span className="text-blue-500 mt-0.5">•</span>
+                            <span>{note}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Test buttons */}
+                  {integration.id === "ionos" && (
+                    <Button size="sm" variant="outline" onClick={testCorrespondence} className="text-xs">
+                      <Mail className="h-3 w-3 mr-1" /> Test Email Connection (Dry Run)
+                    </Button>
+                  )}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          );
+        })}
+
+        {/* Email Delivery Pipeline */}
+        <AccordionItem value="pipeline" className="border rounded-lg px-4">
+          <AccordionTrigger className="py-3 hover:no-underline">
+            <div className="flex items-center gap-3 flex-1">
+              <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-purple-500/10 text-purple-600">
+                <Server className="h-4 w-4" />
+              </div>
+              <div className="text-left">
+                <div className="text-sm font-medium">Email Delivery Pipeline Overview</div>
+                <div className="text-[10px] text-muted-foreground">How emails flow from templates to client inboxes</div>
+              </div>
+              <Badge className="ml-auto mr-2 bg-purple-500/10 text-purple-700 text-[10px]">Reference</Badge>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="space-y-4 pb-2">
+              {/* Flow diagram */}
+              <div className="flex items-center gap-2 flex-wrap text-xs">
+                {["Template Hub", "Edge Function", "IONOS SMTP / Email Queue", "Client Inbox"].map((step, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <span className="rounded-md bg-muted px-2.5 py-1 font-medium border border-border">{step}</span>
+                    {i < 3 && <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />}
+                  </div>
+                ))}
+              </div>
+
+              {/* Mapping table */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="text-left py-2 pr-4 font-medium text-muted-foreground">Email Type</th>
+                      <th className="text-left py-2 pr-4 font-medium text-muted-foreground">Trigger</th>
+                      <th className="text-left py-2 pr-4 font-medium text-muted-foreground">Backend Function</th>
+                      <th className="text-left py-2 font-medium text-muted-foreground">Provider</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {EMAIL_PIPELINE_MAP.map((row, i) => (
+                      <tr key={i} className="border-b border-border/50">
+                        <td className="py-1.5 pr-4 font-medium">{row.emailType}</td>
+                        <td className="py-1.5 pr-4 text-muted-foreground">{row.trigger}</td>
+                        <td className="py-1.5 pr-4 font-mono text-[10px]">{row.edgeFunction}</td>
+                        <td className="py-1.5 text-muted-foreground">{row.provider}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Retry logic */}
+              <div className="rounded-md bg-muted/50 border border-border p-3 space-y-2">
+                <h4 className="text-xs font-semibold">Retry & Delivery Logic</h4>
+                <ul className="space-y-1 text-[11px] text-muted-foreground">
+                  <li>• <strong>Primary:</strong> IONOS SMTP (port 587, TLS) for all transactional emails</li>
+                  <li>• <strong>Fallback:</strong> Resend API is used when IONOS fails (if RESEND_API_KEY is set)</li>
+                  <li>• <strong>Auth emails:</strong> Processed through a durable pgmq queue with automatic retries (max 5 attempts)</li>
+                  <li>• <strong>Rate limiting:</strong> On 429 responses, the dispatcher backs off using the Retry-After header</li>
+                  <li>• <strong>Dead letter queue:</strong> After 5 failures, messages move to DLQ and are logged as 'dlq' in email_send_log</li>
+                  <li>• <strong>TTL:</strong> Auth emails expire after 15 min; transactional emails expire after 60 min</li>
+                  <li>• <strong>Branding:</strong> All outgoing emails are wrapped with the Master Branding template (Tab 1)</li>
+                </ul>
+              </div>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
    MAIN COMPONENT
    ═══════════════════════════════════════════ */
 
@@ -761,12 +1231,12 @@ export default function AdminAutomatedEmails() {
     <div className="space-y-4">
       <div className="rounded-lg bg-muted/50 p-3 mb-2">
         <p className="text-xs text-muted-foreground">
-          <strong>Central Email Template Hub</strong> — All email templates are managed here. The Master Branding tab controls the global wrapper (colors, logo, footer) applied to every outgoing email. Global Templates cover auth, notifications, and system emails. Service Templates provide per-service overrides for booking workflows.
+          <strong>Central Email Template Hub</strong> — All email templates are managed here. The Master Branding tab controls the global wrapper (colors, logo, footer) applied to every outgoing email. Global Templates cover auth, notifications, and system emails. Service Templates provide per-service overrides for booking workflows. The Setup & Integrations tab provides detailed configuration instructions for all connected services.
         </p>
       </div>
 
       <Tabs defaultValue="branding" className="w-full">
-        <TabsList className="grid w-full max-w-xl grid-cols-3">
+        <TabsList className="grid w-full max-w-2xl grid-cols-4">
           <TabsTrigger value="branding" className="flex items-center gap-1.5 text-xs">
             <Palette className="h-3.5 w-3.5" /> Master Branding
           </TabsTrigger>
@@ -775,6 +1245,9 @@ export default function AdminAutomatedEmails() {
           </TabsTrigger>
           <TabsTrigger value="services" className="flex items-center gap-1.5 text-xs">
             <Mail className="h-3.5 w-3.5" /> Service Templates
+          </TabsTrigger>
+          <TabsTrigger value="integrations" className="flex items-center gap-1.5 text-xs">
+            <Settings className="h-3.5 w-3.5" /> Setup & Integrations
           </TabsTrigger>
         </TabsList>
 
@@ -801,6 +1274,10 @@ export default function AdminAutomatedEmails() {
 
         <TabsContent value="services" className="mt-4">
           <ServiceTemplatesTab />
+        </TabsContent>
+
+        <TabsContent value="integrations" className="mt-4">
+          <IntegrationSetupTab />
         </TabsContent>
       </Tabs>
     </div>
