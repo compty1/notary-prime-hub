@@ -76,10 +76,10 @@ export function Footer({ phone = BRAND.defaultPhone, email = BRAND.defaultEmail 
         </div>
 
         <div className="mt-6 border-t border-slate-800 pt-4 text-center text-sm flex flex-col md:flex-row justify-between items-center">
-          <p>© {new Date().getFullYear()} NotarDex.com. All rights reserved.</p>
+          <p>{BRAND.footerText(new Date().getFullYear())}</p>
           <div className="flex items-center gap-4 mt-4 md:mt-0">
-            <span className="flex items-center gap-1 text-xs"><ShieldCheck className="w-4 h-4 text-emerald-500" /> SOC 2 Type II</span>
-            <span className="flex items-center gap-1 text-xs"><Lock className="w-4 h-4 text-emerald-500" /> 256-bit Encryption</span>
+            <span className="flex items-center gap-1 text-xs"><ShieldCheck className="w-4 h-4 text-emerald-500" /> SOC 2 Aligned</span>
+            <span className="flex items-center gap-1 text-xs"><Lock className="w-4 h-4 text-emerald-500" /> AES-256 / TLS 1.2+</span>
           </div>
         </div>
       </div>
