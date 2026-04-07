@@ -76,6 +76,8 @@ export default function BookAppointment() {
   const [serviceTypes, setServiceTypes] = useState<string[]>(fallbackServiceTypes);
   const [serviceDescriptions, setServiceDescriptions] = useState<Record<string, string>>({});
   const [serviceCategories, setServiceCategories] = useState<Record<string, string>>({});
+  const [serviceDurations, setServiceDurations] = useState<Record<string, number>>({});
+  const [serviceRonSupport, setServiceRonSupport] = useState<Record<string, boolean>>({});
 
   // Waitlist state
   const [joiningWaitlist, setJoiningWaitlist] = useState(false);
