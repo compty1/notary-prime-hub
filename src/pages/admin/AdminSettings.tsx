@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, DollarSign, MapPin, Monitor, Save, Loader2, AlertTriangle, CalendarClock, Shield, Upload, Eye, Mail, CheckCircle, XCircle, ArrowDownUp, Palette } from "lucide-react";
-import EmailTemplateDesigner from "@/components/EmailTemplateDesigner";
+import { Settings, DollarSign, MapPin, Monitor, Save, Loader2, AlertTriangle, CalendarClock, Shield, Upload, Eye, Mail, CheckCircle, XCircle, ArrowDownUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -486,56 +485,25 @@ export default function AdminSettings() {
           </CardContent>
         </Card>
 
-        {/* Email Template Designer */}
+        {/* Email Templates — Managed in Email Management → Automated Emails */}
         <Card className="border-border/50 lg:col-span-2">
           <CardHeader>
             <CardTitle className="font-sans text-lg flex items-center gap-2">
-              <Palette className="h-5 w-5 text-primary" /> Email Template Designer
+              <Mail className="h-5 w-5 text-primary" /> Email Templates
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <EmailTemplateDesigner settings={editValues} onSave={(key, value) => updateValue(key, value)} />
+            <p className="text-sm text-muted-foreground mb-3">
+              All email templates (branding, global templates, and per-service overrides) are now managed in one central location.
+            </p>
+            <Button variant="outline" asChild>
+              <a href="/admin/email-management">Go to Email Management → Automated Emails</a>
+            </Button>
           </CardContent>
         </Card>
 
-        {/* Email Notification Templates */}
-        <Card className="border-border/50 lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="font-sans text-lg flex items-center gap-2">
-              <Mail className="h-5 w-5 text-primary" /> Email Notification Templates
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <p className="text-sm text-muted-foreground">
-              Customize the email messages sent to clients. Use placeholders: {"{{client_name}}"}, {"{{date}}"}, {"{{time}}"}, {"{{service_type}}"}, {"{{location}}"}.
-            </p>
-            <div>
-              <Label>Confirmation Email</Label>
-              <RichTextEditor
-                value={editValues.email_template_confirmation || ""}
-                onChange={(html) => updateValue("email_template_confirmation", html)}
-                placeholder="Enter confirmation email template..."
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label>Reminder Email</Label>
-              <RichTextEditor
-                value={editValues.email_template_reminder || ""}
-                onChange={(html) => updateValue("email_template_reminder", html)}
-                placeholder="Enter reminder email template..."
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label>Follow-Up Email</Label>
-              <RichTextEditor
-                value={editValues.email_template_followup || ""}
-                onChange={(html) => updateValue("email_template_followup", html)}
-                placeholder="Enter follow-up email template..."
-                className="mt-1"
-              />
-            </div>
+        <Card className="border-border/50">
+          <CardContent className="pt-6">
             <div>
               <Label>Business Hours Display</Label>
               <Input
