@@ -1200,9 +1200,125 @@ export default function DocumentTemplates() {
             </motion.div>
           ))}
         </div>
+          </TabsContent>
+
+          {/* ── Document Studio Tab ── */}
+          <TabsContent value="studio" className="mt-6">
+            <div className="flex flex-col gap-4">
+              {/* Title + Actions Bar */}
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <Input
+                  value={studioTitle}
+                  onChange={(e) => setStudioTitle(e.target.value)}
+                  className="max-w-md text-lg font-semibold"
+                  placeholder="Document Title"
+                />
+                <div className="flex gap-2 flex-wrap">
+                  <Button variant="outline" size="sm" onClick={() => setStudioChatOpen(!studioChatOpen)}>
+                    <PanelRightOpen className="h-4 w-4 mr-1.5" /> AI Chat
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={studioReviewDocument} disabled={studioReviewing}>
+                    {studioReviewing ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <CheckCircle className="h-4 w-4 mr-1.5" />}
+                    Review
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={studioHandleExport}><Download className="h-4 w-4 mr-1.5" /> Export .DOC</Button>
+                  <Button variant="outline" size="sm" onClick={studioHandlePrint}><Printer className="h-4 w-4 mr-1.5" /> Print / PDF</Button>
+                  <Button size="sm" onClick={studioHandleSave} disabled={studioSaving || !user}>
+                    {studioSaving ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Save className="h-4 w-4 mr-1.5" />}
+                    Save to Vault
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                {/* Main Editor */}
+                <div className="flex-1 border rounded-lg overflow-hidden bg-background">
+                  <EditorToolbar editor={studioEditor} />
+                  {/* AI Inline Actions Bar */}
+                  <div className="flex gap-1 border-b border-border p-1.5 bg-muted/20 flex-wrap">
+                    <span className="text-xs text-muted-foreground self-center mr-1">AI Actions:</span>
+                    {["rewrite", "expand", "summarize", "grammar", "formal"].map((action) => (
+                      <Button key={action} variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => aiInlineAction(action)} disabled={aiInlineLoading}>
+                        {aiInlineLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : action.charAt(0).toUpperCase() + action.slice(1)}
+                      </Button>
+                    ))}
+                    <span className="text-xs text-muted-foreground self-center ml-auto italic">Select text first</span>
+                  </div>
+                  <EditorContent editor={studioEditor} />
+                </div>
+
+                {/* AI Chat Sidebar */}
+                {studioChatOpen && (
+                  <div className="w-80 shrink-0 border rounded-lg flex flex-col bg-background">
+                    <div className="p-3 border-b flex items-center justify-between">
+                      <h3 className="text-sm font-semibold flex items-center gap-1.5"><Sparkles className="h-4 w-4 text-primary" /> AI Assistant</h3>
+                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => setStudioChatOpen(false)}>×</Button>
+                    </div>
+                    <div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-[300px] max-h-[500px]">
+                      {studioChatMessages.length === 0 && (
+                        <div className="text-center text-xs text-muted-foreground py-8 space-y-2">
+                          <p>Ask me to help draft, edit, or review your document.</p>
+                          <div className="flex flex-wrap gap-1 justify-center">
+                            {["Help me draft a letter", "Add a section about...", "Make this more formal"].map((q) => (
+                              <Button key={q} variant="outline" size="sm" className="text-xs h-auto py-1" onClick={() => { setStudioChatInput(q); }}>
+                                {q}
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {studioChatMessages.map((msg, i) => (
+                        <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                          <div className={`max-w-[90%] rounded-lg px-3 py-2 text-sm ${msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}>
+                            {msg.role === "assistant" ? (
+                              <div className="prose prose-sm max-w-none dark:prose-invert"><ReactMarkdown>{msg.content}</ReactMarkdown></div>
+                            ) : <p>{msg.content}</p>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="p-3 border-t flex gap-2">
+                      <Input value={studioChatInput} onChange={(e) => setStudioChatInput(e.target.value)} placeholder="Ask AI..." onKeyDown={(e) => { if (e.key === "Enter") sendStudioChat(); }} className="text-sm" />
+                      <Button size="sm" onClick={sendStudioChat} disabled={studioChatLoading || !studioChatInput.trim()}>
+                        {studioChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Review Results */}
+              {studioReviewResult && (
+                <Card>
+                  <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Document Review</CardTitle></CardHeader>
+                  <CardContent className="prose prose-sm dark:prose-invert max-w-none">
+                    <ReactMarkdown>{studioReviewResult}</ReactMarkdown>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Quick Start Templates */}
+              <div className="mt-4">
+                <h3 className="text-sm font-semibold mb-3">Quick Start from Template</h3>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  {templates.slice(0, 4).map((t) => (
+                    <Card key={t.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => startFromTemplate(t)}>
+                      <CardContent className="p-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <FileText className="h-4 w-4 text-primary" />
+                          <Badge variant="outline" className="text-xs">{t.category}</Badge>
+                        </div>
+                        <p className="text-sm font-medium">{t.title}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
 
-      {/* Quick Preview Dialog */}
       <Dialog open={!!quickPreviewTemplate} onOpenChange={() => setQuickPreviewTemplate(null)}>
         <DialogContent className="sm:max-w-2xl max-h-[85vh] flex flex-col">
           <DialogHeader>
