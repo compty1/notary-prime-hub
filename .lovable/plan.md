@@ -1,113 +1,168 @@
 
 
-# Plan: UI/UX Bug Fixes (Gaps 46–85)
+# Plan: Feature Completeness (Gaps 156–200)
 
-## Audit of Actual Status
+## Audit of Current State
 
-After code review, several items from the 200-gap list are **already fixed** and will be skipped:
-- Bug 49 (hamburger close): Already handled in Navbar.tsx line 89-91
-- Bug 50 (dark mode flash): Inline script in index.html line 123
-- Bug 72 (reduced motion): Handled in animations.ts + 3 CSS blocks
-- Bug 73 (portal tab URL): ClientPortal.tsx line 318-320 updates `searchParams`
-- Bug 75 (ErrorBoundary retry): Has "Try Again" button, lines 54-62
-- Bug 85 (print stylesheet): Exists in index.css lines 379-396
+After code review, several items are **already implemented** or partially done:
+- **Gap 174 (Social login)**: Google OAuth already working via `lovable.auth.signInWithOAuth("google")` in Login.tsx and SignUp.tsx
+- **Gap 159 (Document versioning)**: Memory mentions `document_versions` table exists in schema, but no UI uses it
+- **Gap 166 (Waitlist)**: Memory mentions `waitlist` table exists, but no UI integration
+- **Gap 163 (Invoice generator)**: `InvoiceGenerator` component exists but isn't connected to payment flow
+- **Gap 173 (Client feedback)**: `ClientFeedbackForm` component exists but isn't integrated into any page
 
-**22 genuine fixes remain.** Grouped into 8 implementation batches:
-
----
-
-## Batch 1: Image & Loading Robustness (Bugs 46, 71)
-
-**File: `src/pages/Index.tsx`**
-- Add `onError` fallbacks on `heroBackground` and `stepProcessImg` `<img>` tags — hide or swap to gradient placeholder
-- Add a loading skeleton wrapper for the Index page hero section
+**35 genuine gaps remain.** Grouped into 8 implementation batches, prioritized by user impact:
 
 ---
 
-## Batch 2: Mobile Layout Fixes (Bugs 57, 78)
+## Batch 1: Real-time Appointment Status (Gap 158)
 
-**File: `src/components/BackToTop.tsx`**
-- Increase bottom offset on mobile to avoid overlap with MobileFAB (currently `bottom-6 right-4`, MobileFAB is `bottom-[7.5rem] right-5`)
-- Change to `bottom-[11rem]` on mobile to stack above MobileFAB
+**Migration**: Enable Realtime on `appointments` table
+```sql
+ALTER PUBLICATION supabase_realtime ADD TABLE public.appointments;
+```
 
-**File: `src/pages/RonSession.tsx`**
-- Add responsive classes to the 3-column layout so columns stack vertically below `lg` breakpoint instead of overflowing
-
----
-
-## Batch 3: PageShell Conditional Chatbot (Bug 76)
-
-**File: `src/components/PageShell.tsx`**
-- Conditionally render `AILeadChatbot` only on public pages (not admin routes)
-- Check `useLocation().pathname` — skip chatbot if path starts with `/admin` or `/portal`
-
----
-
-## Batch 4: Empty States & Skeletons (Bugs 52, 61, 77)
+**File: `src/pages/portal/PortalAppointmentsTab.tsx`**
+- Add Supabase Realtime subscription on `appointments` table filtered by client_id
+- Auto-update appointment list when status changes (no manual refresh needed)
 
 **File: `src/pages/ClientPortal.tsx`**
-- Add `<EmptyState>` component for zero-appointment overview tab with CTA to book
-
-**File: `src/pages/admin/AdminDashboard.tsx` or `AdminOverview.tsx`**
-- Make stat cards clickable links to their respective admin pages
-
-**File: `src/pages/admin/AdminAppointments.tsx`**
-- Add `AdminLoadingSkeleton` while data is loading
+- Pass a `refetch` callback from the parent query to PortalAppointmentsTab so Realtime events trigger data refresh
 
 ---
 
-## Batch 5: Form & Validation Fixes (Bugs 48, 59, 62, 63)
+## Batch 2: Client Feedback Integration (Gap 173) + NPS (Gap 188)
 
-**File: `src/pages/booking/BookingIntakeFields.tsx`**
-- Add inline validation errors for required fields on blur (not just on submit)
+**File: `src/pages/portal/PortalAppointmentsTab.tsx`**
+- Show `ClientFeedbackForm` inline on completed appointments that haven't been rated yet
+- Add NPS question (0-10 scale) to the existing feedback form
 
-**File: Various Select components**
-- Add `required` attribute and placeholder text like "Select an option" on required Select fields
-
-**File: Various admin pages with delete actions**
-- Audit and add `AlertDialog` confirmation for any destructive button missing it
-
-**File: `src/components/ai-tools/ToolRunner.tsx` and other upload zones**
-- Add visual drag indicator (border color change, icon) during `onDragOver`
-
----
-
-## Batch 6: Admin Search & Timezone (Bugs 83, 84)
-
-**File: `src/pages/admin/AdminClients.tsx`, `AdminAppointments.tsx`**
-- Normalize search to `.toLowerCase()` for case-insensitive matching
-
-**File: Various appointment display components**
-- Append timezone indicator (e.g., "EST") to scheduled time displays using `Intl.DateTimeFormat`
-
----
-
-## Batch 7: QR Code Context & Breadcrumb Fix (Bugs 80, 82)
-
-**File: `src/pages/ClientPortal.tsx`**
-- Add description text below QR code explaining: "Scan to upload documents from your phone"
-
-**File: `src/components/Breadcrumbs.tsx`**
-- Add nested admin route labels: `docudex-pro`, `ai-assistant`, `build-tracker`, `overview`, `performance`, `webhooks`, `task-queue`, `process-flows`, `content-workspace`, `compliance-report`
+**Migration**: Create `client_feedback` table if not exists
+```sql
+CREATE TABLE IF NOT EXISTS public.client_feedback (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  appointment_id uuid REFERENCES appointments(id),
+  client_id uuid NOT NULL,
+  rating int NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  nps_score int CHECK (nps_score >= 0 AND nps_score <= 10),
+  comment text,
+  created_at timestamptz DEFAULT now()
+);
+ALTER TABLE public.client_feedback ENABLE ROW LEVEL SECURITY;
+-- Clients can insert/read their own feedback
+CREATE POLICY "clients_own_feedback" ON public.client_feedback
+  FOR ALL TO authenticated USING (client_id = auth.uid()) WITH CHECK (client_id = auth.uid());
+-- Admins can read all
+CREATE POLICY "admins_read_feedback" ON public.client_feedback
+  FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'));
+```
 
 ---
 
-## Batch 8: Misc UI Fixes (Bugs 53, 54, 56, 60, 70)
+## Batch 3: Invoice → Payment Flow Connection (Gap 163) + Receipt Email (Gap 164)
 
-**File: `src/index.css`**
-- Add admin sidebar scroll fix: ensure last nav items are accessible via `overflow-y: auto` + padding-bottom
+**File: `src/pages/admin/AdminRevenue.tsx`**
+- Add "Generate Invoice" button on appointment rows that integrates `InvoiceGenerator`
+- After payment completion, trigger receipt email via existing `send-correspondence` edge function
 
-**File: `src/components/CommandPalette.tsx`**
-- Add a visible "Search" button in mobile navbar that opens the command palette (alternative to keyboard shortcut)
+**File: `src/components/InvoiceGenerator.tsx`**
+- Add `appointmentId` prop to link invoice to appointment record
+- Save generated invoice metadata to `payments` table
 
-**File: Toast configuration**
-- Set `visibleToasts` limit (e.g., 3) on the Toaster/Sonner provider
+---
 
-**File: Document list displays**
-- Add status badge styling differentiation (draft = muted outline, uploaded = blue, approved = green, notarized = amber)
+## Batch 4: Document Status Notifications (Gap 172) + Automated Follow-ups (Gap 187)
 
-**File: Upload components**
-- Show upload percentage via `XMLHttpRequest` progress events where Supabase storage upload is used
+**Edge function: `supabase/functions/send-document-notification/index.ts`**
+- Trigger email when document status changes (uploaded → approved → notarized)
+- Use existing IONOS email infrastructure
+
+**Migration**: Add trigger on `documents` table for status changes
+```sql
+CREATE OR REPLACE FUNCTION notify_document_status_change() ...
+```
+
+**Edge function: `supabase/functions/send-followup-sequence/index.ts`**
+- After session completion, enqueue 3-email sequence: thank you (immediate), feedback request (24h), referral invitation (72h)
+- Use existing `enqueue_email` + `process-email-queue` infrastructure
+
+---
+
+## Batch 5: Appointment Duration Estimation (Gap 170) + Waitlist UI (Gap 166)
+
+**File: `src/pages/booking/BookingScheduleStep.tsx`**
+- Display estimated session duration based on service type and document count
+- Pull duration estimates from `services` table
+
+**File: `src/pages/BookAppointment.tsx`**
+- When no slots available, show "Join Waitlist" button
+- Insert into existing `waitlist` table with client notification preference
+
+**Migration**: Create waitlist table if not exists
+```sql
+CREATE TABLE IF NOT EXISTS public.waitlist (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_id uuid NOT NULL,
+  service_type text NOT NULL,
+  preferred_date date,
+  preferred_time text,
+  status text DEFAULT 'waiting',
+  notified_at timestamptz,
+  created_at timestamptz DEFAULT now()
+);
+ALTER TABLE public.waitlist ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "clients_own_waitlist" ON public.waitlist
+  FOR ALL TO authenticated USING (client_id = auth.uid()) WITH CHECK (client_id = auth.uid());
+```
+
+---
+
+## Batch 6: Referral Tracking Dashboard (Gap 181) + Onboarding Email (Gap 195)
+
+**File: `src/components/ReferralPortal.tsx`**
+- Add tracking analytics: referral count, conversion rate, reward status
+- Query `referrals` table for stats
+
+**Edge function: `supabase/functions/send-welcome-sequence/index.ts`**
+- On new user signup, enqueue a 3-email welcome series
+- Triggered via database trigger on `profiles` table insert
+
+---
+
+## Batch 7: Bulk Document Upload for Clients (Gap 171) + Document Templates Access (Gap 168)
+
+**File: `src/pages/portal/PortalDocumentsTab.tsx`**
+- Integrate existing `BulkDocumentUpload` component into client portal documents tab
+- Add "Use Template" button linking to `/templates` for client-accessible templates
+
+---
+
+## Batch 8: Scheduling Optimization UI (Gap 178) + Geographic Enforcement (Gap 196)
+
+**File: `src/pages/booking/BookingScheduleStep.tsx`**
+- Call existing `ai-schedule-optimizer` edge function to suggest optimal time slots
+- Display AI-recommended slots with a "Recommended" badge
+
+**File: `src/pages/BookAppointment.tsx`**
+- For mobile notary bookings, validate that client address is within service area (50-mile radius from Columbus)
+- Show warning/block if outside service area using existing `haversineDistance` from `geoUtils.ts`
+
+---
+
+## Skipped Items (out of scope or require external services)
+
+| Gap | Reason |
+|---|---|
+| 156 (SMS reminders) | Requires Twilio/SMS provider — needs separate secret setup |
+| 157 (Push notifications) | Requires FCM/Web Push infrastructure — separate effort |
+| 160 (Multi-language) | Major i18n effort — separate project phase |
+| 175 (SSO) | Enterprise feature — requires SAML infrastructure |
+| 176 (Webhook config UI) | AdminWebhooks page already exists |
+| 177 (API key management) | Enterprise feature |
+| 179 (White-label portal) | Major customization effort |
+| 182 (A/B testing) | Requires analytics infrastructure |
+| 190 (Real-time DocuDex) | Requires CRDT/multiplayer infrastructure |
+| 174 (Social login) | Already implemented with Google OAuth |
 
 ---
 
@@ -115,18 +170,15 @@ After code review, several items from the 200-gap list are **already fixed** and
 
 | File | Changes |
 |---|---|
-| `src/pages/Index.tsx` | Image `onError` fallback, hero loading skeleton |
-| `src/components/BackToTop.tsx` | Mobile position adjustment |
-| `src/pages/RonSession.tsx` | Responsive 3-column stacking |
-| `src/components/PageShell.tsx` | Conditional chatbot rendering |
-| `src/pages/ClientPortal.tsx` | Empty state, QR description |
-| `src/pages/admin/AdminAppointments.tsx` | Loading skeleton, case-insensitive search |
-| `src/pages/admin/AdminClients.tsx` | Case-insensitive search |
-| `src/pages/admin/AdminOverview.tsx` | Clickable stat cards |
-| `src/pages/booking/BookingIntakeFields.tsx` | Inline field validation |
-| `src/components/Breadcrumbs.tsx` | Admin route labels |
-| `src/components/CommandPalette.tsx` | Mobile trigger button |
-| `src/components/ai-tools/ToolRunner.tsx` | Drag-and-drop indicator |
-| `src/index.css` | Admin sidebar scroll fix, toast limit |
-| `src/App.tsx` | Toast `visibleToasts` config |
+| `src/pages/portal/PortalAppointmentsTab.tsx` | Realtime subscription, feedback form integration |
+| `src/pages/ClientPortal.tsx` | Realtime refetch callback |
+| `src/components/ClientFeedbackForm.tsx` | Add NPS score field |
+| `src/components/InvoiceGenerator.tsx` | Connect to appointment/payment flow |
+| `src/pages/admin/AdminRevenue.tsx` | Invoice generation button |
+| `src/pages/portal/PortalDocumentsTab.tsx` | Bulk upload + template access |
+| `src/pages/booking/BookingScheduleStep.tsx` | Duration display, AI suggestions |
+| `src/pages/BookAppointment.tsx` | Waitlist, geographic enforcement |
+| `src/components/ReferralPortal.tsx` | Tracking analytics dashboard |
+| **New edge functions** | `send-document-notification`, `send-followup-sequence`, `send-welcome-sequence` |
+| **Migrations** | `client_feedback`, `waitlist` tables, Realtime on appointments |
 
