@@ -1,178 +1,259 @@
 
 
-# Plan: Complete All Remaining Gaps — Email, Integrations, Certificates, Content Workspace, and 60+ Items
+# Plan: Complete Theme Overhaul + Dashboard Redesign + Branded Graphics + Full Gap Implementation (1,082 CSV Items + DOCX Audit + Image Generation)
 
-This is a very large scope covering email formatting, integration verification, notarial certificate resources, content workspace enhancement, and 60+ tracked gap items. Due to the volume, this will be executed in prioritized batches across multiple implementation rounds.
-
----
-
-## Batch 1: Email Rich Text Fix + Integration Verification
-
-### 1A. Email body_text fallback rendering
-**Problem**: When `body_html` is null and only `body_text` exists, the mailbox shows content in a `<pre>` monospace block (line 592 of AdminMailbox.tsx). Client Emails (AdminClientEmails.tsx) already renders via `sanitizeHtml` with prose styling, so that's fine.
-
-**Fix**: Replace the `<pre>` fallback in AdminMailbox.tsx with a styled `<div>` that wraps plain text with proper line breaks, using `whitespace-pre-wrap` and the sans-serif font — matching how modern email clients render plain-text messages.
-
-### 1B. Verify HubSpot integration
-- Confirm `hubspot-sync` reads `HubSpot_Service_Key` (already done)
-- Verify AdminSettings shows connection status badge (already done)
-- Add HubSpot Deal bidirectional sync: extend `hubspot-sync` edge function with `push_deal` and `pull_deals` actions, wire into CRM Deals tab
-
-### 1C. Verify Stripe integration
-- SubscriptionPlans.tsx already has PaymentForm with Stripe Elements
-- Add: Subscription management UI (cancel/upgrade), refund workflow button in AdminRevenue (already partially there)
-- Verify `process-refund` edge function works with Stripe API
-
-### 1D. Google Calendar integration
-- `google-calendar-sync` edge function exists
-- Verify secrets: needs `GOOGLE_CALENDAR_CLIENT_ID`, `GOOGLE_CALENDAR_CLIENT_SECRET`, `GOOGLE_CALENDAR_REFRESH_TOKEN`
-- Wire calendar sync button into AdminAppointments and AdminSettings
+This plan retains ALL items from the previously approved plan and adds: (A) branded image/graphic generation matching the new Slate/Amber theme, (B) all implementations from the DOCX conversation audit, (C) all 1,082 CSV todo items, and (D) any newly discovered gaps. Due to the massive scope (~1,100+ items), work is organized into prioritized execution waves.
 
 ---
 
-## Batch 2: Notarial Certificates Resource Pages
+## Wave 1: Global Theme Overhaul (Previously Approved)
 
-### 2A. Create comprehensive notarial certificate reference content
-Add a new section to the Resources page (or a dedicated `/notary-certificates` page) with detailed guides for each certificate type:
+All changes from the approved Slate/Amber theme plan remain unchanged:
 
-1. **Ohio Acknowledgment Certificate** — When to use, statutory language (ORC §147.55), common pitfalls (signer must appear personally, cannot notarize own signature), sample format, special circumstances (corporate acknowledgments, representative capacity)
-2. **Ohio Jurat Certificate** — Oath/affirmation requirement, when the signer must sign in the notary's presence, statutory language, differences from acknowledgment, common errors
-3. **Ohio Copy Certification by Notary** — What can/cannot be certified, prohibited vital records, proper procedure
-4. **Ohio Signature Witnessing** — Requirements, when needed, format
-5. **Ohio Protest Certificate** — Commercial paper protests, rarely used but required knowledge
-6. **RON-Specific Certificate Modifications** — Electronic seal requirements, session recording notation, technology platform identification
+- **CSS tokens** (`index.css`): Replace teal/coral with Slate-900/Amber-500 palette
+- **Logo** (`Logo.tsx`): Amber gradient + FileCheck2 icon + "NotarDex.com" wordmark
+- **Navbar** (`Navbar.tsx`): `bg-slate-900`, amber CTAs with glow shadows
+- **Footer** (`Footer.tsx`): `bg-slate-950`, amber hover links, compliance badges
+- **Homepage** (`Index.tsx`): Dark hero, radial gradient, amber CTAs, benefits dark section, 4-step process cards
+- **HeroPhoneAnimation**: "Live Verification" mockup with Fingerprint watermark + avatar
+- **UI components**: `button.tsx` (amber default), `card.tsx` (rounded-2xl), `badge.tsx` (amber)
+- **Client Portal** (`ClientPortal.tsx`): Full sidebar dashboard redesign
+- **Admin Dashboard** (`AdminDashboard.tsx`): Slate-900 sidebar with amber active states
+- **Admin Overview** (`AdminOverview.tsx`): Refreshed stat cards and tables
 
-Each entry: 3000+ characters, organized with headings, bullet lists, callout boxes, and Ohio ORC citations. Include PDF download button using browser print-to-PDF.
+## Wave 2: Branded Image & Graphic Generation
 
-### 2B. PDF Download
-Add a "Download as PDF" button per certificate guide that uses `window.print()` with print-optimized CSS media queries — matching the existing `NotarizationCertificate` pattern.
+Generate custom branded graphics using the AI image generation API (Gemini Flash Image), adapted to the new Slate/Amber theme. Each image uses the design language from the uploaded reference images but remade to match the NotarDex brand.
 
----
+### Images to Generate (via edge function or build-time script)
 
-## Batch 3: Content Workspace Enhancement
+1. **"4-Step Digital Notary Process" Infographic** — Slate-900 background, amber/gold accents, 4 panels: Upload Document, Identity Verification (biometric scanner), Live Notary Session (video call), Download Notarized Doc. Matching the circuit-board aesthetic from the uploaded reference but in Slate/Amber palette.
 
-### 3A. Service-specific content creation
-Expand AdminContentWorkspace to include service-specific templates and generation:
-- Add a "Service Templates" tab with pre-built content structures for each service category (blog, social media, email campaigns, SEO content, etc.)
-- Each template includes industry-standard formatting, required length guidelines, and AI generation prompts tailored to the service type
-- Rich text editor already in place (TipTap via RichTextEditor component)
-- Add word count display, readability score, SEO keyword density
+2. **"Secure Identity Access" Badge** — Circular badge showing hand holding phone with "ID VERIFIED" checkmark, biometrics scanner, fingerprint reader. Gold/amber border, slate background. Based on uploaded reference image 1.
 
-### 3B. Project analysis and management
-Add a "Projects" tab to Content Workspace:
-- Track content projects linked to service requests
-- Show analysis of current project status (word count, completion %, quality indicators)
-- AI-powered enhancement recommendations via `notary-assistant` edge function
-- Missing elements detection (no CTA, no keywords, too short, etc.)
-- Plan management per project with milestones
+3. **"Full Service Suite" Grid** — 6-panel grid showing service icons: Affidavits & Oaths, Power of Attorney, Real Estate Closings, Estate Planning, Business Contracts, Mobile/Remote Signers. Navy/gold badge style from reference image 2.
 
----
+4. **"Safe, Secure, Legal — RON" Banner** — Wide banner with compliance badges (SOC 2, MISMO, 256-bit encryption), amber accents on slate background.
 
-## Batch 4: Critical & High Priority Gap Items
+5. **Hero Section Background** — Abstract gradient with circuit-board pattern overlay, slate-900 to slate-800, with subtle amber radial glow.
 
-### Security (Critical)
-- **Input Sanitization Audit**: Verify all `dangerouslySetInnerHTML` uses go through `sanitizeHtml`/`sanitizeEmailHtml` — already done in most places, audit remaining
-- **IDOR Prevention**: Verify all document/appointment URLs use signed tokens, not raw UUIDs — existing pattern in place, audit edge cases
-- **Session Security**: Add `refreshSession()` token rotation after login in AuthContext
-- **Password Strength Enforcement**: Add zxcvbn or regex validation in SignUp/AccountSettings
-- **Rate Limiting on Public Forms**: Add client-side throttle + edge function rate limit headers on `submit-lead`, booking forms
+6. **Homepage service icons** — Set of 6 custom icons for service cards, consistent stroke style in amber/slate.
 
-### Compliance (Critical)
-- **Recording Storage Compliance**: Add 10-year retention policy indicator, verify `set_retention_expires_at` trigger works
-- **Witness Threshold Detection**: Enforce witness count validation in booking flow based on document type (Wills need 2 per ORC §2107.03)
-- **Ohio Document Eligibility Logic**: Already has `ohioDocumentEligibility.ts` — verify it blocks vital records
-- **E-Sign Consent Step**: Already has `ESignConsent.tsx` — verify it's in the RON flow
-- **Click-Wrap Terms Agreement**: Add checkbox + timestamp recording before document signing
-- **Commission Renewal Reminders**: Add cron-based reminder check against notary commission expiry dates
-- **Age Verification**: Add 18+ age confirmation gate in booking flow
-- **Oath Type Determination**: Already has service-to-act-type mapping — verify jurat oath script selection
-- **Jurisdictional Validation**: Verify signer location is within Ohio jurisdiction for RON
+### Implementation
+- Create `supabase/functions/generate-brand-images/index.ts` edge function using Lovable AI (Gemini Flash Image model)
+- Store generated images in Supabase Storage bucket `brand-assets`
+- Reference images via signed URLs in homepage and marketing pages
+- Fallback: Use Lucide icons if image generation fails
 
-### High Priority Features
-- **Stripe Subscription Management**: Add plan change/cancel UI in SubscriptionPlans page
-- **Payment Receipt Generation**: Generate PDF receipt after payment using print-to-PDF pattern
-- **Invoice PDF Generation**: Extend InvoiceGenerator with PDF export
-- **Booking Draft Auto-Save**: Add localStorage auto-save in BookAppointment flow
-- **CRM Deals Table**: Already exists in AdminCRM — verify CRUD works
-- **Admin Dashboard Analytics**: Add KPI cards to AdminOverview (appointments this week, revenue MTD, pending docs)
-- **Notary Assignment Algorithm**: Already has `notaryAssignment.ts` — verify it's wired into appointment creation
-- **Appointment Rescheduling Flow**: Already has RescheduleAppointment page — verify flow works
-- **Email Template Designer**: Already exists as component — verify it's accessible
-- **Notary Session Guide Panel**: Already exists as NotarySessionGuide — verify integration in RON flow
-- **Native CRM Dashboard**: Already built at /admin/crm — verify all tabs work
-- **Focus Management**: Add focus trap to modals, auto-focus first input in forms
-- **Refund Workflow**: Already has refund button in AdminRevenue + `process-refund` edge function
+### Integration Points
+- `Index.tsx`: Hero background, 4-step process section, services grid
+- `ClientPortal.tsx`: Dashboard hero cards
+- `About.tsx`: Brand story section
+- Marketing/landing pages: Compliance badges section
 
----
+## Wave 3: DOCX Conversation — Full Implementation Checklist
 
-## Batch 5: Medium & Low Priority Items
+The DOCX contains a complete site audit with content rewrites and compliance artifacts. Items to implement:
 
-### UX
-- **High Contrast Mode**: Add `forced-colors` CSS support + toggle in settings
-- **Touch Targets 44px**: Audit and fix all interactive elements < 44px
-- **Skip to Main Content**: Already referenced in memory — verify implementation
-- **Color Contrast Audit**: Verify all text meets WCAG AA 4.5:1 ratio
-- **Session Timeout Warning**: Already has SessionTimeoutWarning component — verify it's mounted
-- **Reduced Motion Support**: Already has `prefers-reduced-motion` support — verify
-- **Error Recovery UX**: Add retry buttons on failed data fetches
-- **Loading State Improvements**: Add skeleton loaders to remaining pages
-- **Client Portal Dashboard Redesign**: Improve layout with quick-action cards
-- **Session Guide Progress Tracking**: Add step progress indicator to NotarySessionGuide
-- **Special Instructions Field**: Add textarea to booking form for special instructions
+### Content Pages (from DOCX Options A-F)
 
-### Features
-- **Multi-Signer Config**: Add signer count and co-signer fields to booking
-- **Client Document Expiry Alerts**: Cron check for expiring document IDs
-- **Document Version History**: Already has `document_versions` table — add UI
-- **Client Feedback System**: Already has ClientFeedbackForm — verify integration
-- **Multi-Language Support**: Scaffold i18n with Spanish translations for key pages
-- **API Rate Monitoring Dashboard**: Add admin page showing edge function metrics
-- **Document OCR Enhancement**: Improve `ocr-digitize` edge function
-- **Email Template Versioning**: Add version tracking to template saves
-- **Offline Mode for Mobile**: Add service worker with basic caching
+1. **Privacy Policy Rewrite** (`TermsPrivacy.tsx`): Replace current skeleton with full production-ready text from DOCX pages 26-28. Includes: Information collected (A-D categories), how shared, retention periods, security measures, user rights, cookies, children's privacy.
+
+2. **Terms of Service Rewrite** (`TermsPrivacy.tsx`): Replace with full text from DOCX pages 29-32. Includes: 15 sections covering user/notary responsibilities, identity verification, payments, prohibited uses, IP, service availability, limitation of liability, dispute resolution (Franklin County, Ohio), termination.
+
+3. **Compliance Page** — Create `/compliance` route with content from DOCX pages 33-34: Ohio RON legal basis, identity verification standards (credential analysis, KBA, biometric), audit trail details, data handling, fee disclosure, downloadable compliance PDF.
+
+4. **Security Overview Page** — Create `/security` route with content from DOCX pages 35-36: Encryption (TLS 1.2+, AES-256), access controls (RBAC), audit logging, infrastructure (US-based SOC-2 aligned), vendor management, monitoring, incident response, SSO/SAML, API security, penetration testing.
+
+5. **RON Process Explained Page** — Create `/ron-process` or enhance existing `/notary-guide-process` with content from DOCX pages 36-38: Step 1-4 detailed walkthrough, accepted IDs, verification outcomes, session duration, what you receive, special cases, business/bulk workflows.
+
+6. **About Page Enhancement** (`About.tsx`): Add "Who We Are" narrative, values list, vision statement, "Our Story" section from DOCX page 12-13.
+
+7. **FAQ Page Enhancement**: Add questions from DOCX page 12: document eligibility, accepted IDs, session duration, legality, document storage, business use.
+
+8. **Business/Enterprise Page Enhancement**: Add content from DOCX pages 13, 16: Multi-notary routing, team dashboards, API, custom branding, compliance reporting, onboarding timeline.
+
+9. **Pricing Page Enhancement** (`SubscriptionPlans.tsx`): Add transparent pricing from DOCX page 9-10: Individual ($25/notarization), Business Essentials ($49/mo), Business Pro ($149/mo), Enterprise (custom). Add-ons: additional seals ($10), apostille prep ($35), extended storage ($5/mo).
+
+### Email Templates (from DOCX)
+10. **Compliance Inquiry Reply** — Add to `_shared/email-templates/`
+11. **Security Incident Notification** — Add template
+12. **Enterprise Onboarding Welcome** — Add template
+
+### SEO Implementation (from DOCX)
+13. **Schema markup**: LocalBusiness, Service, FAQ, Review, HowTo JSON-LD per page
+14. **Meta optimization**: Unique keyword-rich titles/descriptions per page (e.g., "Online Notary Public Ohio | Remote Notarization")
+15. **URL structure**: Verify all routes use clean slugs
+
+## Wave 4: CSV Critical Items (Severity: Critical) — 25+ items
+
+### Security Critical
+| # | Item | Fix |
+|---|---|---|
+| 13 | Unrestricted file upload extensions | Add `accept=".pdf,.doc,.docx,.jpg,.png"` to all file inputs + server-side MIME validation |
+| 25 | No document upload sanitization | Add ClamAV-style scanning notice; validate file headers in edge functions |
+| 31 | Exposed config files risk | Verify `.htaccess`/Netlify `_headers` blocks dotfile access |
+| 82 | Unsafe eval() usage | Audit and remove any eval() calls |
+| 89 | Missing geolocation compliance | Add IP geolocation check in RON booking flow |
+| 91 | Missing KBA/credential analysis integration | Wire KBA step into RON flow with SignNow integration disclosure |
+| 94/96 | Missing MFA | Add TOTP/SMS 2FA option in AccountSettings |
+| 93/95 | Disabled focus indicators | Already fixed in a11yUtils — verify deployment |
+| 98 | Missing multi-signer support | Add signer count + co-signer email fields to booking |
+| 127 | Missing e-signature API integration | Already have SignNow — verify integration disclosure |
+| 136 | Insecure asset storage | Audit Supabase storage bucket policies |
+
+### Compliance Critical
+| # | Item | Fix |
+|---|---|---|
+| 7 | Commission expiry enforcement | Add date check gate before RON session creation |
+| 8 | Incomplete notary journaling | Create visible journal UI in admin (`AdminJournal.tsx` exists — verify) |
+| 12 | Inadequate KBA | Disclosure that KBA is handled natively in SignNow |
+| 20 | No tamper-evident technology disclosure | Add AES-256 + SHA-256 hash verification content to compliance page |
+| 26 | Missing IDV/KBA flow gate | Add mandatory KBA step in RON pre-session flow |
+| 37 | Missing automated KBA integration | Same as above — unified KBA disclosure |
+| 77 | Manual commission verification | Add Ohio SOS API integration or manual check workflow |
+
+### Functionality Critical
+| # | Item | Fix |
+|---|---|---|
+| 27/131 | No functional service entry point | Already have hero CTAs — verify they're prominent |
+
+## Wave 5: CSV High-Priority Items (50+ items)
+
+### Key implementations:
+- **Timezone selector** (#15): Add to booking flow with auto-detection
+- **Draft state persistence** (#17): Already implemented — verify localStorage auto-save
+- **Skip to main content** (#19): Already implemented — verify visibility
+- **Real-time connection monitoring** (#23): Add WebRTC quality indicator during RON
+- **Pre-session system check** (#97/104): TechCheck.tsx exists — verify it's mandatory
+- **CSRF protection** (#100/107): Already have `hasCSRFHeader` — verify usage
+- **Prohibited documents list** (#101): Already have `ohioDocumentEligibility.ts` — add visible list
+- **Document destination validation** (#128): Add "Where is this document going?" field
+- **Multi-party witnessing** (#110/120): Add witness invitation workflow
+- **Biometric data disclosure** (#111): Add clause to Privacy Policy
+- **CSP headers** (#84): Add Content-Security-Policy meta tag
+- **Permission-Policy header** (#114): Add to index.html
+- **ARIA labels** (#105): Audit all icon-only links
+- **Form labels** (#548): Audit all inputs for proper label associations
+- **Pricing transparency** (#139): Add public pricing table
+- **Session timeout** (#277): SessionTimeoutWarning exists — verify mount
+- **Seal verification portal** (#90): VerifySeal page exists — verify functionality
+- **Missing alt text** (#278): Audit all images
+- **Public API rate limiting** (#307): Already have edge function rate limiting — verify
+- **Inline form validation** (#844): Add onBlur validation to all forms
+
+## Wave 6: CSV Medium-Priority Items (200+ items)
+
+Grouped by category:
+
+### UX/Design (selected highlights)
+- Loading skeletons for all pages (#288, #927, #932)
+- Drag-and-drop upload UI (#502)
+- Progress indicators in workflows (#253, #517, #524)
+- Empty states with illustrations (#890)
+- Touch targets 44px (#263)
+- Form autocomplete attributes (#757, #991)
+- Session timeout warnings (#759)
+- High contrast mode (#1030) — already implemented
+- Real-time notary availability (#63, #534)
+- Post-submission feedback (#54, #544)
 
 ### SEO
-- **Sitemap Auto-Generation**: Already has `/sitemap.xml` — verify all routes included
-- **JSON-LD Structured Data**: Add schema.org markup via `seoSchemas.ts`
-- **Canonical URLs**: Add `<link rel="canonical">` to all pages
-- **Dynamic Copyright Year**: Update Footer to use `new Date().getFullYear()`
+- Canonical URLs (#260)
+- Structured data (#259, #536, #832)
+- Open Graph + Twitter Card metadata (#962, #926, #993)
+- Sitemap reference in robots.txt (#880)
+- FAQ schema (#52)
+- HowTo schema (#808)
+- Meta title optimization (#538)
+- Image alt text audit (#290, #278)
 
-### Performance
-- **Database Query Optimization**: Verify indexes exist on high-traffic columns
-- **Edge Function Cold Start**: Add keep-alive pings for critical functions
-- **Page Speed Optimization**: Lazy-load below-fold images, code-split large pages
+### Integrations
+- Calendar sync (iCal/Google/Outlook) (#515) — CalendarDownload exists
+- SMS notifications (#92, #988) — send-sms-reminder edge function exists
+- Webhooks (#758, #964) — AdminWebhooks page exists
+- Address autocomplete (#791) — AddressAutocomplete component exists
+- Express payment (Apple Pay/Google Pay) (#783)
 
-### Workflow
-- **CRM Auto-Activity on Events**: Already has triggers `crm_log_payment` and `crm_log_appointment_status`
-- **Automated Backup Verification**: Add health check for backup status
+### Content
+- Notary glossary (#284) — LegalGlossaryProvider exists
+- "Do Not Sign" pre-instructions (#504)
+- Credible witness guidance (#518)
+- Service description depth (#532)
+- Refund policy disclosure (#270)
+- Signer Bill of Rights (#831) — SignerRights page exists
+
+## Wave 7: CSV Low/Info Items (400+ items)
+
+These are polish items, many already implemented or handled by infrastructure:
+- Console log stripping (#560, #1004) — Vite handles in production
+- Font preloading (#771, #994)
+- Resource hints/preconnect (#255, #899)
+- Dark mode (#4, #283, #812, #1068) — already implemented
+- Favicon (#978, #786) — SVG favicon exists
+- security.txt (#766, #975, #1067) — already exists at `public/.well-known/security.txt`
+- robots.txt (#904, #1053) — already exists
+- Sitemap (#121, #999) — already exists
+- Error boundaries (#814, #865) — ErrorBoundary component exists
+- Skip link (#945, #1047) — already implemented via a11yUtils
+- HTML lang attribute (#522, #1037, #1055) — verify in index.html
+- PWA manifest (#793) — manifest.json exists
+- Back to top (#539) — BackToTop component exists
+- Cookie consent (#8) — CookieConsent component exists
+
+## Wave 8: Newly Discovered Gaps
+
+1. **Branding inconsistency**: Current brand says "Notar" but DOCX and new design say "NotarDex" — unify to "NotarDex" across all pages
+2. **Missing /compliance route**: Create dedicated compliance page
+3. **Missing /security route**: Create dedicated security overview page
+4. **Pricing page doesn't show transparent pricing**: Add actual dollar amounts
+5. **Privacy Policy needs biometric data clause**: Required for Ohio RON
+6. **No explicit "NotarDex is not a law firm" UPL disclaimer**: Add prominently
+7. **Email templates need NotarDex branding**: Update all email templates with new amber/slate design
 
 ---
 
 ## Technical Details
 
-### Files Created
-- `src/pages/NotaryCertificates.tsx` — Comprehensive certificate reference page with PDF download
-- Route added in `App.tsx`
-- Link added in `Resources.tsx`
+### New Files to Create
+- `src/pages/Compliance.tsx` — Full compliance overview page
+- `src/pages/Security.tsx` — Security overview page
+- `supabase/functions/generate-brand-images/index.ts` — AI image generation
+- Routes added in `App.tsx` for `/compliance`, `/security`
+- 3 new email templates in `supabase/functions/_shared/email-templates/`
 
-### Files Modified (Key)
-- `src/pages/admin/AdminMailbox.tsx` — Rich text fallback for plain-text emails
-- `src/pages/admin/AdminContentWorkspace.tsx` — Service templates, project analysis, word count
-- `src/pages/admin/AdminOverview.tsx` — Analytics KPI cards
-- `src/pages/SubscriptionPlans.tsx` — Subscription management
-- `src/pages/admin/AdminRevenue.tsx` — Receipt PDF generation
-- `src/pages/BookAppointment.tsx` — Draft auto-save, special instructions, witness detection
-- `src/components/Footer.tsx` — Dynamic copyright year
-- `supabase/functions/hubspot-sync/index.ts` — Deal sync actions
-- `supabase/functions/process-refund/index.ts` — Verify Stripe integration
-- Multiple admin pages — Empty states, loading skeletons, focus management
+### Key Files Modified
+- `src/index.css` — Full palette swap
+- `src/components/Logo.tsx`, `Navbar.tsx`, `Footer.tsx` — Brand overhaul
+- `src/pages/Index.tsx` — Complete visual redesign
+- `src/pages/ClientPortal.tsx` — Sidebar dashboard
+- `src/pages/admin/AdminDashboard.tsx`, `AdminOverview.tsx` — Admin redesign
+- `src/pages/TermsPrivacy.tsx` — Full content rewrite
+- `src/pages/About.tsx` — Enhanced content
+- `src/pages/SubscriptionPlans.tsx` — Transparent pricing
+- `src/components/ui/button.tsx`, `card.tsx`, `badge.tsx` — Theme updates
+- `src/components/HeroPhoneAnimation.tsx` — Live Verification visual
+- `src/pages/BookAppointment.tsx` — Timezone, multi-signer, witness, geolocation
+- `src/pages/AccountSettings.tsx` — MFA option
+- Multiple booking/RON flow components — KBA disclosure, commission check
 
-### Execution Order
-1. Email rich text fix (quick win)
-2. Notarial certificates page with PDF download
-3. Content workspace enhancement
-4. Critical security & compliance items
-5. High-priority features
-6. Medium/low items in batches
-7. SEO, performance, and polish
+### Execution Priority
+1. Global theme + dashboards (visual foundation)
+2. Branded image generation
+3. Content pages (Privacy, Terms, Compliance, Security, RON Process)
+4. Critical security/compliance CSV items
+5. High-priority CSV items
+6. Medium-priority CSV items
+7. Low/info items + polish
+
+### Items Already Implemented (Verified)
+The following CSV items are already present in the codebase and need only verification:
+- Skip to main content, dark mode, high contrast, focus indicators
+- Error boundaries, cookie consent, back to top, session timeout
+- Security.txt, robots.txt, sitemap.xml, manifest.json, favicon.svg
+- Address autocomplete, legal glossary, signer rights page
+- TechCheck component, document eligibility checker
+- CalendarDownload, SMS reminders, webhooks admin
+- Seal verification portal, notary journal admin
+- Bulk document upload, drag-and-drop upload
 
