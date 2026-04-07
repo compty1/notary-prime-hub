@@ -81,6 +81,107 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
     setFieldValues((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    const err = validateFile(file, { allowedMimes: ALLOWED_DOCUMENT_MIMES });
+    if (err) {
+      toast({ title: "Invalid file", description: err, variant: "destructive" });
+      return;
+    }
+
+    setUploading(true);
+    setUploadSuccess(false);
+    try {
+      // Read file as text for simple text files, or use AI extraction
+      if (file.type === "text/plain" || file.name.endsWith(".txt")) {
+        const text = await file.text();
+        updateField("resumeText", text);
+        setUploadSuccess(true);
+        toast({ title: "Resume loaded", description: "Text extracted from file." });
+      } else {
+        // For PDF/DOCX - read as text and send to AI extractor
+        const arrayBuffer = await file.arrayBuffer();
+        const uint8 = new Uint8Array(arrayBuffer);
+        // Convert to base64 for text extraction attempt, or read raw text
+        let docText = "";
+        try {
+          docText = new TextDecoder("utf-8", { fatal: false }).decode(uint8);
+          // If it looks like binary (PDF), extract via edge function
+          if (docText.includes("%PDF") || !docText.match(/[a-zA-Z]{10,}/)) {
+            // Use ai-extract-document edge function
+            const { data: sessionData } = await supabase.auth.getSession();
+            const token = sessionData?.session?.access_token;
+            if (!token) throw new Error("Not authenticated");
+
+            const resp = await fetch(
+              `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/ai-extract-document`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  document_text: docText.slice(0, 50000),
+                  extractor_type: "hr",
+                }),
+              }
+            );
+
+            if (resp.ok) {
+              const data = await resp.json();
+              const extraction = data.extraction;
+              // Format extracted data into readable text
+              const parts: string[] = [];
+              if (extraction?.summary) parts.push(extraction.summary);
+              if (extraction?.results) {
+                const r = extraction.results;
+                if (r.candidate_name) parts.push(`Name: ${r.candidate_name}`);
+                if (r.email) parts.push(`Email: ${r.email}`);
+                if (r.phone) parts.push(`Phone: ${r.phone}`);
+                if (r.skills?.length) parts.push(`\nSkills: ${r.skills.map((s: any) => typeof s === "string" ? s : s.name || s.skill).join(", ")}`);
+                if (r.experience?.length) {
+                  parts.push("\nExperience:");
+                  r.experience.forEach((exp: any) => {
+                    parts.push(`- ${exp.title || ""} at ${exp.company || ""} (${exp.dates || ""})`);
+                    if (exp.key_achievements?.length) exp.key_achievements.forEach((a: string) => parts.push(`  • ${a}`));
+                  });
+                }
+                if (r.education?.length) {
+                  parts.push("\nEducation:");
+                  r.education.forEach((ed: any) => parts.push(`- ${ed.degree || ""}, ${ed.institution || ""} (${ed.year || ""})`));
+                }
+                if (r.certifications?.length) parts.push(`\nCertifications: ${r.certifications.join(", ")}`);
+              }
+              docText = parts.join("\n") || docText.slice(0, 10000);
+            } else {
+              // Fallback: use raw text
+              docText = docText.replace(/[^\x20-\x7E\n\r\t]/g, " ").slice(0, 10000);
+            }
+          }
+        } catch {
+          docText = docText.replace(/[^\x20-\x7E\n\r\t]/g, " ").slice(0, 10000);
+        }
+        updateField("resumeText", docText);
+        setUploadSuccess(true);
+        toast({ title: "Resume loaded", description: "Content extracted and ready for analysis." });
+      }
+    } catch (err) {
+      toast({ title: "Upload failed", description: err instanceof Error ? err.message : "Could not process file.", variant: "destructive" });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }, [user, toast, updateField]);
+
+  const handleOpenInDocuDex = useCallback(() => {
+    if (!result) return;
+    safeSetItem("ai_tools_content", result, sessionStorage);
+    navigate("/docudex");
+  }, [result, navigate]);
+
   const doGenerate = useCallback(async (previousOutput?: string, refinePrompt?: string) => {
     if (!user) {
       toast({ title: "Sign in required", description: "Please sign in to use AI tools.", variant: "destructive" });
