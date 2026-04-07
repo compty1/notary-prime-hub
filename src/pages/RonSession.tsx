@@ -1,4 +1,5 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { SessionWaitingRoom } from "@/components/SessionWaitingRoom";
 import { useState, useRef, useEffect } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -137,6 +138,7 @@ export default function RonSession() {
   const finalTranscriptRef = useRef("");
 
   const [sessionStatus, setSessionStatus] = useState<string>("scheduled");
+  const [showWaitingRoom, setShowWaitingRoom] = useState(false);
   const [recordingUrl, setRecordingUrl] = useState("");
 
   // Webhook status
@@ -962,6 +964,19 @@ export default function RonSession() {
         {appointment?.notarization_type === "ron" && (
           <div className="mb-4">
             <ComplianceBanner variant="ron" compact />
+          </div>
+        )}
+
+        {/* Waiting Room Phase */}
+        {showWaitingRoom && appointmentId && (
+          <div className="mb-6">
+            <SessionWaitingRoom
+              appointmentId={appointmentId}
+              signerName={clientProfile?.full_name}
+              notaryName={user?.email?.split("@")[0] || "Notary"}
+              witnessRequired={!!witnessName}
+              onAllReady={() => setShowWaitingRoom(false)}
+            />
           </div>
         )}
 
