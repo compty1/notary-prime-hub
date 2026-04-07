@@ -244,17 +244,24 @@ export default function AppointmentConfirmation() {
             notarizationType={appointment.notarization_type}
             location={appointment.location}
           />
-          {/* Phase 5.3: Upload documents button */}
+          {/* ID 42: Upload documents prompt */}
           <Link to="/portal?tab=documents">
             <Button variant="outline" className="w-full gap-2 sm:w-auto">
-              <Upload className="h-4 w-4" /> Upload Documents
+              <Upload className="h-4 w-4" /> Upload Documents Now
             </Button>
           </Link>
+          {/* ID 239: Portal access CTA */}
           <Link to="/portal">
             <Button className="w-full sm:w-auto">
-              Go to Portal
+              Access Your Portal
             </Button>
           </Link>
+        </div>
+
+        {/* ID 239: Portal access reminder for new users */}
+        <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-4 text-left text-sm">
+          <p className="font-medium text-foreground flex items-center gap-2"><User className="h-4 w-4 text-primary" /> Your Portal is Ready</p>
+          <p className="text-muted-foreground mt-1">Log in to your Client Portal to track your appointment, upload documents, and communicate with your notary. Use the email address you provided during booking.</p>
         </div>
 
         {/* Pay Now Section */}
