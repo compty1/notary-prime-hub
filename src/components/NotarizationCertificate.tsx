@@ -37,8 +37,8 @@ export function NotarizationCertificate({
         <title>Certificate of Notarization — ${signerName}</title>
         <style>
           @page { size: letter; margin: 1in; }
-          body { font-family: Georgia, 'Times New Roman', serif; color: #0f172a; margin: 0; padding: 40px; }
-          .cert-border { border: 3px double #0f172a; padding: 40px; }
+          body { font-family: Georgia, 'Times New Roman', serif; color: #1a2744; margin: 0; padding: 40px; }
+          .cert-border { border: 3px double #1a2744; padding: 40px; }
           .header { text-align: center; margin-bottom: 30px; }
           .seal-img { width: 100px; height: 100px; object-fit: contain; margin: 0 auto 16px; display: block; }
           .title { font-size: 22px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin: 0; }

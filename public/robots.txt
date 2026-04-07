@@ -22,7 +22,5 @@ Disallow: /ron-session
 Disallow: /session-tracker
 Disallow: /account-settings
 Disallow: /mobile-upload
-Disallow: /rest/v1/
-Disallow: /functions/v1/
 
 Sitemap: https://notardex.com/sitemap.xml

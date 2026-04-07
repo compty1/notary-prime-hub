@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, Search, Loader2, RefreshCw } from "lucide-react";
+import { Shield, Search, Loader2, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
+import { logAuditEvent } from "@/lib/auditLog";
 
 type AppRole = "admin" | "notary" | "client";
 
@@ -17,6 +18,8 @@ interface ProfileRow {
   email: string | null;
   created_at: string;
 }
+
+const PAGE_SIZE = 20;
 
 export default function AdminUsers() {
   usePageMeta({ title: "User Management", noIndex: true });
@@ -28,47 +31,59 @@ export default function AdminUsers() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [savingKey, setSavingKey] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (pageNum = 0) => {
     setLoading(true);
-    const [{ data: profileData, error: profileError }, { data: roleData, error: roleError }] = await Promise.all([
-      supabase.from("profiles").select("user_id, full_name, email, created_at").order("created_at", { ascending: false }),
+    const from = pageNum * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+
+    let query = supabase.from("profiles").select("user_id, full_name, email, created_at", { count: "exact" }).order("created_at", { ascending: false });
+
+    if (search.trim()) {
+      query = query.or(`full_name.ilike.%${search.trim()}%,email.ilike.%${search.trim()}%`);
+    }
+
+    query = query.range(from, to);
+
+    const [{ data: profileData, count, error: profileError }, { data: roleData, error: roleError }] = await Promise.all([
+      query,
       supabase.from("user_roles").select("user_id, role"),
     ]);
 
     if (profileError || roleError) {
-      toast({
-        title: "Failed to load users",
-        description: profileError?.message || roleError?.message || "Please try again.",
-        variant: "destructive",
-      });
+      toast({ title: "Failed to load users", description: profileError?.message || roleError?.message, variant: "destructive" });
       setLoading(false);
       return;
     }
 
     const nextRoles: Record<string, AppRole[]> = {};
     (roleData || []).forEach((row: any) => {
-      const role = row.role as AppRole;
       if (!nextRoles[row.user_id]) nextRoles[row.user_id] = [];
-      nextRoles[row.user_id].push(role);
+      nextRoles[row.user_id].push(row.role as AppRole);
     });
 
     setProfiles((profileData || []) as ProfileRow[]);
     setRolesByUser(nextRoles);
+    setTotalCount(count || 0);
+    setPage(pageNum);
     setLoading(false);
   };
 
   useEffect(() => {
-    if (isAdmin) fetchUsers();
+    if (isAdmin) fetchUsers(0);
   }, [isAdmin]);
 
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return profiles;
-    return profiles.filter((p) => (p.full_name || "").toLowerCase().includes(q) || (p.email || "").toLowerCase().includes(q));
-  }, [profiles, search]);
+  // Debounced search
+  useEffect(() => {
+    if (!isAdmin) return;
+    const timer = setTimeout(() => fetchUsers(0), 300);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   const hasRole = (userId: string, role: AppRole) => (rolesByUser[userId] || []).includes(role);
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   const toggleRole = async (targetUserId: string, role: AppRole) => {
     if (!isAdmin) return;
@@ -79,9 +94,10 @@ export default function AdminUsers() {
 
     const key = `${targetUserId}:${role}`;
     setSavingKey(key);
+    const wasActive = hasRole(targetUserId, role);
 
     let opError: { message?: string } | null = null;
-    if (hasRole(targetUserId, role)) {
+    if (wasActive) {
       const { error } = await supabase.from("user_roles").delete().eq("user_id", targetUserId).eq("role", role);
       opError = error;
     } else {
@@ -90,18 +106,27 @@ export default function AdminUsers() {
     }
 
     if (opError) {
-      toast({ title: "Role update failed", description: opError.message || "Please try again.", variant: "destructive" });
+      toast({ title: "Role update failed", description: opError.message, variant: "destructive" });
       setSavingKey(null);
       return;
     }
 
+    // UM-005: Audit log role change
+    try {
+      logAuditEvent(wasActive ? "role_removed" : "role_assigned", {
+        entityType: "user",
+        entityId: targetUserId,
+        details: { role, action: wasActive ? "removed" : "assigned" },
+      });
+    } catch { /* never block on audit */ }
+
     setRolesByUser((prev) => {
       const current = prev[targetUserId] || [];
-      const updated = hasRole(targetUserId, role) ? current.filter((r) => r !== role) : [...current, role];
+      const updated = wasActive ? current.filter((r) => r !== role) : [...current, role];
       return { ...prev, [targetUserId]: updated };
     });
 
-    toast({ title: "Role updated", description: `${role} role ${hasRole(targetUserId, role) ? "removed" : "assigned"}.` });
+    toast({ title: "Role updated", description: `${role} role ${wasActive ? "removed" : "assigned"}.` });
     setSavingKey(null);
   };
 
@@ -118,9 +143,9 @@ export default function AdminUsers() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-sans text-2xl font-bold text-foreground">User Management</h1>
-          <p className="text-sm text-muted-foreground">Assign or remove admin, notary, and client roles.</p>
+          <p className="text-sm text-muted-foreground">Assign or remove admin, notary, and client roles. {totalCount > 0 && `${totalCount} total users`}</p>
         </div>
-        <Button variant="outline" onClick={fetchUsers}>
+        <Button variant="outline" onClick={() => fetchUsers(page)}>
           <RefreshCw className="mr-2 h-4 w-4" /> Refresh
         </Button>
       </div>
@@ -132,7 +157,7 @@ export default function AdminUsers() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name or email" />
+          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name or email" aria-label="Search users" />
         </CardContent>
       </Card>
 
@@ -147,10 +172,10 @@ export default function AdminUsers() {
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
-          ) : filtered.length === 0 ? (
+          ) : profiles.length === 0 ? (
             <p className="py-8 text-center text-sm text-muted-foreground">No users found.</p>
           ) : (
-            filtered.map((profile) => {
+            profiles.map((profile) => {
               const userRoles = rolesByUser[profile.user_id] || [];
               return (
                 <div key={profile.user_id} className="rounded-lg border border-border/60 p-4">
@@ -165,20 +190,12 @@ export default function AdminUsers() {
                       )) : <Badge variant="outline">No roles</Badge>}
                     </div>
                   </div>
-
                   <div className="flex flex-wrap gap-2">
                     {(["admin", "notary", "client"] as AppRole[]).map((role) => {
                       const active = hasRole(profile.user_id, role);
                       const busy = savingKey === `${profile.user_id}:${role}`;
                       return (
-                        <Button
-                          key={role}
-                          size="sm"
-                          variant={active ? "default" : "outline"}
-                          className="capitalize"
-                          onClick={() => toggleRole(profile.user_id, role)}
-                          disabled={busy}
-                        >
+                        <Button key={role} size="sm" variant={active ? "default" : "outline"} className="capitalize" onClick={() => toggleRole(profile.user_id, role)} disabled={busy}>
                           {busy ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : null}
                           {active ? `Remove ${role}` : `Add ${role}`}
                         </Button>
@@ -191,6 +208,18 @@ export default function AdminUsers() {
           )}
         </CardContent>
       </Card>
+
+      {/* UM-004: Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">{totalCount} users total</p>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" disabled={page === 0} onClick={() => fetchUsers(page - 1)}><ChevronLeft className="h-4 w-4" /></Button>
+            <span className="text-sm text-muted-foreground">Page {page + 1} of {totalPages}</span>
+            <Button variant="outline" size="sm" disabled={page >= totalPages - 1} onClick={() => fetchUsers(page + 1)}><ChevronRight className="h-4 w-4" /></Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

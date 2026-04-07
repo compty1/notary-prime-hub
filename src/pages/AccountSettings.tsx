@@ -12,11 +12,11 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from "@/hooks/use-toast";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { Shield, Trash2, Download, Key, Eye, EyeOff, Bell, Contrast } from "lucide-react";
+import { Shield, Trash2, Download, Key, Eye, EyeOff, Bell, Smartphone, Contrast } from "lucide-react";
 import { getHighContrast, setHighContrast } from "@/lib/a11yUtils";
 import SubscriptionManager from "@/components/SubscriptionManager";
-import MFASetup from "@/components/MFASetup";
 import { PasswordStrengthMeter } from "@/components/PasswordStrengthMeter";
+import { MFASetup } from "@/components/MFASetup";
 
 export default function AccountSettings() {
   usePageMeta({ title: "Account Settings", description: "Manage your NotarDex account — update password, notification preferences, and security settings.", noIndex: true });
@@ -39,39 +39,27 @@ export default function AccountSettings() {
     { key: "marketing", label: "Marketing emails" },
   ];
   const [notifPrefs, setNotifPrefs] = useState<Record<string, boolean>>({
-    appointment_reminders: true,
-    document_updates: true,
-    session_alerts: true,
-    marketing: false,
+    appointment_reminders: true, document_updates: true, session_alerts: true, marketing: false,
   });
   const [loadingPrefs, setLoadingPrefs] = useState(true);
   const [savingPrefs, setSavingPrefs] = useState(false);
 
   useEffect(() => {
     if (!user) return;
-    supabase.from("notification_preferences")
-      .select("event_type, enabled")
-      .eq("user_id", user.id)
-      .eq("channel", "email")
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          const map: Record<string, boolean> = {};
-          data.forEach(r => { map[r.event_type] = r.enabled; });
-          setNotifPrefs(prev => ({ ...prev, ...map }));
-        }
-        setLoadingPrefs(false);
-      });
+    supabase.from("notification_preferences").select("event_type, enabled").eq("user_id", user.id).eq("channel", "email").then(({ data }) => {
+      if (data && data.length > 0) {
+        const map: Record<string, boolean> = {};
+        data.forEach(r => { map[r.event_type] = r.enabled; });
+        setNotifPrefs(prev => ({ ...prev, ...map }));
+      }
+      setLoadingPrefs(false);
+    });
   }, [user]);
 
   const saveNotifPrefs = async () => {
     if (!user) return;
     setSavingPrefs(true);
-    const rows = NOTIF_EVENTS.map(e => ({
-      user_id: user.id,
-      event_type: e.key,
-      channel: "email",
-      enabled: notifPrefs[e.key] ?? true,
-    }));
+    const rows = NOTIF_EVENTS.map(e => ({ user_id: user.id, event_type: e.key, channel: "email", enabled: notifPrefs[e.key] ?? true }));
     const { error } = await supabase.from("notification_preferences").upsert(rows, { onConflict: "user_id,event_type,channel" });
     if (error) toast({ title: "Error saving preferences", description: error.message, variant: "destructive" });
     else toast({ title: "Notification preferences saved" });
@@ -80,25 +68,13 @@ export default function AccountSettings() {
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPassword.length < 8) {
-      toast({ title: "Password too short", description: "Minimum 8 characters.", variant: "destructive" });
-      return;
-    }
-    if (!/[A-Z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
-      toast({ title: "Weak password", description: "Must contain uppercase and number.", variant: "destructive" });
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      toast({ title: "Passwords don't match", variant: "destructive" });
-      return;
-    }
+    if (newPassword.length < 8) { toast({ title: "Password too short", description: "Minimum 8 characters.", variant: "destructive" }); return; }
+    if (!/[A-Z]/.test(newPassword) || !/[0-9]/.test(newPassword)) { toast({ title: "Weak password", description: "Must contain uppercase and number.", variant: "destructive" }); return; }
+    if (newPassword !== confirmPassword) { toast({ title: "Passwords don't match", variant: "destructive" }); return; }
     setChangingPassword(true);
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else {
-      toast({ title: "Password updated" });
-      setCurrentPassword(""); setNewPassword(""); setConfirmPassword("");
-    }
+    else { toast({ title: "Password updated" }); setCurrentPassword(""); setNewPassword(""); setConfirmPassword(""); }
     setChangingPassword(false);
   };
 
@@ -106,7 +82,6 @@ export default function AccountSettings() {
     if (!user) return;
     setExporting(true);
     try {
-      // Item 493: Select specific non-sensitive columns
       const [profile, appointments, documents, payments, reviews, serviceReqs] = await Promise.all([
         supabase.from("profiles").select("full_name, email, phone, address, city, state, zip, created_at").eq("user_id", user.id).single(),
         supabase.from("appointments").select("scheduled_date, scheduled_time, service_type, notarization_type, status, created_at").eq("client_id", user.id).limit(500),
@@ -115,15 +90,7 @@ export default function AccountSettings() {
         supabase.from("reviews").select("rating, comment, created_at").eq("client_id", user.id).limit(200),
         supabase.from("service_requests").select("service_name, status, created_at").eq("client_id", user.id).limit(500),
       ]);
-      const exportData = {
-        exported_at: new Date().toISOString(),
-        profile: profile.data,
-        appointments: appointments.data,
-        documents: documents.data,
-        payments: payments.data,
-        reviews: reviews.data,
-        service_requests: serviceReqs.data,
-      };
+      const exportData = { exported_at: new Date().toISOString(), profile: profile.data, appointments: appointments.data, documents: documents.data, payments: payments.data, reviews: reviews.data, service_requests: serviceReqs.data };
       const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a"); a.href = url; a.download = "my-data-export.json"; a.click();
@@ -138,21 +105,12 @@ export default function AccountSettings() {
 
   const handleDeleteAccount = async () => {
     if (!user) return;
-    if (!deletePassword) {
-      setDeletePasswordError("Please enter your password to confirm.");
-      return;
-    }
+    if (!deletePassword) { setDeletePasswordError("Please enter your password to confirm."); return; }
     setDeleting(true);
     setDeletePasswordError("");
-    // Re-authenticate
     const { error: authErr } = await supabase.auth.signInWithPassword({ email: user.email!, password: deletePassword });
-    if (authErr) {
-      setDeletePasswordError("Incorrect password. Please try again.");
-      setDeleting(false);
-      return;
-    }
+    if (authErr) { setDeletePasswordError("Incorrect password. Please try again."); setDeleting(false); return; }
     try {
-      // Item 494: Full cascade delete including service_requests, apostille_requests, correspondence
       await supabase.from("document_reminders").delete().eq("user_id", user.id);
       await supabase.from("service_requests").delete().eq("client_id", user.id);
       await supabase.from("apostille_requests").delete().eq("client_id", user.id);
@@ -166,9 +124,7 @@ export default function AccountSettings() {
       await supabase.from("profiles").delete().eq("user_id", user.id);
       toast({ title: "Account data deleted", description: "Signing you out..." });
       setTimeout(() => signOut(), 1500);
-    } catch (e: any) {
-      toast({ title: "Error", description: e.message, variant: "destructive" });
-    }
+    } catch (e: any) { toast({ title: "Error", description: e.message, variant: "destructive" }); }
     setDeleting(false);
   };
 
@@ -178,7 +134,7 @@ export default function AccountSettings() {
         <Breadcrumbs />
         <h1 className="mt-4 mb-8 font-sans text-3xl font-bold text-foreground">Account Settings</h1>
 
-        {/* Change Password */}
+        {/* Change Password with Strength Meter */}
         <Card className="mb-6 border-border/50">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg"><Key className="h-5 w-5 text-primary" /> Change Password</CardTitle>
@@ -233,7 +189,7 @@ export default function AccountSettings() {
         <Card className="mb-6 border-border/50">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg"><Download className="h-5 w-5 text-primary" /> Export My Data</CardTitle>
-            <CardDescription>Download all your data as JSON</CardDescription>
+            <CardDescription>Download all your data as JSON (GDPR/CCPA compliant)</CardDescription>
           </CardHeader>
           <CardContent>
             <Button variant="outline" onClick={handleExportData} disabled={exporting}>{exporting ? "Exporting..." : "Download Data"}</Button>
@@ -255,11 +211,21 @@ export default function AccountSettings() {
           </CardContent>
         </Card>
 
-        {/* MFA Section */}
-        <MFASetup />
+        {/* MFA Section - Real Implementation */}
+        <Card className="mb-6 border-border/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Smartphone className="h-5 w-5 text-primary" /> Multi-Factor Authentication
+            </CardTitle>
+            <CardDescription>Add an extra layer of security to your account</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <MFASetup />
+          </CardContent>
+        </Card>
 
         {/* Delete Account */}
-        <Card className="border-destructive/30">
+        <Card className="mb-6 border-destructive/30">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg text-destructive"><Trash2 className="h-5 w-5" /> Delete Account</CardTitle>
             <CardDescription>Permanently delete your account and all associated data</CardDescription>

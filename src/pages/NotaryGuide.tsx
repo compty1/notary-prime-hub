@@ -19,8 +19,8 @@ const documentCategories = [
   {
     icon: Home,
     title: "Real Estate Documents",
-    color: "text-primary",
-    bgColor: "bg-primary/10",
+    color: "text-blue-600",
+    bgColor: "bg-blue-50",
     documents: [
       {
         name: "Deeds (Warranty, Quit Claim, Transfer on Death)",
@@ -60,8 +60,8 @@ const documentCategories = [
   {
     icon: Scale,
     title: "Legal Documents",
-    color: "text-secondary-foreground",
-    bgColor: "bg-secondary",
+    color: "text-purple-600",
+    bgColor: "bg-purple-50",
     documents: [
       {
         name: "Power of Attorney (General, Durable, Limited)",
@@ -101,8 +101,8 @@ const documentCategories = [
   {
     icon: Heart,
     title: "Estate Planning Documents",
-    color: "text-destructive",
-    bgColor: "bg-destructive/10",
+    color: "text-rose-600",
+    bgColor: "bg-rose-50",
     documents: [
       {
         name: "Last Will & Testament",
@@ -142,8 +142,8 @@ const documentCategories = [
   {
     icon: Briefcase,
     title: "Business Documents",
-    color: "text-accent-foreground",
-    bgColor: "bg-accent",
+    color: "text-amber-600",
+    bgColor: "bg-amber-50",
     documents: [
       {
         name: "Articles of Incorporation / Organization",

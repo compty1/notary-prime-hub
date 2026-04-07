@@ -79,14 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const extendSession = async () => {
     setShowTimeoutWarning(false);
-    try {
-      const { error } = await supabase.auth.refreshSession();
-      if (error) {
-        toast({ title: "Session refresh failed", description: error.message, variant: "destructive" });
-      }
-    } catch {
-      toast({ title: "Session refresh failed", description: "Please sign in again.", variant: "destructive" });
-    }
+    await supabase.auth.refreshSession();
   };
 
   useEffect(() => {

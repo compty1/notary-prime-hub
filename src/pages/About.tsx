@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { Logo } from "@/components/Logo";
-import { BRAND } from "@/lib/brand";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -31,7 +30,7 @@ const serviceAreas = [
 ];
 
 export default function About() {
-  const [contactInfo, setContactInfo] = useState<{ phone: string; email: string }>({ phone: BRAND.defaultPhone, email: BRAND.defaultEmail });
+  const [contactInfo, setContactInfo] = useState({ phone: "(614) 300-6890", email: "contact@notardex.com" });
   const [commissionExp, setCommissionExp] = useState<string | null>(null);
   const [eoStatus, setEoStatus] = useState<string | null>(null);
   const [bondStatus, setBondStatus] = useState<string | null>(null);

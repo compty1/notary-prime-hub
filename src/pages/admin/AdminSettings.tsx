@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, DollarSign, MapPin, Monitor, Save, Loader2, AlertTriangle, CalendarClock, Shield, Upload, Eye, Mail, CheckCircle, XCircle, ArrowDownUp } from "lucide-react";
+import { Settings, DollarSign, MapPin, Monitor, Save, Loader2, AlertTriangle, CalendarClock, Shield, Upload, Eye, Mail, CheckCircle, XCircle, ArrowDownUp, Download, UploadCloud, ExternalLink, Server } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -78,8 +78,20 @@ export default function AdminSettings() {
     run();
   }, [loading, editValues.id_expiration_reminder_days]);
 
+  // AS-002: URL validation
+  const urlKeys = ["kba_platform_url", "zoom_meeting_link"];
+  const validateUrl = (val: string) => !val || /^https?:\/\/.+\..+/.test(val);
+
   const handleSave = async () => {
     if (saving) return;
+
+    // Validate URLs
+    for (const key of urlKeys) {
+      if (editValues[key] && !validateUrl(editValues[key])) {
+        toast({ title: "Invalid URL", description: `${key.replace(/_/g, " ")} must start with http:// or https://`, variant: "destructive" });
+        return;
+      }
+    }
 
     // Item 351/367: Validate numeric settings
     const numericKeys = ["base_fee_per_signature", "travel_fee_per_mile", "travel_fee_minimum", "ron_platform_fee", "kba_fee", "travel_radius_miles", "max_appointments_per_day", "min_booking_lead_hours"];
@@ -93,14 +105,16 @@ export default function AdminSettings() {
 
     setSaving(true);
     const changedKeys: string[] = [];
+    const beforeValues: Record<string, string> = {};
     const updates = Object.entries(editValues).map(([key, value]) => {
-      // Bug 487: Removed console.warn that leaked security info in browser console
       if (settings[key]) {
         if (settings[key].setting_value === value) return null;
         changedKeys.push(key);
+        beforeValues[key] = settings[key].setting_value;
         return supabase.from("platform_settings").update({ setting_value: value, updated_at: new Date().toISOString(), updated_by: user?.id }).eq("setting_key", key);
       }
       changedKeys.push(key);
+      beforeValues[key] = "";
       return supabase.from("platform_settings").insert({ setting_key: key, setting_value: value, updated_by: user?.id });
     }).filter(Boolean);
 
@@ -109,18 +123,44 @@ export default function AdminSettings() {
     if (hasError) toast({ title: "Error saving some settings", variant: "destructive" });
     else {
       toast({ title: "Settings saved", description: "All changes have been applied." });
-      // Item 352: Audit log for settings changes
+      // AS-003: Audit log with before/after diff
       if (changedKeys.length > 0) {
         try {
           const { logAuditEvent } = await import("@/lib/auditLog");
-          logAuditEvent("settings_updated", { entityType: "platform_settings", details: { changed_keys: changedKeys } });
-        } catch (auditErr) {
-          console.error("Failed to log settings audit event:", auditErr);
-        }
+          const diff: Record<string, { from: string; to: string }> = {};
+          changedKeys.forEach(k => { diff[k] = { from: beforeValues[k] || "", to: editValues[k] || "" }; });
+          logAuditEvent("settings_updated", { entityType: "platform_settings", details: { changed_keys: changedKeys, diff } });
+        } catch { /* never block on audit */ }
       }
       await fetchSettings();
     }
     setSaving(false);
+  };
+
+  // AS-004: Settings backup/restore
+  const handleExportSettings = () => {
+    const json = JSON.stringify(editValues, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = `platform-settings-${new Date().toISOString().slice(0, 10)}.json`; a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: "Settings exported" });
+  };
+
+  const handleImportSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const imported = JSON.parse(ev.target?.result as string);
+        if (typeof imported !== "object" || Array.isArray(imported)) throw new Error("Invalid format");
+        setEditValues(prev => ({ ...prev, ...imported }));
+        toast({ title: "Settings imported", description: "Review and click Save to apply." });
+      } catch { toast({ title: "Invalid file", description: "Please upload a valid settings JSON.", variant: "destructive" }); }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
   };
 
   const updateValue = (key: string, value: string) => setEditValues((prev) => ({ ...prev, [key]: value }));
@@ -159,14 +199,27 @@ export default function AdminSettings() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="font-sans text-2xl font-bold text-foreground">Platform Settings</h1>
           <p className="text-sm text-muted-foreground">Configure pricing, credentials, platform integrations, and compliance reminders</p>
         </div>
-        <Button onClick={handleSave} disabled={saving} className="">
-          {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />} Save Changes
-        </Button>
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* AS-008: Environment indicator */}
+          <Badge variant="outline" className="text-xs gap-1">
+            <Server className="h-3 w-3" />
+            {import.meta.env.VITE_SUPABASE_URL?.includes("localhost") ? "Local" : import.meta.env.DEV ? "Development" : "Production"}
+          </Badge>
+          {/* AS-004: Backup/Restore */}
+          <Button variant="outline" size="sm" onClick={handleExportSettings}><Download className="mr-1 h-3 w-3" /> Export</Button>
+          <label className="cursor-pointer">
+            <input type="file" accept=".json" className="hidden" onChange={handleImportSettings} />
+            <Button variant="outline" size="sm" asChild><span><UploadCloud className="mr-1 h-3 w-3" /> Import</span></Button>
+          </label>
+          <Button onClick={handleSave} disabled={saving}>
+            {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />} Save Changes
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -360,7 +413,11 @@ export default function AdminSettings() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">Auto-detected compliance with Ohio Revised Code §147.65-.66 requirements for Remote Online Notarization.</p>
+            <p className="text-sm text-muted-foreground mb-2">Auto-detected compliance with Ohio Revised Code §147.65-.66 requirements for Remote Online Notarization.</p>
+            {/* AS-006: Secretary of State verification link */}
+            <a href="https://www.ohiosos.gov/notary/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-primary hover:underline mb-4">
+              <ExternalLink className="h-3 w-3" /> Verify on Ohio Secretary of State
+            </a>
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {[
                 { label: "Commission Number", ok: !!editValues.commission_number, detail: editValues.commission_number || "Not configured" },
