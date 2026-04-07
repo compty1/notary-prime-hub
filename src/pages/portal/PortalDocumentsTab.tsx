@@ -266,6 +266,12 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
                   <div className="min-w-0">
                     <p className="font-medium text-sm truncate">{doc.file_name}</p>
                     <p className="text-xs text-muted-foreground">{new Date(doc.created_at).toLocaleDateString()}{doc.appointment_id && <span className="ml-1 text-primary">• Linked to appointment</span>}</p>
+                    {/* ID 127: Show rejection reason to client */}
+                    {doc.status === "rejected" && doc.rejection_reason && (
+                      <p className="text-xs text-destructive mt-0.5 flex items-center gap-1">
+                        <AlertTriangle className="h-3 w-3" /> Reason: {doc.rejection_reason}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">

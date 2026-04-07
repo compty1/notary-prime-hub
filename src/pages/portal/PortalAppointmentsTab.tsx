@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, Clock, MapPin, Monitor, Plus, Video, RefreshCw, Wifi, Star, Hash, LayoutGrid, List } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
 import { ClientFeedbackForm } from "@/components/ClientFeedbackForm";
@@ -43,9 +44,12 @@ interface Props {
 
 export default function PortalAppointmentsTab({ appointments, loading, zoomLink, onCancelClick, onTechCheck }: Props) {
   const { user } = useAuth();
-  const upcoming = appointments.filter(a => ["scheduled", "confirmed", "id_verification", "kba_pending"].includes(a.status));
-  const inSession = appointments.filter(a => a.status === "in_session");
-  const past = appointments.filter(a => ["completed", "cancelled", "no_show"].includes(a.status));
+  // ID 403: Status filter for appointments
+  const [statusFilter, setStatusFilter] = useState("all");
+  const filteredAppointments = statusFilter === "all" ? appointments : appointments.filter(a => a.status === statusFilter);
+  const upcoming = filteredAppointments.filter(a => ["scheduled", "confirmed", "id_verification", "kba_pending"].includes(a.status));
+  const inSession = filteredAppointments.filter(a => a.status === "in_session");
+  const past = filteredAppointments.filter(a => ["completed", "cancelled", "no_show"].includes(a.status));
 
   const isSessionNear = (appt: any) => {
     const diff = new Date(`${appt.scheduled_date}T${appt.scheduled_time}`).getTime() - Date.now();
@@ -70,9 +74,20 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="font-sans text-xl font-semibold">Upcoming Appointments</h2>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* ID 403: Status filter tabs */}
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[130px] h-8 text-xs"><SelectValue placeholder="All Status" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="scheduled">Scheduled</SelectItem>
+              <SelectItem value="confirmed">Confirmed</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
+            </SelectContent>
+          </Select>
           <div className="flex rounded-md border border-border">
             <Button size="sm" variant={viewMode === "list" ? "default" : "ghost"} className="rounded-r-none h-8" onClick={() => setViewMode("list")} aria-label="List view">
               <List className="h-4 w-4" />

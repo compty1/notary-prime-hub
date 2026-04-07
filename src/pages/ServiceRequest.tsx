@@ -270,6 +270,15 @@ export default function ServiceRequest() {
   const [guestEmail, setGuestEmail] = useState("");
   const [guestPassword, setGuestPassword] = useState("");
 
+  // IDs 246-317: Service pricing and turnaround from DB
+  const [serviceInfo, setServiceInfo] = useState<{ price_from?: number; price_to?: number; estimated_turnaround?: string } | null>(null);
+  useEffect(() => {
+    if (!serviceName) return;
+    supabase.from("services").select("price_from, price_to, estimated_turnaround").eq("name", serviceName).single().then(({ data }) => {
+      if (data) setServiceInfo(data);
+    });
+  }, [serviceName]);
+
   usePageMeta({ title: config.label, description: `Submit a ${config.label} request — professional Ohio notary and document services.` });
 
   // Auto-save to localStorage every 5 seconds
@@ -406,11 +415,36 @@ export default function ServiceRequest() {
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
               <ClipboardList className="h-6 w-6 text-primary" />
             </div>
-            <div>
+             <div>
               <h1 className="font-sans text-2xl font-bold text-foreground">{config.label}</h1>
               <p className="text-sm text-muted-foreground">{serviceName}</p>
             </div>
           </div>
+
+          {/* IDs 246-317: Show estimated cost and turnaround for all services */}
+          {serviceInfo && (serviceInfo.price_from || serviceInfo.estimated_turnaround) && (
+            <Card className="mb-4 border-primary/20 bg-primary/5">
+              <CardContent className="p-4 flex flex-wrap items-center gap-4 text-sm">
+                {serviceInfo.price_from != null && (
+                  <div className="flex items-center gap-1.5">
+                    <Briefcase className="h-4 w-4 text-primary" />
+                    <span className="text-muted-foreground">Estimated cost:</span>
+                    <span className="font-semibold text-foreground">
+                      ${serviceInfo.price_from.toFixed(2)}
+                      {serviceInfo.price_to && serviceInfo.price_to !== serviceInfo.price_from && ` – $${serviceInfo.price_to.toFixed(2)}`}
+                    </span>
+                  </div>
+                )}
+                {serviceInfo.estimated_turnaround && (
+                  <div className="flex items-center gap-1.5">
+                    <Clock className="h-4 w-4 text-primary" />
+                    <span className="text-muted-foreground">Turnaround:</span>
+                    <span className="font-semibold text-foreground">{serviceInfo.estimated_turnaround}</span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           <Card className="border-border/50">
             <CardContent className="p-6 space-y-4">
