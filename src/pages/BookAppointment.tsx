@@ -192,17 +192,15 @@ export default function BookAppointment() {
         // Sort popular services to top (ID 5)
         const sorted = [...bookable].sort((a: any, b: any) => (b.is_popular ? 1 : 0) - (a.is_popular ? 1 : 0));
         setServiceTypes([...new Set(sorted.map((s: any) => s.name))]);
-        const descs: Record<string, string> = {}, cats: Record<string, string> = {}, durs: Record<string, number> = {}, ronMap: Record<string, boolean> = {};
+        const descs: Record<string, string> = {}, cats: Record<string, string> = {}, durs: Record<string, number> = {};
         bookable.forEach((s: any) => {
           if (s.short_description) descs[s.name] = s.short_description;
           cats[s.name] = s.category;
           if (s.duration_minutes) durs[s.name] = s.duration_minutes;
-          ronMap[s.name] = s.supports_ron !== false; // default true if not set
         });
         setServiceDescriptions(descs);
         setServiceCategories(cats);
         setServiceDurations(durs);
-        setServiceRonSupport(ronMap);
         // ID 1: Validate URL param against NON_BOOKABLE before pre-filling
         const preService = new URLSearchParams(window.location.search).get("service");
         if (preService) {
