@@ -1,37 +1,45 @@
 
 
-# Plan: Admin & Settings Recommendation Audit CSV
+# Plan: DocuDex Editor Comprehensive Audit CSV
 
-Generate a comprehensive CSV audit file covering all admin pages, account settings, controls wiring, gaps, bugs, and recommendations across the entire admin panel and settings infrastructure.
+Generate a CSV at `/mnt/documents/docudex_editor_audit.csv` listing all bugs, gaps, enhancements, and recommendations for the DocuDex editor.
 
-## Scope of Audit
+## Key Findings from Code Review
 
-The CSV will cover these domains with up to 1000 items:
+**Critical bugs:**
+- Uses deprecated `document.execCommand` for all formatting (lines 170-172) — will stop working in browsers
+- `dangerouslySetInnerHTML` + `contentEditable` causes React state vs DOM desync (page content resets on re-render)
+- No drag-and-drop for page reordering (only arrow buttons)
+- No image upload — only inserts a placeholder div
+- No color picker for text/background — only preset accent colors for elements
+- No undo/redo (Ctrl+Z broken with contentEditable + React)
+- Floating toolbar position calculation doesn't account for zoom level
+- Export `.doc` is actually HTML with wrong MIME type — not real DOCX
+- No auto-save / unsaved changes warning
+- No keyboard shortcuts (Ctrl+S, Ctrl+B, etc.)
 
-1. **Route Security & Access Control** — adminOnly flags, ProtectedRoute wiring, missing guards
-2. **Admin Settings Page** — platform_settings controls, validation, missing fields, Ohio compliance checks
-3. **Account Settings** — password change, data export, delete account, notification prefs, MFA
-4. **Admin Overview/Dashboard** — stats accuracy, chart wiring, calendar integration, commission alerts
-5. **User Management** — role toggling, self-demotion guard, pagination, search
-6. **Team & Invites** — notary onboarding, certifications, avatar handling
-7. **Audit Log** — filter coverage, export, entity linking, retention
-8. **Admin Sidebar Navigation** — item ordering, role visibility, missing links
-9. **All 33 Admin Sub-pages** — controls wiring, data fetching patterns, error handling
-10. **Cross-cutting Concerns** — loading states, empty states, responsive layout, dark mode, a11y
+**Missing UX features:**
+- No font size control, no line spacing, no margin adjustment
+- No find & replace
+- No spell check indicator
+- No real image upload to storage
+- No table editing (row/col add/remove)
+- No text color or highlight color picker
+- No hyperlink insertion
+- No page margins/orientation settings
+- No ruler/guides
+- No snap-to-grid or alignment guides
+- No collaborative editing indicators
+- No document autosave with conflict detection
+- No full-screen / distraction-free mode
 
 ## CSV Structure
 
-Columns: `ID, Category, Page/Component, Severity, Type, Title, Current State, Recommended Fix, Wiring Notes, Ohio Compliance`
+Columns: `ID, Category, Severity, Type, Title, Current State, Recommended Fix, UX Impact, Implementation Notes`
+
+Categories: Core Editor, Formatting, Drag & Drop, Colors & Styling, Elements, Templates, AI Features, Export, Page Management, Performance, Accessibility, Mobile, Dark Mode
 
 ## Implementation
 
-Single script execution to generate `/mnt/documents/admin_settings_audit.csv` with all findings organized by category and severity (Critical → Low).
-
-## Key Areas of Focus
-
-- **Security gaps**: Routes without `adminOnly` that should have it (e.g., `/admin/docudex-pro` accessible to notaries), delete account cascade missing some tables
-- **Settings controls**: Missing validation for URLs, missing TOTP/MFA enablement, no settings backup/restore
-- **Wiring issues**: Admin sidebar nav items vs actual route guards mismatch, HubSpot buttons lacking loading states
-- **Missing admin features**: No bulk user operations, no settings change history, no admin activity dashboard
-- **Ohio compliance**: Commission/bond/E&O expiration alerts not triggering emails, no Secretary of State verification link
+Single Python script generating the CSV with ~200+ findings.
 
