@@ -598,12 +598,30 @@ export default function BookAppointment() {
     signerDob, setSignerDob,
   };
 
+  const handleJoinWaitlist = async () => {
+    if (!user || !date || !serviceType) return;
+    setJoiningWaitlist(true);
+    const { error } = await supabase.from("waitlist").insert({
+      client_id: user.id,
+      service_id: null,
+      preferred_date: date,
+      preferred_time: time || null,
+      status: "waiting",
+    } as any);
+    if (error) { toast({ title: "Could not join waitlist", description: error.message, variant: "destructive" }); }
+    else { setWaitlistJoined(true); toast({ title: "You're on the waitlist!", description: "We'll notify you when a slot opens." }); }
+    setJoiningWaitlist(false);
+  };
+
   const scheduleStepProps = {
     date, setDate, time, setTime, notes, setNotes, serviceType, notarizationType, serviceCategories,
     availableSlots, suggestedSlots, loadingSlots, leadTimeWarning,
     clientAddress, setClientAddress, clientCity, setClientCity, clientState, setClientState, clientZip, setClientZip,
     location, setLocation, locatingUser, userLat, userLon, onUseLocation: handleUseLocation,
     outsideServiceArea, travelDistance,
+    onJoinWaitlist: user ? handleJoinWaitlist : undefined,
+    joiningWaitlist,
+    waitlistJoined,
   };
 
   const reviewProps = {
