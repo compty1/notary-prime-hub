@@ -1,14 +1,16 @@
 import React, { useRef, useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Upload, Download, Eye, Sparkles, RefreshCw, Loader2, ShieldCheck, Search, ScanSearch, AlertTriangle, CheckCircle2, Info } from "lucide-react";
+import { FileText, Upload, Download, Eye, Sparkles, RefreshCw, Loader2, ShieldCheck, Search, ScanSearch, AlertTriangle, CheckCircle2, Info, FolderOpen } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import BulkDocumentUpload from "@/components/BulkDocumentUpload";
 
 const docStatusColors: Record<string, string> = {
   uploaded: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
@@ -39,6 +41,7 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
   const [reviewingDocId, setReviewingDocId] = useState<string | null>(null);
   const [reviewResults, setReviewResults] = useState<Record<string, any>>({});
   const [showReviewDialog, setShowReviewDialog] = useState<string | null>(null);
+  const [showBulkUpload, setShowBulkUpload] = useState(false);
 
   // FC-1: AI Document Review handler
   const handleAIReview = async (doc: any) => {
@@ -220,8 +223,29 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
           <Button size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
             {uploading ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />} Upload
           </Button>
+          <Button size="sm" variant="outline" onClick={() => setShowBulkUpload(prev => !prev)}>
+            <FolderOpen className="mr-1 h-4 w-4" /> Bulk Upload
+          </Button>
+          <Link to="/templates">
+            <Button size="sm" variant="outline">
+              <FileText className="mr-1 h-4 w-4" /> Templates
+            </Button>
+          </Link>
         </div>
       </div>
+
+      {showBulkUpload && (
+        <BulkDocumentUpload
+          userId={userId}
+          onComplete={() => {
+            setShowBulkUpload(false);
+            // Refresh documents list
+            supabase.from("documents").select("*").eq("uploaded_by", userId).order("created_at", { ascending: false }).then(({ data }) => {
+              if (data) setDocuments(data);
+            });
+          }}
+        />
+      )}
       {otherDocs.length === 0 && notarizedDocs.length === 0 ? (
         <Card className="border-border/50"><CardContent className="p-0">
           <EmptyState

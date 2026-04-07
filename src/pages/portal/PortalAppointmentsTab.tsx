@@ -42,6 +42,7 @@ interface Props {
 }
 
 export default function PortalAppointmentsTab({ appointments, loading, zoomLink, onCancelClick, onTechCheck }: Props) {
+  const { user } = useAuth();
   const upcoming = appointments.filter(a => ["scheduled", "confirmed", "id_verification", "kba_pending"].includes(a.status));
   const inSession = appointments.filter(a => a.status === "in_session");
   const past = appointments.filter(a => ["completed", "cancelled", "no_show"].includes(a.status));
@@ -52,6 +53,20 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
   };
 
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
+
+  // Track which appointments already have feedback
+  const [feedbackGiven, setFeedbackGiven] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("client_feedback" as any)
+      .select("appointment_id")
+      .eq("client_id", user.id)
+      .then(({ data }: any) => {
+        if (data) setFeedbackGiven(new Set(data.map((f: any) => f.appointment_id)));
+      });
+  }, [user]);
 
   return (
     <div className="space-y-6">
@@ -151,24 +166,33 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
           <h2 className="mt-8 font-sans text-xl font-semibold">Past Appointments</h2>
           <div className="space-y-3">
             {past.map(appt => (
-              <Card key={appt.id} className="border-border/50 opacity-75">
-                <CardContent className="flex items-center justify-between p-4">
-                  <div>
-                    <p className="font-medium">{appt.service_type}</p>
-                    <p className="text-sm text-muted-foreground">{formatDate(appt.scheduled_date)}</p>
-                    {appt.confirmation_number && <p className="text-xs text-muted-foreground flex items-center gap-1"><Hash className="h-3 w-3" /> {appt.confirmation_number}</p>}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {appt.status === "completed" && (
-                      <>
-                        <Link to={`/portal?tab=reviews&appointmentId=${appt.id}`}><Button size="sm" variant="outline" className="text-xs"><Star className="mr-1 h-3 w-3" /> Review</Button></Link>
-                        <Link to={`/book?rebook=${appt.id}`}><Button size="sm" variant="outline" className="text-xs"><RefreshCw className="mr-1 h-3 w-3" /> Rebook</Button></Link>
-                      </>
-                    )}
-                    <Badge className={statusColors[appt.status]}>{appt.status.replace(/_/g, " ")}</Badge>
-                  </div>
-                </CardContent>
-              </Card>
+              <div key={appt.id} className="space-y-2">
+                <Card className="border-border/50 opacity-75">
+                  <CardContent className="flex items-center justify-between p-4">
+                    <div>
+                      <p className="font-medium">{appt.service_type}</p>
+                      <p className="text-sm text-muted-foreground">{formatDate(appt.scheduled_date)}</p>
+                      {appt.confirmation_number && <p className="text-xs text-muted-foreground flex items-center gap-1"><Hash className="h-3 w-3" /> {appt.confirmation_number}</p>}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {appt.status === "completed" && (
+                        <>
+                          <Link to={`/portal?tab=reviews&appointmentId=${appt.id}`}><Button size="sm" variant="outline" className="text-xs"><Star className="mr-1 h-3 w-3" /> Review</Button></Link>
+                          <Link to={`/book?rebook=${appt.id}`}><Button size="sm" variant="outline" className="text-xs"><RefreshCw className="mr-1 h-3 w-3" /> Rebook</Button></Link>
+                        </>
+                      )}
+                      <Badge className={statusColors[appt.status]}>{appt.status.replace(/_/g, " ")}</Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+                {/* Inline feedback for completed appointments without existing feedback */}
+                {appt.status === "completed" && !feedbackGiven.has(appt.id) && (
+                  <ClientFeedbackForm
+                    appointmentId={appt.id}
+                    onSubmitted={() => setFeedbackGiven(prev => new Set([...prev, appt.id]))}
+                  />
+                )}
+              </div>
             ))}
           </div>
         </>
