@@ -326,7 +326,7 @@ export default function BookAppointment() {
       async (position) => {
         try {
           const { latitude, longitude } = position.coords;
-          const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`, { headers: { "User-Agent": "Notar/1.0" } });
+          const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`, { headers: { "User-Agent": "NotarDex/1.0" } });
           const data = await resp.json();
           if (data.address) {
             const addr = data.address;
@@ -739,7 +739,7 @@ export default function BookAppointment() {
                   <div className="rounded-lg border border-dashed border-primary/20 bg-primary/5 p-4">
                     <p className="mb-2 flex items-center gap-2 text-sm font-medium"><Sparkles className="h-4 w-4 text-primary" /> Upload your document for AI analysis (optional)</p>
                     <p className="mb-3 text-xs text-muted-foreground">We'll identify the notarization type, who needs to be present, and any special requirements.</p>
-                    <Input type="file" accept="image/*" onChange={handleDocScan} disabled={docScanning} className="text-xs" />
+                    <Input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={handleDocScan} disabled={docScanning} className="text-xs" />
                     {docScanning && <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground"><Loader2 className="h-3 w-3 animate-spin" /> Analyzing document...</div>}
                     {docAnalysis && !docAnalysis.error && (
                       <div className="mt-2 space-y-2 rounded bg-primary/10 p-3 text-xs text-foreground">
@@ -772,7 +772,7 @@ export default function BookAppointment() {
                       <Tooltip><TooltipTrigger asChild><Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" /></TooltipTrigger><TooltipContent className="max-w-xs text-xs">This pre-scan helps speed up your session. Full identity verification (KBA) occurs during the notary session.</TooltipContent></Tooltip>
                     </p>
                     <p className="mb-3 text-xs text-muted-foreground">Upload a photo of your government-issued ID to auto-fill your information.</p>
-                    <Input type="file" accept="image/*" onChange={handleIdScan} disabled={idScanning} className="text-xs" />
+                    <Input type="file" accept=".jpg,.jpeg,.png,.webp,.heic" onChange={handleIdScan} disabled={idScanning} className="text-xs" />
                     {idScanning && <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground"><Loader2 className="h-3 w-3 animate-spin" /> Scanning your ID...</div>}
                     {idData && !idData.error && <div className="mt-2 rounded bg-primary/10 p-2 text-xs text-foreground"><CheckCircle className="mr-1 inline h-3 w-3 text-primary" /> Verified: {idData.full_name} — {idData.id_type}{idData.is_expired && <span className="ml-2 text-destructive font-medium">⚠ EXPIRED</span>}</div>}
                   </div>
