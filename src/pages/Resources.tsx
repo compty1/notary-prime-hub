@@ -43,6 +43,13 @@ const resources = [
     category: "Reference",
   },
   {
+    title: "Notarial Certificates Guide",
+    desc: "Comprehensive Ohio reference for Acknowledgments, Jurats, Copy Certifications, Signature Witnessing, and RON modifications with sample formats.",
+    icon: Scale,
+    link: "/notary-certificates",
+    category: "Reference",
+  },
+  {
     title: "The Notarization Process Step by Step",
     desc: "From booking to e-seal — learn exactly what happens during an in-person or remote notarization appointment.",
     icon: HelpCircle,

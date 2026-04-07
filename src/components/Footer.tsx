@@ -46,6 +46,7 @@ export function Footer({ phone = "(614) 300-6890", email = "contact@notardex.com
               <Link to="/ron-check" className="block transition-colors hover:text-primary">RON Eligibility</Link>
               <Link to="/ron-info" className="block transition-colors hover:text-primary">RON Info</Link>
               <Link to="/notary-guide" className="block transition-colors hover:text-primary">Notary Guide</Link>
+              <Link to="/notary-certificates" className="block transition-colors hover:text-primary">Certificates Guide</Link>
               <Link to="/about" className="block transition-colors hover:text-primary">About</Link>
               <Link to="/help" className="block transition-colors hover:text-primary">Help & Support</Link>
             </div>
