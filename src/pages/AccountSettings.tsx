@@ -12,9 +12,11 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from "@/hooks/use-toast";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { Shield, Trash2, Download, Key, Eye, EyeOff, Bell, Smartphone, Contrast } from "lucide-react";
+import { Shield, Trash2, Download, Key, Eye, EyeOff, Bell, Contrast } from "lucide-react";
 import { getHighContrast, setHighContrast } from "@/lib/a11yUtils";
 import SubscriptionManager from "@/components/SubscriptionManager";
+import MFASetup from "@/components/MFASetup";
+import { PasswordStrengthMeter } from "@/components/PasswordStrengthMeter";
 
 export default function AccountSettings() {
   usePageMeta({ title: "Account Settings", description: "Manage your NotarDex account — update password, notification preferences, and security settings.", noIndex: true });
@@ -192,6 +194,7 @@ export default function AccountSettings() {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+                <PasswordStrengthMeter password={newPassword} />
                 <p className="mt-1 text-xs text-muted-foreground">Min 8 chars, 1 uppercase, 1 number</p>
               </div>
               <div>
@@ -253,22 +256,7 @@ export default function AccountSettings() {
         </Card>
 
         {/* MFA Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Smartphone className="h-5 w-5 text-primary" /> Multi-Factor Authentication
-            </CardTitle>
-            <CardDescription>Add an extra layer of security to your account</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-              <p className="text-sm text-muted-foreground mb-2">
-                MFA adds a second verification step when signing in — typically a code from an authenticator app.
-              </p>
-              <Badge variant="secondary" className="text-xs">Available — Contact admin to enable</Badge>
-            </div>
-          </CardContent>
-        </Card>
+        <MFASetup />
 
         {/* Delete Account */}
         <Card className="border-destructive/30">

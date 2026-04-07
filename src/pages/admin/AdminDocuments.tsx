@@ -267,13 +267,13 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
 
       const htmlBody = `
         <div style="font-family:Arial,sans-serif;max-width:600px;">
-          <h2 style="color:#1a2744;">Your Notarized Document is Ready</h2>
+          <h2 style="color:#0f172a;">Your Notarized Document is Ready</h2>
           <p>Hello ${profile?.full_name || "Client"},</p>
           <p>Your notarized document <strong>${doc.file_name}</strong> is ready for download.</p>
-          <p><a href="${downloadLink}" style="display:inline-block;padding:12px 24px;background:#1a2744;color:#e8d5a3;text-decoration:none;border-radius:6px;font-weight:600;">Download Document</a></p>
+          <p><a href="${downloadLink}" style="display:inline-block;padding:12px 24px;background:#f59e0b;color:#0f172a;text-decoration:none;border-radius:6px;font-weight:600;">Download Document</a></p>
           ${verifyLink ? `<p style="margin-top:16px;font-size:13px;">Verify authenticity: <a href="${verifyLink}">${verifyLink}</a></p>` : ""}
           <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;" />
-          <p style="font-size:12px;color:#9ca3af;">Notar Notary Services · Franklin County, Ohio</p>
+          <p style="font-size:12px;color:#9ca3af;">NotarDex · Franklin County, Ohio</p>
         </div>`;
 
       const { data: session } = await supabase.auth.getSession();

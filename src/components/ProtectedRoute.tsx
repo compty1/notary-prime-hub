@@ -1,7 +1,9 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { logAuditEvent } from "@/lib/auditLog";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -12,6 +14,18 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ children, requireAdmin = false, adminOnly = false }: ProtectedRouteProps) => {
   const { user, isAdmin, isNotary, loading } = useAuth();
+  const location = useLocation();
+  const deniedRef = useRef(false);
+
+  // Log access denial (RS-016)
+  const shouldDeny = !loading && user && ((adminOnly && !isAdmin) || (requireAdmin && !isAdmin && !isNotary));
+
+  useEffect(() => {
+    if (shouldDeny && !deniedRef.current) {
+      deniedRef.current = true;
+      logAuditEvent("access_denied", { details: { route: location.pathname, requiredRole: adminOnly ? "admin" : "admin_or_notary" } });
+    }
+  }, [shouldDeny, location.pathname, adminOnly]);
 
   if (loading) {
     return (

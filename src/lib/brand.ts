@@ -21,4 +21,10 @@ export const BRAND = {
     title: "Lead Notary & Founder",
     credentials: "NNA Certified Notary Signing Agent",
   },
+  voice: {
+    tone: "Professional, trustworthy, and accessible",
+    personality: "Knowledgeable Ohio notary expert who simplifies complex legal processes",
+    doNot: "Do not provide legal advice. Always recommend consulting an attorney for legal questions.",
+    style: "Clear, concise, and action-oriented. Use plain English over legal jargon when possible.",
+  },
 } as const;
