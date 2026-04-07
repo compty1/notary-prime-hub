@@ -23,6 +23,8 @@ import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
 import { fadeUp, blurIn, scaleReveal } from "@/lib/animations";
 import HeroPhoneAnimation from "@/components/HeroPhoneAnimation";
+import heroBackground from "@/assets/hero-background.jpg";
+import stepProcessImg from "@/assets/hero-4-step-process.jpg";
 
 const primaryServices = [
   {
@@ -226,6 +228,7 @@ export default function Index() {
     <PageShell>
       {/* ===== HERO — Dark Slate with Amber Accents ===== */}
       <section className="relative bg-sidebar-background text-white overflow-hidden">
+        <div className="absolute inset-0 opacity-30" style={{ backgroundImage: `url(${heroBackground})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary via-sidebar-background to-sidebar-background" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -279,9 +282,21 @@ export default function Index() {
       {/* ===== 4-Step Process ===== */}
       <section id="how-it-works" className="py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-foreground mb-4">The 4-Step Process</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Complete your notarization online quickly and securely from anywhere in the world.</p>
+          </div>
+
+          {/* Branded infographic */}
+          <div className="mb-12">
+            <img
+              src={stepProcessImg}
+              alt="NotarDex 4-Step Digital Notary Process: Upload Document, Identity Verification, Live Notary Session, Download Document"
+              className="w-full rounded-2xl shadow-lg"
+              loading="lazy"
+              width={1920}
+              height={640}
+            />
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
