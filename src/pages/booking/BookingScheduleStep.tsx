@@ -20,7 +20,6 @@ interface ScheduleStepProps {
   suggestedSlots: any[];
   loadingSlots: boolean;
   leadTimeWarning: string | null;
-  // Location
   clientAddress: string; setClientAddress: (v: string) => void;
   clientCity: string; setClientCity: (v: string) => void;
   clientState: string; setClientState: (v: string) => void;
@@ -32,6 +31,10 @@ interface ScheduleStepProps {
   onUseLocation: () => void;
   outsideServiceArea?: boolean;
   travelDistance?: number | null;
+  // Waitlist
+  onJoinWaitlist?: () => void;
+  joiningWaitlist?: boolean;
+  waitlistJoined?: boolean;
 }
 
 export default function BookingScheduleStep(props: ScheduleStepProps) {
@@ -105,6 +108,23 @@ export default function BookingScheduleStep(props: ScheduleStepProps) {
               </Button>
             ))}
           </div>
+          {/* Waitlist option */}
+          {props.onJoinWaitlist && !props.waitlistJoined && (
+            <div className="mt-3 pt-3 border-t border-border">
+              <Button variant="secondary" size="sm" className="w-full" onClick={props.onJoinWaitlist} disabled={props.joiningWaitlist}>
+                {props.joiningWaitlist ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Clock className="mr-1 h-3 w-3" />}
+                Join Waitlist for {new Date(date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+              </Button>
+              <p className="text-[10px] text-muted-foreground mt-1 text-center">We'll notify you if a slot opens up</p>
+            </div>
+          )}
+          {props.waitlistJoined && (
+            <div className="mt-3 pt-3 border-t border-border text-center">
+              <p className="text-sm text-primary font-medium flex items-center justify-center gap-1">
+                <Info className="h-3 w-3" /> You're on the waitlist! We'll email you if a slot opens.
+              </p>
+            </div>
+          )}
         </div>
       )}
 
