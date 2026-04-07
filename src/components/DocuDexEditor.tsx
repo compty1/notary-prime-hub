@@ -644,7 +644,7 @@ export function DocuDexEditor({
     }).join("");
   };
 
-  // Save with document hash (OC-003)
+  // Save with document hash (OC-003, OC-004, OC-005)
   const handleSave = async () => {
     if (!onSave) return;
     setSaving(true);
@@ -658,7 +658,7 @@ export function DocuDexEditor({
       const combinedContent = pages.map(p => p.html).join("");
       const docHash = await hashContent(combinedContent);
 
-      // Log save to audit trail (SC-003, EX-009)
+      // Log save to audit trail (SC-003, EX-009) with compliance linking (OC-004/005)
       logAuditEvent("document_save", {
         entityType: "docudex_document",
         details: {
@@ -666,6 +666,9 @@ export function DocuDexEditor({
           pageCount: pages.length,
           charCount: charCount(pages),
           documentHash: docHash,
+          ...(appointmentId ? { appointmentId } : {}),
+          ...(sessionId ? { ronSessionId: sessionId } : {}),
+          watermark: watermark !== "none" ? watermark : undefined,
         },
       });
 
@@ -678,9 +681,9 @@ export function DocuDexEditor({
     }
   };
 
-  // Export .DOC (EX-001 - improved with proper styling)
+  // Export .DOC (EX-001 - with headers/footers/watermark)
   const exportDoc = () => {
-    const allHtml = pages.map((p, i) => `<div style="page-break-after:${i < pages.length - 1 ? "always" : "auto"};">${p.html}</div>`).join("");
+    const allHtml = buildExportHtml();
     const full = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]--><style>body{font-family:${fontFamily};font-size:14px;line-height:${lineSpacing};color:#1a1a1a;max-width:700px;margin:0 auto;padding:${pageMargins.top}px ${pageMargins.right}px ${pageMargins.bottom}px ${pageMargins.left}px;}h1{font-size:24px;}h2{font-size:20px;}h3{font-size:17px;}table{border-collapse:collapse;width:100%;}td,th{border:1px solid #ccc;padding:8px;}@page{margin:1in;}</style></head><body>${allHtml}</body></html>`;
     const blob = new Blob([full], { type: "application/msword" });
     const url = URL.createObjectURL(blob);
