@@ -10,8 +10,8 @@ import {
   Bold, Italic, Underline, Strikethrough, AlignLeft, AlignCenter, AlignRight, AlignJustify,
   List, ListOrdered, Heading1, Heading2, Heading3, Heading4,
   Link, Unlink, Subscript, Superscript, Quote, Minus,
-  Table, Undo2, Redo2, Eraser, Paintbrush, Search, Replace,
-  Type, Palette, Highlighter, Image as ImageIcon,
+  Table, Undo2, Redo2, Eraser, Search,
+  Type, Highlighter, Image as ImageIcon,
 } from "lucide-react";
 import { TEXT_COLORS, HIGHLIGHT_COLORS, FONT_SIZES, BRAND_FONTS } from "./constants";
 
@@ -123,9 +123,9 @@ function ColorPicker({ colors, activeColor, onSelect, icon: Icon, title }: {
 }
 
 export function DocuDexToolbar({ editor, brandFont, onBrandFontChange, onImageUpload, onFindReplace }: ToolbarProps) {
-  if (!editor) return null;
-
+  // All hooks must be called before any conditional returns
   const addLink = useCallback(() => {
+    if (!editor) return;
     const url = window.prompt("Enter URL:", "https://");
     if (url) {
       editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
@@ -133,10 +133,12 @@ export function DocuDexToolbar({ editor, brandFont, onBrandFontChange, onImageUp
   }, [editor]);
 
   const insertTable = useCallback(() => {
-    editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
+    if (!editor) return;
+    (editor.chain().focus() as any).insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
   }, [editor]);
 
-  const currentFontSize = editor.getAttributes("textStyle")?.fontSize?.replace("px", "") || "14";
+  if (!editor) return null;
+
   const currentTextColor = editor.getAttributes("textStyle")?.color || "";
   const currentHighlight = editor.getAttributes("highlight")?.color || "";
 
@@ -170,8 +172,10 @@ export function DocuDexToolbar({ editor, brandFont, onBrandFontChange, onImageUp
 
       {/* Font size */}
       <Select
-        value={currentFontSize}
-        onValueChange={v => editor.chain().focus().setMark("textStyle", { fontSize: `${v}px` }).run()}
+        value="14"
+        onValueChange={v => {
+          (editor.chain().focus() as any).setMark("textStyle", { fontSize: `${v}px` }).run();
+        }}
       >
         <SelectTrigger className="h-7 w-16 text-xs border-none shadow-none" aria-label="Font size">
           <SelectValue />
@@ -214,10 +218,10 @@ export function DocuDexToolbar({ editor, brandFont, onBrandFontChange, onImageUp
       <ToolBtn title="Strikethrough" active={editor.isActive("strike")} onClick={() => editor.chain().focus().toggleStrike().run()}>
         <Strikethrough className="h-3.5 w-3.5" />
       </ToolBtn>
-      <ToolBtn title="Subscript" active={editor.isActive("subscript")} onClick={() => editor.chain().focus().toggleSubscript().run()}>
+      <ToolBtn title="Subscript" active={editor.isActive("subscript")} onClick={() => (editor.chain().focus() as any).toggleSubscript().run()}>
         <Subscript className="h-3.5 w-3.5" />
       </ToolBtn>
-      <ToolBtn title="Superscript" active={editor.isActive("superscript")} onClick={() => editor.chain().focus().toggleSuperscript().run()}>
+      <ToolBtn title="Superscript" active={editor.isActive("superscript")} onClick={() => (editor.chain().focus() as any).toggleSuperscript().run()}>
         <Superscript className="h-3.5 w-3.5" />
       </ToolBtn>
 
@@ -228,8 +232,8 @@ export function DocuDexToolbar({ editor, brandFont, onBrandFontChange, onImageUp
         colors={TEXT_COLORS}
         activeColor={currentTextColor}
         onSelect={color => {
-          if (color) editor.chain().focus().setColor(color).run();
-          else editor.chain().focus().unsetColor().run();
+          if (color) (editor.chain().focus() as any).setColor(color).run();
+          else (editor.chain().focus() as any).unsetColor().run();
         }}
         icon={Type}
         title="Text Color"
@@ -238,8 +242,8 @@ export function DocuDexToolbar({ editor, brandFont, onBrandFontChange, onImageUp
         colors={HIGHLIGHT_COLORS}
         activeColor={currentHighlight}
         onSelect={color => {
-          if (color) editor.chain().focus().toggleHighlight({ color }).run();
-          else editor.chain().focus().unsetHighlight().run();
+          if (color) (editor.chain().focus() as any).toggleHighlight({ color }).run();
+          else (editor.chain().focus() as any).unsetHighlight().run();
         }}
         icon={Highlighter}
         title="Highlight Color"
