@@ -1,3 +1,4 @@
+import { useState, useCallback } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,6 +9,20 @@ import {
   HAGUE_COUNTRIES, USCIS_FORMS, COMMON_LANGUAGES, TRANSLATION_DOC_TYPES,
   DIGITAL_ONLY_SERVICES,
 } from "./bookingConstants";
+
+/** Inline validation hook for blur-based field errors */
+function useFieldValidation() {
+  const [touched, setTouched] = useState<Set<string>>(new Set());
+  const markTouched = useCallback((field: string) => {
+    setTouched(prev => { const n = new Set(prev); n.add(field); return n; });
+  }, []);
+  const showError = useCallback((field: string, value: string | undefined, message = "This field is required.") => {
+    if (!touched.has(field)) return null;
+    if (!value || !value.trim()) return <p className="text-xs text-destructive mt-1">{message}</p>;
+    return null;
+  }, [touched]);
+  return { markTouched, showError };
+}
 
 interface IntakeFieldsProps {
   serviceType: string;
