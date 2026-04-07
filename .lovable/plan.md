@@ -1,121 +1,56 @@
 
 
-# Updated Plan: Resolve Build Tracker Gaps + Fix Critical Runtime Errors & Broken Links
+# Plan: HubSpot Integration Fix + Remaining Gaps
 
-## Existing Plan (Preserved)
+## 1. Fix HubSpot Secret Name Mismatch (Critical)
 
-### Tier 1: Fix 27 High-severity items (code changes)
-UX (10), edge_function (6), feature (5), devops (4), mobile (1), performance (1)
+**Problem**: The `hubspot-sync` edge function reads `Deno.env.get("HUBSPOT_API_KEY")` but the secrets you added are named `HubSpot_Service_Key` and `HubSpot_Developer_Key`. These names don't match, so the function always returns "HubSpot API key not configured."
 
-### Tier 2: Batch-resolve verified/non-actionable items
-Bulk-mark duplicates, documentation, SEO, and testing items as resolved/deferred
+**Fix**: Update `supabase/functions/hubspot-sync/index.ts` to read `HubSpot_Service_Key` (the private app token used for CRM API calls) instead of `HUBSPOT_API_KEY`. Add a fallback chain: try `HubSpot_Service_Key` first, then `HUBSPOT_API_KEY` for backwards compatibility.
 
-### Tier 3: Medium-priority code fixes
-Feature (99), UX (83), Security (23), Compliance (17), Data integrity (30), Accessibility (30), Testing (30 deferred)
+Also update the AdminSettings UI text to reflect the actual secret names so there's no confusion.
 
-### Tier 4: Low-severity items (271)
-Bulk-resolve or defer
+## 2. Remove Redundant HubSpot Key Input from AdminSettings
+
+The AdminSettings page has an input field for `hubspot_api_key` that saves to `platform_settings` table, but the edge function reads from environment secrets — not from the database. This input field is misleading.
+
+**Fix**: Replace the manual key input in `AdminSettings.tsx` with a status indicator showing whether the backend secret is configured, plus the existing Test/Push/Pull buttons.
+
+## 3. Verify FullCalendar Integration Works
+
+The `FullCalendarView` component and its lazy imports in `AdminAppointments.tsx` and `PortalAppointmentsTab.tsx` are already in place. Confirm `@fullcalendar` packages are in `package.json`.
+
+## 4. Continue Tier 1 High-Severity Gaps
+
+Based on the existing plan, the remaining work from Tiers 1-4 includes edge function hardening, UX fixes, and security improvements. The Priority 0 items (crash fix, external links, calendar, auth-aware CTAs) are already implemented.
+
+**Immediate next items from Tier 1**:
+- Audit all edge functions for consistent CORS headers and error handling
+- Ensure all admin pages with data tables handle empty states
+- Verify ProtectedRoute redirect logic includes return URLs
 
 ---
 
-## NEW — Priority 0 Fixes (added above all tiers)
+## Technical Details
 
-### Fix 0A: Services page crash — `useRef` null error (CRITICAL)
+### Files Modified
+| File | Change |
+|---|---|
+| `supabase/functions/hubspot-sync/index.ts` | Read `HubSpot_Service_Key` instead of `HUBSPOT_API_KEY` |
+| `src/pages/admin/AdminSettings.tsx` | Remove misleading API key input; show connection status instead |
 
-**Root cause**: `AnimatePresence mode="wait"` with `key={routeKey}` on `<Routes>` in `App.tsx` forces a full unmount/remount cycle on every navigation. When a lazy-loaded component (like `Services`) mounts during AnimatePresence's exit/enter transition, React's internal dispatcher can be null, causing `useSearchParams` → `useRef` to throw `Cannot read properties of null`.
+### Edge Function Change (hubspot-sync)
+```typescript
+// Before:
+const HUBSPOT_API_KEY = Deno.env.get("HUBSPOT_API_KEY");
 
-**Fix**: Change `AnimatePresence` to not use `mode="wait"`, or remove the `key` prop from `<Routes>` so it doesn't force full tree remounts. The simplest reliable fix:
-
-```tsx
-// App.tsx — AnimatedRoutes function
-// BEFORE:
-<AnimatePresence mode="wait">
-  <Routes location={location} key={routeKey}>
-// AFTER:
-<AnimatePresence mode="popLayout" initial={false}>
-  <Routes location={location} key={routeKey}>
+// After:
+const HUBSPOT_API_KEY = Deno.env.get("HubSpot_Service_Key") || Deno.env.get("HUBSPOT_API_KEY");
 ```
 
-If that doesn't resolve it, remove `key={routeKey}` entirely — page transitions aren't worth a broken `/services` page.
-
-**File**: `src/App.tsx` (lines 128-129)
-
-### Fix 0B: Broken external social media links
-
-These URLs in `Footer.tsx` likely point to non-existent pages:
-- `https://www.facebook.com/notardex` → Verify or remove
-- `https://www.linkedin.com/company/notardex` → Verify or remove  
-- `https://g.co/kgs/notardex` → Verify or remove
-
-**Fix**: Replace with verified URLs or remove until profiles are created. Add `rel="noopener noreferrer"` (already present) and a visual external-link indicator.
-
-**File**: `src/components/Footer.tsx` (lines 98-102)
-
-### Fix 0C: Broken Ohio SOS external links
-
-The URL pattern `https://www.ohiosos.gov/notary/` is used across 8 files. The actual Ohio SOS site uses `/businesses/notary-public/` not `/notary/`. Several URLs need updating:
-
-| Current URL | Likely correct URL |
-|---|---|
-| `ohiosos.gov/notary/` | `ohiosos.gov/businesses/notary-public/` |
-| `ohiosos.gov/notary/forms/` | `ohiosos.gov/businesses/notary-public/forms/` or similar |
-| `ohiosos.gov/notary/remote-online-notarization/` | Verify — may have moved |
-| `ohiosos.gov/notary/education-providers/` | Verify |
-| `ohiosos.gov/notary/notary-search/` | Verify |
-
-**Fix**: Verify each URL (browser check), then update all references across:
-- `src/pages/admin/AdminResources.tsx` (5 URLs)
-- `src/pages/admin/AdminTemplates.tsx` (6 URLs)
-- `src/pages/admin/AdminAppointments.tsx` (3 URLs)
-- `src/pages/admin/AdminApostille.tsx` (2 URLs)
-- `src/components/Footer.tsx` (1 URL)
-- `src/components/ComplianceBanner.tsx` (1 URL)
-- `src/pages/About.tsx` (1 URL)
-- `src/pages/ServiceDetail.tsx` (1 URL)
-
-### Fix 0D: Missing FullCalendar integration
-
-Memory states a FullCalendar component was built, but `@fullcalendar` is NOT in `package.json`. The admin appointments page uses a basic custom grid.
-
-**Fix**:
-1. Install `@fullcalendar/react`, `@fullcalendar/daygrid`, `@fullcalendar/timegrid`, `@fullcalendar/interaction`
-2. Create `src/components/FullCalendarView.tsx` — shared component with Month/Week/Day views
-3. Integrate into `AdminAppointments.tsx` calendar view (replace custom grid)
-4. Add read-only calendar to `PortalAppointmentsTab.tsx`
-
-### Fix 0E: Verify all internal route links resolve
-
-Multiple buttons across services route to pages like `/request`, `/subscribe`, `/mailroom`, `/digitize` which are behind `ProtectedRoute`. When unauthenticated users click these from the public services page, they'll hit an auth wall with no explanation.
-
-**Fix**: In service card CTAs that route to protected pages, either:
-- Show a login prompt/redirect with return URL
-- Or indicate "Login required" on the button
-
-**File**: `src/pages/Services.tsx` service card action buttons
-
----
-
-## Execution Order
-
-1. **Fix 0A** — Services page crash (unblocks all /services testing)
-2. **Fix 0C** — Verify and fix Ohio SOS URLs (browser verification + bulk update)
-3. **Fix 0B** — Social media links (verify or remove)
-4. **Fix 0D** — FullCalendar installation and integration
-5. **Fix 0E** — Protected route CTAs get login redirect
-6. Continue with Tier 1–4 from original plan
-
-## Files Modified
-- `src/App.tsx` — AnimatePresence fix
-- `src/components/Footer.tsx` — Social links
-- `src/pages/admin/AdminResources.tsx` — External URLs
-- `src/pages/admin/AdminTemplates.tsx` — External URLs
-- `src/pages/admin/AdminAppointments.tsx` — External URLs + calendar
-- `src/pages/admin/AdminApostille.tsx` — External URLs
-- `src/components/ComplianceBanner.tsx` — External URL
-- `src/pages/About.tsx` — External URL
-- `src/pages/ServiceDetail.tsx` — External URL
-- `src/pages/Services.tsx` — Auth-aware CTAs
-- `src/pages/portal/PortalAppointmentsTab.tsx` — Calendar view
-- `src/components/FullCalendarView.tsx` — New shared component
-- `package.json` — FullCalendar dependencies
+### Execution Order
+1. Fix HubSpot secret name mismatch in edge function
+2. Update AdminSettings HubSpot section
+3. Test HubSpot connection via Admin Settings
+4. Continue with remaining Tier 1 gap fixes
 
