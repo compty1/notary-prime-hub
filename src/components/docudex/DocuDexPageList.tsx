@@ -44,7 +44,7 @@ function SortablePageThumb({ page, idx, active, onClick }: {
       style={style}
       onClick={onClick}
       className={cn(
-        "h-14 w-10 rounded border-2 bg-white dark:bg-zinc-900 shrink-0 overflow-hidden transition-all hover:scale-105 relative group/thumb",
+        "h-14 w-10 rounded border-2 bg-background shrink-0 overflow-hidden transition-all hover:scale-105 relative group/thumb",
         active ? "border-primary shadow-md" : "border-border/50"
       )}
       title={`Page ${idx + 1}`}

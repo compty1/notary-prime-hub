@@ -644,7 +644,7 @@ export function DocuDexEditor({
                 <div style={{ transform: `scale(${zoom / 100})`, transformOrigin: "top center" }}>
                   <div
                     className={cn(
-                      "bg-white dark:bg-zinc-900 shadow-lg rounded border border-border/50",
+                      "bg-background shadow-lg rounded border border-border/50",
                       "outline-none focus-within:shadow-xl transition-shadow ring-2 ring-primary/30"
                     )}
                     style={{
