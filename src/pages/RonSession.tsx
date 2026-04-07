@@ -1675,10 +1675,18 @@ export default function RonSession() {
                     <Select value={idType} onValueChange={setIdType}>
                       <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select type..." /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="drivers_license">Driver's License</SelectItem>
-                        <SelectItem value="passport">Passport</SelectItem>
-                        <SelectItem value="state_id">State ID</SelectItem>
-                        <SelectItem value="military_id">Military ID</SelectItem>
+                        <SelectItem value="drivers_license">State Driver's License</SelectItem>
+                        <SelectItem value="state_id">State Identification Card</SelectItem>
+                        <SelectItem value="passport">US Passport</SelectItem>
+                        <SelectItem value="passport_card">US Passport Card</SelectItem>
+                        <SelectItem value="military_id">US Military ID</SelectItem>
+                        <SelectItem value="foreign_passport">Foreign Passport</SelectItem>
+                        <SelectItem value="green_card">Permanent Resident Card (Green Card)</SelectItem>
+                        <SelectItem value="ead">Employment Authorization Document</SelectItem>
+                        <SelectItem value="nexus">NEXUS Card</SelectItem>
+                        <SelectItem value="sentri">SENTRI Card</SelectItem>
+                        <SelectItem value="global_entry">Global Entry Card</SelectItem>
+                        <SelectItem value="tribal_id">Tribal ID</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
