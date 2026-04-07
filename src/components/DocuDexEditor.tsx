@@ -1276,7 +1276,26 @@ export function DocuDexEditor({
           </DialogContent>
         </Dialog>
 
-        {/* Mobile sidebar trigger */}
+        {/* Version Name Dialog (HV-003) */}
+        <Dialog open={showVersionNameDialog} onOpenChange={setShowVersionNameDialog}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle>Name This Version</DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground">Give this snapshot a descriptive name for easy identification.</p>
+            <Input
+              value={versionName}
+              onChange={e => setVersionName(e.target.value)}
+              placeholder="e.g. Final Draft, After Review..."
+              autoFocus
+              onKeyDown={e => { if (e.key === "Enter" && versionName.trim()) nameSnapshot(versionName.trim()); }}
+            />
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowVersionNameDialog(false)}>Cancel</Button>
+              <Button onClick={() => { if (versionName.trim()) nameSnapshot(versionName.trim()); }} disabled={!versionName.trim()}>Save Version</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         {isMobile && (
           <Button
             variant="outline"
