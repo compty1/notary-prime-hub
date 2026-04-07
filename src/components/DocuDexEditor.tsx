@@ -916,6 +916,9 @@ export function DocuDexEditor({
           onFindReplace={() => setShowFindReplace(f => !f)}
         />
 
+        {/* Table Context Toolbar (EL-002) */}
+        {editor && <DocuDexTableToolbar editor={editor} />}
+
         {/* Find & Replace (FR-001, FR-002) */}
         {showFindReplace && (
           <DocuDexFindReplace
