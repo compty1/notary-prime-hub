@@ -152,6 +152,9 @@ export default function AdminDashboard() {
               <span className="ml-4 font-sans text-sm font-medium text-muted-foreground">
                 Notar — {isAdmin ? "Admin" : "Notary"}
               </span>
+              <kbd className="ml-3 hidden sm:inline-flex items-center gap-1 rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
+                ⌘K
+              </kbd>
             </div>
             <div className="flex items-center gap-1">
               <AdminNotificationCenter />

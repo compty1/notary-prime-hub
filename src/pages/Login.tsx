@@ -166,13 +166,6 @@ export default function Login() {
                 <Button type="submit" className="w-full" disabled={submitting || rateLimitSeconds > 0}>
                   {submitting ? "Signing in..." : rateLimitSeconds > 0 ? `Wait ${rateLimitSeconds}s` : "Continue"}
                 </Button>
-                <button
-                  type="button"
-                  className="block w-full text-center text-sm text-muted-foreground hover:text-primary"
-                  onClick={() => setForgotMode(true)}
-                >
-                  Forgot your password?
-                </button>
               </form>
             </div>
           )}
