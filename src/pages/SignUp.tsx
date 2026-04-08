@@ -7,13 +7,11 @@ import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle, Eye, EyeOff } from "lucide-react";
+import { CheckCircle, Eye, EyeOff, Shield, FileText, Lock } from "lucide-react";
 import { Logo } from "@/components/Logo";
-
 import { getPasswordStrength } from "@/lib/utils";
 
 const strengthLabels = ["", "Very Weak", "Weak", "Fair", "Strong", "Very Strong"];
@@ -34,9 +32,8 @@ export default function SignUp() {
 
   const strength = useMemo(() => getPasswordStrength(password), [password]);
 
-  usePageMeta({ title: "Sign Up", description: "Create a free Notar account to book notarization appointments, upload documents, and access Ohio notary services online.", noIndex: true });
+  usePageMeta({ title: "Sign Up", description: "Create a free NotarDex account to book notarization appointments, upload documents, and access Ohio notary services online.", noIndex: true });
 
-  // Redirect already-authenticated users based on role
   if (!loading && user) {
     if (isAdmin || isNotary) return <Navigate to="/admin" replace />;
     return <Navigate to="/portal" replace />;
@@ -66,7 +63,6 @@ export default function SignUp() {
       toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
     } else {
       setSignupSuccess(true);
-      // FC-2: Track referral code from URL param
       if (refCode) {
         try {
           await supabase.from("referrals").update({ status: "signed_up" } as any)
@@ -91,55 +87,53 @@ export default function SignUp() {
 
   if (signupSuccess) {
     return (
-      <div className="relative flex min-h-screen items-center justify-center bg-background px-4">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
-        <Card className="relative z-10 w-full max-w-md">
-          <CardContent className="flex flex-col items-center py-12 text-center">
+      <div className="flex min-h-screen items-center justify-center bg-[#fcfcfc] px-4">
+        <div className="w-full max-w-md rounded-[24px] border border-gray-100 bg-white p-8 shadow-sm">
+          <div className="flex flex-col items-center text-center">
             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
               <CheckCircle className="h-8 w-8 text-primary" />
             </div>
-            <h2 className="font-sans text-2xl font-bold text-foreground mb-2">Check Your Email</h2>
+            <h2 className="text-2xl font-black text-[#212529] mb-2">Check Your Email</h2>
             <p className="text-muted-foreground mb-2">We sent a verification link to</p>
-            <p className="font-medium text-foreground mb-4">{email}</p>
+            <p className="font-bold text-[#212529] mb-4">{email}</p>
             <p className="text-sm text-muted-foreground mb-2">Click the link in the email to verify your account, then sign in.</p>
             <p className="text-xs text-muted-foreground mb-4">Don't see it? Check your spam or junk folder.</p>
-            <Button variant="outline" size="sm" onClick={handleResendVerification} disabled={submitting} className="mb-4">
+            <Button variant="outline" size="sm" onClick={handleResendVerification} disabled={submitting} className="mb-4 rounded-xl">
               {submitting ? "Sending..." : "Resend Verification Email"}
             </Button>
             <Link to="/login">
-              <Button>Go to Sign In</Button>
+              <Button className="rounded-xl bg-[#eab308] text-white hover:bg-[#ca9a06] shadow-[3px_3px_0px_#212529]">Go to Sign In</Button>
             </Link>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
-      <Card className="relative z-10 w-full max-w-md">
-        <CardHeader className="text-center">
-          <Link to="/" className="mx-auto mb-4">
+    <div className="flex min-h-screen bg-[#fcfcfc]">
+      {/* Left — Form */}
+      <div className="flex flex-1 items-center justify-center px-6 py-12">
+        <div className="w-full max-w-md">
+          <Link to="/" className="mb-8 inline-block">
             <Logo size="lg" />
           </Link>
-          <CardTitle className="font-sans text-2xl">Create Account</CardTitle>
-          <CardDescription>Sign up to book notary appointments</CardDescription>
-        </CardHeader>
-        <CardContent>
+          <h1 className="text-3xl font-black text-[#212529] mb-1">Create Account</h1>
+          <p className="text-muted-foreground mb-8">Sign up to book notary appointments</p>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="name">Full Name</Label>
-              <Input id="name" value={fullName} onChange={(e) => setFullName(e.target.value)} required autoComplete="name" />
+              <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest text-gray-500">Full Name</Label>
+              <Input id="name" value={fullName} onChange={(e) => setFullName(e.target.value)} required autoComplete="name" className="mt-1 rounded-xl border-gray-200 bg-white" />
             </div>
             <div>
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
+              <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-gray-500">Email</Label>
+              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className="mt-1 rounded-xl border-gray-200 bg-white" />
             </div>
             <div>
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" />
+              <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-gray-500">Password</Label>
+              <div className="relative mt-1">
+                <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" className="rounded-xl border-gray-200 bg-white pr-10" />
                 <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Hide password" : "Show password"}>
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -155,11 +149,11 @@ export default function SignUp() {
                   <p className="text-xs text-muted-foreground">Use 10+ chars with uppercase, numbers, and symbols</p>
                 </div>
               )}
-              {!password && <p className="mt-1 text-xs text-muted-foreground">Minimum 8 characters with uppercase, lowercase, numbers &amp; special characters</p>}
+              {!password && <p className="mt-1 text-xs text-muted-foreground">Minimum 8 characters with uppercase, lowercase, numbers & special characters</p>}
             </div>
             <div>
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input id="confirmPassword" type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} />
+              <Label htmlFor="confirmPassword" className="text-[10px] font-black uppercase tracking-widest text-gray-500">Confirm Password</Label>
+              <Input id="confirmPassword" type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} className="mt-1 rounded-xl border-gray-200 bg-white" />
               {confirmPassword && password !== confirmPassword && (
                 <p className="mt-1 text-xs text-destructive">Passwords don't match</p>
               )}
@@ -170,17 +164,17 @@ export default function SignUp() {
                 I agree to the <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link> and <Link to="/terms" className="text-primary hover:underline">Privacy Policy</Link>
               </Label>
             </div>
-            <Button type="submit" className="w-full " disabled={submitting || !acceptTerms}>
+            <Button type="submit" className="w-full rounded-xl bg-[#eab308] text-white font-bold hover:bg-[#ca9a06] shadow-[3px_3px_0px_#212529] h-11" disabled={submitting || !acceptTerms}>
               {submitting ? "Creating account..." : "Create Account"}
             </Button>
             <div className="relative my-4">
-              <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
-              <div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-muted-foreground">or</span></div>
+              <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-gray-200" /></div>
+              <div className="relative flex justify-center text-xs uppercase"><span className="bg-[#fcfcfc] px-2 text-muted-foreground">or</span></div>
             </div>
             <Button
               type="button"
               variant="outline"
-              className="w-full"
+              className="w-full rounded-xl border-gray-200"
               onClick={async () => {
                 const { error } = await lovable.auth.signInWithOAuth("google", {
                   redirect_uri: `${window.location.origin}/portal`,
@@ -192,12 +186,35 @@ export default function SignUp() {
               Continue with Google
             </Button>
           </form>
-          <p className="mt-4 text-center text-sm text-muted-foreground">
+          <p className="mt-6 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link to="/login" className="font-medium text-primary hover:underline">Sign in</Link>
+            <Link to="/login" className="font-bold text-[#212529] hover:underline">Sign in</Link>
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
+      {/* Right — Brand panel (desktop only) */}
+      <div className="hidden lg:flex lg:w-[45%] flex-col items-center justify-center bg-[#212529] p-12 text-white">
+        <div className="max-w-sm text-center space-y-8">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[24px] bg-[#eab308]/20">
+            <Shield className="h-10 w-10 text-[#eab308]" />
+          </div>
+          <h2 className="text-3xl font-black">Ohio's Trusted<br />Notary Platform</h2>
+          <p className="text-gray-400">Join thousands of Ohioans who trust NotarDex for secure, compliant notarization services.</p>
+          <div className="grid grid-cols-2 gap-4 text-left">
+            <div className="rounded-2xl bg-white/5 p-4">
+              <FileText className="h-5 w-5 text-[#eab308] mb-2" />
+              <p className="text-sm font-bold">Document Upload</p>
+              <p className="text-xs text-gray-400">Secure cloud storage</p>
+            </div>
+            <div className="rounded-2xl bg-white/5 p-4">
+              <Lock className="h-5 w-5 text-[#eab308] mb-2" />
+              <p className="text-sm font-bold">Bank-Level Security</p>
+              <p className="text-xs text-gray-400">End-to-end encryption</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
