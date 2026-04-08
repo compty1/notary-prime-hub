@@ -663,7 +663,7 @@ export default function RonSession() {
     let documentHash: string | null = null;
     try {
       // Try to download actual document content for hash
-      const docPath = sessionDocuments?.[0]?.file_path || `placeholder/${appointmentId}`;
+      const docPath = docs?.[0]?.file_path || `placeholder/${appointmentId}`;
       const { data: fileData } = await supabase.storage.from("documents").download(docPath);
       let hashBuffer: ArrayBuffer;
       if (fileData) {
