@@ -41,7 +41,7 @@ _______________________________
 Notary Public, State of Ohio
 My Commission Expires: ________`;
 
-// ORC §147.56: Jurat certificate template
+// ORC §147.56: Jurat certificate template (updated with signer name per HB 315)
 export const JURAT_CERTIFICATE = `STATE OF OHIO
 COUNTY OF __________
 
@@ -66,16 +66,22 @@ _______________________________
 Notary Public, State of Ohio
 My Commission Expires: ________`;
 
-// ORC §147.542: Required journal fields
+// ORC §147.542: Required journal fields (expanded to 14 per audit item 205/950)
 export const REQUIRED_JOURNAL_FIELDS = [
   "date_of_notarization",
+  "time_of_notarization",
   "type_of_notarial_act",
   "type_of_document",
+  "document_date",
   "signer_name",
   "signer_address",
   "id_type",
   "id_serial_number",
+  "id_expiration",
   "fees_charged",
+  "notary_commission_number",
+  "communication_technology",
+  "credential_analysis_method",
 ] as const;
 
 // ORC §147.60: RON authorization checks
@@ -177,7 +183,7 @@ export function isValidStatusTransition(from: string, to: string): boolean {
   return VALID_STATUS_TRANSITIONS[from]?.includes(to) ?? false;
 }
 
-// Witness requirements by service type
+// Witness requirements by service type (item 611: signature by mark enforcement)
 export function getWitnessRequirements(serviceType: string): { required: boolean; count: number; reason: string } {
   const lower = serviceType.toLowerCase();
   if (lower.includes("will") || lower.includes("estate planning") || lower.includes("testament")) {
@@ -186,5 +192,68 @@ export function getWitnessRequirements(serviceType: string): { required: boolean
   if (lower.includes("self-proving affidavit")) {
     return { required: true, count: 2, reason: "Self-proving affidavits require two witnesses" };
   }
+  if (lower.includes("signature by mark") || lower.includes("mark signature")) {
+    return { required: true, count: 2, reason: "Signature by mark requires two disinterested witnesses (ORC §147.542)" };
+  }
   return { required: false, count: 0, reason: "" };
+}
+
+// Ohio fee cap validation (item 610)
+export function validateOhioFeeCap(feeCharged: number, notarialActCount: number): { valid: boolean; maxAllowed: number; issue?: string } {
+  const maxAllowed = notarialActCount * OHIO_MAX_FEE_PER_ACT;
+  if (feeCharged > maxAllowed) {
+    return { valid: false, maxAllowed, issue: `Fee of $${feeCharged.toFixed(2)} exceeds Ohio statutory cap of $${maxAllowed.toFixed(2)} for ${notarialActCount} act(s) (ORC §147.08)` };
+  }
+  return { valid: true, maxAllowed };
+}
+
+// Multi-document journal entry generator (item 609: ORC §147.141)
+export function generateMultiDocJournalEntries(
+  baseEntry: Record<string, any>,
+  documents: Array<{ name: string; type: string; date?: string }>
+): Record<string, any>[] {
+  return documents.map((doc, idx) => ({
+    ...baseEntry,
+    document_type_description: doc.type || doc.name,
+    document_date: doc.date || baseEntry.document_date,
+    journal_number: (baseEntry.journal_number_start || 0) + idx,
+    notes: documents.length > 1 
+      ? `Document ${idx + 1} of ${documents.length}: ${doc.name}`
+      : baseEntry.notes,
+  }));
+}
+
+// Prohibited document types for notarization (Ohio vital records)
+export const PROHIBITED_DOCUMENTS = [
+  "birth certificate",
+  "death certificate",
+  "marriage certificate",
+  "divorce decree",
+  "adoption decree",
+] as const;
+
+export function isProhibitedDocument(documentType: string): boolean {
+  const lower = documentType.toLowerCase().trim();
+  return PROHIBITED_DOCUMENTS.some(p => lower.includes(p));
+}
+
+// Signer age verification (18+ required)
+export function validateSignerAge(dateOfBirth: string): { valid: boolean; issue?: string } {
+  const dob = new Date(dateOfBirth);
+  const today = new Date();
+  const age = today.getFullYear() - dob.getFullYear();
+  const monthDiff = today.getMonth() - dob.getMonth();
+  const actualAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate()) ? age - 1 : age;
+  
+  if (actualAge < 18) {
+    return { valid: false, issue: "Signer must be at least 18 years of age" };
+  }
+  return { valid: true };
+}
+
+// Ohio HB 315: Motor vehicle dealer title exception
+export function isVehicleDealerTitleException(transactionType: string, isDealerInvolved: boolean): boolean {
+  if (!isDealerInvolved) return false;
+  const lower = transactionType.toLowerCase();
+  return lower.includes("vehicle title") || lower.includes("motor vehicle") || lower.includes("auto title");
 }

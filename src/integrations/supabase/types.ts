@@ -1631,6 +1631,108 @@ export type Database = {
         }
         Relationships: []
       }
+      journal_entries: {
+        Row: {
+          appointment_id: string | null
+          communication_technology: string | null
+          created_at: string
+          credential_analysis_method: string | null
+          document_date: string | null
+          document_type_description: string
+          entry_date: string
+          entry_time: string
+          fee_charged: number | null
+          id: string
+          id_expiration: string | null
+          id_number: string | null
+          id_type: string | null
+          journal_number: number
+          kba_vendor: string | null
+          notarial_act_type: string
+          notary_commission_expiration: string | null
+          notary_commission_number: string | null
+          notary_name: string
+          notary_user_id: string
+          notes: string | null
+          session_id: string | null
+          signer_address: string | null
+          signer_name: string
+          signer_signature_path: string | null
+          updated_at: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          communication_technology?: string | null
+          created_at?: string
+          credential_analysis_method?: string | null
+          document_date?: string | null
+          document_type_description?: string
+          entry_date?: string
+          entry_time?: string
+          fee_charged?: number | null
+          id?: string
+          id_expiration?: string | null
+          id_number?: string | null
+          id_type?: string | null
+          journal_number?: number
+          kba_vendor?: string | null
+          notarial_act_type?: string
+          notary_commission_expiration?: string | null
+          notary_commission_number?: string | null
+          notary_name?: string
+          notary_user_id: string
+          notes?: string | null
+          session_id?: string | null
+          signer_address?: string | null
+          signer_name?: string
+          signer_signature_path?: string | null
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string | null
+          communication_technology?: string | null
+          created_at?: string
+          credential_analysis_method?: string | null
+          document_date?: string | null
+          document_type_description?: string
+          entry_date?: string
+          entry_time?: string
+          fee_charged?: number | null
+          id?: string
+          id_expiration?: string | null
+          id_number?: string | null
+          id_type?: string | null
+          journal_number?: number
+          kba_vendor?: string | null
+          notarial_act_type?: string
+          notary_commission_expiration?: string | null
+          notary_commission_number?: string | null
+          notary_name?: string
+          notary_user_id?: string
+          notes?: string | null
+          session_id?: string | null
+          signer_address?: string | null
+          signer_name?: string
+          signer_signature_path?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "journal_entries_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journal_entries_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "notarization_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_sources: {
         Row: {
           config: Json | null
