@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Menu, ChevronDown } from "lucide-react";
-import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
@@ -53,15 +52,15 @@ function DropdownNav({ label, linkTo, children }: { label: string; linkTo?: stri
         {linkTo ? (
           <Link
             to={linkTo}
-            className="relative px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:text-white"
+            className="relative px-3 py-2 text-sm font-bold text-gray-500 transition-colors hover:text-foreground"
           >
             {label}
           </Link>
         ) : (
-          <span className="px-3 py-2 text-sm font-medium text-slate-300 cursor-default">{label}</span>
+          <span className="px-3 py-2 text-sm font-bold text-gray-500 cursor-default">{label}</span>
         )}
         <PopoverTrigger asChild>
-          <button className="-ml-2 p-1 text-slate-300 hover:text-white transition-colors" aria-label={`${label} menu`}>
+          <button className="-ml-2 p-1 text-gray-400 hover:text-foreground transition-colors" aria-label={`${label} menu`}>
             <ChevronDown className="h-3 w-3" />
           </button>
         </PopoverTrigger>
@@ -94,13 +93,10 @@ export function Navbar() {
   const portalLabel = isAdmin || isNotary ? "Dashboard" : "Portal";
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-white/10 bg-[hsl(222,47%,5%)] shadow-lg" aria-label="Main navigation">
-      <div className="container mx-auto flex items-center justify-between px-4 py-3">
+    <nav className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 backdrop-blur-md h-20 flex items-center" aria-label="Main navigation">
+      <div className="container mx-auto flex items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
-          <Logo size="sm" />
-          <span className="font-heading text-xl font-bold tracking-tight text-white">
-            NotarDex<span className="text-primary">.com</span>
-          </span>
+          <Logo size="sm" showText theme="light" />
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">
@@ -158,29 +154,35 @@ export function Navbar() {
             </div>
           </DropdownNav>
 
-          {plainLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className="relative px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:text-white after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:scale-x-0 after:bg-primary after:transition-transform after:duration-200 hover:after:scale-x-100"
-            >
-              {link.label}
-            </Link>
-          ))}
-          <div className="ml-2 flex items-center gap-2">
-            <DarkModeToggle />
+          <Link
+            to="/solutions/small-business"
+            className="px-3 py-2 text-sm font-bold text-gray-500 transition-colors hover:text-foreground"
+          >
+            For Businesses
+          </Link>
+          <Link
+            to="/fee-calculator"
+            className="px-3 py-2 text-sm font-bold text-gray-500 transition-colors hover:text-foreground"
+          >
+            Pricing
+          </Link>
+
+          <div className="ml-4 flex items-center gap-3">
             {user ? (
               <Link to={portalLink}>
-                <Button variant="ghost" size="sm" className="text-sm text-slate-300 hover:text-white hover:bg-white/10">{portalLabel}</Button>
+                <Button variant="ghost" size="sm" className="text-sm font-bold text-gray-500 hover:text-foreground hover:bg-gray-50">{portalLabel}</Button>
               </Link>
             ) : (
               <Link to="/login">
-                <Button size="sm" variant="outline" className="rounded-full border-slate-600 text-slate-300 hover:text-white hover:bg-slate-800 text-sm">Sign In</Button>
+                <Button size="sm" variant="ghost" className="text-sm font-bold text-gray-500 hover:text-foreground">Sign In</Button>
               </Link>
             )}
             <Link to="/book">
-              <Button size="sm" className="rounded-full glow-amber font-semibold">
-                Notarize Now
+              <Button
+                size="sm"
+                className="rounded-full bg-[#eab308] text-white font-bold px-6 hover:bg-[#ca9a06] shadow-block hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all"
+              >
+                Start Notarizing
               </Button>
             </Link>
           </div>
@@ -188,7 +190,7 @@ export function Navbar() {
 
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild className="md:hidden">
-            <Button variant="ghost" size="icon" aria-label="Open menu" className="text-slate-300 hover:text-white">
+            <Button variant="ghost" size="icon" aria-label="Open menu" className="text-foreground">
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
@@ -231,10 +233,7 @@ export function Navbar() {
                 </div>
               )}
 
-              <Link
-                to="/ai-tools"
-                className="rounded-lg px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-              >
+              <Link to="/ai-tools" className="rounded-lg px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted">
                 AI Tools Hub
               </Link>
 
@@ -248,10 +247,6 @@ export function Navbar() {
                 </Link>
               ))}
               <hr className="my-3 border-border" />
-              <div className="flex items-center gap-2 px-4 py-2">
-                <DarkModeToggle />
-                <span className="text-sm text-muted-foreground">Dark Mode</span>
-              </div>
               {user ? (
                 <Link to={portalLink}>
                   <Button variant="outline" className="w-full">{portalLabel}</Button>
@@ -262,7 +257,7 @@ export function Navbar() {
                 </Link>
               )}
               <Link to="/book">
-                <Button className="w-full font-semibold">Notarize Now</Button>
+                <Button className="w-full font-bold bg-[#eab308] text-white hover:bg-[#ca9a06]">Start Notarizing</Button>
               </Link>
             </div>
           </SheetContent>
