@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { rateLimitGuard, handleCorsOptions, corsHeaders as buildCors } from "../_shared/middleware.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,6 +10,10 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
+  // Audit Item 34: Rate limiting (10 req/min for admin user creation)
+  const rlResponse = rateLimitGuard(req, 10);
+  if (rlResponse) return rlResponse;
 
   try {
     const authHeader = req.headers.get("Authorization");

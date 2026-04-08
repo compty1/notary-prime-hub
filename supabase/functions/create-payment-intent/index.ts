@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import Stripe from "https://esm.sh/stripe@14.21.0";
+import { rateLimitGuard } from "../_shared/middleware.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,6 +12,10 @@ const corsHeaders = {
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  // Audit Item 47: Rate limiting (20 req/min for payment creation)
+  const rlResponse = rateLimitGuard(req, 20);
+  if (rlResponse) return rlResponse;
 
   try {
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
