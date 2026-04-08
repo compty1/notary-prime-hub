@@ -102,6 +102,212 @@ const emptyForm: ServiceForm = {
   estimated_turnaround: "", is_popular: false,
 };
 
+function PricingRulesTab() {
+  const { toast } = useToast();
+  const [rules, setRules] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingRule, setEditingRule] = useState<any | null>(null);
+  const [form, setForm] = useState({ name: "", rule_type: "discount", condition_field: "signer_count", condition_operator: "gte", condition_value: "2", adjustment_type: "percentage", adjustment_value: 10, is_active: true, priority: 0 });
+
+  const fetchRules = async () => {
+    const { data } = await supabase.from("pricing_rules").select("*").order("priority");
+    if (data) setRules(data);
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchRules(); }, []);
+
+  const save = async () => {
+    const payload = { ...form, condition: { field: form.condition_field, operator: form.condition_operator, value: form.condition_value } };
+    const { condition_field, condition_operator, condition_value, ...rest } = payload;
+    const dbPayload = { ...rest, condition: { field: condition_field, operator: condition_operator, value: condition_value } };
+
+    if (editingRule) {
+      await supabase.from("pricing_rules").update(dbPayload).eq("id", editingRule.id);
+      toast({ title: "Rule updated" });
+    } else {
+      await supabase.from("pricing_rules").insert(dbPayload);
+      toast({ title: "Rule created" });
+    }
+    setDialogOpen(false);
+    setEditingRule(null);
+    fetchRules();
+  };
+
+  const deleteRule = async (id: string) => {
+    if (!confirm("Delete this pricing rule?")) return;
+    await supabase.from("pricing_rules").delete().eq("id", id);
+    setRules(prev => prev.filter(r => r.id !== id));
+    toast({ title: "Rule deleted" });
+  };
+
+  const openAdd = () => {
+    setEditingRule(null);
+    setForm({ name: "", rule_type: "discount", condition_field: "signer_count", condition_operator: "gte", condition_value: "2", adjustment_type: "percentage", adjustment_value: 10, is_active: true, priority: rules.length });
+    setDialogOpen(true);
+  };
+
+  const openEdit = (r: any) => {
+    setEditingRule(r);
+    setForm({
+      name: r.name, rule_type: r.rule_type || "discount",
+      condition_field: r.condition?.field || "signer_count",
+      condition_operator: r.condition?.operator || "gte",
+      condition_value: String(r.condition?.value || ""),
+      adjustment_type: r.adjustment_type || "percentage",
+      adjustment_value: r.adjustment_value || 0,
+      is_active: r.is_active, priority: r.priority || 0,
+    });
+    setDialogOpen(true);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">Define automatic pricing adjustments based on conditions (volume, service type, time of day).</p>
+        <Button onClick={openAdd} size="sm"><Plus className="mr-1 h-4 w-4" /> Add Rule</Button>
+      </div>
+
+      {loading ? <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div> : (
+        <Card className="border-border/50">
+          <CardContent className="p-0 overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Priority</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Condition</TableHead>
+                  <TableHead>Adjustment</TableHead>
+                  <TableHead>Active</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rules.map(r => (
+                  <TableRow key={r.id}>
+                    <TableCell className="text-xs text-muted-foreground">{r.priority}</TableCell>
+                    <TableCell className="font-medium text-sm">{r.name}</TableCell>
+                    <TableCell><Badge variant="outline" className="text-xs">{r.rule_type || "discount"}</Badge></TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {r.condition?.field} {r.condition?.operator} {r.condition?.value}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {r.adjustment_type === "percentage" ? `${r.adjustment_value}%` : `$${r.adjustment_value}`} {r.rule_type === "surcharge" ? "surcharge" : "off"}
+                    </TableCell>
+                    <TableCell>
+                      <Switch checked={r.is_active} onCheckedChange={async (v) => {
+                        await supabase.from("pricing_rules").update({ is_active: v }).eq("id", r.id);
+                        setRules(prev => prev.map(x => x.id === r.id ? { ...x, is_active: v } : x));
+                      }} />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button size="sm" variant="ghost" onClick={() => openEdit(r)}><Pencil className="h-3 w-3" /></Button>
+                      <Button size="sm" variant="ghost" className="text-destructive" onClick={() => deleteRule(r.id)}><Trash2 className="h-3 w-3" /></Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {rules.length === 0 && (
+                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No pricing rules yet. Add one to automate adjustments.</TableCell></TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader><DialogTitle>{editingRule ? "Edit" : "Add"} Pricing Rule</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Rule Name *</Label>
+              <Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="e.g. Multi-signer discount" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Type</Label>
+                <Select value={form.rule_type} onValueChange={v => setForm({ ...form, rule_type: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="discount">Discount</SelectItem>
+                    <SelectItem value="surcharge">Surcharge</SelectItem>
+                    <SelectItem value="override">Override</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Priority</Label>
+                <Input type="number" value={form.priority} onChange={e => setForm({ ...form, priority: parseInt(e.target.value) || 0 })} />
+              </div>
+            </div>
+            <Separator />
+            <p className="text-xs font-medium text-muted-foreground">Condition</p>
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <Label className="text-xs">Field</Label>
+                <Select value={form.condition_field} onValueChange={v => setForm({ ...form, condition_field: v })}>
+                  <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="signer_count">Signer Count</SelectItem>
+                    <SelectItem value="service_type">Service Type</SelectItem>
+                    <SelectItem value="notarization_type">Notarization Type</SelectItem>
+                    <SelectItem value="after_hours">After Hours</SelectItem>
+                    <SelectItem value="travel_distance">Travel Distance</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-xs">Operator</Label>
+                <Select value={form.condition_operator} onValueChange={v => setForm({ ...form, condition_operator: v })}>
+                  <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="eq">equals</SelectItem>
+                    <SelectItem value="gte">≥</SelectItem>
+                    <SelectItem value="lte">≤</SelectItem>
+                    <SelectItem value="gt">&gt;</SelectItem>
+                    <SelectItem value="lt">&lt;</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-xs">Value</Label>
+                <Input className="text-xs" value={form.condition_value} onChange={e => setForm({ ...form, condition_value: e.target.value })} />
+              </div>
+            </div>
+            <Separator />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Adjustment Type</Label>
+                <Select value={form.adjustment_type} onValueChange={v => setForm({ ...form, adjustment_type: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="percentage">Percentage</SelectItem>
+                    <SelectItem value="flat">Flat Amount ($)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Value</Label>
+                <Input type="number" step="0.01" value={form.adjustment_value} onChange={e => setForm({ ...form, adjustment_value: parseFloat(e.target.value) || 0 })} />
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <Label>Active</Label>
+              <Switch checked={form.is_active} onCheckedChange={v => setForm({ ...form, is_active: v })} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+            <Button onClick={save} disabled={!form.name.trim()}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
 export default function AdminServices() {
   usePageMeta({ title: "Services", noIndex: true });
   const { toast } = useToast();
@@ -271,10 +477,10 @@ export default function AdminServices() {
         );
       })()}
 
-
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="all">All ({services.length})</TabsTrigger>
+          <TabsTrigger value="pricing-rules">Pricing Rules</TabsTrigger>
           {categories.map(c => {
             const count = services.filter(s => s.category === c.value).length;
             if (count === 0) return null;
@@ -283,7 +489,9 @@ export default function AdminServices() {
         </TabsList>
       </Tabs>
 
-      {loading ? (
+      {activeTab === "pricing-rules" && <PricingRulesTab />}
+
+      {activeTab !== "pricing-rules" && (loading ? (
         <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
       ) : (
         <Card className="border-border/50">
@@ -350,7 +558,7 @@ export default function AdminServices() {
             </Table>
           </CardContent>
         </Card>
-      )}
+      ))}
 
       {/* ─── Comprehensive Edit Dialog ─── */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
