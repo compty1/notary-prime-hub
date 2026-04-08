@@ -161,9 +161,12 @@ export default function ClientPortal() {
       if (data) { setChatMessages(data); setUnreadCount(data.filter((m: any) => m.is_admin && !m.read).length); }
     });
 
-    const chatChannel = supabase.channel("client-chat").on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages" }, (payload) => {
+    const chatChannel = supabase.channel("client-chat").on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages", filter: `recipient_id=eq.${user.id}` }, (payload) => {
       const msg = payload.new as any;
       if (msg.sender_id === user.id || (msg.is_admin && msg.recipient_id === user.id)) setChatMessages(prev => prev.some(m => m.id === msg.id) ? prev : [...prev, msg]);
+    }).on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages", filter: `sender_id=eq.${user.id}` }, (payload) => {
+      const msg = payload.new as any;
+      setChatMessages(prev => prev.some(m => m.id === msg.id) ? prev : [...prev, msg]);
     }).subscribe();
 
     const apptChannel = supabase.channel("client-appointments").on("postgres_changes", { event: "UPDATE", schema: "public", table: "appointments", filter: `client_id=eq.${user.id}` }, (payload) => {
@@ -264,7 +267,8 @@ export default function ClientPortal() {
     return idx >= 0 ? ((idx + 1) / pipelineSteps.length) * 100 : 0;
   };
 
-  const qrUrl = `${window.location.origin}/mobile-upload`;
+  const selectedApptId = appointments.find(a => ["scheduled", "confirmed"].includes(a.status))?.id;
+  const qrUrl = `${window.location.origin}/mobile-upload${selectedApptId ? `?appointment_id=${selectedApptId}` : ""}`;
   if (initialLoad) {
     return (
       <div className="min-h-screen bg-muted/30">

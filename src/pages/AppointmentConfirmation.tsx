@@ -15,14 +15,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/Logo";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 
-const formatDate = (dateStr: string) =>
-  new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-
-const formatTime = (timeStr: string) => {
-  const [h, m] = timeStr.split(":");
-  const hour = parseInt(h);
-  return `${hour > 12 ? hour - 12 : hour === 0 ? 12 : hour}:${m} ${hour >= 12 ? "PM" : "AM"}`;
-};
+import { formatDate, formatTime } from "@/lib/utils";
 
 function generateICS(appt: any): string {
   const dtStart = `${appt.scheduled_date.replace(/-/g, "")}T${appt.scheduled_time.replace(/:/g, "").substring(0, 6)}00`;
