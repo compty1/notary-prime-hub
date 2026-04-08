@@ -211,7 +211,17 @@ export default function BookAppointment() {
     });
   }, []);
 
-  // Centralized pricing via pricingEngine
+  // 5.1 Early Ohio vital records check on serviceType change
+  const [earlyEligibilityWarning, setEarlyEligibilityWarning] = useState<string | null>(null);
+  useEffect(() => {
+    if (!serviceType) { setEarlyEligibilityWarning(null); return; }
+    import("@/lib/ohioDocumentEligibility").then(({ checkDocumentEligibility }) => {
+      const result = checkDocumentEligibility(serviceType);
+      setEarlyEligibilityWarning(result.eligible ? null : (result.reason || "This document cannot be notarized under Ohio law."));
+    });
+  }, [serviceType]);
+
+
   const pricingBreakdown = useMemo<PricingBreakdown | null>(() => {
     if (!pricingSettings.base_fee_per_signature) return null;
     const settings = parseSettings(pricingSettings);
