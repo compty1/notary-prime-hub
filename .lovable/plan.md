@@ -1,58 +1,35 @@
 
 
-# Complete Platform Audit & Gap Analysis — Plan
+# Supplemental Platform Audit — Plan
 
 ## What This Delivers
 
-A comprehensive CSV file at `/mnt/documents/notardex-audit-2026.csv` containing 2,000+ findings across every page, flow, integration, edge function, component, and compliance area. Each row includes: ID, Category, Severity, Page/File, Title, Description, Fix Plan, and Status. The build tracker table will be cleared of resolved items and repopulated with new findings.
+A second CSV file at `/mnt/documents/notardex-audit-supplement-2026.csv` containing 1,000+ additional findings NOT present in the first audit. Focuses on deeper code-level bugs, edge-case compliance gaps, UX dead-ends, missing validations, and integration wiring issues discovered through line-by-line analysis.
 
-## Audit Scope (All Areas Analyzed)
+## New Categories Covered (Beyond First Audit)
 
-### Categories to Audit
-1. **Public Pages** (55+ routes) — content gaps, broken CTAs, missing SEO, dead links
-2. **Admin Dashboard** (36 pages) — incomplete CRUD, missing filters, export gaps, UX issues
-3. **Client Portal** (7 tabs + overview) — missing features, flow dead-ends, state issues
-4. **Edge Functions** (47 functions) — error handling, missing secrets checks, CORS, rate limiting
-5. **Auth & RBAC** — role enforcement gaps, session edge cases, MFA flows
-6. **Database/RLS** — missing policies, orphaned tables, missing indexes, schema gaps
-7. **Booking Flow** — multi-step validation, payment integration, email confirmations
-8. **RON Session** — compliance gaps, recording management, oath tracking
-9. **Email System** — template gaps, SMTP error handling, queue processing
-10. **AI Tools** (56 tools) — prompt quality, error states, output formatting
-11. **DocuDex Editor** — missing features vs Canva comparison, toolbar gaps
-12. **Compliance** — ORC statute coverage, fee enforcement, journal completeness
-13. **Integrations** — Stripe, SignNow, IONOS, Google Calendar, HubSpot connectivity
-14. **Mobile/Responsive** — breakpoint issues, touch targets, navigation
-15. **SEO & Performance** — meta tags, lazy loading, bundle size, Core Web Vitals
-16. **Security** — CSRF, XSS, input sanitization, rate limiting, secret management
-17. **Accessibility** — ARIA labels, keyboard nav, contrast, screen reader support
-18. **Business Portal** — feature completeness, member management, reporting
-19. **Services Catalog** — pricing model gaps, category coverage, detail pages
-20. **CRM & Leads** — pipeline completeness, activity tracking, conversion tracking
+The first audit had 864 items across 20 categories. This supplement digs deeper into:
 
-## CSV Structure
+1. **RON Session deep-dive** — line-level bugs in 2,198-line RonSession.tsx (type casts, missing error boundaries, recording storage gaps)
+2. **Booking flow edge cases** — 955-line BookAppointment.tsx validation gaps, race conditions, state persistence
+3. **Payment lifecycle** — create-payment-intent, stripe-webhook, process-refund edge cases
+4. **Journal compliance gaps** — 14 ORC mandatory data points vs actual schema, missing fields
+5. **Admin page feature parity** — incomplete CRUD on AdminTaskQueue (77 lines, minimal), AdminWebhooks (read-only, no retry), AdminPerformance (no date filter)
+6. **Edge function hardening** — each of 47 functions checked for: rate limiting, input validation, error logging, timeout handling, secret validation
+7. **Client Portal UX** — dead-end states, missing loading skeletons, stale data after mutations
+8. **Business Portal** — registration flow, member invite, missing RLS for business_members
+9. **Service catalog** — pricing model inconsistencies, orphaned SAAS_LINKS, missing categories
+10. **Component-level bugs** — individual component issues in 80+ components
+11. **Database trigger gaps** — triggers listed as empty despite functions existing
+12. **Auth flow edge cases** — password reset, email change, MFA enrollment, session refresh
+13. **Ohio HB 315 (2025)** — new vehicle title dealer exception, updated jurat wording, RON fee updates
+14. **Content completeness** — solution pages, resources, guides with placeholder content
+15. **Cross-page state** — navigation losing state, URL params not synced, back button issues
 
-```
-ID,Category,Severity,Page/File,Title,Description,Fix Plan,Status
-1,Public Pages,medium,src/pages/Index.tsx,Hero CTA doesn't pre-select RON type,The "Start RON Session" button links to /book?type=ron but booking page may not parse this correctly,Verify searchParams parsing in BookAppointment and map type param to notarizationType state,open
-...
-```
+## Implementation
 
-## Database Action
+Run a Python script that generates all findings as a CSV with the same structure as audit #1 (ID, Category, Severity, Page/File, Title, Description, Fix Plan, Status). IDs start at 865 to continue numbering.
 
-Clear all `status = 'resolved'` items from `build_tracker_items` table, then insert top-priority new findings (up to DB insert limits).
-
-## Implementation Steps
-
-1. Run a Python script that systematically catalogs all findings based on file analysis
-2. Generate the CSV with 2,000+ rows organized by category
-3. Execute SQL to clear resolved build tracker items
-4. Insert new critical/high findings into build_tracker_items
-5. Deliver the CSV as a downloadable artifact
-
-## Technical Notes
-- The script will use the codebase analysis already performed to enumerate findings
-- Each finding includes actionable fix instructions suitable for future Lovable prompts
-- Severities: critical, high, medium, low, info
-- Categories match the 20 audit areas listed above
+## Files Modified
+None — this is a data generation task producing `/mnt/documents/notardex-audit-supplement-2026.csv`.
 
