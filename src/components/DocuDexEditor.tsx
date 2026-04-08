@@ -125,6 +125,8 @@ export function DocuDexEditor({
   const [pendingSnapshot, setPendingSnapshot] = useState<HistorySnapshot | null>(null);
   const [recommendations, setRecommendations] = useState<{ type: "suggestion" | "compliance" | "improvement"; title: string; description: string; insertHtml?: string }[]>([]);
   const [recommendLoading, setRecommendLoading] = useState(false);
+
+  const canvasRef = useRef<HTMLDivElement>(null);
   const autoSaveTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const announcerRef = useRef<HTMLDivElement>(null);
 
