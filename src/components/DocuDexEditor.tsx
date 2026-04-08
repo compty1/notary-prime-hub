@@ -1468,6 +1468,9 @@ export function DocuDexEditor({
                 maxChars={maxChars}
                 compact={false}
                 isMobile={true}
+                recommendations={recommendations}
+                recommendLoading={recommendLoading}
+                onRequestRecommendations={requestRecommendations}
               />
             </div>
           </div>
