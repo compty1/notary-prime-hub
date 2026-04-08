@@ -127,7 +127,8 @@ export default function Services() {
         const q = debouncedSearch.toLowerCase();
         return s.name.toLowerCase().includes(q) ||
           (s.description || "").toLowerCase().includes(q) ||
-          (s.short_description || "").toLowerCase().includes(q);
+          (s.short_description || "").toLowerCase().includes(q) ||
+          s.category.toLowerCase().includes(q);
       })
     : services;
 
