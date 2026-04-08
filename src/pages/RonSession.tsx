@@ -640,7 +640,7 @@ export default function RonSession() {
     } as any);
 
     // e-seal: prefer uploaded doc, fall back to manual document_name
-    const { data: docs } = await supabase.from("documents").select("id, file_name").eq("appointment_id", appointmentId).limit(1);
+    const { data: docs } = await supabase.from("documents").select("id, file_name, file_path").eq("appointment_id", appointmentId).limit(1);
     let eSealDocId: string;
     let eSealDocName: string;
     if (docs && docs.length > 0) {
