@@ -142,7 +142,7 @@ export default function BookAppointment() {
           clientCity, clientState, clientZip, documentCount, signerCapacity,
           entityName, signerTitle, facilityName, urgencyLevel, destinationCountry,
         };
-        const { data: existing } = await supabase.from("booking_drafts").select("id").eq("user_id", user.id).limit(1).single();
+        const { data: existing } = await supabase.from("booking_drafts").select("id").eq("user_id", user.id).limit(1).maybeSingle();
         if (existing) {
           await supabase.from("booking_drafts").update({ draft_data: draftData as any, step, updated_at: new Date().toISOString() }).eq("id", existing.id);
         } else {

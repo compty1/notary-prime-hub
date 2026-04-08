@@ -179,6 +179,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = async () => {
     await supabase.auth.signOut();
     setRoles([]);
+    setSession(null);
     // Only clear auth-related storage, not theme preferences
     try {
       const theme = localStorage.getItem("theme");
@@ -195,6 +196,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       keysToRemove.forEach(k => localStorage.removeItem(k));
     } catch {}
+    // Use navigate via location change — clears React Query cache with full reload
     window.location.href = "/";
   };
 

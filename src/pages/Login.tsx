@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, Eye, EyeOff, Shield } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { logAuditEvent } from "@/lib/auditLog";
@@ -24,7 +23,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [forgotMode, setForgotMode] = useState(false);
   const [resetSent, setResetSent] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  
   const [rateLimitEnd, setRateLimitEnd] = useState<number | null>(null);
 
   usePageMeta({ title: forgotMode ? "Reset Password" : "Sign In", description: "Sign in to your NotarDex account to access notarization services, document management, and your client portal.", noIndex: true });
@@ -57,15 +56,6 @@ export default function Login() {
     if (rateLimitEnd && Date.now() < rateLimitEnd) return;
     setSubmitting(true);
 
-    // 3.8 Remember Me: set session persistence before sign-in
-    try {
-      if (rememberMe) {
-        // Default Supabase behavior uses localStorage (persistent)
-      } else {
-        // For non-remember-me, we'll clear on tab close via sessionStorage flag
-        sessionStorage.setItem("notardex_session_only", "true");
-      }
-    } catch {}
 
     const { error } = await signIn(email, password);
     if (error) {
@@ -167,9 +157,8 @@ export default function Login() {
                      </button>
                    </div>
                  </div>
-                 <div className="flex items-center gap-2">
-                   <Checkbox id="remember" checked={rememberMe} onCheckedChange={(c) => setRememberMe(c === true)} />
-                   <Label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">Remember me</Label>
+                 <div className="flex items-center justify-end">
+                   <button type="button" onClick={() => setForgotMode(true)} className="text-sm text-primary hover:underline">Forgot password?</button>
                  </div>
                 {rateLimitSeconds > 0 && (
                   <p className="text-sm text-destructive text-center">Too many attempts. Try again in {rateLimitSeconds}s</p>
@@ -177,13 +166,6 @@ export default function Login() {
                 <Button type="submit" className="w-full" disabled={submitting || rateLimitSeconds > 0}>
                   {submitting ? "Signing in..." : rateLimitSeconds > 0 ? `Wait ${rateLimitSeconds}s` : "Continue"}
                 </Button>
-                <button
-                  type="button"
-                  className="block w-full text-center text-sm text-muted-foreground hover:text-primary"
-                  onClick={() => setForgotMode(true)}
-                >
-                  Forgot your password?
-                </button>
               </form>
             </div>
           )}
