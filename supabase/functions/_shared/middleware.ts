@@ -95,6 +95,25 @@ export function checkRateLimit(identifier: string, maxRequests = RATE_LIMIT_MAX)
   return entry.count <= maxRequests;
 }
 
+/** Get client identifier for rate limiting (IP or fallback) */
+export function getClientId(req: Request): string {
+  return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+    || req.headers.get("cf-connecting-ip")
+    || req.headers.get("x-real-ip")
+    || "unknown";
+}
+
+/** Full rate limit guard — returns 429 Response if exceeded, null otherwise */
+export function rateLimitGuard(req: Request, maxRequests = RATE_LIMIT_MAX): Response | null {
+  const clientId = getClientId(req);
+  if (!checkRateLimit(clientId, maxRequests)) {
+    return errorResponse(req, 429, "Too Many Requests", "Rate limit exceeded. Please try again later.", {
+      "Retry-After": "60",
+    });
+  }
+  return null;
+}
+
 /** Validate required fields on request body (item 638) */
 export function validateRequired(
   body: Record<string, unknown>,
@@ -111,4 +130,15 @@ export function validateRequired(
 /** Max request body size check (item 643) — call after parsing JSON */
 export function checkBodySize(body: string, maxBytes = 1_048_576): boolean {
   return new TextEncoder().encode(body).length <= maxBytes;
+}
+
+/** Validate required environment variables — returns error Response or null */
+export function requireEnvVars(req: Request, ...vars: string[]): Response | null {
+  for (const v of vars) {
+    if (!Deno.env.get(v)) {
+      console.error(`Missing required environment variable: ${v}`);
+      return errorResponse(req, 500, "Configuration Error", `Server misconfigured: missing ${v}`);
+    }
+  }
+  return null;
 }
