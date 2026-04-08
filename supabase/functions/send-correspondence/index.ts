@@ -1,10 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { z } from "https://esm.sh/zod@3.23.8";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+import { corsHeaders, handleCorsOptions, errorResponse, jsonResponse, rateLimitGuard, requireEnvVars, securityHeaders } from "../_shared/middleware.ts";
 
 const BodySchema = z.object({
   to_address: z.string().email().max(255),
@@ -15,14 +11,21 @@ const BodySchema = z.object({
 });
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (req.method === "OPTIONS") return handleCorsOptions(req);
 
   try {
+    // Rate limit: 15 correspondence emails per minute
+    const rlResponse = rateLimitGuard(req, 15);
+    if (rlResponse) return rlResponse;
+
     // Auth check — only admins/notaries should send correspondence
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return errorResponse(req, 401, "Unauthorized");
     }
+
+    const envErr = requireEnvVars(req, "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY");
+    if (envErr) return envErr;
 
     const supabaseAuth = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -32,22 +35,20 @@ Deno.serve(async (req) => {
 
     const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
     if (authError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return errorResponse(req, 401, "Unauthorized");
     }
 
     const rawBody = await req.json();
 
     // Dry-run mode for integration testing
     if (rawBody.dry_run === true) {
-      return new Response(JSON.stringify({ success: true, dry_run: true }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse(req, { success: true, dry_run: true });
     }
 
     // Validate input
     const parsed = BodySchema.safeParse(rawBody);
     if (!parsed.success) {
-      return new Response(JSON.stringify({ error: parsed.error.flatten().fieldErrors }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return errorResponse(req, 400, "Validation Error", JSON.stringify(parsed.error.flatten().fieldErrors));
     }
     const { to_address, subject, body, client_id, reply_to_id } = parsed.data;
 
@@ -94,7 +95,6 @@ Deno.serve(async (req) => {
     // Fallback to Resend
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     if (!emailSent && RESEND_API_KEY) {
-      // Item 483: Send as HTML instead of text for Resend fallback
       const emailRes = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
@@ -140,15 +140,9 @@ Deno.serve(async (req) => {
       details: { to_address, subject, email_sent: emailSent },
     });
 
-    return new Response(
-      JSON.stringify({ success: true, email_sent: emailSent }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
-  } catch (error) {
+    return jsonResponse(req, { success: true, email_sent: emailSent });
+  } catch (error: unknown) {
     console.error("send-correspondence error:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return errorResponse(req, 500, "Internal Error", (error as Error).message);
   }
 });

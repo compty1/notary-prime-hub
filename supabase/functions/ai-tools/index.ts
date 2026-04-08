@@ -1,9 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+import { corsHeaders, handleCorsOptions, errorResponse, jsonResponse, rateLimitGuard, requireEnvVars } from "../_shared/middleware.ts";
 
 const TOOL_IDS = new Set([
   "contract-generator","meeting-minutes","business-proposal","policy-generator",
@@ -25,17 +21,20 @@ const TOOL_IDS = new Set([
 ]);
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return handleCorsOptions(req);
 
   try {
+    // Rate limit: 15 AI tool generations per minute
+    const rlResponse = rateLimitGuard(req, 15);
+    if (rlResponse) return rlResponse;
+
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(req, 401, "Unauthorized");
     }
+
+    const envErr = requireEnvVars(req, "SUPABASE_URL", "LOVABLE_API_KEY");
+    if (envErr) return envErr;
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -45,23 +44,17 @@ Deno.serve(async (req) => {
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(req, 401, "Unauthorized");
     }
 
     const { tool_id, fields, systemPrompt, previousOutput, refinementPrompt } = await req.json();
 
     if (!tool_id || !TOOL_IDS.has(tool_id)) {
-      return new Response(JSON.stringify({ error: "Invalid tool_id" }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(req, 400, "Invalid tool_id");
     }
 
     if (!systemPrompt || !fields) {
-      return new Response(JSON.stringify({ error: "Missing systemPrompt or fields" }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(req, 400, "Missing systemPrompt or fields");
     }
 
     // ─── Free plan usage cap: 2 free generations ───
@@ -81,9 +74,7 @@ Deno.serve(async (req) => {
         .select("*", { count: "exact", head: true })
         .eq("user_id", user.id);
       if ((count ?? 0) >= 2) {
-        return new Response(JSON.stringify({ error: "Free plan limit reached. You've used your 2 free AI generations. Upgrade your plan to continue.", code: "USAGE_LIMIT" }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return errorResponse(req, 402, "Usage Limit", "Free plan limit reached. You've used your 2 free AI generations. Upgrade your plan to continue.");
       }
     }
 
@@ -92,7 +83,6 @@ Deno.serve(async (req) => {
       .map(([k, v]) => `**${k}**: ${v}`)
       .join("\n");
 
-    // Build messages array with multi-turn refinement support
     const messages: Array<{ role: string; content: string }> = [
       {
         role: "system",
@@ -104,7 +94,6 @@ Deno.serve(async (req) => {
       },
     ];
 
-    // Multi-turn refinement: append previous output and refinement instruction
     if (previousOutput && refinementPrompt) {
       messages.push(
         { role: "assistant", content: previousOutput },
@@ -112,12 +101,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const apiKey = Deno.env.get("LOVABLE_API_KEY");
-    if (!apiKey) {
-      return new Response(JSON.stringify({ error: "AI service not configured" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    const apiKey = Deno.env.get("LOVABLE_API_KEY")!;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -137,15 +121,15 @@ Deno.serve(async (req) => {
       const errText = await response.text();
       const status = response.status === 429 ? 429 : response.status === 402 ? 402 : 500;
       const retryAfter = response.headers.get("retry-after");
-      const headers: Record<string, string> = { ...corsHeaders, "Content-Type": "application/json" };
-      if (retryAfter) headers["Retry-After"] = retryAfter;
+      const hdrs: Record<string, string> = { ...corsHeaders(req), "Content-Type": "application/json" };
+      if (retryAfter) hdrs["Retry-After"] = retryAfter;
       return new Response(JSON.stringify({ error: `AI service error: ${response.status}`, details: errText, retryAfter }), {
         status,
-        headers,
+        headers: hdrs,
       });
     }
 
-    // Save generation to database (non-blocking, fire-and-forget)
+    // Save generation to database (non-blocking)
     supabase.from("tool_generations").insert({
       user_id: user.id,
       tool_id,
@@ -156,16 +140,13 @@ Deno.serve(async (req) => {
 
     return new Response(response.body, {
       headers: {
-        ...corsHeaders,
+        ...corsHeaders(req),
         "Content-Type": "text/event-stream",
         "Cache-Control": "no-cache",
         Connection: "keep-alive",
       },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: (err as Error).message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return errorResponse(req, 500, "Internal Error", (err as Error).message);
   }
 });

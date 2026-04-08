@@ -1,15 +1,18 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+import { corsHeaders, handleCorsOptions, errorResponse, jsonResponse, rateLimitGuard, requireEnvVars } from "../_shared/middleware.ts";
 
 Deno.serve(async (req: Request) => {
   const start = Date.now();
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method === "OPTIONS") return handleCorsOptions(req);
 
   try {
+    // Rate limit: 10 welcome sequences per minute
+    const rlResponse = rateLimitGuard(req, 10);
+    if (rlResponse) return rlResponse;
+
+    const envErr = requireEnvVars(req, "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY");
+    if (envErr) return envErr;
+
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
@@ -23,10 +26,7 @@ Deno.serve(async (req: Request) => {
     });
     const parsed = BodySchema.safeParse(await req.json());
     if (!parsed.success) {
-      return new Response(JSON.stringify({ error: "Invalid input", details: parsed.error.flatten().fieldErrors }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(req, 400, "Invalid input", JSON.stringify(parsed.error.flatten().fieldErrors));
     }
     const { userId, email, fullName } = parsed.data;
 
@@ -101,14 +101,9 @@ Deno.serve(async (req: Request) => {
     });
 
     console.log(`send-welcome-sequence completed in ${Date.now() - start}ms`);
-    return new Response(JSON.stringify({ success: true, emails_queued: 3 }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse(req, { success: true, emails_queued: 3 });
   } catch (error) {
     console.error(`send-welcome-sequence error (${Date.now() - start}ms):`, (error as Error).message);
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return errorResponse(req, 500, "Internal server error");
   }
 });

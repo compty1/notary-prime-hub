@@ -1,9 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+import { corsHeaders, handleCorsOptions, errorResponse, jsonResponse, rateLimitGuard, requireEnvVars } from "../_shared/middleware.ts";
 
 interface AppointmentWithProfile {
   id: string;
@@ -49,20 +45,22 @@ const serviceChecklists: Record<string, string[]> = {
 };
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return handleCorsOptions(req);
 
   try {
+    // Rate limit: 5 reminder batches per minute
+    const rlResponse = rateLimitGuard(req, 5);
+    if (rlResponse) return rlResponse;
+
+    const envErr = requireEnvVars(req, "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY");
+    if (envErr) return envErr;
+
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const now = new Date();
-
-    // Find appointments in the next 24 hours that are scheduled/confirmed
     const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-    const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
 
     const { data: appointments, error: apptError } = await supabase
       .from("appointments")
@@ -73,9 +71,7 @@ Deno.serve(async (req) => {
 
     if (apptError) throw apptError;
     if (!appointments || appointments.length === 0) {
-      return new Response(JSON.stringify({ message: "No upcoming appointments" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse(req, { message: "No upcoming appointments" });
     }
 
     let sentCount = 0;
@@ -84,7 +80,6 @@ Deno.serve(async (req) => {
       const apptDateTime = new Date(`${appt.scheduled_date}T${appt.scheduled_time}`);
       const hoursUntil = (apptDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
 
-      // Send reminders at ~24h and ~1h before
       const shouldSend24h = hoursUntil > 23 && hoursUntil <= 25;
       const shouldSend1h = hoursUntil > 0.5 && hoursUntil <= 1.5;
 
@@ -92,7 +87,6 @@ Deno.serve(async (req) => {
 
       const emailType = shouldSend24h ? "reminder_24h" : "reminder_1h";
 
-      // Check if already sent
       const { data: existing } = await supabase
         .from("appointment_emails")
         .select("id")
@@ -102,7 +96,6 @@ Deno.serve(async (req) => {
 
       if (existing) continue;
 
-      // Get client profile
       const { data: profile } = await supabase
         .from("profiles")
         .select("full_name, email")
@@ -111,7 +104,6 @@ Deno.serve(async (req) => {
 
       if (!profile?.email) continue;
 
-      // Determine checklist
       const isRon = appt.notarization_type === "ron";
       const serviceKey = isRon ? "ron"
         : appt.service_type?.toLowerCase().includes("apostille") ? "apostille"
@@ -141,13 +133,11 @@ If you need to reschedule or cancel, please do so through your Client Portal or 
 Thank you,
 Notar Notary Services`;
 
-      // Record the email send
       await supabase.from("appointment_emails").insert({
         appointment_id: appt.id,
         email_type: emailType,
       });
 
-      // Send via correspondence
       await supabase.from("client_correspondence").insert({
         client_id: appt.client_id,
         subject,
@@ -157,7 +147,6 @@ Notar Notary Services`;
         status: "sent",
       });
 
-      // Attempt actual email send
       try {
         const sendResponse = await fetch(`${supabaseUrl}/functions/v1/send-correspondence`, {
           method: "POST",
@@ -175,14 +164,9 @@ Notar Notary Services`;
       sentCount++;
     }
 
-    return new Response(JSON.stringify({ message: `Sent ${sentCount} reminder(s)` }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  } catch (error: any) {
+    return jsonResponse(req, { message: `Sent ${sentCount} reminder(s)` });
+  } catch (error: unknown) {
     console.error("Reminder error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return errorResponse(req, 500, "Internal Error", (error as Error).message);
   }
 });

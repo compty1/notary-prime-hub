@@ -63,8 +63,8 @@ export function ComplianceWatchdog({ documentText, className }: ComplianceWatchd
       if (fnError) throw fnError;
       if (data?.error) throw new Error(data.error);
       setResult(data.scan);
-    } catch (err: any) {
-      setError(err.message || "Scan failed");
+    } catch (err: unknown) {
+      setError((err instanceof Error ? err.message : String(err)) || "Scan failed");
     }
     setScanning(false);
   };
