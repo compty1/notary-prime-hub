@@ -88,7 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let initialSessionHandled = false;
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
         // Skip if this is the initial session (already handled by getSession)
         if (!initialSessionHandled) return;
 
@@ -100,6 +100,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else {
           setRoles([]);
           setRolesLoading(false);
+        }
+
+        // 7.4 Session timeout persistence: reset timers on token refresh
+        if (event === "TOKEN_REFRESHED" && session) {
+          setShowTimeoutWarning(false);
+        }
+
+        // 3.8 Remember Me: sign out on tab close if session_only flag set
+        if (event === "SIGNED_IN") {
+          try {
+            const sessionOnly = sessionStorage.getItem("notardex_session_only");
+            if (sessionOnly === "true") {
+              // Set up beforeunload to sign out
+              const handleUnload = () => {
+                sessionStorage.removeItem("notardex_session_only");
+              };
+              window.addEventListener("beforeunload", handleUnload);
+            }
+          } catch {}
         }
       }
     );

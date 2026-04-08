@@ -508,6 +508,12 @@ export default function BookAppointment() {
     sessionStorage.removeItem(BOOKING_STORAGE_KEY);
     try { await supabase.functions.invoke("send-appointment-emails", { body: { appointmentId: appointmentResultId, emailType: "confirmation" } }); } catch (e) { console.error("Email error:", e); }
     if (user?.email && !rebookingId) { try { await supabase.from("leads").update({ status: "converted" }).ilike("email", user.email).in("status", ["new", "contacted", "qualified"]); } catch (e) { console.error("Lead conversion error:", e); } }
+
+    // 3.6 Wire send-welcome-sequence for first-time bookers
+    if (!rebookingId && pastAppointments.length === 0) {
+      try { await supabase.functions.invoke("send-welcome-sequence", { body: { appointmentId: appointmentResultId, userId } }); } catch (e) { console.error("Welcome sequence error:", e); }
+    }
+
     toast({ title: rebookingId ? "Appointment rescheduled!" : "Appointment booked!", description: "You'll receive a confirmation email shortly." });
     navigate(`/confirmation?id=${appointmentResultId}`);
     setSubmitting(false);
