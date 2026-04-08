@@ -708,19 +708,7 @@ export default function ClientPortal() {
 
           {/* SERVICE REQUESTS TAB */}
           <TabsContent value="requests" className="space-y-6">
-            <div className="flex items-center justify-between"><h2 className="font-sans text-xl font-semibold">Service Requests</h2><Link to="/request"><Button size="sm" className=""><Plus className="mr-1 h-4 w-4" /> New Request</Button></Link></div>
-            {serviceRequests.length === 0 ? (
-              <Card className="border-border/50"><CardContent className="flex flex-col items-center py-12 text-center"><Clock className="mb-4 h-12 w-12 text-muted-foreground/50" /><p className="text-muted-foreground">No service requests yet</p></CardContent></Card>
-            ) : (
-              <div className="space-y-3">{serviceRequests.map(req => {
-                const intakeData = typeof req.intake_data === 'object' ? req.intake_data : {};
-                return (<Card key={req.id} className="border-border/50"><CardContent className="p-4"><div className="flex items-center justify-between mb-2"><div><p className="font-medium text-sm">{req.service_name}</p><p className="text-xs text-muted-foreground">{new Date(req.created_at).toLocaleDateString()}</p></div><Badge className={req.status === "completed" ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" : req.status === "in_progress" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" : "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"}>{req.client_visible_status || req.status.replace(/_/g, " ")}</Badge></div>
-                {Object.entries(intakeData).length > 0 && <div className="mt-2 text-xs text-muted-foreground space-y-1">{Object.entries(intakeData).slice(0, 4).map(([key, value]) => <p key={key}><span className="font-medium capitalize">{key.replace(/_/g, " ")}:</span> {String(value)}</p>)}</div>}
-                {req.notes && <p className="text-xs text-muted-foreground mt-2 italic">{req.notes}</p>}
-                {req.deliverable_url && <a href={req.deliverable_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 mt-2 text-xs text-primary hover:underline"><ArrowRight className="h-3 w-3" /> Download Deliverable</a>}
-                </CardContent></Card>);
-              })}</div>
-            )}
+            <PortalServiceRequestsTab serviceRequests={serviceRequests} />
           </TabsContent>
 
           {/* REMINDERS TAB */}
