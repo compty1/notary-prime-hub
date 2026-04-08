@@ -395,31 +395,31 @@ export default function AdminOverview() {
         </div>
       )}
 
-      <h2 className="mb-4 font-sans text-lg font-semibold text-foreground">Recent Appointments</h2>
+      <h2 className="mb-4 text-lg font-black text-[#212529]">Recent Appointments</h2>
       {appointments.length === 0 ? (
-        <Card className="border-border/50"><CardContent className="py-8 text-center text-muted-foreground">No appointments yet</CardContent></Card>
+        <Card className="rounded-[24px] border-gray-100 bg-white"><CardContent className="py-8 text-center text-gray-400">No appointments yet</CardContent></Card>
       ) : (
-        <Card className="border-border/50">
+        <Card className="rounded-[24px] border-gray-100 bg-white">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[600px]">
-                <thead><tr className="border-b border-border/50">
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Client</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Date</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Time</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Service</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Type</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
+                <thead><tr className="border-b border-gray-100">
+                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Client</th>
+                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Date</th>
+                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Time</th>
+                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Service</th>
+                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Type</th>
+                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Status</th>
                 </tr></thead>
                 <tbody>
                   {appointments.map((a) => (
-                    <tr key={a.id} className="border-b border-border/30 last:border-0 hover:bg-muted/30">
-                      <td className="px-4 py-3 font-medium">{getClientName(a.client_id)}</td>
-                      <td className="px-4 py-3">{formatDate(a.scheduled_date)}</td>
-                      <td className="px-4 py-3">{formatTime(a.scheduled_time)}</td>
-                      <td className="px-4 py-3">{a.service_type}</td>
-                      <td className="px-4 py-3 capitalize">{a.notarization_type.replace("_", " ")}</td>
-                      <td className="px-4 py-3"><Badge className={statusColors[a.status] || "bg-muted"}>{a.status.replace(/_/g, " ")}</Badge></td>
+                    <tr key={a.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50">
+                      <td className="px-5 py-3 font-bold text-[#212529]">{getClientName(a.client_id)}</td>
+                      <td className="px-5 py-3 text-gray-600">{formatDate(a.scheduled_date)}</td>
+                      <td className="px-5 py-3 text-gray-600">{formatTime(a.scheduled_time)}</td>
+                      <td className="px-5 py-3 text-gray-600">{a.service_type}</td>
+                      <td className="px-5 py-3 capitalize text-gray-600">{a.notarization_type.replace("_", " ")}</td>
+                      <td className="px-5 py-3"><Badge className={`${statusColors[a.status] || "bg-gray-100"} rounded-lg`}>{a.status.replace(/_/g, " ")}</Badge></td>
                     </tr>
                   ))}
                 </tbody>
