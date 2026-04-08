@@ -81,6 +81,9 @@ interface SidebarProps {
   maxChars: number;
   compact?: boolean;
   isMobile?: boolean;
+  recommendations?: { type: "suggestion" | "compliance" | "improvement"; title: string; description: string; insertHtml?: string }[];
+  recommendLoading?: boolean;
+  onRequestRecommendations?: () => void;
 }
 
 export function DocuDexSidebar({
@@ -94,6 +97,7 @@ export function DocuDexSidebar({
   history, customTemplates, onApplyTemplate, onInsertElement, onAiGenerate, onAiTextAction,
   onTranslate, onRestoreSnapshot, onSaveAsTemplate, onDeleteCustomTemplate,
   onNameSnapshot, aiLoading, maxChars, compact, isMobile,
+  recommendations = [], recommendLoading = false, onRequestRecommendations,
 }: SidebarProps) {
   const [aiPrompt, setAiPrompt] = useState("");
   const [targetLength, setTargetLength] = useState<number[]>([5000]);
