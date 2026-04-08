@@ -82,11 +82,12 @@ export default function PortalChatTab({ userId, chatMessages, chatInput, setChat
           </div>
           <div className="flex gap-2">
             <input type="file" ref={fileRef} className="hidden" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.webp" onChange={handleFileUpload} />
-            <Button size="icon" variant="ghost" onClick={() => fileRef.current?.click()} title="Attach file">
+            <Button size="icon" variant="ghost" onClick={() => fileRef.current?.click()} aria-label="Attach file">
               <Paperclip className="h-4 w-4" />
             </Button>
-            <Textarea value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder="Type a message..." className="min-h-[40px] resize-none flex-1" rows={1} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); onSend(); } }} />
-            <Button onClick={onSend} disabled={sendingChat || !chatInput.trim()}>
+            <label htmlFor="chat-message-input" className="sr-only">Type a message</label>
+            <Textarea id="chat-message-input" value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder="Type a message..." className="min-h-[40px] resize-none flex-1" rows={1} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); onSend(); } }} />
+            <Button onClick={onSend} disabled={sendingChat || !chatInput.trim()} aria-label="Send message">
               {sendingChat ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </Button>
           </div>
