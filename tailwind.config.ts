@@ -88,6 +88,16 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        card: "24px",
+        "card-lg": "32px",
+      },
+      boxShadow: {
+        block: "4px 4px 0px #eab308",
+        "block-lg": "6px 6px 0px #212529",
+        "block-active": "0px 0px 0px #eab308",
+      },
+      fontSize: {
+        label: ["10px", { letterSpacing: "0.1em", fontWeight: "900" }],
       },
       keyframes: {
         "accordion-down": {
@@ -130,6 +140,14 @@ export default {
           "0%, 100%": { backgroundPosition: "0% 50%" },
           "50%": { backgroundPosition: "100% 50%" },
         },
+        "spin-slow": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
+        "bounce-slow": {
+          "0%, 100%": { transform: "translateY(-5%)", animationTimingFunction: "cubic-bezier(0.8,0,1,1)" },
+          "50%": { transform: "translateY(0)", animationTimingFunction: "cubic-bezier(0,0,0.2,1)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -142,6 +160,8 @@ export default {
         "glow-pulse": "glow-pulse 3s ease-in-out infinite",
         "float": "float 3s ease-in-out infinite",
         "gradient-shift": "gradient-shift 6s ease-in-out infinite",
+        "spin-slow": "spin-slow 20s linear infinite",
+        "bounce-slow": "bounce-slow 4s infinite",
       },
     },
   },

@@ -1,6 +1,5 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import { FileCheck2 } from "lucide-react";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg" | "xl";
@@ -11,53 +10,55 @@ interface LogoProps {
 }
 
 const sizeMap = {
-  sm: { icon: 20, text: "text-lg", gap: "gap-2", pad: "p-1.5" },
-  md: { icon: 24, text: "text-2xl", gap: "gap-3", pad: "p-2" },
-  lg: { icon: 32, text: "text-4xl", gap: "gap-4", pad: "p-2.5" },
-  xl: { icon: 40, text: "text-5xl", gap: "gap-5", pad: "p-3" },
+  sm: { mark: "text-[32px]", text: "text-xl", gap: "gap-1.5" },
+  md: { mark: "text-[40px]", text: "text-2xl", gap: "gap-2" },
+  lg: { mark: "text-[48px]", text: "text-[32px]", gap: "gap-2" },
+  xl: { mark: "text-[56px]", text: "text-4xl", gap: "gap-3" },
 };
 
 export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
   ({ size = "md", showText = false, subtitle, theme, className }, ref) => {
     const s = sizeMap[size];
 
-    const textColorClass =
-      theme === "dark"
-        ? "text-white"
-        : theme === "light"
-        ? "text-foreground"
-        : "text-foreground";
+    const isDark = theme === "dark";
+    const textColor = isDark ? "text-white" : "text-[#0a0a0a]";
+    const shadowColor = isDark ? "#000000" : "#212529";
 
     return (
-      <div ref={ref} className={cn("flex items-center", s.gap, className)} aria-label="NotarDex logo">
-        {/* Amber gradient icon badge */}
-        <div
+      <div
+        ref={ref}
+        className={cn("group flex items-end", s.gap, className)}
+        aria-label="NotarDex logo"
+      >
+        {/* Stylized "n" lettermark */}
+        <span
           className={cn(
-            "rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shrink-0",
-            s.pad
+            "font-black tracking-tighter leading-none transition-transform group-hover:-translate-y-1",
+            s.mark
           )}
+          style={{
+            color: "#eab308",
+            textShadow: `2.5px 1px 0px ${shadowColor}`,
+          }}
+          aria-hidden="true"
         >
-          <FileCheck2
-            style={{ width: s.icon, height: s.icon }}
-            className="text-slate-900"
-            strokeWidth={2.5}
-          />
-        </div>
+          n
+        </span>
 
         {showText && (
-          <div>
+          <div className="flex flex-col">
             <span
               className={cn(
-                "block font-heading font-bold tracking-tight",
+                "font-black tracking-tighter leading-none",
                 s.text,
-                textColorClass
+                textColor
               )}
             >
-              NotarDex
-              <span className="text-primary">.com</span>
+              notar<span className="text-[#eab308]">dex</span>
+              <span className={textColor}>.</span>
             </span>
             {subtitle && (
-              <span className="block text-xs text-muted-foreground">
+              <span className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">
                 {subtitle}
               </span>
             )}
