@@ -1,9 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { corsHeaders, handleCorsOptions, errorResponse, jsonResponse, rateLimitGuard, requireEnvVars } from "../_shared/middleware.ts";
 
 const GOOGLE_API = "https://www.googleapis.com/calendar/v3";
 
@@ -25,74 +21,79 @@ async function getAccessToken(): Promise<{ token: string | null; error?: string 
       return { token: null, error: data.error_description || "Token refresh failed. Please re-authorize Google Calendar." };
     }
     return { token: data.access_token };
-  } catch (e) {
-    console.error("Google token refresh error:", e.message);
+  } catch (e: unknown) {
+    console.error("Google token refresh error:", (e as Error).message);
     return { token: null, error: "Failed to connect to Google OAuth" };
   }
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method === "OPTIONS") return handleCorsOptions(req);
 
   try {
+    // Rate limit: 20 requests per minute
+    const rlResponse = rateLimitGuard(req, 20);
+    if (rlResponse) return rlResponse;
+
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    if (!authHeader) return errorResponse(req, 401, "Unauthorized");
+
+    const envErr = requireEnvVars(req, "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY");
+    if (envErr) return envErr;
 
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const token = authHeader.replace("Bearer ", "");
     const { data: { user } } = await supabase.auth.getUser(token);
-    if (!user) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    if (!user) return errorResponse(req, 401, "Unauthorized");
 
     const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
-    if (!roles?.some(r => ["admin", "notary"].includes(r.role))) return new Response(JSON.stringify({ error: "Access denied" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    if (!roles?.some((r: { role: string }) => ["admin", "notary"].includes(r.role))) {
+      return errorResponse(req, 403, "Access Denied", "Admin or notary role required");
+    }
 
     const { token: accessToken, error: tokenError } = await getAccessToken();
     const { action, ...params } = await req.json();
 
     if (!accessToken) {
-      return new Response(JSON.stringify({ error: tokenError || "Google Calendar not configured", connected: false }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return jsonResponse(req, { error: tokenError || "Google Calendar not configured", connected: false });
     }
 
     const headers = { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" };
 
-    // GET EVENTS
     if (action === "list_events") {
       const { timeMin, timeMax } = params;
-      const url = `${GOOGLE_API}/calendars/primary/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&maxResults=250`;
+      const url = `${GOOGLE_API}/calendars/primary/events?timeMin=${encodeURIComponent(timeMin)}&timeMax=${encodeURIComponent(timeMax)}&singleEvents=true&orderBy=startTime&maxResults=250`;
       const res = await fetch(url, { headers });
       const data = await res.json();
-      return new Response(JSON.stringify({ connected: true, events: data.items || [] }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return jsonResponse(req, { connected: true, events: data.items || [] });
     }
 
-    // CREATE EVENT
     if (action === "create_event") {
       const { summary, description, start, end, location } = params;
       const event = { summary, description, location, start: { dateTime: start, timeZone: "America/New_York" }, end: { dateTime: end, timeZone: "America/New_York" }, reminders: { useDefault: false, overrides: [{ method: "popup", minutes: 30 }] } };
       const res = await fetch(`${GOOGLE_API}/calendars/primary/events`, { method: "POST", headers, body: JSON.stringify(event) });
       const data = await res.json();
-      return new Response(JSON.stringify({ connected: true, event: data }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return jsonResponse(req, { connected: true, event: data });
     }
 
-    // CHECK CONFLICTS
     if (action === "check_conflicts") {
       const { timeMin, timeMax } = params;
-      const url = `${GOOGLE_API}/calendars/primary/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true`;
+      const url = `${GOOGLE_API}/calendars/primary/events?timeMin=${encodeURIComponent(timeMin)}&timeMax=${encodeURIComponent(timeMax)}&singleEvents=true`;
       const res = await fetch(url, { headers });
       const data = await res.json();
-      const conflicts = (data.items || []).filter((e: any) => e.status !== "cancelled");
-      return new Response(JSON.stringify({ connected: true, hasConflicts: conflicts.length > 0, conflicts }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      const conflicts = (data.items || []).filter((e: Record<string, unknown>) => e.status !== "cancelled");
+      return jsonResponse(req, { connected: true, hasConflicts: conflicts.length > 0, conflicts });
     }
 
-    // STATUS CHECK
     if (action === "status") {
       const res = await fetch(`${GOOGLE_API}/calendars/primary`, { headers });
       const data = await res.json();
-      return new Response(JSON.stringify({ connected: true, calendar: { id: data.id, summary: data.summary } }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return jsonResponse(req, { connected: true, calendar: { id: data.id, summary: data.summary } });
     }
 
-    return new Response(JSON.stringify({ error: "Unknown action" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-  } catch (e) {
-    console.error("google-calendar-sync error:", e.message);
-    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return errorResponse(req, 400, "Unknown action");
+  } catch (e: unknown) {
+    console.error("google-calendar-sync error:", (e as Error).message);
+    return errorResponse(req, 500, "Internal server error");
   }
 });

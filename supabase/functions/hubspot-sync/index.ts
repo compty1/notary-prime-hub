@@ -1,24 +1,22 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+import { corsHeaders, handleCorsOptions, errorResponse, jsonResponse, rateLimitGuard, requireEnvVars } from "../_shared/middleware.ts";
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return handleCorsOptions(req);
 
   try {
+    // Rate limit: 10 sync operations per minute
+    const rlResponse = rateLimitGuard(req, 10);
+    if (rlResponse) return rlResponse;
+
     // Auth check — admin only
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(req, 401, "Unauthorized");
     }
+
+    const envErr = requireEnvVars(req, "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY");
+    if (envErr) return envErr;
 
     const userClient = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -28,12 +26,8 @@ Deno.serve(async (req) => {
 
     const { data: { user: caller }, error: userErr } = await userClient.auth.getUser();
     if (userErr || !caller?.id) {
-      return new Response(JSON.stringify({ error: "Invalid token" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(req, 401, "Invalid token");
     }
-
-    const callerId = caller.id;
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -41,43 +35,29 @@ Deno.serve(async (req) => {
     );
 
     // Verify admin role
-    const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", callerId).eq("role", "admin");
+    const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", caller.id).eq("role", "admin");
     if (!roleData || roleData.length === 0) {
-      return new Response(JSON.stringify({ error: "Admin access required" }), {
-        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(req, 403, "Admin access required");
     }
 
     const HUBSPOT_API_KEY = Deno.env.get("HubSpot_Service_Key") || Deno.env.get("HUBSPOT_API_KEY");
     if (!HUBSPOT_API_KEY) {
-      return new Response(
-        JSON.stringify({ error: "HubSpot API key not configured. Add HubSpot_Service_Key in Lovable Cloud secrets." }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return errorResponse(req, 400, "HubSpot not configured", "Add HubSpot_Service_Key in Lovable Cloud secrets.");
     }
 
     const { action } = await req.json();
 
     if (action === "test") {
-      // Test HubSpot connection
       const resp = await fetch("https://api.hubapi.com/crm/v3/objects/contacts?limit=1", {
         headers: { Authorization: `Bearer ${HUBSPOT_API_KEY}` },
       });
       if (!resp.ok) {
-        const err = await resp.text();
-        return new Response(
-          JSON.stringify({ connected: false, error: `HubSpot API error: ${resp.status}` }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return jsonResponse(req, { connected: false, error: `HubSpot API error: ${resp.status}` });
       }
-      return new Response(
-        JSON.stringify({ connected: true }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse(req, { connected: true });
     }
 
     if (action === "push") {
-      // Push leads without hubspot_contact_id to HubSpot
       const { data: leads, error: leadsErr } = await supabase
         .from("leads")
         .select("*")
@@ -88,10 +68,7 @@ Deno.serve(async (req) => {
 
       if (leadsErr) throw leadsErr;
       if (!leads || leads.length === 0) {
-        return new Response(
-          JSON.stringify({ success: true, pushed: 0, message: "No new leads to push." }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return jsonResponse(req, { success: true, pushed: 0, message: "No new leads to push." });
       }
 
       let pushed = 0;
@@ -99,25 +76,12 @@ Deno.serve(async (req) => {
 
       for (const lead of leads) {
         try {
-          // Check if contact already exists in HubSpot by email
           const searchResp = await fetch("https://api.hubapi.com/crm/v3/objects/contacts/search", {
             method: "POST",
-            headers: {
-              Authorization: `Bearer ${HUBSPOT_API_KEY}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              filterGroups: [{
-                filters: [{
-                  propertyName: "email",
-                  operator: "EQ",
-                  value: lead.email,
-                }],
-              }],
-            }),
+            headers: { Authorization: `Bearer ${HUBSPOT_API_KEY}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ filterGroups: [{ filters: [{ propertyName: "email", operator: "EQ", value: lead.email }] }] }),
           });
 
-          // Handle 429 rate limits with exponential backoff
           if (searchResp.status === 429) {
             const retryAfter = parseInt(searchResp.headers.get("Retry-After") || "10", 10);
             console.warn(`HubSpot 429 rate limit hit, waiting ${retryAfter}s`);
@@ -129,48 +93,34 @@ Deno.serve(async (req) => {
           const searchData = await searchResp.json();
           let contactId: string;
 
+          const contactProps = {
+            firstname: lead.name?.split(" ")[0] || "",
+            lastname: lead.name?.split(" ").slice(1).join(" ") || "",
+            phone: lead.phone || "",
+            company: lead.business_name || "",
+            city: lead.city || "",
+            state: lead.state || "",
+            zip: lead.zip || "",
+          };
+
           if (searchData.total > 0) {
-            // Contact exists, update
             contactId = searchData.results[0].id;
             await fetch(`https://api.hubapi.com/crm/v3/objects/contacts/${contactId}`, {
               method: "PATCH",
-              headers: {
-                Authorization: `Bearer ${HUBSPOT_API_KEY}`,
-                "Content-Type": "application/json",
-              },
+              headers: { Authorization: `Bearer ${HUBSPOT_API_KEY}`, "Content-Type": "application/json" },
               body: JSON.stringify({
                 properties: {
-                  firstname: lead.name?.split(" ")[0] || "",
-                  lastname: lead.name?.split(" ").slice(1).join(" ") || "",
-                  phone: lead.phone || "",
-                  company: lead.business_name || "",
-                  city: lead.city || "",
-                  state: lead.state || "",
-                  zip: lead.zip || "",
+                  ...contactProps,
                   hs_lead_status: lead.status === "converted" ? "CONNECTED" : lead.status === "contacted" ? "IN_PROGRESS" : "NEW",
                 },
               }),
             });
           } else {
-            // Create new contact
             const createResp = await fetch("https://api.hubapi.com/crm/v3/objects/contacts", {
               method: "POST",
-              headers: {
-                Authorization: `Bearer ${HUBSPOT_API_KEY}`,
-                "Content-Type": "application/json",
-              },
+              headers: { Authorization: `Bearer ${HUBSPOT_API_KEY}`, "Content-Type": "application/json" },
               body: JSON.stringify({
-                properties: {
-                  email: lead.email,
-                  firstname: lead.name?.split(" ")[0] || "",
-                  lastname: lead.name?.split(" ").slice(1).join(" ") || "",
-                  phone: lead.phone || "",
-                  company: lead.business_name || "",
-                  city: lead.city || "",
-                  state: lead.state || "",
-                  zip: lead.zip || "",
-                  hs_lead_status: "NEW",
-                },
+                properties: { email: lead.email, ...contactProps, hs_lead_status: "NEW" },
               }),
             });
 
@@ -183,12 +133,7 @@ Deno.serve(async (req) => {
             contactId = created.id;
           }
 
-          // Update lead with HubSpot contact ID
-          await supabase
-            .from("leads")
-            .update({ hubspot_contact_id: contactId })
-            .eq("id", lead.id);
-
+          await supabase.from("leads").update({ hubspot_contact_id: contactId }).eq("id", lead.id);
           pushed++;
         } catch (e) {
           console.error("HubSpot sync error for lead:", lead.id, e);
@@ -196,26 +141,16 @@ Deno.serve(async (req) => {
         }
       }
 
-      // Audit log
       await supabase.from("audit_log").insert({
         action: "hubspot_sync_push",
         entity_type: "leads",
         details: { pushed, errors, total: leads.length },
       });
 
-      return new Response(
-        JSON.stringify({
-          success: true,
-          pushed,
-          errors,
-          message: `Pushed ${pushed} leads to HubSpot${errors > 0 ? `, ${errors} errors` : ""}.`,
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse(req, { success: true, pushed, errors, message: `Pushed ${pushed} leads to HubSpot${errors > 0 ? `, ${errors} errors` : ""}.` });
     }
 
     if (action === "pull") {
-      // Pull recent contacts from HubSpot that aren't already in leads
       const resp = await fetch(
         "https://api.hubapi.com/crm/v3/objects/contacts?limit=50&properties=email,firstname,lastname,phone,company,city,state,zip,hs_lead_status&sorts=-createdate",
         { headers: { Authorization: `Bearer ${HUBSPOT_API_KEY}` } }
@@ -225,15 +160,14 @@ Deno.serve(async (req) => {
       const data = await resp.json();
       const contacts = data.results || [];
 
-      // Get existing HubSpot IDs
       const { data: existingLeads } = await supabase
         .from("leads")
         .select("hubspot_contact_id, email")
         .not("hubspot_contact_id", "is", null);
 
-      const existingHsIds = new Set((existingLeads || []).map((l) => l.hubspot_contact_id));
+      const existingHsIds = new Set((existingLeads || []).map((l: Record<string, unknown>) => l.hubspot_contact_id));
       const existingEmails = new Set(
-        (existingLeads || []).map((l) => l.email?.toLowerCase()).filter(Boolean)
+        (existingLeads || []).map((l: Record<string, unknown>) => (l.email as string)?.toLowerCase()).filter(Boolean)
       );
 
       let pulled = 0;
@@ -262,25 +196,12 @@ Deno.serve(async (req) => {
         pulled++;
       }
 
-      return new Response(
-        JSON.stringify({
-          success: true,
-          pulled,
-          message: `Pulled ${pulled} new contacts from HubSpot.`,
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse(req, { success: true, pulled, message: `Pulled ${pulled} new contacts from HubSpot.` });
     }
 
-    return new Response(
-      JSON.stringify({ error: "Invalid action. Use: test, push, pull" }),
-      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
-  } catch (err: any) {
+    return errorResponse(req, 400, "Invalid action", "Use: test, push, pull");
+  } catch (err: unknown) {
     console.error("hubspot-sync error:", err);
-    return new Response(
-      JSON.stringify({ error: "Internal server error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return errorResponse(req, 500, "Internal server error");
   }
 });
