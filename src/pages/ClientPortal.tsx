@@ -189,8 +189,12 @@ export default function ClientPortal() {
     return () => { supabase.removeChannel(chatChannel); supabase.removeChannel(apptChannel); supabase.removeChannel(paymentChannel); supabase.removeChannel(docChannel); };
   }, [user]);
 
-  const upcoming = appointments.filter(a => ["scheduled", "confirmed", "id_verification", "kba_pending"].includes(a.status));
-  const past = appointments.filter(a => ["completed", "cancelled", "no_show"].includes(a.status));
+  const searchLower = portalSearch.toLowerCase();
+  const filteredAppointments = portalSearch ? appointments.filter(a => a.service_type?.toLowerCase().includes(searchLower) || a.scheduled_date?.includes(portalSearch) || a.status?.toLowerCase().includes(searchLower)) : appointments;
+  const upcoming = filteredAppointments.filter(a => ["scheduled", "confirmed", "id_verification", "kba_pending"].includes(a.status));
+  const past = filteredAppointments.filter(a => ["completed", "cancelled", "no_show"].includes(a.status));
+  const filteredDocuments = portalSearch ? documents.filter(d => d.file_name?.toLowerCase().includes(searchLower) || d.status?.toLowerCase().includes(searchLower)) : documents;
+  const filteredPayments = portalSearch ? payments.filter(p => p.amount?.toString().includes(portalSearch) || p.status?.toLowerCase().includes(searchLower) || p.notes?.toLowerCase().includes(searchLower)) : payments;
 
   const cancelAppointment = async (id: string) => {
     // Check if appointment is cancellable

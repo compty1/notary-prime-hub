@@ -11,47 +11,79 @@ import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { AdminNotificationCenter } from "@/components/AdminNotificationCenter";
 
-const adminNavItems = [
-  { title: "Overview", url: "/admin", icon: LayoutDashboard, adminOnly: false },
-  { title: "Appointments", url: "/admin/appointments", icon: Calendar, adminOnly: false },
-  { title: "Clients", url: "/admin/clients", icon: Users, adminOnly: true },
-  { title: "Business Clients", url: "/admin/business-clients", icon: Building2, adminOnly: true },
-  { title: "Service Requests", url: "/admin/service-requests", icon: ClipboardList, adminOnly: true },
-  { title: "Content Workspace", url: "/admin/content-workspace", icon: PenTool, adminOnly: true },
-  { title: "DocuDex Pro", url: "/admin/docudex-pro", icon: FileEdit, adminOnly: false },
-  { title: "Process Flows", url: "/admin/process-flows", icon: Workflow, adminOnly: true },
-  { title: "Task Queue", url: "/admin/task-queue", icon: ListChecks, adminOnly: true },
-  { title: "Services Catalog", url: "/admin/services", icon: ShoppingBag, adminOnly: true },
-  { title: "Availability", url: "/admin/availability", icon: Clock, adminOnly: true },
-  { title: "Documents", url: "/admin/documents", icon: FileText, adminOnly: false },
-  { title: "Templates & Forms", url: "/admin/templates", icon: FileSignature, adminOnly: false },
-  { title: "Apostille", url: "/admin/apostille", icon: Package, adminOnly: true },
-  { title: "Email Management", url: "/admin/email-management", icon: Mail, adminOnly: true },
-  { title: "Lead Portal", url: "/admin/leads", icon: Target, adminOnly: true },
-  { title: "CRM", url: "/admin/crm", icon: Handshake, adminOnly: true },
-  { title: "Live Chat", url: "/admin/chat", icon: MessageSquare, adminOnly: true },
-  { title: "Journal", url: "/admin/journal", icon: BookMarked, adminOnly: false },
-  { title: "Revenue", url: "/admin/revenue", icon: DollarSign, adminOnly: true },
-  { title: "Performance", url: "/admin/performance", icon: TrendingUp, adminOnly: true },
-  { title: "Compliance Report", url: "/admin/compliance-report", icon: ShieldCheck, adminOnly: true },
-  { title: "Webhooks", url: "/admin/webhooks", icon: Webhook, adminOnly: true },
-  { title: "Team & Invites", url: "/admin/team", icon: UserPlus, adminOnly: true },
-  { title: "Resources", url: "/admin/resources", icon: BookOpen, adminOnly: false },
-  { title: "Process Guide", url: "/notary-guide-process", icon: GraduationCap, adminOnly: false },
-  { title: "AI Assistant", url: "/admin/ai-assistant", icon: Bot, adminOnly: false },
-  { title: "Audit Log", url: "/admin/audit-log", icon: ScrollText, adminOnly: true },
-  { title: "Build Tracker", url: "/admin/build-tracker", icon: Bug, adminOnly: true },
-  { title: "Integration Testing", url: "/admin/integrations", icon: Plug, adminOnly: true },
-  { title: "User Management", url: "/admin/users", icon: Shield, adminOnly: true },
-  { title: "Settings", url: "/admin/settings", icon: Settings, adminOnly: true },
+const sidebarGroups = [
+  {
+    label: "Operations",
+    items: [
+      { title: "Overview", url: "/admin", icon: LayoutDashboard, adminOnly: false },
+      { title: "Appointments", url: "/admin/appointments", icon: Calendar, adminOnly: false },
+      { title: "Availability", url: "/admin/availability", icon: Clock, adminOnly: true },
+      { title: "Task Queue", url: "/admin/task-queue", icon: ListChecks, adminOnly: true },
+      { title: "Process Flows", url: "/admin/process-flows", icon: Workflow, adminOnly: true },
+      { title: "Performance", url: "/admin/performance", icon: TrendingUp, adminOnly: true },
+    ],
+  },
+  {
+    label: "Clients & CRM",
+    items: [
+      { title: "Clients", url: "/admin/clients", icon: Users, adminOnly: true },
+      { title: "Business Clients", url: "/admin/business-clients", icon: Building2, adminOnly: true },
+      { title: "Lead Portal", url: "/admin/leads", icon: Target, adminOnly: true },
+      { title: "CRM", url: "/admin/crm", icon: Handshake, adminOnly: true },
+      { title: "Service Requests", url: "/admin/service-requests", icon: ClipboardList, adminOnly: true },
+    ],
+  },
+  {
+    label: "Documents & Tools",
+    items: [
+      { title: "Documents", url: "/admin/documents", icon: FileText, adminOnly: false },
+      { title: "Templates & Forms", url: "/admin/templates", icon: FileSignature, adminOnly: false },
+      { title: "DocuDex Pro", url: "/admin/docudex-pro", icon: FileEdit, adminOnly: false },
+      { title: "Content Workspace", url: "/admin/content-workspace", icon: PenTool, adminOnly: true },
+      { title: "Apostille", url: "/admin/apostille", icon: Package, adminOnly: true },
+    ],
+  },
+  {
+    label: "Communication",
+    items: [
+      { title: "Live Chat", url: "/admin/chat", icon: MessageSquare, adminOnly: true },
+      { title: "Email Management", url: "/admin/email-management", icon: Mail, adminOnly: true },
+    ],
+  },
+  {
+    label: "Finance",
+    items: [
+      { title: "Revenue", url: "/admin/revenue", icon: DollarSign, adminOnly: true },
+      { title: "Services Catalog", url: "/admin/services", icon: ShoppingBag, adminOnly: true },
+    ],
+  },
+  {
+    label: "Compliance & Journal",
+    items: [
+      { title: "Journal", url: "/admin/journal", icon: BookMarked, adminOnly: false },
+      { title: "Compliance Report", url: "/admin/compliance-report", icon: ShieldCheck, adminOnly: true },
+      { title: "Audit Log", url: "/admin/audit-log", icon: ScrollText, adminOnly: true },
+    ],
+  },
+  {
+    label: "System",
+    items: [
+      { title: "AI Assistant", url: "/admin/ai-assistant", icon: Bot, adminOnly: false },
+      { title: "Team & Invites", url: "/admin/team", icon: UserPlus, adminOnly: true },
+      { title: "Webhooks", url: "/admin/webhooks", icon: Webhook, adminOnly: true },
+      { title: "Integration Testing", url: "/admin/integrations", icon: Plug, adminOnly: true },
+      { title: "User Management", url: "/admin/users", icon: Shield, adminOnly: true },
+      { title: "Build Tracker", url: "/admin/build-tracker", icon: Bug, adminOnly: true },
+      { title: "Resources", url: "/admin/resources", icon: BookOpen, adminOnly: false },
+      { title: "Settings", url: "/admin/settings", icon: Settings, adminOnly: true },
+    ],
+  },
 ];
 
 function AdminSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const { signOut, isAdmin } = useAuth();
-
-  const visibleNav = adminNavItems.filter((item) => !item.adminOnly || isAdmin);
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
@@ -62,25 +94,31 @@ function AdminSidebar() {
           </div>
           {!collapsed && <span className="font-sans text-sm font-semibold text-sidebar-foreground">{isAdmin ? "Admin Panel" : "Notary Panel"}</span>}
         </div>
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-sidebar-foreground/50">Navigation</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {visibleNav.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink to={item.url} end={item.url === "/admin"}
-                      className="text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
-                      activeClassName="bg-sidebar-accent text-sidebar-primary font-semibold">
-                      <item.icon className="mr-2 h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {sidebarGroups.map((group) => {
+          const visibleItems = group.items.filter((item) => !item.adminOnly || isAdmin);
+          if (visibleItems.length === 0) return null;
+          return (
+            <SidebarGroup key={group.label}>
+              <SidebarGroupLabel className="text-sidebar-foreground/50">{group.label}</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {visibleItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild>
+                        <NavLink to={item.url} end={item.url === "/admin"}
+                          className="text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                          activeClassName="bg-sidebar-accent text-sidebar-primary font-semibold">
+                          <item.icon className="mr-2 h-4 w-4" />
+                          {!collapsed && <span>{item.title}</span>}
+                        </NavLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          );
+        })}
         <div className="mt-auto p-4">
           <Link to="/portal" className="mb-2 block">
             <Button variant="ghost" size="sm" className="w-full justify-start text-sidebar-foreground/70 hover:text-sidebar-foreground">

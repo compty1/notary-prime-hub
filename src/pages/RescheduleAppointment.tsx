@@ -19,7 +19,16 @@ export default function RescheduleAppointment() {
   const [newDate, setNewDate] = useState("");
   const [newTime, setNewTime] = useState("");
   const [rescheduled, setRescheduled] = useState(false);
-  const [attempts, setAttempts] = useState(0);
+  const [attempts, setAttempts] = useState(() => {
+    try {
+      const stored = sessionStorage.getItem("reschedule_attempts");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed.ts && Date.now() - parsed.ts < 3600000) return parsed.count;
+      }
+    } catch {}
+    return 0;
+  });
 
   const handleVerify = async () => {
     if (!email.trim() || !confirmationNumber) return;
@@ -28,7 +37,11 @@ export default function RescheduleAppointment() {
       return;
     }
     setLoading(true);
-    setAttempts(prev => prev + 1);
+    setAttempts(prev => {
+      const next = prev + 1;
+      try { sessionStorage.setItem("reschedule_attempts", JSON.stringify({ count: next, ts: Date.now() })); } catch {}
+      return next;
+    });
 
     try {
       const { data: profile } = await supabase

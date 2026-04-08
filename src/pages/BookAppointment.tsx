@@ -536,7 +536,8 @@ export default function BookAppointment() {
     const errors: Record<string, string> = {};
     // Validate date is not in the past
     if (date) {
-      const today = new Date().toISOString().split("T")[0];
+      const now = new Date();
+      const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
       if (date < today) errors.date = "Please select a future date.";
     }
     if (!date) errors.date = "Date is required.";
