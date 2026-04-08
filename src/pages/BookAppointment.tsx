@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
