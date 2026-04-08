@@ -437,6 +437,17 @@ export function DocuDexSidebar({
                 </div>
               )}
 
+              {/* ═══ Shapes & Visual Blocks ═══ */}
+              {sidebarTab === "shapes" && (
+                <DocuDexShapesPanel
+                  onInsertShape={(html) => {
+                    if (editor) {
+                      editor.chain().focus().insertContent(html).run();
+                    }
+                  }}
+                />
+              )}
+
               {/* ═══ Design (CS-002, PM-004, PM-005, OC-006) ═══ */}
               {sidebarTab === "design" && (
                 <div className="space-y-4">
