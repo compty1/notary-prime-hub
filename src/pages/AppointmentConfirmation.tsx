@@ -178,6 +178,23 @@ export default function AppointmentConfirmation() {
         <h1 className="mb-2 font-sans text-3xl font-bold text-foreground">Appointment Confirmed!</h1>
         <p className="mb-8 text-muted-foreground">Your notarization appointment has been booked successfully.</p>
 
+        {/* Audit Item 6: Display confirmation number prominently */}
+        {appointment.confirmation_number && (
+          <div className="mb-6 rounded-2xl border-2 border-primary/30 bg-primary/5 p-4">
+            <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-1">Confirmation Number</p>
+            <div className="flex items-center justify-center gap-2">
+              <p className="text-2xl font-black text-primary tracking-wider">{appointment.confirmation_number}</p>
+              <button
+                onClick={() => { navigator.clipboard.writeText(appointment.confirmation_number); }}
+                className="text-muted-foreground hover:text-primary transition-colors"
+                title="Copy to clipboard"
+              >
+                <Download className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
         <Card className="mb-6 border-border/50 text-left">
           <CardContent className="space-y-3 p-6">
             <div className="flex items-center justify-between">

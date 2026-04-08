@@ -166,7 +166,10 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
                     {zoomLink && (appt.service_type || "").toLowerCase().includes("consult") && (
                       <a href={zoomLink} target="_blank" rel="noopener noreferrer"><Button size="sm" variant="outline" className="text-xs"><Video className="mr-1 h-3 w-3" /> Zoom</Button></a>
                     )}
-                    <Link to={`/book?rebook=${appt.id}`}><Button size="sm" variant="outline" className="text-xs"><RefreshCw className="mr-1 h-3 w-3" /> Reschedule</Button></Link>
+                    {/* Audit Item 31: Reschedule button */}
+                    <Link to={appt.confirmation_number ? `/reschedule/${appt.confirmation_number}` : `/book?rebook=${appt.id}`}>
+                      <Button size="sm" variant="outline" className="text-xs"><RefreshCw className="mr-1 h-3 w-3" /> Reschedule</Button>
+                    </Link>
                     <Button size="sm" variant="ghost" className="text-xs text-destructive hover:text-destructive" onClick={() => onCancelClick(appt.id)}>Cancel</Button>
                     <Badge className={statusColors[appt.status] || "bg-muted text-muted-foreground"}>{appt.status.replace(/_/g, " ")}</Badge>
                   </div>

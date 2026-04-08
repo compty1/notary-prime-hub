@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { rateLimitGuard } from "../_shared/middleware.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,6 +10,10 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
+
+  // Audit Item 38: Rate limiting for AI functions (15 req/min)
+  const rlResponse = rateLimitGuard(req, 15);
+  if (rlResponse) return rlResponse;
 
   try {
     const authHeader = req.headers.get("Authorization");

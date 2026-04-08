@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { rateLimitGuard } from "../_shared/middleware.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -8,6 +9,10 @@ const corsHeaders = {
 Deno.serve(async (req) => {
   const start = Date.now();
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+
+  // Audit Item 83: Rate limiting (5 req/min for refunds)
+  const rlResponse = rateLimitGuard(req, 5);
+  if (rlResponse) return rlResponse;
 
   try {
     const authHeader = req.headers.get("Authorization");
