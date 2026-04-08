@@ -52,6 +52,7 @@ export default function ClientPortal() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = searchParams.get("tab") || window.location.hash?.slice(1) || "overview";
+  const [activeSection, setActiveSection] = useState(initialTab);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   usePageMeta({ title: "Client Portal", description: "Manage your appointments, documents, and communications in one place.", noIndex: true });
