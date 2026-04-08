@@ -1,0 +1,24 @@
+
+CREATE INDEX IF NOT EXISTS idx_appointments_scheduled_date ON public.appointments (scheduled_date);
+CREATE INDEX IF NOT EXISTS idx_appointments_client_id ON public.appointments (client_id);
+CREATE INDEX IF NOT EXISTS idx_appointments_status ON public.appointments (status);
+CREATE INDEX IF NOT EXISTS idx_leads_status ON public.leads (status);
+CREATE INDEX IF NOT EXISTS idx_leads_created_at ON public.leads (created_at);
+CREATE INDEX IF NOT EXISTS idx_documents_uploaded_by ON public.documents (uploaded_by);
+CREATE INDEX IF NOT EXISTS idx_documents_appointment_id ON public.documents (appointment_id);
+CREATE INDEX IF NOT EXISTS idx_payments_client_id ON public.payments (client_id);
+CREATE INDEX IF NOT EXISTS idx_payments_appointment_id ON public.payments (appointment_id);
+CREATE INDEX IF NOT EXISTS idx_payments_status ON public.payments (status);
+CREATE INDEX IF NOT EXISTS idx_audit_log_created_at ON public.audit_log (created_at);
+CREATE INDEX IF NOT EXISTS idx_audit_log_user_id ON public.audit_log (user_id);
+CREATE INDEX IF NOT EXISTS idx_journal_entries_notary_user_id ON public.journal_entries (notary_user_id);
+CREATE INDEX IF NOT EXISTS idx_journal_entries_entry_date ON public.journal_entries (entry_date);
+CREATE INDEX IF NOT EXISTS idx_service_requests_client_id ON public.service_requests (client_id);
+CREATE INDEX IF NOT EXISTS idx_service_requests_status ON public.service_requests (status);
+CREATE INDEX IF NOT EXISTS idx_session_tracking_appointment_id ON public.session_tracking (appointment_id);
+CREATE INDEX IF NOT EXISTS idx_notarization_sessions_appointment_id ON public.notarization_sessions (appointment_id);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_sender_id ON public.chat_messages (sender_id);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_recipient_id ON public.chat_messages (recipient_id);
+CREATE INDEX IF NOT EXISTS idx_email_cache_folder ON public.email_cache (folder);
+CREATE INDEX IF NOT EXISTS idx_deals_stage ON public.deals (stage);
+CREATE INDEX IF NOT EXISTS idx_crm_activities_contact_id ON public.crm_activities (contact_id);
