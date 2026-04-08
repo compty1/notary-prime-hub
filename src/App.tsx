@@ -115,6 +115,7 @@ const SignerRights = lazyRetry(() => import("./pages/SignerRights"));
 const NotaryCertificates = lazyRetry(() => import("./pages/NotaryCertificates"));
 const Compliance = lazyRetry(() => import("./pages/Compliance"));
 const Security = lazyRetry(() => import("./pages/Security"));
+const Accessibility = lazyRetry(() => import("./pages/Accessibility"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
