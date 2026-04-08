@@ -558,7 +558,7 @@ export default function AdminServices() {
             </Table>
           </CardContent>
         </Card>
-      )}
+      ))}
 
       {/* ─── Comprehensive Edit Dialog ─── */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
