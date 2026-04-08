@@ -659,12 +659,20 @@ export default function RonSession() {
       eSealDocId = newDoc?.id || crypto.randomUUID();
       eSealDocName = placeholderName;
     }
-    // Generate tamper-evident SHA-256 hash for Ohio ORC §147.63 compliance
+    // Generate tamper-evident SHA-256 hash from actual document bytes for Ohio ORC §147.63 compliance
     let documentHash: string | null = null;
     try {
-      const hashInput = `${eSealDocId}|${eSealDocName}|${appointmentId}|${clientProfile?.full_name || ""}|${new Date().toISOString()}`;
-      const encoder = new TextEncoder();
-      const hashBuffer = await crypto.subtle.digest("SHA-256", encoder.encode(hashInput));
+      // Try to download actual document content for hash
+      const docPath = sessionDocuments?.[0]?.file_path || `placeholder/${appointmentId}`;
+      const { data: fileData } = await supabase.storage.from("documents").download(docPath);
+      let hashBuffer: ArrayBuffer;
+      if (fileData) {
+        hashBuffer = await crypto.subtle.digest("SHA-256", await fileData.arrayBuffer());
+      } else {
+        // Fallback: hash metadata if file not accessible
+        const hashInput = `${eSealDocId}|${eSealDocName}|${appointmentId}|${clientProfile?.full_name || ""}|${new Date().toISOString()}`;
+        hashBuffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(hashInput));
+      }
       documentHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
     } catch (e) { console.error("Hash generation error:", e); }
 
