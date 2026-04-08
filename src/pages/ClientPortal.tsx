@@ -206,8 +206,12 @@ export default function ClientPortal() {
 
   const saveProfile = async () => {
     if (!user || !profile) return;
+    // Validate profile fields
+    if (!profileForm.full_name.trim()) { toast({ title: "Validation Error", description: "Full name is required.", variant: "destructive" }); return; }
+    if (profileForm.phone && !/^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/.test(profileForm.phone.replace(/\s+/g, ""))) { toast({ title: "Validation Error", description: "Please enter a valid phone number.", variant: "destructive" }); return; }
+    if (profileForm.zip && !/^\d{5}(-\d{4})?$/.test(profileForm.zip)) { toast({ title: "Validation Error", description: "Please enter a valid 5-digit zip code.", variant: "destructive" }); return; }
     setSavingProfile(true);
-    const { error } = await supabase.from("profiles").update({ full_name: profileForm.full_name, phone: profileForm.phone || null, address: profileForm.address || null, city: profileForm.city || null, state: profileForm.state || null, zip: profileForm.zip || null }).eq("user_id", user.id);
+    const { error } = await supabase.from("profiles").update({ full_name: profileForm.full_name.trim(), phone: profileForm.phone || null, address: profileForm.address || null, city: profileForm.city || null, state: profileForm.state || null, zip: profileForm.zip || null }).eq("user_id", user.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else { toast({ title: "Profile updated" }); setProfile({ ...profile, ...profileForm }); setEditProfileOpen(false); }
     setSavingProfile(false);
