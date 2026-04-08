@@ -812,6 +812,6 @@ export default function ClientPortal() {
       <Dialog open={techCheckOpen} onOpenChange={setTechCheckOpen}>
         <DialogContent className="sm:max-w-md"><TechCheck onComplete={() => setTechCheckOpen(false)} /></DialogContent>
       </Dialog>
-    </div>
+    </SidebarProvider>
   );
 }
