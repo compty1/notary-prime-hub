@@ -14,7 +14,7 @@ import {
   QrCode, FileSignature, Calendar, Clock, CheckSquare, Hash,
   Scale, BookOpen, Search, Eye, ChevronRight, Save, Trash2,
   Stamp, Users, Type as TypeIcon, Tag,
-  LayoutGrid, Shapes,
+  LayoutGrid, Shapes, Lightbulb, CheckCircle, Plus, AlertTriangle,
 } from "lucide-react";
 import {
   TEMPLATES, TEMPLATE_CATEGORIES, BRAND_FONTS, ACCENT_COLORS,
@@ -32,6 +32,7 @@ const SIDEBAR_TABS = [
   { id: "templates", icon: LayoutTemplate, label: "Templates" },
   { id: "layouts", icon: LayoutGrid, label: "Layouts" },
   { id: "ai", icon: Wand2, label: "AI Tools" },
+  { id: "recommend", icon: Lightbulb, label: "Recommend" },
   { id: "elements", icon: Table, label: "Elements" },
   { id: "shapes", icon: Shapes, label: "Shapes" },
   { id: "design", icon: Palette, label: "Design" },
