@@ -1045,6 +1045,9 @@ export function DocuDexEditor({
               aiLoading={aiLoading}
               maxChars={maxChars}
               compact={compact}
+              recommendations={recommendations}
+              recommendLoading={recommendLoading}
+              onRequestRecommendations={requestRecommendations}
             />
           )}
 
