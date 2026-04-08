@@ -27,6 +27,8 @@ import { formatPhone } from "@/lib/formatPhone";
 import PortalAppointmentsTab from "./portal/PortalAppointmentsTab";
 import PortalDocumentsTab from "./portal/PortalDocumentsTab";
 import PortalChatTab from "./portal/PortalChatTab";
+import PortalCorrespondenceTab from "./portal/PortalCorrespondenceTab";
+import PortalServiceRequestsTab from "./portal/PortalServiceRequestsTab";
 import { PortalLoadingSkeleton } from "@/components/PortalLoadingSkeleton";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -35,6 +37,7 @@ import { PortalQuickActions } from "@/components/PortalQuickActions";
 import { DocumentReadinessScore } from "@/components/DocumentReadinessScore";
 import { ReferralPortal } from "@/components/ReferralPortal";
 import PortalAIToolsTab from "./portal/PortalAIToolsTab";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 const pipelineSteps = [
   { key: "uploaded", label: "Intake", icon: Upload },
   { key: "pending_review", label: "Review", icon: FileText },
