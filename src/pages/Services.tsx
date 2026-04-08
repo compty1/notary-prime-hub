@@ -155,11 +155,13 @@ export default function Services() {
 
   return (
     <PageShell>
-      {/* Hero */}
-      <section className="relative overflow-hidden border-b border-border bg-card py-16">
+      {/* Hero — Block Shadow */}
+      <section className="relative overflow-hidden border-b-2 border-[hsl(220,10%,90%)] bg-white py-16 md:py-20">
         <div className="container relative mx-auto px-4 text-center">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Everything you need</p>
-          <h1 className="mb-4 font-sans text-4xl font-bold text-foreground md:text-5xl">Services</h1>
+          <p className="mb-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Everything you need</p>
+          <h1 className="mb-4 text-4xl font-black text-[hsl(220,26%,14%)] md:text-5xl">
+            Services
+          </h1>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
             Fast, secure notary and document services for individuals and businesses in Ohio.
             Transparent pricing, secure storage, and business plans available.
@@ -169,26 +171,26 @@ export default function Services() {
 
       <WhatDoINeed />
 
-      {/* AI Tools */}
-      <section className="border-b border-border bg-gradient-to-br from-primary/5 via-background to-accent/5 py-12">
+      {/* AI Tools — Block Shadow cards */}
+      <section className="border-b-2 border-[hsl(220,10%,90%)] bg-[hsl(45,96%,50%)]/5 py-12">
         <div className="container mx-auto px-4">
           <div className="mb-8 text-center">
-            <Badge variant="secondary" className="mb-3"><Sparkles className="mr-1 h-3 w-3" /> AI-Powered</Badge>
-            <h2 className="mb-2 text-2xl font-bold text-foreground md:text-3xl">Do It Yourself</h2>
+            <Badge className="mb-3 bg-[hsl(45,96%,50%)]/10 text-[hsl(45,96%,40%)] border-[hsl(45,96%,50%)]/20 rounded-lg font-bold"><Sparkles className="mr-1 h-3 w-3" /> AI-Powered</Badge>
+            <h2 className="mb-2 text-2xl font-black text-[hsl(220,26%,14%)] md:text-3xl">Do It Yourself</h2>
             <p className="mx-auto max-w-lg text-muted-foreground">Every tool is enhanced with AI — smarter suggestions, auto-fill, and intelligent recommendations.</p>
           </div>
           <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-3">
             {aiTools.map((tool, i) => (
               <motion.div key={tool.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
-                <Card className="group h-full border-primary/10 hover:border-primary/30 transition-colors">
+                <Card className="group h-full rounded-[24px] border-2 border-[hsl(220,10%,90%)] shadow-[4px_4px_0px_hsl(220,10%,85%)] hover:shadow-[6px_6px_0px_hsl(45,96%,50%)] transition-shadow">
                   <CardContent className="flex h-full flex-col items-center p-6 text-center">
-                    <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 group-hover:bg-primary/15 transition-colors">
-                      <tool.icon className="h-7 w-7 text-primary" />
+                    <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[hsl(45,96%,50%)]/10 group-hover:bg-[hsl(45,96%,50%)]/20 transition-colors">
+                      <tool.icon className="h-7 w-7 text-[hsl(45,96%,50%)]" />
                     </div>
-                    <h3 className="mb-2 font-semibold text-foreground">{tool.title}</h3>
+                    <h3 className="mb-2 font-black text-foreground">{tool.title}</h3>
                     <p className="mb-4 flex-1 text-sm text-muted-foreground">{tool.description}</p>
                     <Link to={tool.link} className="w-full">
-                      <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                      <Button variant="outline" className="w-full rounded-xl font-bold border-2 group-hover:bg-[hsl(45,96%,50%)] group-hover:text-[hsl(220,26%,14%)] group-hover:border-[hsl(220,26%,14%)] transition-colors">
                         {tool.cta} <ArrowRight className="ml-2 h-3 w-3" />
                       </Button>
                     </Link>
@@ -205,15 +207,14 @@ export default function Services() {
         <Breadcrumbs />
         <div className="relative mb-4 max-w-md mx-auto">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="Search services..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" />
+          <Input placeholder="Search services..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 rounded-xl border-2 border-[hsl(220,10%,90%)]" />
         </div>
 
-        {/* Gap #8: scrollable tabs with scroll-snap */}
         <Tabs value={activeCategory} onValueChange={setActiveCategory}>
-          <TabsList className="mb-8 overflow-x-auto flex-nowrap h-auto gap-1 w-full justify-start sm:flex-wrap sm:justify-center scroll-smooth snap-x">
-            <TabsTrigger value="all" className="snap-start">All Services</TabsTrigger>
+          <TabsList className="mb-8 overflow-x-auto flex-nowrap h-auto gap-1 w-full justify-start sm:flex-wrap sm:justify-center scroll-smooth snap-x bg-[hsl(220,10%,95%)] rounded-2xl p-1">
+            <TabsTrigger value="all" className="snap-start rounded-xl font-bold text-xs data-[state=active]:bg-white data-[state=active]:shadow-[2px_2px_0px_hsl(220,10%,85%)]">All Services</TabsTrigger>
             {CATEGORY_ORDER.map(cat => (
-              <TabsTrigger key={cat} value={cat} className="text-xs whitespace-nowrap snap-start">{CATEGORY_LABELS[cat]?.label || cat}</TabsTrigger>
+              <TabsTrigger key={cat} value={cat} className="text-xs whitespace-nowrap snap-start rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-[2px_2px_0px_hsl(220,10%,85%)]">{CATEGORY_LABELS[cat]?.label || cat}</TabsTrigger>
             ))}
           </TabsList>
         </Tabs>
@@ -223,15 +224,15 @@ export default function Services() {
         ) : error ? (
           <div className="py-20 text-center text-muted-foreground">
             <Search className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
-            <p>We couldn't load services right now.</p>
+            <p className="font-bold">We couldn't load services right now.</p>
             <p className="mt-2 text-xs text-muted-foreground/80">{error}</p>
-            <Button variant="outline" className="mt-4" onClick={retry}>Retry</Button>
+            <Button variant="outline" className="mt-4 rounded-xl font-bold border-2" onClick={retry}>Retry</Button>
           </div>
         ) : grouped.length === 0 && searchQuery ? (
           <div className="py-20 text-center text-muted-foreground">
             <Search className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
-            <p>No services match "{searchQuery}"</p>
-            <Button variant="outline" className="mt-4" onClick={() => setSearchQuery("")}>Clear Search</Button>
+            <p className="font-bold">No services match "{searchQuery}"</p>
+            <Button variant="outline" className="mt-4 rounded-xl font-bold border-2" onClick={() => setSearchQuery("")}>Clear Search</Button>
           </div>
         ) : grouped.length === 0 ? (
           <div className="py-20 text-center text-muted-foreground"><p>No active services are available right now.</p></div>
@@ -240,7 +241,7 @@ export default function Services() {
             {grouped.map((group) => (
               <section key={group.category}>
                 <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.35 }} className="mb-6">
-                  <h2 className="font-sans text-2xl font-bold text-foreground">{group.label}</h2>
+                  <h2 className="text-2xl font-black text-[hsl(220,26%,14%)]">{group.label}</h2>
                   <p className="text-sm text-muted-foreground">{group.description}</p>
                 </motion.div>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -249,34 +250,33 @@ export default function Services() {
                     const { url: actionUrl, label: actionLabel } = getServiceAction(s);
                     return (
                       <motion.div key={s.id} initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.25, delay: i * 0.03 }}>
-                        <Card className="group h-full hover:border-primary/20" role="article">
+                        <Card className="group h-full rounded-[24px] border-2 border-[hsl(220,10%,90%)] shadow-[4px_4px_0px_hsl(220,10%,85%)] hover:shadow-[6px_6px_0px_hsl(45,96%,50%)] transition-shadow" role="article">
                           <CardContent className="flex h-full flex-col p-6">
                             <div className="mb-3 flex items-start justify-between">
-                              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/15 transition-colors">
-                                <IconComp className="h-5 w-5 text-primary" />
+                              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[hsl(45,96%,50%)]/10 group-hover:bg-[hsl(45,96%,50%)]/20 transition-colors">
+                                <IconComp className="h-5 w-5 text-[hsl(45,96%,50%)]" />
                               </div>
                               <div className="flex items-center gap-1.5">
-                                {/* Gap #2: Popular badge */}
                                 {s.is_popular && (
-                                  <Badge variant="default" className="text-[10px] px-1.5 py-0">Popular</Badge>
+                                  <Badge className="text-[10px] px-1.5 py-0 bg-[hsl(45,96%,50%)] text-[hsl(220,26%,14%)] font-black rounded-md">Popular</Badge>
                                 )}
-                                <Badge variant="outline" className="text-xs font-mono">{formatPrice(s)}</Badge>
+                                <Badge variant="outline" className="text-xs font-mono font-bold rounded-lg border-2">{formatPrice(s)}</Badge>
                               </div>
                             </div>
-                            <h3 className="mb-1 font-sans text-base font-semibold text-foreground">{s.name}</h3>
+                            <h3 className="mb-1 text-base font-black text-foreground">{s.name}</h3>
                             <p className="mb-4 flex-1 text-sm text-muted-foreground">{s.description || s.short_description}</p>
                             <div className="flex gap-2">
                               <Link to={`/services/${s.id}`} className="flex-1">
-                                <Button size="sm" variant="outline" className="w-full">More Info</Button>
+                                <Button size="sm" variant="outline" className="w-full rounded-xl font-bold border-2">More Info</Button>
                               </Link>
                               {!user && PROTECTED_PREFIXES.some(p => actionUrl.startsWith(p)) ? (
-                                <Button size="sm" variant="outline" className="flex-1 group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                                <Button size="sm" className="flex-1 rounded-xl font-bold bg-[hsl(45,96%,50%)] text-[hsl(220,26%,14%)] hover:bg-[hsl(45,96%,45%)] shadow-[3px_3px_0px_hsl(220,26%,14%)]"
                                   onClick={() => navigate(`/login?redirect=${encodeURIComponent(actionUrl)}`)}>
                                   {actionLabel} <ChevronRight className="ml-1 h-3 w-3" />
                                 </Button>
                               ) : (
                                 <Link to={actionUrl} className="flex-1">
-                                  <Button size="sm" variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                                  <Button size="sm" className="w-full rounded-xl font-bold bg-[hsl(45,96%,50%)] text-[hsl(220,26%,14%)] hover:bg-[hsl(45,96%,45%)] shadow-[3px_3px_0px_hsl(220,26%,14%)]">
                                     {actionLabel} <ChevronRight className="ml-1 h-3 w-3" />
                                   </Button>
                                 </Link>
@@ -294,16 +294,16 @@ export default function Services() {
         )}
       </div>
 
-      {/* CTA */}
-      <section className="border-t border-border bg-card py-16">
+      {/* CTA — Block Shadow */}
+      <section className="border-t-2 border-[hsl(220,10%,90%)] bg-white py-16">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="mb-4 font-sans text-2xl font-bold text-foreground">Ready to Get Started?</h2>
+          <h2 className="mb-4 text-2xl font-black text-[hsl(220,26%,14%)]">Ready to Get Started?</h2>
           <p className="mb-6 text-muted-foreground">Book an appointment or contact us for a custom quote.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link to="/book"><Button size="lg" className="rounded-full px-8">Notarize Now</Button></Link>
-            <Link to="/fee-calculator"><Button size="lg" variant="outline">View Pricing</Button></Link>
-            <Link to="/loan-signing"><Button size="lg" variant="outline">Loan Signing Partnership</Button></Link>
-            <Link to="/ron-check"><Button size="lg" variant="outline">RON Eligibility Checker</Button></Link>
+            <Link to="/book"><Button size="lg" className="rounded-xl font-bold bg-[hsl(45,96%,50%)] text-[hsl(220,26%,14%)] hover:bg-[hsl(45,96%,45%)] shadow-[4px_4px_0px_hsl(220,26%,14%)] px-8">Notarize Now</Button></Link>
+            <Link to="/fee-calculator"><Button size="lg" variant="outline" className="rounded-xl font-bold border-2">View Pricing</Button></Link>
+            <Link to="/loan-signing"><Button size="lg" variant="outline" className="rounded-xl font-bold border-2">Loan Signing Partnership</Button></Link>
+            <Link to="/ron-check"><Button size="lg" variant="outline" className="rounded-xl font-bold border-2">RON Eligibility Checker</Button></Link>
           </div>
         </div>
       </section>
