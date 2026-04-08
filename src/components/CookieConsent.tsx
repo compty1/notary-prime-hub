@@ -34,7 +34,7 @@ const CookieConsentInner = forwardRef<HTMLDivElement>((_, ref) => {
         role="alertdialog"
         aria-label="Cookie consent"
         aria-describedby="cookie-consent-desc"
-        className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur-sm p-4 shadow-lg"
+        className="fixed bottom-0 left-0 right-0 z-[45] border-t border-border bg-background/95 backdrop-blur-sm p-4 shadow-lg"
       >
         <div className="container mx-auto flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
