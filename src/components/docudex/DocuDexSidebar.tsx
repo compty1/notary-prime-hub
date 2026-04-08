@@ -14,6 +14,7 @@ import {
   QrCode, FileSignature, Calendar, Clock, CheckSquare, Hash,
   Scale, BookOpen, Search, Eye, ChevronRight, Save, Trash2,
   Stamp, Users, Type as TypeIcon, Tag,
+  LayoutGrid, Shapes,
 } from "lucide-react";
 import {
   TEMPLATES, TEMPLATE_CATEGORIES, BRAND_FONTS, ACCENT_COLORS,
@@ -24,11 +25,15 @@ import {
 } from "./constants";
 import type { Editor } from "@tiptap/react";
 import type { HistorySnapshot, CustomTemplate } from "./types";
+import { DocuDexLayoutsPanel } from "./DocuDexLayoutsPanel";
+import { DocuDexShapesPanel } from "./DocuDexShapesPanel";
 
 const SIDEBAR_TABS = [
   { id: "templates", icon: LayoutTemplate, label: "Templates" },
+  { id: "layouts", icon: LayoutGrid, label: "Layouts" },
   { id: "ai", icon: Wand2, label: "AI Tools" },
   { id: "elements", icon: Table, label: "Elements" },
+  { id: "shapes", icon: Shapes, label: "Shapes" },
   { id: "design", icon: Palette, label: "Design" },
   { id: "translate", icon: Languages, label: "Translate" },
   { id: "history", icon: History, label: "History" },
