@@ -18,6 +18,9 @@ import {
   CheckCircle2, AlertCircle, Circle, Workflow, Mail, Zap, Search, ChevronDown, ChevronRight,
   FileText, Settings, Loader2, Save, RefreshCw, BarChart3
 } from "lucide-react";
+import ProcessFlowsTab from "./process-flows/ProcessFlowsTab";
+import EmailTemplatesTab from "./process-flows/EmailTemplatesTab";
+import AutomationsTab from "./process-flows/AutomationsTab";
 
 // Known edge function automations
 const EDGE_AUTOMATIONS: Record<string, { name: string; description: string; triggers: string[] }> = {
@@ -30,14 +33,14 @@ const EDGE_AUTOMATIONS: Record<string, { name: string; description: string; trig
 
 const AUTH_TEMPLATES = ["signup", "recovery", "magic-link", "invite", "email-change", "reauthentication"];
 
+export { EDGE_AUTOMATIONS, AUTH_TEMPLATES };
+
 export default function AdminProcessFlows() {
   usePageMeta({ title: "Process Flows & Automation", noIndex: true });
   const { toast } = useToast();
-  const [expandedFlows, setExpandedFlows] = useState<Set<string>>(new Set(["booking"]));
   const [services, setServices] = useState<any[]>([]);
   const [globalTemplates, setGlobalTemplates] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
   const [editingTemplate, setEditingTemplate] = useState<{ key: string; value: string; scope: string } | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -58,37 +61,16 @@ export default function AdminProcessFlows() {
     load();
   }, []);
 
-  const toggleFlow = (id: string) => {
-    setExpandedFlows(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
   // Stats
   const totalSteps = SERVICE_FLOWS.reduce((s, f) => s + f.steps.length, 0);
   const implementedSteps = SERVICE_FLOWS.reduce((s, f) => s + f.steps.filter(st => st.implemented).length, 0);
-  const gapSteps = totalSteps - implementedSteps;
   const automatedSteps = SERVICE_FLOWS.reduce((s, f) => s + f.steps.filter(st => st.automations && st.automations.length > 0).length, 0);
   const totalEmailTemplates = Object.keys(globalTemplates).length + services.reduce((s, svc) => s + (svc.email_templates ? Object.keys(svc.email_templates).length : 0), 0) + AUTH_TEMPLATES.length;
-
-  // Filter flows
-  const filteredFlows = useMemo(() => {
-    if (!searchQuery.trim()) return SERVICE_FLOWS;
-    const q = searchQuery.toLowerCase();
-    return SERVICE_FLOWS.map(flow => ({
-      ...flow,
-      steps: flow.steps.filter(s => s.name.toLowerCase().includes(q) || s.description.toLowerCase().includes(q) || (s.component && s.component.toLowerCase().includes(q))),
-    })).filter(f => f.steps.length > 0 || f.name.toLowerCase().includes(q));
-  }, [searchQuery]);
 
   const saveTemplate = async () => {
     if (!editingTemplate) return;
     setSaving(true);
     if (editingTemplate.scope === "global") {
-      // Template sync confirmation: offer to propagate to per-service templates
       const matchingServices = services.filter(svc => {
         if (!svc.email_templates) return false;
         const templates = typeof svc.email_templates === "object" ? svc.email_templates : {};
@@ -112,7 +94,6 @@ export default function AdminProcessFlows() {
       } else {
         setGlobalTemplates(prev => ({ ...prev, [editingTemplate.key]: editingTemplate.value }));
 
-        // Propagate to matching per-service templates if confirmed
         if (propagate) {
           const templateKey = editingTemplate.key.replace("email_template_", "");
           for (const svc of matchingServices) {
@@ -138,193 +119,60 @@ export default function AdminProcessFlows() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            <Workflow className="h-6 w-6 text-primary" /> Process Flows & Automation
+          <h1 className="text-2xl font-black text-foreground flex items-center gap-2">
+            <Workflow className="h-6 w-6 text-[hsl(45,96%,50%)]" /> Process Flows & Automation
           </h1>
           <p className="text-sm text-muted-foreground mt-1">All service flows, automated steps, and email templates in one view</p>
         </div>
       </div>
 
-      {/* Summary cards */}
+      {/* Summary cards — Block Shadow style */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <Card className="rounded-2xl"><CardContent className="p-4 text-center"><p className="text-2xl font-bold text-foreground">{SERVICE_FLOWS.length}</p><p className="text-xs text-muted-foreground">Service Flows</p></CardContent></Card>
-        <Card className="rounded-2xl"><CardContent className="p-4 text-center"><p className="text-2xl font-bold text-emerald-600">{implementedSteps}/{totalSteps}</p><p className="text-xs text-muted-foreground">Steps Implemented</p></CardContent></Card>
-        <Card className="rounded-2xl"><CardContent className="p-4 text-center"><p className="text-2xl font-bold text-primary">{automatedSteps}</p><p className="text-xs text-muted-foreground">Automated Steps</p></CardContent></Card>
-        <Card className="rounded-2xl"><CardContent className="p-4 text-center"><p className="text-2xl font-bold text-amber-600">{totalEmailTemplates}</p><p className="text-xs text-muted-foreground">Email Templates</p></CardContent></Card>
+        {[
+          { label: "Service Flows", value: SERVICE_FLOWS.length, color: "text-foreground" },
+          { label: "Steps Implemented", value: `${implementedSteps}/${totalSteps}`, color: "text-emerald-600" },
+          { label: "Automated Steps", value: automatedSteps, color: "text-[hsl(45,96%,50%)]" },
+          { label: "Email Templates", value: totalEmailTemplates, color: "text-amber-600" },
+        ].map((stat) => (
+          <Card key={stat.label} className="rounded-[24px] border-2 border-[hsl(220,10%,90%)] shadow-[4px_4px_0px_hsl(220,10%,85%)]">
+            <CardContent className="p-4 text-center">
+              <p className={`text-3xl font-black ${stat.color}`}>{stat.value}</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-1">{stat.label}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       <Tabs defaultValue="flows" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="flows"><Workflow className="mr-1 h-4 w-4" /> Process Flows</TabsTrigger>
-          <TabsTrigger value="emails"><Mail className="mr-1 h-4 w-4" /> Email Templates</TabsTrigger>
-          <TabsTrigger value="automations"><Zap className="mr-1 h-4 w-4" /> Automations</TabsTrigger>
+        <TabsList className="bg-[hsl(220,10%,95%)] rounded-2xl p-1">
+          <TabsTrigger value="flows" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-[2px_2px_0px_hsl(220,10%,85%)] font-bold text-xs"><Workflow className="mr-1 h-4 w-4" /> Process Flows</TabsTrigger>
+          <TabsTrigger value="emails" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-[2px_2px_0px_hsl(220,10%,85%)] font-bold text-xs"><Mail className="mr-1 h-4 w-4" /> Email Templates</TabsTrigger>
+          <TabsTrigger value="automations" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-[2px_2px_0px_hsl(220,10%,85%)] font-bold text-xs"><Zap className="mr-1 h-4 w-4" /> Automations</TabsTrigger>
         </TabsList>
 
-        {/* PROCESS FLOWS TAB */}
-        <TabsContent value="flows" className="space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search flows, steps, components…"
-              className="pl-10"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-            />
-          </div>
-
-          {filteredFlows.map(flow => (
-            <Card key={flow.id} className="rounded-2xl border-border/50 overflow-hidden">
-              <button
-                className="w-full p-4 flex items-center justify-between hover:bg-muted/30 transition-colors"
-                onClick={() => toggleFlow(flow.id)}
-              >
-                <div className="flex items-center gap-3">
-                  {expandedFlows.has(flow.id) ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
-                  <div className="text-left">
-                    <h3 className="font-bold text-sm text-foreground">{flow.name}</h3>
-                    <p className="text-xs text-muted-foreground">{flow.description}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-xs">
-                    {flow.steps.filter(s => s.implemented).length}/{flow.steps.length} steps
-                  </Badge>
-                  {flow.steps.some(s => s.issues?.length) && (
-                    <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 text-xs">
-                      {flow.steps.filter(s => s.issues?.length).length} issues
-                    </Badge>
-                  )}
-                </div>
-              </button>
-
-              {expandedFlows.has(flow.id) && (
-                <div className="border-t border-border/50 divide-y divide-border/30">
-                  {flow.steps.map((step, i) => (
-                    <div key={i} className="px-4 py-3 flex items-start justify-between hover:bg-muted/20">
-                      <div className="flex items-start gap-3">
-                        <div className="mt-0.5">
-                          {step.implemented ? (
-                            <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                          ) : (
-                            <AlertCircle className="h-4 w-4 text-amber-500" />
-                          )}
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-foreground">{step.name}</p>
-                          <p className="text-xs text-muted-foreground">{step.description}</p>
-                          {step.route && <p className="text-xs text-primary font-mono mt-0.5">{step.route}</p>}
-                          {step.component && <Badge variant="outline" className="text-[10px] mt-1">{step.component}</Badge>}
-                          {step.automations && step.automations.length > 0 && (
-                            <div className="flex gap-1 mt-1">
-                              {step.automations.map((a, ai) => (
-                                <Badge key={ai} className="bg-primary/10 text-primary text-[10px]">
-                                  <Zap className="h-2.5 w-2.5 mr-0.5" /> {a.name}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
-                          {step.emailTemplateKey && (
-                            <Badge className="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 text-[10px] mt-1">
-                              <Mail className="h-2.5 w-2.5 mr-0.5" /> {step.emailTemplateKey}
-                            </Badge>
-                          )}
-                          {step.issues?.map((issue, ii) => (
-                            <p key={ii} className="text-xs text-amber-600 mt-1">⚠ {issue}</p>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Card>
-          ))}
+        <TabsContent value="flows">
+          <ProcessFlowsTab />
         </TabsContent>
 
-        {/* EMAIL TEMPLATES TAB */}
-        <TabsContent value="emails" className="space-y-6">
-          <h3 className="font-bold text-sm text-foreground">Global Email Templates</h3>
-          <div className="space-y-2">
-            {Object.entries(globalTemplates).map(([key, value]) => (
-              <Card key={key} className="rounded-xl border-border/50">
-                <CardContent className="p-3 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-foreground">{key.replace("email_template_", "").replace(/_/g, " ")}</p>
-                    <p className="text-xs text-muted-foreground line-clamp-1">{value.slice(0, 100)}…</p>
-                  </div>
-                  <Button size="sm" variant="outline" className="text-xs" onClick={() => setEditingTemplate({ key, value, scope: "global" })}>
-                    Edit
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-            {Object.keys(globalTemplates).length === 0 && (
-              <p className="text-sm text-muted-foreground">No global email templates configured in platform settings.</p>
-            )}
-          </div>
-
-          <h3 className="font-bold text-sm text-foreground mt-6">Per-Service Email Overrides</h3>
-          <div className="space-y-2">
-            {services.filter(s => s.email_templates && Object.keys(s.email_templates).length > 0).map(svc => (
-              <Card key={svc.id} className="rounded-xl border-border/50">
-                <CardContent className="p-3">
-                  <p className="text-sm font-bold text-foreground mb-2">{svc.name}</p>
-                  <div className="flex flex-wrap gap-1">
-                    {Object.keys(svc.email_templates || {}).map(tplKey => (
-                      <Badge key={tplKey} variant="outline" className="text-[10px]">
-                        {tplKey.replace(/_/g, " ")}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-            {services.filter(s => s.email_templates && Object.keys(s.email_templates).length > 0).length === 0 && (
-              <p className="text-sm text-muted-foreground">No per-service email overrides configured.</p>
-            )}
-          </div>
-
-          <h3 className="font-bold text-sm text-foreground mt-6">Auth Email Templates</h3>
-          <div className="flex flex-wrap gap-2">
-            {AUTH_TEMPLATES.map(t => (
-              <Badge key={t} className="bg-muted text-muted-foreground">
-                <Mail className="h-3 w-3 mr-1" /> {t}
-              </Badge>
-            ))}
-          </div>
-          <p className="text-xs text-muted-foreground">Auth templates are defined in <code>supabase/functions/_shared/email-templates/</code> and deployed via the auth-email-hook edge function.</p>
+        <TabsContent value="emails">
+          <EmailTemplatesTab
+            globalTemplates={globalTemplates}
+            services={services}
+            onEdit={(key, value, scope) => setEditingTemplate({ key, value, scope })}
+          />
         </TabsContent>
 
-        {/* AUTOMATIONS TAB */}
-        <TabsContent value="automations" className="space-y-4">
-          {Object.entries(EDGE_AUTOMATIONS).map(([fnName, auto]) => (
-            <Card key={fnName} className="rounded-2xl border-border/50">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-primary" />
-                    <h3 className="font-bold text-sm text-foreground">{auto.name}</h3>
-                  </div>
-                  <Badge variant="outline" className="text-xs font-mono">{fnName}</Badge>
-                </div>
-                <p className="text-xs text-muted-foreground mb-3">{auto.description}</p>
-                <div className="flex flex-wrap gap-1">
-                  {auto.triggers.map(t => (
-                    <Badge key={t} className="bg-primary/10 text-primary text-[10px]">{t}</Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <TabsContent value="automations">
+          <AutomationsTab automations={EDGE_AUTOMATIONS} />
         </TabsContent>
       </Tabs>
 
       {/* Edit template dialog */}
       <Dialog open={!!editingTemplate} onOpenChange={() => setEditingTemplate(null)}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-lg rounded-[24px] border-2 border-[hsl(220,10%,90%)] shadow-[6px_6px_0px_hsl(220,10%,85%)]">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Mail className="h-5 w-5 text-primary" />
+            <DialogTitle className="flex items-center gap-2 font-black">
+              <Mail className="h-5 w-5 text-[hsl(45,96%,50%)]" />
               Edit Template: {editingTemplate?.key.replace("email_template_", "").replace(/_/g, " ")}
             </DialogTitle>
           </DialogHeader>
@@ -332,11 +180,11 @@ export default function AdminProcessFlows() {
             value={editingTemplate?.value || ""}
             onChange={e => setEditingTemplate(prev => prev ? { ...prev, value: e.target.value } : null)}
             rows={10}
-            className="font-mono text-xs"
+            className="font-mono text-xs rounded-xl border-2 border-[hsl(220,10%,90%)]"
           />
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditingTemplate(null)}>Cancel</Button>
-            <Button onClick={saveTemplate} disabled={saving}>
+            <Button variant="outline" onClick={() => setEditingTemplate(null)} className="rounded-xl font-bold">Cancel</Button>
+            <Button onClick={saveTemplate} disabled={saving} className="rounded-xl font-bold bg-[hsl(45,96%,50%)] text-[hsl(220,26%,14%)] hover:bg-[hsl(45,96%,45%)] shadow-[3px_3px_0px_hsl(220,26%,14%)]">
               {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />}
               Save Template
             </Button>
