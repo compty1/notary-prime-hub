@@ -272,6 +272,17 @@ export function DocuDexSidebar({
                 </div>
               )}
 
+              {/* ═══ Layouts ═══ */}
+              {sidebarTab === "layouts" && (
+                <DocuDexLayoutsPanel
+                  onApplyLayout={(html) => {
+                    if (editor) {
+                      editor.chain().focus().setContent(html).run();
+                    }
+                  }}
+                />
+              )}
+
               {/* ═══ AI Tools (AI-001 to AI-005) ═══ */}
               {sidebarTab === "ai" && (
                 <div className="space-y-3">
