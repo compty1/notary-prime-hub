@@ -77,9 +77,12 @@ export default function FeeCalculator() {
     // Validate notarial act fee against Ohio statutory cap
     const notarialActCount = documentCount * signerCount;
     const maxNotarialFee = notarialActCount * OHIO_MAX_FEE_PER_ACT;
-    if (result && result.basePrice > maxNotarialFee) {
-      result.basePrice = maxNotarialFee;
-      result.total = maxNotarialFee + (result.travelFee || 0) + (result.techFee || 0) + (result.rushFee || 0) + (result.afterHoursFee || 0) + (result.witnessFee || 0) + (result.apostilleFee || 0);
+    if (result && result.notarizationFees > maxNotarialFee) {
+      const diff = result.notarizationFees - maxNotarialFee;
+      result.notarizationFees = maxNotarialFee;
+      result.subtotal = result.subtotal - diff;
+      result.total = result.total - diff;
+      result.deposit = Math.round(result.total * 0.25 * 100) / 100;
     }
     return result;
   }, [notarizationType, documentCount, signerCount, effectiveMiles, isRush, isAfterHours, witnessCount, needsApostille, settings]);
