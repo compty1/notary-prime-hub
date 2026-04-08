@@ -206,8 +206,8 @@ export default function AdminOverview() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-sans text-2xl font-bold text-foreground">Dashboard Overview</h1>
-        <Button variant="ghost" size="sm" onClick={fetchData}><RefreshCw className="mr-1 h-3 w-3" /> Refresh</Button>
+        <h1 className="text-3xl font-black text-[#212529]">Dashboard Overview</h1>
+        <Button variant="ghost" size="sm" onClick={fetchData} className="rounded-xl"><RefreshCw className="mr-1 h-3 w-3" /> Refresh</Button>
       </div>
 
       {(commissionAlert || eoAlert || bondAlert) && (
@@ -245,7 +245,7 @@ export default function AdminOverview() {
 
       {/* Live Calendar Widget */}
       <div className="mb-8">
-        <Card className="border-border/50">
+        <Card className="rounded-[24px] border-gray-100 bg-white">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -296,10 +296,11 @@ export default function AdminOverview() {
         {statCards.map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
             <Link to={s.link}>
-              <Card className="border-border/50 hover:border-primary/30 hover:shadow-sm transition-all cursor-pointer">
-                <CardContent className="flex items-center gap-4 p-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted"><s.icon className={`h-5 w-5 ${s.color}`} /></div>
-                  <div><p className="text-2xl font-bold text-foreground">{s.value}</p><p className="text-xs text-muted-foreground">{s.label}</p></div>
+              <Card className="rounded-[24px] border-gray-100 hover:shadow-md transition-all cursor-pointer bg-white">
+                <CardContent className="p-5">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-50 mb-3"><s.icon className={`h-5 w-5 ${s.color}`} /></div>
+                  <p className="text-4xl font-black text-[#212529]">{s.value}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">{s.label}</p>
                 </CardContent>
               </Card>
             </Link>
@@ -309,42 +310,42 @@ export default function AdminOverview() {
 
       {/* Analytics Charts */}
       <div className="mb-8 grid gap-6 lg:grid-cols-3">
-        <Card className="border-border/50 lg:col-span-1">
-          <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Appointments by Month</CardTitle></CardHeader>
+        <Card className="rounded-[24px] border-gray-100 bg-white lg:col-span-1">
+          <CardHeader className="pb-2"><CardTitle className="text-[10px] font-black uppercase tracking-widest text-gray-400">Appointments by Month</CardTitle></CardHeader>
           <CardContent>
             {monthlyAppointments.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={monthlyAppointments}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-                  <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} allowDecimals={false} />
-                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
-                  <Bar dataKey="appointments" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#9ca3af" }} />
+                  <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} allowDecimals={false} />
+                  <Tooltip contentStyle={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, fontSize: 12 }} />
+                  <Bar dataKey="appointments" fill="#eab308" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
-            ) : <p className="py-10 text-center text-sm text-muted-foreground">No data yet</p>}
+            ) : <p className="py-10 text-center text-sm text-gray-400">No data yet</p>}
           </CardContent>
         </Card>
 
-        <Card className="border-border/50 lg:col-span-1">
-          <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Revenue Trend</CardTitle></CardHeader>
+        <Card className="rounded-[24px] border-gray-100 bg-white lg:col-span-1">
+          <CardHeader className="pb-2"><CardTitle className="text-[10px] font-black uppercase tracking-widest text-gray-400">Revenue Trend</CardTitle></CardHeader>
           <CardContent>
             {monthlyRevenue.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={monthlyRevenue}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-                  <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickFormatter={(v) => `$${v}`} />
-                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} formatter={(value: number) => [`$${value.toFixed(2)}`, "Revenue"]} />
-                  <Line type="monotone" dataKey="revenue" stroke="hsl(var(--accent))" strokeWidth={2} dot={{ fill: "hsl(var(--accent))", r: 4 }} />
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#9ca3af" }} />
+                  <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} tickFormatter={(v) => `$${v}`} />
+                  <Tooltip contentStyle={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, fontSize: 12 }} formatter={(value: number) => [`$${value.toFixed(2)}`, "Revenue"]} />
+                  <Line type="monotone" dataKey="revenue" stroke="#212529" strokeWidth={2} dot={{ fill: "#eab308", r: 4 }} />
                 </LineChart>
               </ResponsiveContainer>
-            ) : <p className="py-10 text-center text-sm text-muted-foreground">No data yet</p>}
+            ) : <p className="py-10 text-center text-sm text-gray-400">No data yet</p>}
           </CardContent>
         </Card>
 
-        <Card className="border-border/50 lg:col-span-1">
-          <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Status Breakdown</CardTitle></CardHeader>
+        <Card className="rounded-[24px] border-gray-100 bg-white lg:col-span-1">
+          <CardHeader className="pb-2"><CardTitle className="text-[10px] font-black uppercase tracking-widest text-gray-400">Status Breakdown</CardTitle></CardHeader>
           <CardContent>
             {statusBreakdown.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
@@ -352,10 +353,10 @@ export default function AdminOverview() {
                   <Pie data={statusBreakdown} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={3} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
                     {statusBreakdown.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
                   </Pie>
-                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
+                  <Tooltip contentStyle={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, fontSize: 12 }} />
                 </PieChart>
               </ResponsiveContainer>
-            ) : <p className="py-10 text-center text-sm text-muted-foreground">No data yet</p>}
+            ) : <p className="py-10 text-center text-sm text-gray-400">No data yet</p>}
           </CardContent>
         </Card>
       </div>
@@ -369,21 +370,21 @@ export default function AdminOverview() {
       {recentActivity.length > 0 && (
         <div className="mb-8">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-sans text-lg font-semibold text-foreground flex items-center gap-2">
-              <ScrollText className="h-5 w-5 text-muted-foreground" /> Recent Activity
+            <h2 className="text-lg font-black text-[#212529] flex items-center gap-2">
+              <ScrollText className="h-5 w-5 text-gray-400" /> Recent Activity
             </h2>
-            <Link to="/admin/audit-log"><Button variant="ghost" size="sm" className="text-xs">View All →</Button></Link>
+            <Link to="/admin/audit-log"><Button variant="ghost" size="sm" className="text-xs rounded-xl">View All →</Button></Link>
           </div>
-          <Card className="border-border/50">
+          <Card className="rounded-[24px] border-gray-100 bg-white">
             <CardContent className="p-0">
-              <div className="divide-y divide-border/30">
+              <div className="divide-y divide-gray-100">
                 {recentActivity.map((log) => (
-                  <div key={log.id} className="flex items-center justify-between px-4 py-2.5 hover:bg-muted/30">
+                  <div key={log.id} className="flex items-center justify-between px-5 py-3 hover:bg-gray-50/50">
                     <div className="flex items-center gap-3">
-                      <Badge className="text-xs bg-muted text-muted-foreground">{log.action.replace(/_/g, " ")}</Badge>
-                      <span className="text-xs text-muted-foreground">{log.entity_type || ""}</span>
+                      <Badge className="text-xs bg-gray-100 text-gray-600 rounded-lg">{log.action.replace(/_/g, " ")}</Badge>
+                      <span className="text-xs text-gray-400">{log.entity_type || ""}</span>
                     </div>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-gray-400">
                       {new Date(log.created_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
                     </span>
                   </div>
@@ -394,31 +395,31 @@ export default function AdminOverview() {
         </div>
       )}
 
-      <h2 className="mb-4 font-sans text-lg font-semibold text-foreground">Recent Appointments</h2>
+      <h2 className="mb-4 text-lg font-black text-[#212529]">Recent Appointments</h2>
       {appointments.length === 0 ? (
-        <Card className="border-border/50"><CardContent className="py-8 text-center text-muted-foreground">No appointments yet</CardContent></Card>
+        <Card className="rounded-[24px] border-gray-100 bg-white"><CardContent className="py-8 text-center text-gray-400">No appointments yet</CardContent></Card>
       ) : (
-        <Card className="border-border/50">
+        <Card className="rounded-[24px] border-gray-100 bg-white">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[600px]">
-                <thead><tr className="border-b border-border/50">
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Client</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Date</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Time</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Service</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Type</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
+                <thead><tr className="border-b border-gray-100">
+                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Client</th>
+                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Date</th>
+                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Time</th>
+                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Service</th>
+                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Type</th>
+                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Status</th>
                 </tr></thead>
                 <tbody>
                   {appointments.map((a) => (
-                    <tr key={a.id} className="border-b border-border/30 last:border-0 hover:bg-muted/30">
-                      <td className="px-4 py-3 font-medium">{getClientName(a.client_id)}</td>
-                      <td className="px-4 py-3">{formatDate(a.scheduled_date)}</td>
-                      <td className="px-4 py-3">{formatTime(a.scheduled_time)}</td>
-                      <td className="px-4 py-3">{a.service_type}</td>
-                      <td className="px-4 py-3 capitalize">{a.notarization_type.replace("_", " ")}</td>
-                      <td className="px-4 py-3"><Badge className={statusColors[a.status] || "bg-muted"}>{a.status.replace(/_/g, " ")}</Badge></td>
+                    <tr key={a.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50">
+                      <td className="px-5 py-3 font-bold text-[#212529]">{getClientName(a.client_id)}</td>
+                      <td className="px-5 py-3 text-gray-600">{formatDate(a.scheduled_date)}</td>
+                      <td className="px-5 py-3 text-gray-600">{formatTime(a.scheduled_time)}</td>
+                      <td className="px-5 py-3 text-gray-600">{a.service_type}</td>
+                      <td className="px-5 py-3 capitalize text-gray-600">{a.notarization_type.replace("_", " ")}</td>
+                      <td className="px-5 py-3"><Badge className={`${statusColors[a.status] || "bg-gray-100"} rounded-lg`}>{a.status.replace(/_/g, " ")}</Badge></td>
                     </tr>
                   ))}
                 </tbody>

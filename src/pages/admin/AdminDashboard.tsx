@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug, TrendingUp, ShieldCheck, Webhook, FileEdit, Workflow } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { AdminNotificationCenter } from "@/components/AdminNotificationCenter";
+import { Logo } from "@/components/Logo";
 
 const sidebarGroups = [
   {
@@ -86,30 +87,31 @@ function AdminSidebar() {
   const { signOut, isAdmin } = useAuth();
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-sidebar-border">
-      <SidebarContent className="bg-sidebar">
-        <div className="flex items-center gap-2 px-4 py-4">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-            <Shield className="h-4 w-4 text-primary-foreground" />
-          </div>
-          {!collapsed && <span className="font-sans text-sm font-semibold text-sidebar-foreground">{isAdmin ? "Admin Panel" : "Notary Panel"}</span>}
+    <Sidebar collapsible="icon" className="border-r-0 bg-[#212529]">
+      <SidebarContent className="bg-[#212529]">
+        {/* Logo + title */}
+        <div className="flex items-center gap-2 px-4 py-5 border-b border-white/10">
+          <Logo size="sm" showText={!collapsed} theme="dark" />
         </div>
+
         {sidebarGroups.map((group) => {
           const visibleItems = group.items.filter((item) => !item.adminOnly || isAdmin);
           if (visibleItems.length === 0) return null;
           return (
             <SidebarGroup key={group.label}>
-              <SidebarGroupLabel className="text-sidebar-foreground/50">{group.label}</SidebarGroupLabel>
+              <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-widest text-gray-500 px-3">
+                {group.label}
+              </SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   {visibleItems.map((item) => (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild>
                         <NavLink to={item.url} end={item.url === "/admin"}
-                          className="text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
-                          activeClassName="bg-sidebar-accent text-sidebar-primary font-semibold">
+                          className="text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+                          activeClassName="bg-[#eab308] text-white shadow-lg shadow-yellow-500/20 font-bold">
                           <item.icon className="mr-2 h-4 w-4" />
-                          {!collapsed && <span>{item.title}</span>}
+                          {!collapsed && <span className="text-sm">{item.title}</span>}
                         </NavLink>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -119,13 +121,14 @@ function AdminSidebar() {
             </SidebarGroup>
           );
         })}
-        <div className="mt-auto p-4">
+
+        <div className="mt-auto p-4 border-t border-white/10">
           <Link to="/portal" className="mb-2 block">
-            <Button variant="ghost" size="sm" className="w-full justify-start text-sidebar-foreground/70 hover:text-sidebar-foreground">
+            <Button variant="ghost" size="sm" className="w-full justify-start text-gray-400 hover:text-white hover:bg-white/5 rounded-xl">
               <Eye className="mr-2 h-4 w-4" />{!collapsed && "Client View"}
             </Button>
           </Link>
-          <Button variant="ghost" size="sm" onClick={signOut} className="w-full justify-start text-sidebar-foreground/70 hover:text-sidebar-foreground">
+          <Button variant="ghost" size="sm" onClick={signOut} className="w-full justify-start text-gray-400 hover:text-white hover:bg-white/5 rounded-xl">
             <LogOut className="mr-2 h-4 w-4" />{!collapsed && "Sign Out"}
           </Button>
         </div>
@@ -140,19 +143,18 @@ export default function AdminDashboard() {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
-        {/* Skip to main content */}
         <a href="#admin-main" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded focus:bg-accent focus:px-4 focus:py-2 focus:text-primary-foreground focus:outline-none">
           Skip to main content
         </a>
         <AdminSidebar />
         <div className="flex-1 flex flex-col">
-          <header className="flex h-12 items-center justify-between border-b border-border/50 bg-background px-4">
+          <header className="flex h-14 items-center justify-between border-b border-gray-100 bg-white/80 backdrop-blur-sm px-6">
             <div className="flex items-center">
               <SidebarTrigger />
-              <span className="ml-4 font-sans text-sm font-medium text-muted-foreground">
-                Notar — {isAdmin ? "Admin" : "Notary"}
+              <span className="ml-4 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                {isAdmin ? "Admin Panel" : "Notary Panel"}
               </span>
-              <kbd className="ml-3 hidden sm:inline-flex items-center gap-1 rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
+              <kbd className="ml-3 hidden sm:inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[10px] font-mono text-gray-400">
                 ⌘K
               </kbd>
             </div>
@@ -161,7 +163,7 @@ export default function AdminDashboard() {
               <DarkModeToggle />
             </div>
           </header>
-          <main id="admin-main" className="flex-1 overflow-auto p-6"><Outlet /></main>
+          <main id="admin-main" className="flex-1 overflow-auto p-6 bg-[#f8f9fa]"><Outlet /></main>
         </div>
       </div>
     </SidebarProvider>
