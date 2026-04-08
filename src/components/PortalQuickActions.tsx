@@ -1,7 +1,7 @@
 /**
  * Portal quick action cards — restyled with colored icon backgrounds.
  */
-import { Upload, Calendar, MessageSquare, FileText, Smartphone } from "lucide-react";
+import { Upload, Calendar, MessageSquare, FileText, Smartphone, PenTool } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 
@@ -18,11 +18,12 @@ const ACTIONS: QuickAction[] = [
   { icon: Upload, label: "Upload Document", href: "/mobile-upload", iconColor: "text-purple-600 dark:text-purple-400", iconBg: "bg-purple-50 dark:bg-purple-900/30" },
   { icon: MessageSquare, label: "Message Us", href: "/portal?tab=chat", iconColor: "text-green-600 dark:text-green-400", iconBg: "bg-green-50 dark:bg-green-900/30" },
   { icon: FileText, label: "View Documents", href: "/portal?tab=documents", iconColor: "text-amber-600 dark:text-amber-400", iconBg: "bg-amber-50 dark:bg-amber-900/30" },
+  { icon: PenTool, label: "Document Studio", href: "/docudex", iconColor: "text-indigo-600 dark:text-indigo-400", iconBg: "bg-indigo-50 dark:bg-indigo-900/30" },
 ];
 
 export function PortalQuickActions() {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
       {ACTIONS.map(action => (
         <Link key={action.label} to={action.href}>
           <Card className="rounded-2xl border-border/50 hover:border-primary/30 hover:shadow-sm transition-all cursor-pointer">

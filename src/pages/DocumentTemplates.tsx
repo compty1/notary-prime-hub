@@ -1,6 +1,6 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, FileText, Download, Eye, Printer, ChevronLeft, AlertTriangle, Save, MessageSquare, Sparkles, Send, Loader2, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, AlignLeft, AlignCenter, AlignRight, Heading1, Heading2, Heart, RotateCcw, HelpCircle, PenTool, Plus, CheckCircle, PanelRightOpen } from "lucide-react";
+import { Search, FileText, Download, Eye, Printer, ChevronLeft, AlertTriangle, Save, MessageSquare, Sparkles, Send, Loader2, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, AlignLeft, AlignCenter, AlignRight, Heading1, Heading2, Heart, RotateCcw, HelpCircle, PenTool, Plus, CheckCircle, PanelRightOpen, ExternalLink } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { motion } from "framer-motion";
@@ -650,7 +650,16 @@ export default function DocumentTemplates() {
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const printRef = useRef<HTMLDivElement>(null);
+
+  /** Open filled template in DocuDex for advanced editing */
+  const openInDocuDex = (t: Template) => {
+    let body = t.body;
+    Object.entries(formData).forEach(([k, v]) => { body = body.replace(new RegExp(`\\{\\{${k}\\}\\}`, "g"), v || `{{${k}}}`); });
+    sessionStorage.setItem("ai_tools_content", body);
+    navigate("/docudex");
+  };
 
   // AI Chat state
   const [chatOpen, setChatOpen] = useState(false);
@@ -1398,6 +1407,9 @@ export default function DocumentTemplates() {
             </div>
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => setSelectedTemplate(null)}>Cancel</Button>
+              <Button variant="outline" onClick={() => { if (selectedTemplate) openInDocuDex(selectedTemplate); }} className="gap-1">
+                <ExternalLink className="h-3 w-3" /> Open in DocuDex
+              </Button>
               <Button onClick={() => setPreviewOpen(true)} className=""><Eye className="mr-1 h-4 w-4" /> Preview & Edit</Button>
             </div>
           </DialogFooter>
@@ -1415,6 +1427,9 @@ export default function DocumentTemplates() {
           <DialogFooter className="flex-col sm:flex-row gap-2">
             <Button variant="outline" onClick={() => setPreviewOpen(false)}>Back to Fields</Button>
             <Button variant="outline" onClick={handleExportDocx} className="gap-1"><Download className="h-3 w-3" /> Export .DOC</Button>
+            <Button variant="outline" onClick={() => { if (selectedTemplate) openInDocuDex(selectedTemplate); }} className="gap-1">
+              <ExternalLink className="h-3 w-3" /> Open in DocuDex
+            </Button>
             <Button variant="outline" onClick={handleSaveToVault} disabled={saving || !user} className="gap-1">
               {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />} Save to Vault
             </Button>
