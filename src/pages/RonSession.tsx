@@ -62,17 +62,17 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
         return (
           <div key={step.label} className="flex items-center gap-1 flex-1">
             <div className={cn(
-              "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-              isDone && "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary",
-              isActive && "bg-primary/10 text-primary ring-1 ring-primary/30",
-              !isActive && !isDone && "bg-muted text-muted-foreground"
+              "flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-colors",
+              isDone && "bg-[#eab308]/10 text-[#eab308]",
+              isActive && "bg-[#eab308]/10 text-[#eab308] ring-1 ring-[#eab308]/30",
+              !isActive && !isDone && "bg-gray-100 text-gray-400"
             )}>
               {isDone ? <CheckCircle className="h-3.5 w-3.5" /> : <Icon className="h-3.5 w-3.5" />}
               <span className="hidden sm:inline">{step.label}</span>
               <span className="sm:hidden">{i + 1}</span>
             </div>
             {i < STEPS.length - 1 && (
-              <div className={cn("h-px flex-1 min-w-4", isDone ? "bg-primary/30 dark:bg-primary" : "bg-border")} />
+              <div className={cn("h-px flex-1 min-w-4", isDone ? "bg-[#eab308]/30" : "bg-gray-200")} />
             )}
           </div>
         );
