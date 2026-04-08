@@ -167,9 +167,8 @@ export default function Login() {
                      </button>
                    </div>
                  </div>
-                 <div className="flex items-center gap-2">
-                   <Checkbox id="remember" checked={rememberMe} onCheckedChange={(c) => setRememberMe(c === true)} />
-                   <Label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">Remember me</Label>
+                 <div className="flex items-center justify-end">
+                   <button type="button" onClick={() => setForgotMode(true)} className="text-sm text-primary hover:underline">Forgot password?</button>
                  </div>
                 {rateLimitSeconds > 0 && (
                   <p className="text-sm text-destructive text-center">Too many attempts. Try again in {rateLimitSeconds}s</p>
