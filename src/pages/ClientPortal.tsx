@@ -379,7 +379,7 @@ export default function ClientPortal() {
             if (unreadIds.length > 0) supabase.from("chat_messages").update({ read: true }).in("id", unreadIds).then(() => { setChatMessages(prev => prev.map(m => unreadIds.includes(m.id) ? { ...m, read: true } : m)); setUnreadCount(0); });
           }
         }}>
-          <TabsList className="w-full overflow-x-auto flex flex-nowrap gap-1 h-auto justify-start sm:justify-center scrollbar-hide">
+          <TabsList className="w-full overflow-x-auto flex flex-nowrap gap-1 h-auto justify-start sm:justify-center scrollbar-hide py-1.5 px-1" role="tablist" aria-label="Portal sections">
             <TabsTrigger value="overview" aria-label="Dashboard Overview"><Home className="mr-1 h-4 w-4 hidden sm:inline" /> Home</TabsTrigger>
             <TabsTrigger value="appointments" aria-label="Appointments"><Calendar className="mr-1 h-4 w-4 hidden sm:inline" /> Appts</TabsTrigger>
             <TabsTrigger value="documents" aria-label="Documents"><FileText className="mr-1 h-4 w-4 hidden sm:inline" /> Docs</TabsTrigger>
@@ -640,6 +640,9 @@ export default function ClientPortal() {
                 <div><Label>Notes (optional)</Label><Textarea value={apostilleForm.notes} onChange={e => setApostilleForm({ ...apostilleForm, notes: e.target.value })} rows={2} placeholder="Urgency, special instructions" maxLength={500} /></div>
                 <Button disabled={!apostilleForm.document_description.trim() || submittingApostille} onClick={async () => {
                   if (!user) return;
+                  // Issue 3.9: Confirmation dialog before submission
+                  const confirmed = window.confirm(`Submit apostille request for "${apostilleForm.document_description}"${apostilleForm.destination_country ? ` to ${apostilleForm.destination_country}` : ""}? This will create a new service request.`);
+                  if (!confirmed) return;
                   setSubmittingApostille(true);
                   const { data: newReq, error } = await supabase.from("apostille_requests").insert({ client_id: user.id, document_description: apostilleForm.document_description.trim(), notes: apostilleForm.notes.trim() || null, destination_country: apostilleForm.destination_country.trim() || null, document_count: parseInt(apostilleForm.document_count) || 1 }).select().single();
                   if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -830,7 +833,21 @@ export default function ClientPortal() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <Dialog open={editProfileOpen} onOpenChange={setEditProfileOpen}>
+      <Dialog open={editProfileOpen} onOpenChange={(open) => {
+        if (!open) {
+          // Issue 3.14: Unsaved changes warning
+          const hasChanges = profile && (
+            profileForm.full_name !== (profile.full_name || "") ||
+            profileForm.phone !== (profile.phone || "") ||
+            profileForm.address !== (profile.address || "") ||
+            profileForm.city !== (profile.city || "") ||
+            profileForm.state !== (profile.state || "") ||
+            profileForm.zip !== (profile.zip_code || "")
+          );
+          if (hasChanges && !window.confirm("You have unsaved changes. Discard them?")) return;
+        }
+        setEditProfileOpen(open);
+      }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader><DialogTitle className="font-sans flex items-center gap-2"><User className="h-5 w-5 text-primary" /> Edit Profile</DialogTitle></DialogHeader>
           <div className="space-y-4">
