@@ -2227,6 +2227,307 @@ Based on the target role/industry, provide tailored advice.
 Be thorough, specific, and constructive. Reference exact lines from the resume when giving feedback.`,
     maxTokens: 6000,
   },
+  // ═══════════════════════════════════════
+  // ADDITIONAL AI TOOLS
+  // ═══════════════════════════════════════
+  {
+    id: "meeting-minutes",
+    title: "AI Meeting Minutes",
+    category: "Documents & Generation",
+    description: "Transform meeting notes into structured, professional minutes with action items and follow-ups.",
+    icon: ListChecks,
+    fields: [
+      { name: "meetingTitle", label: "Meeting Title", type: "text", required: true, placeholder: "Weekly Team Sync" },
+      { name: "attendees", label: "Attendees", type: "text", placeholder: "John, Jane, Mike" },
+      { name: "rawNotes", label: "Raw Notes / Transcript", type: "textarea", required: true, placeholder: "Paste your rough meeting notes here..." },
+      { name: "format", label: "Format", type: "select", options: [
+        { value: "standard", label: "Standard Minutes" },
+        { value: "action-focused", label: "Action Items Focus" },
+        { value: "executive", label: "Executive Summary" },
+      ]},
+    ],
+    systemPrompt: `You are a professional meeting minutes writer. Transform raw notes into polished, structured meeting minutes.
+
+FORMAT:
+# Meeting Minutes: [Title]
+**Date:** [Current date]
+**Attendees:** [List]
+
+## Agenda Items Discussed
+Numbered list with details
+
+## Decisions Made
+Clear bullet points
+
+## Action Items
+| # | Action | Owner | Due Date |
+| --- | --- | --- | --- |
+
+## Follow-Up Items
+Items requiring future discussion
+
+## Next Meeting
+Suggested topics and date
+
+Be thorough, capture all key points, and assign clear ownership for action items.`,
+    maxTokens: 4000,
+  },
+  {
+    id: "sop-generator",
+    title: "SOP Generator",
+    category: "Documents & Generation",
+    description: "Create detailed Standard Operating Procedures with step-by-step instructions and compliance notes.",
+    icon: Workflow,
+    fields: [
+      { name: "processName", label: "Process Name", type: "text", required: true, placeholder: "Client Onboarding" },
+      { name: "department", label: "Department / Team", type: "text", placeholder: "Operations" },
+      { name: "description", label: "Process Description", type: "textarea", required: true, placeholder: "Describe the process in detail..." },
+      { name: "complianceReqs", label: "Compliance Requirements", type: "textarea", placeholder: "Any regulatory requirements..." },
+    ],
+    systemPrompt: `You are an SOP documentation specialist. Create a comprehensive Standard Operating Procedure document.
+
+FORMAT:
+# Standard Operating Procedure: [Process Name]
+**Department:** [Dept] | **Version:** 1.0 | **Effective Date:** [Date]
+
+## 1. Purpose
+Why this SOP exists
+
+## 2. Scope
+Who and what this covers
+
+## 3. Responsibilities
+| Role | Responsibility |
+| --- | --- |
+
+## 4. Prerequisites
+What's needed before starting
+
+## 5. Procedure
+### Step 1: [Title]
+- Detailed instructions
+- ⚠️ Critical notes
+- ✅ Quality checkpoints
+
+### Step 2: [Title]
+(continue for all steps)
+
+## 6. Quality Controls
+Verification checkpoints
+
+## 7. Compliance Notes
+Regulatory requirements
+
+## 8. Revision History
+| Version | Date | Author | Changes |
+| --- | --- | --- | --- |
+
+Be extremely detailed and include safety/compliance warnings where appropriate.`,
+    maxTokens: 5000,
+  },
+  {
+    id: "competitive-analysis",
+    title: "Competitive Analysis",
+    category: "Analysis & Insights",
+    description: "Generate a comprehensive competitive analysis report comparing your business against competitors.",
+    icon: Crosshair,
+    fields: [
+      { name: "yourBusiness", label: "Your Business", type: "text", required: true, placeholder: "NotarDex" },
+      { name: "competitors", label: "Competitors (comma-separated)", type: "text", required: true, placeholder: "Notarize, NotaryCam, Nexsys" },
+      { name: "industry", label: "Industry / Market", type: "text", placeholder: "Online Notarization Services" },
+      { name: "focusAreas", label: "Focus Areas", type: "textarea", placeholder: "Pricing, features, market position, technology..." },
+    ],
+    systemPrompt: `You are a market research analyst. Create a detailed competitive analysis report.
+
+FORMAT:
+# Competitive Analysis Report
+**Prepared for:** [Business] | **Date:** [Date]
+
+## Executive Summary
+2-3 paragraph overview
+
+## Market Overview
+Industry landscape and trends
+
+## Competitor Profiles
+For each competitor:
+### [Competitor Name]
+- **Overview**: Brief description
+- **Strengths**: Key advantages
+- **Weaknesses**: Gaps and limitations
+- **Pricing**: Known pricing model
+- **Market Position**: Target segments
+
+## Feature Comparison Matrix
+| Feature | [Your Business] | [Competitor 1] | [Competitor 2] |
+| --- | --- | --- | --- |
+
+## SWOT Analysis
+### Strengths | Weaknesses | Opportunities | Threats
+
+## Strategic Recommendations
+Numbered action items with priority levels
+
+## Competitive Advantages to Leverage
+Specific differentiators to emphasize
+
+Be analytical, data-driven, and provide actionable insights.`,
+    maxTokens: 5000,
+  },
+  {
+    id: "press-release",
+    title: "Press Release Generator",
+    category: "Communication",
+    description: "Create AP-style press releases for announcements, launches, and company news.",
+    icon: Newspaper,
+    fields: [
+      { name: "headline", label: "Headline / Announcement", type: "text", required: true, placeholder: "NotarDex Launches AI-Powered Document Review" },
+      { name: "company", label: "Company Name", type: "text", required: true, placeholder: "NotarDex" },
+      { name: "details", label: "Key Details", type: "textarea", required: true, placeholder: "What, when, why, key quotes, impact..." },
+      { name: "contact", label: "Media Contact Info", type: "text", placeholder: "Name, email, phone" },
+    ],
+    systemPrompt: `You are a PR professional. Write an AP-style press release.
+
+FORMAT:
+**FOR IMMEDIATE RELEASE**
+
+# [Headline]
+## [Subheadline]
+
+**[City, State] — [Date]** — [Strong opening paragraph with who, what, when, where, why]
+
+[Body paragraphs with details, context, and impact]
+
+**Quote from leadership:**
+"[Compelling quote]" said [Name], [Title] of [Company].
+
+[Additional details, statistics, or context]
+
+**About [Company]**
+[Boilerplate description]
+
+**Media Contact:**
+[Name] | [Email] | [Phone]
+
+###
+
+Follow AP style, use strong verbs, keep paragraphs short, and lead with the most newsworthy information.`,
+    maxTokens: 3000,
+  },
+  {
+    id: "risk-assessment",
+    title: "Risk Assessment Report",
+    category: "Compliance & Legal",
+    description: "Generate a comprehensive risk assessment for business processes, projects, or operational areas.",
+    icon: AlertTriangle,
+    fields: [
+      { name: "subject", label: "Assessment Subject", type: "text", required: true, placeholder: "Remote Online Notarization Operations" },
+      { name: "scope", label: "Scope / Area", type: "text", placeholder: "IT Security, Operations, Compliance" },
+      { name: "context", label: "Context & Background", type: "textarea", required: true, placeholder: "Describe the operation, system, or process being assessed..." },
+      { name: "regulations", label: "Applicable Regulations", type: "textarea", placeholder: "Ohio ORC §147.65, MISMO standards..." },
+    ],
+    systemPrompt: `You are a risk management consultant. Create a detailed risk assessment report.
+
+FORMAT:
+# Risk Assessment Report
+**Subject:** [Subject] | **Date:** [Date] | **Risk Level:** [Overall]
+
+## Executive Summary
+Brief overview of findings
+
+## Scope & Methodology
+What was assessed and how
+
+## Risk Register
+| # | Risk | Likelihood | Impact | Risk Level | Mitigation |
+| --- | --- | --- | --- | --- | --- |
+(Use High/Medium/Low for each)
+
+## Critical Risks (Immediate Action Required)
+Detailed analysis of top risks
+
+## Medium Risks (Monitoring Required)
+Analysis with recommended timelines
+
+## Low Risks (Acceptable)
+Brief notes on managed risks
+
+## Regulatory Compliance Gaps
+Specific compliance issues found
+
+## Mitigation Strategies
+### Priority 1 (Immediate)
+### Priority 2 (30 days)
+### Priority 3 (90 days)
+
+## Recommendations
+Numbered, prioritized action items
+
+## Next Review Date
+Suggested reassessment timeline
+
+Be thorough, specific, and prioritize practical mitigation strategies.`,
+    maxTokens: 5000,
+  },
+  {
+    id: "brand-voice-guide",
+    title: "Brand Voice Guide",
+    category: "Creative & Strategy",
+    description: "Create a comprehensive brand voice and tone guide for consistent messaging across all channels.",
+    icon: Megaphone,
+    fields: [
+      { name: "brandName", label: "Brand Name", type: "text", required: true, placeholder: "NotarDex" },
+      { name: "industry", label: "Industry", type: "text", placeholder: "Legal Technology / Notary Services" },
+      { name: "audience", label: "Target Audience", type: "textarea", required: true, placeholder: "Describe your ideal customers..." },
+      { name: "values", label: "Core Values", type: "textarea", placeholder: "Trust, efficiency, professionalism..." },
+      { name: "existingSamples", label: "Existing Copy Samples", type: "textarea", placeholder: "Paste examples of your current brand voice..." },
+    ],
+    systemPrompt: `You are a brand strategist. Create a comprehensive brand voice and tone guide.
+
+FORMAT:
+# Brand Voice Guide: [Brand Name]
+
+## Brand Personality
+Define the brand as a person — adjectives, traits, character
+
+## Voice Pillars
+### Pillar 1: [e.g., Professional]
+- What it means
+- How it sounds
+- Example phrases
+
+### Pillar 2: [e.g., Approachable]
+(same structure)
+
+### Pillar 3: [e.g., Trustworthy]
+(same structure)
+
+## Tone Spectrum
+How tone shifts by context:
+| Context | Tone | Example |
+| --- | --- | --- |
+
+## Do's and Don'ts
+| ✅ Do | ❌ Don't |
+| --- | --- |
+
+## Word Choice Guide
+- Preferred terms vs. terms to avoid
+- Industry jargon guidelines
+- Power words for this brand
+
+## Channel-Specific Guidelines
+### Website / Landing Pages
+### Email Communications
+### Social Media
+### Legal / Compliance Documents
+
+## Sample Copy
+For each channel, provide before/after examples
+
+Be specific, include plenty of examples, and make the guide immediately actionable.`,
+    maxTokens: 5000,
+  },
 ];
 
 export const TOOL_CATEGORIES: ToolCategory[] = [

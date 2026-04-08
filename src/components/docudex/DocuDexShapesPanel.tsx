@@ -1,144 +1,239 @@
-import { cn } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
 import {
-  RectangleHorizontal, Circle, Triangle, Star, ArrowRight,
-  Minus, CornerDownRight, Frame, Quote, Bookmark, Shield, Award,
+  AlertTriangle, CheckCircle, Info, XCircle, Quote, BarChart3,
+  Layers, Clock, Sparkles, ArrowRight, Star, Zap, Shield, Heart,
+  Bookmark, Flag, Award, Target, TrendingUp, Box,
 } from "lucide-react";
-
-interface ShapeItem {
-  id: string;
-  label: string;
-  icon: React.ReactNode;
-  html: string;
-}
-
-const SHAPES: ShapeItem[] = [
-  {
-    id: "rect-filled",
-    label: "Filled Box",
-    icon: <RectangleHorizontal className="h-4 w-4" />,
-    html: `<div style="background:#f1f5f9;border-radius:12px;padding:24px;margin:16px 0;"><p>Content block</p></div>`,
-  },
-  {
-    id: "rect-outlined",
-    label: "Outlined Box",
-    icon: <Frame className="h-4 w-4" />,
-    html: `<div style="border:2px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;"><p>Content block</p></div>`,
-  },
-  {
-    id: "accent-box",
-    label: "Accent Box",
-    icon: <RectangleHorizontal className="h-4 w-4" />,
-    html: `<div style="border-left:4px solid #3b82f6;background:#eff6ff;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0;"><p><strong>Note:</strong> Important information here</p></div>`,
-  },
-  {
-    id: "warning-box",
-    label: "Warning Box",
-    icon: <Shield className="h-4 w-4" />,
-    html: `<div style="border-left:4px solid #f59e0b;background:#fffbeb;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0;"><p>⚠️ <strong>Warning:</strong> Please review carefully</p></div>`,
-  },
-  {
-    id: "success-box",
-    label: "Success Box",
-    icon: <Award className="h-4 w-4" />,
-    html: `<div style="border-left:4px solid #10b981;background:#f0fdf4;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0;"><p>✅ <strong>Complete:</strong> All requirements met</p></div>`,
-  },
-  {
-    id: "error-box",
-    label: "Error Box",
-    icon: <Shield className="h-4 w-4" />,
-    html: `<div style="border-left:4px solid #ef4444;background:#fef2f2;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0;"><p>❌ <strong>Error:</strong> Action required</p></div>`,
-  },
-  {
-    id: "pull-quote",
-    label: "Pull Quote",
-    icon: <Quote className="h-4 w-4" />,
-    html: `<div style="border-top:3px solid #1e293b;border-bottom:3px solid #1e293b;padding:24px 16px;margin:24px 32px;text-align:center;"><p style="font-size:20px;font-style:italic;color:#334155;line-height:1.6;">"Your quote text here"</p><p style="font-size:13px;color:#94a3b8;margin-top:8px;">— Attribution</p></div>`,
-  },
-  {
-    id: "stat-block",
-    label: "Stat Block",
-    icon: <Star className="h-4 w-4" />,
-    html: `<table style="width:100%;border:none;border-collapse:separate;border-spacing:12px;text-align:center;"><tr><td style="border:none;background:#f8fafc;border-radius:12px;padding:20px;"><p style="font-size:32px;font-weight:bold;color:#1e293b;margin:0;">99%</p><p style="font-size:12px;color:#64748b;margin:4px 0 0;">Satisfaction</p></td><td style="border:none;background:#f8fafc;border-radius:12px;padding:20px;"><p style="font-size:32px;font-weight:bold;color:#1e293b;margin:0;">500+</p><p style="font-size:12px;color:#64748b;margin:4px 0 0;">Documents</p></td><td style="border:none;background:#f8fafc;border-radius:12px;padding:20px;"><p style="font-size:32px;font-weight:bold;color:#1e293b;margin:0;">24/7</p><p style="font-size:12px;color:#64748b;margin:4px 0 0;">Support</p></td></tr></table>`,
-  },
-  {
-    id: "divider-fancy",
-    label: "Fancy Divider",
-    icon: <Minus className="h-4 w-4" />,
-    html: `<div style="text-align:center;margin:32px 0;"><span style="display:inline-block;width:80px;height:1px;background:#cbd5e1;vertical-align:middle;"></span><span style="display:inline-block;margin:0 12px;color:#94a3b8;font-size:14px;">✦</span><span style="display:inline-block;width:80px;height:1px;background:#cbd5e1;vertical-align:middle;"></span></div>`,
-  },
-  {
-    id: "divider-dots",
-    label: "Dot Divider",
-    icon: <Minus className="h-4 w-4" />,
-    html: `<p style="text-align:center;letter-spacing:8px;color:#94a3b8;margin:24px 0;">• • • • •</p>`,
-  },
-  {
-    id: "gradient-banner",
-    label: "Gradient Banner",
-    icon: <RectangleHorizontal className="h-4 w-4" />,
-    html: `<div style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:32px;border-radius:12px;margin:16px 0;text-align:center;"><h2 style="color:#fff;margin:0 0 8px;">Banner Title</h2><p style="color:rgba(255,255,255,0.8);margin:0;">Supporting text goes here</p></div>`,
-  },
-  {
-    id: "timeline-entry",
-    label: "Timeline Entry",
-    icon: <CornerDownRight className="h-4 w-4" />,
-    html: `<table style="width:100%;border:none;"><tr><td style="width:80px;text-align:center;vertical-align:top;border:none;"><div style="background:#3b82f6;color:#fff;border-radius:50%;width:32px;height:32px;line-height:32px;text-align:center;margin:0 auto;">1</div><div style="width:2px;height:40px;background:#e2e8f0;margin:4px auto;"></div></td><td style="padding:4px 16px;vertical-align:top;border:none;"><h3 style="margin:4px 0;">Step One</h3><p style="font-size:13px;color:#64748b;">Description of this step</p></td></tr></table>`,
-  },
-  {
-    id: "arrow-callout",
-    label: "Arrow Callout",
-    icon: <ArrowRight className="h-4 w-4" />,
-    html: `<div style="display:flex;align-items:center;gap:12px;background:#fefce8;border:1px solid #fde68a;border-radius:8px;padding:16px;margin:16px 0;"><span style="font-size:24px;">👉</span><div><p style="margin:0;font-weight:600;">Action Required</p><p style="margin:4px 0 0;font-size:13px;color:#64748b;">Description of what needs to be done</p></div></div>`,
-  },
-  {
-    id: "badge-row",
-    label: "Badge Row",
-    icon: <Bookmark className="h-4 w-4" />,
-    html: `<p style="display:flex;gap:8px;flex-wrap:wrap;margin:16px 0;"><span style="display:inline-block;background:#dbeafe;color:#1e40af;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:500;">Label 1</span><span style="display:inline-block;background:#dcfce7;color:#166534;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:500;">Label 2</span><span style="display:inline-block;background:#fef3c7;color:#92400e;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:500;">Label 3</span></p>`,
-  },
-];
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface ShapesPanelProps {
   onInsertShape: (html: string) => void;
 }
 
-export function DocuDexShapesPanel({ onInsertShape }: ShapesPanelProps) {
-  const [search, setSearch] = useState("");
+const SHAPE_CATEGORIES = [
+  { value: "all", label: "All" },
+  { value: "callouts", label: "Callouts" },
+  { value: "blocks", label: "Content Blocks" },
+  { value: "decorative", label: "Decorative" },
+  { value: "data", label: "Data Display" },
+];
 
-  const filtered = SHAPES.filter(s =>
-    !search || s.label.toLowerCase().includes(search.toLowerCase())
-  );
+const SHAPES = [
+  // Callouts
+  {
+    id: "callout-info",
+    label: "Info Callout",
+    icon: Info,
+    category: "callouts",
+    preview: "ℹ️ Information notice",
+    html: `<div style="background:#EFF6FF;border-left:4px solid #3B82F6;padding:16px;margin:12px 0;border-radius:0 8px 8px 0;"><p style="margin:0;font-weight:600;color:#1E40AF;">ℹ️ Information</p><p style="margin:4px 0 0;color:#1E3A5F;">Enter your informational note here.</p></div>`,
+  },
+  {
+    id: "callout-warning",
+    label: "Warning Callout",
+    icon: AlertTriangle,
+    category: "callouts",
+    preview: "⚠️ Warning notice",
+    html: `<div style="background:#FFFBEB;border-left:4px solid #F59E0B;padding:16px;margin:12px 0;border-radius:0 8px 8px 0;"><p style="margin:0;font-weight:600;color:#92400E;">⚠️ Warning</p><p style="margin:4px 0 0;color:#78350F;">Important warning message here.</p></div>`,
+  },
+  {
+    id: "callout-success",
+    label: "Success Callout",
+    icon: CheckCircle,
+    category: "callouts",
+    preview: "✅ Success notice",
+    html: `<div style="background:#F0FDF4;border-left:4px solid #22C55E;padding:16px;margin:12px 0;border-radius:0 8px 8px 0;"><p style="margin:0;font-weight:600;color:#166534;">✅ Success</p><p style="margin:4px 0 0;color:#14532D;">Operation completed successfully.</p></div>`,
+  },
+  {
+    id: "callout-error",
+    label: "Error Callout",
+    icon: XCircle,
+    category: "callouts",
+    preview: "❌ Error notice",
+    html: `<div style="background:#FEF2F2;border-left:4px solid #EF4444;padding:16px;margin:12px 0;border-radius:0 8px 8px 0;"><p style="margin:0;font-weight:600;color:#991B1B;">❌ Error</p><p style="margin:4px 0 0;color:#7F1D1D;">Error details or corrective action here.</p></div>`,
+  },
+  // Content Blocks
+  {
+    id: "pull-quote",
+    label: "Pull Quote",
+    icon: Quote,
+    category: "blocks",
+    preview: "Elegant quote block",
+    html: `<blockquote style="border-left:4px solid #F59E0B;margin:24px 0;padding:20px 24px;background:linear-gradient(135deg,#FFFBEB 0%,#FEF3C7 100%);border-radius:0 12px 12px 0;font-size:18px;font-style:italic;color:#92400E;line-height:1.6;"><p style="margin:0;">"Excellence is not a skill. It is an attitude."</p><p style="margin:8px 0 0;font-size:14px;font-style:normal;font-weight:600;">— Ralph Marston</p></blockquote>`,
+  },
+  {
+    id: "feature-card",
+    label: "Feature Card",
+    icon: Star,
+    category: "blocks",
+    preview: "Highlighted feature",
+    html: `<div style="background:linear-gradient(135deg,#1E293B,#334155);color:#F8FAFC;padding:24px;margin:16px 0;border-radius:12px;"><p style="margin:0;font-size:12px;text-transform:uppercase;letter-spacing:2px;color:#F59E0B;">Featured</p><p style="margin:8px 0;font-size:20px;font-weight:700;">Key Feature Title</p><p style="margin:0;color:#94A3B8;font-size:14px;line-height:1.6;">Describe the feature benefit and value proposition here. Make it compelling and clear.</p></div>`,
+  },
+  {
+    id: "cta-block",
+    label: "Call to Action",
+    icon: ArrowRight,
+    category: "blocks",
+    preview: "Action prompt block",
+    html: `<div style="background:linear-gradient(135deg,#F59E0B,#D97706);padding:24px;margin:16px 0;border-radius:12px;text-align:center;"><p style="margin:0;font-size:20px;font-weight:700;color:#FFFFFF;">Ready to Get Started?</p><p style="margin:8px 0 16px;color:#FEF3C7;font-size:14px;">Take the next step today. We're here to help.</p><p style="margin:0;"><span style="background:#FFFFFF;color:#D97706;padding:10px 24px;border-radius:8px;font-weight:600;font-size:14px;">Contact Us →</span></p></div>`,
+  },
+  {
+    id: "testimonial",
+    label: "Testimonial",
+    icon: Heart,
+    category: "blocks",
+    preview: "Client testimonial",
+    html: `<div style="border:1px solid #E2E8F0;padding:24px;margin:16px 0;border-radius:12px;background:#FFFFFF;"><p style="margin:0;font-size:16px;line-height:1.7;color:#475569;font-style:italic;">"This service exceeded all my expectations. Professional, thorough, and incredibly efficient."</p><div style="margin-top:16px;display:flex;align-items:center;gap:12px;"><div style="width:40px;height:40px;border-radius:50%;background:#F59E0B;display:flex;align-items:center;justify-content:center;color:#FFF;font-weight:700;">JD</div><div><p style="margin:0;font-weight:600;color:#1E293B;font-size:14px;">Jane Doe</p><p style="margin:0;font-size:12px;color:#94A3B8;">Business Owner, Columbus OH</p></div></div></div>`,
+  },
+  {
+    id: "step-process",
+    label: "Process Steps",
+    icon: Layers,
+    category: "blocks",
+    preview: "Numbered process",
+    html: `<div style="margin:16px 0;"><div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;"><div style="width:32px;height:32px;border-radius:50%;background:#F59E0B;color:#FFF;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">1</div><div><p style="margin:0;font-weight:600;">Step One</p><p style="margin:4px 0 0;color:#64748B;font-size:14px;">Description of the first step in your process.</p></div></div><div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;"><div style="width:32px;height:32px;border-radius:50%;background:#F59E0B;color:#FFF;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">2</div><div><p style="margin:0;font-weight:600;">Step Two</p><p style="margin:4px 0 0;color:#64748B;font-size:14px;">Description of the second step.</p></div></div><div style="display:flex;gap:12px;align-items:flex-start;"><div style="width:32px;height:32px;border-radius:50%;background:#F59E0B;color:#FFF;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">3</div><div><p style="margin:0;font-weight:600;">Step Three</p><p style="margin:4px 0 0;color:#64748B;font-size:14px;">Description of the final step.</p></div></div></div>`,
+  },
+  {
+    id: "timeline",
+    label: "Timeline Entry",
+    icon: Clock,
+    category: "blocks",
+    preview: "Timeline milestone",
+    html: `<div style="border-left:3px solid #F59E0B;padding-left:20px;margin:16px 0;position:relative;"><div style="position:absolute;left:-7px;top:0;width:11px;height:11px;border-radius:50%;background:#F59E0B;border:2px solid #FFF;"></div><p style="margin:0;font-size:12px;color:#F59E0B;font-weight:600;text-transform:uppercase;">January 2025</p><p style="margin:4px 0;font-weight:600;font-size:16px;">Milestone Title</p><p style="margin:0;color:#64748B;font-size:14px;">Description of what was achieved at this milestone.</p></div>`,
+  },
+  // Data Display
+  {
+    id: "stat-grid",
+    label: "Stats Grid",
+    icon: BarChart3,
+    category: "data",
+    preview: "3-column statistics",
+    html: `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:16px 0;"><div style="text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:1px solid #E2E8F0;"><p style="margin:0;font-size:32px;font-weight:800;color:#F59E0B;">500+</p><p style="margin:4px 0 0;font-size:13px;color:#64748B;">Documents Notarized</p></div><div style="text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:1px solid #E2E8F0;"><p style="margin:0;font-size:32px;font-weight:800;color:#F59E0B;">4.9★</p><p style="margin:4px 0 0;font-size:13px;color:#64748B;">Client Rating</p></div><div style="text-align:center;padding:20px;background:#F8FAFC;border-radius:12px;border:1px solid #E2E8F0;"><p style="margin:0;font-size:32px;font-weight:800;color:#F59E0B;">24/7</p><p style="margin:4px 0 0;font-size:13px;color:#64748B;">Online Availability</p></div></div>`,
+  },
+  {
+    id: "comparison-table",
+    label: "Comparison Table",
+    icon: Target,
+    category: "data",
+    preview: "Pro/Con comparison",
+    html: `<table style="width:100%;border-collapse:collapse;margin:16px 0;border-radius:8px;overflow:hidden;"><thead><tr><th style="background:#1E293B;color:#F8FAFC;padding:12px 16px;text-align:left;font-size:14px;">Feature</th><th style="background:#1E293B;color:#F8FAFC;padding:12px 16px;text-align:center;font-size:14px;">Basic</th><th style="background:#F59E0B;color:#FFF;padding:12px 16px;text-align:center;font-size:14px;">Pro</th></tr></thead><tbody><tr><td style="padding:10px 16px;border-bottom:1px solid #E2E8F0;">Document Notarization</td><td style="padding:10px 16px;border-bottom:1px solid #E2E8F0;text-align:center;">✓</td><td style="padding:10px 16px;border-bottom:1px solid #E2E8F0;text-align:center;">✓</td></tr><tr><td style="padding:10px 16px;border-bottom:1px solid #E2E8F0;">Priority Support</td><td style="padding:10px 16px;border-bottom:1px solid #E2E8F0;text-align:center;">—</td><td style="padding:10px 16px;border-bottom:1px solid #E2E8F0;text-align:center;">✓</td></tr><tr><td style="padding:10px 16px;">AI Document Tools</td><td style="padding:10px 16px;text-align:center;">—</td><td style="padding:10px 16px;text-align:center;">✓</td></tr></tbody></table>`,
+  },
+  {
+    id: "progress-bar",
+    label: "Progress Bar",
+    icon: TrendingUp,
+    category: "data",
+    preview: "Visual progress",
+    html: `<div style="margin:16px 0;"><p style="margin:0 0 8px;font-weight:600;font-size:14px;">Project Completion — 75%</p><div style="background:#E2E8F0;border-radius:999px;height:12px;overflow:hidden;"><div style="background:linear-gradient(90deg,#F59E0B,#EAB308);height:100%;width:75%;border-radius:999px;transition:width 0.3s;"></div></div></div>`,
+  },
+  // Decorative
+  {
+    id: "gradient-divider",
+    label: "Gradient Divider",
+    icon: Sparkles,
+    category: "decorative",
+    preview: "Decorative separator",
+    html: `<div style="margin:24px 0;height:3px;background:linear-gradient(90deg,transparent,#F59E0B,transparent);border-radius:2px;"></div>`,
+  },
+  {
+    id: "accent-line",
+    label: "Accent Line",
+    icon: Zap,
+    category: "decorative",
+    preview: "Bold accent separator",
+    html: `<div style="margin:20px 0;display:flex;align-items:center;gap:12px;"><div style="flex:1;height:1px;background:#E2E8F0;"></div><div style="width:8px;height:8px;background:#F59E0B;border-radius:50%;"></div><div style="flex:1;height:1px;background:#E2E8F0;"></div></div>`,
+  },
+  {
+    id: "badge-row",
+    label: "Badge Row",
+    icon: Award,
+    category: "decorative",
+    preview: "Tag badges",
+    html: `<div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;"><span style="background:#FEF3C7;color:#92400E;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;">Certified</span><span style="background:#DBEAFE;color:#1E40AF;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;">Ohio Licensed</span><span style="background:#F0FDF4;color:#166534;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;">RON Approved</span><span style="background:#FDF2F8;color:#9D174D;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;">Insured</span></div>`,
+  },
+  {
+    id: "seal-stamp",
+    label: "Official Seal",
+    icon: Shield,
+    category: "decorative",
+    preview: "Notary seal block",
+    html: `<div style="border:3px double #1E293B;padding:24px;margin:24px auto;text-align:center;border-radius:12px;max-width:320px;background:#FAFAFA;"><p style="margin:0;font-size:10px;text-transform:uppercase;letter-spacing:3px;color:#64748B;">State of Ohio</p><p style="margin:8px 0;font-size:18px;font-weight:800;color:#1E293B;">NOTARY PUBLIC</p><div style="width:60px;height:2px;background:#F59E0B;margin:8px auto;"></div><p style="margin:8px 0 0;font-size:12px;color:#64748B;">Commission #: ____________</p><p style="margin:4px 0;font-size:12px;color:#64748B;">Expires: ____________</p></div>`,
+  },
+  {
+    id: "ribbon-header",
+    label: "Ribbon Header",
+    icon: Flag,
+    category: "decorative",
+    preview: "Styled section header",
+    html: `<div style="background:linear-gradient(135deg,#1E293B,#334155);color:#F8FAFC;padding:12px 24px;margin:16px -8px;position:relative;"><p style="margin:0;font-size:16px;font-weight:700;letter-spacing:0.5px;">Section Title</p><div style="position:absolute;bottom:-6px;left:0;width:0;height:0;border-top:6px solid #0F172A;border-right:6px solid transparent;"></div></div>`,
+  },
+  {
+    id: "bookmark-note",
+    label: "Bookmark Note",
+    icon: Bookmark,
+    category: "decorative",
+    preview: "Pinned note style",
+    html: `<div style="background:#FFFBEB;border:1px solid #FDE68A;padding:16px 16px 16px 48px;margin:16px 0;border-radius:8px;position:relative;"><div style="position:absolute;left:16px;top:16px;font-size:20px;">📌</div><p style="margin:0;font-weight:600;font-size:14px;color:#92400E;">Important Note</p><p style="margin:4px 0 0;color:#78350F;font-size:13px;">This is a pinned note that draws attention to key information.</p></div>`,
+  },
+];
+
+export function DocuDexShapesPanel({ onInsertShape }: ShapesPanelProps) {
+  const [category, setCategory] = useState("all");
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+
+  const filtered = SHAPES.filter(s => category === "all" || s.category === category);
 
   return (
-    <div className="space-y-2">
-      <p className="text-[10px] text-muted-foreground mb-1">Visual blocks & decorative elements</p>
-      <Input
-        className="h-7 text-xs"
-        placeholder="Search shapes..."
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-      />
-      <div className="grid grid-cols-2 gap-2 mt-2">
-        {filtered.map(shape => (
+    <div className="space-y-3">
+      <p className="text-[10px] text-muted-foreground font-medium">Drag-and-drop style content blocks</p>
+      <div className="flex gap-1 flex-wrap">
+        {SHAPE_CATEGORIES.map(cat => (
           <button
-            key={shape.id}
-            onClick={() => onInsertShape(shape.html)}
+            key={cat.value}
+            onClick={() => setCategory(cat.value)}
             className={cn(
-              "flex flex-col items-center gap-1.5 rounded-lg border border-border p-2.5",
-              "text-xs hover:bg-muted hover:border-primary/30 transition-all group"
+              "px-2 py-0.5 rounded-full text-[10px] transition-colors",
+              category === cat.value
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
             )}
           >
-            <div className="h-7 w-7 rounded-md bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-              {shape.icon}
-            </div>
-            <span className="text-[9px] text-center font-medium leading-tight">{shape.label}</span>
+            {cat.label}
           </button>
         ))}
       </div>
+      <div className="space-y-1.5">
+        {filtered.map(shape => {
+          const Icon = shape.icon;
+          return (
+            <button
+              key={shape.id}
+              onClick={() => onInsertShape(shape.html)}
+              onMouseEnter={() => setHoveredId(shape.id)}
+              onMouseLeave={() => setHoveredId(null)}
+              className="w-full text-left rounded-lg border border-border p-2.5 text-xs hover:bg-muted hover:border-primary/30 transition-all group"
+            >
+              <div className="flex items-center gap-2">
+                <div className="h-7 w-7 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <Icon className="h-3.5 w-3.5 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-[11px] leading-tight">{shape.label}</p>
+                  <p className="text-[9px] text-muted-foreground truncate">{shape.preview}</p>
+                </div>
+                <Badge variant="outline" className="text-[8px] px-1.5 py-0 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                  Insert
+                </Badge>
+              </div>
+            </button>
+          );
+        })}
+      </div>
       {filtered.length === 0 && (
-        <p className="text-[10px] text-muted-foreground text-center py-4">No shapes match.</p>
+        <p className="text-[10px] text-muted-foreground text-center py-4">No shapes in this category.</p>
       )}
     </div>
   );
