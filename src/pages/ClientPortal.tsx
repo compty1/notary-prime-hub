@@ -602,26 +602,7 @@ export default function ClientPortal() {
 
           {/* CORRESPONDENCE TAB */}
           <TabsContent value="correspondence" className="space-y-6">
-            <h2 className="font-sans text-xl font-semibold">Email Correspondence</h2>
-            {correspondence.length === 0 ? (
-              <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground"><Mail className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" /><p>No correspondence yet</p></CardContent></Card>
-            ) : (
-              <div className="space-y-3">
-                {correspondence.map(c => (
-                  <Card key={c.id} className="border-border/50">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">{c.direction === "inbound" ? <Mail className="h-4 w-4 text-primary" /> : <Send className="h-4 w-4 text-primary" />}<span className="text-sm font-medium">{c.subject}</span></div>
-                        <Badge className={c.status === "replied" ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" : c.status === "pending" ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300" : "bg-muted text-muted-foreground"}>{c.status.replace(/_/g, " ")}</Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground mb-1">{c.direction === "inbound" ? `From: ${c.from_address || "—"}` : `To: ${c.to_address || "—"}`}</p>
-                      <p className="text-sm text-foreground line-clamp-2">{c.body}</p>
-                      <p className="text-xs text-muted-foreground mt-2">{new Date(c.created_at).toLocaleDateString()}</p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
+            {user && <PortalCorrespondenceTab userId={user.id} correspondence={correspondence} setCorrespondence={setCorrespondence} />}
           </TabsContent>
 
           {/* APOSTILLE TAB */}
