@@ -271,10 +271,10 @@ export default function AdminServices() {
         );
       })()}
 
-
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="all">All ({services.length})</TabsTrigger>
+          <TabsTrigger value="pricing-rules">Pricing Rules</TabsTrigger>
           {categories.map(c => {
             const count = services.filter(s => s.category === c.value).length;
             if (count === 0) return null;
@@ -282,6 +282,8 @@ export default function AdminServices() {
           })}
         </TabsList>
       </Tabs>
+
+      {activeTab === "pricing-rules" && <PricingRulesTab />}
 
       {loading ? (
         <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
