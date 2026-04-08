@@ -211,7 +211,17 @@ export default function BookAppointment() {
     });
   }, []);
 
-  // Centralized pricing via pricingEngine
+  // 5.1 Early Ohio vital records check on serviceType change
+  const [earlyEligibilityWarning, setEarlyEligibilityWarning] = useState<string | null>(null);
+  useEffect(() => {
+    if (!serviceType) { setEarlyEligibilityWarning(null); return; }
+    import("@/lib/ohioDocumentEligibility").then(({ checkDocumentEligibility }) => {
+      const result = checkDocumentEligibility(serviceType);
+      setEarlyEligibilityWarning(result.eligible ? null : (result.reason || "This document cannot be notarized under Ohio law."));
+    });
+  }, [serviceType]);
+
+
   const pricingBreakdown = useMemo<PricingBreakdown | null>(() => {
     if (!pricingSettings.base_fee_per_signature) return null;
     const settings = parseSettings(pricingSettings);
@@ -508,6 +518,12 @@ export default function BookAppointment() {
     sessionStorage.removeItem(BOOKING_STORAGE_KEY);
     try { await supabase.functions.invoke("send-appointment-emails", { body: { appointmentId: appointmentResultId, emailType: "confirmation" } }); } catch (e) { console.error("Email error:", e); }
     if (user?.email && !rebookingId) { try { await supabase.from("leads").update({ status: "converted" }).ilike("email", user.email).in("status", ["new", "contacted", "qualified"]); } catch (e) { console.error("Lead conversion error:", e); } }
+
+    // 3.6 Wire send-welcome-sequence for first-time bookers
+    if (!rebookingId && pastAppointments.length === 0) {
+      try { await supabase.functions.invoke("send-welcome-sequence", { body: { appointmentId: appointmentResultId, userId } }); } catch (e) { console.error("Welcome sequence error:", e); }
+    }
+
     toast({ title: rebookingId ? "Appointment rescheduled!" : "Appointment booked!", description: "You'll receive a confirmation email shortly." });
     navigate(`/confirmation?id=${appointmentResultId}`);
     setSubmitting(false);
@@ -812,6 +828,13 @@ export default function BookAppointment() {
                   {serviceType === "Other" && <div><Label>Describe your document</Label><Input placeholder="What type of document do you need notarized?" value={notes} onChange={e => setNotes(e.target.value)} /></div>}
                   {/* ID 2: Show service description */}
                   {serviceType && serviceDescriptions[serviceType] && <p className="text-xs text-muted-foreground bg-muted/50 rounded p-2">{serviceDescriptions[serviceType]}</p>}
+                  {/* 5.1 Early Ohio vital records warning */}
+                  {earlyEligibilityWarning && (
+                    <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-xs text-destructive flex items-start gap-2">
+                      <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                      <div><p className="font-medium">Document Not Eligible</p><p>{earlyEligibilityWarning}</p></div>
+                    </div>
+                  )}
                   {/* ID 4: Show estimated duration */}
                   {serviceType && serviceDurations[serviceType] && (
                     <p className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" /> Estimated duration: {serviceDurations[serviceType]} minutes</p>

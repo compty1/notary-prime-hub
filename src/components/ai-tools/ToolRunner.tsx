@@ -267,6 +267,19 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
       }
       setIsRefining(false);
       setRefinementPrompt("");
+
+      // 4.5 Auto-save generation result as draft
+      if (user) {
+        try {
+          await supabase.from("tool_generations").insert({
+            user_id: user.id,
+            tool_id: tool.id,
+            input: fieldValues as any,
+            output: "", // output populated by edge function; this logs usage
+          } as any);
+          setUsageCount((prev) => (prev ?? 0) + 1);
+        } catch (e) { console.error("Auto-save generation error:", e); }
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Generation failed";
       setLastError(true);

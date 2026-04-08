@@ -304,7 +304,7 @@ export function DocuDexEditor({
     return () => window.removeEventListener("keydown", handler);
   }, [pages, title]);
 
-  // Auto-save every 30 seconds (CE-006)
+  // Auto-save every 30 seconds (CE-006) — 5.6 Fix DocuDex auto-save reliability
   useEffect(() => {
     autoSaveTimer.current = setInterval(async () => {
       if (isDirty && onSave && user) {
@@ -312,15 +312,16 @@ export function DocuDexEditor({
         try {
           await onSave(title, pages);
           setLastSaved(new Date().toLocaleTimeString());
-        } catch {
-          // Silently fail auto-save to avoid toast spam
+          setIsDirty(false);
+          announce("Document auto-saved");
+        } catch (err) {
+          console.error("Auto-save failed:", err);
+          toast({ title: "Auto-save failed", description: "Could not save your document. Please save manually.", variant: "destructive" });
         }
-        setIsDirty(false);
-        announce("Document auto-saved");
       }
     }, 30000);
     return () => { if (autoSaveTimer.current) clearInterval(autoSaveTimer.current); };
-  }, [isDirty, onSave, user, announce]);
+  }, [isDirty, onSave, user, announce, toast]);
 
   // Unsaved changes warning (CE-006)
   useEffect(() => {

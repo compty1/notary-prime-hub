@@ -737,6 +737,13 @@ export default function RonSession() {
       });
     } catch (e) { console.error("Completion email error:", e); }
 
+    // 3.7 Wire send-followup-sequence on session completion
+    try {
+      await supabase.functions.invoke("send-followup-sequence", {
+        body: { appointmentId, clientId: appointment.client_id },
+      });
+    } catch (e) { console.error("Follow-up sequence error:", e); }
+
     setCompleting(false);
     toast({ title: "Session finalized", description: "Appointment completed, journal entry & e-seal created, documents marked as notarized. Completion email sent to client." });
     navigate("/admin/appointments");

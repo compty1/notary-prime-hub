@@ -20,7 +20,7 @@ import { Link } from "react-router-dom";
 
 import { leadIntentColors as intentColors, leadStatusColors as statusColors } from "@/lib/statusColors";
 
-const pipelineStatuses = ["new", "contacted", "qualified", "converted", "closed"];
+const pipelineStatuses = ["new", "contacted", "qualified", "proposal", "converted", "closed-won", "closed-lost"];
 
 const emptyLead = {
   name: "", phone: "", email: "", business_name: "", address: "", city: "", state: "OH", zip: "",
