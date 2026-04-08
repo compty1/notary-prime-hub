@@ -650,7 +650,16 @@ export default function DocumentTemplates() {
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const printRef = useRef<HTMLDivElement>(null);
+
+  /** Open filled template in DocuDex for advanced editing */
+  const openInDocuDex = (t: Template) => {
+    let body = t.body;
+    Object.entries(formData).forEach(([k, v]) => { body = body.replace(new RegExp(`\\{\\{${k}\\}\\}`, "g"), v || `{{${k}}}`); });
+    sessionStorage.setItem("ai_tools_content", body);
+    navigate("/docudex");
+  };
 
   // AI Chat state
   const [chatOpen, setChatOpen] = useState(false);
