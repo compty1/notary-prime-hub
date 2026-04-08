@@ -15,7 +15,7 @@ export default function AdminReferrals() {
 export function ReferralPortal() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [referrals, setReferrals] = useState<any[]>([]);
+  const [referrals, setReferrals] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
