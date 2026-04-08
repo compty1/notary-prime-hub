@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, Eye, EyeOff, Shield } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { logAuditEvent } from "@/lib/auditLog";
@@ -24,7 +23,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [forgotMode, setForgotMode] = useState(false);
   const [resetSent, setResetSent] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  
   const [rateLimitEnd, setRateLimitEnd] = useState<number | null>(null);
 
   usePageMeta({ title: forgotMode ? "Reset Password" : "Sign In", description: "Sign in to your NotarDex account to access notarization services, document management, and your client portal.", noIndex: true });
