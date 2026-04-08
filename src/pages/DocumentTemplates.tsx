@@ -1407,6 +1407,9 @@ export default function DocumentTemplates() {
             </div>
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => setSelectedTemplate(null)}>Cancel</Button>
+              <Button variant="outline" onClick={() => { if (selectedTemplate) openInDocuDex(selectedTemplate); }} className="gap-1">
+                <ExternalLink className="h-3 w-3" /> Open in DocuDex
+              </Button>
               <Button onClick={() => setPreviewOpen(true)} className=""><Eye className="mr-1 h-4 w-4" /> Preview & Edit</Button>
             </div>
           </DialogFooter>
@@ -1424,6 +1427,9 @@ export default function DocumentTemplates() {
           <DialogFooter className="flex-col sm:flex-row gap-2">
             <Button variant="outline" onClick={() => setPreviewOpen(false)}>Back to Fields</Button>
             <Button variant="outline" onClick={handleExportDocx} className="gap-1"><Download className="h-3 w-3" /> Export .DOC</Button>
+            <Button variant="outline" onClick={() => { if (selectedTemplate) openInDocuDex(selectedTemplate); }} className="gap-1">
+              <ExternalLink className="h-3 w-3" /> Open in DocuDex
+            </Button>
             <Button variant="outline" onClick={handleSaveToVault} disabled={saving || !user} className="gap-1">
               {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />} Save to Vault
             </Button>
