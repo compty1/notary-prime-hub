@@ -97,6 +97,7 @@ export default function ClientPortal() {
   const [reminders, setReminders] = useState<any[]>([]);
   const [reminderForm, setReminderForm] = useState({ document_id: "", expiry_date: "", remind_days_before: "30" });
   const [savingReminder, setSavingReminder] = useState(false);
+  const [portalSearch, setPortalSearch] = useState("");
 
   const INTAKE_ONLY = INTAKE_ONLY_SERVICES;
   const SAAS_TOOLS = SAAS_LINKS;
