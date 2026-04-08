@@ -28,17 +28,34 @@ export default function BulkDocumentUpload({ userId, onComplete }: Props) {
   const [progress, setProgress] = useState(0);
   const [dragOver, setDragOver] = useState(false);
 
+  const MAX_FILES = 20;
+  const MAX_TOTAL_BYTES = 100 * 1024 * 1024; // 100MB total
+
   const addFiles = useCallback((newFiles: FileList | File[]) => {
-    const arr = Array.from(newFiles).map((file) => {
-      const validationError = validateFile(file, { allowedMimes: ALLOWED_DOCUMENT_MIMES });
-      return {
-        file,
-        status: validationError ? "error" as const : "pending" as const,
-        error: validationError || undefined,
-      };
+    const incoming = Array.from(newFiles);
+    setFiles((prev) => {
+      if (prev.length + incoming.length > MAX_FILES) {
+        toast({ title: "Too many files", description: `Maximum ${MAX_FILES} files per batch.`, variant: "destructive" });
+        return prev;
+      }
+      const totalSize = [...prev, ...incoming.map(f => ({ file: f }))].reduce((sum, f) => sum + f.file.size, 0);
+      if (totalSize > MAX_TOTAL_BYTES) {
+        toast({ title: "Total size exceeded", description: "Combined upload cannot exceed 100MB.", variant: "destructive" });
+        return prev;
+      }
+      const arr = incoming.map((file) => {
+        const validationError = validateFile(file, { allowedMimes: ALLOWED_DOCUMENT_MIMES });
+        const sizeError = file.size > MAX_FILE_SIZE ? `Exceeds ${Math.round(MAX_FILE_SIZE / 1024 / 1024)}MB limit` : null;
+        const error = validationError || sizeError;
+        return {
+          file,
+          status: error ? "error" as const : "pending" as const,
+          error: error || undefined,
+        };
+      });
+      return [...prev, ...arr];
     });
-    setFiles((prev) => [...prev, ...arr]);
-  }, []);
+  }, [toast]);
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();

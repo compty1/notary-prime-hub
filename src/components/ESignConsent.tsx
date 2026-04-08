@@ -1,15 +1,33 @@
-import { useState } from "react";
+import { useCallback } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Shield, FileText } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ESignConsentProps {
   consented: boolean;
   onConsentChange: (consented: boolean) => void;
   consentTimestamp: string | null;
+  /** Session tracking ID — if provided, consent is persisted to the DB */
+  sessionId?: string;
 }
 
-export function ESignConsent({ consented, onConsentChange, consentTimestamp }: ESignConsentProps) {
+export function ESignConsent({ consented, onConsentChange, consentTimestamp, sessionId }: ESignConsentProps) {
+  const handleConsentChange = useCallback(async (checked: boolean) => {
+    onConsentChange(checked);
+    // Persist consent timestamp to DB when granted
+    if (checked && sessionId) {
+      try {
+        await supabase
+          .from("session_tracking" as any)
+          .update({ esign_consent: true, esign_consent_at: new Date().toISOString() } as any)
+          .eq("id", sessionId);
+      } catch (err) {
+        console.error("Failed to persist e-sign consent:", err);
+      }
+    }
+  }, [onConsentChange, sessionId]);
+
   return (
     <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
       <div className="flex items-center gap-2">
@@ -35,7 +53,7 @@ export function ESignConsent({ consented, onConsentChange, consentTimestamp }: E
         <Checkbox
           id="esign-consent"
           checked={consented}
-          onCheckedChange={(checked) => onConsentChange(checked === true)}
+          onCheckedChange={(checked) => handleConsentChange(checked === true)}
         />
         <Label htmlFor="esign-consent" className="text-xs leading-relaxed cursor-pointer">
           I have read and agree to the electronic signature disclosure above. I understand that my electronic signature 

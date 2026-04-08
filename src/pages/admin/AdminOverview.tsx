@@ -395,6 +395,33 @@ export default function AdminOverview() {
         </div>
       )}
 
+      {/* Today's Schedule */}
+      {(() => {
+        const todayAppts = allAppointments.filter(a => a.scheduled_date === today && !["cancelled", "no_show"].includes(a.status));
+        return todayAppts.length > 0 ? (
+          <div className="mb-8">
+            <h2 className="mb-4 text-lg font-black text-[#212529] flex items-center gap-2">
+              <Clock className="h-5 w-5 text-amber-500" /> Today's Schedule ({todayAppts.length})
+            </h2>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {todayAppts.sort((a, b) => (a.scheduled_time || "").localeCompare(b.scheduled_time || "")).map((a) => (
+                <Card key={a.id} className="rounded-[24px] border-gray-100 bg-white hover:shadow-md transition-shadow">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-lg font-black text-[#212529]">{formatTime(a.scheduled_time || "00:00")}</span>
+                      <Badge className={`${statusColors[a.status] || "bg-gray-100"} rounded-lg text-xs`}>{a.status.replace(/_/g, " ")}</Badge>
+                    </div>
+                    <p className="text-sm font-bold text-foreground">{getClientName(a.client_id)}</p>
+                    <p className="text-xs text-muted-foreground">{a.service_type} • {(a.notarization_type || "").replace("_", " ")}</p>
+                    {a.confirmation_number && <p className="text-[10px] font-mono text-muted-foreground mt-1">{a.confirmation_number}</p>}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        ) : null;
+      })()}
+
       <h2 className="mb-4 text-lg font-black text-[#212529]">Recent Appointments</h2>
       {appointments.length === 0 ? (
         <Card className="rounded-[24px] border-gray-100 bg-white"><CardContent className="py-8 text-center text-gray-400">No appointments yet</CardContent></Card>
@@ -418,7 +445,7 @@ export default function AdminOverview() {
                       <td className="px-5 py-3 text-gray-600">{formatDate(a.scheduled_date)}</td>
                       <td className="px-5 py-3 text-gray-600">{formatTime(a.scheduled_time)}</td>
                       <td className="px-5 py-3 text-gray-600">{a.service_type}</td>
-                      <td className="px-5 py-3 capitalize text-gray-600">{a.notarization_type.replace("_", " ")}</td>
+                      <td className="px-5 py-3 capitalize text-gray-600">{(a.notarization_type || "").replace("_", " ")}</td>
                       <td className="px-5 py-3"><Badge className={`${statusColors[a.status] || "bg-gray-100"} rounded-lg`}>{a.status.replace(/_/g, " ")}</Badge></td>
                     </tr>
                   ))}

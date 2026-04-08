@@ -120,7 +120,7 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
     setUploading(true);
     for (const file of Array.from(files)) {
       if (file.size > 10 * 1024 * 1024) { toast({ title: "File too large", description: `${file.name} exceeds 10MB limit.`, variant: "destructive" }); continue; }
-      if (!ACCEPTED_TYPES.includes(file.type) && !file.name.match(/\.(pdf|jpe?g|png|tiff?|docx?)$/i)) { toast({ title: "Unsupported file type", description: `Accepted formats: ${ACCEPTED_EXTENSIONS}`, variant: "destructive" }); continue; }
+      if (!ACCEPTED_TYPES.includes(file.type) && !file.name.match(/\.(pdf|jpe?g|png|tiff?|docx?)$/i)) { toast({ title: "Unsupported file type", description: `Only PDF, JPG, PNG, TIFF, DOC, and DOCX files are accepted.`, variant: "destructive" }); continue; }
       const filePath = `${userId}/${Date.now()}_${file.name}`;
       const { error: uploadError } = await supabase.storage.from("documents").upload(filePath, file);
       if (uploadError) { toast({ title: "Upload failed", description: uploadError.message, variant: "destructive" }); continue; }
