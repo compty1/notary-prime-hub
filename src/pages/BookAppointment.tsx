@@ -828,6 +828,13 @@ export default function BookAppointment() {
                   {serviceType === "Other" && <div><Label>Describe your document</Label><Input placeholder="What type of document do you need notarized?" value={notes} onChange={e => setNotes(e.target.value)} /></div>}
                   {/* ID 2: Show service description */}
                   {serviceType && serviceDescriptions[serviceType] && <p className="text-xs text-muted-foreground bg-muted/50 rounded p-2">{serviceDescriptions[serviceType]}</p>}
+                  {/* 5.1 Early Ohio vital records warning */}
+                  {earlyEligibilityWarning && (
+                    <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-xs text-destructive flex items-start gap-2">
+                      <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                      <div><p className="font-medium">Document Not Eligible</p><p>{earlyEligibilityWarning}</p></div>
+                    </div>
+                  )}
                   {/* ID 4: Show estimated duration */}
                   {serviceType && serviceDurations[serviceType] && (
                     <p className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" /> Estimated duration: {serviceDurations[serviceType]} minutes</p>
