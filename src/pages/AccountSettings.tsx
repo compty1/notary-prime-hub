@@ -125,20 +125,11 @@ export default function AccountSettings() {
     const { error: authErr } = await supabase.auth.signInWithPassword({ email: user.email!, password: deletePassword });
     if (authErr) { setDeletePasswordError("Incorrect password. Please try again."); setDeleting(false); return; }
     try {
-      await supabase.from("document_reminders").delete().eq("user_id", user.id);
-      await supabase.from("service_requests").delete().eq("client_id", user.id);
-      await supabase.from("apostille_requests").delete().eq("client_id", user.id);
-      await supabase.from("client_correspondence").delete().eq("client_id", user.id);
-      await supabase.from("reviews").delete().eq("client_id", user.id);
-      await supabase.from("chat_messages").delete().eq("sender_id", user.id);
-      await supabase.from("payments").delete().eq("client_id", user.id);
-      await supabase.from("documents").delete().eq("uploaded_by", user.id);
-      await supabase.from("appointments").delete().eq("client_id", user.id);
-      await supabase.from("user_roles").delete().eq("user_id", user.id);
-      await supabase.from("profiles").delete().eq("user_id", user.id);
-      toast({ title: "Account data deleted", description: "Signing you out..." });
-      setTimeout(() => signOut(), 1500);
-    } catch (e: any) { toast({ title: "Error", description: e.message, variant: "destructive" }); }
+      const resp = await supabase.functions.invoke("delete-account");
+      if (resp.error) throw resp.error;
+      toast({ title: "Account deleted", description: "Your account and all data have been permanently deleted." });
+      signOut();
+    } catch (e: any) { toast({ title: "Error", description: e.message || "Failed to delete account. Please contact support.", variant: "destructive" }); }
     setDeleting(false);
   };
 
