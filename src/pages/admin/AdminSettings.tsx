@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, DollarSign, MapPin, Monitor, Save, Loader2, AlertTriangle, CalendarClock, Shield, Upload, Eye, Mail, CheckCircle, XCircle, ArrowDownUp, Download, UploadCloud, ExternalLink, Server } from "lucide-react";
+import { Settings, MapPin, Monitor, Save, Loader2, AlertTriangle, CalendarClock, Shield, Upload, Eye, Mail, CheckCircle, XCircle, ArrowDownUp, Download, UploadCloud, ExternalLink, Server } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -94,7 +94,7 @@ export default function AdminSettings() {
     }
 
     // Item 351/367: Validate numeric settings
-    const numericKeys = ["base_fee_per_signature", "travel_fee_per_mile", "travel_fee_minimum", "ron_platform_fee", "kba_fee", "travel_radius_miles", "max_appointments_per_day", "min_booking_lead_hours"];
+    const numericKeys = ["travel_radius_miles", "max_appointments_per_day", "min_booking_lead_hours"];
     for (const key of numericKeys) {
       const val = editValues[key];
       if (val && (isNaN(Number(val)) || Number(val) < 0)) {
@@ -320,22 +320,7 @@ export default function AdminSettings() {
           </CardContent>
         </Card>
 
-        {/* Pricing Configuration */}
-        <Card className="border-border/50">
-          <CardHeader>
-            <CardTitle className="font-sans text-lg flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-primary" /> Pricing Configuration
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div><Label>Base Fee per Signature ($)</Label><Input type="number" step="0.01" value={editValues.base_fee_per_signature || ""} onChange={(e) => updateValue("base_fee_per_signature", e.target.value)} /><p className="mt-1 text-xs text-muted-foreground">ORC §147.08 standard fee</p></div>
-            <div><Label>Travel Fee per Mile ($)</Label><Input type="number" step="0.01" value={editValues.travel_fee_per_mile || ""} onChange={(e) => updateValue("travel_fee_per_mile", e.target.value)} /></div>
-            <div><Label>Minimum Travel Fee ($)</Label><Input type="number" step="0.01" value={editValues.travel_fee_minimum || ""} onChange={(e) => updateValue("travel_fee_minimum", e.target.value)} /></div>
-            <div><Label>Maximum Travel Radius (miles)</Label><Input type="number" value={editValues.travel_radius_miles || ""} onChange={(e) => updateValue("travel_radius_miles", e.target.value)} /></div>
-            <div><Label>RON Platform Fee ($)</Label><Input type="number" step="0.01" value={editValues.ron_platform_fee || ""} onChange={(e) => updateValue("ron_platform_fee", e.target.value)} /></div>
-            <div><Label>KBA Fee ($)</Label><Input type="number" step="0.01" value={editValues.kba_fee || ""} onChange={(e) => updateValue("kba_fee", e.target.value)} /></div>
-          </CardContent>
-        </Card>
+        {/* Pricing managed in Service Catalogue — removed from settings to avoid duplication */}
 
         {/* Platform Integration */}
         <Card className="border-border/50">
