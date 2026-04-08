@@ -162,9 +162,9 @@ export default function ClientPortal() {
       if (msg.sender_id === user.id || (msg.is_admin && msg.recipient_id === user.id)) setChatMessages(prev => prev.some(m => m.id === msg.id) ? prev : [...prev, msg]);
     }).subscribe();
 
-    const apptChannel = supabase.channel("client-appointments").on("postgres_changes", { event: "UPDATE", schema: "public", table: "appointments" }, (payload) => {
+    const apptChannel = supabase.channel("client-appointments").on("postgres_changes", { event: "UPDATE", schema: "public", table: "appointments", filter: `client_id=eq.${user.id}` }, (payload) => {
       const updated = payload.new as any;
-      if (updated.client_id === user.id) { setAppointments(prev => prev.map(a => a.id === updated.id ? updated : a)); toast({ title: "Appointment updated", description: `Status: ${updated.status.replace(/_/g, " ")}` }); }
+      setAppointments(prev => prev.map(a => a.id === updated.id ? updated : a)); toast({ title: "Appointment updated", description: `Status: ${updated.status.replace(/_/g, " ")}` });
     }).subscribe();
 
     const paymentChannel = supabase.channel("client-payments").on("postgres_changes", { event: "*", schema: "public", table: "payments", filter: `client_id=eq.${user.id}` }, (payload) => {
@@ -194,9 +194,9 @@ export default function ClientPortal() {
       return;
     }
     setCancelling(true);
-    const { error } = await supabase.from("appointments").update({ status: "cancelled" as any }).eq("id", id).eq("client_id", user.id);
+    const { error } = await supabase.from("appointments").update({ status: "cancelled" as any, admin_notes: cancelReason ? `Client cancel reason: ${cancelReason}` : null } as any).eq("id", id).eq("client_id", user.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else { toast({ title: "Appointment cancelled" }); setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: "cancelled" } : a)); try { await supabase.functions.invoke("send-appointment-emails", { body: { appointmentId: id, emailType: "cancellation" } }); } catch (e) { console.error("Cancellation email error:", e); } }
+    else { toast({ title: "Appointment cancelled" }); setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: "cancelled" } : a)); setCancelReason(""); try { await supabase.functions.invoke("send-appointment-emails", { body: { appointmentId: id, emailType: "cancellation", cancelReason: cancelReason || undefined } }); } catch (e) { console.error("Cancellation email error:", e); } }
     setCancelling(false); setCancelDialogId(null);
   };
 
@@ -664,7 +664,7 @@ export default function ClientPortal() {
                     </Card>
                   );
                 })}
-                {payingPaymentId && <PaymentForm defaultAmount={parseFloat(payments.find(p => p.id === payingPaymentId)?.amount || "0")} onSuccess={async () => { await supabase.from("payments").update({ status: "paid", paid_at: new Date().toISOString(), method: "stripe" } as any).eq("id", payingPaymentId); setPayments(prev => prev.map(p => p.id === payingPaymentId ? { ...p, status: "paid" } : p)); setPayingPaymentId(null); toast({ title: "Payment successful!" }); }} onCancel={() => setPayingPaymentId(null)} />}
+                {payingPaymentId && <PaymentForm defaultAmount={parseFloat(payments.find(p => p.id === payingPaymentId)?.amount || "0")} onSuccess={async () => { setPayments(prev => prev.map(p => p.id === payingPaymentId ? { ...p, status: "processing" } : p)); setPayingPaymentId(null); toast({ title: "Payment processing", description: "Your payment is being confirmed. Status will update automatically." }); }} onCancel={() => setPayingPaymentId(null)} />}
               </div>
             ) : null}
           </TabsContent>
@@ -823,7 +823,7 @@ export default function ClientPortal() {
           <div className="mt-6 border-t border-destructive/20 pt-4">
             <p className="text-sm font-medium text-destructive mb-1">Close Account</p>
             <p className="text-xs text-muted-foreground mb-3">This will permanently delete your account and all associated data.</p>
-            <AlertDialog><AlertDialogTrigger asChild><Button variant="outline" size="sm" className="text-destructive border-destructive/30 hover:bg-destructive/10">Close My Account</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle><AlertDialogDescription>This will permanently delete your account, all appointments, documents, and data.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => { if (!user) return; await supabase.from("document_reminders").delete().eq("user_id", user.id); await supabase.from("reviews").delete().eq("client_id", user.id); await supabase.from("chat_messages").delete().eq("sender_id", user.id); await supabase.from("documents").delete().eq("uploaded_by", user.id); await supabase.from("appointments").delete().eq("client_id", user.id); await supabase.from("profiles").delete().eq("user_id", user.id); await supabase.from("user_roles").delete().eq("user_id", user.id); toast({ title: "Account closed" }); signOut(); }}>Yes, close my account</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+            <AlertDialog><AlertDialogTrigger asChild><Button variant="outline" size="sm" className="text-destructive border-destructive/30 hover:bg-destructive/10">Close My Account</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle><AlertDialogDescription>This will permanently delete your account, all appointments, documents, and data.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => { if (!user) return; try { const resp = await supabase.functions.invoke("delete-account"); if (resp.error) throw resp.error; toast({ title: "Account closed", description: "Your account and all data have been permanently deleted." }); signOut(); } catch (e: any) { toast({ title: "Error", description: e.message || "Failed to delete account. Please contact support.", variant: "destructive" }); } }}>Yes, close my account</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
           </div>
         </DialogContent>
       </Dialog>
