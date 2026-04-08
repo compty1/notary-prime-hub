@@ -245,7 +245,7 @@ export default function AdminOverview() {
 
       {/* Live Calendar Widget */}
       <div className="mb-8">
-        <Card className="border-border/50">
+        <Card className="rounded-[24px] border-gray-100 bg-white">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
