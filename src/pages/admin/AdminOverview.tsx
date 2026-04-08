@@ -50,7 +50,7 @@ export default function AdminOverview() {
       supabase.from("appointments").select("id, client_id, scheduled_date, scheduled_time, status, service_type, notarization_type, confirmation_number").order("scheduled_date", { ascending: false }).limit(10),
       supabase.from("payments").select("amount, status").eq("status", "paid"),
       supabase.from("platform_settings").select("setting_key, setting_value"),
-      supabase.from("profiles").select("user_id, full_name, email").limit(500),
+      supabase.from("profiles").select("user_id, full_name, email").limit(2000),
       supabase.from("appointments").select("scheduled_date, status, notarization_type, client_id").order("scheduled_date", { ascending: true }).gte("scheduled_date", new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]).limit(1000),
     ]);
 
