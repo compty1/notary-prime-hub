@@ -286,16 +286,8 @@ export default function ClientPortal() {
   const qrUrl = `${window.location.origin}/mobile-upload${selectedApptId ? `?appointment_id=${selectedApptId}` : ""}`;
   if (initialLoad) {
     return (
-      <div className="min-h-screen bg-muted/30">
-        <nav className="border-b border-border/50 bg-background/80 backdrop-blur-lg">
-          <div className="container mx-auto flex items-center justify-between px-4 py-4">
-            <Link to="/" className="flex items-center gap-2"><Logo size="md" /><span className="font-sans text-lg font-bold text-foreground">Client Portal</span></Link>
-            <Button variant="ghost" size="sm" onClick={() => setLogoutDialogOpen(true)}><LogOut className="mr-1 h-4 w-4" /> Sign Out</Button>
-          </div>
-        </nav>
-        <div className="container mx-auto max-w-5xl px-4 py-8">
-          <PortalLoadingSkeleton />
-        </div>
+      <div className="min-h-screen bg-[#f8f9fa] flex items-center justify-center">
+        <PortalLoadingSkeleton />
       </div>
     );
   }
