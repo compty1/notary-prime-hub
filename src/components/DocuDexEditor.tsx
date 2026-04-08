@@ -613,6 +613,39 @@ export function DocuDexEditor({
     }
   };
 
+  // AI Recommendations
+  const requestRecommendations = async () => {
+    setRecommendLoading(true);
+    try {
+      const content = stripHtml(pages.map(p => p.html).join("\n"));
+      const resp = await supabase.functions.invoke("notary-assistant", {
+        body: {
+          messages: [
+            {
+              role: "system",
+              content: `You are a document analysis expert specializing in Ohio legal documents. Analyze the document and return a JSON array of recommendations. Each item must have: "type" (one of "compliance", "suggestion", "improvement"), "title" (short label), "description" (1-2 sentences), and optionally "insertHtml" (HTML to insert if applicable). Check for: missing signature blocks, missing notary acknowledgments, Ohio ORC compliance gaps, incomplete sections, tone/readability issues, missing dates or witness blocks. Return ONLY the JSON array, no markdown.`
+            },
+            { role: "user", content: content.slice(0, 8000) },
+          ],
+        },
+      });
+      if (resp.error) throw resp.error;
+      const raw = typeof resp.data === "string" ? resp.data : resp.data?.response || resp.data?.reply || resp.data?.text || "[]";
+      const cleaned = raw.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+      try {
+        const parsed = JSON.parse(cleaned);
+        setRecommendations(Array.isArray(parsed) ? parsed : []);
+      } catch {
+        setRecommendations([{ type: "improvement", title: "Analysis Complete", description: raw.slice(0, 300) }]);
+      }
+      toast({ title: "Analysis complete", description: `${recommendations.length} recommendations found.` });
+    } catch (e: any) {
+      toast({ title: "Analysis failed", description: e.message, variant: "destructive" });
+    } finally {
+      setRecommendLoading(false);
+    }
+  };
+
   // Restore history (HV-002)
   const restoreSnapshot = (snapshot: HistorySnapshot) => {
     saveSnapshot("Before restore");
