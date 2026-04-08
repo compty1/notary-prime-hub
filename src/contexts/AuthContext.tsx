@@ -102,23 +102,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setRolesLoading(false);
         }
 
-        // 7.4 Session timeout persistence: reset timers on token refresh
+        // Session timeout persistence: reset timers on token refresh
         if (event === "TOKEN_REFRESHED" && session) {
           setShowTimeoutWarning(false);
         }
 
-        // 3.8 Remember Me: sign out on tab close if session_only flag set
+        // Token refresh failure handling (item 1907)
+        if (event === "TOKEN_REFRESHED" && !session) {
+          console.error("Token refresh failed — forcing sign out");
+          toast({ title: "Session expired", description: "Your session could not be refreshed. Please sign in again.", variant: "destructive" });
+          setSession(null);
+          setUser(null);
+          setRoles([]);
+        }
+
+        // Remember Me: sign out on tab close if session_only flag set
         if (event === "SIGNED_IN") {
           try {
             const sessionOnly = sessionStorage.getItem("notardex_session_only");
             if (sessionOnly === "true") {
-              // Set up beforeunload to sign out
               const handleUnload = () => {
                 sessionStorage.removeItem("notardex_session_only");
               };
               window.addEventListener("beforeunload", handleUnload);
             }
           } catch {}
+        }
+
+        // Handle sign out event
+        if (event === "SIGNED_OUT") {
+          setSession(null);
+          setUser(null);
+          setRoles([]);
         }
       }
     );
