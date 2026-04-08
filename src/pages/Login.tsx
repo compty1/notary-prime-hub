@@ -56,15 +56,6 @@ export default function Login() {
     if (rateLimitEnd && Date.now() < rateLimitEnd) return;
     setSubmitting(true);
 
-    // 3.8 Remember Me: set session persistence before sign-in
-    try {
-      if (rememberMe) {
-        // Default Supabase behavior uses localStorage (persistent)
-      } else {
-        // For non-remember-me, we'll clear on tab close via sessionStorage flag
-        sessionStorage.setItem("notardex_session_only", "true");
-      }
-    } catch {}
 
     const { error } = await signIn(email, password);
     if (error) {
