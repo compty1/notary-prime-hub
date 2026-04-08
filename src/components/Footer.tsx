@@ -57,6 +57,7 @@ export function Footer({ phone = BRAND.defaultPhone, email = BRAND.defaultEmail 
               <Link to="/terms" className="block transition-colors hover:text-primary">Terms of Service</Link>
               <Link to="/terms#privacy" className="block transition-colors hover:text-primary">Privacy Policy</Link>
               <Link to="/signer-rights" className="block transition-colors hover:text-primary">Signer Bill of Rights</Link>
+              <Link to="/accessibility" className="block transition-colors hover:text-primary">Accessibility</Link>
               <a href={`tel:${phone.replace(/\D/g, '')}`} className="flex items-center gap-2 transition-colors hover:text-primary">
                 <Phone className="h-3.5 w-3.5" /> {phone}
               </a>
