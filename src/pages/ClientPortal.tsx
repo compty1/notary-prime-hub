@@ -284,14 +284,45 @@ export default function ClientPortal() {
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center bg-muted rounded-full px-3 py-1.5 w-80">
             <Search className="h-4 w-4 text-muted-foreground mr-2" />
-            <input type="text" placeholder="Search appointments or documents..." className="bg-transparent border-none outline-none text-sm w-full text-foreground placeholder:text-muted-foreground" />
+            <input type="text" placeholder="Search appointments or documents..." value={portalSearch} onChange={e => setPortalSearch(e.target.value)} className="bg-transparent border-none outline-none text-sm w-full text-foreground placeholder:text-muted-foreground" />
           </div>
-          <button className="p-2 text-muted-foreground hover:bg-muted rounded-full relative" aria-label="Notifications">
-            <Bell className="h-5 w-5" />
-            {(payments.filter(p => p.status === "pending").length + unreadCount) > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full border-2 border-background" />
-            )}
-          </button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="p-2 text-muted-foreground hover:bg-muted rounded-full relative" aria-label="Notifications">
+                <Bell className="h-5 w-5" />
+                {(payments.filter(p => p.status === "pending").length + unreadCount) > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full border-2 border-background" />
+                )}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-0" align="end">
+              <div className="p-3 border-b border-border">
+                <h4 className="text-sm font-semibold text-foreground">Notifications</h4>
+              </div>
+              <div className="max-h-64 overflow-y-auto divide-y divide-border">
+                {payments.filter(p => p.status === "pending").map(p => (
+                  <div key={p.id} className="p-3 hover:bg-muted/50 cursor-pointer" onClick={() => { const el = document.querySelector('[value="payments"]') as HTMLButtonElement; el?.click(); }}>
+                    <div className="flex items-center gap-2"><CreditCard className="h-4 w-4 text-destructive" /><span className="text-sm font-medium">Payment Due: ${Number(p.amount).toFixed(2)}</span></div>
+                    <p className="text-xs text-muted-foreground ml-6">{p.notes || "Pending payment"}</p>
+                  </div>
+                ))}
+                {upcoming.slice(0, 3).map(a => (
+                  <div key={a.id} className="p-3 hover:bg-muted/50 cursor-pointer" onClick={() => { const el = document.querySelector('[value="appointments"]') as HTMLButtonElement; el?.click(); }}>
+                    <div className="flex items-center gap-2"><Calendar className="h-4 w-4 text-primary" /><span className="text-sm font-medium">{a.service_type}</span></div>
+                    <p className="text-xs text-muted-foreground ml-6">{formatDate(a.scheduled_date)} at {a.scheduled_time}</p>
+                  </div>
+                ))}
+                {unreadCount > 0 && (
+                  <div className="p-3 hover:bg-muted/50 cursor-pointer" onClick={() => { const el = document.querySelector('[value="chat"]') as HTMLButtonElement; el?.click(); }}>
+                    <div className="flex items-center gap-2"><MessageSquare className="h-4 w-4 text-primary" /><span className="text-sm font-medium">{unreadCount} unread message{unreadCount > 1 ? "s" : ""}</span></div>
+                  </div>
+                )}
+                {payments.filter(p => p.status === "pending").length === 0 && upcoming.length === 0 && unreadCount === 0 && (
+                  <div className="p-6 text-center text-sm text-muted-foreground">No notifications</div>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
           <div className="flex items-center gap-3 pl-4 border-l border-border">
             <div className="text-right hidden sm:block">
               <p className="text-sm font-semibold text-foreground">{profile?.full_name || "User"}</p>
