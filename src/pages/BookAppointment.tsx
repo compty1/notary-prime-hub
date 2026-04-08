@@ -705,6 +705,7 @@ export default function BookAppointment() {
 
   return (
     <PageShell>
+      <OfflineIndicator />
       <div className="container mx-auto max-w-2xl px-4 py-12">
         <Breadcrumbs />
         {user && pastAppointments.length > 0 && step === 1 && (
