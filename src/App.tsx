@@ -180,6 +180,7 @@ function AnimatedRoutes() {
       <Route path="/notary-certificates" element={<SR><NotaryCertificates /></SR>} />
       <Route path="/compliance" element={<SR><Compliance /></SR>} />
       <Route path="/security" element={<SR><Security /></SR>} />
+      <Route path="/accessibility" element={<SR><Accessibility /></SR>} />
       <Route path="/solutions/hospitals" element={<SR><ForHospitals /></SR>} />
       <Route path="/solutions/real-estate" element={<SR><ForRealEstate /></SR>} />
       <Route path="/solutions/law-firms" element={<SR><ForLawFirms /></SR>} />
