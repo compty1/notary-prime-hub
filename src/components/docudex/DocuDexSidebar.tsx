@@ -453,6 +453,71 @@ export function DocuDexSidebar({
                 />
               )}
 
+              {/* ═══ AI Recommendations ═══ */}
+              {sidebarTab === "recommend" && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-[10px] text-muted-foreground font-medium">AI Document Analysis</p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-6 text-[10px] gap-1"
+                      onClick={onRequestRecommendations}
+                      disabled={recommendLoading}
+                    >
+                      {recommendLoading ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : <Sparkles className="h-2.5 w-2.5" />}
+                      Analyze
+                    </Button>
+                  </div>
+
+                  {recommendations.length === 0 && !recommendLoading && (
+                    <div className="text-center py-6 space-y-2">
+                      <Lightbulb className="h-8 w-8 mx-auto text-muted-foreground/40" />
+                      <p className="text-[10px] text-muted-foreground">Click "Analyze" to get AI-powered recommendations for your document.</p>
+                      <p className="text-[9px] text-muted-foreground italic">Checks completeness, compliance, tone, and suggests improvements.</p>
+                    </div>
+                  )}
+
+                  {recommendLoading && (
+                    <div className="text-center py-6 space-y-2">
+                      <Loader2 className="h-6 w-6 mx-auto animate-spin text-primary" />
+                      <p className="text-[10px] text-muted-foreground">Analyzing your document...</p>
+                    </div>
+                  )}
+
+                  {recommendations.map((rec, i) => (
+                    <div
+                      key={i}
+                      className="rounded-lg border border-border p-2.5 text-[10px] hover:border-primary/30 transition-all space-y-1.5"
+                    >
+                      <div className="flex items-start gap-1.5">
+                        {rec.type === "compliance" && <AlertTriangle className="h-3 w-3 text-amber-500 shrink-0 mt-0.5" />}
+                        {rec.type === "suggestion" && <Lightbulb className="h-3 w-3 text-blue-500 shrink-0 mt-0.5" />}
+                        {rec.type === "improvement" && <CheckCircle className="h-3 w-3 text-emerald-500 shrink-0 mt-0.5" />}
+                        <div>
+                          <div className="font-medium">{rec.title}</div>
+                          <div className="text-muted-foreground mt-0.5">{rec.description}</div>
+                        </div>
+                      </div>
+                      {rec.insertHtml && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full h-6 text-[10px] gap-1"
+                          onClick={() => {
+                            if (editor && rec.insertHtml) {
+                              editor.chain().focus().insertContent(rec.insertHtml).run();
+                            }
+                          }}
+                        >
+                          <Plus className="h-2.5 w-2.5" /> Insert Suggestion
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {/* ═══ Design (CS-002, PM-004, PM-005, OC-006) ═══ */}
               {sidebarTab === "design" && (
                 <div className="space-y-4">
