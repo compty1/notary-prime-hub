@@ -58,10 +58,13 @@ export default function FeeCalculator() {
 
   const effectiveMiles = manualOverride ? travelMiles : (calculatedDistance ?? travelMiles);
 
+  // Audit Item 5: Enforce Ohio $5 per act fee cap (ORC §147.08)
+  const OHIO_MAX_FEE_PER_ACT = 5;
+
   const breakdown = useMemo(() => {
     if (!settings.base_fee_per_signature && Object.keys(settings).length === 0) return null;
     const parsed = parseSettings(settings);
-    return calculatePrice({
+    const result = calculatePrice({
       notarizationType,
       documentCount,
       signerCount,
@@ -71,6 +74,14 @@ export default function FeeCalculator() {
       witnessCount,
       needsApostille,
     }, parsed);
+    // Validate notarial act fee against Ohio statutory cap
+    const notarialActCount = documentCount * signerCount;
+    const maxNotarialFee = notarialActCount * OHIO_MAX_FEE_PER_ACT;
+    if (result && result.basePrice > maxNotarialFee) {
+      result.basePrice = maxNotarialFee;
+      result.total = maxNotarialFee + (result.travelFee || 0) + (result.techFee || 0) + (result.rushFee || 0) + (result.afterHoursFee || 0) + (result.witnessFee || 0) + (result.apostilleFee || 0);
+    }
+    return result;
   }, [notarizationType, documentCount, signerCount, effectiveMiles, isRush, isAfterHours, witnessCount, needsApostille, settings]);
 
   const bookingUrl = `/book?type=${notarizationType}&estimate=${breakdown?.total.toFixed(2) || "0"}&docs=${documentCount}${needsApostille ? "&apostille=true" : ""}`;

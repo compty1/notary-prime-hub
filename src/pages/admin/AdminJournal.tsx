@@ -113,13 +113,25 @@ export default function AdminJournal() {
   };
 
   const handleSubmit = async () => {
-    // Ohio ORC §147.551 journal completeness validation
+    // Audit Item 14: Validate ALL ORC §147.141 required fields
     const missing: string[] = [];
     if (!form.signer_name) missing.push("Signer Name");
+    if (!form.signer_address) missing.push("Signer Address");
     if (!form.document_type) missing.push("Document Type");
     if (!form.id_type) missing.push("ID Type");
+    if (!form.id_number) missing.push("ID Number");
+    if (!form.id_expiration) missing.push("ID Expiration");
     if (!form.service_performed) missing.push("Service Performed");
+    if (!form.fees_charged) missing.push("Fee Charged");
     if (form.notarization_type === "ron" && !form.id_number) missing.push("ID Number (required for RON)");
+    // ORC §147.08: Validate Ohio fee cap
+    const feesCharged = parseFloat(form.fees_charged);
+    if (feesCharged > 0 && feesCharged > 5) {
+      const docCount = 1; // per-act validation
+      if (feesCharged > docCount * 5) {
+        missing.push(`Fee exceeds Ohio $5/act cap (ORC §147.08)`);
+      }
+    }
     if (missing.length > 0) {
       toast({ title: "Incomplete journal entry", description: `Required: ${missing.join(", ")}`, variant: "destructive" });
       return;
