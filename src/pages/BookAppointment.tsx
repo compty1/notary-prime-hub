@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
@@ -705,6 +706,7 @@ export default function BookAppointment() {
 
   return (
     <PageShell>
+      <OfflineIndicator />
       <div className="container mx-auto max-w-2xl px-4 py-12">
         <Breadcrumbs />
         {user && pastAppointments.length > 0 && step === 1 && (
@@ -917,7 +919,7 @@ export default function BookAppointment() {
               )}
 
               <div className="flex justify-between pt-4">
-                <Button variant="outline" onClick={() => step > 1 && setStep((step - 1) as BookingStep)} disabled={step === 1}><ChevronLeft className="mr-1 h-4 w-4" /> Back</Button>
+                <Button variant="outline" onClick={() => { if (step === 1) navigate("/services"); else setStep((step - 1) as BookingStep); }}><ChevronLeft className="mr-1 h-4 w-4" /> {step === 1 ? "Services" : "Back"}</Button>
                 {step < lastStep ? (
                   <Button onClick={() => setStep((step + 1) as BookingStep)} disabled={!canProceed()} className="">Next <ChevronRight className="ml-1 h-4 w-4" /></Button>
                 ) : (

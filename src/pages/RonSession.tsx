@@ -383,6 +383,51 @@ export default function RonSession() {
     };
   }, [isAdminOrNotary, participantLink, sessionStatus, lastActivityAt, inactivityLocked, appointmentId]);
 
+  // Issue 3.7: Auto-save session data every 60 seconds during active session
+  useEffect(() => {
+    if (!isAdminOrNotary || !appointmentId || !participantLink || sessionStatus === "completed") return;
+    const autoSaveInterval = setInterval(async () => {
+      try {
+        await supabase.from("notarization_sessions").update({
+          id_verified: idVerified,
+          kba_completed: kbaCompleted,
+          recording_consent: recordingConsent,
+          recording_consent_at: recordingConsentAt,
+          session_mode: sessionMode,
+          signing_platform: signingPlatform,
+          document_name: documentName || null,
+          signer_email: signerEmail || null,
+          kba_attempts: kbaAttempts,
+          esign_consent: esignConsented,
+          esign_consent_at: esignConsentTimestamp,
+          witness_verified: witnessVerified,
+          witness_name: witnessName || null,
+        } as any).eq("appointment_id", appointmentId);
+        // Also save notes
+        await supabase.from("appointments").update({ admin_notes: notes }).eq("id", appointmentId);
+      } catch { /* silent auto-save failure — manual save is still available */ }
+    }, 60_000);
+    return () => clearInterval(autoSaveInterval);
+  }, [isAdminOrNotary, appointmentId, participantLink, sessionStatus, idVerified, kbaCompleted, recordingConsent, recordingConsentAt, sessionMode, signingPlatform, documentName, signerEmail, kbaAttempts, esignConsented, esignConsentTimestamp, witnessVerified, witnessName, notes]);
+
+  // Issue 5.6: Persist e-sign consent immediately when granted
+  useEffect(() => {
+    if (!appointmentId || !esignConsented || !esignConsentTimestamp) return;
+    supabase.from("notarization_sessions").update({
+      esign_consent: true,
+      esign_consent_at: esignConsentTimestamp,
+    } as any).eq("appointment_id", appointmentId).then(() => {}, () => {});
+  }, [esignConsented, esignConsentTimestamp, appointmentId]);
+
+  // Issue 5.6: Persist recording consent immediately when granted
+  useEffect(() => {
+    if (!appointmentId || !recordingConsent || !recordingConsentAt) return;
+    supabase.from("notarization_sessions").update({
+      recording_consent: true,
+      recording_consent_at: recordingConsentAt,
+    } as any).eq("appointment_id", appointmentId).then(() => {}, () => {});
+  }, [recordingConsent, recordingConsentAt, appointmentId]);
+
   const toggleVoice = () => {
     if (!recognitionRef.current) {
       toast({ title: "Not supported", description: "Voice recognition is not available in this browser.", variant: "destructive" });
