@@ -310,42 +310,42 @@ export default function AdminOverview() {
 
       {/* Analytics Charts */}
       <div className="mb-8 grid gap-6 lg:grid-cols-3">
-        <Card className="border-border/50 lg:col-span-1">
-          <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Appointments by Month</CardTitle></CardHeader>
+        <Card className="rounded-[24px] border-gray-100 bg-white lg:col-span-1">
+          <CardHeader className="pb-2"><CardTitle className="text-[10px] font-black uppercase tracking-widest text-gray-400">Appointments by Month</CardTitle></CardHeader>
           <CardContent>
             {monthlyAppointments.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={monthlyAppointments}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-                  <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} allowDecimals={false} />
-                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
-                  <Bar dataKey="appointments" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#9ca3af" }} />
+                  <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} allowDecimals={false} />
+                  <Tooltip contentStyle={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, fontSize: 12 }} />
+                  <Bar dataKey="appointments" fill="#eab308" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
-            ) : <p className="py-10 text-center text-sm text-muted-foreground">No data yet</p>}
+            ) : <p className="py-10 text-center text-sm text-gray-400">No data yet</p>}
           </CardContent>
         </Card>
 
-        <Card className="border-border/50 lg:col-span-1">
-          <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Revenue Trend</CardTitle></CardHeader>
+        <Card className="rounded-[24px] border-gray-100 bg-white lg:col-span-1">
+          <CardHeader className="pb-2"><CardTitle className="text-[10px] font-black uppercase tracking-widest text-gray-400">Revenue Trend</CardTitle></CardHeader>
           <CardContent>
             {monthlyRevenue.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={monthlyRevenue}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-                  <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickFormatter={(v) => `$${v}`} />
-                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} formatter={(value: number) => [`$${value.toFixed(2)}`, "Revenue"]} />
-                  <Line type="monotone" dataKey="revenue" stroke="hsl(var(--accent))" strokeWidth={2} dot={{ fill: "hsl(var(--accent))", r: 4 }} />
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#9ca3af" }} />
+                  <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} tickFormatter={(v) => `$${v}`} />
+                  <Tooltip contentStyle={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, fontSize: 12 }} formatter={(value: number) => [`$${value.toFixed(2)}`, "Revenue"]} />
+                  <Line type="monotone" dataKey="revenue" stroke="#212529" strokeWidth={2} dot={{ fill: "#eab308", r: 4 }} />
                 </LineChart>
               </ResponsiveContainer>
-            ) : <p className="py-10 text-center text-sm text-muted-foreground">No data yet</p>}
+            ) : <p className="py-10 text-center text-sm text-gray-400">No data yet</p>}
           </CardContent>
         </Card>
 
-        <Card className="border-border/50 lg:col-span-1">
-          <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Status Breakdown</CardTitle></CardHeader>
+        <Card className="rounded-[24px] border-gray-100 bg-white lg:col-span-1">
+          <CardHeader className="pb-2"><CardTitle className="text-[10px] font-black uppercase tracking-widest text-gray-400">Status Breakdown</CardTitle></CardHeader>
           <CardContent>
             {statusBreakdown.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
@@ -353,10 +353,10 @@ export default function AdminOverview() {
                   <Pie data={statusBreakdown} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={3} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
                     {statusBreakdown.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
                   </Pie>
-                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
+                  <Tooltip contentStyle={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, fontSize: 12 }} />
                 </PieChart>
               </ResponsiveContainer>
-            ) : <p className="py-10 text-center text-sm text-muted-foreground">No data yet</p>}
+            ) : <p className="py-10 text-center text-sm text-gray-400">No data yet</p>}
           </CardContent>
         </Card>
       </div>
@@ -370,21 +370,21 @@ export default function AdminOverview() {
       {recentActivity.length > 0 && (
         <div className="mb-8">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-sans text-lg font-semibold text-foreground flex items-center gap-2">
-              <ScrollText className="h-5 w-5 text-muted-foreground" /> Recent Activity
+            <h2 className="text-lg font-black text-[#212529] flex items-center gap-2">
+              <ScrollText className="h-5 w-5 text-gray-400" /> Recent Activity
             </h2>
-            <Link to="/admin/audit-log"><Button variant="ghost" size="sm" className="text-xs">View All →</Button></Link>
+            <Link to="/admin/audit-log"><Button variant="ghost" size="sm" className="text-xs rounded-xl">View All →</Button></Link>
           </div>
-          <Card className="border-border/50">
+          <Card className="rounded-[24px] border-gray-100 bg-white">
             <CardContent className="p-0">
-              <div className="divide-y divide-border/30">
+              <div className="divide-y divide-gray-100">
                 {recentActivity.map((log) => (
-                  <div key={log.id} className="flex items-center justify-between px-4 py-2.5 hover:bg-muted/30">
+                  <div key={log.id} className="flex items-center justify-between px-5 py-3 hover:bg-gray-50/50">
                     <div className="flex items-center gap-3">
-                      <Badge className="text-xs bg-muted text-muted-foreground">{log.action.replace(/_/g, " ")}</Badge>
-                      <span className="text-xs text-muted-foreground">{log.entity_type || ""}</span>
+                      <Badge className="text-xs bg-gray-100 text-gray-600 rounded-lg">{log.action.replace(/_/g, " ")}</Badge>
+                      <span className="text-xs text-gray-400">{log.entity_type || ""}</span>
                     </div>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-gray-400">
                       {new Date(log.created_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
                     </span>
                   </div>
