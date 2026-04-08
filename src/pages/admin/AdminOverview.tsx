@@ -206,8 +206,8 @@ export default function AdminOverview() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-sans text-2xl font-bold text-foreground">Dashboard Overview</h1>
-        <Button variant="ghost" size="sm" onClick={fetchData}><RefreshCw className="mr-1 h-3 w-3" /> Refresh</Button>
+        <h1 className="text-3xl font-black text-[#212529]">Dashboard Overview</h1>
+        <Button variant="ghost" size="sm" onClick={fetchData} className="rounded-xl"><RefreshCw className="mr-1 h-3 w-3" /> Refresh</Button>
       </div>
 
       {(commissionAlert || eoAlert || bondAlert) && (
@@ -296,10 +296,11 @@ export default function AdminOverview() {
         {statCards.map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
             <Link to={s.link}>
-              <Card className="border-border/50 hover:border-primary/30 hover:shadow-sm transition-all cursor-pointer">
-                <CardContent className="flex items-center gap-4 p-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted"><s.icon className={`h-5 w-5 ${s.color}`} /></div>
-                  <div><p className="text-2xl font-bold text-foreground">{s.value}</p><p className="text-xs text-muted-foreground">{s.label}</p></div>
+              <Card className="rounded-[24px] border-gray-100 hover:shadow-md transition-all cursor-pointer bg-white">
+                <CardContent className="p-5">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-50 mb-3"><s.icon className={`h-5 w-5 ${s.color}`} /></div>
+                  <p className="text-4xl font-black text-[#212529]">{s.value}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">{s.label}</p>
                 </CardContent>
               </Card>
             </Link>
