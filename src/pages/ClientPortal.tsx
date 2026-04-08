@@ -240,13 +240,22 @@ export default function ClientPortal() {
   const sendChatMessage = async () => {
     if (!chatInput.trim() || !user) return;
     setSendingChat(true);
-    const { error } = await supabase.from("chat_messages").insert({ sender_id: user.id, message: chatInput.trim(), is_admin: false, recipient_id: chatRecipient || null });
+    // Sanitize chat input before insert to prevent stored XSS (Issue 1.6)
+    const sanitizedMessage = chatInput.trim().replace(/[<>]/g, c => c === '<' ? '&lt;' : '&gt;');
+    const { error } = await supabase.from("chat_messages").insert({ sender_id: user.id, message: sanitizedMessage, is_admin: false, recipient_id: chatRecipient || null });
     if (error) toast({ title: "Error sending message", variant: "destructive" });
     else setChatInput("");
     setSendingChat(false);
   };
 
-  useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatMessages]);
+  // Only auto-scroll on NEW messages, not initial load (Issue 3.3)
+  const prevChatCountRef = useRef(0);
+  useEffect(() => {
+    if (chatMessages.length > prevChatCountRef.current && prevChatCountRef.current > 0) {
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+    prevChatCountRef.current = chatMessages.length;
+  }, [chatMessages]);
 
   const explainDocument = async (doc: any) => {
     setExplaining(true); setExplanation(null); setExplainDialogOpen(true);
@@ -700,10 +709,10 @@ export default function ClientPortal() {
           {/* REVIEWS TAB */}
           <TabsContent value="reviews" className="space-y-6">
             <h2 className="font-sans text-xl font-semibold">Leave a Review</h2>
-            {past.filter(a => a.status === "completed").length > 0 && (
+            {past.filter(a => a.status === "completed").length > 0 ? (
               <Card className="border-border/50"><CardContent className="p-4 space-y-4">
                 <div><Label>Select Appointment</Label><Select value={reviewForm.appointment_id} onValueChange={v => setReviewForm({ ...reviewForm, appointment_id: v })}><SelectTrigger><SelectValue placeholder="Choose completed appointment..." /></SelectTrigger><SelectContent>{past.filter(a => a.status === "completed" && !reviews.some(r => r.appointment_id === a.id)).map(a => <SelectItem key={a.id} value={a.id}>{a.service_type} — {formatDate(a.scheduled_date)}</SelectItem>)}</SelectContent></Select></div>
-                <div><Label>Rating</Label><div className="flex gap-1 mt-1">{[1,2,3,4,5].map(n => <button key={n} onClick={() => setReviewForm({ ...reviewForm, rating: n })} className="p-1"><Star className={`h-6 w-6 ${n <= reviewForm.rating ? "text-amber-500 fill-amber-500" : "text-muted-foreground"}`} /></button>)}</div></div>
+                <div><Label id="rating-label">Rating</Label><div className="flex gap-1 mt-1" role="radiogroup" aria-labelledby="rating-label">{[1,2,3,4,5].map(n => <button key={n} role="radio" aria-checked={reviewForm.rating === n} aria-label={`${n} star${n > 1 ? "s" : ""}`} onClick={() => setReviewForm({ ...reviewForm, rating: n })} onKeyDown={e => { if (e.key === "ArrowRight" && reviewForm.rating < 5) setReviewForm({ ...reviewForm, rating: reviewForm.rating + 1 }); if (e.key === "ArrowLeft" && reviewForm.rating > 1) setReviewForm({ ...reviewForm, rating: reviewForm.rating - 1 }); }} tabIndex={reviewForm.rating === n ? 0 : -1} className="p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"><Star className={`h-6 w-6 ${n <= reviewForm.rating ? "text-amber-500 fill-amber-500" : "text-muted-foreground"}`} /></button>)}</div></div>
                 <div><Label>Comment (optional)</Label><Textarea value={reviewForm.comment} onChange={e => setReviewForm({ ...reviewForm, comment: e.target.value })} rows={3} placeholder="Tell us about your experience..." /></div>
                 <Button disabled={!reviewForm.appointment_id || submittingReview} onClick={async () => {
                   if (!user || !reviewForm.appointment_id) return;
@@ -714,6 +723,8 @@ export default function ClientPortal() {
                   setSubmittingReview(false);
                 }} className="">{submittingReview ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Star className="mr-1 h-4 w-4" />} Submit Review</Button>
               </CardContent></Card>
+            ) : (
+              <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground"><Star className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" /><p className="font-medium text-foreground mb-1">No reviews yet</p><p className="text-sm">Complete an appointment to leave feedback.</p></CardContent></Card>
             )}
             {reviews.length > 0 && <><h3 className="font-sans text-lg font-semibold mt-6">Your Reviews</h3><div className="space-y-3">{reviews.map(r => <Card key={r.id} className="border-border/50"><CardContent className="p-4"><div className="flex items-center gap-1 mb-2">{[1,2,3,4,5].map(n => <Star key={n} className={`h-4 w-4 ${n <= r.rating ? "text-amber-500 fill-amber-500" : "text-muted-foreground"}`} />)}</div>{r.comment && <p className="text-sm">{r.comment}</p>}<p className="text-xs text-muted-foreground mt-2">{new Date(r.created_at).toLocaleDateString()}</p></CardContent></Card>)}</div></>}
           </TabsContent>
