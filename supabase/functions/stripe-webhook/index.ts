@@ -123,6 +123,27 @@ Deno.serve(async (req) => {
         }
         break;
       }
+      case "customer.subscription.created":
+      case "customer.subscription.updated": {
+        const sub = event.data.object as any;
+        const customerId = sub.customer;
+        // Look up user by stripe customer ID in profiles
+        const { data: prof } = await supabase.from("profiles").select("user_id").eq("stripe_customer_id", customerId).limit(1);
+        if (prof && prof.length > 0) {
+          const plan = sub.status === "active" ? (sub.items?.data?.[0]?.price?.lookup_key || "pro") : "free";
+          await supabase.from("profiles").update({ plan } as any).eq("user_id", prof[0].user_id);
+        }
+        break;
+      }
+      case "customer.subscription.deleted": {
+        const sub = event.data.object as any;
+        const customerId = sub.customer;
+        const { data: prof } = await supabase.from("profiles").select("user_id").eq("stripe_customer_id", customerId).limit(1);
+        if (prof && prof.length > 0) {
+          await supabase.from("profiles").update({ plan: "free" } as any).eq("user_id", prof[0].user_id);
+        }
+        break;
+      }
     }
 
     // Log webhook event for idempotency and audit (item 44)

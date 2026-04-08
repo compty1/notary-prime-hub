@@ -48,10 +48,10 @@ export default function AdminOverview() {
       supabase.from("appointments").select("id", { count: "exact", head: true }).eq("status", "completed"),
       supabase.from("profiles").select("id", { count: "exact", head: true }),
       supabase.from("appointments").select("id, client_id, scheduled_date, scheduled_time, status, service_type, notarization_type, confirmation_number").order("scheduled_date", { ascending: false }).limit(10),
-      supabase.from("notary_journal").select("fees_charged, created_at, notarization_type").limit(1000),
+      supabase.from("payments").select("amount, status").eq("status", "paid"),
       supabase.from("platform_settings").select("setting_key, setting_value"),
       supabase.from("profiles").select("user_id, full_name, email").limit(500),
-      supabase.from("appointments").select("scheduled_date, status, notarization_type").order("scheduled_date", { ascending: true }).gte("scheduled_date", new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]).limit(1000),
+      supabase.from("appointments").select("scheduled_date, status, notarization_type, client_id").order("scheduled_date", { ascending: true }).gte("scheduled_date", new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]).limit(1000),
     ]);
 
     // Fetch recent audit activity
@@ -65,11 +65,13 @@ export default function AdminOverview() {
       setProfiles(map);
     }
 
-    const totalRevenue = (journalData || []).reduce((sum: number, j: any) => sum + (parseFloat(j.fees_charged) || 0), 0);
+    const totalRevenue = (journalData || []).reduce((sum: number, j: any) => sum + (parseFloat(j.amount) || 0), 0);
     if (recentAppts) setAppointments(recentAppts);
     if (journalData) setJournalEntries(journalData);
     if (allApptData) setAllAppointments(allApptData);
-    setStats({ total: totalAppts || 0, upcoming: upcomingCount || 0, completed: completedCount || 0, clients: clientCount || 0, revenue: totalRevenue });
+    // Use distinct client_ids from appointments for accurate client count
+    const uniqueClients = new Set((allApptData || []).map((a: any) => a.client_id).filter(Boolean));
+    setStats({ total: totalAppts || 0, upcoming: upcomingCount || 0, completed: completedCount || 0, clients: uniqueClients.size || clientCount || 0, revenue: totalRevenue });
 
     if (settingsData) {
       const s: Record<string, string> = {};

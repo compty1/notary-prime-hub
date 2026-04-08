@@ -2290,6 +2290,45 @@ export type Database = {
         }
         Relationships: []
       }
+      pricing_rules: {
+        Row: {
+          adjustment_type: string
+          adjustment_value: number
+          conditions: Json
+          created_at: string
+          id: string
+          is_active: boolean | null
+          name: string
+          priority: number | null
+          rule_type: string
+          updated_at: string
+        }
+        Insert: {
+          adjustment_type?: string
+          adjustment_value?: number
+          conditions?: Json
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          priority?: number | null
+          rule_type?: string
+          updated_at?: string
+        }
+        Update: {
+          adjustment_type?: string
+          adjustment_value?: number
+          conditions?: Json
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          priority?: number | null
+          rule_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
@@ -2620,6 +2659,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      service_add_ons: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          price: number
+          service_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price?: number
+          service_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price?: number
+          service_id?: string | null
+        }
+        Relationships: []
       }
       service_faqs: {
         Row: {
@@ -3094,6 +3163,36 @@ export type Database = {
         }
         Relationships: []
       }
+      usage_tracking: {
+        Row: {
+          created_at: string
+          feature: string
+          id: string
+          period_start: string
+          usage_count: number
+          usage_period: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feature: string
+          id?: string
+          period_start?: string
+          usage_count?: number
+          usage_period?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feature?: string
+          id?: string
+          period_start?: string
+          usage_count?: number
+          usage_period?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_favorites: {
         Row: {
           created_at: string
@@ -3167,6 +3266,48 @@ export type Database = {
           is_default?: boolean | null
           name?: string
           style_config?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean | null
+          created_at: string
+          current_period_end: string | null
+          current_period_start: string | null
+          id: string
+          plan: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          plan?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          plan?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -3317,6 +3458,15 @@ export type Database = {
       }
     }
     Functions: {
+      check_and_reserve_slot: {
+        Args: {
+          p_client_id: string
+          p_date: string
+          p_service_type: string
+          p_time: string
+        }
+        Returns: string
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean

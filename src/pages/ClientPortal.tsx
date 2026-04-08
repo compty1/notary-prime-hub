@@ -27,6 +27,8 @@ import { formatPhone } from "@/lib/formatPhone";
 import PortalAppointmentsTab from "./portal/PortalAppointmentsTab";
 import PortalDocumentsTab from "./portal/PortalDocumentsTab";
 import PortalChatTab from "./portal/PortalChatTab";
+import PortalCorrespondenceTab from "./portal/PortalCorrespondenceTab";
+import PortalServiceRequestsTab from "./portal/PortalServiceRequestsTab";
 import { PortalLoadingSkeleton } from "@/components/PortalLoadingSkeleton";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -35,6 +37,7 @@ import { PortalQuickActions } from "@/components/PortalQuickActions";
 import { DocumentReadinessScore } from "@/components/DocumentReadinessScore";
 import { ReferralPortal } from "@/components/ReferralPortal";
 import PortalAIToolsTab from "./portal/PortalAIToolsTab";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 const pipelineSteps = [
   { key: "uploaded", label: "Intake", icon: Upload },
   { key: "pending_review", label: "Review", icon: FileText },
@@ -94,6 +97,7 @@ export default function ClientPortal() {
   const [reminders, setReminders] = useState<any[]>([]);
   const [reminderForm, setReminderForm] = useState({ document_id: "", expiry_date: "", remind_days_before: "30" });
   const [savingReminder, setSavingReminder] = useState(false);
+  const [portalSearch, setPortalSearch] = useState("");
 
   const INTAKE_ONLY = INTAKE_ONLY_SERVICES;
   const SAAS_TOOLS = SAAS_LINKS;
@@ -162,9 +166,9 @@ export default function ClientPortal() {
       if (msg.sender_id === user.id || (msg.is_admin && msg.recipient_id === user.id)) setChatMessages(prev => prev.some(m => m.id === msg.id) ? prev : [...prev, msg]);
     }).subscribe();
 
-    const apptChannel = supabase.channel("client-appointments").on("postgres_changes", { event: "UPDATE", schema: "public", table: "appointments" }, (payload) => {
+    const apptChannel = supabase.channel("client-appointments").on("postgres_changes", { event: "UPDATE", schema: "public", table: "appointments", filter: `client_id=eq.${user.id}` }, (payload) => {
       const updated = payload.new as any;
-      if (updated.client_id === user.id) { setAppointments(prev => prev.map(a => a.id === updated.id ? updated : a)); toast({ title: "Appointment updated", description: `Status: ${updated.status.replace(/_/g, " ")}` }); }
+      setAppointments(prev => prev.map(a => a.id === updated.id ? updated : a)); toast({ title: "Appointment updated", description: `Status: ${updated.status.replace(/_/g, " ")}` });
     }).subscribe();
 
     const paymentChannel = supabase.channel("client-payments").on("postgres_changes", { event: "*", schema: "public", table: "payments", filter: `client_id=eq.${user.id}` }, (payload) => {
@@ -194,16 +198,20 @@ export default function ClientPortal() {
       return;
     }
     setCancelling(true);
-    const { error } = await supabase.from("appointments").update({ status: "cancelled" as any }).eq("id", id).eq("client_id", user.id);
+    const { error } = await supabase.from("appointments").update({ status: "cancelled" as any, admin_notes: cancelReason ? `Client cancel reason: ${cancelReason}` : null } as any).eq("id", id).eq("client_id", user.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else { toast({ title: "Appointment cancelled" }); setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: "cancelled" } : a)); try { await supabase.functions.invoke("send-appointment-emails", { body: { appointmentId: id, emailType: "cancellation" } }); } catch (e) { console.error("Cancellation email error:", e); } }
+    else { toast({ title: "Appointment cancelled" }); setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: "cancelled" } : a)); setCancelReason(""); try { await supabase.functions.invoke("send-appointment-emails", { body: { appointmentId: id, emailType: "cancellation", cancelReason: cancelReason || undefined } }); } catch (e) { console.error("Cancellation email error:", e); } }
     setCancelling(false); setCancelDialogId(null);
   };
 
   const saveProfile = async () => {
     if (!user || !profile) return;
+    // Validate profile fields
+    if (!profileForm.full_name.trim()) { toast({ title: "Validation Error", description: "Full name is required.", variant: "destructive" }); return; }
+    if (profileForm.phone && !/^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/.test(profileForm.phone.replace(/\s+/g, ""))) { toast({ title: "Validation Error", description: "Please enter a valid phone number.", variant: "destructive" }); return; }
+    if (profileForm.zip && !/^\d{5}(-\d{4})?$/.test(profileForm.zip)) { toast({ title: "Validation Error", description: "Please enter a valid 5-digit zip code.", variant: "destructive" }); return; }
     setSavingProfile(true);
-    const { error } = await supabase.from("profiles").update({ full_name: profileForm.full_name, phone: profileForm.phone || null, address: profileForm.address || null, city: profileForm.city || null, state: profileForm.state || null, zip: profileForm.zip || null }).eq("user_id", user.id);
+    const { error } = await supabase.from("profiles").update({ full_name: profileForm.full_name.trim(), phone: profileForm.phone || null, address: profileForm.address || null, city: profileForm.city || null, state: profileForm.state || null, zip: profileForm.zip || null }).eq("user_id", user.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else { toast({ title: "Profile updated" }); setProfile({ ...profile, ...profileForm }); setEditProfileOpen(false); }
     setSavingProfile(false);
@@ -280,14 +288,45 @@ export default function ClientPortal() {
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center bg-muted rounded-full px-3 py-1.5 w-80">
             <Search className="h-4 w-4 text-muted-foreground mr-2" />
-            <input type="text" placeholder="Search appointments or documents..." className="bg-transparent border-none outline-none text-sm w-full text-foreground placeholder:text-muted-foreground" />
+            <input type="text" placeholder="Search appointments or documents..." value={portalSearch} onChange={e => setPortalSearch(e.target.value)} className="bg-transparent border-none outline-none text-sm w-full text-foreground placeholder:text-muted-foreground" />
           </div>
-          <button className="p-2 text-muted-foreground hover:bg-muted rounded-full relative" aria-label="Notifications">
-            <Bell className="h-5 w-5" />
-            {(payments.filter(p => p.status === "pending").length + unreadCount) > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full border-2 border-background" />
-            )}
-          </button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="p-2 text-muted-foreground hover:bg-muted rounded-full relative" aria-label="Notifications">
+                <Bell className="h-5 w-5" />
+                {(payments.filter(p => p.status === "pending").length + unreadCount) > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full border-2 border-background" />
+                )}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-0" align="end">
+              <div className="p-3 border-b border-border">
+                <h4 className="text-sm font-semibold text-foreground">Notifications</h4>
+              </div>
+              <div className="max-h-64 overflow-y-auto divide-y divide-border">
+                {payments.filter(p => p.status === "pending").map(p => (
+                  <div key={p.id} className="p-3 hover:bg-muted/50 cursor-pointer" onClick={() => { const el = document.querySelector('[value="payments"]') as HTMLButtonElement; el?.click(); }}>
+                    <div className="flex items-center gap-2"><CreditCard className="h-4 w-4 text-destructive" /><span className="text-sm font-medium">Payment Due: ${Number(p.amount).toFixed(2)}</span></div>
+                    <p className="text-xs text-muted-foreground ml-6">{p.notes || "Pending payment"}</p>
+                  </div>
+                ))}
+                {upcoming.slice(0, 3).map(a => (
+                  <div key={a.id} className="p-3 hover:bg-muted/50 cursor-pointer" onClick={() => { const el = document.querySelector('[value="appointments"]') as HTMLButtonElement; el?.click(); }}>
+                    <div className="flex items-center gap-2"><Calendar className="h-4 w-4 text-primary" /><span className="text-sm font-medium">{a.service_type}</span></div>
+                    <p className="text-xs text-muted-foreground ml-6">{formatDate(a.scheduled_date)} at {a.scheduled_time}</p>
+                  </div>
+                ))}
+                {unreadCount > 0 && (
+                  <div className="p-3 hover:bg-muted/50 cursor-pointer" onClick={() => { const el = document.querySelector('[value="chat"]') as HTMLButtonElement; el?.click(); }}>
+                    <div className="flex items-center gap-2"><MessageSquare className="h-4 w-4 text-primary" /><span className="text-sm font-medium">{unreadCount} unread message{unreadCount > 1 ? "s" : ""}</span></div>
+                  </div>
+                )}
+                {payments.filter(p => p.status === "pending").length === 0 && upcoming.length === 0 && unreadCount === 0 && (
+                  <div className="p-6 text-center text-sm text-muted-foreground">No notifications</div>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
           <div className="flex items-center gap-3 pl-4 border-l border-border">
             <div className="text-right hidden sm:block">
               <p className="text-sm font-semibold text-foreground">{profile?.full_name || "User"}</p>
@@ -567,26 +606,7 @@ export default function ClientPortal() {
 
           {/* CORRESPONDENCE TAB */}
           <TabsContent value="correspondence" className="space-y-6">
-            <h2 className="font-sans text-xl font-semibold">Email Correspondence</h2>
-            {correspondence.length === 0 ? (
-              <Card className="border-border/50"><CardContent className="py-12 text-center text-muted-foreground"><Mail className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" /><p>No correspondence yet</p></CardContent></Card>
-            ) : (
-              <div className="space-y-3">
-                {correspondence.map(c => (
-                  <Card key={c.id} className="border-border/50">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">{c.direction === "inbound" ? <Mail className="h-4 w-4 text-primary" /> : <Send className="h-4 w-4 text-primary" />}<span className="text-sm font-medium">{c.subject}</span></div>
-                        <Badge className={c.status === "replied" ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" : c.status === "pending" ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300" : "bg-muted text-muted-foreground"}>{c.status.replace(/_/g, " ")}</Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground mb-1">{c.direction === "inbound" ? `From: ${c.from_address || "—"}` : `To: ${c.to_address || "—"}`}</p>
-                      <p className="text-sm text-foreground line-clamp-2">{c.body}</p>
-                      <p className="text-xs text-muted-foreground mt-2">{new Date(c.created_at).toLocaleDateString()}</p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
+            {user && <PortalCorrespondenceTab userId={user.id} correspondence={correspondence} setCorrespondence={setCorrespondence} />}
           </TabsContent>
 
           {/* APOSTILLE TAB */}
@@ -664,7 +684,7 @@ export default function ClientPortal() {
                     </Card>
                   );
                 })}
-                {payingPaymentId && <PaymentForm defaultAmount={parseFloat(payments.find(p => p.id === payingPaymentId)?.amount || "0")} onSuccess={async () => { await supabase.from("payments").update({ status: "paid", paid_at: new Date().toISOString(), method: "stripe" } as any).eq("id", payingPaymentId); setPayments(prev => prev.map(p => p.id === payingPaymentId ? { ...p, status: "paid" } : p)); setPayingPaymentId(null); toast({ title: "Payment successful!" }); }} onCancel={() => setPayingPaymentId(null)} />}
+                {payingPaymentId && <PaymentForm defaultAmount={parseFloat(payments.find(p => p.id === payingPaymentId)?.amount || "0")} onSuccess={async () => { setPayments(prev => prev.map(p => p.id === payingPaymentId ? { ...p, status: "processing" } : p)); setPayingPaymentId(null); toast({ title: "Payment processing", description: "Your payment is being confirmed. Status will update automatically." }); }} onCancel={() => setPayingPaymentId(null)} />}
               </div>
             ) : null}
           </TabsContent>
@@ -692,19 +712,7 @@ export default function ClientPortal() {
 
           {/* SERVICE REQUESTS TAB */}
           <TabsContent value="requests" className="space-y-6">
-            <div className="flex items-center justify-between"><h2 className="font-sans text-xl font-semibold">Service Requests</h2><Link to="/request"><Button size="sm" className=""><Plus className="mr-1 h-4 w-4" /> New Request</Button></Link></div>
-            {serviceRequests.length === 0 ? (
-              <Card className="border-border/50"><CardContent className="flex flex-col items-center py-12 text-center"><Clock className="mb-4 h-12 w-12 text-muted-foreground/50" /><p className="text-muted-foreground">No service requests yet</p></CardContent></Card>
-            ) : (
-              <div className="space-y-3">{serviceRequests.map(req => {
-                const intakeData = typeof req.intake_data === 'object' ? req.intake_data : {};
-                return (<Card key={req.id} className="border-border/50"><CardContent className="p-4"><div className="flex items-center justify-between mb-2"><div><p className="font-medium text-sm">{req.service_name}</p><p className="text-xs text-muted-foreground">{new Date(req.created_at).toLocaleDateString()}</p></div><Badge className={req.status === "completed" ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" : req.status === "in_progress" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" : "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"}>{req.client_visible_status || req.status.replace(/_/g, " ")}</Badge></div>
-                {Object.entries(intakeData).length > 0 && <div className="mt-2 text-xs text-muted-foreground space-y-1">{Object.entries(intakeData).slice(0, 4).map(([key, value]) => <p key={key}><span className="font-medium capitalize">{key.replace(/_/g, " ")}:</span> {String(value)}</p>)}</div>}
-                {req.notes && <p className="text-xs text-muted-foreground mt-2 italic">{req.notes}</p>}
-                {req.deliverable_url && <a href={req.deliverable_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 mt-2 text-xs text-primary hover:underline"><ArrowRight className="h-3 w-3" /> Download Deliverable</a>}
-                </CardContent></Card>);
-              })}</div>
-            )}
+            <PortalServiceRequestsTab serviceRequests={serviceRequests} />
           </TabsContent>
 
           {/* REMINDERS TAB */}
@@ -823,7 +831,7 @@ export default function ClientPortal() {
           <div className="mt-6 border-t border-destructive/20 pt-4">
             <p className="text-sm font-medium text-destructive mb-1">Close Account</p>
             <p className="text-xs text-muted-foreground mb-3">This will permanently delete your account and all associated data.</p>
-            <AlertDialog><AlertDialogTrigger asChild><Button variant="outline" size="sm" className="text-destructive border-destructive/30 hover:bg-destructive/10">Close My Account</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle><AlertDialogDescription>This will permanently delete your account, all appointments, documents, and data.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => { if (!user) return; await supabase.from("document_reminders").delete().eq("user_id", user.id); await supabase.from("reviews").delete().eq("client_id", user.id); await supabase.from("chat_messages").delete().eq("sender_id", user.id); await supabase.from("documents").delete().eq("uploaded_by", user.id); await supabase.from("appointments").delete().eq("client_id", user.id); await supabase.from("profiles").delete().eq("user_id", user.id); await supabase.from("user_roles").delete().eq("user_id", user.id); toast({ title: "Account closed" }); signOut(); }}>Yes, close my account</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+            <AlertDialog><AlertDialogTrigger asChild><Button variant="outline" size="sm" className="text-destructive border-destructive/30 hover:bg-destructive/10">Close My Account</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle><AlertDialogDescription>This will permanently delete your account, all appointments, documents, and data.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => { if (!user) return; try { const resp = await supabase.functions.invoke("delete-account"); if (resp.error) throw resp.error; toast({ title: "Account closed", description: "Your account and all data have been permanently deleted." }); signOut(); } catch (e: any) { toast({ title: "Error", description: e.message || "Failed to delete account. Please contact support.", variant: "destructive" }); } }}>Yes, close my account</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
           </div>
         </DialogContent>
       </Dialog>
