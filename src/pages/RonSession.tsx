@@ -563,6 +563,17 @@ export default function RonSession() {
       toast({ title: "Recording URL required", description: "A session recording URL must be provided before finalizing per Ohio ORC §147.66.", variant: "destructive" });
       return;
     }
+    // Validate recording URL format (Issue 5.1)
+    try {
+      const parsedUrl = new URL(recordingUrl.trim());
+      if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+        toast({ title: "Invalid recording URL", description: "Recording URL must use HTTPS protocol.", variant: "destructive" });
+        return;
+      }
+    } catch {
+      toast({ title: "Invalid recording URL", description: "Please enter a valid URL for the session recording.", variant: "destructive" });
+      return;
+    }
     // Item 405: Confirmation dialog
     if (!window.confirm("Are you sure you want to finalize this session? This will mark the appointment as completed, create a journal entry, e-seal verification, and payment record. This action cannot be undone.")) {
       return;
