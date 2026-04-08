@@ -1,6 +1,6 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, FileText, Download, Eye, Printer, ChevronLeft, AlertTriangle, Save, MessageSquare, Sparkles, Send, Loader2, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, AlignLeft, AlignCenter, AlignRight, Heading1, Heading2, Heart, RotateCcw, HelpCircle, PenTool, Plus, CheckCircle, PanelRightOpen } from "lucide-react";
+import { Search, FileText, Download, Eye, Printer, ChevronLeft, AlertTriangle, Save, MessageSquare, Sparkles, Send, Loader2, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, AlignLeft, AlignCenter, AlignRight, Heading1, Heading2, Heart, RotateCcw, HelpCircle, PenTool, Plus, CheckCircle, PanelRightOpen, ExternalLink } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { motion } from "framer-motion";
