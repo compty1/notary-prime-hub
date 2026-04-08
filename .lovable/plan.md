@@ -1,91 +1,58 @@
 
 
-# NotarDex: Ohio Notary Toolkit — Implementation Plan
+# Complete Platform Audit & Gap Analysis — Plan
 
-## Overview
+## What This Delivers
 
-Build the NotarDex prototype as a full-featured, production-ready notary resource toolkit integrated into the admin dashboard. This replaces the current `AdminResources.tsx` page, combining all existing resource content with the new NotarDex modules.
+A comprehensive CSV file at `/mnt/documents/notardex-audit-2026.csv` containing 2,000+ findings across every page, flow, integration, edge function, component, and compliance area. Each row includes: ID, Category, Severity, Page/File, Title, Description, Fix Plan, and Status. The build tracker table will be cleared of resolved items and repopulated with new findings.
 
-## Architecture
+## Audit Scope (All Areas Analyzed)
 
-**Single page replacement**: Rebuild `src/pages/admin/AdminResources.tsx` as the NotarDex toolkit with 6 tabs, merging existing content (service guides, compliance, external links, new notary guide) with the new modules (Form Vault with visual anatomy, Special Acts & Document Intelligence, Journal view, Sim Lab, Vehicle Title Masterclass, Representative Capacity).
+### Categories to Audit
+1. **Public Pages** (55+ routes) — content gaps, broken CTAs, missing SEO, dead links
+2. **Admin Dashboard** (36 pages) — incomplete CRUD, missing filters, export gaps, UX issues
+3. **Client Portal** (7 tabs + overview) — missing features, flow dead-ends, state issues
+4. **Edge Functions** (47 functions) — error handling, missing secrets checks, CORS, rate limiting
+5. **Auth & RBAC** — role enforcement gaps, session edge cases, MFA flows
+6. **Database/RLS** — missing policies, orphaned tables, missing indexes, schema gaps
+7. **Booking Flow** — multi-step validation, payment integration, email confirmations
+8. **RON Session** — compliance gaps, recording management, oath tracking
+9. **Email System** — template gaps, SMTP error handling, queue processing
+10. **AI Tools** (56 tools) — prompt quality, error states, output formatting
+11. **DocuDex Editor** — missing features vs Canva comparison, toolbar gaps
+12. **Compliance** — ORC statute coverage, fee enforcement, journal completeness
+13. **Integrations** — Stripe, SignNow, IONOS, Google Calendar, HubSpot connectivity
+14. **Mobile/Responsive** — breakpoint issues, touch targets, navigation
+15. **SEO & Performance** — meta tags, lazy loading, bundle size, Core Web Vitals
+16. **Security** — CSRF, XSS, input sanitization, rate limiting, secret management
+17. **Accessibility** — ARIA labels, keyboard nav, contrast, screen reader support
+18. **Business Portal** — feature completeness, member management, reporting
+19. **Services Catalog** — pricing model gaps, category coverage, detail pages
+20. **CRM & Leads** — pipeline completeness, activity tracking, conversion tracking
 
-**No new routes needed** — stays at `/admin/resources`.
+## CSV Structure
 
-## Tab Structure
-
-```text
-┌──────────────────────────────────────────────────────────┐
-│  NotarDex — Ohio Notary Toolkit                          │
-├──────────┬───────────┬──────────┬─────────┬──────┬───────┤
-│Form Vault│Special    │Service   │Registry/│Sim   │Reference│
-│          │Acts       │Guides    │Journal  │Lab   │& Law    │
-└──────────┴───────────┴──────────┴─────────┴──────┴───────┘
+```
+ID,Category,Severity,Page/File,Title,Description,Fix Plan,Status
+1,Public Pages,medium,src/pages/Index.tsx,Hero CTA doesn't pre-select RON type,The "Start RON Session" button links to /book?type=ron but booking page may not parse this correctly,Verify searchParams parsing in BookAppointment and map type param to notarizationType state,open
+...
 ```
 
-## Tabs & Content
+## Database Action
 
-### 1. Form Vault (from prototype)
-- Category filter pills: All, General, Corporate, Specialized, Vehicle, Correction
-- 9+ certificate forms with card grid display
-- Click-to-open modal with **visual certificate anatomy** (live preview with hotspot indicators showing venue, testimonium, signature, seal placement)
-- Statutory requirements panel with ORC references
-- Ohio tips sidebar
-- "Copy to Clipboard" and "Download PDF" actions per form
-- **Module 4 content**: Standard Acknowledgment, Updated Jurat (HB 315), Copy Certification exact statutory wording
+Clear all `status = 'resolved'` items from `build_tracker_items` table, then insert top-priority new findings (up to DB insert limits).
 
-### 2. Special Acts & Document Intelligence (from prototype + new modules)
-- **Document Intelligence cards**: Warranty Deed, Will, Promissory Note, Healthcare Directive with key flags and notary role
-- **Special Circumstances**: Signature by Mark (ORC 147.542), Alternative Signer (ORC 147.59), Venue Determination (ORC 147.07)
-- **Module 2 — Vehicle Title Masterclass**: Dealer Exception filter (HB 315 / ORC 4505.06), Jurat requirement with oath script, compliance checklist (white-out, blank space felony trap, open title)
-- **Module 3 — Representative Capacity**: Attorney-in-Fact, Corporate Officer, Trustee scenarios with scripts and certificate modifications
-- **Module 5 — Accessibility**: Signature by Mark with 2-witness requirement, Designated Alternative Signer (ORC 147.59)
-- Each item opens a detail modal with: statutory rule, recommended verbal script, step-by-step protocol
+## Implementation Steps
 
-### 3. Service Guides (existing content preserved)
-- All 10 existing `documentGuides` categories (Real Estate, Legal, Estate Planning, I-9, Apostille, Document Prep, RON, Business, Witness, Virtual Mailroom, Situational)
-- Searchable accordion format with tags, steps, warnings, who-must-be-present
+1. Run a Python script that systematically catalogs all findings based on file analysis
+2. Generate the CSV with 2,000+ rows organized by category
+3. Execute SQL to clear resolved build tracker items
+4. Insert new critical/high findings into build_tracker_items
+5. Deliver the CSV as a downloadable artifact
 
-### 4. Registry / Journal (from prototype)
-- Summary stat cards: Total Volume, Revenue Generated, Record New Act CTA
-- Journal table with date, signer, act type, fee, status
-- Export CSV and Sign Entry actions
-- Pulls from existing `journal_entries` table when available, falls back to demo data
-
-### 5. Sim Lab (from prototype)
-- Training simulator with scenario-based questions
-- Vehicle title traps, expired credentials, representative capacity edge cases
-- Expand to 8+ scenarios covering all high-risk areas
-- Pass/fail feedback with ORC explanations
-- Progress tracking
-
-### 6. Reference & Law (existing content merged)
-- Compliance reminders (seal, journal, prohibited acts, ID, fees)
-- New Notary Guide (8-step onboarding)
-- External resources (Ohio SOS, ORC links, NNA, multi-state RON)
-- Common mistakes to avoid
-
-## Sidebar (Desktop)
-- Notary Health Score with compliance percentage bar
-- Credentials status indicator
-- Venue Scout with auto-detected county
-- Quick links to journal, certificates page, fee calculator
-
-## Mobile
-- Bottom navigation bar with 4 primary tabs (Vault, Acts, Journal, Sim)
-- Remaining tabs accessible via "More" or horizontal scroll
-
-## Key Technical Decisions
-- All content is client-side data arrays (no DB dependency for reference content)
-- Journal tab queries `journal_entries` table via Supabase if authenticated, otherwise shows demo data
-- Certificate PDFs generated via browser print-to-PDF (existing pattern from NotaryCertificates page)
-- Copy-to-clipboard for statutory language templates
-- Responsive grid layouts matching existing admin dashboard patterns
-- Uses existing UI components (Card, Tabs, Dialog, Badge, Button, Accordion)
-- Admin-only route access preserved
-
-## Files Modified
-1. **`src/pages/admin/AdminResources.tsx`** — Complete rebuild as NotarDex toolkit (~1200 lines). All existing data arrays (documentGuides, complianceReminders, newNotaryGuide, externalResources) preserved and reorganized into the new tab structure. New data arrays added for forms, special circumstances, document intelligence, simulator levels, and vehicle title content.
-
-No new routes, no DB migrations, no new components needed — this is a single-file rebuild that consolidates everything into one professional resource hub.
+## Technical Notes
+- The script will use the codebase analysis already performed to enumerate findings
+- Each finding includes actionable fix instructions suitable for future Lovable prompts
+- Severities: critical, high, medium, low, info
+- Categories match the 20 audit areas listed above
 
