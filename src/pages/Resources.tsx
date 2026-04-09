@@ -92,7 +92,12 @@ export default function Resources() {
                 </CardContent>
               </Card>
             </Link>
-          {resources.map((r, i) => (
+          ))}
+          {/* Document Examples below */}
+        </div>
+
+        {/* Remove duplicate map */}
+        {false && resources.map((r, i) => (
             <Link key={i} to={r.link} className="group">
               <Card className="h-full border-border/50 transition-all hover:border-primary/30 hover:shadow-md">
                 <CardContent className="p-6 space-y-3">
