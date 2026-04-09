@@ -807,6 +807,40 @@ export function DocuDexEditor({
     announce("Document exported as TXT");
   };
 
+  // #82: Export as Markdown
+  const exportMarkdown = () => {
+    const md = pages.map(p => {
+      // Simple HTML to Markdown conversion
+      let text = p.html;
+      text = text.replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n');
+      text = text.replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n');
+      text = text.replace(/<h3[^>]*>(.*?)<\/h3>/gi, '### $1\n');
+      text = text.replace(/<h4[^>]*>(.*?)<\/h4>/gi, '#### $1\n');
+      text = text.replace(/<strong[^>]*>(.*?)<\/strong>/gi, '**$1**');
+      text = text.replace(/<b[^>]*>(.*?)<\/b>/gi, '**$1**');
+      text = text.replace(/<em[^>]*>(.*?)<\/em>/gi, '*$1*');
+      text = text.replace(/<i[^>]*>(.*?)<\/i>/gi, '*$1*');
+      text = text.replace(/<u[^>]*>(.*?)<\/u>/gi, '$1');
+      text = text.replace(/<li[^>]*>(.*?)<\/li>/gi, '- $1\n');
+      text = text.replace(/<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi, '[$2]($1)');
+      text = text.replace(/<blockquote[^>]*>(.*?)<\/blockquote>/gi, '> $1\n');
+      text = text.replace(/<hr\s*\/?>/gi, '\n---\n');
+      text = text.replace(/<br\s*\/?>/gi, '\n');
+      text = text.replace(/<p[^>]*>(.*?)<\/p>/gi, '$1\n\n');
+      text = text.replace(/<[^>]+>/g, '');
+      text = text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ');
+      return text.trim();
+    }).join('\n\n---\n\n');
+    const blob = new Blob([md], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${title || "DocuDex-Document"}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+    announce("Document exported as Markdown");
+  };
+
   // Export as HTML
   const exportHtml = () => {
     const allHtml = pages.map(p => p.html).join("\n<!-- page-break -->\n");
