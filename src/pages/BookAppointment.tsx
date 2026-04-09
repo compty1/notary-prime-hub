@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useSettings } from "@/hooks/useSettings";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -182,10 +183,9 @@ export default function BookAppointment() {
     return () => window.removeEventListener("beforeunload", handler);
   }, [serviceType, date, time, notes, step]);
 
+  const { settings: cachedSettings } = useSettings();
   useEffect(() => {
-    supabase.from("platform_settings").select("setting_key, setting_value").limit(100).then(({ data }) => {
-      if (data) { const s: Record<string, string> = {}; data.forEach((r: any) => { s[r.setting_key] = r.setting_value; }); setPricingSettings(s); }
-    });
+    if (Object.keys(cachedSettings).length > 0) setPricingSettings(cachedSettings);
     const NON_BOOKABLE = ["admin_support","content_creation","research","customer_service","technical_support","ux_testing"];
     supabase.from("services").select("name, short_description, category, duration_minutes, is_popular").eq("is_active", true).order("display_order").limit(100).then(({ data }) => {
       if (data && data.length > 0) {

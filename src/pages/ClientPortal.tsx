@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useSettings } from "@/hooks/useSettings";
 import { INTAKE_ONLY_SERVICES, SAAS_LINKS, SUBSCRIPTION_SERVICES as SUBSCRIPTION_SVC_SET, PORTAL_SERVICES as PORTAL_SVC_SET } from "@/lib/serviceConstants";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -148,8 +149,7 @@ export default function ClientPortal() {
       if (apoRes.data) setApostilleRequests(apoRes.data);
       if (reqRes.data) setServiceRequests(reqRes.data);
       if (remRes.data) setReminders(remRes.data);
-      const { data: zoomSetting } = await supabase.from("platform_settings").select("setting_value").eq("setting_key", "zoom_meeting_link").single();
-      if (zoomSetting?.setting_value) setZoomLink(zoomSetting.setting_value);
+      // zoom_meeting_link is fetched via useSettings hook below
       if (profileRes.data) {
         setProfile(profileRes.data);
         setProfileForm({ full_name: profileRes.data.full_name || "", phone: profileRes.data.phone || "", address: profileRes.data.address || "", city: profileRes.data.city || "", state: profileRes.data.state || "", zip: profileRes.data.zip || "" });
