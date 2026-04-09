@@ -119,6 +119,7 @@ const Compliance = lazyRetry(() => import("./pages/Compliance"));
 const Security = lazyRetry(() => import("./pages/Security"));
 const Accessibility = lazyRetry(() => import("./pages/Accessibility"));
 const NotaryPage = lazyRetry(() => import("./pages/NotaryPage"));
+const NotaryDirectory = lazyRetry(() => import("./pages/NotaryDirectory"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -195,6 +196,7 @@ function AnimatedRoutes() {
       <Route path="/solutions/law-firms" element={<SR><ForLawFirms /></SR>} />
       <Route path="/solutions/small-business" element={<SR><ForSmallBusiness /></SR>} />
       <Route path="/solutions/individuals" element={<SR><ForIndividuals /></SR>} />
+      <Route path="/notaries" element={<SR msg="Notary directory failed to load"><NotaryDirectory /></SR>} />
       <Route path="/n/:slug" element={<SR msg="Notary page failed to load"><NotaryPage /></SR>} />
       <Route path="/digitize" element={<ProtectedRoute><SR msg="Document digitize failed to load"><DocumentDigitize /></SR></ProtectedRoute>} />
       <Route path="/request" element={<ProtectedRoute><SR msg="Service request failed to load"><ServiceRequest /></SR></ProtectedRoute>} />

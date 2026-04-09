@@ -133,6 +133,9 @@ export default function BookAppointment() {
   const [additionalSignerEmails, setAdditionalSignerEmails] = useState("");
   const [signerDob, setSignerDob] = useState("");
 
+  // Notary page branding support (?notary=slug)
+  const [notaryBranding, setNotaryBranding] = useState<{ display_name: string; theme_color: string; slug: string; use_platform_booking: boolean; external_booking_url: string } | null>(null);
+
   // Booking draft persistence (Phase 3.4)
   useEffect(() => {
     if (!user) return;
@@ -161,7 +164,7 @@ export default function BookAppointment() {
       navigator.geolocation.getCurrentPosition(pos => { setUserLat(pos.coords.latitude); setUserLon(pos.coords.longitude); }, () => {}, { timeout: 5000 });
     }
   }, []);
-  usePageMeta({ title: "Book a Notary Appointment", description: "Schedule an in-person or remote online notarization appointment with an Ohio-commissioned notary. Same-day availability in Columbus, OH." });
+  usePageMeta({ title: notaryBranding ? `Book with ${notaryBranding.display_name}` : "Book a Notary Appointment", description: "Schedule an in-person or remote online notarization appointment with an Ohio-commissioned notary. Same-day availability in Columbus, OH." });
 
   // Bug 33: Use sessionStorage for pending bookings (more secure on shared computers)
   useEffect(() => {
@@ -305,6 +308,27 @@ export default function BookAppointment() {
     const preDocs = searchParams.get("docs");
     if (preDocs) setDocumentCount(parseInt(preDocs) || 1);
   }, [searchParams, user]);
+
+  // Load notary branding when ?notary=slug is present
+  useEffect(() => {
+    const notarySlug = searchParams.get("notary");
+    if (!notarySlug) return;
+    (async () => {
+      const { data } = await supabase
+        .from("notary_pages")
+        .select("display_name, theme_color, slug, use_platform_booking, external_booking_url")
+        .eq("slug", notarySlug)
+        .eq("is_published", true)
+        .maybeSingle();
+      if (data) {
+        if (!(data as any).use_platform_booking && (data as any).external_booking_url) {
+          window.location.href = (data as any).external_booking_url;
+          return;
+        }
+        setNotaryBranding(data as any);
+      }
+    })();
+  }, [searchParams]);
 
   useEffect(() => {
     if (!date) return;
