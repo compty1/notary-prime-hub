@@ -1,186 +1,168 @@
 
 
-# Comprehensive Implementation Plan — External Orders, SignNow Integration, Document Examples, Settings Sync & Pricing
+# Notary Personal Service Pages — Full Implementation Plan
 
 ## Summary
-
-This plan covers 8 major workstreams: (1) Manual/external order entry from Fiverr and other platforms, (2) SignNow automated email tracking and status integration, (3) Real notarized Ohio document example images in Resources and Service Guides, (4) Document anatomy completion in Resources, (5) Link auditing in References, (6) Mobile/Online notary process instructions in Templates & Forms, (7) Settings-to-site global sync, and (8) Pricing adjustments for mobile and online notary services.
-
----
-
-## 1. Manual Order Entry & External Platform Import
-
-**What**: Add an "External Order" feature to AdminServiceRequests so orders from Fiverr, Upwork, or other platforms can be tracked alongside native orders.
-
-**Implementation**:
-- Add a "New External Order" button and dialog to `AdminServiceRequests.tsx` with fields: Client Name, Client Email, Platform (dropdown: Fiverr, Upwork, Direct, Other), Platform Order ID, Service Type, Amount Paid, Payment Status (Paid on Platform / Pending), Notes, and a paste-friendly "Import from clipboard" parser
-- Database migration: add columns to `service_requests` table — `source_platform` (text, default 'notardex'), `external_order_id` (text, nullable), `external_payment_status` (text, nullable), `external_payment_amount` (numeric, nullable)
-- Add a "Paste Order Details" textarea that parses structured text (Fiverr order confirmations) using regex to auto-fill fields
-- Add CSV import for bulk external orders
-- Display platform badge on each order row in the table
-- External orders with "Paid on Platform" skip Stripe but still track in revenue reports
+Build a multi-tenant personal notary service page system where each notary on the platform gets a public-facing micro-site (e.g., `/n/shane-goble`) with scheduling, about info, services, and signing integration. Super admin (you) has full control over all pages; notary users manage their own. Additionally, generate a comprehensive DOCX specification document.
 
 ---
 
-## 2. SignNow Automated Email Tracking & Status Integration
+## Architecture Overview
 
-**What**: Account for emails SignNow sends automatically (signing invitations, completion notifications) and track document status from SignNow across the platform.
+```text
+/n/:slug              → Public notary page (no auth required)
+/admin/notary-pages   → Super admin manages all notary pages
+/portal (notary tab)  → Notary manages their own page settings
 
-**Implementation**:
-- Add a `signnow_documents` tracking table: `id`, `appointment_id`, `document_name`, `signnow_document_id`, `status` (draft/pending/signed/completed/declined), `invite_sent_at`, `viewed_at`, `signed_at`, `completed_at`, `signnow_emails_sent` (jsonb array of email events)
-- Update `signnow-webhook/index.ts` to capture `document.complete`, `invite.sent`, `document.update` events and update the tracking table + insert into `crm_activities`
-- Create a "SignNow Status" panel in the appointment detail view showing: document status timeline, emails sent by SignNow (invite, reminder, completion), signer actions
-- Add SignNow document status to `PortalAppointmentsTab` so clients see real-time signing progress
-- Add SignNow email events to the Admin Automated Emails dashboard as "External Emails (SignNow)" section so admins see the full communication picture
-- Update `AdminProcessFlows` ProcessFlowsTab to include SignNow steps in service flows (e.g., "Document Sent via SignNow → Signer Invited → Signed → Completed")
-
----
-
-## 3. Real Notarized Ohio Document Example Images
-
-**What**: Add actual images showing real Ohio notarized documents (with PII redacted) as visual examples in Resources, NotaryGuide, NotaryCertificates, and AdminResources.
-
-**Implementation**:
-- Generate high-fidelity example document images programmatically (SVG/Canvas rendered to PNG) for: Acknowledgment certificate, Jurat certificate, Copy Certification, POA acknowledgment, Corporate acknowledgment, Signature by Mark, Vehicle Title notarization, Self-Proving Affidavit
-- Each image shows: filled-in certificate language, notary seal placement, signature lines, venue, date — all with realistic Ohio formatting and "[SAMPLE — NOT A LEGAL DOCUMENT]" watermark
-- Store images in `public/images/documents/` as static assets
-- Add image gallery/lightbox to each document type in:
-  - `Resources.tsx` — new "Document Examples" resource card linking to a gallery page
-  - `NotaryGuide.tsx` — inline example image for each document category
-  - `NotaryCertificates.tsx` — example completed certificate for each type
-  - `AdminResources.tsx` Form Vault — anatomy diagram image for each form entry
-  - `AdminResources.tsx` Service Guides — step-by-step images showing the process
+DB: notary_pages table → stores page config per notary
+    ↕ joins profiles (commission, seal, credentials)
+    ↕ joins platform_settings (global defaults)
+```
 
 ---
 
-## 4. Document Anatomy Completion in Resources
+## Phase 1: Database Migration
 
-**What**: The AdminResources Form Vault has `anatomy` data for each form but needs visual anatomy diagrams (annotated images with callout arrows).
+**New table: `notary_pages`**
+- `id` UUID PK
+- `user_id` UUID FK → profiles.user_id (notary owner)
+- `slug` TEXT UNIQUE (URL-friendly: "shane-goble")
+- `display_name`, `title`, `tagline`, `bio` TEXT
+- `profile_photo_path`, `cover_photo_path` TEXT (storage refs)
+- `phone`, `email`, `website_url` TEXT
+- `service_areas` JSONB (array of counties/cities)
+- `services_offered` JSONB (array of service objects)
+- `credentials` JSONB (NNA, RON cert, commission info)
+- `theme_color` TEXT (hex, default brand gold)
+- `custom_css` TEXT (advanced)
+- `signing_platform_url` TEXT (paste SignNow/other link)
+- `use_platform_booking` BOOLEAN DEFAULT true
+- `external_booking_url` TEXT
+- `social_links` JSONB
+- `seo_title`, `seo_description` TEXT
+- `is_published` BOOLEAN DEFAULT false
+- `is_featured` BOOLEAN DEFAULT false
+- `created_at`, `updated_at` TIMESTAMPTZ
 
-**Implementation**:
-- Create an `AnatomyDiagram` component that renders a document image with numbered callout markers overlaid at specific positions
-- Each callout links to the existing `anatomy` record descriptions
-- Add anatomy diagrams to all 10 form entries in the Form Vault
-- Add a "Document Anatomy" section to the public Resources page with simplified versions for client education
-- Include print-friendly CSS so anatomy diagrams render cleanly when printed
+**RLS Policies:**
+- Public SELECT where `is_published = true`
+- Notary can SELECT/UPDATE their own row
+- Admin can SELECT/UPDATE/INSERT/DELETE all rows
 
----
-
-## 5. Link Auditing in References
-
-**What**: Verify all external links in AdminResources Reference & Law tab point to live pages.
-
-**Implementation**:
-- Audit all hardcoded links in AdminResources.tsx (Ohio SOS, ORC citations, NNA, etc.)
-- Replace any broken or outdated links with current URLs
-- Add `target="_blank" rel="noopener noreferrer"` to all external links
-- Verify links: ohiosos.gov/notary, Ohio Revised Code sections (§147.xx, §4505.06), NNA resources
-- Add a small "Link Health" indicator in the Reference tab showing last-verified date
-
----
-
-## 6. Mobile & Online Notary Process Instructions in Templates & Forms
-
-**What**: Add detailed step-by-step instructions for both mobile (in-person travel) and online (RON via SignNow) notary processes in the Form Vault, including real example images.
-
-**Implementation**:
-- Add two new accordion sections to each form entry in AdminResources: "Mobile Notary Process" and "Online (RON) Process"
-- **Mobile process steps**: Pre-appointment checklist, travel/venue setup, ID verification procedure, document review, signing ceremony, journal entry, seal application, payment collection
-- **RON process steps**: Platform login (SignNow), tech check, KBA verification, credential analysis, document presentation, e-signature, e-seal application, recording start/stop, journal entry
-- Include example images for each step showing the SignNow interface, seal placement, etc.
-- Add print/download capability: "Print Process Guide" button that generates a clean PDF-style printable view with all steps and images
-- Add certificate download: each form entry already has `certificateText` — add a "Download Certificate Template" button that generates a formatted DOCX/PDF with proper Ohio formatting
+**Seed Shane Goble's page** via insert tool after migration.
 
 ---
 
-## 7. Settings-to-Site Global Sync
+## Phase 2: Public Notary Page (`/n/:slug`)
 
-**What**: Many settings exist in `platform_settings` but aren't consumed by the site components (e.g., `business_hours`, `notary_phone`, `support_email`, `site_name`, etc.).
+**New file: `src/pages/NotaryPage.tsx`** — ~600 lines
 
-**Implementation**:
-- Create a `useSettings` hook that fetches and caches `platform_settings` on app load (with 5-min TTL)
-- Update these components to consume settings:
-  - `Footer.tsx` — phone, email, business hours, copyright text, social links, disclaimer
-  - `Navbar.tsx` — site name, logo path
-  - `PageShell.tsx` / `usePageMeta` — default meta title/description from settings
-  - `BookAppointment.tsx` — booking_enabled gate, min lead hours, max appointments
-  - `ClientPortal.tsx` — portal_welcome_message, tab visibility toggles
-  - `CookieConsent.tsx` — cookie_consent_enabled toggle
-  - `Index.tsx` (homepage) — business name, phone, tagline
-  - `Maintenance.tsx` — maintenance_mode gate
-- Populate missing settings values in the database (see Section 8)
+Sections (all data-driven from `notary_pages` + `profiles`):
+1. **Hero Banner** — cover photo, profile photo, name, title, tagline, "Book Now" CTA
+2. **About / Bio** — rich text bio, credentials badges (NNA, RON, Bonded, E&O)
+3. **Services Grid** — cards for each offered service with pricing
+4. **Service Area Map** — county list with Ohio focus
+5. **Scheduling** — either embedded platform booking (reuse `BookAppointment` logic with `?notary=slug` param) or external link button
+6. **Signing Portal** — "Sign Documents" button linking to `signing_platform_url` or integrated SignNow flow
+7. **Contact Section** — phone, email, social links
+8. **Credentials Footer** — commission number, expiration, bond info, seal image
+9. **SEO** — dynamic meta tags, JSON-LD for LocalBusiness schema
+
+**Route:** `/n/:slug` added to App.tsx (public, no auth)
 
 ---
 
-## 8. Pricing Adjustments — Mobile & Online Notary
+## Phase 3: Notary Settings Panel
 
-**What**: Update platform_settings with market-accurate pricing using SignNow's pay-as-you-go model for RON and fair mileage-based pricing for mobile.
+**New file: `src/pages/portal/PortalNotaryPageTab.tsx`**
 
-**Database updates** (via insert tool, not migration):
-| Setting Key | Current | New Value | Rationale |
-|---|---|---|---|
-| `base_fee_per_signature` | 10 | 5 | Ohio statutory max per ORC §147.08 |
-| `ron_platform_fee` | 25 | 25 | SignNow pay-as-you-go session fee |
-| `kba_fee` | 10 | 15 | KBA credential analysis cost |
-| `travel_fee_minimum` | 25 | 35 | Minimum mobile dispatch fee (market rate) |
-| `travel_fee_per_mile` | (missing) | 0.70 | IRS 2025 mileage rate ($0.70/mi) |
-| `rush_fee` | (missing) | 50 | Same-day/next-day mobile priority |
-| `after_hours_fee` | (missing) | 35 | Evenings/weekends surcharge |
-| `apostille_fee` | 50 | 75 | SOS filing + processing + return shipping |
-| `witness_fee` | 10 | 15 | Per-witness appearance fee |
-| `mobile_base_service_fee` | (new) | 75 | Base fee for mobile notary visit (includes first 2 seals) |
-| `ron_base_service_fee` | (new) | 25 | Base fee for RON session (includes first seal) |
-| `printing_fee_per_page` | (new) | 0.50 | Document printing at mobile signings |
-| `scan_back_fee` | (new) | 10 | Scan and email documents back after mobile signing |
+For notary-role users in their portal:
+- Live preview toggle (desktop/mobile)
+- Edit all `notary_pages` fields via form
+- Upload profile/cover photos to `documents` bucket
+- Toggle services on/off
+- Paste signing platform URL
+- Toggle between platform booking vs external URL
+- Publish/unpublish toggle
+- Copy shareable link
 
-Also populate missing general settings:
-- `site_name` = "NotarDex"
-- `site_tagline` = "Professional Ohio Notary Services"
-- `support_email` = "shane@notardex.com"  
-- `support_phone` = "(614) 300-6890"
-- `copyright_text` = "© 2026 NotarDex. All rights reserved."
-- `booking_enabled` = "true"
-- `registration_enabled` = "true"
-- `chat_enabled` = "true"
-- `ai_tools_enabled` = "true"
-- Other feature toggles defaulting to "true"
+---
+
+## Phase 4: Super Admin Management
+
+**New file: `src/pages/admin/AdminNotaryPages.tsx`**
+
+For admin role:
+- Table of all notary pages (published/draft, views)
+- Create page for any notary user
+- Edit any page (same form as notary portal)
+- Feature/unfeature pages
+- Override settings, force publish/unpublish
+- Bulk actions
+
+**Route:** `/admin/notary-pages` (adminOnly)
+
+---
+
+## Phase 5: Booking Integration
+
+- Modify `BookAppointment.tsx` to accept `?notary=slug` query param
+- When present, pre-select that notary and show their branding
+- If `use_platform_booking = false`, redirect to `external_booking_url`
+
+---
+
+## Phase 6: Shane Goble's Page (Seed Data)
+
+Pre-populate via database insert:
+- slug: `shane-goble`
+- Full bio, NNA credentials, Ohio commission details
+- All current NotarDex services
+- Brand colors matching NotarDex gold
+- signing_platform_url from existing SignNow integration
+- Published and featured
+
+---
+
+## Phase 7: DOCX Specification Document
+
+Generate a comprehensive Word document at `/mnt/documents/notary-service-pages-spec.docx` containing:
+- Feature overview and architecture diagrams
+- Database schema documentation
+- UI wireframes (text-based)
+- All page sections with detailed specs
+- Enhancement ideas (50+ future features)
+- API integration details (SignNow, Stripe, Calendar)
+- SEO and marketing strategy
+- Mobile responsiveness requirements
+- Accessibility compliance (WCAG 2.1 AA)
+- Ohio compliance considerations
+
+---
+
+## Files Created/Modified
+
+| Action | File |
+|--------|------|
+| Create | `supabase/migrations/xxx_notary_pages.sql` |
+| Create | `src/pages/NotaryPage.tsx` |
+| Create | `src/pages/portal/PortalNotaryPageTab.tsx` |
+| Create | `src/pages/admin/AdminNotaryPages.tsx` |
+| Modify | `src/App.tsx` (add routes) |
+| Modify | `src/pages/ClientPortal.tsx` (add tab for notaries) |
+| Modify | `src/pages/admin/AdminDashboard.tsx` (add sidebar link) |
+| Modify | `src/pages/BookAppointment.tsx` (notary param support) |
+| Create | `/mnt/documents/notary-service-pages-spec.docx` |
+| Insert | Seed data for Shane Goble's page |
 
 ---
 
 ## Technical Details
 
-### New Database Tables
-1. `signnow_documents` — tracks SignNow document lifecycle per appointment
-2. Migration adds `source_platform`, `external_order_id`, `external_payment_status`, `external_payment_amount` columns to `service_requests`
-
-### New/Modified Components
-- `src/hooks/useSettings.ts` — global settings provider hook
-- `src/components/ExternalOrderDialog.tsx` — manual order entry form
-- `src/components/SignNowStatusPanel.tsx` — document status timeline
-- `src/components/AnatomyDiagram.tsx` — annotated document diagrams
-- `src/components/ProcessGuide.tsx` — printable mobile/RON process guide
-
-### New Static Assets
-- `public/images/documents/` — 8-10 example document PNGs generated programmatically
-
-### Modified Files (key ones)
-- `AdminServiceRequests.tsx` — external order entry
-- `AdminResources.tsx` — anatomy diagrams, process guides, link audit
-- `Resources.tsx` — document examples section
-- `NotaryGuide.tsx` — inline example images
-- `NotaryCertificates.tsx` — completed certificate examples
-- `Footer.tsx` — settings consumption
-- `signnow-webhook/index.ts` — enhanced event tracking
-- ~15 components updated for settings sync
-
-### Edge Function Updates
-- `signnow-webhook` — capture email events and document status changes
-- `signnow` — add document status query endpoint
-
-### Estimated Scope
-- 2 database migrations
-- ~15 settings data inserts
-- ~8 new components
-- ~20 file modifications
-- 8-10 generated document images
+- Uses existing `profiles` table for commission/credential data
+- Leverages existing `documents` storage bucket for photos
+- Reuses `PageShell`, `usePageMeta`, brand constants
+- SignNow signing link integration via `signing_platform_url` field
+- RLS via `has_role()` security definer function (already exists)
+- Responsive design with Tailwind (mobile-first)
 
