@@ -18,8 +18,17 @@ import { formatDate, formatTime } from "@/lib/utils";
 
 const CHART_COLORS = ["hsl(224, 63%, 28%)", "hsl(168, 75%, 36%)", "hsl(42, 78%, 55%)", "hsl(0, 85%, 55%)", "hsl(261, 50%, 51%)", "hsl(190, 95%, 39%)", "hsl(30, 95%, 53%)", "hsl(140, 60%, 40%)"];
 
+// #3422: Time-of-day greeting
+function getGreeting(): string {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  return "Good evening";
+}
+
 export default function AdminOverview() {
   usePageMeta({ title: "Overview", noIndex: true });
+  const greeting = getGreeting();
   const [appointments, setAppointments] = useState<any[]>([]);
   const [allAppointments, setAllAppointments] = useState<any[]>([]);
   const [journalEntries, setJournalEntries] = useState<any[]>([]);
@@ -206,7 +215,10 @@ export default function AdminOverview() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-black text-[#212529]">Dashboard Overview</h1>
+        <div>
+          <p className="text-sm text-muted-foreground">{greeting}, Admin 👋</p>
+          <h1 className="text-3xl font-black text-foreground">Dashboard Overview</h1>
+        </div>
         <Button variant="ghost" size="sm" onClick={fetchData} className="rounded-xl"><RefreshCw className="mr-1 h-3 w-3" /> Refresh</Button>
       </div>
 

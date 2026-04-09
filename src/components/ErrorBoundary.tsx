@@ -61,6 +61,17 @@ export default class ErrorBoundary extends Component<Props, State> {
                 ? "Try refreshing the page. If the problem persists, check your internet connection."
                 : "You can try again or navigate to the home page. If this keeps happening, please contact support."}
             </p>
+            {/* #3433: Error details collapsible */}
+            {this.state.error?.stack && !isChunkError && (
+              <details className="mb-4 text-left rounded-lg border border-border bg-muted/30 p-3">
+                <summary className="text-xs font-medium text-muted-foreground cursor-pointer">Error Details</summary>
+                <pre className="mt-2 text-[10px] text-muted-foreground overflow-auto max-h-32 whitespace-pre-wrap">
+                  {this.state.error.message}
+                  {"\n\n"}
+                  {this.state.error.stack?.split("\n").slice(0, 5).join("\n")}
+                </pre>
+              </details>
+            )}
             <div className="flex items-center justify-center gap-3">
               <Button
                 onClick={() => {
