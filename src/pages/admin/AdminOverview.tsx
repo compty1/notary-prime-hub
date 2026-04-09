@@ -18,8 +18,17 @@ import { formatDate, formatTime } from "@/lib/utils";
 
 const CHART_COLORS = ["hsl(224, 63%, 28%)", "hsl(168, 75%, 36%)", "hsl(42, 78%, 55%)", "hsl(0, 85%, 55%)", "hsl(261, 50%, 51%)", "hsl(190, 95%, 39%)", "hsl(30, 95%, 53%)", "hsl(140, 60%, 40%)"];
 
+// #3422: Time-of-day greeting
+function getGreeting(): string {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  return "Good evening";
+}
+
 export default function AdminOverview() {
   usePageMeta({ title: "Overview", noIndex: true });
+  const greeting = getGreeting();
   const [appointments, setAppointments] = useState<any[]>([]);
   const [allAppointments, setAllAppointments] = useState<any[]>([]);
   const [journalEntries, setJournalEntries] = useState<any[]>([]);

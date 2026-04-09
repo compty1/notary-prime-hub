@@ -577,10 +577,15 @@ export function DocuDexEditor({
     }
   };
 
-  // Insert AI response at cursor (AI-001)
+  // Insert AI response at cursor (AI-001) — #3: Restore cursor after AI insert
   const insertAiResponse = (content: string) => {
     if (!editor) return;
+    const { from } = editor.state.selection;
     editor.chain().focus().insertContent(sanitizeHtml(content)).run();
+    // Restore cursor to end of inserted content
+    requestAnimationFrame(() => {
+      editor.commands.focus("end");
+    });
     toast({ title: "Content inserted" });
     announce("AI content inserted at cursor");
   };
@@ -855,12 +860,15 @@ export function DocuDexEditor({
     announce("Document exported as HTML");
   };
 
-  // Apply AI content from preview
+  // Apply AI content from preview — #3: Focus editor after applying AI content
   const handleApplyContent = (content: string) => {
     saveSnapshot("Before AI insert");
     const sanitized = sanitizeHtml(content);
     setPages(prev => prev.map((p, i) => i === activePageIdx ? { ...p, html: sanitized } : p));
-    if (editor) editor.commands.setContent(sanitized);
+    if (editor) {
+      editor.commands.setContent(sanitized);
+      requestAnimationFrame(() => editor.commands.focus("end"));
+    }
     setShowPreview(false);
     toast({ title: "Content applied" });
   };
@@ -902,9 +910,12 @@ export function DocuDexEditor({
   const { score: readScore, level: readLevel } = readabilityScore(plainText);
   const wordGoalProgress = wordCountGoal ? Math.min(100, Math.round((totalWords / wordCountGoal) * 100)) : null;
 
+  // #171: Autosave visual indicator
+  const autosaveStatus = saving ? "saving" : isDirty ? "unsaved" : lastSaved ? "saved" : "idle";
+
   return (
     <TooltipProvider>
-      <div className={cn("flex flex-col h-full bg-background", isFullscreen && "fixed inset-0 z-50")}>
+      <div className={cn("flex flex-col h-full bg-background", isFullscreen && "fixed inset-0 z-50")} role="application" aria-label="DocuDex Document Editor">
         {/* ═══ ONBOARDING TOOLTIP ═══ */}
         {showOnboarding && (
           <div className="absolute inset-0 z-40 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
@@ -978,9 +989,10 @@ export function DocuDexEditor({
 
           <div className="flex-1" />
 
-          {/* Save status (ST-005) */}
-          <span className="text-[10px] text-muted-foreground shrink-0 hidden md:inline">
-            {saving ? "Saving..." : isDirty ? "Unsaved changes" : lastSaved ? `Saved ${lastSaved}` : ""}
+          {/* Save status (ST-005) — #171: Autosave indicator with dot */}
+          <span className="text-[10px] text-muted-foreground shrink-0 hidden md:inline flex items-center gap-1">
+            <span className={cn("inline-block h-1.5 w-1.5 rounded-full", autosaveStatus === "saving" ? "bg-amber-500 animate-pulse" : autosaveStatus === "unsaved" ? "bg-amber-400" : autosaveStatus === "saved" ? "bg-green-500" : "bg-muted-foreground/30")} />
+            {saving ? "Auto-saving..." : isDirty ? "Unsaved changes" : lastSaved ? `Saved ${lastSaved}` : "Ready"}
           </span>
 
           {(clientName || serviceName) && (
@@ -1092,13 +1104,15 @@ export function DocuDexEditor({
             />
           )}
 
-          {/* ─── CANVAS AREA ─── */}
+          {/* ─── CANVAS AREA ─── (#116: ARIA landmarks for editor regions) */}
           <div
             className="flex-1 flex flex-col overflow-hidden relative"
             ref={canvasRef}
             onContextMenu={handleContextMenu}
+            role="region"
+            aria-label="Document canvas"
           >
-            <div className="flex-1 overflow-auto bg-muted/40 docudex-canvas-area">
+            <div className="flex-1 overflow-auto bg-muted/40 docudex-canvas-area" role="document">
               <div className="py-4 md:py-8 px-2 md:px-4 min-h-full flex flex-col items-center">
                 {/* AI Content Preview */}
                 {showPreview && (
@@ -1329,8 +1343,8 @@ export function DocuDexEditor({
           )}
         </div>
 
-        {/* ═══ STATUS BAR (ST-001 to ST-005) ═══ */}
-        <div className="flex items-center justify-between border-t border-border bg-card px-2 md:px-4 py-1.5 shrink-0 overflow-x-auto" role="status">
+        {/* ═══ STATUS BAR (ST-001 to ST-005) (#116: ARIA landmark) ═══ */}
+        <div className="flex items-center justify-between border-t border-border bg-card px-2 md:px-4 py-1.5 shrink-0 overflow-x-auto" role="status" aria-label="Document statistics">
           {/* #121: aria-live for word/char count */}
           <div className="flex items-center gap-3 md:gap-5 text-[10px] text-muted-foreground whitespace-nowrap" aria-live="polite" aria-atomic="true">
             <span className="font-medium">{pages.length} page{pages.length !== 1 ? "s" : ""}</span>

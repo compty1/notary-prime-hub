@@ -6,8 +6,11 @@ export const TEMPLATE_CATEGORIES = [
   { value: "personal", label: "Personal" },
 ] as const;
 
+// #72: Template difficulty/complexity ratings
+export type TemplateDifficulty = "beginner" | "intermediate" | "advanced";
+
 export const TEMPLATES = [
-  { id: "blank", label: "Blank Document", icon: "📄", category: "personal", content: "<p><br></p>" },
+  { id: "blank", label: "Blank Document", icon: "📄", category: "personal", difficulty: "beginner" as TemplateDifficulty, content: "<p><br></p>" },
   { id: "contract", label: "Service Contract", icon: "📋", category: "legal", content: "<h1>Service Agreement</h1><p>This agreement is entered into between the following parties...</p><h2>1. Scope of Services</h2><p></p><h2>2. Compensation</h2><p></p><h2>3. Terms & Conditions</h2><p></p><h2>4. Signatures</h2><p></p>" },
   { id: "affidavit", label: "Affidavit", icon: "⚖️", category: "legal", content: "<h1>Affidavit</h1><p><strong>State of Ohio</strong><br>County of ____________</p><p>I, ____________, being duly sworn, do hereby state under oath:</p><ol><li></li></ol><p>Signed this ___ day of ____________, 20___.</p><p>___________________________<br>Affiant Signature</p>" },
   { id: "deed", label: "Warranty Deed", icon: "🏠", category: "legal", content: "<h1>Warranty Deed</h1><p>This deed is made on ____________, by and between:</p><p><strong>Grantor:</strong> ____________</p><p><strong>Grantee:</strong> ____________</p><h2>Property Description</h2><p></p><h2>Covenants</h2><p></p>" },
