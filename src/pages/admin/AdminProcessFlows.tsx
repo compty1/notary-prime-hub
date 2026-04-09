@@ -29,6 +29,8 @@ const EDGE_AUTOMATIONS: Record<string, { name: string; description: string; trig
   "send-correspondence": { name: "Correspondence", description: "Sends admin-to-client formal correspondence", triggers: ["admin_correspondence"] },
   "process-email-queue": { name: "Email Queue Processor", description: "Processes queued emails via IONOS SMTP", triggers: ["queued_email"] },
   "auth-email-hook": { name: "Auth Email Hook", description: "Custom auth email templates (signup, recovery, etc.)", triggers: ["signup", "recovery", "magic_link", "invite", "email_change", "reauthentication"] },
+  "signnow-webhook": { name: "SignNow Webhooks", description: "Captures SignNow document events (invite sent, viewed, signed, completed) and tracks automated emails sent by SignNow", triggers: ["invite.sent", "document.viewed", "document.signed", "document.complete"] },
+  "signnow": { name: "SignNow API", description: "Uploads documents and manages signing workflows via SignNow", triggers: ["document.upload", "invite.create"] },
 };
 
 const AUTH_TEMPLATES = ["signup", "recovery", "magic-link", "invite", "email-change", "reauthentication"];
