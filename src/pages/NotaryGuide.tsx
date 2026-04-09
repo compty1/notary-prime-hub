@@ -225,6 +225,16 @@ export default function NotaryGuide() {
     ),
   })).filter((cat) => cat.documents.length > 0);
 
+  const [lightboxImage, setLightboxImage] = useState<{ src: string; label: string } | null>(null);
+
+  /** Find matching example image for a document name */
+  const getDocImage = (docName: string) => {
+    for (const [key, val] of Object.entries(documentExampleImages)) {
+      if (docName.includes(key)) return val;
+    }
+    return null;
+  };
+
   return (
     <PageShell>
       {/* Nav */}
@@ -343,10 +353,30 @@ export default function NotaryGuide() {
                                 <p className="text-sm">{doc.fee}</p>
                               </div>
                             </div>
+                            {/* Example Document Image */}
+                            {(() => {
+                              const img = getDocImage(doc.name);
+                              return img ? (
+                                <button
+                                  onClick={() => setLightboxImage(img)}
+                                  className="w-full rounded-lg border border-border/50 overflow-hidden hover:border-primary/50 transition-all group/img"
+                                >
+                                  <div className="flex items-center gap-3 p-3 bg-muted/30">
+                                    <ImageIcon className="h-4 w-4 text-primary" />
+                                    <span className="text-xs font-medium text-foreground">Example Document</span>
+                                    <span className="ml-auto text-xs text-muted-foreground group-hover/img:text-primary transition-colors">Click to enlarge →</span>
+                                  </div>
+                                  <img src={img.src} alt={img.label} className="w-full h-40 object-cover object-top" loading="lazy" />
+                                  <p className="text-[10px] text-center text-muted-foreground py-1.5 bg-muted/20">{img.label}</p>
+                                </button>
+                              ) : null;
+                            })()}
                             <div className="rounded-lg bg-muted/50 p-3">
                               <p className="flex items-start gap-1.5 text-xs">
                                 <Info className="mt-0.5 h-3 w-3 flex-shrink-0 text-primary" />
                                 <span><strong>Ohio Note:</strong> {doc.ohioNotes}</span>
+                              </p>
+                            </div>
                               </p>
                             </div>
                           </div>
