@@ -186,11 +186,13 @@ export default function BookAppointment() {
   const { settings: cachedSettings } = useSettings();
   useEffect(() => {
     if (Object.keys(cachedSettings).length > 0) setPricingSettings(cachedSettings);
+  }, [cachedSettings]);
+
+  useEffect(() => {
     const NON_BOOKABLE = ["admin_support","content_creation","research","customer_service","technical_support","ux_testing"];
     supabase.from("services").select("name, short_description, category, duration_minutes, is_popular").eq("is_active", true).order("display_order").limit(100).then(({ data }) => {
       if (data && data.length > 0) {
         const bookable = data.filter((s: any) => !NON_BOOKABLE.includes(s.category));
-        // Sort popular services to top (ID 5)
         const sorted = [...bookable].sort((a: any, b: any) => (b.is_popular ? 1 : 0) - (a.is_popular ? 1 : 0));
         setServiceTypes([...new Set(sorted.map((s: any) => s.name))]);
         const descs: Record<string, string> = {}, cats: Record<string, string> = {}, durs: Record<string, number> = {};
@@ -202,7 +204,6 @@ export default function BookAppointment() {
         setServiceDescriptions(descs);
         setServiceCategories(cats);
         setServiceDurations(durs);
-        // ID 1: Validate URL param against NON_BOOKABLE before pre-filling
         const preService = new URLSearchParams(window.location.search).get("service");
         if (preService) {
           const match = bookable.find((s: any) => s.name.toLowerCase() === preService.toLowerCase());
