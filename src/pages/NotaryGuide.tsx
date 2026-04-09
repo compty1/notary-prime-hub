@@ -376,9 +376,6 @@ export default function NotaryGuide() {
                                 <Info className="mt-0.5 h-3 w-3 flex-shrink-0 text-primary" />
                                 <span><strong>Ohio Note:</strong> {doc.ohioNotes}</span>
                               </p>
-                            </div>
-                              </p>
-                            </div>
                           </div>
                         </AccordionContent>
                       </AccordionItem>
