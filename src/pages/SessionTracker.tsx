@@ -5,6 +5,7 @@ import { PageShell } from "@/components/PageShell";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, CheckCircle2, Clock, Play, AlertCircle, FileUp, Shield, PenTool } from "lucide-react";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const STEPS = [
   { key: "waiting", label: "Waiting", icon: Clock },
@@ -30,6 +31,7 @@ function getStepIndex(status: string): number {
 }
 
 export default function SessionTracker() {
+  usePageMeta({ title: "Session Tracker | NotarDex", description: "Track your notarization session progress in real-time." });
   const { token } = useParams<{ token: string }>();
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
