@@ -4,10 +4,14 @@ import ErrorBoundary from "./components/ErrorBoundary.tsx";
 import "./index.css";
 import { supabase } from "@/integrations/supabase/client";
 import { ensureSkipLink, initHighContrast } from "@/lib/a11yUtils";
+import { injectFrameProtection } from "@/lib/securityHelpers";
 
 // Initialize accessibility features
 ensureSkipLink();
 initHighContrast();
+
+// #3879: Clickjacking protection
+injectFrameProtection();
 
 // Global unhandled error handler (Gap: missing global error handler)
 window.addEventListener("error", (event) => {
