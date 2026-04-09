@@ -39,6 +39,7 @@ import { PortalQuickActions } from "@/components/PortalQuickActions";
 import { DocumentReadinessScore } from "@/components/DocumentReadinessScore";
 import { ReferralPortal } from "@/components/ReferralPortal";
 import PortalAIToolsTab from "./portal/PortalAIToolsTab";
+import PortalNotaryPageTab from "./portal/PortalNotaryPageTab";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 const pipelineSteps = [
   { key: "uploaded", label: "Intake", icon: Upload },
@@ -707,6 +708,10 @@ export default function ClientPortal() {
 
           {activeSection === "referral" && (
             <ReferralPortal />
+          )}
+
+          {activeSection === "my-page" && (
+            <PortalNotaryPageTab />
           )}
 
             </div>
