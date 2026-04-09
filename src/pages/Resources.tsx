@@ -93,28 +93,6 @@ export default function Resources() {
               </Card>
             </Link>
           ))}
-          {/* Document Examples below */}
-        </div>
-
-        {/* Remove duplicate map */}
-        {false && resources.map((r, i) => (
-            <Link key={i} to={r.link} className="group">
-              <Card className="h-full border-border/50 transition-all hover:border-primary/30 hover:shadow-md">
-                <CardContent className="p-6 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                      <r.icon className="h-5 w-5 text-primary" />
-                    </div>
-                    <Badge variant="outline" className="text-xs">{r.category}</Badge>
-                  </div>
-                  <h2 className="font-sans text-base font-semibold text-foreground group-hover:text-primary transition-colors">
-                    {r.title}
-                  </h2>
-                  <p className="text-sm text-muted-foreground">{r.desc}</p>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
         </div>
 
         {/* Document Examples Section */}
