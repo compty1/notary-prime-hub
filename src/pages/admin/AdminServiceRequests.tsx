@@ -408,6 +408,12 @@ export default function AdminServiceRequests() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ExternalOrderDialog
+        open={externalOrderOpen}
+        onOpenChange={setExternalOrderOpen}
+        onCreated={fetchRequests}
+      />
     </div>
   );
 }
