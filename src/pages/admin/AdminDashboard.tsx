@@ -88,7 +88,7 @@ function AdminSidebar() {
 
   return (
     <Sidebar collapsible="icon" className="border-r-0 bg-[#212529]">
-      <SidebarContent className="bg-[#212529]">
+      <SidebarContent className="bg-[#212529]" role="navigation" aria-label="Admin navigation">
         {/* Logo + title */}
         <div className="flex items-center gap-2 px-4 py-5 border-b border-white/10">
           <Logo size="sm" showText={!collapsed} theme="dark" />

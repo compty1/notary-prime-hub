@@ -45,3 +45,22 @@ export function sanitizeTextInput(input: string, maxLength = 1000): string {
 export function hasCSRFHeader(headers: Headers): boolean {
   return headers.get("X-Requested-With") === "XMLHttpRequest";
 }
+
+/** #3547: Client-side rate limiter for form submissions */
+const _rateLimitMap = new Map<string, number>();
+export function isRateLimited(key: string, intervalMs = 60000): boolean {
+  const now = Date.now();
+  const lastTime = _rateLimitMap.get(key) || 0;
+  if (now - lastTime < intervalMs) return true;
+  _rateLimitMap.set(key, now);
+  return false;
+}
+
+/** #3879: Inject X-Frame-Options equivalent via CSP meta tag */
+export function injectFrameProtection() {
+  if (document.querySelector('meta[http-equiv="Content-Security-Policy"]')) return;
+  const meta = document.createElement("meta");
+  meta.httpEquiv = "Content-Security-Policy";
+  meta.content = "frame-ancestors 'self'";
+  document.head.appendChild(meta);
+}

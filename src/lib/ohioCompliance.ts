@@ -257,3 +257,94 @@ export function isVehicleDealerTitleException(transactionType: string, isDealerI
   const lower = transactionType.toLowerCase();
   return lower.includes("vehicle title") || lower.includes("motor vehicle") || lower.includes("auto title");
 }
+
+// #3587: Notary commission expiration auto-check
+export function isCommissionExpired(commissionExpiry: string): { expired: boolean; expiresWithin30Days: boolean; daysRemaining: number } {
+  const expiry = new Date(commissionExpiry);
+  const today = new Date();
+  const diffMs = expiry.getTime() - today.getTime();
+  const daysRemaining = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  return {
+    expired: daysRemaining < 0,
+    expiresWithin30Days: daysRemaining >= 0 && daysRemaining <= 30,
+    daysRemaining,
+  };
+}
+
+// #3589: Witness identity verification fields
+export interface WitnessInfo {
+  name: string;
+  address?: string;
+  idType?: string;
+  idNumber?: string;
+  relationship?: string;
+}
+
+export function validateWitness(witness: WitnessInfo): { valid: boolean; issues: string[] } {
+  const issues: string[] = [];
+  if (!witness.name?.trim()) issues.push("Witness name is required");
+  if (!witness.address?.trim()) issues.push("Witness address is recommended for compliance");
+  return { valid: issues.length === 0, issues };
+}
+
+// #3591: Venue county auto-detection from Ohio zip codes (common Franklin County zips)
+const OHIO_ZIP_COUNTY_MAP: Record<string, string> = {
+  "43004": "Franklin", "43016": "Franklin", "43017": "Franklin", "43026": "Franklin",
+  "43054": "Franklin", "43068": "Franklin", "43081": "Franklin", "43085": "Franklin",
+  "43201": "Franklin", "43202": "Franklin", "43203": "Franklin", "43204": "Franklin",
+  "43205": "Franklin", "43206": "Franklin", "43207": "Franklin", "43209": "Franklin",
+  "43210": "Franklin", "43211": "Franklin", "43212": "Franklin", "43213": "Franklin",
+  "43214": "Franklin", "43215": "Franklin", "43219": "Franklin", "43220": "Franklin",
+  "43221": "Franklin", "43222": "Franklin", "43223": "Franklin", "43224": "Franklin",
+  "43227": "Franklin", "43228": "Franklin", "43229": "Franklin", "43230": "Franklin",
+  "43231": "Franklin", "43232": "Franklin", "43235": "Franklin", "43240": "Delaware",
+  "43015": "Delaware", "43065": "Delaware", "43035": "Delaware",
+  "43002": "Union", "43031": "Licking", "43055": "Licking", "43056": "Licking",
+  "43064": "Union", "43029": "Madison", "43140": "Madison",
+  "43110": "Fairfield", "43112": "Fairfield", "43130": "Fairfield",
+  "43062": "Licking", "43023": "Licking",
+};
+
+export function detectCountyFromZip(zipCode: string): string | null {
+  const zip5 = zipCode?.trim().slice(0, 5);
+  return OHIO_ZIP_COUNTY_MAP[zip5] || null;
+}
+
+// #3592: Notarial act type validation per document
+export const DOCUMENT_ACT_REQUIREMENTS: Record<string, string[]> = {
+  "power_of_attorney": ["acknowledgment"],
+  "deed": ["acknowledgment"],
+  "mortgage": ["acknowledgment"],
+  "affidavit": ["jurat"],
+  "sworn_statement": ["jurat"],
+  "deposition": ["oath"],
+  "copy_certification": ["copy_certification"],
+  "will": ["acknowledgment"],
+  "trust": ["acknowledgment"],
+};
+
+export function getRequiredActTypes(documentType: string): string[] {
+  const lower = documentType.toLowerCase().replace(/\s+/g, "_");
+  for (const [key, acts] of Object.entries(DOCUMENT_ACT_REQUIREMENTS)) {
+    if (lower.includes(key)) return acts;
+  }
+  return [];
+}
+
+// #3590: Signer location state tracking for RON
+export interface SignerLocation {
+  state: string;
+  country: string;
+  isUSBased: boolean;
+  requiresOutOfStateDisclosure: boolean;
+}
+
+export function classifySignerLocation(state: string, country: string = "US"): SignerLocation {
+  const isUS = country.toUpperCase() === "US" || country.toUpperCase() === "USA" || country.toLowerCase() === "united states";
+  return {
+    state: state.toUpperCase(),
+    country: country.toUpperCase(),
+    isUSBased: isUS,
+    requiresOutOfStateDisclosure: isUS && requiresOutOfStateDisclosure(state),
+  };
+}

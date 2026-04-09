@@ -1,5 +1,5 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
-import { ORGANIZATION_JSONLD } from "@/lib/seoHelpers";
+import { ORGANIZATION_JSONLD, reviewAggregateJsonLd, setOpenGraphMeta } from "@/lib/seoHelpers";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
@@ -106,6 +106,16 @@ export default function Index() {
   const [lastSubmitTime, setLastSubmitTime] = useState(0);
   const [agreeTerms, setAgreeTerms] = useState(false);
 
+  // #3947/#3948: Set Open Graph + Twitter meta
+  useEffect(() => {
+    setOpenGraphMeta({
+      title: "Ohio Notary & Document Services | NotarDex",
+      description: "Trusted Ohio notary services — in-person and remote online notarization (RON). Book online, get notarized today.",
+      url: "/",
+      type: "website",
+    });
+  }, []);
+
   const [dbServices, setDbServices] = useState<any[]>([]);
   const [dbReviews, setDbReviews] = useState<any[]>([]);
 
@@ -202,9 +212,12 @@ export default function Index() {
     })),
   };
 
+  // #3639: Review aggregate schema
+  const reviewSchema = reviewAggregateJsonLd(5, testimonials.length);
+
   useEffect(() => {
     const scripts: HTMLScriptElement[] = [];
-    [jsonLd, faqSchema].forEach(data => {
+    [jsonLd, faqSchema, reviewSchema].forEach(data => {
       const script = document.createElement("script");
       script.type = "application/ld+json";
       script.textContent = JSON.stringify(data);
@@ -467,6 +480,26 @@ export default function Index() {
 
       {/* AI Helper */}
       <WhatDoINeed />
+
+      {/* ===== Trust Badges (#3642) ===== */}
+      <section className="py-12 bg-[#f8f9fa] border-t border-gray-100">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
+            {[
+              { label: "Ohio Commissioned", icon: ShieldCheck },
+              { label: "NNA Certified", icon: FileCheck2 },
+              { label: "RON Authorized", icon: Globe },
+              { label: "MISMO Compliant", icon: Lock },
+              { label: "10-Year Retention", icon: Clock },
+            ].map(badge => (
+              <div key={badge.label} className="flex items-center gap-2 text-gray-400">
+                <badge.icon className="h-5 w-5" />
+                <span className="text-xs font-black uppercase tracking-widest">{badge.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ===== Testimonials ===== */}
       <section className="py-20 bg-white">

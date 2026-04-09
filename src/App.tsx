@@ -121,9 +121,15 @@ const Accessibility = lazyRetry(() => import("./pages/Accessibility"));
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,
+      staleTime: 2 * 60 * 1000, // #3709: Reduced from 5min to 2min for fresher data
       retry: 1,
       refetchOnWindowFocus: false,
+    },
+    mutations: {
+      // #3708: Global mutation error handler
+      onError: (error: unknown) => {
+        console.error("[QueryClient] Mutation error:", error);
+      },
     },
   },
 });
