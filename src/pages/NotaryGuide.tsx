@@ -8,12 +8,24 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Shield, FileText, Home, Briefcase, Scale, Heart, ChevronRight, Search, Users, Clock, CreditCard, MapPin, Monitor, CheckCircle, AlertTriangle, Info } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Shield, FileText, Home, Briefcase, Scale, Heart, ChevronRight, Search, Users, Clock, CreditCard, MapPin, Monitor, CheckCircle, AlertTriangle, Info, ImageIcon } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
 import { fadeUp } from "@/lib/animations";
+
+/** Map document method keywords to example images */
+const documentExampleImages: Record<string, { src: string; label: string }> = {
+  "Deeds": { src: "/images/documents/acknowledgment-certificate.jpg", label: "Ohio Acknowledgment Certificate — Sample" },
+  "Mortgages": { src: "/images/documents/acknowledgment-certificate.jpg", label: "Acknowledgment Certificate — Mortgage" },
+  "Power of Attorney": { src: "/images/documents/poa-acknowledgment.jpg", label: "POA Acknowledgment — Sample" },
+  "Affidavits": { src: "/images/documents/jurat-certificate.jpg", label: "Ohio Jurat Certificate — Sample" },
+  "Last Will": { src: "/images/documents/self-proving-affidavit.jpg", label: "Self-Proving Affidavit — Sample" },
+  "Articles of Incorporation": { src: "/images/documents/corporate-acknowledgment.jpg", label: "Corporate Acknowledgment — Sample" },
+  "Operating Agreements": { src: "/images/documents/corporate-acknowledgment.jpg", label: "Corporate Acknowledgment — Sample" },
+};
 
 const documentCategories = [
   {
@@ -213,6 +225,16 @@ export default function NotaryGuide() {
     ),
   })).filter((cat) => cat.documents.length > 0);
 
+  const [lightboxImage, setLightboxImage] = useState<{ src: string; label: string } | null>(null);
+
+  /** Find matching example image for a document name */
+  const getDocImage = (docName: string) => {
+    for (const [key, val] of Object.entries(documentExampleImages)) {
+      if (docName.includes(key)) return val;
+    }
+    return null;
+  };
+
   return (
     <PageShell>
       {/* Nav */}
@@ -331,6 +353,24 @@ export default function NotaryGuide() {
                                 <p className="text-sm">{doc.fee}</p>
                               </div>
                             </div>
+                            {/* Example Document Image */}
+                            {(() => {
+                              const img = getDocImage(doc.name);
+                              return img ? (
+                                <button
+                                  onClick={() => setLightboxImage(img)}
+                                  className="w-full rounded-lg border border-border/50 overflow-hidden hover:border-primary/50 transition-all group/img"
+                                >
+                                  <div className="flex items-center gap-3 p-3 bg-muted/30">
+                                    <ImageIcon className="h-4 w-4 text-primary" />
+                                    <span className="text-xs font-medium text-foreground">Example Document</span>
+                                    <span className="ml-auto text-xs text-muted-foreground group-hover/img:text-primary transition-colors">Click to enlarge →</span>
+                                  </div>
+                                  <img src={img.src} alt={img.label} className="w-full h-40 object-cover object-top" loading="lazy" />
+                                  <p className="text-[10px] text-center text-muted-foreground py-1.5 bg-muted/20">{img.label}</p>
+                                </button>
+                              ) : null;
+                            })()}
                             <div className="rounded-lg bg-muted/50 p-3">
                               <p className="flex items-start gap-1.5 text-xs">
                                 <Info className="mt-0.5 h-3 w-3 flex-shrink-0 text-primary" />
@@ -424,7 +464,7 @@ export default function NotaryGuide() {
               <li><strong>Healthcare Directives (ORC §1337.12):</strong> 2 witnesses required — specific disqualifications apply</li>
               <li><strong>Living Wills (ORC §2133.02):</strong> 2 witnesses required — cannot be attending physician or healthcare agent</li>
             </ul>
-            <p>Notar provides witness services at <strong>$10 per witness</strong> per session. It is the signer's responsibility to arrange their own witnesses if preferred. If you need witnesses provided, please request them when booking.</p>
+            <p>NotarDex provides witness services at <strong>$15 per witness</strong> per session. It is the signer's responsibility to arrange their own witnesses if preferred. If you need witnesses provided, please request them when booking.</p>
           </div>
         </div>
       </section>
@@ -574,7 +614,17 @@ export default function NotaryGuide() {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* Image Lightbox */}
+      <Dialog open={!!lightboxImage} onOpenChange={() => setLightboxImage(null)}>
+        <DialogContent className="max-w-3xl p-2">
+          {lightboxImage && (
+            <div>
+              <img src={lightboxImage.src} alt={lightboxImage.label} className="w-full rounded-lg" />
+              <p className="text-center text-sm text-muted-foreground mt-2 pb-2">{lightboxImage.label}</p>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </PageShell>
   );
 }

@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState, useRef } from "react";
+import { ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -8,14 +8,9 @@ import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { MobileFAB } from "@/components/MobileFAB";
 import { AILeadChatbot } from "@/components/AILeadChatbot";
 import LegalGlossaryProvider from "@/components/LegalGlossaryProvider";
-import { supabase } from "@/integrations/supabase/client";
+import { useSettings } from "@/hooks/useSettings";
 import { motion } from "framer-motion";
 import { pageTransition } from "@/lib/animations";
-
-// Simple in-memory cache for platform_settings across PageShell mounts (item 531)
-let _cachedContact: { phone: string; email: string } | null = null;
-let _cacheTime = 0;
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 interface PageShellProps {
   children: ReactNode;
@@ -26,29 +21,13 @@ interface PageShellProps {
 export function PageShell({ children, hideNav = false, hideFooter = false }: PageShellProps) {
   const { pathname } = useLocation();
   const isInternalRoute = pathname.startsWith("/admin") || pathname.startsWith("/portal");
-  const [contactInfo, setContactInfo] = useState(_cachedContact || { phone: "(614) 300-6890", email: "contact@notardex.com" });
+  const { get, isEnabled } = useSettings();
 
-  useEffect(() => {
-    if (_cachedContact && Date.now() - _cacheTime < CACHE_TTL) {
-      setContactInfo(_cachedContact);
-      return;
-    }
-    supabase.from("platform_settings").select("setting_key, setting_value")
-      .in("setting_key", ["notary_phone", "notary_email"])
-      .then(({ data }) => {
-        if (data) {
-          const phone = data.find(s => s.setting_key === "notary_phone")?.setting_value;
-          const email = data.find(s => s.setting_key === "notary_email")?.setting_value;
-          const info = {
-            phone: phone || contactInfo.phone,
-            email: email || contactInfo.email,
-          };
-          setContactInfo(info);
-          _cachedContact = info;
-          _cacheTime = Date.now();
-        }
-      });
-  }, []);
+  const phone = get("notary_phone", "(614) 300-6890");
+  const email = get("notary_email", "shane@notardex.com");
+  const copyrightText = get("copyright_text", "");
+  const cookieConsentEnabled = isEnabled("cookie_consent_enabled", true);
+  const maintenanceMode = isEnabled("maintenance_mode", false);
 
   return (
     <div className="min-h-screen bg-background">
@@ -61,11 +40,11 @@ export function PageShell({ children, hideNav = false, hideFooter = false }: Pag
           {children}
         </LegalGlossaryProvider>
       </motion.main>
-      {!hideFooter && <Footer phone={contactInfo.phone} email={contactInfo.email} />}
+      {!hideFooter && <Footer phone={phone} email={email} copyrightText={copyrightText} />}
       <BackToTop />
       <MobileFAB />
       {!isInternalRoute && <AILeadChatbot />}
-      <CookieConsent />
+      {cookieConsentEnabled && <CookieConsent />}
       <OfflineIndicator />
     </div>
   );
