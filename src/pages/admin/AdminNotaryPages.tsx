@@ -49,8 +49,8 @@ const emptyPage: Partial<NotaryPage> = {
   slug: "", display_name: "", title: "", tagline: "", bio: "", phone: "", email: "",
   website_url: "", service_areas: [], services_offered: [], credentials: {},
   theme_color: "#eab308", signing_platform_url: "", use_platform_booking: true,
-  external_booking_url: "", social_links: {}, seo_title: "", seo_description: "",
-  is_published: false, is_featured: false,
+  external_booking_url: "", social_links: {}, profile_photo_path: null, cover_photo_path: null,
+  seo_title: "", seo_description: "", is_published: false, is_featured: false,
 };
 
 export default function AdminNotaryPages() {
