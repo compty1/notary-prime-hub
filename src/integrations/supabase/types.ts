@@ -3634,6 +3634,19 @@ export type Database = {
         }
         Returns: string
       }
+      check_journal_completeness: {
+        Args: { p_appointment_id: string }
+        Returns: boolean
+      }
+      create_per_document_journal_entries: {
+        Args: {
+          p_documents: Json
+          p_notary_name: string
+          p_notary_user_id: string
+          p_session_id: string
+        }
+        Returns: undefined
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -3678,6 +3691,10 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      validate_ohio_fee_cap: {
+        Args: { p_amount: number; p_notarial_act_count?: number }
+        Returns: boolean
       }
     }
     Enums: {
