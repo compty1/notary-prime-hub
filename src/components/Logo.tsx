@@ -22,7 +22,7 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
     const s = sizeMap[size];
 
     const isDark = theme === "dark";
-    const textColor = isDark ? "text-white" : "text-[#0a0a0a]";
+    const textColor = isDark ? "text-white" : "text-foreground";
 
     return (
       <div
