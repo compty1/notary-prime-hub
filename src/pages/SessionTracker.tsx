@@ -31,6 +31,7 @@ function getStepIndex(status: string): number {
 }
 
 export default function SessionTracker() {
+  usePageMeta({ title: "Session Tracker | NotarDex", description: "Track your notarization session progress in real-time." });
   const { token } = useParams<{ token: string }>();
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
