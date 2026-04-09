@@ -309,6 +309,28 @@ export default function AdminNotaryPages() {
             />
 
             <Separator />
+            <h3 className="font-semibold">Social Links (JSON)</h3>
+            <Textarea
+              rows={3}
+              placeholder='{"facebook":"https://facebook.com/...","linkedin":"https://linkedin.com/in/...","twitter":"https://x.com/..."}'
+              value={typeof editPage.social_links === "string" ? editPage.social_links : JSON.stringify(editPage.social_links || {}, null, 2)}
+              onChange={e => { try { updateField("social_links", JSON.parse(e.target.value)); } catch { updateField("social_links", e.target.value); } }}
+            />
+
+            <Separator />
+            <h3 className="font-semibold">Photos</h3>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <Label>Profile Photo Path</Label>
+                <Input placeholder="notary-pages/id/profile.jpg" value={editPage.profile_photo_path || ""} onChange={e => updateField("profile_photo_path", e.target.value)} />
+              </div>
+              <div>
+                <Label>Cover Photo Path</Label>
+                <Input placeholder="notary-pages/id/cover.jpg" value={editPage.cover_photo_path || ""} onChange={e => updateField("cover_photo_path", e.target.value)} />
+              </div>
+            </div>
+
+            <Separator />
             <h3 className="font-semibold">SEO</h3>
             <div><Label>SEO Title</Label><Input value={editPage.seo_title || ""} onChange={e => updateField("seo_title", e.target.value)} /></div>
             <div><Label>SEO Description</Label><Textarea rows={2} value={editPage.seo_description || ""} onChange={e => updateField("seo_description", e.target.value)} /></div>
