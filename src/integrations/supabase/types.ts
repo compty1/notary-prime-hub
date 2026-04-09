@@ -2187,6 +2187,96 @@ export type Database = {
           },
         ]
       }
+      notary_pages: {
+        Row: {
+          bio: string | null
+          cover_photo_path: string | null
+          created_at: string
+          credentials: Json | null
+          custom_css: string | null
+          display_name: string
+          email: string | null
+          external_booking_url: string | null
+          id: string
+          is_featured: boolean | null
+          is_published: boolean | null
+          phone: string | null
+          profile_photo_path: string | null
+          seo_description: string | null
+          seo_title: string | null
+          service_areas: Json | null
+          services_offered: Json | null
+          signing_platform_url: string | null
+          slug: string
+          social_links: Json | null
+          tagline: string | null
+          theme_color: string | null
+          title: string | null
+          updated_at: string
+          use_platform_booking: boolean | null
+          user_id: string
+          website_url: string | null
+        }
+        Insert: {
+          bio?: string | null
+          cover_photo_path?: string | null
+          created_at?: string
+          credentials?: Json | null
+          custom_css?: string | null
+          display_name?: string
+          email?: string | null
+          external_booking_url?: string | null
+          id?: string
+          is_featured?: boolean | null
+          is_published?: boolean | null
+          phone?: string | null
+          profile_photo_path?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          service_areas?: Json | null
+          services_offered?: Json | null
+          signing_platform_url?: string | null
+          slug: string
+          social_links?: Json | null
+          tagline?: string | null
+          theme_color?: string | null
+          title?: string | null
+          updated_at?: string
+          use_platform_booking?: boolean | null
+          user_id: string
+          website_url?: string | null
+        }
+        Update: {
+          bio?: string | null
+          cover_photo_path?: string | null
+          created_at?: string
+          credentials?: Json | null
+          custom_css?: string | null
+          display_name?: string
+          email?: string | null
+          external_booking_url?: string | null
+          id?: string
+          is_featured?: boolean | null
+          is_published?: boolean | null
+          phone?: string | null
+          profile_photo_path?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          service_areas?: Json | null
+          services_offered?: Json | null
+          signing_platform_url?: string | null
+          slug?: string
+          social_links?: Json | null
+          tagline?: string | null
+          theme_color?: string | null
+          title?: string | null
+          updated_at?: string
+          use_platform_booking?: boolean | null
+          user_id?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       notary_payouts: {
         Row: {
           created_at: string
