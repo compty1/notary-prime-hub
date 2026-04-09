@@ -8,12 +8,24 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Shield, FileText, Home, Briefcase, Scale, Heart, ChevronRight, Search, Users, Clock, CreditCard, MapPin, Monitor, CheckCircle, AlertTriangle, Info } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Shield, FileText, Home, Briefcase, Scale, Heart, ChevronRight, Search, Users, Clock, CreditCard, MapPin, Monitor, CheckCircle, AlertTriangle, Info, ImageIcon } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
 import { fadeUp } from "@/lib/animations";
+
+/** Map document method keywords to example images */
+const documentExampleImages: Record<string, { src: string; label: string }> = {
+  "Deeds": { src: "/images/documents/acknowledgment-certificate.jpg", label: "Ohio Acknowledgment Certificate — Sample" },
+  "Mortgages": { src: "/images/documents/acknowledgment-certificate.jpg", label: "Acknowledgment Certificate — Mortgage" },
+  "Power of Attorney": { src: "/images/documents/poa-acknowledgment.jpg", label: "POA Acknowledgment — Sample" },
+  "Affidavits": { src: "/images/documents/jurat-certificate.jpg", label: "Ohio Jurat Certificate — Sample" },
+  "Last Will": { src: "/images/documents/self-proving-affidavit.jpg", label: "Self-Proving Affidavit — Sample" },
+  "Articles of Incorporation": { src: "/images/documents/corporate-acknowledgment.jpg", label: "Corporate Acknowledgment — Sample" },
+  "Operating Agreements": { src: "/images/documents/corporate-acknowledgment.jpg", label: "Corporate Acknowledgment — Sample" },
+};
 
 const documentCategories = [
   {
