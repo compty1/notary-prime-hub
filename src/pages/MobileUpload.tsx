@@ -1,4 +1,5 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { validateFile, ALLOWED_DOCUMENT_MIMES } from "@/lib/fileValidation";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -72,14 +73,11 @@ export default function MobileUpload() {
   const handleUpload = async (files: FileList | null) => {
     if (!files || !user) return;
 
-    // Validate files before uploading
+    // Validate files before uploading using centralized validation
     for (const file of Array.from(files)) {
-      if (file.size > MAX_FILE_SIZE) {
-        toast({ title: "File too large", description: `${file.name} exceeds the 25MB limit.`, variant: "destructive" });
-        return;
-      }
-      if (!ALLOWED_TYPES.includes(file.type) && !file.name.match(/\.(pdf|jpe?g|png|docx?)$/i)) {
-        toast({ title: "Unsupported file type", description: `${file.name} is not a supported format. Please upload PDF, JPG, PNG, DOC, or DOCX files.`, variant: "destructive" });
+      const validationErr = validateFile(file, { allowedMimes: ALLOWED_DOCUMENT_MIMES, maxBytes: 25 * 1024 * 1024 });
+      if (validationErr) {
+        toast({ title: "File rejected", description: `${file.name}: ${validationErr}`, variant: "destructive" });
         return;
       }
     }

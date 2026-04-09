@@ -1,5 +1,6 @@
 import React, { useRef, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
+import { validateFile, ALLOWED_DOCUMENT_MIMES, MAX_FILE_SIZE_BYTES } from "@/lib/fileValidation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -119,8 +120,8 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
     if (!files) return;
     setUploading(true);
     for (const file of Array.from(files)) {
-      if (file.size > 10 * 1024 * 1024) { toast({ title: "File too large", description: `${file.name} exceeds 10MB limit.`, variant: "destructive" }); continue; }
-      if (!ACCEPTED_TYPES.includes(file.type) && !file.name.match(/\.(pdf|jpe?g|png|tiff?|docx?)$/i)) { toast({ title: "Unsupported file type", description: `Only PDF, JPG, PNG, TIFF, DOC, and DOCX files are accepted.`, variant: "destructive" }); continue; }
+      const validationErr = validateFile(file, { allowedMimes: ALLOWED_DOCUMENT_MIMES, maxBytes: 25 * 1024 * 1024 });
+      if (validationErr) { toast({ title: "File rejected", description: `${file.name}: ${validationErr}`, variant: "destructive" }); continue; }
       const filePath = `${userId}/${Date.now()}_${file.name}`;
       const { error: uploadError } = await supabase.storage.from("documents").upload(filePath, file);
       if (uploadError) { toast({ title: "Upload failed", description: uploadError.message, variant: "destructive" }); continue; }

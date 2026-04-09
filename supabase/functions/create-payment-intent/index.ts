@@ -55,10 +55,15 @@ Deno.serve(async (req) => {
     const amount = Math.round(rawAmount * 100) / 100; // round to 2 decimal places
 
     // Ohio ORC §147.08 fee cap enforcement: $5 per notarial act
+    // Always enforce for notarization services
     const notarialActCount = Number(body.notarialActCount) || 1;
-    const ohioFeeCap = notarialActCount * 5;
-    if (body.enforceFeeCap && amount > ohioFeeCap) {
-      return new Response(JSON.stringify({ error: `Amount exceeds Ohio statutory fee cap of $${ohioFeeCap.toFixed(2)} for ${notarialActCount} notarial act(s) per ORC §147.08` }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    const isNotarialService = body.serviceType?.toLowerCase()?.includes("notar") || body.enforceFeeCap;
+    if (isNotarialService) {
+      const ohioFeeCap = notarialActCount * 5;
+      const notaryFeeOnly = Number(body.notaryFeeOnly) || amount;
+      if (notaryFeeOnly > ohioFeeCap) {
+        return new Response(JSON.stringify({ error: `Notarization fee exceeds Ohio statutory cap of $${ohioFeeCap.toFixed(2)} for ${notarialActCount} act(s) per ORC §147.08. The notary fee portion must not exceed $5 per act.` }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
     }
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });

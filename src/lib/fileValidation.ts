@@ -30,7 +30,7 @@ export const DOCUMENT_ACCEPT = ".pdf,.jpg,.jpeg,.png,.tiff,.doc,.docx,.xlsx,.csv
 export const IMAGE_ACCEPT = ".jpg,.jpeg,.png,.webp,.heic";
 
 /** Default max file size: 10 MB */
-export const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
+export const MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024;
 
 /** Validate a file's MIME type against a whitelist */
 export function validateFileMime(file: File, allowedMimes: Set<string> = ALLOWED_DOCUMENT_MIMES): string | null {
