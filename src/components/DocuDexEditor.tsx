@@ -965,6 +965,9 @@ export function DocuDexEditor({
             <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 hidden md:flex" onClick={exportTxt}>
               TXT
             </Button>
+            <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 hidden lg:flex" onClick={exportMarkdown}>
+              MD
+            </Button>
             <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 hidden md:flex" onClick={() => setShowPrintPreview(true)}>
               <Eye className="h-3.5 w-3.5" /> <span className="hidden lg:inline">Preview</span>
             </Button>
