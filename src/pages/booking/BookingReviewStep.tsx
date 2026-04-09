@@ -208,7 +208,7 @@ function PromoCodeInput() {
     setResult(null);
     const { data, error } = await supabase
       .from("promo_codes")
-      .select("discount_percent, description, is_active, max_uses, current_uses, expires_at")
+      .select("discount_type, discount_value, is_active, usage_limit, times_used, valid_to")
       .ilike("code", code.trim())
       .single();
 
@@ -216,12 +216,13 @@ function PromoCodeInput() {
       setResult({ valid: false });
     } else if (!data.is_active) {
       setResult({ valid: false });
-    } else if (data.expires_at && new Date(data.expires_at) < new Date()) {
+    } else if (data.valid_to && new Date(data.valid_to) < new Date()) {
       setResult({ valid: false });
-    } else if (data.max_uses && data.current_uses >= data.max_uses) {
+    } else if (data.usage_limit && data.times_used >= data.usage_limit) {
       setResult({ valid: false });
     } else {
-      setResult({ valid: true, discount: data.discount_percent, description: data.description });
+      const discountLabel = data.discount_type === "percent" ? `${data.discount_value}%` : `$${data.discount_value}`;
+      setResult({ valid: true, discount: data.discount_value, description: `${discountLabel} off` });
     }
     setChecking(false);
   };
