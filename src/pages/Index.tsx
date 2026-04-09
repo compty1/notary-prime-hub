@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+import { useSettings } from "@/hooks/useSettings";
 import { submitLead } from "@/lib/submitLead";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -130,20 +131,11 @@ export default function Index() {
 
   const testimonials = dbReviews.length > 0 ? dbReviews : fallbackTestimonials;
 
-  const [contactInfo, setContactInfo] = useState({ phone: "(614) 300-6890", email: "contact@notardex.com" });
-
-  useEffect(() => {
-    supabase.from("platform_settings").select("setting_key, setting_value")
-      .in("setting_key", ["notary_phone", "notary_email"])
-      .then(({ data }) => {
-        if (data) {
-          const phone = data.find((s) => s.setting_key === "notary_phone")?.setting_value;
-          const email = data.find((s) => s.setting_key === "notary_email")?.setting_value;
-          if (phone) setContactInfo((prev) => ({ ...prev, phone }));
-          if (email) setContactInfo((prev) => ({ ...prev, email }));
-        }
-      });
-  }, []);
+  const { get } = useSettings(["notary_phone", "notary_email"]);
+  const contactInfo = {
+    phone: get("notary_phone", "(614) 300-6890"),
+    email: get("notary_email", "contact@notardex.com"),
+  };
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

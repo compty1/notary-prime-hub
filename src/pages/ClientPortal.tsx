@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useSettings } from "@/hooks/useSettings";
 import { INTAKE_ONLY_SERVICES, SAAS_LINKS, SUBSCRIPTION_SERVICES as SUBSCRIPTION_SVC_SET, PORTAL_SERVICES as PORTAL_SVC_SET } from "@/lib/serviceConstants";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -94,7 +95,8 @@ export default function ClientPortal() {
   const [apostilleForm, setApostilleForm] = useState({ document_description: "", notes: "", destination_country: "", document_count: "1" });
   const [submittingApostille, setSubmittingApostille] = useState(false);
   const [payingPaymentId, setPayingPaymentId] = useState<string | null>(null);
-  const [zoomLink, setZoomLink] = useState("");
+  const { get: getSetting } = useSettings(["zoom_meeting_link"]);
+  const zoomLink = getSetting("zoom_meeting_link", "");
   const [serviceRequests, setServiceRequests] = useState<any[]>([]);
   const [reminders, setReminders] = useState<any[]>([]);
   const [reminderForm, setReminderForm] = useState({ document_id: "", expiry_date: "", remind_days_before: "30" });
@@ -148,8 +150,7 @@ export default function ClientPortal() {
       if (apoRes.data) setApostilleRequests(apoRes.data);
       if (reqRes.data) setServiceRequests(reqRes.data);
       if (remRes.data) setReminders(remRes.data);
-      const { data: zoomSetting } = await supabase.from("platform_settings").select("setting_value").eq("setting_key", "zoom_meeting_link").single();
-      if (zoomSetting?.setting_value) setZoomLink(zoomSetting.setting_value);
+      // zoom_meeting_link is fetched via useSettings hook below
       if (profileRes.data) {
         setProfile(profileRes.data);
         setProfileForm({ full_name: profileRes.data.full_name || "", phone: profileRes.data.phone || "", address: profileRes.data.address || "", city: profileRes.data.city || "", state: profileRes.data.state || "", zip: profileRes.data.zip || "" });
