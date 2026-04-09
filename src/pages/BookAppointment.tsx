@@ -309,7 +309,27 @@ export default function BookAppointment() {
     if (preDocs) setDocumentCount(parseInt(preDocs) || 1);
   }, [searchParams, user]);
 
+  // Load notary branding when ?notary=slug is present
   useEffect(() => {
+    const notarySlug = searchParams.get("notary");
+    if (!notarySlug) return;
+    (async () => {
+      const { data } = await supabase
+        .from("notary_pages")
+        .select("display_name, theme_color, slug, use_platform_booking, external_booking_url")
+        .eq("slug", notarySlug)
+        .eq("is_published", true)
+        .maybeSingle();
+      if (data) {
+        if (!(data as any).use_platform_booking && (data as any).external_booking_url) {
+          window.location.href = (data as any).external_booking_url;
+          return;
+        }
+        setNotaryBranding(data as any);
+      }
+    })();
+  }, [searchParams]);
+
     if (!date) return;
     setLoadingSlots(true);
     const selectedDate = new Date(date + "T00:00:00");
