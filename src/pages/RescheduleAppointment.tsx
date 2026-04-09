@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Calendar, CheckCircle2 } from "lucide-react";
 import { useParams } from "react-router-dom";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 export default function RescheduleAppointment() {
   const { confirmationNumber } = useParams<{ confirmationNumber: string }>();
