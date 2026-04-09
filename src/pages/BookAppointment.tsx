@@ -164,7 +164,7 @@ export default function BookAppointment() {
       navigator.geolocation.getCurrentPosition(pos => { setUserLat(pos.coords.latitude); setUserLon(pos.coords.longitude); }, () => {}, { timeout: 5000 });
     }
   }, []);
-  usePageMeta({ title: "Book a Notary Appointment", description: "Schedule an in-person or remote online notarization appointment with an Ohio-commissioned notary. Same-day availability in Columbus, OH." });
+  usePageMeta({ title: notaryBranding ? `Book with ${notaryBranding.display_name}` : "Book a Notary Appointment", description: "Schedule an in-person or remote online notarization appointment with an Ohio-commissioned notary. Same-day availability in Columbus, OH." });
 
   // Bug 33: Use sessionStorage for pending bookings (more secure on shared computers)
   useEffect(() => {
