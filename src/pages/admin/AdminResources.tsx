@@ -1136,7 +1136,7 @@ export default function AdminResources() {
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-4">
                 {/* Certificate Preview */}
-                <div className="lg:col-span-8">
+                <div className="lg:col-span-8 space-y-4">
                   <Card className="relative overflow-hidden border-2 min-h-[400px]">
                     <CardContent className="p-8 md:p-10 font-serif text-foreground">
                       {/* Hotspot indicators */}
@@ -1167,6 +1167,87 @@ export default function AdminResources() {
                       </div>
                     </CardContent>
                   </Card>
+
+                  {/* Example Document Image */}
+                  {formImageMap[selectedForm.name] && (
+                    <Card className="overflow-hidden">
+                      <div className="p-3 border-b bg-muted/30 flex items-center gap-2">
+                        <ImageIcon className="h-4 w-4 text-primary" />
+                        <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Example Document</span>
+                        <Badge variant="outline" className="text-[9px] ml-auto">SAMPLE — NOT A LEGAL DOCUMENT</Badge>
+                      </div>
+                      <img
+                        src={formImageMap[selectedForm.name]}
+                        alt={`Example ${selectedForm.name}`}
+                        className="w-full max-h-[300px] object-cover object-top"
+                        loading="lazy"
+                      />
+                    </Card>
+                  )}
+
+                  {/* Process Guides */}
+                  <Accordion type="single" collapsible className="space-y-2">
+                    <AccordionItem value="mobile-process" className="rounded-lg border border-border/50 bg-card px-4">
+                      <AccordionTrigger className="text-sm font-medium">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-primary" />
+                          Mobile Notary Process
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-2 pb-2">
+                          {[
+                            "Confirm appointment details and travel destination",
+                            "Gather supplies: journal, seal, ink pad, ID scanner, blank certificates",
+                            "Verify signer identity with acceptable government-issued photo ID",
+                            "Review document for completeness — no blank fields",
+                            "Administer oath (Jurat) or take acknowledgment as required",
+                            "Signer signs in your presence — witness the actual signing",
+                            "Complete the notarial certificate with correct venue (county)",
+                            "Apply notary seal — clear, legible, not overlapping signatures",
+                            "Record all details in notary journal (14 mandatory fields)",
+                            "Collect payment — $5/act max + travel fee + any applicable surcharges"
+                          ].map((step, i) => (
+                            <div key={i} className="flex gap-3 items-start">
+                              <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary shrink-0">{i + 1}</div>
+                              <p className="text-xs text-foreground">{step}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="ron-process" className="rounded-lg border border-border/50 bg-card px-4">
+                      <AccordionTrigger className="text-sm font-medium">
+                        <div className="flex items-center gap-2">
+                          <Globe className="h-4 w-4 text-primary" />
+                          Online (RON) Process via SignNow
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-2 pb-2">
+                          {[
+                            "Log into SignNow RON platform — verify active Ohio RON commission",
+                            "Send signing invitation to signer via SignNow",
+                            "Signer completes KBA (Knowledge-Based Authentication) — 5 questions, must get 4/5 correct",
+                            "Signer completes credential analysis (ID verification) via SignNow",
+                            "Start live video session — confirm signer identity on camera",
+                            "Begin session recording (mandatory per ORC §147.66)",
+                            "Present each document — signer applies electronic signature",
+                            "Administer oath verbally for Jurats over video",
+                            "Apply electronic notary seal and signature",
+                            "End recording — download and store for 10-year retention",
+                            "Complete journal entry with RON-specific fields",
+                            "Deliver notarized documents electronically via SignNow"
+                          ].map((step, i) => (
+                            <div key={i} className="flex gap-3 items-start">
+                              <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary shrink-0">{i + 1}</div>
+                              <p className="text-xs text-foreground">{step}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
                 </div>
 
                 {/* Anatomy Panel */}
@@ -1215,7 +1296,7 @@ export default function AdminResources() {
                       className="flex-1 text-[10px] font-bold uppercase tracking-wider"
                       onClick={() => window.print()}
                     >
-                      <Download className="h-3 w-3 mr-1" /> Print
+                      <Printer className="h-3 w-3 mr-1" /> Print
                     </Button>
                   </div>
                 </div>
