@@ -1,5 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
+import logoIcon from "@/assets/logo-icon.png";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg" | "xl";
@@ -10,10 +11,10 @@ interface LogoProps {
 }
 
 const sizeMap = {
-  sm: { mark: "text-[32px]", text: "text-xl", gap: "gap-1.5" },
-  md: { mark: "text-[40px]", text: "text-2xl", gap: "gap-2" },
-  lg: { mark: "text-[48px]", text: "text-[32px]", gap: "gap-2" },
-  xl: { mark: "text-[56px]", text: "text-4xl", gap: "gap-3" },
+  sm: { icon: "h-8 w-8", text: "text-xl", gap: "gap-1.5" },
+  md: { icon: "h-10 w-10", text: "text-2xl", gap: "gap-2" },
+  lg: { icon: "h-12 w-12", text: "text-[32px]", gap: "gap-2" },
+  xl: { icon: "h-14 w-14", text: "text-4xl", gap: "gap-3" },
 };
 
 export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
@@ -22,28 +23,18 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
 
     const isDark = theme === "dark";
     const textColor = isDark ? "text-white" : "text-[#0a0a0a]";
-    const shadowColor = isDark ? "#000000" : "#212529";
 
     return (
       <div
         ref={ref}
-        className={cn("group flex items-end", s.gap, className)}
+        className={cn("group flex items-center", s.gap, className)}
         aria-label="NotarDex logo"
       >
-        {/* Stylized "n" lettermark */}
-        <span
-          className={cn(
-            "font-black tracking-tighter leading-none transition-transform group-hover:-translate-y-1",
-            s.mark
-          )}
-          style={{
-            color: "#eab308",
-            textShadow: `2.5px 1px 0px ${shadowColor}`,
-          }}
-          aria-hidden="true"
-        >
-          n
-        </span>
+        <img
+          src={logoIcon}
+          alt="NotarDex"
+          className={cn(s.icon, "object-contain transition-transform group-hover:-translate-y-0.5")}
+        />
 
         {showText && (
           <div className="flex flex-col">
@@ -54,7 +45,7 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
                 textColor
               )}
             >
-              notar<span className="text-[#eab308]">dex</span>
+              notar<span className="text-primary">dex</span>
               <span className={textColor}>.</span>
             </span>
             {subtitle && (
