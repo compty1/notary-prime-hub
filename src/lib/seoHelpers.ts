@@ -78,3 +78,61 @@ export function faqJsonLd(items: { q: string; a: string }[]) {
     })),
   };
 }
+
+/** #3638: Breadcrumb JSON-LD */
+export function breadcrumbJsonLd(items: { name: string; url: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, idx) => ({
+      "@type": "ListItem",
+      position: idx + 1,
+      name: item.name,
+      item: `${SITE_DOMAIN}${item.url}`,
+    })),
+  };
+}
+
+/** #3639: Review aggregate schema */
+export function reviewAggregateJsonLd(ratingValue: number, reviewCount: number, bestRating = 5) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: "NotarDex — Ohio Notary & Document Services",
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue,
+      reviewCount,
+      bestRating,
+      worstRating: 1,
+    },
+  };
+}
+
+/** #3947: Open Graph meta helper */
+export function setOpenGraphMeta(opts: { title: string; description: string; image?: string; url?: string; type?: string }) {
+  const tags: Record<string, string> = {
+    "og:title": opts.title,
+    "og:description": opts.description,
+    "og:type": opts.type || "website",
+    "og:url": opts.url ? `${SITE_DOMAIN}${opts.url}` : SITE_DOMAIN,
+    "og:site_name": "NotarDex",
+  };
+  if (opts.image) tags["og:image"] = opts.image;
+
+  // Twitter card
+  tags["twitter:card"] = opts.image ? "summary_large_image" : "summary";
+  tags["twitter:title"] = opts.title;
+  tags["twitter:description"] = opts.description;
+  if (opts.image) tags["twitter:image"] = opts.image;
+
+  Object.entries(tags).forEach(([property, content]) => {
+    let meta = document.querySelector<HTMLMetaElement>(`meta[property="${property}"], meta[name="${property}"]`);
+    if (!meta) {
+      meta = document.createElement("meta");
+      meta.setAttribute(property.startsWith("twitter:") ? "name" : "property", property);
+      document.head.appendChild(meta);
+    }
+    meta.content = content;
+  });
+}
