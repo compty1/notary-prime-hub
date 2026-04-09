@@ -95,7 +95,8 @@ export default function ClientPortal() {
   const [apostilleForm, setApostilleForm] = useState({ document_description: "", notes: "", destination_country: "", document_count: "1" });
   const [submittingApostille, setSubmittingApostille] = useState(false);
   const [payingPaymentId, setPayingPaymentId] = useState<string | null>(null);
-  const [zoomLink, setZoomLink] = useState("");
+  const { get: getSetting } = useSettings(["zoom_meeting_link"]);
+  const zoomLink = getSetting("zoom_meeting_link", "");
   const [serviceRequests, setServiceRequests] = useState<any[]>([]);
   const [reminders, setReminders] = useState<any[]>([]);
   const [reminderForm, setReminderForm] = useState({ document_id: "", expiry_date: "", remind_days_before: "30" });
