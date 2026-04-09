@@ -23,6 +23,7 @@ import { NotaryAttestationPanel } from "@/components/NotaryAttestationPanel";
 import { ESignConsent } from "@/components/ESignConsent";
 import { SessionTimeoutWarning } from "@/components/SessionTimeoutWarning";
 import { ComplianceBanner } from "@/components/ComplianceBanner";
+import { RonRecordingPanel } from "@/components/RonRecordingPanel";
 
 const oathScripts = {
   acknowledgment: "The signer personally appeared before me and acknowledged that they signed this document voluntarily for the purposes stated therein. (No verbal oath required for acknowledgments per ORC §147.55)",
@@ -1190,6 +1191,16 @@ export default function RonSession() {
                   </Button>
                 </div>
               </Card>
+
+              {/* RON Session Recording (Ohio ORC §147.66) */}
+              {isAdminOrNotary && user && appointmentId && (
+                <RonRecordingPanel
+                  appointmentId={appointmentId}
+                  userId={user.id}
+                  onRecordingUrl={(url) => setRecordingUrl(url)}
+                  disabled={!recordingConsent}
+                />
+              )}
 
               {/* Guardian Eye Monitoring */}
               <Card className="rounded-2xl border-border/50">

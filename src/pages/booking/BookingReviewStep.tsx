@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { MapPin, Monitor, Calendar, Shield, DollarSign, AlertTriangle, Clock, Eye, EyeOff, CreditCard } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { MapPin, Monitor, Calendar, Shield, DollarSign, AlertTriangle, Clock, Eye, EyeOff, CreditCard, Tag, Loader2, CheckCircle } from "lucide-react";
 import { formatTimeSlot, isDigitalOnly, HAGUE_COUNTRIES } from "./bookingConstants";
 import { OhioComplianceNotice } from "@/components/OhioComplianceNotice";
 
@@ -182,11 +184,71 @@ export default function BookingReviewStep(props: ReviewStepProps) {
         </div>
       </div>
 
+      {/* Promo Code (MED-002) */}
+      <PromoCodeInput />
+
       {/* Payment methods */}
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <CreditCard className="h-3.5 w-3.5" aria-hidden="true" />
         <span>We accept: Credit/Debit • Venmo • Zelle • CashApp • Cash (in-person only)</span>
       </div>
+    </div>
+  );
+}
+
+/** Inline promo code validator (MED-002) */
+function PromoCodeInput() {
+  const [code, setCode] = useState("");
+  const [checking, setChecking] = useState(false);
+  const [result, setResult] = useState<{ valid: boolean; discount?: number; description?: string } | null>(null);
+
+  const checkPromo = async () => {
+    if (!code.trim()) return;
+    setChecking(true);
+    setResult(null);
+    const { data, error } = await supabase
+      .from("promo_codes")
+      .select("discount_type, discount_value, is_active, usage_limit, times_used, valid_to")
+      .ilike("code", code.trim())
+      .single();
+
+    if (error || !data) {
+      setResult({ valid: false });
+    } else if (!data.is_active) {
+      setResult({ valid: false });
+    } else if (data.valid_to && new Date(data.valid_to) < new Date()) {
+      setResult({ valid: false });
+    } else if (data.usage_limit && data.times_used >= data.usage_limit) {
+      setResult({ valid: false });
+    } else {
+      const discountLabel = data.discount_type === "percent" ? `${data.discount_value}%` : `$${data.discount_value}`;
+      setResult({ valid: true, discount: data.discount_value, description: `${discountLabel} off` });
+    }
+    setChecking(false);
+  };
+
+  return (
+    <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-2">
+      <Label className="text-xs flex items-center gap-1"><Tag className="h-3 w-3" /> Promo Code</Label>
+      <div className="flex gap-2">
+        <Input
+          value={code}
+          onChange={(e) => { setCode(e.target.value.toUpperCase()); setResult(null); }}
+          placeholder="Enter code"
+          className="text-xs h-8"
+        />
+        <Button size="sm" variant="outline" onClick={checkPromo} disabled={checking || !code.trim()} className="h-8 text-xs">
+          {checking ? <Loader2 className="h-3 w-3 animate-spin" /> : "Apply"}
+        </Button>
+      </div>
+      {result && !result.valid && (
+        <p className="text-xs text-destructive">Invalid or expired promo code.</p>
+      )}
+      {result?.valid && (
+        <p className="text-xs text-primary flex items-center gap-1">
+          <CheckCircle className="h-3 w-3" /> {result.discount}% discount applied{result.description ? ` — ${result.description}` : ""}
+        </p>
+      )}
     </div>
   );
 }
