@@ -31,7 +31,19 @@ interface FormEntry {
   anatomy: Record<string, string>;
   certificateText?: string;
   ohioTip?: string;
+  exampleImage?: string;
 }
+
+/** Map form names to example document images */
+const formImageMap: Record<string, string> = {
+  "Ohio Jurat (Individual)": "/images/documents/jurat-certificate.jpg",
+  "Acknowledgment (Individual)": "/images/documents/acknowledgment-certificate.jpg",
+  "Acknowledgment (Corp/LLC)": "/images/documents/corporate-acknowledgment.jpg",
+  "Attorney-in-Fact (POA)": "/images/documents/poa-acknowledgment.jpg",
+  "Copy Certification": "/images/documents/copy-certification.jpg",
+  "Signature by Mark (The X)": "/images/documents/signature-by-mark.jpg",
+  "Ohio Vehicle Title (Seller)": "/images/documents/vehicle-title-notarization.jpg",
+};
 
 const forms: FormEntry[] = [
   {
