@@ -35,6 +35,8 @@ interface NotaryPage {
   use_platform_booking: boolean;
   external_booking_url: string;
   social_links: Record<string, any>;
+  profile_photo_path: string | null;
+  cover_photo_path: string | null;
   seo_title: string;
   seo_description: string;
   is_published: boolean;
