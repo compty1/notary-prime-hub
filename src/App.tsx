@@ -101,6 +101,7 @@ const AdminMailbox = lazyRetry(() => import("./pages/admin/AdminMailbox"));
 const Unsubscribe = lazyRetry(() => import("./pages/Unsubscribe"));
 const AdminWebhooks = lazyRetry(() => import("./pages/admin/AdminWebhooks"));
 const AdminPerformance = lazyRetry(() => import("./pages/admin/AdminPerformance"));
+const AdminNotaryPages = lazyRetry(() => import("./pages/admin/AdminNotaryPages"));
 const AdminComplianceReport = lazyRetry(() => import("./pages/admin/AdminComplianceReport"));
 const AdminAutomatedEmails = lazyRetry(() => import("./pages/admin/AdminAutomatedEmails"));
 const Maintenance = lazyRetry(() => import("./pages/Maintenance"));
@@ -117,6 +118,7 @@ const NotaryCertificates = lazyRetry(() => import("./pages/NotaryCertificates"))
 const Compliance = lazyRetry(() => import("./pages/Compliance"));
 const Security = lazyRetry(() => import("./pages/Security"));
 const Accessibility = lazyRetry(() => import("./pages/Accessibility"));
+const NotaryPage = lazyRetry(() => import("./pages/NotaryPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -193,6 +195,7 @@ function AnimatedRoutes() {
       <Route path="/solutions/law-firms" element={<SR><ForLawFirms /></SR>} />
       <Route path="/solutions/small-business" element={<SR><ForSmallBusiness /></SR>} />
       <Route path="/solutions/individuals" element={<SR><ForIndividuals /></SR>} />
+      <Route path="/n/:slug" element={<SR msg="Notary page failed to load"><NotaryPage /></SR>} />
       <Route path="/digitize" element={<ProtectedRoute><SR msg="Document digitize failed to load"><DocumentDigitize /></SR></ProtectedRoute>} />
       <Route path="/request" element={<ProtectedRoute><SR msg="Service request failed to load"><ServiceRequest /></SR></ProtectedRoute>} />
       <Route path="/mailroom" element={<ProtectedRoute><SR msg="Mailroom failed to load"><VirtualMailroom /></SR></ProtectedRoute>} />
@@ -254,6 +257,7 @@ function AnimatedRoutes() {
         <Route path="webhooks" element={<ProtectedRoute adminOnly><SR msg="Webhooks failed to load"><AdminWebhooks /></SR></ProtectedRoute>} />
         <Route path="performance" element={<ProtectedRoute adminOnly><SR msg="Performance failed to load"><AdminPerformance /></SR></ProtectedRoute>} />
         <Route path="compliance-report" element={<ProtectedRoute adminOnly><SR msg="Compliance report failed to load"><AdminComplianceReport /></SR></ProtectedRoute>} />
+        <Route path="notary-pages" element={<ProtectedRoute adminOnly><SR msg="Notary pages failed to load"><AdminNotaryPages /></SR></ProtectedRoute>} />
         <Route path="automated-emails" element={<ProtectedRoute adminOnly><SR msg="Automated emails failed to load"><AdminAutomatedEmails /></SR></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>

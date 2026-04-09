@@ -61,6 +61,7 @@ const sidebarGroups = [
       { key: "reviews", label: "Reviews & Feedback", icon: Star },
       { key: "services", label: "Available Services", icon: ShoppingBag },
       { key: "referral", label: "Refer a Friend", icon: UserPlus },
+      { key: "my-page", label: "My Notary Page", icon: CheckCircle },
     ],
   },
 ];
