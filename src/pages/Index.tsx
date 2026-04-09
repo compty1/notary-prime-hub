@@ -106,6 +106,16 @@ export default function Index() {
   const [lastSubmitTime, setLastSubmitTime] = useState(0);
   const [agreeTerms, setAgreeTerms] = useState(false);
 
+  // #3947/#3948: Set Open Graph + Twitter meta
+  useEffect(() => {
+    setOpenGraphMeta({
+      title: "Ohio Notary & Document Services | NotarDex",
+      description: "Trusted Ohio notary services — in-person and remote online notarization (RON). Book online, get notarized today.",
+      url: "/",
+      type: "website",
+    });
+  }, []);
+
   const [dbServices, setDbServices] = useState<any[]>([]);
   const [dbReviews, setDbReviews] = useState<any[]>([]);
 
