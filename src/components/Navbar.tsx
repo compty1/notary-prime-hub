@@ -39,6 +39,7 @@ const toolLinks = [
 
 const plainLinks = [
   { to: "/about", label: "About" },
+  { to: "/notaries", label: "Find a Notary" },
   { to: "/templates", label: "Templates" },
   { to: "/fee-calculator", label: "Pricing" },
   { to: "/help", label: "Help" },

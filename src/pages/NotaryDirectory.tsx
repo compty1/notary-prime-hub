@@ -88,11 +88,15 @@ export default function NotaryDirectory() {
                       <CardContent className="p-6">
                         <div className="flex items-start gap-4">
                           <div
-                            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 text-xl font-black"
+                            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 text-xl font-black overflow-hidden"
                             style={{ borderColor: color, color, background: `${color}10` }}
                           >
                             {n.profile_photo_path ? (
-                              <img src={n.profile_photo_path} alt={n.display_name} className="h-full w-full rounded-full object-cover" />
+                              <img
+                                src={n.profile_photo_path.startsWith("http") ? n.profile_photo_path : supabase.storage.from("documents").getPublicUrl(n.profile_photo_path).data.publicUrl}
+                                alt={n.display_name}
+                                className="h-full w-full rounded-full object-cover"
+                              />
                             ) : (
                               n.display_name?.charAt(0)?.toUpperCase() || "N"
                             )}

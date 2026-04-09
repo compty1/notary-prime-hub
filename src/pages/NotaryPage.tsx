@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -112,6 +112,14 @@ export default function NotaryPage() {
     ? `/book?notary=${page.slug}`
     : page.external_booking_url || `/book?notary=${page.slug}`;
 
+  const resolveStorageUrl = (path: string | null) => {
+    if (!path) return null;
+    if (path.startsWith("http")) return path;
+    return supabase.storage.from("documents").getPublicUrl(path).data.publicUrl;
+  };
+  const profilePhotoUrl = resolveStorageUrl(page.profile_photo_path);
+  const coverPhotoUrl = resolveStorageUrl(page.cover_photo_path);
+
   return (
     <PageShell>
       {/* Hero */}
@@ -119,9 +127,9 @@ export default function NotaryPage() {
         className="relative overflow-hidden"
         style={{ background: `linear-gradient(135deg, ${themeColor}22, ${themeColor}08)` }}
       >
-        {page.cover_photo_path && (
+        {coverPhotoUrl && (
           <div className="absolute inset-0 opacity-20">
-            <img src={page.cover_photo_path} alt="" className="h-full w-full object-cover" />
+            <img src={coverPhotoUrl} alt="" className="h-full w-full object-cover" />
           </div>
         )}
         <div className="relative mx-auto max-w-6xl px-4 py-16 sm:py-24">
@@ -136,8 +144,8 @@ export default function NotaryPage() {
               className="flex h-32 w-32 items-center justify-center rounded-full border-4 shadow-xl sm:h-40 sm:w-40"
               style={{ borderColor: themeColor, background: `${themeColor}15` }}
             >
-              {page.profile_photo_path ? (
-                <img src={page.profile_photo_path} alt={page.display_name} className="h-full w-full rounded-full object-cover" />
+              {profilePhotoUrl ? (
+                <img src={profilePhotoUrl} alt={page.display_name} className="h-full w-full rounded-full object-cover" />
               ) : (
                 <span className="text-4xl font-black" style={{ color: themeColor }}>
                   {page.display_name?.charAt(0)?.toUpperCase() || "N"}

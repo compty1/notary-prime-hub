@@ -35,6 +35,8 @@ interface NotaryPage {
   use_platform_booking: boolean;
   external_booking_url: string;
   social_links: Record<string, any>;
+  profile_photo_path: string | null;
+  cover_photo_path: string | null;
   seo_title: string;
   seo_description: string;
   is_published: boolean;
@@ -47,8 +49,8 @@ const emptyPage: Partial<NotaryPage> = {
   slug: "", display_name: "", title: "", tagline: "", bio: "", phone: "", email: "",
   website_url: "", service_areas: [], services_offered: [], credentials: {},
   theme_color: "#eab308", signing_platform_url: "", use_platform_booking: true,
-  external_booking_url: "", social_links: {}, seo_title: "", seo_description: "",
-  is_published: false, is_featured: false,
+  external_booking_url: "", social_links: {}, profile_photo_path: null, cover_photo_path: null,
+  seo_title: "", seo_description: "", is_published: false, is_featured: false,
 };
 
 export default function AdminNotaryPages() {
@@ -307,6 +309,28 @@ export default function AdminNotaryPages() {
               value={typeof editPage.credentials === "string" ? editPage.credentials : JSON.stringify(editPage.credentials || {}, null, 2)}
               onChange={e => { try { updateField("credentials", JSON.parse(e.target.value)); } catch { updateField("credentials", e.target.value); } }}
             />
+
+            <Separator />
+            <h3 className="font-semibold">Social Links (JSON)</h3>
+            <Textarea
+              rows={3}
+              placeholder='{"facebook":"https://facebook.com/...","linkedin":"https://linkedin.com/in/...","twitter":"https://x.com/..."}'
+              value={typeof editPage.social_links === "string" ? editPage.social_links : JSON.stringify(editPage.social_links || {}, null, 2)}
+              onChange={e => { try { updateField("social_links", JSON.parse(e.target.value)); } catch { updateField("social_links", e.target.value); } }}
+            />
+
+            <Separator />
+            <h3 className="font-semibold">Photos</h3>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <Label>Profile Photo Path</Label>
+                <Input placeholder="notary-pages/id/profile.jpg" value={editPage.profile_photo_path || ""} onChange={e => updateField("profile_photo_path", e.target.value)} />
+              </div>
+              <div>
+                <Label>Cover Photo Path</Label>
+                <Input placeholder="notary-pages/id/cover.jpg" value={editPage.cover_photo_path || ""} onChange={e => updateField("cover_photo_path", e.target.value)} />
+              </div>
+            </div>
 
             <Separator />
             <h3 className="font-semibold">SEO</h3>
