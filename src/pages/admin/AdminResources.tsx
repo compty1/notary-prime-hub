@@ -11,10 +11,12 @@ import {
   Search, FileText, Users, Shield, AlertTriangle, CheckCircle, BookOpen, ExternalLink,
   GraduationCap, Scale, Gavel, Globe, Briefcase, Notebook, Stamp, Fingerprint,
   MapPin, Plus, TrendingUp, Zap, FileCheck, UserCheck, ShieldAlert, XCircle,
-  FileSearch, Info, Copy, Download, Car, Building2, PenTool, Eye
+  FileSearch, Info, Copy, Download, Car, Building2, PenTool, Eye, Printer, ImageIcon
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { AnatomyDiagram } from "@/components/AnatomyDiagram";
+import { ProcessGuide } from "@/components/ProcessGuide";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // DATA: FORM VAULT
