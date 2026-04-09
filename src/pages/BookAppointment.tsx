@@ -133,6 +133,9 @@ export default function BookAppointment() {
   const [additionalSignerEmails, setAdditionalSignerEmails] = useState("");
   const [signerDob, setSignerDob] = useState("");
 
+  // Notary page branding support (?notary=slug)
+  const [notaryBranding, setNotaryBranding] = useState<{ display_name: string; theme_color: string; slug: string; use_platform_booking: boolean; external_booking_url: string } | null>(null);
+
   // Booking draft persistence (Phase 3.4)
   useEffect(() => {
     if (!user) return;
