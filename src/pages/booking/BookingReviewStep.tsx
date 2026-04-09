@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { MapPin, Monitor, Calendar, Shield, DollarSign, AlertTriangle, Clock, Eye, EyeOff, CreditCard } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { MapPin, Monitor, Calendar, Shield, DollarSign, AlertTriangle, Clock, Eye, EyeOff, CreditCard, Tag, Loader2, CheckCircle } from "lucide-react";
 import { formatTimeSlot, isDigitalOnly, HAGUE_COUNTRIES } from "./bookingConstants";
 import { OhioComplianceNotice } from "@/components/OhioComplianceNotice";
 
@@ -181,6 +183,9 @@ export default function BookingReviewStep(props: ReviewStepProps) {
           </Label>
         </div>
       </div>
+
+      {/* Promo Code (MED-002) */}
+      <PromoCodeInput />
 
       {/* Payment methods */}
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
