@@ -1,106 +1,186 @@
 
 
-# DocuDex Enhancement: Portal Access, Template Library, AI Recommendations & Comprehensive Audit CSV
+# Comprehensive Implementation Plan — External Orders, SignNow Integration, Document Examples, Settings Sync & Pricing
 
-## Overview
+## Summary
 
-Three deliverables:
-1. **Add DocuDex access to the Client Portal dashboard** (quick action + tab link)
-2. **Create a high-quality Document Templates gallery page** that feeds into DocuDex for editing
-3. **Add real-time AI recommendations panel** in DocuDex that analyzes the current document and suggests improvements
-4. **Generate a comprehensive CSV** (`/mnt/documents/docudex-enhancements-full-2026.csv`) with ALL gaps, bugs, enhancements, and implementation plans to bring DocuDex to Canva-level quality for documents
+This plan covers 8 major workstreams: (1) Manual/external order entry from Fiverr and other platforms, (2) SignNow automated email tracking and status integration, (3) Real notarized Ohio document example images in Resources and Service Guides, (4) Document anatomy completion in Resources, (5) Link auditing in References, (6) Mobile/Online notary process instructions in Templates & Forms, (7) Settings-to-site global sync, and (8) Pricing adjustments for mobile and online notary services.
 
-## 1. DocuDex Access from Client Portal
+---
 
-**File: `src/pages/ClientPortal.tsx`**
-- Add a "Document Studio" quick action card in the portal dashboard that links to `/docudex`
-- Add a "DocuDex" entry to the `PortalQuickActions` component
+## 1. Manual Order Entry & External Platform Import
 
-**File: `src/components/PortalQuickActions.tsx`**
-- Add DocuDex as a quick action tile with FileText icon and link to `/docudex`
+**What**: Add an "External Order" feature to AdminServiceRequests so orders from Fiverr, Upwork, or other platforms can be tracked alongside native orders.
 
-## 2. Enhanced Document Templates Page → DocuDex Integration
+**Implementation**:
+- Add a "New External Order" button and dialog to `AdminServiceRequests.tsx` with fields: Client Name, Client Email, Platform (dropdown: Fiverr, Upwork, Direct, Other), Platform Order ID, Service Type, Amount Paid, Payment Status (Paid on Platform / Pending), Notes, and a paste-friendly "Import from clipboard" parser
+- Database migration: add columns to `service_requests` table — `source_platform` (text, default 'notardex'), `external_order_id` (text, nullable), `external_payment_status` (text, nullable), `external_payment_amount` (numeric, nullable)
+- Add a "Paste Order Details" textarea that parses structured text (Fiverr order confirmations) using regex to auto-fill fields
+- Add CSV import for bulk external orders
+- Display platform badge on each order row in the table
+- External orders with "Paid on Platform" skip Stripe but still track in revenue reports
 
-**File: `src/pages/DocumentTemplates.tsx`** (modify existing 1467-line page)
-- Add an "Open in DocuDex" button on each template that passes the rendered template content via `sessionStorage` (same pattern as AI Tools Hub handoff) and navigates to `/docudex`
-- Add a "Premium Templates" section with high-quality, professionally designed templates (real estate closing, loan packages, corporate resolutions, estate planning)
-- Add template quality indicators (popularity, rating, compliance badges)
+---
 
-**File: `src/components/docudex/constants.ts`**
-- Expand TEMPLATES array with 15+ new high-quality templates: Corporate Resolution, Real Estate Closing, Loan Package Checklist, Living Trust, Last Will & Testament, Lease Agreement, Employment Agreement, Operating Agreement, Promissory Note, Demand Letter
+## 2. SignNow Automated Email Tracking & Status Integration
 
-## 3. AI Recommendations Panel in DocuDex
+**What**: Account for emails SignNow sends automatically (signing invitations, completion notifications) and track document status from SignNow across the platform.
 
-**File: `src/components/DocuDexEditor.tsx`**
-- Add a new "AI Recommendations" floating panel (togglable) that analyzes the current page content and provides:
-  - Document completeness score
-  - Missing sections detection (e.g., "Add a signature block", "Missing notary acknowledgment")
-  - Tone/readability suggestions
-  - Ohio compliance checks (missing required clauses for notary docs)
-  - Next-step suggestions ("Add witness attestation", "Include governing law clause")
-- Uses the `notary-assistant` edge function with a specialized system prompt
-- Debounced analysis (runs 3 seconds after user stops typing)
-- Results cached per page to avoid repeated API calls
+**Implementation**:
+- Add a `signnow_documents` tracking table: `id`, `appointment_id`, `document_name`, `signnow_document_id`, `status` (draft/pending/signed/completed/declined), `invite_sent_at`, `viewed_at`, `signed_at`, `completed_at`, `signnow_emails_sent` (jsonb array of email events)
+- Update `signnow-webhook/index.ts` to capture `document.complete`, `invite.sent`, `document.update` events and update the tracking table + insert into `crm_activities`
+- Create a "SignNow Status" panel in the appointment detail view showing: document status timeline, emails sent by SignNow (invite, reminder, completion), signer actions
+- Add SignNow document status to `PortalAppointmentsTab` so clients see real-time signing progress
+- Add SignNow email events to the Admin Automated Emails dashboard as "External Emails (SignNow)" section so admins see the full communication picture
+- Update `AdminProcessFlows` ProcessFlowsTab to include SignNow steps in service flows (e.g., "Document Sent via SignNow → Signer Invited → Signed → Completed")
 
-**New sidebar tab: "Recommend"** in `DocuDexSidebar.tsx`
-- Shows AI-powered suggestions contextual to the document type
-- One-click insert for each recommendation
-- Compliance checklist for Ohio notary documents
+---
 
-## 4. AI-Powered Active Editing (Next-Gen)
+## 3. Real Notarized Ohio Document Example Images
 
-**File: `src/components/DocuDexEditor.tsx`**
-- Add inline AI completion: when user types `//` at the start of a line, show AI autocomplete suggestions
-- Add "Continue Writing" button that generates the next paragraph based on document context
-- Add AI-powered "Smart Format" that auto-detects document type and applies appropriate formatting
+**What**: Add actual images showing real Ohio notarized documents (with PII redacted) as visual examples in Resources, NotaryGuide, NotaryCertificates, and AdminResources.
 
-## 5. Comprehensive CSV Generation
+**Implementation**:
+- Generate high-fidelity example document images programmatically (SVG/Canvas rendered to PNG) for: Acknowledgment certificate, Jurat certificate, Copy Certification, POA acknowledgment, Corporate acknowledgment, Signature by Mark, Vehicle Title notarization, Self-Proving Affidavit
+- Each image shows: filled-in certificate language, notary seal placement, signature lines, venue, date — all with realistic Ohio formatting and "[SAMPLE — NOT A LEGAL DOCUMENT]" watermark
+- Store images in `public/images/documents/` as static assets
+- Add image gallery/lightbox to each document type in:
+  - `Resources.tsx` — new "Document Examples" resource card linking to a gallery page
+  - `NotaryGuide.tsx` — inline example image for each document category
+  - `NotaryCertificates.tsx` — example completed certificate for each type
+  - `AdminResources.tsx` Form Vault — anatomy diagram image for each form entry
+  - `AdminResources.tsx` Service Guides — step-by-step images showing the process
 
-Run a Python script to generate `/mnt/documents/docudex-enhancements-full-2026.csv` with columns:
-`ID, Category, Priority, Component/File, Title, Description, Implementation Plan, Effort (hours), Status`
+---
 
-Categories will cover:
-- **Core Editor Bugs** (40+ items): cursor sync issues, paste handling edge cases, undo/redo across pages, zoom rendering artifacts
-- **Missing Canva-Parity Features** (80+ items): drag-and-drop elements, rulers/guides, snap-to-grid, layers panel, element locking, grouping, master pages, slide sorter view, presentation mode
-- **AI Enhancements** (50+ items): inline autocomplete, smart formatting, document classification, content recommendations, compliance scanning, auto-translate, voice-to-text, image-to-text OCR insertion
-- **Template System** (40+ items): template marketplace, version control, collaborative templates, industry-specific packs, dynamic field binding, conditional sections
-- **Export/Import** (30+ items): true DOCX export (not HTML-as-DOC), PDF generation with proper pagination, Excel/CSV table export, Markdown export, EPUB generation
-- **Collaboration** (30+ items): real-time multi-user editing, comments/annotations, track changes, approval workflows, sharing links, role-based permissions
-- **Performance** (20+ items): virtual scrolling for large documents, lazy page rendering, Web Worker for spell-check, IndexedDB for offline drafts
-- **Accessibility** (20+ items): keyboard navigation improvements, screen reader announcements, focus management, high contrast mode
-- **Mobile Experience** (20+ items): touch gestures, responsive toolbar, swipe between pages, pinch-to-zoom
-- **Ohio Compliance** (30+ items): automated notary certificate insertion, journal field auto-population, 10-year retention enforcement, HB 315 compliance checks
-- **Design System** (20+ items): theme presets, brand kit import, style consistency checker, color palette generator
-- **Integration** (20+ items): Google Drive sync, cloud storage, email document, SignNow integration, e-seal embedding
+## 4. Document Anatomy Completion in Resources
 
-Total: **400+ items** with detailed implementation plans.
+**What**: The AdminResources Form Vault has `anatomy` data for each form but needs visual anatomy diagrams (annotated images with callout arrows).
 
-## Technical Approach
+**Implementation**:
+- Create an `AnatomyDiagram` component that renders a document image with numbered callout markers overlaid at specific positions
+- Each callout links to the existing `anatomy` record descriptions
+- Add anatomy diagrams to all 10 form entries in the Form Vault
+- Add a "Document Anatomy" section to the public Resources page with simplified versions for client education
+- Include print-friendly CSS so anatomy diagrams render cleanly when printed
 
-### Portal Quick Action
-Add to `PortalQuickActions.tsx`:
-```tsx
-{ icon: FileText, label: "Document Studio", href: "/docudex", description: "Create & edit documents" }
-```
+---
 
-### Template → DocuDex Handoff
-Same `sessionStorage` pattern already used by AI Tools Hub:
-```tsx
-sessionStorage.setItem("ai_tools_content", renderedTemplateHtml);
-navigate("/docudex");
-```
+## 5. Link Auditing in References
 
-### AI Recommendations
-New debounced hook that calls `notary-assistant` with document context and returns structured suggestions. Cached in component state per page hash.
+**What**: Verify all external links in AdminResources Reference & Law tab point to live pages.
 
-### CSV Generation
-Python script producing 400+ rows with actionable implementation plans for every enhancement needed to reach Canva-level document editing quality.
+**Implementation**:
+- Audit all hardcoded links in AdminResources.tsx (Ohio SOS, ORC citations, NNA, etc.)
+- Replace any broken or outdated links with current URLs
+- Add `target="_blank" rel="noopener noreferrer"` to all external links
+- Verify links: ohiosos.gov/notary, Ohio Revised Code sections (§147.xx, §4505.06), NNA resources
+- Add a small "Link Health" indicator in the Reference tab showing last-verified date
 
-## Files Modified
-1. `src/components/PortalQuickActions.tsx` — Add DocuDex quick action
-2. `src/pages/DocumentTemplates.tsx` — Add "Open in DocuDex" button
-3. `src/components/docudex/constants.ts` — Add 15+ premium templates
-4. `src/components/DocuDexEditor.tsx` — AI recommendations panel + inline AI
-5. `src/components/docudex/DocuDexSidebar.tsx` — New "Recommend" tab
-6. `/mnt/documents/docudex-enhancements-full-2026.csv` — Generated CSV (400+ items)
+---
+
+## 6. Mobile & Online Notary Process Instructions in Templates & Forms
+
+**What**: Add detailed step-by-step instructions for both mobile (in-person travel) and online (RON via SignNow) notary processes in the Form Vault, including real example images.
+
+**Implementation**:
+- Add two new accordion sections to each form entry in AdminResources: "Mobile Notary Process" and "Online (RON) Process"
+- **Mobile process steps**: Pre-appointment checklist, travel/venue setup, ID verification procedure, document review, signing ceremony, journal entry, seal application, payment collection
+- **RON process steps**: Platform login (SignNow), tech check, KBA verification, credential analysis, document presentation, e-signature, e-seal application, recording start/stop, journal entry
+- Include example images for each step showing the SignNow interface, seal placement, etc.
+- Add print/download capability: "Print Process Guide" button that generates a clean PDF-style printable view with all steps and images
+- Add certificate download: each form entry already has `certificateText` — add a "Download Certificate Template" button that generates a formatted DOCX/PDF with proper Ohio formatting
+
+---
+
+## 7. Settings-to-Site Global Sync
+
+**What**: Many settings exist in `platform_settings` but aren't consumed by the site components (e.g., `business_hours`, `notary_phone`, `support_email`, `site_name`, etc.).
+
+**Implementation**:
+- Create a `useSettings` hook that fetches and caches `platform_settings` on app load (with 5-min TTL)
+- Update these components to consume settings:
+  - `Footer.tsx` — phone, email, business hours, copyright text, social links, disclaimer
+  - `Navbar.tsx` — site name, logo path
+  - `PageShell.tsx` / `usePageMeta` — default meta title/description from settings
+  - `BookAppointment.tsx` — booking_enabled gate, min lead hours, max appointments
+  - `ClientPortal.tsx` — portal_welcome_message, tab visibility toggles
+  - `CookieConsent.tsx` — cookie_consent_enabled toggle
+  - `Index.tsx` (homepage) — business name, phone, tagline
+  - `Maintenance.tsx` — maintenance_mode gate
+- Populate missing settings values in the database (see Section 8)
+
+---
+
+## 8. Pricing Adjustments — Mobile & Online Notary
+
+**What**: Update platform_settings with market-accurate pricing using SignNow's pay-as-you-go model for RON and fair mileage-based pricing for mobile.
+
+**Database updates** (via insert tool, not migration):
+| Setting Key | Current | New Value | Rationale |
+|---|---|---|---|
+| `base_fee_per_signature` | 10 | 5 | Ohio statutory max per ORC §147.08 |
+| `ron_platform_fee` | 25 | 25 | SignNow pay-as-you-go session fee |
+| `kba_fee` | 10 | 15 | KBA credential analysis cost |
+| `travel_fee_minimum` | 25 | 35 | Minimum mobile dispatch fee (market rate) |
+| `travel_fee_per_mile` | (missing) | 0.70 | IRS 2025 mileage rate ($0.70/mi) |
+| `rush_fee` | (missing) | 50 | Same-day/next-day mobile priority |
+| `after_hours_fee` | (missing) | 35 | Evenings/weekends surcharge |
+| `apostille_fee` | 50 | 75 | SOS filing + processing + return shipping |
+| `witness_fee` | 10 | 15 | Per-witness appearance fee |
+| `mobile_base_service_fee` | (new) | 75 | Base fee for mobile notary visit (includes first 2 seals) |
+| `ron_base_service_fee` | (new) | 25 | Base fee for RON session (includes first seal) |
+| `printing_fee_per_page` | (new) | 0.50 | Document printing at mobile signings |
+| `scan_back_fee` | (new) | 10 | Scan and email documents back after mobile signing |
+
+Also populate missing general settings:
+- `site_name` = "NotarDex"
+- `site_tagline` = "Professional Ohio Notary Services"
+- `support_email` = "shane@notardex.com"  
+- `support_phone` = "(614) 300-6890"
+- `copyright_text` = "© 2026 NotarDex. All rights reserved."
+- `booking_enabled` = "true"
+- `registration_enabled` = "true"
+- `chat_enabled` = "true"
+- `ai_tools_enabled` = "true"
+- Other feature toggles defaulting to "true"
+
+---
+
+## Technical Details
+
+### New Database Tables
+1. `signnow_documents` — tracks SignNow document lifecycle per appointment
+2. Migration adds `source_platform`, `external_order_id`, `external_payment_status`, `external_payment_amount` columns to `service_requests`
+
+### New/Modified Components
+- `src/hooks/useSettings.ts` — global settings provider hook
+- `src/components/ExternalOrderDialog.tsx` — manual order entry form
+- `src/components/SignNowStatusPanel.tsx` — document status timeline
+- `src/components/AnatomyDiagram.tsx` — annotated document diagrams
+- `src/components/ProcessGuide.tsx` — printable mobile/RON process guide
+
+### New Static Assets
+- `public/images/documents/` — 8-10 example document PNGs generated programmatically
+
+### Modified Files (key ones)
+- `AdminServiceRequests.tsx` — external order entry
+- `AdminResources.tsx` — anatomy diagrams, process guides, link audit
+- `Resources.tsx` — document examples section
+- `NotaryGuide.tsx` — inline example images
+- `NotaryCertificates.tsx` — completed certificate examples
+- `Footer.tsx` — settings consumption
+- `signnow-webhook/index.ts` — enhanced event tracking
+- ~15 components updated for settings sync
+
+### Edge Function Updates
+- `signnow-webhook` — capture email events and document status changes
+- `signnow` — add document status query endpoint
+
+### Estimated Scope
+- 2 database migrations
+- ~15 settings data inserts
+- ~8 new components
+- ~20 file modifications
+- 8-10 generated document images
 
