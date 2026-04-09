@@ -6,9 +6,10 @@ import { BRAND } from "@/lib/brand";
 interface FooterProps {
   phone?: string;
   email?: string;
+  copyrightText?: string;
 }
 
-export function Footer({ phone = BRAND.defaultPhone, email = BRAND.defaultEmail }: FooterProps) {
+export function Footer({ phone = BRAND.defaultPhone, email = BRAND.defaultEmail, copyrightText }: FooterProps) {
   return (
     <footer className="border-t border-sidebar-border bg-[hsl(222_47%_4%)] text-slate-400" role="contentinfo" aria-label="Site footer">
       <div className="container mx-auto px-4 py-12">
@@ -77,7 +78,7 @@ export function Footer({ phone = BRAND.defaultPhone, email = BRAND.defaultEmail 
         </div>
 
         <div className="mt-6 border-t border-slate-800 pt-4 text-center text-sm flex flex-col md:flex-row justify-between items-center">
-          <p>{BRAND.footerText(new Date().getFullYear())}</p>
+          <p>{copyrightText || BRAND.footerText(new Date().getFullYear())}</p>
           <div className="flex items-center gap-4 mt-4 md:mt-0">
             <span className="flex items-center gap-1 text-xs"><ShieldCheck className="w-4 h-4 text-emerald-500" /> SOC 2 Aligned</span>
             <span className="flex items-center gap-1 text-xs"><Lock className="w-4 h-4 text-emerald-500" /> AES-256 / TLS 1.2+</span>
