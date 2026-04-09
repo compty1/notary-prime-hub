@@ -195,3 +195,59 @@ export default function BookingReviewStep(props: ReviewStepProps) {
     </div>
   );
 }
+
+/** Inline promo code validator (MED-002) */
+function PromoCodeInput() {
+  const [code, setCode] = useState("");
+  const [checking, setChecking] = useState(false);
+  const [result, setResult] = useState<{ valid: boolean; discount?: number; description?: string } | null>(null);
+
+  const checkPromo = async () => {
+    if (!code.trim()) return;
+    setChecking(true);
+    setResult(null);
+    const { data, error } = await supabase
+      .from("promo_codes")
+      .select("discount_percent, description, is_active, max_uses, current_uses, expires_at")
+      .ilike("code", code.trim())
+      .single();
+
+    if (error || !data) {
+      setResult({ valid: false });
+    } else if (!data.is_active) {
+      setResult({ valid: false });
+    } else if (data.expires_at && new Date(data.expires_at) < new Date()) {
+      setResult({ valid: false });
+    } else if (data.max_uses && data.current_uses >= data.max_uses) {
+      setResult({ valid: false });
+    } else {
+      setResult({ valid: true, discount: data.discount_percent, description: data.description });
+    }
+    setChecking(false);
+  };
+
+  return (
+    <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-2">
+      <Label className="text-xs flex items-center gap-1"><Tag className="h-3 w-3" /> Promo Code</Label>
+      <div className="flex gap-2">
+        <Input
+          value={code}
+          onChange={(e) => { setCode(e.target.value.toUpperCase()); setResult(null); }}
+          placeholder="Enter code"
+          className="text-xs h-8"
+        />
+        <Button size="sm" variant="outline" onClick={checkPromo} disabled={checking || !code.trim()} className="h-8 text-xs">
+          {checking ? <Loader2 className="h-3 w-3 animate-spin" /> : "Apply"}
+        </Button>
+      </div>
+      {result && !result.valid && (
+        <p className="text-xs text-destructive">Invalid or expired promo code.</p>
+      )}
+      {result?.valid && (
+        <p className="text-xs text-primary flex items-center gap-1">
+          <CheckCircle className="h-3 w-3" /> {result.discount}% discount applied{result.description ? ` — ${result.description}` : ""}
+        </p>
+      )}
+    </div>
+  );
+}
