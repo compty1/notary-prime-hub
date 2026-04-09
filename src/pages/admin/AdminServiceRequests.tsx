@@ -248,6 +248,18 @@ export default function AdminServiceRequests() {
             ))}
           </SelectContent>
         </Select>
+        <Select value={platformFilter} onValueChange={setPlatformFilter}>
+          <SelectTrigger className="w-[140px]"><SelectValue placeholder="Platform" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Platforms</SelectItem>
+            <SelectItem value="notardex">NotarDex</SelectItem>
+            <SelectItem value="fiverr">Fiverr</SelectItem>
+            <SelectItem value="upwork">Upwork</SelectItem>
+            <SelectItem value="direct">Direct</SelectItem>
+            <SelectItem value="thumbtack">Thumbtack</SelectItem>
+            <SelectItem value="other">Other</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Table */}
@@ -271,7 +283,14 @@ export default function AdminServiceRequests() {
             <TableBody>
               {filtered.map(req => (
                 <TableRow key={req.id} className="cursor-pointer hover:bg-muted/50" onClick={() => openDetail(req)}>
-                  <TableCell className="font-medium">{req.service_name}</TableCell>
+                  <TableCell className="font-medium">
+                    <div className="flex items-center gap-2">
+                      {req.service_name}
+                      {req.source_platform && req.source_platform !== "notardex" && (
+                        <Badge variant="outline" className="text-[10px] gap-1"><Globe className="h-3 w-3" />{req.source_platform}</Badge>
+                      )}
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <User className="h-3.5 w-3.5 text-muted-foreground" />
