@@ -330,6 +330,7 @@ export default function BookAppointment() {
     })();
   }, [searchParams]);
 
+  useEffect(() => {
     if (!date) return;
     setLoadingSlots(true);
     const selectedDate = new Date(date + "T00:00:00");
