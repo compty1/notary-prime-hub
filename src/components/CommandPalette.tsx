@@ -91,12 +91,26 @@ export function CommandPalette() {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
+  // #3435: Recent commands
+  const [recentPaths, setRecentPaths] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem("cmd_palette_recent") || "[]"); } catch { return []; }
+  });
+
   const go = useCallback((path: string) => {
     navigate(path);
     setOpen(false);
+    setRecentPaths(prev => {
+      const updated = [path, ...prev.filter(p => p !== path)].slice(0, 5);
+      localStorage.setItem("cmd_palette_recent", JSON.stringify(updated));
+      return updated;
+    });
   }, [navigate]);
 
   const openPalette = useCallback(() => setOpen(true), []);
+
+  // Build recent items from all route arrays
+  const allRoutes = [...publicRoutes, ...portalRoutes, ...adminRoutes];
+  const recentItems = recentPaths.map(p => allRoutes.find(r => r.path === p)).filter(Boolean) as RouteItem[];
 
   return (
     <>
@@ -112,6 +126,18 @@ export function CommandPalette() {
       <CommandInput placeholder="Search pages, tools, actions..." />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
+
+        {/* #3435: Recent commands */}
+        {recentItems.length > 0 && (
+          <CommandGroup heading="Recent">
+            {recentItems.map((r) => (
+              <CommandItem key={`recent-${r.path}`} onSelect={() => go(r.path)} keywords={[r.keywords || ""]}>
+                <r.icon className="mr-2 h-4 w-4" />
+                {r.label}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        )}
 
         <CommandGroup heading="Pages">
           {publicRoutes.map((r) => (
