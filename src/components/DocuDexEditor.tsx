@@ -807,6 +807,40 @@ export function DocuDexEditor({
     announce("Document exported as TXT");
   };
 
+  // #82: Export as Markdown
+  const exportMarkdown = () => {
+    const md = pages.map(p => {
+      // Simple HTML to Markdown conversion
+      let text = p.html;
+      text = text.replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n');
+      text = text.replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n');
+      text = text.replace(/<h3[^>]*>(.*?)<\/h3>/gi, '### $1\n');
+      text = text.replace(/<h4[^>]*>(.*?)<\/h4>/gi, '#### $1\n');
+      text = text.replace(/<strong[^>]*>(.*?)<\/strong>/gi, '**$1**');
+      text = text.replace(/<b[^>]*>(.*?)<\/b>/gi, '**$1**');
+      text = text.replace(/<em[^>]*>(.*?)<\/em>/gi, '*$1*');
+      text = text.replace(/<i[^>]*>(.*?)<\/i>/gi, '*$1*');
+      text = text.replace(/<u[^>]*>(.*?)<\/u>/gi, '$1');
+      text = text.replace(/<li[^>]*>(.*?)<\/li>/gi, '- $1\n');
+      text = text.replace(/<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi, '[$2]($1)');
+      text = text.replace(/<blockquote[^>]*>(.*?)<\/blockquote>/gi, '> $1\n');
+      text = text.replace(/<hr\s*\/?>/gi, '\n---\n');
+      text = text.replace(/<br\s*\/?>/gi, '\n');
+      text = text.replace(/<p[^>]*>(.*?)<\/p>/gi, '$1\n\n');
+      text = text.replace(/<[^>]+>/g, '');
+      text = text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ');
+      return text.trim();
+    }).join('\n\n---\n\n');
+    const blob = new Blob([md], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${title || "DocuDex-Document"}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+    announce("Document exported as Markdown");
+  };
+
   // Export as HTML
   const exportHtml = () => {
     const allHtml = pages.map(p => p.html).join("\n<!-- page-break -->\n");
@@ -852,10 +886,14 @@ export function DocuDexEditor({
     }
   };
 
-  // Context menu handler (UX-001)
+  // Context menu handler (UX-001) — #10: Clamp to viewport bounds
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
-    setContextMenu({ x: e.clientX, y: e.clientY });
+    const menuWidth = 180;
+    const menuHeight = 300;
+    const x = Math.min(e.clientX, window.innerWidth - menuWidth);
+    const y = Math.min(e.clientY, window.innerHeight - menuHeight);
+    setContextMenu({ x, y });
   };
 
   const totalChars = charCount(pages);
@@ -926,6 +964,9 @@ export function DocuDexEditor({
             </Button>
             <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 hidden md:flex" onClick={exportTxt}>
               TXT
+            </Button>
+            <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 hidden lg:flex" onClick={exportMarkdown}>
+              MD
             </Button>
             <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 hidden md:flex" onClick={() => setShowPrintPreview(true)}>
               <Eye className="h-3.5 w-3.5" /> <span className="hidden lg:inline">Preview</span>
@@ -1119,7 +1160,7 @@ export function DocuDexEditor({
                 </div>
 
                 {/* Editor Canvas (DM-001: dark mode aware, OC-006: watermark, PM-005: header/footer) */}
-                <div style={{ transform: `scale(${zoom / 100})`, transformOrigin: "top center" }}>
+                <div style={{ zoom: `${zoom}%` }}>
                   <div
                     className={cn(
                       "docudex-canvas shadow-lg rounded border border-border/50 relative",
@@ -1133,10 +1174,10 @@ export function DocuDexEditor({
                       padding: `${pageMargins.top}px ${pageMargins.right}px ${pageMargins.bottom}px ${pageMargins.left}px`,
                     }}
                   >
-                    {/* Watermark overlay (OC-006) */}
+                    {/* Watermark overlay (OC-006) — #13: pointer-events:none to prevent intercept */}
                     {watermark !== "none" && (
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10" style={{ opacity: 0.06 }}>
-                        <span className="text-7xl font-bold transform -rotate-45 select-none" style={{ color: pageBgColor === "#1E293B" || pageBgColor === "#111827" ? "#fff" : "#000" }}>
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-10" style={{ opacity: 0.06 }} aria-hidden="true">
+                        <span className="text-7xl font-bold transform -rotate-45 select-none pointer-events-none" style={{ color: pageBgColor === "#1E293B" || pageBgColor === "#111827" ? "#fff" : "#000" }}>
                           {watermark.toUpperCase()}
                         </span>
                       </div>
@@ -1289,17 +1330,18 @@ export function DocuDexEditor({
         </div>
 
         {/* ═══ STATUS BAR (ST-001 to ST-005) ═══ */}
-        <div className="flex items-center justify-between border-t border-border bg-card px-2 md:px-4 py-1.5 shrink-0 overflow-x-auto" role="status" aria-live="polite">
-          <div className="flex items-center gap-3 md:gap-5 text-[10px] text-muted-foreground whitespace-nowrap">
+        <div className="flex items-center justify-between border-t border-border bg-card px-2 md:px-4 py-1.5 shrink-0 overflow-x-auto" role="status">
+          {/* #121: aria-live for word/char count */}
+          <div className="flex items-center gap-3 md:gap-5 text-[10px] text-muted-foreground whitespace-nowrap" aria-live="polite" aria-atomic="true">
             <span className="font-medium">{pages.length} page{pages.length !== 1 ? "s" : ""}</span>
-            <span>{totalWords.toLocaleString()} words</span>
+            <span aria-label={`${totalWords} words`}>{totalWords.toLocaleString()} words</span>
             {wordGoalProgress !== null && (
               <span className={wordGoalProgress >= 100 ? "text-green-600" : ""}>
                 Goal: {wordGoalProgress}%
               </span>
             )}
             <span className="hidden md:inline">{readTime(totalWords)} read</span>
-            <span className="hidden md:inline">{totalChars.toLocaleString()} / {maxChars.toLocaleString()} chars</span>
+            <span className="hidden md:inline" aria-label={`${totalChars} of ${maxChars} characters`}>{totalChars.toLocaleString()} / {maxChars.toLocaleString()} chars</span>
             <span>Pg {activePageIdx + 1}/{pages.length}</span>
             <span className="hidden md:inline">Ln {cursorPosition.line}, Col {cursorPosition.col}</span>
             <span className="hidden lg:inline" title={`Flesch-Kincaid: ${readScore}`}>Readability: {readLevel}</span>

@@ -70,7 +70,9 @@ export function DocuDexFindReplace({ editor, onClose, pageContents }: FindReplac
     }
   };
 
-  const replaceAll = () => {
+  const replaceAll = (e?: React.MouseEvent) => {
+    // #6: stopPropagation to prevent editor from stealing focus
+    e?.stopPropagation();
     if (!editor || !query) return;
     const regex = buildRegex(query);
     if (!regex) return;
@@ -101,6 +103,11 @@ export function DocuDexFindReplace({ editor, onClose, pageContents }: FindReplac
     }
     setMatchCount(0);
     setCurrentMatch(0);
+    // #6: Refocus search input after Replace All
+    setTimeout(() => {
+      const searchInput = document.querySelector<HTMLInputElement>('[data-docudex-find-input]');
+      searchInput?.focus();
+    }, 50);
   };
 
   return (
@@ -113,6 +120,7 @@ export function DocuDexFindReplace({ editor, onClose, pageContents }: FindReplac
           onChange={e => handleFind(e.target.value)}
           onKeyDown={e => { if (e.key === "Escape") onClose(); }}
           autoFocus
+          data-docudex-find-input
         />
         <span className="text-[10px] text-muted-foreground w-16 text-center shrink-0">
           {matchCount > 0 ? `${currentMatch}/${matchCount}` : "No results"}
@@ -126,7 +134,7 @@ export function DocuDexFindReplace({ editor, onClose, pageContents }: FindReplac
         <Button variant="outline" size="sm" className="h-7 text-xs px-2" onClick={replaceOne} disabled={matchCount === 0}>
           Replace
         </Button>
-        <Button variant="outline" size="sm" className="h-7 text-xs px-2" onClick={replaceAll} disabled={matchCount === 0}>
+        <Button variant="outline" size="sm" className="h-7 text-xs px-2" onClick={(e) => replaceAll(e)} disabled={matchCount === 0}>
           All
         </Button>
         {/* Regex toggle (FR-003) */}

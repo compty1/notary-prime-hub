@@ -1,30 +1,65 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, Monitor } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+type Theme = "light" | "dark" | "system";
 
 export function DarkModeToggle({ className = "" }: { className?: string }) {
-  const [dark, setDark] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return localStorage.getItem("theme") === "dark";
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window === "undefined") return "system";
+    return (localStorage.getItem("theme") as Theme) || "system";
   });
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-    localStorage.setItem("theme", dark ? "dark" : "light");
-  }, [dark]);
+    const applyTheme = () => {
+      const isDark =
+        theme === "dark" ||
+        (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+      document.documentElement.classList.toggle("dark", isDark);
+    };
+
+    applyTheme();
+    localStorage.setItem("theme", theme);
+
+    // Listen for OS preference changes when in system mode
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = () => { if (theme === "system") applyTheme(); };
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, [theme]);
+
+  const icon = theme === "dark" ? <Moon className="h-4 w-4" /> : theme === "light" ? <Sun className="h-4 w-4" /> : <Monitor className="h-4 w-4" />;
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      className={cn("relative overflow-hidden", className)}
-      onClick={() => setDark(!dark)}
-      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-      aria-pressed={dark}
-    >
-      <Sun className={cn("h-4 w-4 transition-all duration-300", dark ? "rotate-0 scale-100" : "rotate-90 scale-0")} />
-      <Moon className={cn("absolute h-4 w-4 transition-all duration-300", dark ? "-rotate-90 scale-0" : "rotate-0 scale-100")} />
-    </Button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn("relative", className)}
+          aria-label={`Theme: ${theme}`}
+        >
+          {icon}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => setTheme("light")} className="gap-2">
+          <Sun className="h-4 w-4" /> Light
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("dark")} className="gap-2">
+          <Moon className="h-4 w-4" /> Dark
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("system")} className="gap-2">
+          <Monitor className="h-4 w-4" /> System
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

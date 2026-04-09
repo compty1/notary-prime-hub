@@ -1,9 +1,13 @@
-import { Shield, ExternalLink } from "lucide-react";
+import { useState } from "react";
+import { Shield, ExternalLink, X } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { safeGetItem, safeSetItem } from "@/lib/safeStorage";
 
 interface ComplianceBannerProps {
   variant?: "ron" | "journal" | "recording" | "signer-location" | "commission";
   compact?: boolean;
+  dismissible?: boolean;
 }
 
 const BANNERS: Record<string, { title: string; text: string; link?: string }> = {
@@ -31,21 +35,37 @@ const BANNERS: Record<string, { title: string; text: string; link?: string }> = 
   },
 };
 
-export function ComplianceBanner({ variant = "ron", compact = false }: ComplianceBannerProps) {
+export function ComplianceBanner({ variant = "ron", compact = false, dismissible = false }: ComplianceBannerProps) {
+  const storageKey = `compliance_banner_dismissed_${variant}`;
+  const [dismissed, setDismissed] = useState(() => {
+    if (!dismissible) return false;
+    return safeGetItem(storageKey) === "true";
+  });
+
   const banner = BANNERS[variant];
-  if (!banner) return null;
+  if (!banner || dismissed) return null;
+
+  const handleDismiss = (permanent: boolean) => {
+    setDismissed(true);
+    if (permanent) safeSetItem(storageKey, "true");
+  };
 
   if (compact) {
     return (
       <div className="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2">
         <Shield className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-        <p className="text-xs text-muted-foreground">{banner.text}</p>
+        <p className="text-xs text-muted-foreground flex-1">{banner.text}</p>
+        {dismissible && (
+          <button onClick={() => handleDismiss(false)} className="text-muted-foreground hover:text-foreground shrink-0" aria-label="Dismiss">
+            <X className="h-3 w-3" />
+          </button>
+        )}
       </div>
     );
   }
 
   return (
-    <Alert className="border-primary/20 bg-primary/5">
+    <Alert className="border-primary/20 bg-primary/5 relative">
       <Shield className="h-4 w-4 text-primary" />
       <AlertTitle className="text-sm font-semibold">{banner.title}</AlertTitle>
       <AlertDescription className="text-xs text-muted-foreground mt-1">
@@ -59,6 +79,13 @@ export function ComplianceBanner({ variant = "ron", compact = false }: Complianc
           >
             View statute <ExternalLink className="h-3 w-3" />
           </a>
+        )}
+        {/* #3451: Dismissible with don't-show-again */}
+        {dismissible && (
+          <span className="ml-3 inline-flex items-center gap-2">
+            <Button variant="ghost" size="sm" className="h-5 text-[10px] px-1.5" onClick={() => handleDismiss(false)}>Dismiss</Button>
+            <Button variant="ghost" size="sm" className="h-5 text-[10px] px-1.5" onClick={() => handleDismiss(true)}>Don't show again</Button>
+          </span>
         )}
       </AlertDescription>
     </Alert>
