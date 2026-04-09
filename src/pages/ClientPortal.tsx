@@ -370,8 +370,8 @@ export default function ClientPortal() {
           </header>
 
           {/* Main Content */}
-          <main className="p-6 bg-[#f8f9fa] min-h-[calc(100vh-5rem)]">
-            <div className="max-w-6xl mx-auto space-y-6">
+          <main className="p-6 bg-[#f8f9fa] min-h-[calc(100vh-5rem)]" aria-live="polite">
+            <div className="max-w-6xl mx-auto space-y-6" role="region" aria-label={`${activeSection} section`}>
 
           {/* OVERVIEW */}
           {activeSection === "overview" && (
