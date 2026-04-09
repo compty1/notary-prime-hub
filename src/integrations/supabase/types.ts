@@ -2835,6 +2835,9 @@ export type Database = {
           created_at: string
           deliverable_url: string | null
           due_date: string | null
+          external_order_id: string | null
+          external_payment_amount: number | null
+          external_payment_status: string | null
           id: string
           intake_data: Json
           notes: string | null
@@ -2842,6 +2845,7 @@ export type Database = {
           reference_number: string | null
           service_name: string
           sla_deadline: string | null
+          source_platform: string
           status: string
           updated_at: string
         }
@@ -2852,6 +2856,9 @@ export type Database = {
           created_at?: string
           deliverable_url?: string | null
           due_date?: string | null
+          external_order_id?: string | null
+          external_payment_amount?: number | null
+          external_payment_status?: string | null
           id?: string
           intake_data?: Json
           notes?: string | null
@@ -2859,6 +2866,7 @@ export type Database = {
           reference_number?: string | null
           service_name: string
           sla_deadline?: string | null
+          source_platform?: string
           status?: string
           updated_at?: string
         }
@@ -2869,6 +2877,9 @@ export type Database = {
           created_at?: string
           deliverable_url?: string | null
           due_date?: string | null
+          external_order_id?: string | null
+          external_payment_amount?: number | null
+          external_payment_status?: string | null
           id?: string
           intake_data?: Json
           notes?: string | null
@@ -2876,6 +2887,7 @@ export type Database = {
           reference_number?: string | null
           service_name?: string
           sla_deadline?: string | null
+          source_platform?: string
           status?: string
           updated_at?: string
         }
@@ -3139,6 +3151,59 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "session_tracking_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      signnow_documents: {
+        Row: {
+          appointment_id: string | null
+          completed_at: string | null
+          created_at: string
+          document_name: string
+          id: string
+          invite_sent_at: string | null
+          signed_at: string | null
+          signnow_document_id: string
+          signnow_emails_sent: Json
+          status: string
+          updated_at: string
+          viewed_at: string | null
+        }
+        Insert: {
+          appointment_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          document_name?: string
+          id?: string
+          invite_sent_at?: string | null
+          signed_at?: string | null
+          signnow_document_id: string
+          signnow_emails_sent?: Json
+          status?: string
+          updated_at?: string
+          viewed_at?: string | null
+        }
+        Update: {
+          appointment_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          document_name?: string
+          id?: string
+          invite_sent_at?: string | null
+          signed_at?: string | null
+          signnow_document_id?: string
+          signnow_emails_sent?: Json
+          status?: string
+          updated_at?: string
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "signnow_documents_appointment_id_fkey"
             columns: ["appointment_id"]
             isOneToOne: false
             referencedRelation: "appointments"
