@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Download, FileText, Scale, Shield, Stamp, PenTool, AlertTriangle, BookOpen } from "lucide-react";
+import { Download, FileText, Scale, Shield, Stamp, PenTool, AlertTriangle, BookOpen, Image } from "lucide-react";
+import { DOCUMENT_ANATOMY } from "@/components/AnatomyDiagram";
 
 const certificates = [
   {
@@ -497,6 +498,21 @@ export default function NotaryCertificates() {
                       <Download className="mr-2 h-4 w-4" /> Download PDF
                     </Button>
                   </div>
+
+                  {/* Example Document Image */}
+                  {(() => {
+                    const anatomyKey = activeCert.id === "acknowledgment" ? "acknowledgment" : activeCert.id === "jurat" ? "jurat" : activeCert.id === "copy-certification" ? "copy_certification" : activeCert.id === "poa" ? "poa" : activeCert.id === "corporate" ? "corporate" : activeCert.id === "signature-by-mark" ? "signature_by_mark" : null;
+                    const anatomy = anatomyKey ? DOCUMENT_ANATOMY[anatomyKey] : null;
+                    if (!anatomy) return null;
+                    return (
+                      <div className="mb-6 rounded-lg border border-border/50 overflow-hidden">
+                        <div className="bg-muted/30 px-4 py-2 flex items-center gap-2 text-sm font-medium">
+                          <Image className="h-4 w-4 text-primary" /> Example Document
+                        </div>
+                        <img src={anatomy.image} alt={`${activeCert.title} example`} className="w-full max-w-md mx-auto" loading="lazy" />
+                      </div>
+                    );
+                  })()}
 
                   <div ref={printRef} className="certificate-content prose prose-sm dark:prose-invert max-w-none">
                     {/* Render markdown-like content as structured HTML */}

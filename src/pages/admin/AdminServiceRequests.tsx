@@ -12,8 +12,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Filter, Clock, CheckCircle, AlertTriangle, Loader2, User, FileText, Upload, Download } from "lucide-react";
+import { Search, Filter, Clock, CheckCircle, AlertTriangle, Loader2, User, FileText, Upload, Download, PlusCircle, Globe } from "lucide-react";
 import { logAuditEvent } from "@/lib/auditLog";
+import { ExternalOrderDialog } from "@/components/ExternalOrderDialog";
 
 const STATUS_OPTIONS = ["submitted", "in_progress", "awaiting_client", "completed", "cancelled"];
 const PRIORITY_OPTIONS = ["low", "normal", "high", "urgent"];
@@ -55,6 +56,8 @@ export default function AdminServiceRequests() {
   const [teamProfiles, setTeamProfiles] = useState<any[]>([]);
   const [deliverableFile, setDeliverableFile] = useState<File | null>(null);
   const [uploadingDeliverable, setUploadingDeliverable] = useState(false);
+  const [externalOrderOpen, setExternalOrderOpen] = useState(false);
+  const [platformFilter, setPlatformFilter] = useState("all");
 
   useEffect(() => {
     fetchRequests();
@@ -167,6 +170,7 @@ export default function AdminServiceRequests() {
     if (priorityFilter !== "all" && r.priority !== priorityFilter) return false;
     if (assignedFilter === "unassigned" && r.assigned_to) return false;
     if (assignedFilter !== "all" && assignedFilter !== "unassigned" && r.assigned_to !== assignedFilter) return false;
+    if (platformFilter !== "all" && (r.source_platform || "notardex") !== platformFilter) return false;
     if (search) {
       const s = search.toLowerCase();
       const clientName = profiles[r.client_id]?.full_name?.toLowerCase() || "";
@@ -189,6 +193,9 @@ export default function AdminServiceRequests() {
           <h2 className="font-sans text-2xl font-bold text-foreground">Service Requests</h2>
           <p className="text-sm text-muted-foreground">Manage all client service requests across categories</p>
         </div>
+        <Button onClick={() => setExternalOrderOpen(true)} className="gap-2">
+          <PlusCircle className="h-4 w-4" /> External Order
+        </Button>
       </div>
 
       {/* Stats */}
@@ -241,6 +248,18 @@ export default function AdminServiceRequests() {
             ))}
           </SelectContent>
         </Select>
+        <Select value={platformFilter} onValueChange={setPlatformFilter}>
+          <SelectTrigger className="w-[140px]"><SelectValue placeholder="Platform" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Platforms</SelectItem>
+            <SelectItem value="notardex">NotarDex</SelectItem>
+            <SelectItem value="fiverr">Fiverr</SelectItem>
+            <SelectItem value="upwork">Upwork</SelectItem>
+            <SelectItem value="direct">Direct</SelectItem>
+            <SelectItem value="thumbtack">Thumbtack</SelectItem>
+            <SelectItem value="other">Other</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Table */}
@@ -264,7 +283,14 @@ export default function AdminServiceRequests() {
             <TableBody>
               {filtered.map(req => (
                 <TableRow key={req.id} className="cursor-pointer hover:bg-muted/50" onClick={() => openDetail(req)}>
-                  <TableCell className="font-medium">{req.service_name}</TableCell>
+                  <TableCell className="font-medium">
+                    <div className="flex items-center gap-2">
+                      {req.service_name}
+                      {req.source_platform && req.source_platform !== "notardex" && (
+                        <Badge variant="outline" className="text-[10px] gap-1"><Globe className="h-3 w-3" />{req.source_platform}</Badge>
+                      )}
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <User className="h-3.5 w-3.5 text-muted-foreground" />
@@ -382,6 +408,12 @@ export default function AdminServiceRequests() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ExternalOrderDialog
+        open={externalOrderOpen}
+        onOpenChange={setExternalOrderOpen}
+        onCreated={fetchRequests}
+      />
     </div>
   );
 }
