@@ -614,7 +614,17 @@ export default function NotaryGuide() {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* Image Lightbox */}
+      <Dialog open={!!lightboxImage} onOpenChange={() => setLightboxImage(null)}>
+        <DialogContent className="max-w-3xl p-2">
+          {lightboxImage && (
+            <div>
+              <img src={lightboxImage.src} alt={lightboxImage.label} className="w-full rounded-lg" />
+              <p className="text-center text-sm text-muted-foreground mt-2 pb-2">{lightboxImage.label}</p>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </PageShell>
   );
 }
