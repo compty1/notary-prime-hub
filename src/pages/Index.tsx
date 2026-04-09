@@ -1,5 +1,5 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
-import { ORGANIZATION_JSONLD } from "@/lib/seoHelpers";
+import { ORGANIZATION_JSONLD, reviewAggregateJsonLd, setOpenGraphMeta } from "@/lib/seoHelpers";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
