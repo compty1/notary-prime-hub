@@ -215,7 +215,10 @@ export default function AdminOverview() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-black text-[#212529]">Dashboard Overview</h1>
+        <div>
+          <p className="text-sm text-muted-foreground">{greeting}, Admin 👋</p>
+          <h1 className="text-3xl font-black text-foreground">Dashboard Overview</h1>
+        </div>
         <Button variant="ghost" size="sm" onClick={fetchData} className="rounded-xl"><RefreshCw className="mr-1 h-3 w-3" /> Refresh</Button>
       </div>
 
