@@ -36,6 +36,7 @@ export function NotaryAttestationPanel({
   recordingConsent,
   recordingConsentAt,
   sessionUniqueId,
+  sessionId,
   onAttestationComplete,
   disabled,
 }: NotaryAttestationPanelProps) {
