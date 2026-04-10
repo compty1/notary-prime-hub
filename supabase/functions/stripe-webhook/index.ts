@@ -11,6 +11,7 @@ const PaymentMetadataSchema = z.object({
   payment_id: z.string().uuid().optional(),
   appointment_id: z.string().uuid().optional(),
   supabase_user_id: z.string().uuid().optional(),
+  referral_professional_id: z.string().uuid().optional(),
 }).passthrough();
 
 Deno.serve(async (req) => {
@@ -72,17 +73,20 @@ Deno.serve(async (req) => {
         const pi = event.data.object as Stripe.PaymentIntent;
         const metaParsed = PaymentMetadataSchema.safeParse(pi.metadata || {});
         const meta = metaParsed.success ? metaParsed.data : {};
-        const { payment_id: paymentId, appointment_id: appointmentId } = meta;
+        const { payment_id: paymentId, appointment_id: appointmentId, referral_professional_id: referralProfId } = meta;
+
+        const paidUpdate: Record<string, unknown> = {
+          status: "paid",
+          paid_at: new Date().toISOString(),
+          method: "stripe",
+          stripe_payment_intent_id: pi.id,
+        };
+        if (referralProfId) paidUpdate.referral_professional_id = referralProfId;
 
         if (paymentId) {
-          await supabase.from("payments")
-            .update({ status: "paid", paid_at: new Date().toISOString(), method: "stripe", stripe_payment_intent_id: pi.id })
-            .eq("id", paymentId);
+          await supabase.from("payments").update(paidUpdate).eq("id", paymentId);
         } else if (appointmentId) {
-          await supabase.from("payments")
-            .update({ status: "paid", paid_at: new Date().toISOString(), method: "stripe", stripe_payment_intent_id: pi.id })
-            .eq("appointment_id", appointmentId)
-            .eq("status", "pending");
+          await supabase.from("payments").update(paidUpdate).eq("appointment_id", appointmentId).eq("status", "pending");
         }
         break;
       }
