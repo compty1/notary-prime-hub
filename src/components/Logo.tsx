@@ -11,18 +11,15 @@ interface LogoProps {
 }
 
 const sizeMap = {
-  sm: { icon: "h-8 w-8", text: "text-xl", gap: "gap-1.5" },
-  md: { icon: "h-10 w-10", text: "text-2xl", gap: "gap-2" },
-  lg: { icon: "h-14 w-14", text: "text-[32px]", gap: "gap-2.5" },
-  xl: { icon: "h-16 w-16", text: "text-4xl", gap: "gap-3" },
+  sm: { icon: "h-10 w-10", text: "text-xl", gap: "gap-1.5" },
+  md: { icon: "h-12 w-12", text: "text-2xl", gap: "gap-2" },
+  lg: { icon: "h-16 w-16", text: "text-[32px]", gap: "gap-2.5" },
+  xl: { icon: "h-20 w-20", text: "text-4xl", gap: "gap-3" },
 };
 
 export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
   ({ size = "md", showText = false, subtitle, theme, className }, ref) => {
     const s = sizeMap[size];
-
-    const isDark = theme === "dark";
-    const textColor = isDark ? "text-white" : "text-foreground";
 
     return (
       <div
@@ -35,25 +32,10 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
           alt="NotarDex"
           className={cn(s.icon, "object-contain transition-transform group-hover:-translate-y-0.5")}
         />
-
-        {showText && (
-          <div className="flex flex-col">
-            <span
-              className={cn(
-                "font-black tracking-tight leading-none uppercase",
-                s.text,
-                textColor
-              )}
-              style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
-            >
-              NOTAR
-            </span>
-            {subtitle && (
-              <span className="block text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">
-                {subtitle}
-              </span>
-            )}
-          </div>
+        {subtitle && (
+          <span className="block text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            {subtitle}
+          </span>
         )}
       </div>
     );
