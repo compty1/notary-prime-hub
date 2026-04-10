@@ -32,6 +32,7 @@ interface FormEntry {
   certificateText?: string;
   ohioTip?: string;
   exampleImage?: string;
+  anatomyKey?: string;
 }
 
 /** Map form names to example document images */
