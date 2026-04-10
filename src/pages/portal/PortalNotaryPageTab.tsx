@@ -80,6 +80,7 @@ const PROFESSIONAL_TYPES = [
 
 export default function PortalNotaryPageTab() {
   const { user } = useAuth();
+  const { get: getSetting } = useSettings();
   const { toast } = useToast();
   const [page, setPage] = useState<any>(null);
   const [loading, setLoading] = useState(true);
