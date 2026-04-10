@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -45,6 +46,7 @@ export default function AdminProcessFlows() {
   const [loading, setLoading] = useState(true);
   const [editingTemplate, setEditingTemplate] = useState<{ key: string; value: string; scope: string } | null>(null);
   const [saving, setSaving] = useState(false);
+  const [propagateDialog, setPropagateDialog] = useState<{ matchCount: number; resolve: (v: boolean) => void } | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -81,9 +83,9 @@ export default function AdminProcessFlows() {
 
       let propagate = false;
       if (matchingServices.length > 0) {
-        propagate = window.confirm(
-          `${matchingServices.length} service(s) use a matching template key. Apply this update to all of them?`
-        );
+        propagate = await new Promise<boolean>((resolve) => {
+          setPropagateDialog({ matchCount: matchingServices.length, resolve });
+        });
       }
 
       const { error } = await supabase.from("platform_settings").upsert({
@@ -193,6 +195,22 @@ export default function AdminProcessFlows() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Propagate template confirmation */}
+      <AlertDialog open={!!propagateDialog} onOpenChange={(open) => { if (!open && propagateDialog) { propagateDialog.resolve(false); setPropagateDialog(null); } }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Propagate to Services?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {propagateDialog?.matchCount} service(s) use a matching template key. Apply this update to all of them?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => { propagateDialog?.resolve(false); setPropagateDialog(null); }}>No, save globally only</AlertDialogCancel>
+            <AlertDialogAction onClick={() => { propagateDialog?.resolve(true); setPropagateDialog(null); }}>Yes, propagate</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

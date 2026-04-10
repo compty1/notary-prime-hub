@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { User, Phone, MapPin, CheckCircle, ArrowRight, Loader2 } from "lucide-react";
 
 interface OnboardingWizardProps {
-  profile: any;
+  profile: { full_name?: string | null; phone?: string | null; address?: string | null; city?: string | null; state?: string | null; zip_code?: string | null; [key: string]: unknown } | null;
   onComplete: () => void;
 }
 
@@ -20,12 +20,12 @@ export function OnboardingWizard({ profile, onComplete }: OnboardingWizardProps)
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
-    full_name: profile?.full_name || "",
-    phone: profile?.phone || "",
-    address: profile?.address || "",
-    city: profile?.city || "",
-    state: profile?.state || "OH",
-    zip: profile?.zip || "",
+    full_name: String(profile?.full_name || ""),
+    phone: String(profile?.phone || ""),
+    address: String(profile?.address || ""),
+    city: String(profile?.city || ""),
+    state: String(profile?.state || "OH"),
+    zip: String(profile?.zip_code ?? ""),
   });
 
   const steps = [

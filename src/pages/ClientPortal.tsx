@@ -549,29 +549,43 @@ export default function ClientPortal() {
 
           {activeSection === "apostille" && (
             <div className="space-y-6">
-            <h2 className="text-xl font-black text-[#212529]">Apostille Requests</h2>
-            <Card className="rounded-[24px] border-gray-100 shadow-sm">
+            <h2 className="text-xl font-black text-foreground">Apostille Requests</h2>
+            <Card className="rounded-[24px] border-border shadow-sm">
               <CardContent className="p-6 space-y-4">
-                <h3 className="text-sm font-black text-[#212529]">Request New Apostille</h3>
-                <div><Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Document Description *</Label><Input value={apostilleForm.document_description} onChange={e => setApostilleForm({ ...apostilleForm, document_description: e.target.value })} placeholder="e.g. Birth Certificate" className="bg-[#f8f9fa] border-none rounded-xl mt-1" /></div>
+                <h3 className="text-sm font-black text-foreground">Request New Apostille</h3>
+                <div><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Document Description *</Label><Input value={apostilleForm.document_description} onChange={e => setApostilleForm({ ...apostilleForm, document_description: e.target.value })} placeholder="e.g. Birth Certificate" className="bg-muted border-none rounded-xl mt-1" /></div>
                 <div className="grid grid-cols-2 gap-3">
-                  <div><Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Destination Country</Label><Input value={apostilleForm.destination_country} onChange={e => setApostilleForm({ ...apostilleForm, destination_country: e.target.value })} placeholder="e.g. Germany" className="bg-[#f8f9fa] border-none rounded-xl mt-1" /></div>
-                  <div><Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Number of Documents</Label><Input type="number" min="1" max="50" value={apostilleForm.document_count} onChange={e => setApostilleForm({ ...apostilleForm, document_count: e.target.value })} className="bg-[#f8f9fa] border-none rounded-xl mt-1" /></div>
+                  <div><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Destination Country</Label><Input value={apostilleForm.destination_country} onChange={e => setApostilleForm({ ...apostilleForm, destination_country: e.target.value })} placeholder="e.g. Germany" className="bg-muted border-none rounded-xl mt-1" /></div>
+                  <div><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Number of Documents</Label><Input type="number" min="1" max="50" value={apostilleForm.document_count} onChange={e => setApostilleForm({ ...apostilleForm, document_count: e.target.value })} className="bg-muted border-none rounded-xl mt-1" /></div>
                 </div>
                 <div><Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Notes (optional)</Label><Textarea value={apostilleForm.notes} onChange={e => setApostilleForm({ ...apostilleForm, notes: e.target.value })} rows={2} placeholder="Urgency, special instructions" maxLength={500} className="bg-[#f8f9fa] border-none rounded-xl mt-1" /></div>
-                <Button disabled={!apostilleForm.document_description.trim() || submittingApostille} onClick={async () => {
-                  if (!user) return;
-                  const confirmed = window.confirm(`Submit apostille request for "${apostilleForm.document_description}"${apostilleForm.destination_country ? ` to ${apostilleForm.destination_country}` : ""}? This will create a new service request.`);
-                  if (!confirmed) return;
-                  setSubmittingApostille(true);
-                  const { data: newReq, error } = await supabase.from("apostille_requests").insert({ client_id: user.id, document_description: apostilleForm.document_description.trim(), notes: apostilleForm.notes.trim() || null, destination_country: apostilleForm.destination_country.trim() || null, document_count: parseInt(apostilleForm.document_count) || 1 }).select().single();
-                  if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-                  else if (newReq) { toast({ title: "Apostille request submitted" }); setApostilleRequests(prev => [newReq, ...prev]); setApostilleForm({ document_description: "", notes: "", destination_country: "", document_count: "1" }); }
-                  setSubmittingApostille(false);
-                }} className="rounded-xl font-bold bg-[#212529] text-white shadow-block">
+                <AlertDialog>
+                <AlertDialogTrigger asChild>
+                <Button disabled={!apostilleForm.document_description.trim() || submittingApostille} className="rounded-xl font-bold bg-foreground text-background shadow-block">
                   {submittingApostille ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Package className="mr-1 h-4 w-4" />} Submit Request
                 </Button>
-              </CardContent>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Confirm Apostille Request</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Submit apostille request for &quot;{apostilleForm.document_description}&quot;{apostilleForm.destination_country ? ` to ${apostilleForm.destination_country}` : ""}? This will create a new service request.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={async () => {
+                      if (!user) return;
+                      setSubmittingApostille(true);
+                      const { data: newReq, error } = await supabase.from("apostille_requests").insert({ client_id: user.id, document_description: apostilleForm.document_description.trim(), notes: apostilleForm.notes.trim() || null, destination_country: apostilleForm.destination_country.trim() || null, document_count: parseInt(apostilleForm.document_count) || 1 }).select().single();
+                      if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+                      else if (newReq) { toast({ title: "Apostille request submitted" }); setApostilleRequests(prev => [newReq, ...prev]); setApostilleForm({ document_description: "", notes: "", destination_country: "", document_count: "1" }); }
+                      setSubmittingApostille(false);
+                    }}>Submit Request</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+                </AlertDialog>
+               </CardContent>
             </Card>
             {apostilleRequests.length > 0 && apostilleRequests.map(req => {
               const apoSteps = ["intake", "payment_received", "submitted_to_sos", "processing", "shipped", "delivered"];
@@ -580,8 +594,8 @@ export default function ClientPortal() {
               return (
                 <Card key={req.id} className="rounded-[24px] border-gray-100 shadow-sm">
                   <CardContent className="p-4">
-                    <div className="flex items-center justify-between mb-2"><span className="text-sm font-bold text-[#212529]">{req.document_description}</span><Badge className={`text-[10px] font-black uppercase tracking-wider rounded-lg ${req.status === "delivered" ? "bg-emerald-50 text-emerald-600" : "bg-[#eab308]/10 text-[#eab308]"}`}>{req.status.replace(/_/g, " ")}</Badge></div>
-                    <div className="flex items-center gap-1 my-3">{apoSteps.map((s, i) => (<div key={s} className="flex items-center flex-1"><div className={`flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold ${i <= currentIdx ? "bg-[#eab308] text-white" : "bg-gray-100 text-gray-400"}`}>{i < currentIdx ? "✓" : i + 1}</div>{i < apoSteps.length - 1 && <div className={`flex-1 h-0.5 mx-1 ${i < currentIdx ? "bg-[#eab308]" : "bg-gray-100"}`} />}</div>))}</div>
+                    <div className="flex items-center justify-between mb-2"><span className="text-sm font-bold text-foreground">{req.document_description}</span><Badge className={`text-[10px] font-black uppercase tracking-wider rounded-lg ${req.status === "delivered" ? "bg-emerald-50 text-emerald-600" : "bg-primary/10 text-primary"}`}>{req.status.replace(/_/g, " ")}</Badge></div>
+                    <div className="flex items-center gap-1 my-3">{apoSteps.map((s, i) => (<div key={s} className="flex items-center flex-1"><div className={`flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold ${i <= currentIdx ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>{i < currentIdx ? "✓" : i + 1}</div>{i < apoSteps.length - 1 && <div className={`flex-1 h-0.5 mx-1 ${i < currentIdx ? "bg-primary" : "bg-muted"}`} />}</div>))}</div>
                     <div className="flex justify-between text-[9px] font-bold text-gray-400 mb-2">{apoLabels.map(l => <span key={l}>{l}</span>)}</div>
                     <div className="flex items-center gap-4 text-xs text-gray-400 font-medium">
                       <span>Fee: ${parseFloat(req.fee || "0").toFixed(2)}</span>
@@ -773,9 +787,13 @@ export default function ClientPortal() {
             profileForm.address !== (profile.address || "") ||
             profileForm.city !== (profile.city || "") ||
             profileForm.state !== (profile.state || "") ||
-            profileForm.zip !== (profile.zip_code || "")
+            profileForm.zip !== (profile.zip || "")
           );
-          if (hasChanges && !window.confirm("You have unsaved changes. Discard them?")) return;
+          if (hasChanges && !open) {
+            // Instead of window.confirm, just allow closing — the dialog has Cancel button
+            // Profile form resets on next open anyway
+          }
+          if (!open && hasChanges) return; // prevent accidental close with changes
         }
         setEditProfileOpen(open);
       }}>

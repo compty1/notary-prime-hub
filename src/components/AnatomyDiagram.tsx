@@ -61,8 +61,8 @@ export function AnatomyDiagram({ imageSrc, title, callouts }: AnatomyDiagramProp
       </div>
 
       {/* Image with callout markers */}
-      <div className="relative inline-block w-full max-w-md rounded-lg border border-border overflow-hidden">
-        <img src={imageSrc} alt={title} className="w-full" loading="lazy" />
+      <div className="relative inline-block w-full max-w-md rounded-lg border border-border overflow-hidden" role="img" aria-label={`Annotated diagram of ${title} with ${callouts.length} callouts`}>
+        <img src={imageSrc} alt={`${title} document anatomy diagram`} className="w-full" loading="lazy" />
         {callouts.map(c => (
           <button
             key={c.id}

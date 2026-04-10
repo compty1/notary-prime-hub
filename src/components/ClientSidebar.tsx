@@ -13,7 +13,7 @@ import {
 interface ClientSidebarProps {
   activeSection: string;
   onSectionChange: (section: string) => void;
-  profile: any;
+  profile: { full_name?: string | null; email?: string | null; [key: string]: unknown } | null;
   unreadCount: number;
   onSignOut: () => void;
 }
