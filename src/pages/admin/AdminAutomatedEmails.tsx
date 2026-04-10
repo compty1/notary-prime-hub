@@ -1167,6 +1167,7 @@ function IntegrationSetupTab() {
                 <table className="w-full text-xs">
                   <thead>
                     <tr className="border-b border-border">
+                      <th className="text-left py-2 pr-4 font-medium text-muted-foreground">Source</th>
                       <th className="text-left py-2 pr-4 font-medium text-muted-foreground">Email Type</th>
                       <th className="text-left py-2 pr-4 font-medium text-muted-foreground">Trigger</th>
                       <th className="text-left py-2 pr-4 font-medium text-muted-foreground">Backend Function</th>
@@ -1174,16 +1175,50 @@ function IntegrationSetupTab() {
                     </tr>
                   </thead>
                   <tbody>
-                    {EMAIL_PIPELINE_MAP.map((row, i) => (
-                      <tr key={i} className="border-b border-border/50">
-                        <td className="py-1.5 pr-4 font-medium">{row.emailType}</td>
-                        <td className="py-1.5 pr-4 text-muted-foreground">{row.trigger}</td>
-                        <td className="py-1.5 pr-4 font-mono text-[10px]">{row.edgeFunction}</td>
-                        <td className="py-1.5 text-muted-foreground">{row.provider}</td>
-                      </tr>
-                    ))}
+                    {EMAIL_PIPELINE_MAP.map((row, i) => {
+                      const sourceColors = {
+                        notardex: "bg-primary/10 text-primary",
+                        signnow: "bg-orange-500/10 text-orange-700",
+                        lovable: "bg-blue-500/10 text-blue-700",
+                      };
+                      const sourceLabels = {
+                        notardex: "NotarDex",
+                        signnow: "SignNow",
+                        lovable: "Auth System",
+                      };
+                      return (
+                        <tr key={i} className="border-b border-border/50">
+                          <td className="py-1.5 pr-4">
+                            <Badge className={`${sourceColors[row.source]} text-[9px] font-bold`}>{sourceLabels[row.source]}</Badge>
+                          </td>
+                          <td className="py-1.5 pr-4 font-medium">{row.emailType}</td>
+                          <td className="py-1.5 pr-4 text-muted-foreground">{row.trigger}</td>
+                          <td className="py-1.5 pr-4 font-mono text-[10px]">{row.edgeFunction}</td>
+                          <td className="py-1.5 text-muted-foreground">{row.provider}</td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
+              </div>
+
+              {/* SignNow External Emails Explainer */}
+              <div className="rounded-md bg-orange-500/5 border border-orange-500/10 p-3 space-y-2">
+                <h4 className="text-xs font-semibold text-orange-700 dark:text-orange-400 flex items-center gap-1">
+                  <PenTool className="h-3 w-3" /> SignNow External Emails
+                </h4>
+                <p className="text-[11px] text-muted-foreground">
+                  The emails marked <Badge className="bg-orange-500/10 text-orange-700 text-[8px] font-bold mx-0.5">SignNow</Badge> are
+                  sent <strong>directly by SignNow's platform</strong>, not by NotarDex. Their content, branding, and delivery schedule are
+                  controlled in your <a href="https://app.signnow.com" target="_blank" rel="noopener noreferrer" className="underline text-primary">SignNow account settings</a>.
+                  NotarDex receives webhook events for these emails and tracks them in the CRM timeline and <code className="bg-muted px-1 py-0.5 rounded text-[9px]">signnow_documents</code> table.
+                </p>
+                <ul className="text-[11px] text-muted-foreground space-y-0.5">
+                  <li>• <strong>Signing invitations</strong> — sent when you use "Send Invite" in RON Session; customizable in SignNow → Settings → Notifications</li>
+                  <li>• <strong>Auto-reminders</strong> — frequency set in SignNow → Settings → Notifications → Reminder Schedule</li>
+                  <li>• <strong>Completion emails</strong> — sent to all parties with signed PDF attached; configured in SignNow account</li>
+                  <li>• <strong>Webhook tracking</strong> — all SignNow email events are logged to <code className="bg-muted px-1 py-0.5 rounded text-[9px]">webhook_events</code> and <code className="bg-muted px-1 py-0.5 rounded text-[9px]">crm_activities</code></li>
+                </ul>
               </div>
 
               {/* Retry logic */}
