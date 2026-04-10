@@ -540,6 +540,7 @@ function getCircumstanceIcon(name: string) {
 
 export default function AdminResources() {
   usePageMeta({ title: "NotarDex — Ohio Notary Toolkit", noIndex: true });
+  const { user } = useAuth();
 
   const [activeTab, setActiveTab] = useState("vault");
   const [searchTerm, setSearchTerm] = useState("");
@@ -550,6 +551,66 @@ export default function AdminResources() {
   const [simFeedback, setSimFeedback] = useState<{ type: "success" | "error"; msg: string } | null>(null);
   const [showSimulator, setShowSimulator] = useState(false);
   const [simScore, setSimScore] = useState({ correct: 0, total: 0 });
+
+  // AI Chat state for document assistant
+  const [docChatMessages, setDocChatMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
+  const [docChatInput, setDocChatInput] = useState("");
+  const [docChatLoading, setDocChatLoading] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [docChatMessages]);
+
+  // Reset chat when form changes
+  useEffect(() => { setDocChatMessages([]); setDocChatInput(""); }, [selectedForm?.name]);
+
+  const sendDocChat = async () => {
+    if (!docChatInput.trim() || docChatLoading || !selectedForm) return;
+    const userMsg = { role: "user" as const, content: docChatInput.trim() };
+    const updated = [...docChatMessages, userMsg];
+    setDocChatMessages(updated);
+    setDocChatInput("");
+    setDocChatLoading(true);
+
+    try {
+      // Save user message to chat_messages for history
+      if (user) {
+        await supabase.from("chat_messages").insert({
+          sender_id: user.id,
+          message: `[Doc Q: ${selectedForm.name}] ${userMsg.content}`,
+          is_admin: true,
+        });
+      }
+
+      const systemPrompt = `You are NotarDex AI, an Ohio notary law expert. The user is asking about: "${selectedForm.name}" (${selectedForm.ref}). Certificate text: "${selectedForm.certificateText || ""}". Ohio tip: "${selectedForm.ohioTip || ""}". Provide accurate, Ohio-specific answers citing ORC sections. Be concise but thorough.`;
+
+      const { data, error } = await supabase.functions.invoke("notary-assistant", {
+        body: {
+          messages: [
+            { role: "system", content: systemPrompt },
+            ...updated.map(m => ({ role: m.role, content: m.content })),
+          ],
+        },
+      });
+
+      if (error) throw error;
+      const reply = data?.reply || data?.text || data?.response || "I couldn't generate a response.";
+      const assistantMsg = { role: "assistant" as const, content: reply };
+      setDocChatMessages(prev => [...prev, assistantMsg]);
+
+      // Save AI response to chat_messages for history
+      if (user) {
+        await supabase.from("chat_messages").insert({
+          sender_id: user.id,
+          message: `[Doc A: ${selectedForm.name}] ${reply}`,
+          is_admin: true,
+        });
+      }
+    } catch (e: any) {
+      setDocChatMessages(prev => [...prev, { role: "assistant", content: `Error: ${e.message}` }]);
+    } finally {
+      setDocChatLoading(false);
+    }
+  };
 
   // Filtered forms
   const filteredForms = formCategory === "All" ? forms : forms.filter(f => f.category === formCategory);
