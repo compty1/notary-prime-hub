@@ -44,6 +44,7 @@ Deno.serve(async (req) => {
     const rawAmount = Number(body.amount);
     const appointmentId = body.appointmentId || "";
     const description = body.description || "Notary service payment";
+    const referralProfessionalId = body.referralProfessionalId || null;
 
     // Validate amount: must be positive, max $50k, max 2 decimal places
     if (!Number.isFinite(rawAmount) || rawAmount <= 0) {
@@ -97,6 +98,7 @@ Deno.serve(async (req) => {
         supabase_user_id: userId,
         appointment_id: appointmentId || "",
         description: (description || "").slice(0, 500),
+        referral_professional_id: referralProfessionalId || "",
       },
       description: description || "Notary service payment",
       automatic_payment_methods: { enabled: true },
@@ -110,6 +112,7 @@ Deno.serve(async (req) => {
         status: "pending",
         method: "stripe",
         notes: `Stripe PI: ${paymentIntent.id}`,
+        referral_professional_id: referralProfessionalId || null,
       });
     }
 
