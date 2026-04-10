@@ -127,7 +127,6 @@ export default function PortalNotaryPageTab() {
 
   const handlePhotoUpload = async (file: File, type: "profile" | "cover") => {
     if (!user || !page) return;
-    // BUG001/BUG002: Validate file type
     if (!ALLOWED_IMAGE_MIMES.has(file.type)) { toast({ title: "Invalid file type. Only JPG, PNG, WebP allowed.", variant: "destructive" }); return; }
     const setter = type === "profile" ? setUploadingProfile : setUploadingCover;
     setter(true);
@@ -139,16 +138,15 @@ export default function PortalNotaryPageTab() {
       setter(false);
       return;
     }
-    const { data: signedData } = await supabase.storage.from("documents").createSignedUrl(path, 315360000);
+    // S002/DI002: Store storage path (not signed URL) — resolved at display time
     const field = type === "profile" ? "profile_photo_path" : "cover_photo_path";
-    if (signedData?.signedUrl) updateField(field, signedData.signedUrl);
+    updateField(field, path);
     setter(false);
     toast({ title: `${type === "profile" ? "Profile" : "Cover"} photo uploaded` });
   };
 
   const handleGalleryUpload = async (file: File) => {
     if (!user || !page) return;
-    // BUG001: Validate file type for gallery
     if (!ALLOWED_IMAGE_MIMES.has(file.type)) { toast({ title: "Invalid file type. Only JPG, PNG, WebP allowed.", variant: "destructive" }); return; }
     const gallery: string[] = Array.isArray(page.gallery_photos) ? page.gallery_photos : [];
     if (gallery.length >= 6) { toast({ title: "Max 6 gallery photos", variant: "destructive" }); return; }
@@ -157,8 +155,8 @@ export default function PortalNotaryPageTab() {
     const path = `notary-pages/${page.id}/gallery-${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from("documents").upload(path, file, { upsert: true });
     if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); setUploadingGallery(false); return; }
-    const { data: signedData } = await supabase.storage.from("documents").createSignedUrl(path, 315360000);
-    if (signedData?.signedUrl) updateField("gallery_photos", [...gallery, signedData.signedUrl]);
+    // S002/DI002: Store path, not signed URL
+    updateField("gallery_photos", [...gallery, path]);
     setUploadingGallery(false);
     toast({ title: "Gallery photo added" });
   };
@@ -251,8 +249,11 @@ export default function PortalNotaryPageTab() {
   const updateSocial = (key: string, value: string) => updateField("social_links", { ...socials, [key]: value });
 
   // Enrollment management
+  // UX005: Loading state for enrollment toggle
+  const [enrollingServiceId, setEnrollingServiceId] = useState<string | null>(null);
   const handleEnrollService = async (serviceId: string) => {
     if (!user) return;
+    setEnrollingServiceId(serviceId);
     const existing = enrollments.find(e => e.service_id === serviceId);
     if (existing) {
       await supabase.from("professional_service_enrollments").delete().eq("id", existing.id);
@@ -265,10 +266,55 @@ export default function PortalNotaryPageTab() {
         is_active: false,
         show_on_site: true,
       } as any).select().single();
-      if (error) { toast({ title: "Enrollment failed", description: error.message, variant: "destructive" }); return; }
+      if (error) { toast({ title: "Enrollment failed", description: error.message, variant: "destructive" }); setEnrollingServiceId(null); return; }
       if (data) setEnrollments([...enrollments, data]);
       toast({ title: "Service enrollment requested", description: "Pending admin approval." });
     }
+    setEnrollingServiceId(null);
+  };
+
+  // P005: Auto-save every 30s
+  const [lastAutoSave, setLastAutoSave] = useState<Date | null>(null);
+  useEffect(() => {
+    if (!hasPage || !page || loading) return;
+    const timer = setTimeout(async () => {
+      const { error } = await supabase.from("notary_pages").update({
+        display_name: page.display_name, title: page.title, tagline: page.tagline,
+        bio: page.bio, phone: page.phone, email: page.email, website_url: page.website_url,
+        services_offered: page.services_offered, service_areas: page.service_areas,
+        credentials: page.credentials, social_links: page.social_links,
+        seo_title: page.seo_title, seo_description: page.seo_description,
+        theme_color: page.theme_color, accent_color: page.accent_color,
+        font_family: page.font_family, nav_services: page.nav_services,
+        gallery_photos: page.gallery_photos, professional_type: page.professional_type,
+      } as any).eq("id", page.id);
+      if (!error) setLastAutoSave(new Date());
+    }, 30000);
+    return () => clearTimeout(timer);
+  }, [page, hasPage, loading]);
+
+  // P001: Self-service page creation
+  const [creatingPage, setCreatingPage] = useState(false);
+  const handleCreateOwnPage = async () => {
+    if (!user) return;
+    setCreatingPage(true);
+    const { data: profile } = await supabase.from("profiles").select("full_name, email").eq("user_id", user.id).single();
+    const slug = (profile?.full_name || "my-page").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").substring(0, 50);
+    const { data, error } = await supabase.from("notary_pages").insert({
+      user_id: user.id,
+      slug,
+      display_name: profile?.full_name || "My Professional Page",
+      email: profile?.email || user.email || "",
+      is_published: false,
+    } as any).select().single();
+    if (error) {
+      toast({ title: "Could not create page", description: error.message, variant: "destructive" });
+    } else if (data) {
+      setPage(data);
+      setHasPage(true);
+      toast({ title: "Page created! Customize it below, then publish when ready." });
+    }
+    setCreatingPage(false);
   };
 
   if (loading) return <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
@@ -280,8 +326,12 @@ export default function PortalNotaryPageTab() {
           <Globe className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
           <h3 className="text-lg font-semibold">No Personal Page Yet</h3>
           <p className="mt-2 text-sm text-muted-foreground">
-            Your personal service page hasn't been set up yet. Contact your admin to create one.
+            Create your personal service page to start attracting clients and earning through the platform.
           </p>
+          <Button className="mt-4 gap-2" onClick={handleCreateOwnPage} disabled={creatingPage}>
+            {creatingPage ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+            Create My Page
+          </Button>
         </CardContent>
       </Card>
     );
@@ -309,6 +359,9 @@ export default function PortalNotaryPageTab() {
           </Button>
         </div>
       </div>
+      {lastAutoSave && (
+        <p className="text-[10px] text-muted-foreground">Auto-saved {lastAutoSave.toLocaleTimeString()}</p>
+      )}
 
       <div className="flex items-center gap-3">
         <Badge variant={page.is_published ? "default" : "secondary"}>
@@ -728,7 +781,7 @@ export default function PortalNotaryPageTab() {
             Enroll in platform services to offer them on your personal page. Pending enrollments require admin approval.
           </p>
           <div className="grid gap-2 sm:grid-cols-2">
-            {platformServices.slice(0, 20).map(svc => {
+            {platformServices.map(svc => {
               const enrollment = enrollments.find(e => e.service_id === svc.id);
               return (
                 <div key={svc.id} className="flex items-center justify-between rounded-lg border p-3">
@@ -739,10 +792,15 @@ export default function PortalNotaryPageTab() {
                   <div className="flex items-center gap-2 ml-2">
                     {enrollment?.is_active && <Badge variant="default" className="text-xs">Active</Badge>}
                     {enrollment && !enrollment.is_active && <Badge variant="secondary" className="text-xs">Pending</Badge>}
-                    <Checkbox
-                      checked={!!enrollment}
-                      onCheckedChange={() => handleEnrollService(svc.id)}
-                    />
+                    {enrollingServiceId === svc.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Checkbox
+                        checked={!!enrollment}
+                        onCheckedChange={() => handleEnrollService(svc.id)}
+                        disabled={enrollingServiceId !== null}
+                      />
+                    )}
                   </div>
                 </div>
               );
