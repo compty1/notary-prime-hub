@@ -22,7 +22,7 @@ interface ProfileRecord {
 
 interface PortalOnboardingChecklistProps {
   profile: ProfileRecord | null;
-  documents: Array<{ status: string; [key: string]: unknown }>;
+  documents: Array<{ status: string; file_name?: string; [key: string]: unknown }>;
   appointments: Array<{ status: string; [key: string]: unknown }>;
   onEditProfile: () => void;
 }
