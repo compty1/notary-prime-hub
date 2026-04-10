@@ -116,8 +116,8 @@ export default function Index() {
     });
   }, []);
 
-  const [dbServices, setDbServices] = useState<any[]>([]);
-  const [dbReviews, setDbReviews] = useState<any[]>([]);
+  const [dbServices, setDbServices] = useState<{ name: string; short_description: string | null; icon: string | null; category: string | null }[]>([]);
+  const [dbReviews, setDbReviews] = useState<{ name: string; text: string; rating: number }[]>([]);
 
   useEffect(() => {
     supabase.from("services").select("name, short_description, icon, category")

@@ -471,11 +471,33 @@ export function DocuDexEditor({
   };
 
   // Insert element
+  // QR Code dialog state (EL-QR-001)
+  const [showQrDialog, setShowQrDialog] = useState(false);
+  const [qrValue, setQrValue] = useState("");
+  const [qrSize, setQrSize] = useState(150);
+
+  const insertQrCode = useCallback(() => {
+    if (!editor || !qrValue.trim()) return;
+    // Generate a real QR code as an SVG data URI using qrcode.react rendering
+    // We insert an img tag with a placeholder that triggers client-side QR rendering
+    const encodedValue = encodeURIComponent(qrValue.trim());
+    const qrHtml = `<div style="text-align:center;padding:16px;margin:16px 0;" data-qr-value="${encodedValue}" data-qr-size="${qrSize}"><img src="https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodedValue}" alt="QR Code: ${qrValue.trim()}" width="${qrSize}" height="${qrSize}" style="display:inline-block;" /><p style="font-size:10px;color:#666;margin-top:4px;">${qrValue.trim().length > 50 ? qrValue.trim().slice(0, 50) + '...' : qrValue.trim()}</p></div>`;
+    editor.chain().focus().insertContent(qrHtml).run();
+    announce("QR Code inserted");
+    setShowQrDialog(false);
+    setQrValue("");
+    setQrSize(150);
+  }, [editor, qrValue, qrSize, announce]);
+
   const insertElement = (type: string) => {
     if (!editor) return;
     if (type === "table") {
       (editor.chain().focus() as any).insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
       announce("Table inserted");
+      return;
+    }
+    if (type === "qr-code") {
+      setShowQrDialog(true);
       return;
     }
     let html = "";
@@ -484,7 +506,6 @@ export function DocuDexEditor({
     if (type === "signature") html = `<p style="margin-top:40px">___________________________<br><em>Signature / Date</em></p>`;
     if (type === "image") { handleImageUpload(); return; }
     if (type === "notary-seal") html = `<div style="border:2px solid #1E293B;padding:16px;margin:16px 0;text-align:center;border-radius:8px;"><p><strong>NOTARY SEAL</strong></p><p>State of Ohio</p><p>Commission #: ____________</p><p>Expires: ____________</p></div>`;
-    if (type === "qr-code") html = `<p style="text-align:center;padding:16px;border:1px dashed #ccc;margin:16px 0;">[QR Code — Use export to embed]</p>`;
     if (type === "page-number") html = `<p style="text-align:center;font-size:10px;color:#666;">Page ${activePageIdx + 1} of ${pages.length}</p>`;
     if (type === "date") html = `<p>${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</p>`;
     if (type === "datetime") html = `<p>${new Date().toLocaleString("en-US", { dateStyle: "long", timeStyle: "short" })}</p>`;
