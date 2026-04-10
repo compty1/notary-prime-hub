@@ -39,10 +39,12 @@ interface PlatformService {
 }
 
 interface ProfitTransaction {
+  id?: string;
   gross_amount: number;
   platform_fee: number;
   professional_share: number;
   status: string;
+  created_at?: string;
 }
 
 const DEFAULT_SERVICES: ServiceItem[] = [
