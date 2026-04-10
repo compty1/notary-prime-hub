@@ -101,7 +101,7 @@ function AdminSidebar() {
           if (visibleItems.length === 0) return null;
           return (
             <SidebarGroup key={group.label}>
-              <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-widest text-gray-500 px-3">
+              <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-3">
                 {group.label}
               </SidebarGroupLabel>
               <SidebarGroupContent>
@@ -110,7 +110,7 @@ function AdminSidebar() {
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild>
                         <NavLink to={item.url} end={item.url === "/admin"}
-                          className="text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+                          className="text-muted-foreground hover:text-white hover:bg-white/5 rounded-xl transition-all"
                           activeClassName="bg-primary text-white shadow-lg shadow-primary/20 font-bold">
                           <item.icon className="mr-2 h-4 w-4" />
                           {!collapsed && <span className="text-sm">{item.title}</span>}
@@ -126,11 +126,11 @@ function AdminSidebar() {
 
         <div className="mt-auto p-4 border-t border-white/10">
           <Link to="/portal" className="mb-2 block">
-            <Button variant="ghost" size="sm" className="w-full justify-start text-gray-400 hover:text-white hover:bg-white/5 rounded-xl">
+            <Button variant="ghost" size="sm" className="w-full justify-start text-muted-foreground hover:text-white hover:bg-white/5 rounded-xl">
               <Eye className="mr-2 h-4 w-4" />{!collapsed && "Client View"}
             </Button>
           </Link>
-          <Button variant="ghost" size="sm" onClick={signOut} className="w-full justify-start text-gray-400 hover:text-white hover:bg-white/5 rounded-xl">
+          <Button variant="ghost" size="sm" onClick={signOut} className="w-full justify-start text-muted-foreground hover:text-white hover:bg-white/5 rounded-xl">
             <LogOut className="mr-2 h-4 w-4" />{!collapsed && "Sign Out"}
           </Button>
         </div>
@@ -150,13 +150,13 @@ export default function AdminDashboard() {
         </a>
         <AdminSidebar />
         <div className="flex-1 flex flex-col">
-          <header className="flex h-14 items-center justify-between border-b border-gray-100 bg-white/80 backdrop-blur-sm px-6">
+           <header className="flex h-14 items-center justify-between border-b border-border bg-background/80 backdrop-blur-sm px-6">
             <div className="flex items-center">
               <SidebarTrigger />
-              <span className="ml-4 text-[10px] font-black uppercase tracking-widest text-gray-400">
+              <span className="ml-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                 {isAdmin ? "Admin Panel" : "Notary Panel"}
               </span>
-              <kbd className="ml-3 hidden sm:inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[10px] font-mono text-gray-400">
+              <kbd className="ml-3 hidden sm:inline-flex items-center gap-1 rounded-lg border border-border bg-gray-50 px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
                 ⌘K
               </kbd>
             </div>
@@ -165,7 +165,7 @@ export default function AdminDashboard() {
               <DarkModeToggle />
             </div>
           </header>
-          <main id="admin-main" className="flex-1 overflow-auto p-6 bg-[#f8f9fa]"><Outlet /></main>
+          <main id="admin-main" className="flex-1 overflow-auto p-6 bg-muted"><Outlet /></main>
         </div>
       </div>
     </SidebarProvider>

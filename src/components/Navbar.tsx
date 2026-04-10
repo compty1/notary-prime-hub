@@ -94,7 +94,7 @@ export function Navbar() {
   const portalLabel = isAdmin || isNotary ? "Dashboard" : "Portal";
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 backdrop-blur-md h-20 flex items-center print:hidden" aria-label="Main navigation" role="navigation">
+    <nav className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-md h-20 flex items-center print:hidden" aria-label="Main navigation" role="navigation">
       <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm focus:font-bold">
         Skip to main content
       </a>
@@ -174,7 +174,7 @@ export function Navbar() {
           <div className="ml-4 flex items-center gap-3">
             {user ? (
               <Link to={portalLink}>
-                <Button variant="ghost" size="sm" className="text-sm font-bold text-gray-500 hover:text-foreground hover:bg-gray-50">{portalLabel}</Button>
+                <Button variant="ghost" size="sm" className="text-sm font-bold text-muted-foreground hover:text-foreground hover:bg-muted">{portalLabel}</Button>
               </Link>
             ) : (
               <Link to="/login">
@@ -184,7 +184,7 @@ export function Navbar() {
             <Link to="/book">
               <Button
                 size="sm"
-                className="rounded-full bg-primary text-white font-bold px-6 hover:bg-[#ca9a06] shadow-block hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all"
+                className="rounded-full bg-primary text-primary-foreground font-bold px-6 hover:bg-primary/85 shadow-block hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all"
               >
                 Start Notarizing
               </Button>
@@ -261,7 +261,7 @@ export function Navbar() {
                 </Link>
               )}
               <Link to="/book">
-                <Button className="w-full font-bold bg-primary text-white hover:bg-[#ca9a06]">Start Notarizing</Button>
+                <Button className="w-full font-bold bg-primary text-primary-foreground hover:bg-primary/85">Start Notarizing</Button>
               </Link>
             </div>
           </SheetContent>

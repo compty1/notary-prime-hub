@@ -88,14 +88,14 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#fcfcfc]">
+    <div className="flex min-h-screen bg-background">
       {/* Left — Form */}
       <div className="flex flex-1 items-center justify-center px-6 py-12">
         <div className="w-full max-w-md">
           <Link to="/" className="mb-8 inline-block">
-            <Logo size="lg" />
+            <Logo size="lg" showText />
           </Link>
-          <h1 className="text-3xl font-black text-[#212529] mb-1">
+          <h1 className="text-3xl font-black text-foreground mb-1">
             {success ? "Password Updated" : mode === "reset" ? "Set New Password" : "Forgot Password"}
           </h1>
           <p className="text-muted-foreground mb-8">
@@ -103,22 +103,22 @@ export default function ResetPassword() {
           </p>
 
           {success ? (
-            <div className="flex flex-col items-center gap-4 py-4 rounded-[24px] border border-gray-100 bg-white p-8">
+            <div className="flex flex-col items-center gap-4 py-4 rounded-[24px] border border-border bg-white p-8">
               <CheckCircle className="h-12 w-12 text-primary" />
-              <Link to="/login"><Button className="rounded-xl bg-primary text-white hover:bg-[#ca9a06] shadow-[3px_3px_0px_#212529]">Go to Sign In</Button></Link>
+              <Link to="/login"><Button className="rounded-xl bg-primary text-white hover:bg-primary/85 shadow-block">Go to Sign In</Button></Link>
             </div>
           ) : requestSent ? (
-            <div className="flex flex-col items-center gap-4 py-8 text-center rounded-[24px] border border-gray-100 bg-white p-8">
+            <div className="flex flex-col items-center gap-4 py-8 text-center rounded-[24px] border border-border bg-white p-8">
               <CheckCircle className="h-12 w-12 text-primary" />
               <p className="text-sm text-muted-foreground">Check your email for a password reset link. It may take a minute to arrive.</p>
-              <Link to="/login"><Button variant="outline" className="rounded-xl border-gray-200"><ArrowLeft className="mr-1 h-4 w-4" /> Back to Sign In</Button></Link>
+              <Link to="/login"><Button variant="outline" className="rounded-xl border-border"><ArrowLeft className="mr-1 h-4 w-4" /> Back to Sign In</Button></Link>
             </div>
           ) : mode === "reset" ? (
             <form onSubmit={handleResetPassword} className="space-y-4">
               <div>
-                <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-gray-500">New Password</Label>
+                <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">New Password</Label>
                 <div className="relative mt-1">
-                  <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" className="rounded-xl border-gray-200 bg-white pr-10" />
+                  <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" className="rounded-xl border-border bg-white pr-10" />
                   <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Hide password" : "Show password"}>
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -135,29 +135,29 @@ export default function ResetPassword() {
                 )}
               </div>
               <div>
-                <Label htmlFor="confirm" className="text-[10px] font-black uppercase tracking-widest text-gray-500">Confirm Password</Label>
+                <Label htmlFor="confirm" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Confirm Password</Label>
                 <div className="relative mt-1">
-                  <Input id="confirm" type={showConfirm ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} className="rounded-xl border-gray-200 bg-white pr-10" />
+                  <Input id="confirm" type={showConfirm ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} className="rounded-xl border-border bg-white pr-10" />
                   <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowConfirm(!showConfirm)} aria-label={showConfirm ? "Hide password" : "Show password"}>
                     {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
-              <Button type="submit" className="w-full rounded-xl bg-primary text-white font-bold hover:bg-[#ca9a06] shadow-[3px_3px_0px_#212529] h-11" disabled={submitting}>
+              <Button type="submit" className="w-full rounded-xl bg-primary text-white font-bold hover:bg-primary/85 shadow-block h-11" disabled={submitting}>
                 {submitting ? "Updating..." : "Update Password"}
               </Button>
             </form>
           ) : (
             <form onSubmit={handleRequestReset} className="space-y-4">
               <div>
-                <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-gray-500">Email Address</Label>
-                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" autoComplete="email" className="mt-1 rounded-xl border-gray-200 bg-white" />
+                <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Email Address</Label>
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" autoComplete="email" className="mt-1 rounded-xl border-border bg-white" />
               </div>
-              <Button type="submit" className="w-full rounded-xl bg-primary text-white font-bold hover:bg-[#ca9a06] shadow-[3px_3px_0px_#212529] h-11" disabled={submitting || cooldown > 0}>
+              <Button type="submit" className="w-full rounded-xl bg-primary text-white font-bold hover:bg-primary/85 shadow-block h-11" disabled={submitting || cooldown > 0}>
                 {submitting ? "Sending..." : cooldown > 0 ? `Wait ${cooldown}s` : "Send Reset Link"}
               </Button>
               <p className="text-center text-sm text-muted-foreground">
-                <Link to="/login" className="font-bold text-[#212529] hover:underline">Back to Sign In</Link>
+                <Link to="/login" className="font-bold text-foreground hover:underline">Back to Sign In</Link>
               </p>
             </form>
           )}
@@ -165,13 +165,13 @@ export default function ResetPassword() {
       </div>
 
       {/* Right — Brand panel (desktop only) */}
-      <div className="hidden lg:flex lg:w-[45%] flex-col items-center justify-center bg-[#212529] p-12 text-white">
+      <div className="hidden lg:flex lg:w-[45%] flex-col items-center justify-center bg-foreground p-12 text-white">
         <div className="max-w-sm text-center space-y-8">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[24px] bg-primary/20">
             <KeyRound className="h-10 w-10 text-primary" />
           </div>
           <h2 className="text-3xl font-black">Secure Account<br />Recovery</h2>
-          <p className="text-gray-400">Your account security is our priority. Reset links expire after 24 hours for your protection.</p>
+          <p className="text-muted-foreground">Your account security is our priority. Reset links expire after 24 hours for your protection.</p>
         </div>
       </div>
     </div>
