@@ -191,8 +191,11 @@ export default function NotaryPage() {
   // BUG004: Check if socials have actual non-empty values
   const hasSocialLinks = Object.values(socials).some(v => v && String(v).trim().length > 0);
 
-  return (
+    {/* PU008: Load Google Font */}
     <div style={{ fontFamily: `"${fontFamily}", sans-serif` }}>
+      {fontFamily !== "Inter" && (
+        <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontFamily)}:wght@400;500;600;700;800;900&display=swap`} />
+      )}
       {/* R001: Pass hideNav to prevent double navbar */}
       <PageShell hideNav>
         {/* Dynamic Nav Bar */}
@@ -564,4 +567,3 @@ export default function NotaryPage() {
       </PageShell>
     </div>
   );
-}

@@ -242,7 +242,6 @@ export default function NotaryDirectory() {
     </PageShell>
   );
 }
-  usePageMeta({
     title: typeFilter
       ? `Find a ${PROFESSIONAL_TYPES[typeFilter] || "Professional"} — Ohio Professional Directory`
       : "Find a Notary or Professional — Ohio Directory",
