@@ -46,6 +46,7 @@ export default function AdminProcessFlows() {
   const [loading, setLoading] = useState(true);
   const [editingTemplate, setEditingTemplate] = useState<{ key: string; value: string; scope: string } | null>(null);
   const [saving, setSaving] = useState(false);
+  const [propagateDialog, setPropagateDialog] = useState<{ matchCount: number; resolve: (v: boolean) => void } | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -82,9 +83,9 @@ export default function AdminProcessFlows() {
 
       let propagate = false;
       if (matchingServices.length > 0) {
-        propagate = window.confirm(
-          `${matchingServices.length} service(s) use a matching template key. Apply this update to all of them?`
-        );
+        propagate = await new Promise<boolean>((resolve) => {
+          setPropagateDialog({ matchCount: matchingServices.length, resolve });
+        });
       }
 
       const { error } = await supabase.from("platform_settings").upsert({
