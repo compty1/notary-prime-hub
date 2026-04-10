@@ -171,7 +171,7 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
                       </div>
                       {appt.confirmation_number && <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><Hash className="h-3 w-3" /> {appt.confirmation_number}</p>}
                       {appt.location && appt.location !== "Remote" && <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="h-3 w-3" /> {appt.location}</p>}
-                      {appt.estimated_price && <p className="mt-1 text-xs text-muted-foreground">Est. ${parseFloat(appt.estimated_price).toFixed(2)}</p>}
+                      {appt.estimated_price && <p className="mt-1 text-xs text-muted-foreground">Est. ${Number(appt.estimated_price).toFixed(2)}</p>}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">

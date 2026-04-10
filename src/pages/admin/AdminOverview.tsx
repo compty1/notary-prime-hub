@@ -153,7 +153,7 @@ export default function AdminOverview() {
     const months: Record<string, number> = {};
     journalEntries.forEach(j => {
       const month = j.created_at?.slice(0, 7);
-      if (month) months[month] = (months[month] || 0) + (parseFloat(j.fees_charged) || 0);
+      if (month) months[month] = (months[month] || 0) + (parseFloat(String(j.fees_charged)) || 0);
     });
     return Object.entries(months).slice(-6).map(([month, revenue]) => ({
       month: new Date(month + "-01").toLocaleDateString("en-US", { month: "short" }),
