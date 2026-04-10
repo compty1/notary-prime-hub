@@ -789,7 +789,11 @@ export default function ClientPortal() {
             profileForm.state !== (profile.state || "") ||
             profileForm.zip !== (profile.zip_code || "")
           );
-          if (hasChanges && !window.confirm("You have unsaved changes. Discard them?")) return;
+          if (hasChanges && !open) {
+            // Instead of window.confirm, just allow closing — the dialog has Cancel button
+            // Profile form resets on next open anyway
+          }
+          if (!open && hasChanges) return; // prevent accidental close with changes
         }
         setEditProfileOpen(open);
       }}>
