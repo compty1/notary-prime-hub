@@ -245,6 +245,23 @@ export default function PortalServiceRequestsTab({ serviceRequests: initialReque
           })}
         </div>
       )}
+      <AlertDialog open={!!cancelRequestId} onOpenChange={(open) => { if (!open) setCancelRequestId(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Request?</AlertDialogTitle>
+            <AlertDialogDescription>Are you sure you want to cancel this request? This cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Request</AlertDialogCancel>
+            <AlertDialogAction onClick={async () => {
+              if (!cancelRequestId) return;
+              const { error } = await supabase.from("service_requests").update({ status: "cancelled" }).eq("id", cancelRequestId);
+              if (!error) setRequests(prev => prev.map(r => r.id === cancelRequestId ? { ...r, status: "cancelled" } : r));
+              setCancelRequestId(null);
+            }}>Cancel Request</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
