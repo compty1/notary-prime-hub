@@ -93,7 +93,7 @@ export default function ResetPassword() {
       <div className="flex flex-1 items-center justify-center px-6 py-12">
         <div className="w-full max-w-md">
           <Link to="/" className="mb-8 inline-block">
-            <Logo size="lg" />
+            <Logo size="lg" showText />
           </Link>
           <h1 className="text-3xl font-black text-foreground mb-1">
             {success ? "Password Updated" : mode === "reset" ? "Set New Password" : "Forgot Password"}
@@ -165,7 +165,7 @@ export default function ResetPassword() {
       </div>
 
       {/* Right — Brand panel (desktop only) */}
-      <div className="hidden lg:flex lg:w-[45%] flex-col items-center justify-center bg-[#212529] p-12 text-white">
+      <div className="hidden lg:flex lg:w-[45%] flex-col items-center justify-center bg-foreground p-12 text-white">
         <div className="max-w-sm text-center space-y-8">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[24px] bg-primary/20">
             <KeyRound className="h-10 w-10 text-primary" />

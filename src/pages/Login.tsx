@@ -110,7 +110,7 @@ export default function Login() {
                 <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className="bg-muted border-none rounded-xl mt-1" />
               </div>
               {!resetSent && (
-                <Button type="submit" className="w-full rounded-2xl font-bold bg-[#212529] text-white shadow-block hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all" disabled={submitting}>
+                <Button type="submit" className="w-full rounded-2xl font-bold bg-foreground text-background shadow-block hover:bg-foreground/90 hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all" disabled={submitting}>
                   {submitting ? "Sending..." : "Send Reset Link"}
                 </Button>
               )}
@@ -137,7 +137,7 @@ export default function Login() {
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
-                <div className="relative flex justify-center text-xs uppercase"><span className="bg-white px-2 text-muted-foreground font-bold">or</span></div>
+                <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground font-bold">or</span></div>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -160,7 +160,7 @@ export default function Login() {
                 {rateLimitSeconds > 0 && (
                   <p className="text-sm text-destructive text-center font-bold">Too many attempts. Try again in {rateLimitSeconds}s</p>
                 )}
-                <Button type="submit" className="w-full rounded-2xl font-bold bg-[#212529] text-white shadow-block hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all" disabled={submitting || rateLimitSeconds > 0}>
+                <Button type="submit" className="w-full rounded-2xl font-bold bg-foreground text-background shadow-block hover:bg-foreground/90 hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all" disabled={submitting || rateLimitSeconds > 0}>
                   {submitting ? "Signing in..." : rateLimitSeconds > 0 ? `Wait ${rateLimitSeconds}s` : "Continue"}
                 </Button>
               </form>
@@ -173,7 +173,7 @@ export default function Login() {
         </div>
       </div>
 
-      <div className="hidden lg:flex lg:flex-1 items-center justify-center bg-[#212529] border-l border-gray-800">
+      <div className="hidden lg:flex lg:flex-1 items-center justify-center bg-foreground border-l border-sidebar-border">
         <div className="max-w-md px-12 text-center">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
             <Shield className="h-8 w-8 text-primary" />

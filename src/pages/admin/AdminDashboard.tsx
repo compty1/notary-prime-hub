@@ -150,7 +150,7 @@ export default function AdminDashboard() {
         </a>
         <AdminSidebar />
         <div className="flex-1 flex flex-col">
-          <header className="flex h-14 items-center justify-between border-b border-border bg-background/80 backdrop-blur-sm px-6">
+           <header className="flex h-14 items-center justify-between border-b border-border bg-background/80 backdrop-blur-sm px-6">
             <div className="flex items-center">
               <SidebarTrigger />
               <span className="ml-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
