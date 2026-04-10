@@ -94,7 +94,7 @@ export function Navbar() {
   const portalLabel = isAdmin || isNotary ? "Dashboard" : "Portal";
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 backdrop-blur-md h-20 flex items-center" aria-label="Main navigation">
+    <nav className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 backdrop-blur-md h-20 flex items-center print:hidden" aria-label="Main navigation" role="navigation">
       <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm focus:font-bold">
         Skip to main content
       </a>

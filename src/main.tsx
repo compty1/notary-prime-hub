@@ -5,6 +5,7 @@ import "./index.css";
 import { supabase } from "@/integrations/supabase/client";
 import { ensureSkipLink, initHighContrast } from "@/lib/a11yUtils";
 import { injectFrameProtection } from "@/lib/securityHelpers";
+import { initWebVitals } from "@/lib/performanceMonitor";
 
 // Initialize accessibility features
 ensureSkipLink();
@@ -12,6 +13,9 @@ initHighContrast();
 
 // #3879: Clickjacking protection
 injectFrameProtection();
+
+// Performance monitoring (Items 580-590)
+initWebVitals();
 
 // Global unhandled error handler (Gap: missing global error handler)
 window.addEventListener("error", (event) => {
