@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { User, Phone, MapPin, CheckCircle, ArrowRight, Loader2 } from "lucide-react";
 
 interface OnboardingWizardProps {
-  profile: any;
+  profile: { full_name?: string | null; phone?: string | null; address?: string | null; city?: string | null; state?: string | null; zip_code?: string | null; [key: string]: unknown } | null;
   onComplete: () => void;
 }
 
