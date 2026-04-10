@@ -242,7 +242,6 @@ export default function NotaryDirectory() {
     </PageShell>
   );
 }
-    title: typeFilter
       ? `Find a ${PROFESSIONAL_TYPES[typeFilter] || "Professional"} — Ohio Professional Directory`
       : "Find a Notary or Professional — Ohio Directory",
     description: "Browse certified Ohio notary and service professionals. Book in-person or remote online notarization appointments with trusted, credentialed professionals.",
