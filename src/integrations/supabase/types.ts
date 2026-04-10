@@ -3681,6 +3681,39 @@ export type Database = {
       }
     }
     Views: {
+      e_seal_verifications_public: {
+        Row: {
+          commissioned_state: string | null
+          document_hash: string | null
+          id: string | null
+          notarized_at: string | null
+          notary_name: string | null
+          revoked_at: string | null
+          status: string | null
+          verification_note: string | null
+        }
+        Insert: {
+          commissioned_state?: string | null
+          document_hash?: string | null
+          id?: string | null
+          notarized_at?: string | null
+          notary_name?: string | null
+          revoked_at?: string | null
+          status?: string | null
+          verification_note?: string | null
+        }
+        Update: {
+          commissioned_state?: string | null
+          document_hash?: string | null
+          id?: string | null
+          notarized_at?: string | null
+          notary_name?: string | null
+          revoked_at?: string | null
+          status?: string | null
+          verification_note?: string | null
+        }
+        Relationships: []
+      }
       public_reviews: {
         Row: {
           appointment_id: string | null
@@ -3712,6 +3745,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      reviews_public: {
+        Row: {
+          comment: string | null
+          created_at: string | null
+          id: string | null
+          rating: number | null
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string | null
+          id?: string | null
+          rating?: number | null
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string | null
+          id?: string | null
+          rating?: number | null
+        }
+        Relationships: []
       }
     }
     Functions: {
