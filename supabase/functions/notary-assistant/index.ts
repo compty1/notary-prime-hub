@@ -52,6 +52,8 @@ Always cite specific ORC sections when applicable. Be precise and practical. For
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  const rl = rateLimitGuard(req, 20);
+  if (rl) return rl;
 
   try {
     const authHeader = req.headers.get("Authorization");

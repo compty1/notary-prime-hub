@@ -59,6 +59,8 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+  const rl = rateLimitGuard(req, 15);
+  if (rl) return rl;
 
   try {
     // Auth check
