@@ -137,7 +137,22 @@ export function NotaryAttestationPanel({
         <Button
           className="w-full"
           disabled={!canFinalize || disabled}
-          onClick={() => onAttestationComplete(attestationNotes)}
+          onClick={async () => {
+            // Persist attestation to DB
+            if (sessionId) {
+              try {
+                await supabase.from("notarization_sessions").update({
+                  attestation_confirmed: true,
+                  attestation_confirmed_at: new Date().toISOString(),
+                  attestation_notes: attestationNotes || null,
+                  visual_match_confirmed: true,
+                }).eq("id", sessionId);
+              } catch (err) {
+                console.error("Failed to persist attestation:", err);
+              }
+            }
+            onAttestationComplete(attestationNotes);
+          }}
         >
           <Shield className="mr-2 h-4 w-4" />
           {canFinalize ? "Confirm Attestation & Apply Seal" : "Complete All Checks to Continue"}
