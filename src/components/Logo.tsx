@@ -32,9 +32,12 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
           alt="NotarDex"
           className={cn(s.icon, "object-contain transition-transform group-hover:-translate-y-0.5")}
         />
-        {subtitle && (
-          <span className="block text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-            {subtitle}
+        {showText && (
+          <span
+            className={cn("font-black tracking-tight leading-none uppercase", s.text, theme === "dark" ? "text-white" : "text-foreground")}
+            style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
+          >
+            NOTAR
           </span>
         )}
       </div>
