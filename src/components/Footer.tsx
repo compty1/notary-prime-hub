@@ -11,7 +11,7 @@ interface FooterProps {
 
 export function Footer({ phone = BRAND.defaultPhone, email = BRAND.defaultEmail, copyrightText }: FooterProps) {
   return (
-    <footer className="border-t border-sidebar-border bg-[hsl(222_47%_4%)] text-slate-400" role="contentinfo" aria-label="Site footer">
+    <footer className="border-t border-sidebar-border bg-[hsl(222_47%_4%)] text-slate-400 print:hidden" role="contentinfo" aria-label="Site footer">
       <div className="container mx-auto px-4 py-12">
         <div className="grid gap-8 md:grid-cols-5">
           <div className="md:col-span-1">
@@ -70,10 +70,10 @@ export function Footer({ phone = BRAND.defaultPhone, email = BRAND.defaultEmail,
         </div>
 
         {/* UPL Disclaimer */}
-        <div className="mt-8 border-t border-slate-800 pt-6 text-center text-xs text-slate-500 max-w-2xl mx-auto">
+        <div className="mt-8 border-t border-slate-800 pt-6 text-center text-xs text-slate-500 max-w-2xl mx-auto" role="note" aria-label="Legal disclaimer">
           <p>NotarDex is not a law firm. Our notaries are not attorneys and cannot provide legal advice, draft legal documents, or advise on the content of any document. (ORC §147.01)</p>
         </div>
-        <div className="mt-2 text-center text-xs text-slate-500 max-w-2xl mx-auto">
+        <div className="mt-2 text-center text-xs text-slate-500 max-w-2xl mx-auto" role="note" aria-label="Insurance information">
           <p>$25,000 surety bond &amp; E&amp;O insurance maintained. All notaries are background-checked and Ohio-commissioned.</p>
         </div>
 
