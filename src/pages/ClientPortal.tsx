@@ -372,7 +372,7 @@ export default function ClientPortal() {
               </Popover>
               {isAdmin && <Link to="/admin"><Button variant="outline" size="sm" className="rounded-xl font-bold">Admin</Button></Link>}
               <Link to="/book">
-                <Button size="sm" className="rounded-full bg-primary text-white font-bold hover:bg-primary/90 shadow-block hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all">
+                <Button size="sm" className="rounded-full bg-primary text-background font-bold hover:bg-primary/90 shadow-block hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all">
                   <Plus className="mr-1 h-4 w-4" /> New Notarization
                 </Button>
               </Link>
@@ -398,7 +398,7 @@ export default function ClientPortal() {
                     </div>
                   </div>
                   <Link to={`/ron-session?id=${appointments.find(a => a.status === "in_session")?.id}`}>
-                    <Button size="sm" className="rounded-xl bg-[#212529] text-white font-bold shadow-block">Join Session <ArrowRight className="ml-1 h-3 w-3" /></Button>
+                    <Button size="sm" className="rounded-xl bg-foreground text-background font-bold shadow-block">Join Session <ArrowRight className="ml-1 h-3 w-3" /></Button>
                   </Link>
                 </CardContent>
               </Card>
@@ -465,12 +465,12 @@ export default function ClientPortal() {
 
               <div className="space-y-6">
                 {upcoming.length > 0 && <DocumentReadinessScore serviceType={upcoming[0].service_type} uploadedDocuments={documents.map((d: any) => ({ file_name: d.file_name, status: d.status }))} />}
-                <div className="bg-[#212529] rounded-[24px] p-6 text-white relative overflow-hidden group cursor-pointer" onClick={() => setShowWizard(true)}>
+                <div className="bg-foreground rounded-[24px] p-6 text-background relative overflow-hidden group cursor-pointer" onClick={() => setShowWizard(true)}>
                   <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform"><Sparkles className="h-24 w-24" /></div>
                   <div className="relative z-10">
                     <h3 className="text-lg font-black mb-2 flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary" /> AI Document Wizard</h3>
                     <p className="text-sm text-muted-foreground font-medium mb-4 leading-relaxed">Have our AI review your documents for common errors before your appointment.</p>
-                    <Button size="sm" className="font-bold rounded-xl bg-primary text-white" onClick={e => { e.stopPropagation(); setShowWizard(true); }}>Start AI Review</Button>
+                    <Button size="sm" className="font-bold rounded-xl bg-primary text-background" onClick={e => { e.stopPropagation(); setShowWizard(true); }}>Start AI Review</Button>
                   </div>
                 </div>
 
@@ -487,7 +487,7 @@ export default function ClientPortal() {
                           <div className="flex items-center gap-2 text-xs"><CheckCircle className="h-3.5 w-3.5 text-emerald-500" /><span className="text-foreground font-medium">Government photo ID ready</span></div>
                           <div className="flex items-center gap-2 text-xs"><CheckCircle className="h-3.5 w-3.5 text-emerald-500" /><span className="text-foreground font-medium">Camera & microphone access</span></div>
                         </div>
-                        <Link to={`/ron-session?id=${ronAppt?.id}`}><Button size="sm" className="w-full mt-3 text-xs rounded-xl font-bold bg-[#212529] text-white">Go to Session</Button></Link>
+                        <Link to={`/ron-session?id=${ronAppt?.id}`}><Button size="sm" className="w-full mt-3 text-xs rounded-xl font-bold bg-foreground text-background">Go to Session</Button></Link>
                       </CardContent>
                     </Card>
                   );
@@ -622,7 +622,7 @@ export default function ClientPortal() {
             <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-black text-foreground">Payments & Invoices</h2>
-              {!showPaymentForm && <Button size="sm" onClick={() => setShowPaymentForm(true)} className="rounded-xl font-bold bg-[#212529] text-white shadow-block"><CreditCard className="mr-1 h-4 w-4" /> Make Payment</Button>}
+              {!showPaymentForm && <Button size="sm" onClick={() => setShowPaymentForm(true)} className="rounded-xl font-bold bg-foreground text-background shadow-block"><CreditCard className="mr-1 h-4 w-4" /> Make Payment</Button>}
             </div>
             {showPaymentForm && <PaymentForm onSuccess={() => { setShowPaymentForm(false); supabase.from("payments").select("*").eq("client_id", user!.id).order("created_at", { ascending: false }).then(({ data }) => { if (data) setPayments(data); }); }} onCancel={() => setShowPaymentForm(false)} />}
             {payments.length === 0 && !showPaymentForm ? (
@@ -640,7 +640,7 @@ export default function ClientPortal() {
                           <p className="text-xs text-muted-foreground font-medium">{new Date(p.created_at).toLocaleDateString()} · {p.method || "N/A"}{p.paid_at ? ` · Paid ${new Date(p.paid_at).toLocaleDateString()}` : ""}</p>
                         </div>
                         <div className="flex items-center gap-2">
-                          {p.status === "pending" && <Button size="sm" className="text-xs rounded-xl font-bold bg-[#212529] text-white" onClick={() => setPayingPaymentId(p.id)}><CreditCard className="mr-1 h-3 w-3" /> Pay Now</Button>}
+                          {p.status === "pending" && <Button size="sm" className="text-xs rounded-xl font-bold bg-foreground text-background" onClick={() => setPayingPaymentId(p.id)}><CreditCard className="mr-1 h-3 w-3" /> Pay Now</Button>}
                           <Badge className={`text-[10px] font-black uppercase tracking-wider rounded-lg ${p.status === "paid" ? "bg-emerald-50 text-emerald-600" : p.status === "pending" ? "bg-primary/10 text-primary" : "bg-gray-100 text-muted-foreground"}`}>{p.status}</Badge>
                           {p.invoice_url && <a href={p.invoice_url} target="_blank" rel="noreferrer"><Button size="sm" variant="outline" className="text-xs rounded-xl font-bold">View Invoice</Button></a>}
                         </div>
@@ -669,7 +669,7 @@ export default function ClientPortal() {
                   if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
                   else { toast({ title: "Review submitted!" }); setReviewForm({ appointment_id: "", rating: 5, comment: "" }); const { data: revs } = await supabase.from("reviews").select("*").eq("client_id", user.id); if (revs) setReviews(revs); }
                   setSubmittingReview(false);
-                }} className="rounded-xl font-bold bg-[#212529] text-white shadow-block">{submittingReview ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Star className="mr-1 h-4 w-4" />} Submit Review</Button>
+                }} className="rounded-xl font-bold bg-foreground text-background shadow-block">{submittingReview ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Star className="mr-1 h-4 w-4" />} Submit Review</Button>
               </CardContent></Card>
             ) : (
               <Card className="rounded-[24px] border-border"><CardContent className="py-12 text-center text-muted-foreground"><Star className="mx-auto mb-4 h-12 w-12 text-gray-300" /><p className="font-bold text-foreground mb-1">No reviews yet</p><p className="text-sm font-medium">Complete an appointment to leave feedback.</p></CardContent></Card>
@@ -699,7 +699,7 @@ export default function ClientPortal() {
                 if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
                 else if (data) { toast({ title: "Reminder set" }); setReminders(prev => [...prev, data].sort((a: any, b: any) => a.expiry_date.localeCompare(b.expiry_date))); setReminderForm({ document_id: "", expiry_date: "", remind_days_before: "30" }); }
                 setSavingReminder(false);
-              }} size="sm" className="rounded-xl font-bold bg-[#212529] text-white shadow-block">{savingReminder ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Bell className="mr-1 h-4 w-4" />} Set Reminder</Button>
+              }} size="sm" className="rounded-xl font-bold bg-foreground text-background shadow-block">{savingReminder ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Bell className="mr-1 h-4 w-4" />} Set Reminder</Button>
             </CardContent></Card>
             {reminders.length === 0 ? (
               <Card className="rounded-[24px] border-border"><CardContent className="py-12 text-center text-muted-foreground"><Bell className="mx-auto mb-4 h-12 w-12 text-gray-300" /><p className="font-medium">No reminders set</p></CardContent></Card>
@@ -718,9 +718,9 @@ export default function ClientPortal() {
           {activeSection === "services" && (
             <div className="space-y-6">
             <div className="flex items-center justify-between"><h2 className="text-xl font-black text-foreground">Available Services</h2><Button variant="outline" size="sm" onClick={() => setShowWizard(!showWizard)} className="rounded-xl font-bold"><Sparkles className="mr-1 h-3 w-3" /> {showWizard ? "Hide Guide" : "Not Sure What You Need?"}</Button></div>
-            <Card className="rounded-[24px] border-primary/20 bg-primary/5"><CardContent className="flex items-center justify-between p-4"><div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20"><FileText className="h-5 w-5 text-primary" /></div><div><h3 className="text-sm font-black text-foreground">Digitize Documents</h3><p className="text-xs text-muted-foreground font-medium">Upload scanned documents and convert them to editable digital formats</p></div></div><Link to="/digitize"><Button size="sm" className="rounded-xl font-bold bg-[#212529] text-white shadow-block"><ArrowRight className="mr-1 h-3 w-3" /> Start</Button></Link></CardContent></Card>
+            <Card className="rounded-[24px] border-primary/20 bg-primary/5"><CardContent className="flex items-center justify-between p-4"><div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20"><FileText className="h-5 w-5 text-primary" /></div><div><h3 className="text-sm font-black text-foreground">Digitize Documents</h3><p className="text-xs text-muted-foreground font-medium">Upload scanned documents and convert them to editable digital formats</p></div></div><Link to="/digitize"><Button size="sm" className="rounded-xl font-bold bg-foreground text-background shadow-block"><ArrowRight className="mr-1 h-3 w-3" /> Start</Button></Link></CardContent></Card>
             <div className="grid gap-4 sm:grid-cols-2">{services.map(svc => (
-              <Card key={svc.id} className="rounded-[24px] border-border shadow-sm hover:shadow-md transition-shadow"><CardContent className="p-4"><div className="flex items-start justify-between"><div><h3 className="text-sm font-black text-foreground">{svc.name}</h3>{svc.short_description && <p className="text-xs text-muted-foreground font-medium mt-1">{svc.short_description}</p>}</div><Badge className="text-[10px] font-black uppercase tracking-wider rounded-lg bg-muted text-muted-foreground border-border shrink-0 ml-2">{svc.pricing_model === "custom" ? "Quote" : svc.price_from ? `$${svc.price_from}${svc.price_to && svc.price_to > svc.price_from ? `–$${svc.price_to}` : ""}` : "Contact"}</Badge></div>{svc.description && <p className="text-xs text-muted-foreground font-medium mt-2 line-clamp-2">{svc.description}</p>}<div className="flex gap-2 mt-3"><Link to={getServiceUrl(svc)}><Button size="sm" className="text-xs rounded-xl font-bold bg-[#212529] text-white">{getServiceCTA(svc)}</Button></Link><Link to={`/services/${svc.id}`}><Button size="sm" variant="outline" className="text-xs rounded-xl font-bold">View Details</Button></Link></div></CardContent></Card>
+              <Card key={svc.id} className="rounded-[24px] border-border shadow-sm hover:shadow-md transition-shadow"><CardContent className="p-4"><div className="flex items-start justify-between"><div><h3 className="text-sm font-black text-foreground">{svc.name}</h3>{svc.short_description && <p className="text-xs text-muted-foreground font-medium mt-1">{svc.short_description}</p>}</div><Badge className="text-[10px] font-black uppercase tracking-wider rounded-lg bg-muted text-muted-foreground border-border shrink-0 ml-2">{svc.pricing_model === "custom" ? "Quote" : svc.price_from ? `$${svc.price_from}${svc.price_to && svc.price_to > svc.price_from ? `–$${svc.price_to}` : ""}` : "Contact"}</Badge></div>{svc.description && <p className="text-xs text-muted-foreground font-medium mt-2 line-clamp-2">{svc.description}</p>}<div className="flex gap-2 mt-3"><Link to={getServiceUrl(svc)}><Button size="sm" className="text-xs rounded-xl font-bold bg-foreground text-background">{getServiceCTA(svc)}</Button></Link><Link to={`/services/${svc.id}`}><Button size="sm" variant="outline" className="text-xs rounded-xl font-bold">View Details</Button></Link></div></CardContent></Card>
             ))}</div>
             </div>
           )}
