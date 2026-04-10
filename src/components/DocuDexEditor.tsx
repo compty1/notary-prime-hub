@@ -1488,6 +1488,52 @@ export function DocuDexEditor({
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* QR Code Dialog (EL-QR-001) */}
+        <Dialog open={showQrDialog} onOpenChange={setShowQrDialog}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle>Insert QR Code</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Content / URL</label>
+                <Input
+                  placeholder="https://example.com or any text"
+                  value={qrValue}
+                  onChange={e => setQrValue(e.target.value)}
+                  maxLength={2000}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Size: {qrSize}px</label>
+                <input
+                  type="range"
+                  min={80}
+                  max={400}
+                  step={10}
+                  value={qrSize}
+                  onChange={e => setQrSize(Number(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+              {qrValue.trim() && (
+                <div className="flex justify-center p-4 bg-muted rounded-lg">
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(qrValue.trim())}`}
+                    alt="QR Preview"
+                    width={Math.min(qrSize, 200)}
+                    height={Math.min(qrSize, 200)}
+                  />
+                </div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowQrDialog(false)}>Cancel</Button>
+              <Button onClick={insertQrCode} disabled={!qrValue.trim()}>Insert QR Code</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         {isMobile && (
           <Button
             variant="outline"
