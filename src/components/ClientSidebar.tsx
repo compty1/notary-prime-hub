@@ -52,6 +52,7 @@ const sidebarGroups = [
     items: [
       { key: "chat", label: "Live Chat", icon: MessageSquare },
       { key: "correspondence", label: "Correspondence", icon: Mail },
+      { key: "my-emails", label: "Email & Notifications", icon: Bell },
     ],
   },
   {
