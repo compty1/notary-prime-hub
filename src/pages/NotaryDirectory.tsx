@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, MapPin, Award, Shield, Star, Search, Calendar, User, ChevronLeft, ChevronRight } from "lucide-react";
+import { Loader2, MapPin, Award, Shield, Star, Search, Calendar, User, ChevronLeft, ChevronRight, ArrowUpDown } from "lucide-react";
 import { motion } from "framer-motion";
 import { ensureHex } from "@/lib/colorUtils";
 
@@ -55,6 +55,7 @@ export default function NotaryDirectory() {
   const [search, setSearch] = useState("");
   const [selectedType, setSelectedType] = useState(typeFilter || "all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState<"featured" | "name" | "areas">("featured");
 
   useEffect(() => {
     (async () => {
@@ -86,6 +87,11 @@ export default function NotaryDirectory() {
       (p.service_areas || []).some((a: string) => a.toLowerCase().includes(search.toLowerCase()));
     const matchesType = selectedType === "all" || p.professional_type === selectedType;
     return matchesSearch && matchesType;
+  }).sort((a, b) => {
+    if (sortBy === "name") return a.display_name.localeCompare(b.display_name);
+    if (sortBy === "areas") return (b.service_areas?.length || 0) - (a.service_areas?.length || 0);
+    // default: featured first
+    return (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0);
   });
 
   // DIR001: Pagination
@@ -123,6 +129,18 @@ export default function NotaryDirectory() {
               {Object.entries(PROFESSIONAL_TYPES).map(([k, v]) => (
                 <SelectItem key={k} value={k}>{v}</SelectItem>
               ))}
+            </SelectContent>
+          </Select>
+          {/* DIR002: Sort options */}
+          <Select value={sortBy} onValueChange={(v) => { setSortBy(v as any); setCurrentPage(1); }}>
+            <SelectTrigger className="w-full sm:w-40">
+              <ArrowUpDown className="mr-1 h-3 w-3" />
+              <SelectValue placeholder="Sort" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="featured">Featured First</SelectItem>
+              <SelectItem value="name">Name A-Z</SelectItem>
+              <SelectItem value="areas">Most Areas</SelectItem>
             </SelectContent>
           </Select>
         </div>
