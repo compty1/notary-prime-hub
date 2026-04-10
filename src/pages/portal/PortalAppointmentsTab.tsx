@@ -78,11 +78,11 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
   useEffect(() => {
     if (!user) return;
     supabase
-      .from("client_feedback" as any)
+      .from("client_feedback")
       .select("appointment_id")
       .eq("client_id", user.id)
-      .then(({ data }: any) => {
-        if (data) setFeedbackGiven(new Set(data.map((f: any) => f.appointment_id)));
+      .then(({ data }) => {
+        if (data) setFeedbackGiven(new Set(data.map((f) => f.appointment_id).filter(Boolean) as string[]));
       });
   }, [user]);
 
