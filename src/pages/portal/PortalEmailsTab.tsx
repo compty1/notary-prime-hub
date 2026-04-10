@@ -194,7 +194,7 @@ export default function PortalEmailsTab() {
     const existingCreds = (page.credentials as Record<string, unknown>) || {};
     const { error } = await supabase
       .from("notary_pages")
-      .update({ credentials: { ...existingCreds, email_settings: settings } as Record<string, unknown> })
+      .update({ credentials: { ...existingCreds, email_settings: settings } as unknown as Record<string, never> })
       .eq("id", page.id);
 
     if (error) {
