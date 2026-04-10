@@ -82,7 +82,7 @@ export default function AdminOverview() {
 
       const getValue = (idx: number, key: string): unknown => {
         const r = results[idx];
-        if (r.status === "fulfilled") return (r.value as Record<string, unknown>)[key];
+        if (r.status === "fulfilled") return (r.value as unknown as Record<string, unknown>)[key];
         return null;
       };
 
