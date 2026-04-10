@@ -948,7 +948,7 @@ const INTEGRATIONS: IntegrationSection[] = [
   },
 ];
 
-const EMAIL_PIPELINE_MAP: { emailType: string; trigger: string; edgeFunction: string; provider: string; source: "notardex" | "signnow" | "lovable" }[] = [
+const EMAIL_PIPELINE_MAP: { emailType: string; trigger: string; edgeFunction: string; provider: string; source: "notardex" | "signnow" | "lovable" | "stripe" | "google" }[] = [
   // --- NotarDex Internal Emails ---
   { emailType: "Booking Confirmation", trigger: "New appointment created", edgeFunction: "send-appointment-emails", provider: "IONOS SMTP", source: "notardex" },
   { emailType: "24hr Reminder", trigger: "Scheduled (cron)", edgeFunction: "send-appointment-reminders", provider: "IONOS SMTP", source: "notardex" },
@@ -970,12 +970,24 @@ const EMAIL_PIPELINE_MAP: { emailType: string; trigger: string; edgeFunction: st
   { emailType: "Email Change Verification", trigger: "Auth: email change", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue", source: "lovable" },
   { emailType: "Team / Notary Invite", trigger: "Auth: admin invites user", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue", source: "lovable" },
   { emailType: "Reauthentication Code", trigger: "Auth: sensitive action", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue", source: "lovable" },
-  // --- SignNow External Emails (sent by SignNow, NOT by NotarDex) ---
+  // --- SignNow External Emails ---
   { emailType: "Signing Invitation", trigger: "Document uploaded + invite sent via SignNow", edgeFunction: "signnow (action: send_invite)", provider: "SignNow Platform", source: "signnow" },
   { emailType: "Signing Reminder", trigger: "Auto-scheduled by SignNow for unsigned docs", edgeFunction: "N/A (SignNow internal)", provider: "SignNow Platform", source: "signnow" },
   { emailType: "Document Completed", trigger: "All parties have signed", edgeFunction: "signnow-webhook (event: document.complete)", provider: "SignNow Platform", source: "signnow" },
   { emailType: "Invite Viewed", trigger: "Signer opens document link", edgeFunction: "signnow-webhook (event: document.update)", provider: "SignNow Platform", source: "signnow" },
   { emailType: "Invite Cancelled", trigger: "Admin cancels signing invitation", edgeFunction: "signnow (action: cancel_invite)", provider: "SignNow Platform", source: "signnow" },
+  // --- Stripe External Emails ---
+  { emailType: "Payment Receipt", trigger: "Successful charge / payment_intent.succeeded", edgeFunction: "stripe-webhook (idempotency logged)", provider: "Stripe Platform", source: "stripe" },
+  { emailType: "Refund Confirmation", trigger: "charge.refunded event", edgeFunction: "stripe-webhook (status → refunded)", provider: "Stripe Platform", source: "stripe" },
+  { emailType: "Payment Failed Notice", trigger: "payment_intent.payment_failed", edgeFunction: "stripe-webhook (status → failed)", provider: "Stripe Platform", source: "stripe" },
+  { emailType: "Subscription Confirmation", trigger: "customer.subscription.created", edgeFunction: "stripe-webhook (plan updated)", provider: "Stripe Platform", source: "stripe" },
+  { emailType: "Subscription Cancelled", trigger: "customer.subscription.deleted", edgeFunction: "stripe-webhook (plan → free)", provider: "Stripe Platform", source: "stripe" },
+  { emailType: "Invoice / Upcoming Payment", trigger: "invoice.upcoming / invoice.payment_succeeded", edgeFunction: "N/A (Stripe internal)", provider: "Stripe Platform", source: "stripe" },
+  // --- Google Calendar External Emails ---
+  { emailType: "Calendar Invite (ICS)", trigger: "Appointment booked + calendar sync", edgeFunction: "google-calendar-sync", provider: "Google Calendar", source: "google" },
+  { emailType: "Event Reminder", trigger: "Auto-scheduled by Google (default 30min)", edgeFunction: "N/A (Google internal)", provider: "Google Calendar", source: "google" },
+  { emailType: "Event Updated", trigger: "Appointment rescheduled", edgeFunction: "google-calendar-sync (update)", provider: "Google Calendar", source: "google" },
+  { emailType: "Event Cancelled", trigger: "Appointment cancelled", edgeFunction: "google-calendar-sync (delete)", provider: "Google Calendar", source: "google" },
 ];
 
 function IntegrationSetupTab() {
