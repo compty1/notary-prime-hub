@@ -175,6 +175,7 @@ export default function RonSession() {
   const [isSignatureByMark, setIsSignatureByMark] = useState(false);
   const [witness2Name, setWitness2Name] = useState("");
   const [witness2Verified, setWitness2Verified] = useState(false);
+  const [showFinalizeDialog, setShowFinalizeDialog] = useState(false);
 
   const hasNativeKba = PLATFORMS_WITH_NATIVE_KBA.includes(signingPlatform);
 
