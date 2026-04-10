@@ -515,7 +515,7 @@ export default function Index() {
                   <CardContent className="p-6">
                     <div className="mb-3 flex gap-0.5">
                       {Array.from({ length: t.rating }).map((_, j) => (
-                        <Star key={j} className="h-4 w-4 fill-[hsl(43, 74%, 49%)] text-primary" />
+                        <Star key={j} className="h-4 w-4 fill-primary text-primary" />
                       ))}
                     </div>
                     <p className="mb-4 text-sm text-gray-500 font-medium">{t.text}</p>
@@ -575,17 +575,17 @@ export default function Index() {
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="contact-name" className="text-[10px] font-black uppercase tracking-widest text-gray-400">Name *</Label>
-                      <Input id="contact-name" placeholder="Your full name" value={contactForm.name} onChange={(e) => setContactForm((prev) => ({ ...prev, name: e.target.value }))} maxLength={100} required aria-required="true" autoComplete="name" className="bg-[#f8f9fa] border-none rounded-xl focus:ring-2 focus:ring-[hsl(43, 74%, 49%)]" />
+                      <Input id="contact-name" placeholder="Your full name" value={contactForm.name} onChange={(e) => setContactForm((prev) => ({ ...prev, name: e.target.value }))} maxLength={100} required aria-required="true" autoComplete="name" className="bg-[#f8f9fa] border-none rounded-xl focus:ring-2 focus:ring-primary" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="contact-email" className="text-[10px] font-black uppercase tracking-widest text-gray-400">Email *</Label>
-                      <Input id="contact-email" type="email" inputMode="email" placeholder="you@example.com" value={contactForm.email} onChange={(e) => setContactForm((prev) => ({ ...prev, email: e.target.value }))} maxLength={255} required aria-required="true" autoComplete="email" className="bg-[#f8f9fa] border-none rounded-xl focus:ring-2 focus:ring-[hsl(43, 74%, 49%)]" />
+                      <Input id="contact-email" type="email" inputMode="email" placeholder="you@example.com" value={contactForm.email} onChange={(e) => setContactForm((prev) => ({ ...prev, email: e.target.value }))} maxLength={255} required aria-required="true" autoComplete="email" className="bg-[#f8f9fa] border-none rounded-xl focus:ring-2 focus:ring-primary" />
                     </div>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="contact-phone" className="text-[10px] font-black uppercase tracking-widest text-gray-400">Phone</Label>
-                      <Input id="contact-phone" type="tel" inputMode="tel" placeholder="(614) 000-0000" value={contactForm.phone} onChange={(e) => setContactForm((prev) => ({ ...prev, phone: e.target.value }))} maxLength={20} autoComplete="tel" className="bg-[#f8f9fa] border-none rounded-xl focus:ring-2 focus:ring-[hsl(43, 74%, 49%)]" />
+                      <Input id="contact-phone" type="tel" inputMode="tel" placeholder="(614) 000-0000" value={contactForm.phone} onChange={(e) => setContactForm((prev) => ({ ...prev, phone: e.target.value }))} maxLength={20} autoComplete="tel" className="bg-[#f8f9fa] border-none rounded-xl focus:ring-2 focus:ring-primary" />
                       <p className="text-xs text-gray-400 font-medium">Used only for appointment coordination.</p>
                     </div>
                     <div className="space-y-2">
@@ -610,7 +610,7 @@ export default function Index() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="contact-message" className="text-[10px] font-black uppercase tracking-widest text-gray-400">Message *</Label>
-                    <Textarea id="contact-message" placeholder="Tell us about your notarization needs..." value={contactForm.message} onChange={(e) => setContactForm((prev) => ({ ...prev, message: e.target.value }))} maxLength={1000} rows={4} required aria-required="true" className="bg-[#f8f9fa] border-none rounded-xl focus:ring-2 focus:ring-[hsl(43, 74%, 49%)]" />
+                    <Textarea id="contact-message" placeholder="Tell us about your notarization needs..." value={contactForm.message} onChange={(e) => setContactForm((prev) => ({ ...prev, message: e.target.value }))} maxLength={1000} rows={4} required aria-required="true" className="bg-[#f8f9fa] border-none rounded-xl focus:ring-2 focus:ring-primary" />
                   </div>
                   {/* Honeypot */}
                   <div className="sr-only" aria-hidden="true">
@@ -619,7 +619,7 @@ export default function Index() {
                   </div>
                   {/* Legal consent */}
                   <div className="flex items-start gap-2">
-                    <input type="checkbox" id="agree-terms" checked={agreeTerms} onChange={e => setAgreeTerms(e.target.checked)} className="mt-1 h-4 w-4 rounded border-gray-200 text-primary focus:ring-[hsl(43, 74%, 49%)]" required />
+                    <input type="checkbox" id="agree-terms" checked={agreeTerms} onChange={e => setAgreeTerms(e.target.checked)} className="mt-1 h-4 w-4 rounded border-gray-200 text-primary focus:ring-primary" required />
                     <Label htmlFor="agree-terms" className="text-xs text-gray-400 font-medium leading-tight">
                       I agree to the <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link> and <Link to="/terms#privacy" className="text-primary hover:underline">Privacy Policy</Link>.
                     </Label>
