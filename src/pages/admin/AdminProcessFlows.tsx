@@ -195,6 +195,22 @@ export default function AdminProcessFlows() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Propagate template confirmation */}
+      <AlertDialog open={!!propagateDialog} onOpenChange={(open) => { if (!open && propagateDialog) { propagateDialog.resolve(false); setPropagateDialog(null); } }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Propagate to Services?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {propagateDialog?.matchCount} service(s) use a matching template key. Apply this update to all of them?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => { propagateDialog?.resolve(false); setPropagateDialog(null); }}>No, save globally only</AlertDialogCancel>
+            <AlertDialogAction onClick={() => { propagateDialog?.resolve(true); setPropagateDialog(null); }}>Yes, propagate</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
