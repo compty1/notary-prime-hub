@@ -91,6 +91,7 @@ async function resolveStorageUrl(path: string | null): Promise<string | null> {
 
 export default function NotaryPage() {
   const { slug } = useParams<{ slug: string }>();
+  const { get } = useSettings();
   const [page, setPage] = useState<NotaryPageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
