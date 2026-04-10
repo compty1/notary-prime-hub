@@ -27,7 +27,7 @@ export function sanitizeEmail(email: string): string {
 
 /** Sanitize phone number */
 export function sanitizePhone(phone: string): string {
-  return phone.replace(/[^\d+\-() .ext]/gi, "").slice(0, 20);
+  return phone.replace(/[^\d+\-(). ]/gi, "").slice(0, 20);
 }
 
 /** Sanitize URL - only allow http/https protocols */

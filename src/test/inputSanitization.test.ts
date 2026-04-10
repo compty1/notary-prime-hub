@@ -28,7 +28,7 @@ describe("inputSanitization", () => {
 
   it("sanitizes phone", () => {
     expect(sanitizePhone("(614) 300-6890")).toBe("(614) 300-6890");
-    expect(sanitizePhone("614<script>300")).toBe("614t300");
+    expect(sanitizePhone("614<script>300")).toBe("614ip300");
   });
 
   it("validates UUID", () => {
