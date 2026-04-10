@@ -180,15 +180,25 @@ export default function AdminProfessionals() {
 
   // Export transactions
   const exportTransactions = () => {
-    exportToCSV(transactions.map(t => ({
+    const cols = [
+      { key: "Professional" as const, label: "Professional" },
+      { key: "Gross" as const, label: "Gross" },
+      { key: "PlatformFee" as const, label: "Platform Fee" },
+      { key: "ProShare" as const, label: "Professional Share" },
+      { key: "Status" as const, label: "Status" },
+      { key: "Date" as const, label: "Date" },
+      { key: "PaidAt" as const, label: "Paid At" },
+    ];
+    const rows = transactions.map(t => ({
       Professional: getProfName(t.professional_user_id),
       Gross: t.gross_amount,
-      "Platform Fee": t.platform_fee,
-      "Professional Share": t.professional_share,
+      PlatformFee: t.platform_fee,
+      ProShare: t.professional_share,
       Status: t.status,
       Date: t.created_at,
-      "Paid At": t.paid_at || "",
-    })), "profit-share-transactions");
+      PaidAt: t.paid_at || "",
+    }));
+    exportToCSV(rows, cols, "profit-share-transactions");
     toast({ title: "Exported" });
   };
 
