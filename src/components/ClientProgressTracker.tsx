@@ -15,12 +15,23 @@ const STEPS: ProgressStep[] = [
   { key: "download", label: "Download", icon: Download },
 ];
 
-interface Props {
-  appointments: any[];
-  documents: any[];
+interface AppointmentRecord {
+  status: string;
+  notarization_type?: string;
+  [key: string]: unknown;
 }
 
-function deriveStep(appointments: any[], documents: any[]): number {
+interface DocumentRecord {
+  status: string;
+  [key: string]: unknown;
+}
+
+interface Props {
+  appointments: AppointmentRecord[];
+  documents: DocumentRecord[];
+}
+
+function deriveStep(appointments: AppointmentRecord[], documents: DocumentRecord[]): number {
   if (!appointments.length && !documents.length) return 0;
 
   const hasDoc = documents.length > 0;

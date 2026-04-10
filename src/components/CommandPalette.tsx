@@ -18,7 +18,7 @@ import {
   UserPlus, LogIn, HelpCircle, Star,
 } from "lucide-react";
 
-type RouteItem = { label: string; path: string; icon: any; keywords?: string };
+type RouteItem = { label: string; path: string; icon: React.ElementType; keywords?: string };
 
 const publicRoutes: RouteItem[] = [
   { label: "Home", path: "/", icon: Home, keywords: "landing main" },

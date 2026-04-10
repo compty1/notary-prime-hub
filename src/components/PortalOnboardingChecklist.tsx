@@ -13,10 +13,17 @@ interface ChecklistItem {
   action?: { label: string; href: string };
 }
 
+interface ProfileRecord {
+  full_name?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  [key: string]: unknown;
+}
+
 interface PortalOnboardingChecklistProps {
-  profile: any;
-  documents: any[];
-  appointments: any[];
+  profile: ProfileRecord | null;
+  documents: Array<{ status: string; [key: string]: unknown }>;
+  appointments: Array<{ status: string; [key: string]: unknown }>;
   onEditProfile: () => void;
 }
 
