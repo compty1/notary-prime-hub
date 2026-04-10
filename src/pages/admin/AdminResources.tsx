@@ -82,6 +82,7 @@ const forms: FormEntry[] = [
   {
     category: "Corporate",
     name: "Acknowledgment (Corp/LLC)",
+    anatomyKey: "corporate",
     ref: "ORC §147.55",
     desc: "Signer acting as an officer or agent for a company.",
     items: ["Officer Name", "Title (e.g. Managing Member)", "Entity Name (LLC/INC)", "State of Incorporation"],
@@ -96,6 +97,7 @@ const forms: FormEntry[] = [
   {
     category: "Specialized",
     name: "Attorney-in-Fact (POA)",
+    anatomyKey: "poa",
     ref: "Common Law",
     desc: "When signing on behalf of a Principal under a Power of Attorney.",
     items: ["Agent Name", "As Attorney-in-Fact for...", "Principal Name", "Date of POA Reference"],
@@ -109,6 +111,7 @@ const forms: FormEntry[] = [
   {
     category: "Specialized",
     name: "Copy Certification",
+    anatomyKey: "copy_certification",
     ref: "ORC §147.51",
     desc: "Certifying that a copy is a true replica of an original document.",
     items: ["Type of Document", "Date of Certification", "Custody Statement", "Notary Signature"],
@@ -122,6 +125,7 @@ const forms: FormEntry[] = [
   {
     category: "Specialized",
     name: "Signature by Mark (The X)",
+    anatomyKey: "signature_by_mark",
     ref: "ORC §147.542",
     desc: "Signer cannot sign name but can make a mark.",
     items: ["The Mark (X)", "Witness 1 Signature", "Witness 2 Signature", "Notary Explanation"],
@@ -135,6 +139,7 @@ const forms: FormEntry[] = [
   {
     category: "Vehicle",
     name: "Ohio Vehicle Title (Seller)",
+    anatomyKey: "vehicle_title",
     ref: "ORC §4505.06",
     desc: "Transfer of title — requires strict Jurat compliance. High discipline risk.",
     items: ["Price/Value", "Odometer Reading", "Buyer Info (Name/Address)", "Seller Signature Under Oath"],
@@ -149,6 +154,7 @@ const forms: FormEntry[] = [
   {
     category: "General",
     name: "Oath/Affirmation (Oral)",
+    anatomyKey: "oath_affirmation",
     ref: "ORC §147.14",
     desc: "Verbal oath not attached to a written document.",
     items: ["Identity Verification", "Verbal Script", "Witnessing of Response", "Journal Entry"],
@@ -162,6 +168,7 @@ const forms: FormEntry[] = [
   {
     category: "Correction",
     name: "Certificate Correction",
+    anatomyKey: "certificate_correction",
     ref: "ORC §147.54",
     desc: "Amending a certificate after an error is discovered.",
     items: ["Original Date", "Description of Error", "Date of Correction", "Explanation Statement"],
