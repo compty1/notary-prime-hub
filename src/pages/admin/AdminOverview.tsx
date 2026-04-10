@@ -37,10 +37,10 @@ interface OverviewAppointment {
   confirmation_number: string | null;
 }
 
-interface PaymentRow { amount: number; status: string; }
+interface PaymentRow { amount: number; status: string; created_at?: string; fees_charged?: number; }
 interface SettingRow { setting_key: string; setting_value: string; }
 interface ProfileRow { user_id: string; full_name: string | null; email: string | null; }
-interface AllApptRow { scheduled_date: string; status: string; notarization_type: string; client_id: string; }
+interface AllApptRow { id: string; scheduled_date: string; scheduled_time: string; status: string; notarization_type: string; client_id: string; service_type: string; confirmation_number: string | null; }
 interface AuditRow { id: string; action: string; entity_type: string | null; entity_id: string | null; created_at: string; user_id: string | null; }
 
 export default function AdminOverview() {

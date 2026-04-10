@@ -45,6 +45,7 @@ interface AppointmentItem {
   confirmation_number?: string | null;
   location?: string | null;
   notes?: string | null;
+  estimated_price?: number | null;
 }
 
 interface Props {
