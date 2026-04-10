@@ -609,6 +609,11 @@ export default function RonSession() {
       toast({ title: "Recording consent required", description: "Ohio ORC §147.66 requires explicit recording consent before finalizing a RON session.", variant: "destructive" });
       return;
     }
+    // Ohio ORC §147.54: Signature by mark requires 2 credible witnesses
+    if (isSignatureByMark && (!witnessVerified || !witness2Verified || !witnessName.trim() || !witness2Name.trim())) {
+      toast({ title: "Two witnesses required", description: "Ohio ORC §147.54 requires two credible witnesses for signature by mark. Both must be verified.", variant: "destructive" });
+      return;
+    }
     if (!recordingUrl || !recordingUrl.trim()) {
       toast({ title: "Recording URL required", description: "A session recording URL must be provided before finalizing per Ohio ORC §147.66.", variant: "destructive" });
       return;
