@@ -105,7 +105,7 @@ export default function ResetPassword() {
           {success ? (
             <div className="flex flex-col items-center gap-4 py-4 rounded-[24px] border border-gray-100 bg-white p-8">
               <CheckCircle className="h-12 w-12 text-primary" />
-              <Link to="/login"><Button className="rounded-xl bg-[hsl(43, 74%, 49%)] text-white hover:bg-[#ca9a06] shadow-[3px_3px_0px_#212529]">Go to Sign In</Button></Link>
+              <Link to="/login"><Button className="rounded-xl bg-primary text-white hover:bg-[#ca9a06] shadow-[3px_3px_0px_#212529]">Go to Sign In</Button></Link>
             </div>
           ) : requestSent ? (
             <div className="flex flex-col items-center gap-4 py-8 text-center rounded-[24px] border border-gray-100 bg-white p-8">
@@ -143,7 +143,7 @@ export default function ResetPassword() {
                   </button>
                 </div>
               </div>
-              <Button type="submit" className="w-full rounded-xl bg-[hsl(43, 74%, 49%)] text-white font-bold hover:bg-[#ca9a06] shadow-[3px_3px_0px_#212529] h-11" disabled={submitting}>
+              <Button type="submit" className="w-full rounded-xl bg-primary text-white font-bold hover:bg-[#ca9a06] shadow-[3px_3px_0px_#212529] h-11" disabled={submitting}>
                 {submitting ? "Updating..." : "Update Password"}
               </Button>
             </form>
@@ -153,7 +153,7 @@ export default function ResetPassword() {
                 <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-gray-500">Email Address</Label>
                 <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" autoComplete="email" className="mt-1 rounded-xl border-gray-200 bg-white" />
               </div>
-              <Button type="submit" className="w-full rounded-xl bg-[hsl(43, 74%, 49%)] text-white font-bold hover:bg-[#ca9a06] shadow-[3px_3px_0px_#212529] h-11" disabled={submitting || cooldown > 0}>
+              <Button type="submit" className="w-full rounded-xl bg-primary text-white font-bold hover:bg-[#ca9a06] shadow-[3px_3px_0px_#212529] h-11" disabled={submitting || cooldown > 0}>
                 {submitting ? "Sending..." : cooldown > 0 ? `Wait ${cooldown}s` : "Send Reset Link"}
               </Button>
               <p className="text-center text-sm text-muted-foreground">
@@ -167,8 +167,8 @@ export default function ResetPassword() {
       {/* Right — Brand panel (desktop only) */}
       <div className="hidden lg:flex lg:w-[45%] flex-col items-center justify-center bg-[#212529] p-12 text-white">
         <div className="max-w-sm text-center space-y-8">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[24px] bg-[hsl(43, 74%, 49%)]/20">
-            <KeyRound className="h-10 w-10 text-[hsl(43, 74%, 49%)]" />
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[24px] bg-primary/20">
+            <KeyRound className="h-10 w-10 text-primary" />
           </div>
           <h2 className="text-3xl font-black">Secure Account<br />Recovery</h2>
           <p className="text-gray-400">Your account security is our priority. Reset links expire after 24 hours for your protection.</p>

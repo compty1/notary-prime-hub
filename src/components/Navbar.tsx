@@ -184,7 +184,7 @@ export function Navbar() {
             <Link to="/book">
               <Button
                 size="sm"
-                className="rounded-full bg-[hsl(43, 74%, 49%)] text-white font-bold px-6 hover:bg-[#ca9a06] shadow-block hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all"
+                className="rounded-full bg-primary text-white font-bold px-6 hover:bg-[#ca9a06] shadow-block hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all"
               >
                 Start Notarizing
               </Button>
@@ -261,7 +261,7 @@ export function Navbar() {
                 </Link>
               )}
               <Link to="/book">
-                <Button className="w-full font-bold bg-[hsl(43, 74%, 49%)] text-white hover:bg-[#ca9a06]">Start Notarizing</Button>
+                <Button className="w-full font-bold bg-primary text-white hover:bg-[#ca9a06]">Start Notarizing</Button>
               </Link>
             </div>
           </SheetContent>

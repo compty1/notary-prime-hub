@@ -110,7 +110,7 @@ export function ClientSidebar({ activeSection, onSectionChange, profile, unreadC
                         }}
                         className={`rounded-xl transition-all ${
                           isActive
-                            ? "bg-[hsl(43, 74%, 49%)] text-white shadow-lg shadow-yellow-500/20 font-bold"
+                            ? "bg-primary text-white shadow-lg shadow-primary/20 font-bold"
                             : "text-gray-400 hover:text-white hover:bg-white/5"
                         }`}
                       >

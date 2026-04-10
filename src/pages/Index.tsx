@@ -248,7 +248,7 @@ export default function Index() {
                 Legal documents{" "}
                 <span className="relative inline-block">
                   notarized
-                  <span className="absolute bottom-1 left-0 w-full h-3 bg-[hsl(43, 74%, 49%)]/30 -z-10 rounded-sm" />
+                  <span className="absolute bottom-1 left-0 w-full h-3 bg-primary/30 -z-10 rounded-sm" />
                 </span>{" "}
                 in minutes.
               </motion.h1>
@@ -300,7 +300,7 @@ export default function Index() {
               {/* Document Card */}
               <div className="absolute top-8 left-8 w-56 bg-white rounded-[24px] border border-gray-100 shadow-lg p-5 rotate-6 hover:rotate-2 transition-transform duration-500">
                 <div className="flex items-center gap-2 mb-3">
-                  <FileSignature className="h-5 w-5 text-[hsl(43, 74%, 49%)]" />
+                  <FileSignature className="h-5 w-5 text-primary" />
                   <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Document</span>
                 </div>
                 <div className="space-y-2">
@@ -310,7 +310,7 @@ export default function Index() {
                   <div className="h-2 bg-gray-100 rounded-full w-2/3" />
                 </div>
                 <div className="mt-4 flex items-center gap-2">
-                  <div className="h-6 w-16 bg-[hsl(43, 74%, 49%)]/20 rounded-md" />
+                  <div className="h-6 w-16 bg-primary/20 rounded-md" />
                   <div className="h-6 w-12 bg-gray-100 rounded-md" />
                 </div>
               </div>
@@ -333,8 +333,8 @@ export default function Index() {
               <div className="absolute bottom-12 left-16 w-24 h-24 animate-bounce-slow">
                 <div className="relative w-full h-full">
                   {/* Dashed spinning ring */}
-                  <div className="absolute inset-0 rounded-full border-2 border-dashed border-[hsl(43, 74%, 49%)]/40 animate-spin-slow" />
-                  <div className="absolute inset-2 rounded-full bg-[hsl(43, 74%, 49%)] flex items-center justify-center shadow-lg shadow-yellow-500/20">
+                  <div className="absolute inset-0 rounded-full border-2 border-dashed border-primary/40 animate-spin-slow" />
+                  <div className="absolute inset-2 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
                     <Stamp className="h-8 w-8 text-white" />
                   </div>
                 </div>
@@ -372,7 +372,7 @@ export default function Index() {
                 className="relative z-10 group"
               >
                 <div className="bg-white rounded-[24px] border border-gray-100 p-6 shadow-block-lg hover:-translate-y-1 transition-all duration-300">
-                  <div className="w-14 h-14 rounded-xl border-2 border-gray-200 flex items-center justify-center mb-5 group-hover:bg-[hsl(43, 74%, 49%)] group-hover:border-[hsl(43, 74%, 49%)] group-hover:text-white transition-all">
+                  <div className="w-14 h-14 rounded-xl border-2 border-gray-200 flex items-center justify-center mb-5 group-hover:bg-primary group-hover:border-primary group-hover:text-white transition-all">
                     <step.icon className="w-7 h-7 text-gray-600 group-hover:text-white transition-colors" />
                   </div>
                   <h3 className="text-xl font-black text-[#212529] mb-2">{step.title}</h3>
@@ -390,7 +390,7 @@ export default function Index() {
           <div className="text-center mb-16">
             <p className="text-label font-black uppercase tracking-widest text-gray-500 mb-3">Why NotarDex</p>
             <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white mb-4">Key Benefits</h2>
-            <div className="w-16 h-1 bg-[hsl(43, 74%, 49%)] mx-auto rounded-full" />
+            <div className="w-16 h-1 bg-primary mx-auto rounded-full" />
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -408,8 +408,8 @@ export default function Index() {
                 transition={{ delay: idx * 0.1 }}
                 className="bg-white/5 backdrop-blur-sm p-8 rounded-[24px] border border-white/10 text-center hover:-translate-y-1 transition duration-300 group"
               >
-                <div className="w-16 h-16 bg-[hsl(43, 74%, 49%)]/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-[hsl(43, 74%, 49%)]/20 transition-colors">
-                  <benefit.icon className="w-8 h-8 text-[hsl(43, 74%, 49%)]" />
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/20 transition-colors">
+                  <benefit.icon className="w-8 h-8 text-primary" />
                 </div>
                 <h3 className="text-lg font-black mb-2">{benefit.title}</h3>
                 <p className="text-sm text-gray-400 font-medium">{benefit.desc}</p>
@@ -432,11 +432,11 @@ export default function Index() {
           <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-2 mb-12">
             {primaryServices.map((s, i) => (
               <motion.div key={s.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
-                <Card className="group h-full rounded-[24px] border-gray-100 hover:border-[hsl(43, 74%, 49%)]/30 transition-all shadow-sm hover:shadow-md">
+                <Card className="group h-full rounded-[24px] border-gray-100 hover:border-primary/30 transition-all shadow-sm hover:shadow-md">
                   <CardContent className="p-8">
                     <div className="mb-4 flex items-center gap-3">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[hsl(43, 74%, 49%)]/10 transition-colors group-hover:bg-[hsl(43, 74%, 49%)]/15">
-                        <s.icon className="h-7 w-7 text-[hsl(43, 74%, 49%)]" />
+                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 transition-colors group-hover:bg-primary/15">
+                        <s.icon className="h-7 w-7 text-primary" />
                       </div>
                       <Badge className="text-[10px] font-black uppercase tracking-wider bg-[#f8f9fa] text-gray-500 border-gray-200">{s.badge}</Badge>
                     </div>
@@ -465,8 +465,8 @@ export default function Index() {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:gap-8 max-w-5xl mx-auto">
             {otherServices.map((service) => (
               <Link key={service.title} to={service.to}>
-                <div className="bg-white p-6 rounded-[24px] border border-gray-100 shadow-sm flex flex-col items-center text-center hover:border-[hsl(43, 74%, 49%)]/30 hover:-translate-y-0.5 transition-all cursor-pointer group">
-                  <div className="w-12 h-12 rounded-xl bg-[#f8f9fa] flex items-center justify-center text-gray-400 mb-4 group-hover:bg-[hsl(43, 74%, 49%)]/10 group-hover:text-[hsl(43, 74%, 49%)] transition">
+                <div className="bg-white p-6 rounded-[24px] border border-gray-100 shadow-sm flex flex-col items-center text-center hover:border-primary/30 hover:-translate-y-0.5 transition-all cursor-pointer group">
+                  <div className="w-12 h-12 rounded-xl bg-[#f8f9fa] flex items-center justify-center text-gray-400 mb-4 group-hover:bg-primary/10 group-hover:text-primary transition">
                     <service.icon className="w-6 h-6" />
                   </div>
                   <h3 className="font-black text-[#212529] text-sm">{service.title}</h3>
@@ -515,7 +515,7 @@ export default function Index() {
                   <CardContent className="p-6">
                     <div className="mb-3 flex gap-0.5">
                       {Array.from({ length: t.rating }).map((_, j) => (
-                        <Star key={j} className="h-4 w-4 fill-[hsl(43, 74%, 49%)] text-[hsl(43, 74%, 49%)]" />
+                        <Star key={j} className="h-4 w-4 fill-[hsl(43, 74%, 49%)] text-primary" />
                       ))}
                     </div>
                     <p className="mb-4 text-sm text-gray-500 font-medium">{t.text}</p>
@@ -529,7 +529,7 @@ export default function Index() {
       </section>
 
       {/* ===== CTA Banner ===== */}
-      <section className="bg-[hsl(43, 74%, 49%)] py-16">
+      <section className="bg-primary py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-black tracking-tight text-[#212529] mb-6">Ready to Notarize Your Document?</h2>
           <p className="text-[#212529]/70 text-lg font-medium mb-8">Join thousands of users who have securely notarized their documents online.</p>
@@ -619,9 +619,9 @@ export default function Index() {
                   </div>
                   {/* Legal consent */}
                   <div className="flex items-start gap-2">
-                    <input type="checkbox" id="agree-terms" checked={agreeTerms} onChange={e => setAgreeTerms(e.target.checked)} className="mt-1 h-4 w-4 rounded border-gray-200 text-[hsl(43, 74%, 49%)] focus:ring-[hsl(43, 74%, 49%)]" required />
+                    <input type="checkbox" id="agree-terms" checked={agreeTerms} onChange={e => setAgreeTerms(e.target.checked)} className="mt-1 h-4 w-4 rounded border-gray-200 text-primary focus:ring-[hsl(43, 74%, 49%)]" required />
                     <Label htmlFor="agree-terms" className="text-xs text-gray-400 font-medium leading-tight">
-                      I agree to the <Link to="/terms" className="text-[hsl(43, 74%, 49%)] hover:underline">Terms of Service</Link> and <Link to="/terms#privacy" className="text-[hsl(43, 74%, 49%)] hover:underline">Privacy Policy</Link>.
+                      I agree to the <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link> and <Link to="/terms#privacy" className="text-primary hover:underline">Privacy Policy</Link>.
                     </Label>
                   </div>
                   <div aria-live="polite" className="text-sm text-destructive" />
@@ -666,7 +666,7 @@ export default function Index() {
             </Card>
           </div>
           <div className="mt-6 text-center">
-            <Link to="/services" className="text-sm text-[hsl(43, 74%, 49%)] font-bold hover:underline">View all our professional notary and document services →</Link>
+            <Link to="/services" className="text-sm text-primary font-bold hover:underline">View all our professional notary and document services →</Link>
           </div>
         </div>
       </section>

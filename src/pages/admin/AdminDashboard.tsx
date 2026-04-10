@@ -111,7 +111,7 @@ function AdminSidebar() {
                       <SidebarMenuButton asChild>
                         <NavLink to={item.url} end={item.url === "/admin"}
                           className="text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
-                          activeClassName="bg-[hsl(43, 74%, 49%)] text-white shadow-lg shadow-yellow-500/20 font-bold">
+                          activeClassName="bg-primary text-white shadow-lg shadow-primary/20 font-bold">
                           <item.icon className="mr-2 h-4 w-4" />
                           {!collapsed && <span className="text-sm">{item.title}</span>}
                         </NavLink>
