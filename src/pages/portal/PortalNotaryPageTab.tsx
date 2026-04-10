@@ -93,6 +93,7 @@ export default function PortalNotaryPageTab() {
   const [platformServices, setPlatformServices] = useState<PlatformService[]>([]);
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [profitStats, setProfitStats] = useState({ total: 0, fees: 0, profit: 0, pending: 0 });
+  const [profitHistory, setProfitHistory] = useState<ProfitTransaction[]>([]);
 
   useEffect(() => {
     if (!user) return;
