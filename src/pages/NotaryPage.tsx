@@ -193,6 +193,9 @@ export default function NotaryPage() {
 
   return (
     <div style={{ fontFamily: `"${fontFamily}", sans-serif` }}>
+      {fontFamily !== "Inter" && (
+        <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontFamily)}:wght@400;500;600;700;800;900&display=swap`} />
+      )}
       {/* R001: Pass hideNav to prevent double navbar */}
       <PageShell hideNav>
         {/* Dynamic Nav Bar */}
