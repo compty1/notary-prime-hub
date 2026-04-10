@@ -242,9 +242,6 @@ export default function NotaryDirectory() {
     </PageShell>
   );
 }
-  const [searchParams] = useSearchParams();
-  const typeFilter = searchParams.get("type");
-
   usePageMeta({
     title: typeFilter
       ? `Find a ${PROFESSIONAL_TYPES[typeFilter] || "Professional"} — Ohio Professional Directory`
