@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { FileText, Clock, CheckCircle, AlertTriangle, Download, Search, ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
 import { ProgressTimeline } from "@/components/ProgressTimeline";
 import { supabase } from "@/integrations/supabase/client";
