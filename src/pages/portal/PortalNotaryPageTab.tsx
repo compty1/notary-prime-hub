@@ -459,8 +459,8 @@ export default function PortalNotaryPageTab() {
             <div>
               <Label>Primary Color</Label>
               <div className="flex gap-2">
-                <Input type="color" value={page.theme_color || "#eab308"} onChange={e => updateField("theme_color", e.target.value)} className="h-10 w-14 p-1" />
-                <Input value={page.theme_color || "#eab308"} onChange={e => updateField("theme_color", e.target.value)} className="flex-1 font-mono" />
+                <Input type="color" value={page.theme_color || "hsl(43, 74%, 49%)"} onChange={e => updateField("theme_color", e.target.value)} className="h-10 w-14 p-1" />
+                <Input value={page.theme_color || "hsl(43, 74%, 49%)"} onChange={e => updateField("theme_color", e.target.value)} className="flex-1 font-mono" />
               </div>
             </div>
             <div>

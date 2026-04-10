@@ -155,7 +155,7 @@ export default function Login() {
                    </div>
                  </div>
                  <div className="flex items-center justify-end">
-                   <button type="button" onClick={() => setForgotMode(true)} className="text-sm text-[#eab308] font-bold hover:underline">Forgot password?</button>
+                   <button type="button" onClick={() => setForgotMode(true)} className="text-sm text-[hsl(43, 74%, 49%)] font-bold hover:underline">Forgot password?</button>
                  </div>
                 {rateLimitSeconds > 0 && (
                   <p className="text-sm text-destructive text-center font-bold">Too many attempts. Try again in {rateLimitSeconds}s</p>
@@ -175,8 +175,8 @@ export default function Login() {
 
       <div className="hidden lg:flex lg:flex-1 items-center justify-center bg-[#212529] border-l border-gray-800">
         <div className="max-w-md px-12 text-center">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#eab308]/10">
-            <Shield className="h-8 w-8 text-[#eab308]" />
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[hsl(43, 74%, 49%)]/10">
+            <Shield className="h-8 w-8 text-[hsl(43, 74%, 49%)]" />
           </div>
           <h2 className="mb-3 text-2xl font-black text-white">Secure Document Services</h2>
           <p className="text-gray-400 font-medium">In-person and remote online notarization, fully compliant with Ohio Revised Code §147.</p>

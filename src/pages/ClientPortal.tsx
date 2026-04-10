@@ -355,13 +355,13 @@ export default function ClientPortal() {
                     ))}
                     {upcoming.slice(0, 3).map(a => (
                       <div key={a.id} className="p-3 hover:bg-[#f8f9fa] cursor-pointer" onClick={() => handleSectionChange("appointments")}>
-                        <div className="flex items-center gap-2"><Calendar className="h-4 w-4 text-[#eab308]" /><span className="text-sm font-bold text-[#212529]">{a.service_type}</span></div>
+                        <div className="flex items-center gap-2"><Calendar className="h-4 w-4 text-[hsl(43, 74%, 49%)]" /><span className="text-sm font-bold text-[#212529]">{a.service_type}</span></div>
                         <p className="text-xs text-gray-400 font-medium ml-6">{formatDate(a.scheduled_date)} at {a.scheduled_time}</p>
                       </div>
                     ))}
                     {unreadCount > 0 && (
                       <div className="p-3 hover:bg-[#f8f9fa] cursor-pointer" onClick={() => handleSectionChange("chat")}>
-                        <div className="flex items-center gap-2"><MessageSquare className="h-4 w-4 text-[#eab308]" /><span className="text-sm font-bold text-[#212529]">{unreadCount} unread message{unreadCount > 1 ? "s" : ""}</span></div>
+                        <div className="flex items-center gap-2"><MessageSquare className="h-4 w-4 text-[hsl(43, 74%, 49%)]" /><span className="text-sm font-bold text-[#212529]">{unreadCount} unread message{unreadCount > 1 ? "s" : ""}</span></div>
                       </div>
                     )}
                     {payments.filter(p => p.status === "pending").length === 0 && upcoming.length === 0 && unreadCount === 0 && (
@@ -372,7 +372,7 @@ export default function ClientPortal() {
               </Popover>
               {isAdmin && <Link to="/admin"><Button variant="outline" size="sm" className="rounded-xl font-bold">Admin</Button></Link>}
               <Link to="/book">
-                <Button size="sm" className="rounded-full bg-[#eab308] text-white font-bold hover:bg-[#eab308]/90 shadow-block hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all">
+                <Button size="sm" className="rounded-full bg-[hsl(43, 74%, 49%)] text-white font-bold hover:bg-[hsl(43, 74%, 49%)]/90 shadow-block hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all">
                   <Plus className="mr-1 h-4 w-4" /> New Notarization
                 </Button>
               </Link>
@@ -388,10 +388,10 @@ export default function ClientPortal() {
             <div className="space-y-6">
             {/* Active Session Banner */}
             {appointments.some(a => a.status === "in_session") && (
-              <Card className="rounded-[24px] border-[#eab308]/30 bg-[#eab308]/5">
+              <Card className="rounded-[24px] border-[hsl(43, 74%, 49%)]/30 bg-[hsl(43, 74%, 49%)]/5">
                 <CardContent className="p-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-[#eab308]/20 animate-pulse"><Shield className="h-5 w-5 text-[#eab308]" /></div>
+                    <div className="p-2 rounded-xl bg-[hsl(43, 74%, 49%)]/20 animate-pulse"><Shield className="h-5 w-5 text-[hsl(43, 74%, 49%)]" /></div>
                     <div>
                       <p className="font-black text-sm text-[#212529]">Your notarization session is active</p>
                       <p className="text-xs text-gray-400 font-medium">Join now to complete your notarization</p>
@@ -439,7 +439,7 @@ export default function ClientPortal() {
                       <div className="space-y-3">{upcoming.slice(0, 3).map(a => (
                         <div key={a.id} className="flex items-center justify-between p-3 rounded-xl bg-[#f8f9fa] hover:bg-gray-100 transition-colors">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-[#eab308]/10 flex items-center justify-center"><FileText className="h-5 w-5 text-[#eab308]" /></div>
+                            <div className="w-10 h-10 rounded-xl bg-[hsl(43, 74%, 49%)]/10 flex items-center justify-center"><FileText className="h-5 w-5 text-[hsl(43, 74%, 49%)]" /></div>
                             <div><p className="text-sm font-bold text-[#212529]">{a.service_type}</p><p className="text-xs text-gray-400 font-medium">{formatDate(a.scheduled_date)} at {a.scheduled_time}</p></div>
                           </div>
                           <Badge className="text-[10px] font-black uppercase tracking-wider bg-[#f8f9fa] text-gray-500 border-gray-200 rounded-lg">{a.status.replace(/_/g, " ")}</Badge>
@@ -468,9 +468,9 @@ export default function ClientPortal() {
                 <div className="bg-[#212529] rounded-[24px] p-6 text-white relative overflow-hidden group cursor-pointer" onClick={() => setShowWizard(true)}>
                   <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform"><Sparkles className="h-24 w-24" /></div>
                   <div className="relative z-10">
-                    <h3 className="text-lg font-black mb-2 flex items-center gap-2"><Sparkles className="h-5 w-5 text-[#eab308]" /> AI Document Wizard</h3>
+                    <h3 className="text-lg font-black mb-2 flex items-center gap-2"><Sparkles className="h-5 w-5 text-[hsl(43, 74%, 49%)]" /> AI Document Wizard</h3>
                     <p className="text-sm text-gray-400 font-medium mb-4 leading-relaxed">Have our AI review your documents for common errors before your appointment.</p>
-                    <Button size="sm" className="font-bold rounded-xl bg-[#eab308] text-white" onClick={e => { e.stopPropagation(); setShowWizard(true); }}>Start AI Review</Button>
+                    <Button size="sm" className="font-bold rounded-xl bg-[hsl(43, 74%, 49%)] text-white" onClick={e => { e.stopPropagation(); setShowWizard(true); }}>Start AI Review</Button>
                   </div>
                 </div>
 
@@ -478,9 +478,9 @@ export default function ClientPortal() {
                   const ronAppt = appointments.find((a: any) => a.notarization_type === "ron" && ["scheduled", "confirmed"].includes(a.status));
                   const hasDocuments = documents.length > 0;
                   return (
-                    <Card className="rounded-[24px] border-[#eab308]/20 bg-[#eab308]/5">
+                    <Card className="rounded-[24px] border-[hsl(43, 74%, 49%)]/20 bg-[hsl(43, 74%, 49%)]/5">
                       <CardContent className="p-5">
-                        <h4 className="font-black text-sm text-[#212529] flex items-center gap-2 mb-3"><Shield className="h-4 w-4 text-[#eab308]" /> Session Prep Checklist</h4>
+                        <h4 className="font-black text-sm text-[#212529] flex items-center gap-2 mb-3"><Shield className="h-4 w-4 text-[hsl(43, 74%, 49%)]" /> Session Prep Checklist</h4>
                         <p className="text-xs text-gray-400 font-medium mb-3">Your RON session is{" "}{ronAppt ? new Date(ronAppt.scheduled_date + "T" + ronAppt.scheduled_time).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "soon"}.</p>
                         <div className="space-y-2">
                           <div className="flex items-center gap-2 text-xs">{hasDocuments ? <CheckCircle className="h-3.5 w-3.5 text-emerald-500" /> : <AlertCircle className="h-3.5 w-3.5 text-gray-400" />}<span className={hasDocuments ? "text-[#212529] font-medium" : "text-gray-400 font-medium"}>Documents uploaded</span></div>
@@ -493,14 +493,14 @@ export default function ClientPortal() {
                   );
                 })()}
 
-                <Card className="rounded-[24px] bg-[#eab308]/5 border-[#eab308]/20">
+                <Card className="rounded-[24px] bg-[hsl(43, 74%, 49%)]/5 border-[hsl(43, 74%, 49%)]/20">
                   <CardContent className="p-5">
                     <div className="flex gap-4">
-                      <div className="shrink-0 text-[#eab308]"><Eye className="h-6 w-6" /></div>
+                      <div className="shrink-0 text-[hsl(43, 74%, 49%)]"><Eye className="h-6 w-6" /></div>
                       <div>
                         <h4 className="font-black text-sm text-[#212529]">Need Help?</h4>
                         <p className="text-xs text-gray-500 font-medium mt-1 leading-relaxed">Our support team is available 24/7.</p>
-                        <button onClick={() => handleSectionChange("chat")} className="mt-3 text-[#eab308] text-xs font-bold underline">Message Support</button>
+                        <button onClick={() => handleSectionChange("chat")} className="mt-3 text-[hsl(43, 74%, 49%)] text-xs font-bold underline">Message Support</button>
                       </div>
                     </div>
                   </CardContent>
@@ -537,7 +537,7 @@ export default function ClientPortal() {
                       <div className="flex justify-between mt-2">
                         {pipelineSteps.map((ps, i) => {
                           const isComplete = pipelineSteps.findIndex(s => s.key === doc.status) >= i;
-                          return <div key={ps.key} className="flex flex-col items-center gap-1"><ps.icon className={`h-3 w-3 ${isComplete ? "text-[#eab308]" : "text-gray-300"}`} /><span className={`text-[9px] font-bold ${isComplete ? "text-[#212529]" : "text-gray-300"}`}>{ps.label}</span></div>;
+                          return <div key={ps.key} className="flex flex-col items-center gap-1"><ps.icon className={`h-3 w-3 ${isComplete ? "text-[hsl(43, 74%, 49%)]" : "text-gray-300"}`} /><span className={`text-[9px] font-bold ${isComplete ? "text-[#212529]" : "text-gray-300"}`}>{ps.label}</span></div>;
                         })}
                       </div>
                     </CardContent>
@@ -636,12 +636,12 @@ export default function ClientPortal() {
                       <CardContent className="flex items-center justify-between p-4">
                         <div>
                           <p className="font-black text-sm text-[#212529]">${parseFloat(p.amount).toFixed(2)}</p>
-                          {linkedAppt && <p className="text-xs text-[#eab308] font-bold">{linkedAppt.service_type}</p>}
+                          {linkedAppt && <p className="text-xs text-[hsl(43, 74%, 49%)] font-bold">{linkedAppt.service_type}</p>}
                           <p className="text-xs text-gray-400 font-medium">{new Date(p.created_at).toLocaleDateString()} · {p.method || "N/A"}{p.paid_at ? ` · Paid ${new Date(p.paid_at).toLocaleDateString()}` : ""}</p>
                         </div>
                         <div className="flex items-center gap-2">
                           {p.status === "pending" && <Button size="sm" className="text-xs rounded-xl font-bold bg-[#212529] text-white" onClick={() => setPayingPaymentId(p.id)}><CreditCard className="mr-1 h-3 w-3" /> Pay Now</Button>}
-                          <Badge className={`text-[10px] font-black uppercase tracking-wider rounded-lg ${p.status === "paid" ? "bg-emerald-50 text-emerald-600" : p.status === "pending" ? "bg-[#eab308]/10 text-[#eab308]" : "bg-gray-100 text-gray-400"}`}>{p.status}</Badge>
+                          <Badge className={`text-[10px] font-black uppercase tracking-wider rounded-lg ${p.status === "paid" ? "bg-emerald-50 text-emerald-600" : p.status === "pending" ? "bg-[hsl(43, 74%, 49%)]/10 text-[hsl(43, 74%, 49%)]" : "bg-gray-100 text-gray-400"}`}>{p.status}</Badge>
                           {p.invoice_url && <a href={p.invoice_url} target="_blank" rel="noreferrer"><Button size="sm" variant="outline" className="text-xs rounded-xl font-bold">View Invoice</Button></a>}
                         </div>
                       </CardContent>
@@ -660,7 +660,7 @@ export default function ClientPortal() {
             {past.filter(a => a.status === "completed").length > 0 ? (
               <Card className="rounded-[24px] border-gray-100 shadow-sm"><CardContent className="p-6 space-y-4">
                 <div><Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Select Appointment</Label><Select value={reviewForm.appointment_id} onValueChange={v => setReviewForm({ ...reviewForm, appointment_id: v })}><SelectTrigger className="bg-[#f8f9fa] border-none rounded-xl mt-1"><SelectValue placeholder="Choose completed appointment..." /></SelectTrigger><SelectContent>{past.filter(a => a.status === "completed" && !reviews.some(r => r.appointment_id === a.id)).map(a => <SelectItem key={a.id} value={a.id}>{a.service_type} — {formatDate(a.scheduled_date)}</SelectItem>)}</SelectContent></Select></div>
-                <div><Label id="rating-label" className="text-[10px] font-black uppercase tracking-widest text-gray-400">Rating</Label><div className="flex gap-1 mt-1" role="radiogroup" aria-labelledby="rating-label">{[1,2,3,4,5].map(n => <button key={n} role="radio" aria-checked={reviewForm.rating === n} aria-label={`${n} star${n > 1 ? "s" : ""}`} onClick={() => setReviewForm({ ...reviewForm, rating: n })} onKeyDown={e => { if (e.key === "ArrowRight" && reviewForm.rating < 5) setReviewForm({ ...reviewForm, rating: reviewForm.rating + 1 }); if (e.key === "ArrowLeft" && reviewForm.rating > 1) setReviewForm({ ...reviewForm, rating: reviewForm.rating - 1 }); }} tabIndex={reviewForm.rating === n ? 0 : -1} className="p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"><Star className={`h-6 w-6 ${n <= reviewForm.rating ? "text-[#eab308] fill-[#eab308]" : "text-gray-300"}`} /></button>)}</div></div>
+                <div><Label id="rating-label" className="text-[10px] font-black uppercase tracking-widest text-gray-400">Rating</Label><div className="flex gap-1 mt-1" role="radiogroup" aria-labelledby="rating-label">{[1,2,3,4,5].map(n => <button key={n} role="radio" aria-checked={reviewForm.rating === n} aria-label={`${n} star${n > 1 ? "s" : ""}`} onClick={() => setReviewForm({ ...reviewForm, rating: n })} onKeyDown={e => { if (e.key === "ArrowRight" && reviewForm.rating < 5) setReviewForm({ ...reviewForm, rating: reviewForm.rating + 1 }); if (e.key === "ArrowLeft" && reviewForm.rating > 1) setReviewForm({ ...reviewForm, rating: reviewForm.rating - 1 }); }} tabIndex={reviewForm.rating === n ? 0 : -1} className="p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"><Star className={`h-6 w-6 ${n <= reviewForm.rating ? "text-[hsl(43, 74%, 49%)] fill-[hsl(43, 74%, 49%)]" : "text-gray-300"}`} /></button>)}</div></div>
                 <div><Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Comment (optional)</Label><Textarea value={reviewForm.comment} onChange={e => setReviewForm({ ...reviewForm, comment: e.target.value })} rows={3} placeholder="Tell us about your experience..." className="bg-[#f8f9fa] border-none rounded-xl mt-1" /></div>
                 <Button disabled={!reviewForm.appointment_id || submittingReview} onClick={async () => {
                   if (!user || !reviewForm.appointment_id) return;
@@ -674,7 +674,7 @@ export default function ClientPortal() {
             ) : (
               <Card className="rounded-[24px] border-gray-100"><CardContent className="py-12 text-center text-gray-400"><Star className="mx-auto mb-4 h-12 w-12 text-gray-300" /><p className="font-bold text-[#212529] mb-1">No reviews yet</p><p className="text-sm font-medium">Complete an appointment to leave feedback.</p></CardContent></Card>
             )}
-            {reviews.length > 0 && <><h3 className="text-lg font-black text-[#212529] mt-6">Your Reviews</h3><div className="space-y-3">{reviews.map(r => <Card key={r.id} className="rounded-[24px] border-gray-100 shadow-sm"><CardContent className="p-4"><div className="flex items-center gap-1 mb-2">{[1,2,3,4,5].map(n => <Star key={n} className={`h-4 w-4 ${n <= r.rating ? "text-[#eab308] fill-[#eab308]" : "text-gray-300"}`} />)}</div>{r.comment && <p className="text-sm text-gray-500 font-medium">{r.comment}</p>}<p className="text-xs text-gray-400 font-medium mt-2">{new Date(r.created_at).toLocaleDateString()}</p></CardContent></Card>)}</div></>}
+            {reviews.length > 0 && <><h3 className="text-lg font-black text-[#212529] mt-6">Your Reviews</h3><div className="space-y-3">{reviews.map(r => <Card key={r.id} className="rounded-[24px] border-gray-100 shadow-sm"><CardContent className="p-4"><div className="flex items-center gap-1 mb-2">{[1,2,3,4,5].map(n => <Star key={n} className={`h-4 w-4 ${n <= r.rating ? "text-[hsl(43, 74%, 49%)] fill-[hsl(43, 74%, 49%)]" : "text-gray-300"}`} />)}</div>{r.comment && <p className="text-sm text-gray-500 font-medium">{r.comment}</p>}<p className="text-xs text-gray-400 font-medium mt-2">{new Date(r.created_at).toLocaleDateString()}</p></CardContent></Card>)}</div></>}
             </div>
           )}
 
@@ -709,7 +709,7 @@ export default function ClientPortal() {
                 const expiryDate = new Date(rem.expiry_date + "T00:00:00");
                 const daysUntil = Math.ceil((expiryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
                 const isUrgent = daysUntil <= rem.remind_days_before, isExpired = daysUntil <= 0;
-                return (<Card key={rem.id} className={`rounded-[24px] border-gray-100 shadow-sm ${isExpired ? "border-destructive/50" : isUrgent ? "border-[#eab308]/50" : ""}`}><CardContent className="flex items-center justify-between p-4"><div className="flex items-center gap-3"><Bell className={`h-5 w-5 ${isExpired ? "text-destructive" : isUrgent ? "text-[#eab308]" : "text-gray-400"}`} /><div><p className="text-sm font-bold text-[#212529]">{doc?.file_name || "Unknown document"}</p><p className="text-xs text-gray-400 font-medium">Expires: {expiryDate.toLocaleDateString()} · Remind {rem.remind_days_before}d before</p></div></div><div className="flex items-center gap-2"><Badge className={`text-[10px] font-black uppercase tracking-wider rounded-lg ${isExpired ? "bg-destructive/10 text-destructive" : isUrgent ? "bg-[#eab308]/10 text-[#eab308]" : "bg-gray-100 text-gray-400"}`}>{isExpired ? "Expired" : `${daysUntil}d remaining`}</Badge><Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={async () => { const { error } = await supabase.from("document_reminders").delete().eq("id", rem.id); if (!error) { setReminders(prev => prev.filter((r: any) => r.id !== rem.id)); toast({ title: "Reminder removed" }); } }}><XCircle className="h-3 w-3" /></Button></div></CardContent></Card>);
+                return (<Card key={rem.id} className={`rounded-[24px] border-gray-100 shadow-sm ${isExpired ? "border-destructive/50" : isUrgent ? "border-[hsl(43, 74%, 49%)]/50" : ""}`}><CardContent className="flex items-center justify-between p-4"><div className="flex items-center gap-3"><Bell className={`h-5 w-5 ${isExpired ? "text-destructive" : isUrgent ? "text-[hsl(43, 74%, 49%)]" : "text-gray-400"}`} /><div><p className="text-sm font-bold text-[#212529]">{doc?.file_name || "Unknown document"}</p><p className="text-xs text-gray-400 font-medium">Expires: {expiryDate.toLocaleDateString()} · Remind {rem.remind_days_before}d before</p></div></div><div className="flex items-center gap-2"><Badge className={`text-[10px] font-black uppercase tracking-wider rounded-lg ${isExpired ? "bg-destructive/10 text-destructive" : isUrgent ? "bg-[hsl(43, 74%, 49%)]/10 text-[hsl(43, 74%, 49%)]" : "bg-gray-100 text-gray-400"}`}>{isExpired ? "Expired" : `${daysUntil}d remaining`}</Badge><Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={async () => { const { error } = await supabase.from("document_reminders").delete().eq("id", rem.id); if (!error) { setReminders(prev => prev.filter((r: any) => r.id !== rem.id)); toast({ title: "Reminder removed" }); } }}><XCircle className="h-3 w-3" /></Button></div></CardContent></Card>);
               })}</div>
             )}
             </div>
@@ -718,7 +718,7 @@ export default function ClientPortal() {
           {activeSection === "services" && (
             <div className="space-y-6">
             <div className="flex items-center justify-between"><h2 className="text-xl font-black text-[#212529]">Available Services</h2><Button variant="outline" size="sm" onClick={() => setShowWizard(!showWizard)} className="rounded-xl font-bold"><Sparkles className="mr-1 h-3 w-3" /> {showWizard ? "Hide Guide" : "Not Sure What You Need?"}</Button></div>
-            <Card className="rounded-[24px] border-[#eab308]/20 bg-[#eab308]/5"><CardContent className="flex items-center justify-between p-4"><div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#eab308]/20"><FileText className="h-5 w-5 text-[#eab308]" /></div><div><h3 className="text-sm font-black text-[#212529]">Digitize Documents</h3><p className="text-xs text-gray-400 font-medium">Upload scanned documents and convert them to editable digital formats</p></div></div><Link to="/digitize"><Button size="sm" className="rounded-xl font-bold bg-[#212529] text-white shadow-block"><ArrowRight className="mr-1 h-3 w-3" /> Start</Button></Link></CardContent></Card>
+            <Card className="rounded-[24px] border-[hsl(43, 74%, 49%)]/20 bg-[hsl(43, 74%, 49%)]/5"><CardContent className="flex items-center justify-between p-4"><div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[hsl(43, 74%, 49%)]/20"><FileText className="h-5 w-5 text-[hsl(43, 74%, 49%)]" /></div><div><h3 className="text-sm font-black text-[#212529]">Digitize Documents</h3><p className="text-xs text-gray-400 font-medium">Upload scanned documents and convert them to editable digital formats</p></div></div><Link to="/digitize"><Button size="sm" className="rounded-xl font-bold bg-[#212529] text-white shadow-block"><ArrowRight className="mr-1 h-3 w-3" /> Start</Button></Link></CardContent></Card>
             <div className="grid gap-4 sm:grid-cols-2">{services.map(svc => (
               <Card key={svc.id} className="rounded-[24px] border-gray-100 shadow-sm hover:shadow-md transition-shadow"><CardContent className="p-4"><div className="flex items-start justify-between"><div><h3 className="text-sm font-black text-[#212529]">{svc.name}</h3>{svc.short_description && <p className="text-xs text-gray-400 font-medium mt-1">{svc.short_description}</p>}</div><Badge className="text-[10px] font-black uppercase tracking-wider rounded-lg bg-[#f8f9fa] text-gray-500 border-gray-200 shrink-0 ml-2">{svc.pricing_model === "custom" ? "Quote" : svc.price_from ? `$${svc.price_from}${svc.price_to && svc.price_to > svc.price_from ? `–$${svc.price_to}` : ""}` : "Contact"}</Badge></div>{svc.description && <p className="text-xs text-gray-400 font-medium mt-2 line-clamp-2">{svc.description}</p>}<div className="flex gap-2 mt-3"><Link to={getServiceUrl(svc)}><Button size="sm" className="text-xs rounded-xl font-bold bg-[#212529] text-white">{getServiceCTA(svc)}</Button></Link><Link to={`/services/${svc.id}`}><Button size="sm" variant="outline" className="text-xs rounded-xl font-bold">View Details</Button></Link></div></CardContent></Card>
             ))}</div>
