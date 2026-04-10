@@ -11,12 +11,16 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CharCounter } from "@/components/CharCounter";
 import { useToast } from "@/hooks/use-toast";
+import { QRCodeSVG } from "qrcode.react";
+import { format } from "date-fns";
 import {
   Loader2, Copy, Save, Globe, Eye, Upload, Plus, Trash2, Image as ImageIcon,
   Award, Shield, CheckCircle, MapPin, Facebook, Linkedin, Twitter, Search,
   DollarSign, TrendingUp, Palette, Type, LayoutList, AlertTriangle,
+  Link as LinkIcon, QrCode, Download, History,
 } from "lucide-react";
 
 interface ServiceItem {
