@@ -22,6 +22,8 @@ import {
   DollarSign, TrendingUp, Palette, Type, LayoutList, AlertTriangle,
   Link as LinkIcon, QrCode, Download, History,
 } from "lucide-react";
+import { ALLOWED_IMAGE_MIMES } from "@/lib/fileValidation";
+import { ensureHex } from "@/lib/colorUtils";
 
 interface ServiceItem {
   name: string;
@@ -125,6 +127,8 @@ export default function PortalNotaryPageTab() {
 
   const handlePhotoUpload = async (file: File, type: "profile" | "cover") => {
     if (!user || !page) return;
+    // BUG001/BUG002: Validate file type
+    if (!ALLOWED_IMAGE_MIMES.has(file.type)) { toast({ title: "Invalid file type. Only JPG, PNG, WebP allowed.", variant: "destructive" }); return; }
     const setter = type === "profile" ? setUploadingProfile : setUploadingCover;
     setter(true);
     const ext = file.name.split(".").pop();
@@ -144,6 +148,8 @@ export default function PortalNotaryPageTab() {
 
   const handleGalleryUpload = async (file: File) => {
     if (!user || !page) return;
+    // BUG001: Validate file type for gallery
+    if (!ALLOWED_IMAGE_MIMES.has(file.type)) { toast({ title: "Invalid file type. Only JPG, PNG, WebP allowed.", variant: "destructive" }); return; }
     const gallery: string[] = Array.isArray(page.gallery_photos) ? page.gallery_photos : [];
     if (gallery.length >= 6) { toast({ title: "Max 6 gallery photos", variant: "destructive" }); return; }
     setUploadingGallery(true);
@@ -356,9 +362,9 @@ export default function PortalNotaryPageTab() {
               <div>
                 <Label>Direct Booking Link</Label>
                 <div className="flex gap-2 mt-1">
-                  <Input readOnly value={`${window.location.origin}/book?ref=${user?.id}`} className="font-mono text-sm" />
+                  <Input readOnly value={`${window.location.origin}/book?ref=${page?.slug}`} className="font-mono text-sm" />
                   <Button variant="outline" size="sm" onClick={() => {
-                    navigator.clipboard.writeText(`${window.location.origin}/book?ref=${user?.id}`);
+                    navigator.clipboard.writeText(`${window.location.origin}/book?ref=${page?.slug}`);
                     toast({ title: "Booking link copied!" });
                   }} className="gap-1 shrink-0"><Copy className="h-3 w-3" /> Copy</Button>
                 </div>
