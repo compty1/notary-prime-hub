@@ -102,6 +102,7 @@ const emptyPage: Partial<NotaryPage> = {
 
 export default function AdminNotaryPages() {
   usePageMeta({ title: "Admin — Notary Pages", noIndex: true });
+  const { get: getSetting } = useSettings();
   const { toast } = useToast();
   const [pages, setPages] = useState<NotaryPage[]>([]);
   const [loading, setLoading] = useState(true);
