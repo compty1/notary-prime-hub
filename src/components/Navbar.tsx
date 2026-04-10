@@ -53,15 +53,15 @@ function DropdownNav({ label, linkTo, children }: { label: string; linkTo?: stri
         {linkTo ? (
           <Link
             to={linkTo}
-            className="relative px-3 py-2 text-sm font-bold text-gray-500 transition-colors hover:text-foreground"
+            className="relative px-3 py-2 text-sm font-bold text-muted-foreground transition-colors hover:text-foreground"
           >
             {label}
           </Link>
         ) : (
-          <span className="px-3 py-2 text-sm font-bold text-gray-500 cursor-default">{label}</span>
+          <span className="px-3 py-2 text-sm font-bold text-muted-foreground cursor-default">{label}</span>
         )}
         <PopoverTrigger asChild>
-          <button className="-ml-2 p-1 text-gray-400 hover:text-foreground transition-colors" aria-label={`${label} menu`}>
+          <button className="-ml-2 p-1 text-muted-foreground hover:text-foreground transition-colors" aria-label={`${label} menu`}>
             <ChevronDown className="h-3 w-3" />
           </button>
         </PopoverTrigger>
@@ -160,13 +160,13 @@ export function Navbar() {
 
           <Link
             to="/solutions/small-business"
-            className="px-3 py-2 text-sm font-bold text-gray-500 transition-colors hover:text-foreground"
+            className="px-3 py-2 text-sm font-bold text-muted-foreground transition-colors hover:text-foreground"
           >
             For Businesses
           </Link>
           <Link
             to="/fee-calculator"
-            className="px-3 py-2 text-sm font-bold text-gray-500 transition-colors hover:text-foreground"
+            className="px-3 py-2 text-sm font-bold text-muted-foreground transition-colors hover:text-foreground"
           >
             Pricing
           </Link>
@@ -178,7 +178,7 @@ export function Navbar() {
               </Link>
             ) : (
               <Link to="/login">
-                <Button size="sm" variant="ghost" className="text-sm font-bold text-gray-500 hover:text-foreground">Sign In</Button>
+                <Button size="sm" variant="ghost" className="text-sm font-bold text-muted-foreground hover:text-foreground">Sign In</Button>
               </Link>
             )}
             <Link to="/book">

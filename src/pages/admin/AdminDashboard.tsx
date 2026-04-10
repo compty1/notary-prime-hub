@@ -89,8 +89,8 @@ function AdminSidebar() {
   const { signOut, isAdmin } = useAuth();
 
   return (
-    <Sidebar collapsible="icon" className="border-r-0 bg-[#212529]">
-      <SidebarContent className="bg-[#212529]" role="navigation" aria-label="Admin navigation">
+    <Sidebar collapsible="icon" className="border-r-0 bg-sidebar">
+      <SidebarContent className="bg-sidebar" role="navigation" aria-label="Admin navigation">
         {/* Logo + title */}
         <div className="flex items-center gap-2 px-4 py-5 border-b border-white/10">
           <Logo size="sm" showText={!collapsed} theme="dark" />
@@ -156,7 +156,7 @@ export default function AdminDashboard() {
               <span className="ml-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                 {isAdmin ? "Admin Panel" : "Notary Panel"}
               </span>
-              <kbd className="ml-3 hidden sm:inline-flex items-center gap-1 rounded-lg border border-border bg-gray-50 px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
+              <kbd className="ml-3 hidden sm:inline-flex items-center gap-1 rounded-lg border border-border bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
                 ⌘K
               </kbd>
             </div>
