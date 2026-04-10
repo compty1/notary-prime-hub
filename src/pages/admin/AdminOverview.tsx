@@ -53,6 +53,7 @@ export default function AdminOverview() {
   const [profiles, setProfiles] = useState<Record<string, string>>({});
   const [stats, setStats] = useState({ total: 0, upcoming: 0, completed: 0, clients: 0, revenue: 0 });
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [commissionAlert, setCommissionAlert] = useState<{ tone: string; text: string } | null>(null);
   const [eoAlert, setEoAlert] = useState<string | null>(null);
   const [bondAlert, setBondAlert] = useState<string | null>(null);
