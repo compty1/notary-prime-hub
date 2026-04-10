@@ -34,8 +34,22 @@ const formatTime = (timeStr: string) => {
 
 export { formatDate, formatTime };
 
+interface AppointmentItem {
+  id: string;
+  client_id: string;
+  scheduled_date: string;
+  scheduled_time: string;
+  status: string;
+  service_type: string;
+  notarization_type?: string;
+  confirmation_number?: string | null;
+  location?: string | null;
+  notes?: string | null;
+  estimated_price?: number | null;
+}
+
 interface Props {
-  appointments: any[];
+  appointments: AppointmentItem[];
   loading: boolean;
   zoomLink: string;
   onCancelClick: (id: string) => void;
@@ -51,7 +65,7 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
   const inSession = filteredAppointments.filter(a => a.status === "in_session");
   const past = filteredAppointments.filter(a => ["completed", "cancelled", "no_show"].includes(a.status));
 
-  const isSessionNear = (appt: any) => {
+  const isSessionNear = (appt: AppointmentItem) => {
     const diff = new Date(`${appt.scheduled_date}T${appt.scheduled_time}`).getTime() - Date.now();
     return diff <= 15 * 60 * 1000 && diff > -60 * 60 * 1000;
   };
@@ -64,11 +78,11 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
   useEffect(() => {
     if (!user) return;
     supabase
-      .from("client_feedback" as any)
+      .from("client_feedback")
       .select("appointment_id")
       .eq("client_id", user.id)
-      .then(({ data }: any) => {
-        if (data) setFeedbackGiven(new Set(data.map((f: any) => f.appointment_id)));
+      .then(({ data }) => {
+        if (data) setFeedbackGiven(new Set(data.map((f) => f.appointment_id).filter(Boolean) as string[]));
       });
   }, [user]);
 
@@ -157,7 +171,7 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
                       </div>
                       {appt.confirmation_number && <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><Hash className="h-3 w-3" /> {appt.confirmation_number}</p>}
                       {appt.location && appt.location !== "Remote" && <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="h-3 w-3" /> {appt.location}</p>}
-                      {appt.estimated_price && <p className="mt-1 text-xs text-muted-foreground">Est. ${parseFloat(appt.estimated_price).toFixed(2)}</p>}
+                      {appt.estimated_price && <p className="mt-1 text-xs text-muted-foreground">Est. ${Number(appt.estimated_price).toFixed(2)}</p>}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">

@@ -10,9 +10,20 @@ import { Send, Loader2, MessageSquare, Paperclip, FileText } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+interface ChatMessage {
+  id: string;
+  sender_id: string;
+  recipient_id: string | null;
+  message: string;
+  is_admin: boolean | null;
+  read: boolean | null;
+  created_at: string;
+  attachment_url: string | null;
+}
+
 interface Props {
   userId: string;
-  chatMessages: any[];
+  chatMessages: ChatMessage[];
   chatInput: string; setChatInput: (v: string) => void;
   sendingChat: boolean;
   chatRecipient: string; setChatRecipient: (v: string) => void;

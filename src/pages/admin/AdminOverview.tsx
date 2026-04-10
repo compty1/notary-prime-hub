@@ -26,13 +26,30 @@ function getGreeting(): string {
   return "Good evening";
 }
 
+interface OverviewAppointment {
+  id: string;
+  client_id: string;
+  scheduled_date: string;
+  scheduled_time: string;
+  status: string;
+  service_type: string;
+  notarization_type: string;
+  confirmation_number: string | null;
+}
+
+interface PaymentRow { amount: number; status: string; created_at?: string; fees_charged?: number; }
+interface SettingRow { setting_key: string; setting_value: string; }
+interface ProfileRow { user_id: string; full_name: string | null; email: string | null; }
+interface AllApptRow { id: string; scheduled_date: string; scheduled_time: string; status: string; notarization_type: string; client_id: string; service_type: string; confirmation_number: string | null; }
+interface AuditRow { id: string; action: string; entity_type: string | null; entity_id: string | null; created_at: string; user_id: string | null; }
+
 export default function AdminOverview() {
   usePageMeta({ title: "Overview", noIndex: true });
   const greeting = getGreeting();
-  const [appointments, setAppointments] = useState<any[]>([]);
-  const [allAppointments, setAllAppointments] = useState<any[]>([]);
-  const [journalEntries, setJournalEntries] = useState<any[]>([]);
-  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<OverviewAppointment[]>([]);
+  const [allAppointments, setAllAppointments] = useState<AllApptRow[]>([]);
+  const [journalEntries, setJournalEntries] = useState<PaymentRow[]>([]);
+  const [recentActivity, setRecentActivity] = useState<AuditRow[]>([]);
   const [profiles, setProfiles] = useState<Record<string, string>>({});
   const [stats, setStats] = useState({ total: 0, upcoming: 0, completed: 0, clients: 0, revenue: 0 });
   const [loading, setLoading] = useState(true);
@@ -70,21 +87,20 @@ export default function AdminOverview() {
     // Build profiles map
     if (profileData) {
       const map: Record<string, string> = {};
-      profileData.forEach((p: any) => { map[p.user_id] = p.full_name || p.email || p.user_id.slice(0, 8); });
+      (profileData as ProfileRow[]).forEach((p) => { map[p.user_id] = p.full_name || p.email || p.user_id.slice(0, 8); });
       setProfiles(map);
     }
 
-    const totalRevenue = (journalData || []).reduce((sum: number, j: any) => sum + (parseFloat(j.amount) || 0), 0);
-    if (recentAppts) setAppointments(recentAppts);
-    if (journalData) setJournalEntries(journalData);
-    if (allApptData) setAllAppointments(allApptData);
-    // Use distinct client_ids from appointments for accurate client count
-    const uniqueClients = new Set((allApptData || []).map((a: any) => a.client_id).filter(Boolean));
+    const totalRevenue = ((journalData || []) as PaymentRow[]).reduce((sum: number, j) => sum + (Number(j.amount) || 0), 0);
+    if (recentAppts) setAppointments(recentAppts as OverviewAppointment[]);
+    if (journalData) setJournalEntries(journalData as PaymentRow[]);
+    if (allApptData) setAllAppointments(allApptData as AllApptRow[]);
+    const uniqueClients = new Set(((allApptData || []) as AllApptRow[]).map((a) => a.client_id).filter(Boolean));
     setStats({ total: totalAppts || 0, upcoming: upcomingCount || 0, completed: completedCount || 0, clients: uniqueClients.size || clientCount || 0, revenue: totalRevenue });
 
     if (settingsData) {
       const s: Record<string, string> = {};
-      settingsData.forEach((item: any) => { s[item.setting_key] = item.setting_value; });
+      (settingsData as SettingRow[]).forEach((item) => { s[item.setting_key] = item.setting_value; });
       const now = new Date();
       const checkExpiry = (dateStr: string | undefined, reminderDays: number) => {
         if (!dateStr) return null;
@@ -137,7 +153,7 @@ export default function AdminOverview() {
     const months: Record<string, number> = {};
     journalEntries.forEach(j => {
       const month = j.created_at?.slice(0, 7);
-      if (month) months[month] = (months[month] || 0) + (parseFloat(j.fees_charged) || 0);
+      if (month) months[month] = (months[month] || 0) + (parseFloat(String(j.fees_charged)) || 0);
     });
     return Object.entries(months).slice(-6).map(([month, revenue]) => ({
       month: new Date(month + "-01").toLocaleDateString("en-US", { month: "short" }),
@@ -164,7 +180,8 @@ export default function AdminOverview() {
   const [calendarWeekStart, setCalendarWeekStart] = useState(() => {
     const d = new Date(); d.setDate(d.getDate() - d.getDay()); d.setHours(0,0,0,0); return d;
   });
-  const [gcalEvents, setGcalEvents] = useState<any[]>([]);
+  interface GCalEvent { summary?: string; start?: { dateTime?: string; date?: string }; end?: { dateTime?: string; date?: string }; }
+  const [gcalEvents, setGcalEvents] = useState<GCalEvent[]>([]);
   const [gcalConnected, setGcalConnected] = useState<boolean | null>(null);
 
   const weekDays = useMemo(() => {
@@ -204,7 +221,7 @@ export default function AdminOverview() {
 
   const getGcalForDay = (date: Date) => {
     const dateStr = date.toISOString().split("T")[0];
-    return gcalEvents.filter((e: any) => {
+    return gcalEvents.filter((e) => {
       const start = e.start?.dateTime || e.start?.date || "";
       return start.startsWith(dateStr);
     });
