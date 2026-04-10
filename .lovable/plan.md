@@ -1,89 +1,137 @@
 
 
-# DocuDex Editor Enhancement Plan — Canva-Style Document Studio
+# Comprehensive Platform Functionality Audit & Enhancement Plan
 
 ## Summary
-Transform DocuDex from a TipTap-based rich text editor into a Canva-like document canvas with drag-and-drop elements, resizable objects, functional QR codes, and rich design templates (certificates, awards, etc.). Generate a comprehensive DOCX specification and CSV task tracker.
+Generate a 1,000+ item audit covering every page, component, edge function, database table, and integration across the NotarDex platform. Deliverables: a detailed DOCX specification and a structured CSV task tracker, both written to `/mnt/documents/`. No code changes -- documents only.
 
-## Current State Analysis
+## Audit Scope
 
-**What exists:**
-- TipTap-based rich text editor with inline HTML content
-- 9-tab sidebar (Templates, Layouts, AI, Recommend, Elements, Shapes, Design, Translate, History)
-- 25+ document templates (legal, notary, business) — all text-only
-- Elements panel with items like QR Code, Signature, Notary Seal — but QR Code just inserts placeholder text `[QR Code — Use export to embed]`
-- No drag-and-drop positioning, no resize handles, no canvas layer system
-- Shapes are HTML snippets inserted inline (not movable objects)
+The audit will systematically cover these domains:
 
-**Key problems identified:**
-1. QR Code inserts useless placeholder — no actual QR generation or settings
-2. No drag-and-drop canvas — everything is inline TipTap content
-3. No resize handles on inserted elements (images, shapes, blocks)
-4. No certificate/award templates with rich visual designs
-5. No ability to import documents and edit individual elements
-6. Elements can't be freely positioned on the canvas
+### 1. Public Pages (55 routes, ~200 items)
+- Homepage (Index.tsx - 675 lines): CTA wiring, form submission, SEO tags, responsive layout, contact form validation
+- Services/ServiceDetail: category routing, pricing display, checklist persistence, share functionality
+- Booking flow (BookAppointment - 986 lines): multi-step wizard, draft saving, guest signup, geolocation, pricing engine integration, slot reservation, notary param support
+- Solution pages (6): content completeness, CTA links, SEO meta
+- Information pages: RON info, Notary Guide, Certificates, Compliance, Security, Accessibility, Help
+- Public notary pages (/n/:slug): photo rendering, booking integration, SEO schema
+
+### 2. Authentication & Authorization (~50 items)
+- Login/SignUp: rate limiting, password strength, email verification, Google OAuth wiring
+- ProtectedRoute: role enforcement, timeout handling, email confirmation banner
+- AuthContext: session management, role fetching, abort controller, token refresh
+- MFA (TOTP): setup flow, enforcement for admin accounts
+
+### 3. Client Portal (838 lines, ~150 items)
+- Overview dashboard: appointments, documents, payments, reviews, quick actions
+- Profile editing: form fields, avatar upload, phone formatting, zip validation
+- Appointments tab: list, cancel, reschedule, tech check, QR code
+- Documents tab: upload, status pipeline, bulk upload
+- Chat tab: real-time messaging, Google Calendar widget
+- Service Requests tab: submission, status tracking
+- Correspondence tab: message history
+- AI Tools tab: tool catalog integration
+- Notary Page tab (notary role): photo upload/remove, settings, publish toggle
+- Emails tab (notary role): template editing, Gmail integration, test send
+- Leads tab: CSV export
+- Onboarding checklist, quick actions, document readiness score, referral portal
+
+### 4. Admin Dashboard (30+ sub-pages, ~250 items)
+- Overview: stats cards, charts, recent activity
+- Appointments: CRUD, status management, payment recording, notes, linked forms
+- Clients: search, messaging, avatar display, lifetime value
+- Availability: schedule management
+- Documents: list, review, approval pipeline
+- Journal: CRUD, sequential numbering, compliance checks, audit logging
+- Revenue: payment tracking, reports
+- Services Catalog: pricing rules, service management
+- CRM: activities, contacts, pipeline
+- Lead Portal: discovery, proposals, social scraping
+- Business Clients: B2B management
+- Email Management: templates, IONOS sync, queue processing
+- Team & Invites: notary invitations, role assignment
+- Settings: platform configuration, import/export
+- Compliance Report: session audits, seal verification
+- Audit Log: event history, filtering
+- Task Queue: assignment, status tracking
+- Process Flows: workflow steps, automations, email triggers
+- Webhooks: event management
+- Notary Pages: multi-tenant page management
+- Build Tracker: platform scan, gap analysis, AI analyst
+- Content Workspace, Templates, Apostille, Performance, Integration Testing
+
+### 5. RON Session (2,294 lines, ~100 items)
+- 4-step wizard: setup, ID/KBA verification, oath administration, finalization
+- Session management: waiting room, recording panel, compliance banner
+- Signing platform integration (8 platforms): SignNow, DocuSign, etc.
+- Journal entry auto-creation, attestation panel, e-sign consent
+- Ohio compliance: ORC §147.63 recording consent, KBA limits, age verification
+- Session timeout, reconnection handling
+
+### 6. DocuDex Editor (1,537 lines, ~80 items)
+- TipTap editor: all extensions, toolbar actions, formatting
+- Sidebar tabs: Templates, Layouts, AI, Elements, Shapes, Design, Translate, History
+- QR Code: currently broken (placeholder only)
+- Import/Export: DOCX import via mammoth, PDF/DOCX export
+- AI features: autocomplete, continue writing, smart format, compliance check
+- Page management: add, delete, reorder, zoom
+- Find & Replace, table toolbar, compliance watermarks
+
+### 7. Edge Functions (48 functions, ~150 items)
+- Authentication & security: JWT verification, admin role checks, CORS headers, rate limiting
+- AI functions: tools, extractors, compliance scan, style match, document review
+- Email functions: IONOS SMTP, queue processing, appointment reminders, welcome sequence
+- Payment functions: Stripe integration, webhooks, refunds
+- Integration functions: SignNow, HubSpot, Google Calendar
+- Lead functions: discovery, scraping, proposals
+- Document functions: OCR, translation, export, detection
+
+### 8. Database & RLS (~80 items)
+- Table coverage: 30+ tables with RLS policies
+- Trigger validation: 18 triggers for business logic
+- Index optimization: 23 performance indexes
+- Function security: SECURITY DEFINER patterns, search_path settings
+- Data integrity: fee cap enforcement, booking conflict prevention, journal numbering
+
+### 9. Type Safety & Code Quality (~100 items)
+- 1,166 `any` type usages across 67 files
+- Empty catch blocks in 35 files
+- Missing error boundaries on specific routes
+- Console statement cleanup verification
+
+### 10. SEO, Performance & Accessibility (~50 items)
+- Meta tags, JSON-LD schema, Open Graph
+- Lazy loading, code splitting, stale time configuration
+- WCAG 2.1 AA compliance: skip links, ARIA labels, keyboard navigation
+- Dark mode consistency across all pages
 
 ## Deliverables
 
-Two files generated to `/mnt/documents/`:
+### 1. `/mnt/documents/notardex-comprehensive-audit.docx` (~40+ pages)
+Sections:
+1. Executive Summary & Platform Overview
+2. Public Pages Audit (per-page breakdown)
+3. Authentication & Security Audit
+4. Client Portal Functionality Audit
+5. Admin Dashboard Audit (per-sub-page)
+6. RON Session Flow Audit
+7. DocuDex Editor Audit
+8. Edge Functions Audit (per-function)
+9. Database & RLS Audit
+10. Type Safety & Code Quality
+11. SEO & Performance
+12. Ohio Compliance Checklist
+13. Enhancement Roadmap (prioritized)
 
-### 1. `docudex-enhancement-plan.docx` (~30 pages)
-Full specification covering:
-- Architecture: hybrid canvas layer (absolute-positioned elements) + TipTap text flow
-- QR Code fix: real QR generation with URL/text input, size, color, error correction settings
-- Drag-and-drop system using `@dnd-kit` (already in project) + custom resize handles
-- Canvas object model (position, size, rotation, z-index, lock, opacity)
-- 30+ new rich templates: certificates, awards, diplomas, letterheads, flyers, invitations
-- Element library expansion: shapes, icons, borders, frames, decorative dividers
-- Document import enhancements: PDF/DOCX element extraction
-- Export improvements for pixel-perfect output
-- 50+ enhancement ideas for future iterations
+### 2. `/mnt/documents/notardex-comprehensive-audit-tasks.csv`
+Columns: ID, Domain, Category, Item, Type (Bug/Enhancement/Wiring/Compliance/TypeSafety), Priority (P0-P3), Complexity, Status, Description
+- 1,000+ rows organized by domain
+- Types: Bug Fix, Enhancement, Wiring Fix, Compliance Gap, Type Safety, Performance, UX, SEO, Security, Accessibility
 
-### 2. `docudex-enhancement-tasks.csv`
-Structured task tracker with columns: ID, Phase, Category, Task, Priority, Complexity, Status, Description
-- ~150+ specific implementation items
-- Grouped by phase (Foundation, Elements, Templates, Canvas, Import/Export, Polish)
-- Priority levels (P0-Critical, P1-High, P2-Medium, P3-Nice-to-have)
-
-## Technical Approach
-
-### Architecture Change: Hybrid Canvas Model
-```text
-┌─────────────────────────────────────┐
-│  DocuDex Canvas Container           │
-│  ┌───────────────────────────────┐  │
-│  │  Background Layer (z:0)       │  │
-│  │  - Page background/pattern    │  │
-│  ├───────────────────────────────┤  │
-│  │  Text Flow Layer (z:10)       │  │
-│  │  - TipTap editor (existing)   │  │
-│  ├───────────────────────────────┤  │
-│  │  Object Layer (z:20+)         │  │
-│  │  - Draggable/resizable items  │  │
-│  │  - Images, QR codes, shapes   │  │
-│  │  - Signature blocks, seals    │  │
-│  └───────────────────────────────┘  │
-└─────────────────────────────────────┘
-```
-
-### Key Implementation Areas
-
-1. **Canvas Object System** — New `CanvasObject` type with x/y/width/height/rotation/zIndex; rendered as absolutely positioned divs with drag (via @dnd-kit) and resize handles
-
-2. **QR Code Fix** — Replace placeholder with actual QR generation using `qrcode` npm package; dialog for URL, text, WiFi, vCard; color/size/error-correction settings; renders as canvas element on the document
-
-3. **Rich Templates** — Certificate of Achievement, Award of Excellence, Diploma, Employee of the Month, etc. with decorative borders, gold accents, seal placeholders, and rich formatting
-
-4. **Element Resize/Move** — Custom resize handle component (8 handles: corners + edges); maintain aspect ratio option; snap-to-grid; alignment guides
-
-5. **Document Import Enhancement** — Extract images, tables, and text blocks as separate canvas objects from imported DOCX files
-
-## Files to Create/Modify
-
-| Action | File |
-|--------|------|
-| Generate | `/mnt/documents/docudex-enhancement-plan.docx` |
-| Generate | `/mnt/documents/docudex-enhancement-tasks.csv` |
-
-No code changes — this is a planning/documentation task only. Implementation follows after approval.
+## Technical Notes
+- Uses `docx` npm package for DOCX generation (already installed at /tmp)
+- CSV generated via heredoc
+- Both files QA'd via LibreOffice PDF conversion and page inspection
+- No code changes to the project
 
