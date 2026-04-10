@@ -1897,11 +1897,16 @@ export type Database = {
       notarization_sessions: {
         Row: {
           appointment_id: string
+          attestation_confirmed: boolean | null
+          attestation_confirmed_at: string | null
+          attestation_notes: string | null
           bluenotary_session_url: string | null
           completed_at: string | null
           created_at: string
           credential_analysis_result: Json | null
           document_name: string | null
+          esign_consent: boolean | null
+          esign_consent_at: string | null
           id: string
           id_verified: boolean | null
           kba_attempts: number | null
@@ -1927,16 +1932,22 @@ export type Database = {
           status: Database["public"]["Enums"]["appointment_status"]
           total_pause_duration_seconds: number | null
           updated_at: string
+          visual_match_confirmed: boolean | null
           webhook_events_registered: number | null
           webhook_status: string | null
         }
         Insert: {
           appointment_id: string
+          attestation_confirmed?: boolean | null
+          attestation_confirmed_at?: string | null
+          attestation_notes?: string | null
           bluenotary_session_url?: string | null
           completed_at?: string | null
           created_at?: string
           credential_analysis_result?: Json | null
           document_name?: string | null
+          esign_consent?: boolean | null
+          esign_consent_at?: string | null
           id?: string
           id_verified?: boolean | null
           kba_attempts?: number | null
@@ -1962,16 +1973,22 @@ export type Database = {
           status?: Database["public"]["Enums"]["appointment_status"]
           total_pause_duration_seconds?: number | null
           updated_at?: string
+          visual_match_confirmed?: boolean | null
           webhook_events_registered?: number | null
           webhook_status?: string | null
         }
         Update: {
           appointment_id?: string
+          attestation_confirmed?: boolean | null
+          attestation_confirmed_at?: string | null
+          attestation_notes?: string | null
           bluenotary_session_url?: string | null
           completed_at?: string | null
           created_at?: string
           credential_analysis_result?: Json | null
           document_name?: string | null
+          esign_consent?: boolean | null
+          esign_consent_at?: string | null
           id?: string
           id_verified?: boolean | null
           kba_attempts?: number | null
@@ -1997,6 +2014,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["appointment_status"]
           total_pause_duration_seconds?: number | null
           updated_at?: string
+          visual_match_confirmed?: boolean | null
           webhook_events_registered?: number | null
           webhook_status?: string | null
         }
