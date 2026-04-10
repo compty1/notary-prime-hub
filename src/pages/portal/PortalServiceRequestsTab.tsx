@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { FileText, Clock, CheckCircle, AlertTriangle, Download, Search, ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
 import { ProgressTimeline } from "@/components/ProgressTimeline";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,6 +33,7 @@ export default function PortalServiceRequestsTab({ serviceRequests: initialReque
   const [statusFilter, setStatusFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [cancelRequestId, setCancelRequestId] = useState<string | null>(null);
   const [requests, setRequests] = useState(initialRequests);
 
   // Sync with parent prop
@@ -230,12 +232,7 @@ export default function PortalServiceRequestsTab({ serviceRequests: initialReque
                         variant="ghost"
                         size="sm"
                         className="text-xs text-destructive hover:text-destructive"
-                        onClick={async () => {
-                          if (!window.confirm("Are you sure you want to cancel this request? This cannot be undone.")) return;
-                          const { error } = await supabase.from("service_requests").update({ status: "cancelled" }).eq("id", req.id);
-                          if (error) return;
-                          setRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: "cancelled" } : r));
-                        }}
+                        onClick={() => setCancelRequestId(req.id)}
                       >
                         Cancel Request
                       </Button>
@@ -248,6 +245,23 @@ export default function PortalServiceRequestsTab({ serviceRequests: initialReque
           })}
         </div>
       )}
+      <AlertDialog open={!!cancelRequestId} onOpenChange={(open) => { if (!open) setCancelRequestId(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Request?</AlertDialogTitle>
+            <AlertDialogDescription>Are you sure you want to cancel this request? This cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Request</AlertDialogCancel>
+            <AlertDialogAction onClick={async () => {
+              if (!cancelRequestId) return;
+              const { error } = await supabase.from("service_requests").update({ status: "cancelled" }).eq("id", cancelRequestId);
+              if (!error) setRequests(prev => prev.map(r => r.id === cancelRequestId ? { ...r, status: "cancelled" } : r));
+              setCancelRequestId(null);
+            }}>Cancel Request</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

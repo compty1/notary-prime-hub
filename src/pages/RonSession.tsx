@@ -24,6 +24,7 @@ import { ESignConsent } from "@/components/ESignConsent";
 import { SessionTimeoutWarning } from "@/components/SessionTimeoutWarning";
 import { ComplianceBanner } from "@/components/ComplianceBanner";
 import { RonRecordingPanel } from "@/components/RonRecordingPanel";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 const oathScripts = {
   acknowledgment: "The signer personally appeared before me and acknowledged that they signed this document voluntarily for the purposes stated therein. (No verbal oath required for acknowledgments per ORC §147.55)",
@@ -64,16 +65,16 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
           <div key={step.label} className="flex items-center gap-1 flex-1">
             <div className={cn(
               "flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-colors",
-              isDone && "bg-[#eab308]/10 text-[#eab308]",
-              isActive && "bg-[#eab308]/10 text-[#eab308] ring-1 ring-[#eab308]/30",
-              !isActive && !isDone && "bg-gray-100 text-gray-400"
+              isDone && "bg-primary/10 text-primary",
+              isActive && "bg-primary/10 text-primary ring-1 ring-primary/30",
+              !isActive && !isDone && "bg-muted text-muted-foreground"
             )}>
               {isDone ? <CheckCircle className="h-3.5 w-3.5" /> : <Icon className="h-3.5 w-3.5" />}
               <span className="hidden sm:inline">{step.label}</span>
               <span className="sm:hidden">{i + 1}</span>
             </div>
             {i < STEPS.length - 1 && (
-              <div className={cn("h-px flex-1 min-w-4", isDone ? "bg-[#eab308]/30" : "bg-gray-200")} />
+              <div className={cn("h-px flex-1 min-w-4", isDone ? "bg-primary/30" : "bg-border")} />
             )}
           </div>
         );
@@ -174,6 +175,7 @@ export default function RonSession() {
   const [isSignatureByMark, setIsSignatureByMark] = useState(false);
   const [witness2Name, setWitness2Name] = useState("");
   const [witness2Verified, setWitness2Verified] = useState(false);
+  const [showFinalizeDialog, setShowFinalizeDialog] = useState(false);
 
   const hasNativeKba = PLATFORMS_WITH_NATIVE_KBA.includes(signingPlatform);
 
@@ -638,10 +640,12 @@ export default function RonSession() {
         return;
       }
     }
-    // Item 405: Confirmation dialog
-    if (!window.confirm("Are you sure you want to finalize this session? This will mark the appointment as completed, create a journal entry, e-seal verification, and payment record. This action cannot be undone.")) {
-      return;
-    }
+    setShowFinalizeDialog(true);
+    return;
+  };
+
+  const executeFinalization = async () => {
+    setShowFinalizeDialog(false);
     setCompleting(true);
 
     // Fetch notary name from settings (Item 353, 422)
@@ -1420,39 +1424,39 @@ export default function RonSession() {
 
   // Admin/Notary view
   return (
-    <div className="min-h-screen bg-[#f8f9fa]">
-      <nav className="h-14 border-b border-gray-100 bg-[#212529] px-4 flex items-center justify-between sticky top-0 z-50">
+    <div className="min-h-screen bg-background">
+      <nav className="h-14 border-b border-border bg-foreground px-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-3">
-          <Link to="/admin/appointments" className="flex items-center gap-2 text-sm text-gray-400 hover:text-white">
+          <Link to="/admin/appointments" className="flex items-center gap-2 text-sm text-background/60 hover:text-background">
             <ArrowLeft className="h-4 w-4" /> Back
           </Link>
-          <div className="h-6 w-px bg-white/10" />
+          <div className="h-6 w-px bg-background/10" />
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-[#eab308] rounded-lg flex items-center justify-center">
-              <Lock className="h-3.5 w-3.5 text-white" />
+            <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center">
+              <Lock className="h-3.5 w-3.5 text-primary-foreground" />
             </div>
-            <span className="text-sm font-black text-white">RON Session</span>
+            <span className="text-sm font-black text-background">RON Session</span>
           </div>
         </div>
         <div className="flex items-center gap-4">
           {clientProfile && (
-            <span className="text-sm text-gray-400">Client: <span className="font-bold text-white">{clientProfile.full_name}</span></span>
+            <span className="text-sm text-background/60">Client: <span className="font-bold text-background">{clientProfile.full_name}</span></span>
           )}
-          <Badge className="bg-[#eab308]/20 text-[#eab308] border-0 text-xs capitalize rounded-lg">{sessionStatus}</Badge>
-          {sessionUniqueId && <span className="hidden md:inline text-xs font-mono text-gray-500">{sessionUniqueId}</span>}
+          <Badge className="bg-primary/20 text-primary border-0 text-xs capitalize rounded-lg">{sessionStatus}</Badge>
+          {sessionUniqueId && <span className="hidden md:inline text-xs font-mono text-background/40">{sessionUniqueId}</span>}
         </div>
       </nav>
 
       <div className="container mx-auto max-w-5xl px-4 py-8">
         {/* Session Metadata Bar */}
-        <div className="mb-4 flex items-center gap-3 rounded-[16px] border border-gray-100 bg-white px-5 py-3 text-xs flex-wrap">
-          {sessionUniqueId && <span className="font-mono text-gray-400">Session: <strong className="text-[#212529]">{sessionUniqueId}</strong></span>}
-          <span className="text-gray-300">•</span>
+        <div className="mb-4 flex items-center gap-3 rounded-[16px] border border-border bg-card px-5 py-3 text-xs flex-wrap">
+          {sessionUniqueId && <span className="font-mono text-muted-foreground">Session: <strong className="text-foreground">{sessionUniqueId}</strong></span>}
+          <span className="text-border">•</span>
           <span className="flex items-center gap-1 text-emerald-600"><Shield className="h-3 w-3" /> AES-256 Encrypted</span>
-          <span className="text-gray-300">•</span>
+          <span className="text-border">•</span>
           <span>Provider: <strong>{SIGNING_PLATFORMS.find(p => p.value === signingPlatform)?.label || signingPlatform}</strong></span>
-          <span className="text-gray-300">•</span>
-          <Badge className="bg-gray-100 text-gray-600 border-0 text-[10px] capitalize rounded-lg">{sessionStatus}</Badge>
+          <span className="text-border">•</span>
+          <Badge className="bg-muted text-muted-foreground border-0 text-[10px] capitalize rounded-lg">{sessionStatus}</Badge>
         </div>
 
         {appointment && (
@@ -2215,11 +2219,29 @@ export default function RonSession() {
               </CardContent>
             </Card>
 
+            {/* Notary Attestation Panel — required before finalization */}
+            {currentStep >= 3 && (
+              <NotaryAttestationPanel
+                signerName={clientProfile?.full_name || "Unknown Signer"}
+                signingPlatform={SIGNING_PLATFORMS.find(p => p.value === signingPlatform)?.label || signingPlatform}
+                kbaCompleted={kbaCompleted}
+                idVerified={idVerified}
+                oathAdministered={oathAdministered}
+                recordingConsent={recordingConsent}
+                recordingConsentAt={recordingConsentAt}
+                sessionUniqueId={sessionUniqueId}
+                onAttestationComplete={(attestNotes) => {
+                  setNotes(prev => prev + (attestNotes ? `\n[Attestation: ${attestNotes}]` : ""));
+                }}
+                disabled={completing}
+              />
+            )}
+
             {/* Complete & Finalize */}
-            <Card className="rounded-[24px] border-[#eab308]/20 bg-[#eab308]/5">
+            <Card className="rounded-[24px] border-primary/20 bg-primary/5">
               <CardContent className="p-4">
-                <h3 className="mb-3 flex items-center gap-2 text-sm font-black text-[#212529]">
-                  <FileCheck className="h-4 w-4 text-[#eab308]" /> Complete & Finalize
+                <h3 className="mb-3 flex items-center gap-2 text-sm font-black text-foreground">
+                  <FileCheck className="h-4 w-4 text-primary" /> Complete & Finalize
                 </h3>
                 <p className="mb-3 text-xs text-muted-foreground">Marks appointment as completed, creates journal entry, e-seal verification, and payment record.</p>
                 
@@ -2230,7 +2252,7 @@ export default function RonSession() {
                     value={recordingUrl}
                     onChange={(e) => setRecordingUrl(e.target.value)}
                     placeholder="https://platform.com/recording/..."
-                    className="mt-1 text-sm rounded-xl border-gray-200"
+                    className="mt-1 text-sm rounded-xl border-border"
                   />
                   {!recordingUrl && (
                     <p className="mt-1 text-[10px] text-destructive">⚠ Ohio law requires session recordings to be retained for 10 years.</p>
@@ -2243,7 +2265,7 @@ export default function RonSession() {
                   <li className="flex items-center gap-1">{kbaCompleted ? <CheckCircle className="h-3 w-3 text-primary" /> : <XCircle className="h-3 w-3 text-destructive" />} KBA Completed</li>
                   <li className="flex items-center gap-1">{oathAdministered ? <CheckCircle className="h-3 w-3 text-primary" /> : <XCircle className="h-3 w-3 text-destructive" />} Oath Administered</li>
                 </ul>
-                <Button className="w-full rounded-2xl bg-[#eab308] text-white font-bold hover:bg-[#ca9a06] shadow-[3px_3px_0px_#212529] h-11" disabled={!idVerified || !kbaCompleted || completing} onClick={completeAndFinalize}>
+                <Button className="w-full rounded-2xl bg-primary text-primary-foreground font-bold hover:bg-primary/90 shadow-[3px_3px_0px_hsl(var(--foreground))] h-11" disabled={!idVerified || !kbaCompleted || completing} onClick={completeAndFinalize}>
                   {completing ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <FileCheck className="mr-1 h-4 w-4" />} Complete Session
                 </Button>
               </CardContent>
@@ -2251,6 +2273,22 @@ export default function RonSession() {
           </div>
         </div>
       </div>
+
+      {/* Finalization Confirmation Dialog */}
+      <AlertDialog open={showFinalizeDialog} onOpenChange={setShowFinalizeDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Finalize RON Session?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will mark the appointment as completed, create a journal entry, e-seal verification, and payment record. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={executeFinalization}>Finalize Session</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
