@@ -156,6 +156,14 @@ export default function ClientPortal() {
       if (profileRes.data) {
         setProfile(profileRes.data);
         setProfileForm({ full_name: profileRes.data.full_name || "", phone: profileRes.data.phone || "", address: profileRes.data.address || "", city: profileRes.data.city || "", state: profileRes.data.state || "", zip: profileRes.data.zip || "" });
+      } else if (profileRes.error && user) {
+        // Auto-create profile if missing (safety net for edge cases)
+        const fallbackProfile = { user_id: user.id, full_name: user.user_metadata?.full_name || "", email: user.email || "" };
+        const { data: created } = await supabase.from("profiles").upsert(fallbackProfile, { onConflict: "user_id" }).select().single();
+        if (created) {
+          setProfile(created);
+          setProfileForm({ full_name: created.full_name || "", phone: created.phone || "", address: created.address || "", city: created.city || "", state: created.state || "", zip: created.zip || "" });
+        }
       }
       setLoading(false);
       setInitialLoad(false);
