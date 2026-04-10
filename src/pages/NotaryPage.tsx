@@ -46,6 +46,8 @@ export default function NotaryPage() {
   const [page, setPage] = useState<NotaryPageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
+  const [coverPhotoUrl, setCoverPhotoUrl] = useState<string | null>(null);
 
   usePageMeta({
     title: page?.seo_title || page?.display_name || "Notary",
@@ -81,6 +83,18 @@ export default function NotaryPage() {
     })();
   }, [slug]);
 
+  useEffect(() => {
+    if (!page) return;
+    const resolveUrl = async (path: string | null, setter: (url: string | null) => void) => {
+      if (!path) { setter(null); return; }
+      if (path.startsWith("http")) { setter(path); return; }
+      const { data } = await supabase.storage.from("documents").createSignedUrl(path, 3600);
+      setter(data?.signedUrl || null);
+    };
+    resolveUrl(page.profile_photo_path, setProfilePhotoUrl);
+    resolveUrl(page.cover_photo_path, setCoverPhotoUrl);
+  }, [page]);
+
   if (loading) {
     return (
       <PageShell>
@@ -111,21 +125,6 @@ export default function NotaryPage() {
   const bookingUrl = page.use_platform_booking
     ? `/book?notary=${page.slug}`
     : page.external_booking_url || `/book?notary=${page.slug}`;
-
-  const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
-  const [coverPhotoUrl, setCoverPhotoUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!page) return;
-    const resolveUrl = async (path: string | null, setter: (url: string | null) => void) => {
-      if (!path) { setter(null); return; }
-      if (path.startsWith("http")) { setter(path); return; }
-      const { data } = await supabase.storage.from("documents").createSignedUrl(path, 3600);
-      setter(data?.signedUrl || null);
-    };
-    resolveUrl(page.profile_photo_path, setProfilePhotoUrl);
-    resolveUrl(page.cover_photo_path, setCoverPhotoUrl);
-  }, [page]);
 
   return (
     <PageShell>
