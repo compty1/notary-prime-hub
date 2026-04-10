@@ -80,7 +80,7 @@ export default function NotaryProcessGuide() {
             <CardContent className="p-0">
               <div className="md:flex">
                 <div className="md:w-1/2">
-                  <img src={juratExample} alt="Example jurat certificate with seal placement" className="w-full h-auto object-cover" />
+                  <img src={juratExample} alt="Example jurat certificate with seal placement" className="w-full h-auto object-cover" loading="lazy" />
                 </div>
                 <div className="p-6 md:w-1/2 flex flex-col justify-center">
                   <h3 className="mb-2 font-sans text-lg font-semibold">Jurat Certificate Example</h3>

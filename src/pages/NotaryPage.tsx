@@ -135,7 +135,7 @@ export default function NotaryPage() {
       >
         {coverPhotoUrl && (
           <div className="absolute inset-0 opacity-20">
-            <img src={coverPhotoUrl} alt="" className="h-full w-full object-cover" />
+            <img src={coverPhotoUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
           </div>
         )}
         <div className="relative mx-auto max-w-6xl px-4 py-16 sm:py-24">
