@@ -111,6 +111,7 @@ export default function AppointmentConfirmation() {
   const [loading, setLoading] = useState(true);
   const [zoomLink, setZoomLink] = useState<string>("");
   const [notaryProfile, setNotaryProfile] = useState<any>(null);
+  const [referralProfessional, setReferralProfessional] = useState<any>(null);
   const [showPayment, setShowPayment] = useState(false);
 
   useEffect(() => {
@@ -119,9 +120,15 @@ export default function AppointmentConfirmation() {
       supabase.from("appointments").select("*").eq("id", appointmentId).single(),
       supabase.from("platform_settings").select("setting_value").eq("setting_key", "zoom_meeting_link").single(),
     ]).then(async ([apptRes, zoomRes]) => {
-      if (apptRes.data) setAppointment(apptRes.data);
+      if (apptRes.data) {
+        setAppointment(apptRes.data);
+        // Fetch referring professional info if present
+        if (apptRes.data.referral_professional_id) {
+          const { data: refPage } = await supabase.from("notary_pages").select("display_name, slug, professional_type").eq("user_id", apptRes.data.referral_professional_id).maybeSingle();
+          if (refPage) setReferralProfessional(refPage);
+        }
+      }
       if (zoomRes.data?.setting_value) setZoomLink(zoomRes.data.setting_value);
-      // Fetch notary/admin profile to show "Your Notary" info
       const { data: adminRoles } = await supabase.from("user_roles").select("user_id").in("role", ["admin", "notary"]).limit(1);
       if (adminRoles && adminRoles.length > 0) {
         const { data: prof } = await supabase.from("profiles").select("*").eq("user_id", adminRoles[0].user_id).single();
@@ -242,6 +249,18 @@ export default function AppointmentConfirmation() {
               {notaryProfile.phone && <p className="text-xs text-muted-foreground mt-1">📞 {notaryProfile.phone}</p>}
               {notaryProfile.email && <p className="text-xs text-muted-foreground">✉️ {notaryProfile.email}</p>}
               {notaryProfile.state && <p className="text-xs text-muted-foreground">Commissioned in {notaryProfile.state}</p>}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Referred By Professional */}
+        {referralProfessional && (
+          <Card className="mb-6 border-primary/20 bg-primary/5 text-left">
+            <CardContent className="p-4">
+              <p className="text-sm font-medium mb-1 flex items-center gap-2"><User className="h-4 w-4 text-primary" /> Referred by</p>
+              <Link to={`/n/${referralProfessional.slug}`} className="text-sm font-semibold text-primary hover:underline">
+                {referralProfessional.display_name}
+              </Link>
             </CardContent>
           </Card>
         )}

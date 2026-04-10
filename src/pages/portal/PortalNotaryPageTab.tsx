@@ -11,12 +11,16 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CharCounter } from "@/components/CharCounter";
 import { useToast } from "@/hooks/use-toast";
+import { QRCodeSVG } from "qrcode.react";
+import { format } from "date-fns";
 import {
   Loader2, Copy, Save, Globe, Eye, Upload, Plus, Trash2, Image as ImageIcon,
   Award, Shield, CheckCircle, MapPin, Facebook, Linkedin, Twitter, Search,
   DollarSign, TrendingUp, Palette, Type, LayoutList, AlertTriangle,
+  Link as LinkIcon, QrCode, Download, History,
 } from "lucide-react";
 
 interface ServiceItem {
@@ -35,10 +39,12 @@ interface PlatformService {
 }
 
 interface ProfitTransaction {
+  id?: string;
   gross_amount: number;
   platform_fee: number;
   professional_share: number;
   status: string;
+  created_at?: string;
 }
 
 const DEFAULT_SERVICES: ServiceItem[] = [
@@ -87,6 +93,7 @@ export default function PortalNotaryPageTab() {
   const [platformServices, setPlatformServices] = useState<PlatformService[]>([]);
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [profitStats, setProfitStats] = useState({ total: 0, fees: 0, profit: 0, pending: 0 });
+  const [profitHistory, setProfitHistory] = useState<ProfitTransaction[]>([]);
 
   useEffect(() => {
     if (!user) return;
@@ -95,13 +102,14 @@ export default function PortalNotaryPageTab() {
         supabase.from("notary_pages").select("*").eq("user_id", user.id).maybeSingle(),
         supabase.from("services").select("id, name, category, price_from, price_to, short_description").eq("is_active", true).order("display_order"),
         supabase.from("professional_service_enrollments").select("*").eq("professional_user_id", user.id),
-        supabase.from("profit_share_transactions").select("gross_amount, platform_fee, professional_share, status").eq("professional_user_id", user.id),
+        supabase.from("profit_share_transactions").select("id, gross_amount, platform_fee, professional_share, status, created_at").eq("professional_user_id", user.id).order("created_at", { ascending: false }).limit(50),
       ]);
       if (pageRes.data) { setPage(pageRes.data); setHasPage(true); }
       if (svcRes.data) setPlatformServices(svcRes.data as PlatformService[]);
       if (enrollRes.data) setEnrollments(enrollRes.data);
       if (profitRes.data) {
         const txns = profitRes.data as ProfitTransaction[];
+        setProfitHistory(txns);
         setProfitStats({
           total: txns.reduce((s, t) => s + (t.gross_amount || 0), 0),
           fees: txns.reduce((s, t) => s + (t.platform_fee || 0), 0),
@@ -328,6 +336,107 @@ export default function PortalNotaryPageTab() {
           <p className="mt-3 text-xs text-muted-foreground text-center">
             Earnings from bookings made through your personal page. Platform fees cover processing, technology, and compliance.
           </p>
+        </CardContent>
+      </Card>
+
+      {/* Referral Link & QR Code */}
+      <Card>
+        <CardHeader><CardTitle className="flex items-center gap-2"><LinkIcon className="h-4 w-4" /> Referral Link & QR Code</CardTitle></CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+            <div className="flex-1 space-y-3">
+              <div>
+                <Label>Your Referral Link</Label>
+                <div className="flex gap-2 mt-1">
+                  <Input readOnly value={`${window.location.origin}/n/${page?.slug}`} className="font-mono text-sm" />
+                  <Button variant="outline" size="sm" onClick={copyLink} className="gap-1 shrink-0"><Copy className="h-3 w-3" /> Copy</Button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">Share this link — bookings made through it are tracked for your profit share.</p>
+              </div>
+              <div>
+                <Label>Direct Booking Link</Label>
+                <div className="flex gap-2 mt-1">
+                  <Input readOnly value={`${window.location.origin}/book?ref=${user?.id}`} className="font-mono text-sm" />
+                  <Button variant="outline" size="sm" onClick={() => {
+                    navigator.clipboard.writeText(`${window.location.origin}/book?ref=${user?.id}`);
+                    toast({ title: "Booking link copied!" });
+                  }} className="gap-1 shrink-0"><Copy className="h-3 w-3" /> Copy</Button>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <div className="rounded-lg border p-3 bg-white">
+                <QRCodeSVG value={`${window.location.origin}/n/${page?.slug}`} size={120} />
+              </div>
+              <p className="text-xs text-muted-foreground">Scan to visit your page</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Profit History */}
+      {profitHistory.length > 0 && (
+        <Card>
+          <CardHeader><CardTitle className="flex items-center gap-2"><History className="h-4 w-4" /> Profit History</CardTitle></CardHeader>
+          <CardContent>
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Gross</TableHead>
+                    <TableHead>Platform Fee</TableHead>
+                    <TableHead>Your Share</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {profitHistory.slice(0, 20).map((txn, i) => (
+                    <TableRow key={txn.id || i}>
+                      <TableCell className="text-sm">{txn.created_at ? format(new Date(txn.created_at), "MMM d, yyyy") : "—"}</TableCell>
+                      <TableCell>${txn.gross_amount.toFixed(2)}</TableCell>
+                      <TableCell className="text-muted-foreground">${txn.platform_fee.toFixed(2)}</TableCell>
+                      <TableCell className="font-semibold text-green-600">${txn.professional_share.toFixed(2)}</TableCell>
+                      <TableCell>
+                        <Badge variant={txn.status === "paid" ? "default" : txn.status === "disputed" ? "destructive" : "secondary"}>
+                          {txn.status}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            {profitHistory.length > 20 && (
+              <p className="mt-2 text-xs text-muted-foreground text-center">Showing 20 of {profitHistory.length} transactions</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Fee Breakdown Info */}
+      <Card className="border-amber-200 bg-amber-50/50 dark:border-amber-800 dark:bg-amber-950/20">
+        <CardHeader><CardTitle className="flex items-center gap-2 text-sm"><AlertTriangle className="h-4 w-4 text-amber-600" /> Platform Fee Structure</CardTitle></CardHeader>
+        <CardContent>
+          <div className="grid gap-2 text-sm sm:grid-cols-2">
+            <div className="flex justify-between rounded border bg-background px-3 py-2">
+              <span className="text-muted-foreground">Notarization (per act)</span>
+              <span className="font-semibold">$5.00 (Ohio ORC §147.08)</span>
+            </div>
+            <div className="flex justify-between rounded border bg-background px-3 py-2">
+              <span className="text-muted-foreground">RON Session Fee</span>
+              <span className="font-semibold">$25.00 minimum</span>
+            </div>
+            <div className="flex justify-between rounded border bg-background px-3 py-2">
+              <span className="text-muted-foreground">KBA Verification</span>
+              <span className="font-semibold">$15.00 minimum</span>
+            </div>
+            <div className="flex justify-between rounded border bg-background px-3 py-2">
+              <span className="text-muted-foreground">Payment Processing</span>
+              <span className="font-semibold">2.9% + $0.30</span>
+            </div>
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">These fees are set by the platform and cannot be reduced below minimums. Your custom pricing must cover these costs.</p>
         </CardContent>
       </Card>
 
