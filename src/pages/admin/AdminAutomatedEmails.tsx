@@ -65,12 +65,37 @@ const SERVICE_TEMPLATE_KEYS: { key: keyof ServiceEmailTemplates; label: string; 
 
 const DEFAULT_SERVICE_TEMPLATE: EmailTemplate = { enabled: false, subject: "", body: "" };
 
-function defaultServiceTemplates(): ServiceEmailTemplates {
+function defaultServiceTemplates(serviceName?: string): ServiceEmailTemplates {
+  if (!serviceName) {
+    return {
+      booking_confirmation: { ...DEFAULT_SERVICE_TEMPLATE },
+      reminder: { ...DEFAULT_SERVICE_TEMPLATE },
+      follow_up: { ...DEFAULT_SERVICE_TEMPLATE },
+      completion: { ...DEFAULT_SERVICE_TEMPLATE },
+    };
+  }
+  // Generate smart defaults based on service name
   return {
-    booking_confirmation: { ...DEFAULT_SERVICE_TEMPLATE },
-    reminder: { ...DEFAULT_SERVICE_TEMPLATE },
-    follow_up: { ...DEFAULT_SERVICE_TEMPLATE },
-    completion: { ...DEFAULT_SERVICE_TEMPLATE },
+    booking_confirmation: {
+      enabled: true,
+      subject: `Your ${serviceName} Appointment is Confirmed — {{confirmation_number}}`,
+      body: `<h2>Appointment Confirmed</h2><p>Dear {{client_name}},</p><p>Your <strong>${serviceName}</strong> appointment has been confirmed.</p><ul><li><strong>Date:</strong> {{date}}</li><li><strong>Time:</strong> {{time}}</li><li><strong>Confirmation #:</strong> {{confirmation_number}}</li><li><strong>Location:</strong> {{location}}</li></ul><p>Please have a valid government-issued photo ID ready for your appointment.</p><p>If you need to reschedule, please do so at least 24 hours in advance through your <a href="{{portal_link}}">client portal</a>.</p><p>Thank you for choosing NotaryDex!</p>`,
+    },
+    reminder: {
+      enabled: true,
+      subject: `Reminder: Your ${serviceName} Appointment Tomorrow — {{date}}`,
+      body: `<h2>Appointment Reminder</h2><p>Hi {{client_name}},</p><p>This is a friendly reminder that your <strong>${serviceName}</strong> appointment is scheduled for:</p><ul><li><strong>Date:</strong> {{date}}</li><li><strong>Time:</strong> {{time}}</li><li><strong>Location:</strong> {{location}}</li></ul><p><strong>What to bring:</strong></p><ul><li>Valid government-issued photo ID (driver's license, passport, or state ID)</li><li>Any documents that need to be notarized</li><li>Payment method</li></ul><p>Need to reschedule? Visit your <a href="{{portal_link}}">client portal</a> or contact us as soon as possible.</p>`,
+    },
+    follow_up: {
+      enabled: true,
+      subject: `How Was Your ${serviceName} Experience? — NotaryDex`,
+      body: `<h2>We Value Your Feedback</h2><p>Hi {{client_name}},</p><p>Thank you for using NotaryDex for your <strong>${serviceName}</strong> on {{date}}.</p><p>We'd love to hear about your experience! Your feedback helps us improve our services for everyone.</p><p>How would you rate your experience? Please take a moment to share your thoughts in your <a href="{{portal_link}}">client portal</a>.</p><p>If you were satisfied with our service, we'd appreciate it if you'd consider referring us to friends, family, or colleagues who may need notary services.</p><p>Thank you again for choosing NotaryDex!</p>`,
+    },
+    completion: {
+      enabled: true,
+      subject: `Your ${serviceName} is Complete — NotaryDex`,
+      body: `<h2>Notarization Complete</h2><p>Dear {{client_name}},</p><p>Your <strong>${serviceName}</strong> has been successfully completed.</p><p>Your notarized documents are now available for download in your <a href="{{portal_link}}">client portal</a>.</p><p><strong>Important:</strong> Please review your documents for accuracy. Notarized documents are legally binding records. If you have any questions or concerns, please contact us within 24 hours.</p><p>Thank you for choosing NotaryDex for your notarization needs. We look forward to serving you again!</p>`,
+    },
   };
 }
 
@@ -508,7 +533,7 @@ function ServiceTemplatesTab() {
 
   useEffect(() => { load(); }, [load]);
 
-  const getTemplates = (s: ServiceRow): ServiceEmailTemplates => s.email_templates ?? defaultServiceTemplates();
+  const getTemplates = (s: ServiceRow): ServiceEmailTemplates => s.email_templates ?? defaultServiceTemplates(s.name);
 
   const updateLocal = (id: string, templates: ServiceEmailTemplates) => {
     setServices(prev => prev.map(s => (s.id === id ? { ...s, email_templates: templates } : s)));
@@ -923,19 +948,34 @@ const INTEGRATIONS: IntegrationSection[] = [
   },
 ];
 
-const EMAIL_PIPELINE_MAP = [
-  { emailType: "Booking Confirmation", trigger: "New appointment created", edgeFunction: "send-appointment-emails", provider: "IONOS SMTP" },
-  { emailType: "24hr Reminder", trigger: "Scheduled (cron)", edgeFunction: "send-appointment-reminders", provider: "IONOS SMTP" },
-  { emailType: "30min Reminder", trigger: "Scheduled (cron)", edgeFunction: "send-appointment-reminders", provider: "IONOS SMTP" },
-  { emailType: "Completion / Thank You", trigger: "Appointment status → completed", edgeFunction: "send-followup-sequence", provider: "IONOS SMTP" },
-  { emailType: "Feedback Request (NPS)", trigger: "Completion +2 days", edgeFunction: "send-followup-sequence", provider: "IONOS SMTP" },
-  { emailType: "Referral Invitation", trigger: "Completion +5 days", edgeFunction: "send-followup-sequence", provider: "IONOS SMTP" },
-  { emailType: "Welcome Onboarding (3-part)", trigger: "New user signup", edgeFunction: "send-welcome-sequence", provider: "IONOS SMTP" },
-  { emailType: "Document Status Update", trigger: "Document status change", edgeFunction: "send-document-notification", provider: "IONOS SMTP" },
-  { emailType: "Direct Correspondence", trigger: "Admin sends from CRM", edgeFunction: "send-correspondence", provider: "IONOS SMTP → Resend fallback" },
-  { emailType: "Auth Emails (OTP, Recovery)", trigger: "Auth events", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue" },
-  { emailType: "Payment Receipt", trigger: "Stripe payment.succeeded", edgeFunction: "stripe-webhook", provider: "IONOS SMTP" },
-  { emailType: "Lead Confirmation", trigger: "Contact form submission", edgeFunction: "submit-lead", provider: "IONOS SMTP" },
+const EMAIL_PIPELINE_MAP: { emailType: string; trigger: string; edgeFunction: string; provider: string; source: "notardex" | "signnow" | "lovable" }[] = [
+  // --- NotarDex Internal Emails ---
+  { emailType: "Booking Confirmation", trigger: "New appointment created", edgeFunction: "send-appointment-emails", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "24hr Reminder", trigger: "Scheduled (cron)", edgeFunction: "send-appointment-reminders", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "30min Reminder", trigger: "Scheduled (cron)", edgeFunction: "send-appointment-reminders", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "Completion / Thank You", trigger: "Appointment status → completed", edgeFunction: "send-followup-sequence", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "Feedback Request (NPS)", trigger: "Completion +2 days", edgeFunction: "send-followup-sequence", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "Referral Invitation", trigger: "Completion +5 days", edgeFunction: "send-followup-sequence", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "Welcome Onboarding (3-part)", trigger: "New user signup", edgeFunction: "send-welcome-sequence", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "Document Status Update", trigger: "Document status change", edgeFunction: "send-document-notification", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "Direct Correspondence", trigger: "Admin sends from CRM", edgeFunction: "send-correspondence", provider: "IONOS SMTP → Resend fallback", source: "notardex" },
+  { emailType: "Payment Receipt", trigger: "Stripe payment.succeeded", edgeFunction: "stripe-webhook", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "Lead Confirmation", trigger: "Contact form submission", edgeFunction: "submit-lead", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "RON Session Link", trigger: "Session ready / notary sends", edgeFunction: "send-appointment-emails", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "Document Ready for Download", trigger: "Document status → notarized", edgeFunction: "send-document-notification", provider: "IONOS SMTP", source: "notardex" },
+  // --- Auth Emails (Lovable Email Queue) ---
+  { emailType: "Signup Confirmation", trigger: "Auth: new signup", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue", source: "lovable" },
+  { emailType: "Password Recovery", trigger: "Auth: forgot password", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue", source: "lovable" },
+  { emailType: "Magic Link Login", trigger: "Auth: magic link request", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue", source: "lovable" },
+  { emailType: "Email Change Verification", trigger: "Auth: email change", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue", source: "lovable" },
+  { emailType: "Team / Notary Invite", trigger: "Auth: admin invites user", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue", source: "lovable" },
+  { emailType: "Reauthentication Code", trigger: "Auth: sensitive action", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue", source: "lovable" },
+  // --- SignNow External Emails (sent by SignNow, NOT by NotarDex) ---
+  { emailType: "Signing Invitation", trigger: "Document uploaded + invite sent via SignNow", edgeFunction: "signnow (action: send_invite)", provider: "SignNow Platform", source: "signnow" },
+  { emailType: "Signing Reminder", trigger: "Auto-scheduled by SignNow for unsigned docs", edgeFunction: "N/A (SignNow internal)", provider: "SignNow Platform", source: "signnow" },
+  { emailType: "Document Completed", trigger: "All parties have signed", edgeFunction: "signnow-webhook (event: document.complete)", provider: "SignNow Platform", source: "signnow" },
+  { emailType: "Invite Viewed", trigger: "Signer opens document link", edgeFunction: "signnow-webhook (event: document.update)", provider: "SignNow Platform", source: "signnow" },
+  { emailType: "Invite Cancelled", trigger: "Admin cancels signing invitation", edgeFunction: "signnow (action: cancel_invite)", provider: "SignNow Platform", source: "signnow" },
 ];
 
 function IntegrationSetupTab() {
@@ -1152,6 +1192,7 @@ function IntegrationSetupTab() {
                 <table className="w-full text-xs">
                   <thead>
                     <tr className="border-b border-border">
+                      <th className="text-left py-2 pr-4 font-medium text-muted-foreground">Source</th>
                       <th className="text-left py-2 pr-4 font-medium text-muted-foreground">Email Type</th>
                       <th className="text-left py-2 pr-4 font-medium text-muted-foreground">Trigger</th>
                       <th className="text-left py-2 pr-4 font-medium text-muted-foreground">Backend Function</th>
@@ -1159,16 +1200,50 @@ function IntegrationSetupTab() {
                     </tr>
                   </thead>
                   <tbody>
-                    {EMAIL_PIPELINE_MAP.map((row, i) => (
-                      <tr key={i} className="border-b border-border/50">
-                        <td className="py-1.5 pr-4 font-medium">{row.emailType}</td>
-                        <td className="py-1.5 pr-4 text-muted-foreground">{row.trigger}</td>
-                        <td className="py-1.5 pr-4 font-mono text-[10px]">{row.edgeFunction}</td>
-                        <td className="py-1.5 text-muted-foreground">{row.provider}</td>
-                      </tr>
-                    ))}
+                    {EMAIL_PIPELINE_MAP.map((row, i) => {
+                      const sourceColors = {
+                        notardex: "bg-primary/10 text-primary",
+                        signnow: "bg-orange-500/10 text-orange-700",
+                        lovable: "bg-blue-500/10 text-blue-700",
+                      };
+                      const sourceLabels = {
+                        notardex: "NotarDex",
+                        signnow: "SignNow",
+                        lovable: "Auth System",
+                      };
+                      return (
+                        <tr key={i} className="border-b border-border/50">
+                          <td className="py-1.5 pr-4">
+                            <Badge className={`${sourceColors[row.source]} text-[9px] font-bold`}>{sourceLabels[row.source]}</Badge>
+                          </td>
+                          <td className="py-1.5 pr-4 font-medium">{row.emailType}</td>
+                          <td className="py-1.5 pr-4 text-muted-foreground">{row.trigger}</td>
+                          <td className="py-1.5 pr-4 font-mono text-[10px]">{row.edgeFunction}</td>
+                          <td className="py-1.5 text-muted-foreground">{row.provider}</td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
+              </div>
+
+              {/* SignNow External Emails Explainer */}
+              <div className="rounded-md bg-orange-500/5 border border-orange-500/10 p-3 space-y-2">
+                <h4 className="text-xs font-semibold text-orange-700 dark:text-orange-400 flex items-center gap-1">
+                  <PenTool className="h-3 w-3" /> SignNow External Emails
+                </h4>
+                <p className="text-[11px] text-muted-foreground">
+                  The emails marked <Badge className="bg-orange-500/10 text-orange-700 text-[8px] font-bold mx-0.5">SignNow</Badge> are
+                  sent <strong>directly by SignNow's platform</strong>, not by NotarDex. Their content, branding, and delivery schedule are
+                  controlled in your <a href="https://app.signnow.com" target="_blank" rel="noopener noreferrer" className="underline text-primary">SignNow account settings</a>.
+                  NotarDex receives webhook events for these emails and tracks them in the CRM timeline and <code className="bg-muted px-1 py-0.5 rounded text-[9px]">signnow_documents</code> table.
+                </p>
+                <ul className="text-[11px] text-muted-foreground space-y-0.5">
+                  <li>• <strong>Signing invitations</strong> — sent when you use "Send Invite" in RON Session; customizable in SignNow → Settings → Notifications</li>
+                  <li>• <strong>Auto-reminders</strong> — frequency set in SignNow → Settings → Notifications → Reminder Schedule</li>
+                  <li>• <strong>Completion emails</strong> — sent to all parties with signed PDF attached; configured in SignNow account</li>
+                  <li>• <strong>Webhook tracking</strong> — all SignNow email events are logged to <code className="bg-muted px-1 py-0.5 rounded text-[9px]">webhook_events</code> and <code className="bg-muted px-1 py-0.5 rounded text-[9px]">crm_activities</code></li>
+                </ul>
               </div>
 
               {/* Retry logic */}
