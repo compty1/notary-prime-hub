@@ -600,11 +600,12 @@ export default function NotaryPage() {
             <div className="space-y-4">
               {[
                 { q: "What documents do I need to bring?", a: "Bring a valid, government-issued photo ID (driver's license, passport, or state ID). The document(s) you need notarized should be unsigned — you'll sign in the notary's presence." },
-                { q: "How much does notarization cost?", a: "Ohio law caps notary fees at $5 per notarial act. Additional fees may apply for travel, after-hours service, or document preparation." },
-                { q: "Can I get documents notarized online?", a: "Yes! Remote Online Notarization (RON) is authorized in Ohio. You'll connect via secure video, verify your identity, and complete the signing electronically." },
+                { q: "How much does notarization cost?", a: `Ohio law caps notary fees at $${get("base_fee_per_signature", "5")} per notarial act. RON sessions start at $${get("ron_base_service_fee", "25")}. Additional fees may apply for travel ($${get("travel_fee_minimum", "35")} minimum), after-hours service ($${get("after_hours_fee", "35")}), or document preparation.` },
+                { q: "Can I get documents notarized online?", a: "Yes! Remote Online Notarization (RON) is authorized in Ohio under ORC §147.65–.66. You'll connect via secure video, verify your identity through knowledge-based authentication, and complete the signing electronically." },
                 { q: "What types of documents can be notarized?", a: "Common documents include affidavits, powers of attorney, real estate documents, loan packages, medical directives, vehicle titles, and more." },
-                { q: "Do I need an appointment?", a: "Appointments are recommended to ensure availability, but same-day bookings are often available through our online scheduling." },
+                { q: "Do I need an appointment?", a: `Appointments are recommended to ensure availability. We're available ${get("business_hours", "Mon-Fri 9AM-6PM, Sat 10AM-2PM")}. Same-day bookings are often available through our online scheduling.` },
                 { q: "How long does a notarization take?", a: "Most notarizations take 10-15 minutes. Loan signings and complex packages may take 30-60 minutes." },
+                { q: "What area do you serve?", a: `We serve ${get("service_area", "Franklin County & Greater Columbus, OH")}. Mobile notary services are available within ${get("max_travel_miles", "30")} miles. Remote Online Notarization is available to anyone located in Ohio.` },
               ].map((item, i) => (
                 <motion.div key={i} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: i * 0.05 }} viewport={{ once: true }}>
                   <Card>
