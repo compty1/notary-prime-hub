@@ -77,7 +77,7 @@ export default function NotaryPage() {
       if (error || !data) {
         setNotFound(true);
       } else {
-        setPage(data as any);
+        setPage(data as NotaryPageData);
       }
       setLoading(false);
     })();
@@ -119,7 +119,7 @@ export default function NotaryPage() {
 
   const creds = page.credentials || {};
   const socials = page.social_links || {};
-  const services = (page.services_offered || []) as any[];
+  const services = (page.services_offered || []) as Array<{ name: string; description?: string; price?: number }>;
   const areas = (page.service_areas || []) as string[];
   const themeColor = page.theme_color || "#eab308";
   const bookingUrl = page.use_platform_booking
