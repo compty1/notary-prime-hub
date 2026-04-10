@@ -2219,11 +2219,29 @@ export default function RonSession() {
               </CardContent>
             </Card>
 
+            {/* Notary Attestation Panel — required before finalization */}
+            {currentStep >= 3 && (
+              <NotaryAttestationPanel
+                signerName={clientProfile?.full_name || "Unknown Signer"}
+                signingPlatform={SIGNING_PLATFORMS.find(p => p.value === signingPlatform)?.label || signingPlatform}
+                kbaCompleted={kbaCompleted}
+                idVerified={idVerified}
+                oathAdministered={oathAdministered}
+                recordingConsent={recordingConsent}
+                recordingConsentAt={recordingConsentAt}
+                sessionUniqueId={sessionUniqueId}
+                onAttestationComplete={(attestNotes) => {
+                  setNotes(prev => prev + (attestNotes ? `\n[Attestation: ${attestNotes}]` : ""));
+                }}
+                disabled={completing}
+              />
+            )}
+
             {/* Complete & Finalize */}
-            <Card className="rounded-[24px] border-[#eab308]/20 bg-[#eab308]/5">
+            <Card className="rounded-[24px] border-primary/20 bg-primary/5">
               <CardContent className="p-4">
-                <h3 className="mb-3 flex items-center gap-2 text-sm font-black text-[#212529]">
-                  <FileCheck className="h-4 w-4 text-[#eab308]" /> Complete & Finalize
+                <h3 className="mb-3 flex items-center gap-2 text-sm font-black text-foreground">
+                  <FileCheck className="h-4 w-4 text-primary" /> Complete & Finalize
                 </h3>
                 <p className="mb-3 text-xs text-muted-foreground">Marks appointment as completed, creates journal entry, e-seal verification, and payment record.</p>
                 
@@ -2234,7 +2252,7 @@ export default function RonSession() {
                     value={recordingUrl}
                     onChange={(e) => setRecordingUrl(e.target.value)}
                     placeholder="https://platform.com/recording/..."
-                    className="mt-1 text-sm rounded-xl border-gray-200"
+                    className="mt-1 text-sm rounded-xl border-border"
                   />
                   {!recordingUrl && (
                     <p className="mt-1 text-[10px] text-destructive">⚠ Ohio law requires session recordings to be retained for 10 years.</p>
@@ -2247,7 +2265,7 @@ export default function RonSession() {
                   <li className="flex items-center gap-1">{kbaCompleted ? <CheckCircle className="h-3 w-3 text-primary" /> : <XCircle className="h-3 w-3 text-destructive" />} KBA Completed</li>
                   <li className="flex items-center gap-1">{oathAdministered ? <CheckCircle className="h-3 w-3 text-primary" /> : <XCircle className="h-3 w-3 text-destructive" />} Oath Administered</li>
                 </ul>
-                <Button className="w-full rounded-2xl bg-[#eab308] text-white font-bold hover:bg-[#ca9a06] shadow-[3px_3px_0px_#212529] h-11" disabled={!idVerified || !kbaCompleted || completing} onClick={completeAndFinalize}>
+                <Button className="w-full rounded-2xl bg-primary text-primary-foreground font-bold hover:bg-primary/90 shadow-[3px_3px_0px_hsl(var(--foreground))] h-11" disabled={!idVerified || !kbaCompleted || completing} onClick={completeAndFinalize}>
                   {completing ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <FileCheck className="mr-1 h-4 w-4" />} Complete Session
                 </Button>
               </CardContent>
@@ -2255,6 +2273,22 @@ export default function RonSession() {
           </div>
         </div>
       </div>
+
+      {/* Finalization Confirmation Dialog */}
+      <AlertDialog open={showFinalizeDialog} onOpenChange={setShowFinalizeDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Finalize RON Session?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will mark the appointment as completed, create a journal entry, e-seal verification, and payment record. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={executeFinalization}>Finalize Session</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
