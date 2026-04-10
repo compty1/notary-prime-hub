@@ -1,137 +1,102 @@
 
 
-# Comprehensive Platform Functionality Audit & Enhancement Plan
+# Professional Sites & Profit Share — Phases 1–4 Implementation
 
 ## Summary
-Generate a 1,000+ item audit covering every page, component, edge function, database table, and integration across the NotarDex platform. Deliverables: a detailed DOCX specification and a structured CSV task tracker, both written to `/mnt/documents/`. No code changes -- documents only.
+Implement the first 4 phases (43 items) of the professional sites plan: database schema, portal customization, public site rendering, and profit share engine.
 
-## Audit Scope
+---
 
-The audit will systematically cover these domains:
+## Phase 1: Database Schema (PRO-0001 to PRO-0015)
 
-### 1. Public Pages (55 routes, ~200 items)
-- Homepage (Index.tsx - 675 lines): CTA wiring, form submission, SEO tags, responsive layout, contact form validation
-- Services/ServiceDetail: category routing, pricing display, checklist persistence, share functionality
-- Booking flow (BookAppointment - 986 lines): multi-step wizard, draft saving, guest signup, geolocation, pricing engine integration, slot reservation, notary param support
-- Solution pages (6): content completeness, CTA links, SEO meta
-- Information pages: RON info, Notary Guide, Certificates, Compliance, Security, Accessibility, Help
-- Public notary pages (/n/:slug): photo rendering, booking integration, SEO schema
+**Migration 1 — Core tables and columns:**
+- Add columns to `notary_pages`: `accent_color`, `font_family`, `nav_services` (jsonb), `gallery_photos` (jsonb), `professional_type` (text, default 'notary'), `profit_share_enabled` (bool), `profit_share_percentage` (decimal)
+- Add columns to `appointments`: `referral_source` (text), `referral_professional_id` (uuid, FK profiles.user_id)
+- Add columns to `payments`: `referral_professional_id` (uuid, FK profiles.user_id)
+- Create `profit_share_config` table (professional_user_id, service_id FK, share_percentage, min_platform_fee, is_active, approved_by, approved_at, timestamps)
+- Create `profit_share_transactions` table (professional_user_id, service_id, appointment_id, payment_id FK, gross_amount, platform_fee, professional_share, status, period_start/end, paid_at, notes, timestamps)
+- Create `professional_service_enrollments` table (professional_user_id, service_id FK, custom_price_from/to, custom_description, custom_short_description, is_active, show_on_site, show_in_nav, display_order, timestamps)
 
-### 2. Authentication & Authorization (~50 items)
-- Login/SignUp: rate limiting, password strength, email verification, Google OAuth wiring
-- ProtectedRoute: role enforcement, timeout handling, email confirmation banner
-- AuthContext: session management, role fetching, abort controller, token refresh
-- MFA (TOTP): setup flow, enforcement for admin accounts
+**Migration 2 — RLS, indexes, triggers:**
+- RLS on all 3 new tables (own-row for professionals, full CRUD for admin via `has_role`)
+- Indexes on `profit_share_transactions(professional_user_id, status)`, `professional_service_enrollments(professional_user_id, service_id)`, `appointments(referral_professional_id)`
+- Trigger on `profit_share_config` to enforce minimum platform fee
+- Trigger on `payments` (AFTER UPDATE to 'paid' with referral) to auto-create profit share transaction
 
-### 3. Client Portal (838 lines, ~150 items)
-- Overview dashboard: appointments, documents, payments, reviews, quick actions
-- Profile editing: form fields, avatar upload, phone formatting, zip validation
-- Appointments tab: list, cancel, reschedule, tech check, QR code
-- Documents tab: upload, status pipeline, bulk upload
-- Chat tab: real-time messaging, Google Calendar widget
-- Service Requests tab: submission, status tracking
-- Correspondence tab: message history
-- AI Tools tab: tool catalog integration
-- Notary Page tab (notary role): photo upload/remove, settings, publish toggle
-- Emails tab (notary role): template editing, Gmail integration, test send
-- Leads tab: CSV export
-- Onboarding checklist, quick actions, document readiness score, referral portal
+**No data migration needed** — we extend `notary_pages` in place rather than creating a separate `professional_pages` table (avoids backward compatibility issues, PRO-0102 solved by design).
 
-### 4. Admin Dashboard (30+ sub-pages, ~250 items)
-- Overview: stats cards, charts, recent activity
-- Appointments: CRUD, status management, payment recording, notes, linked forms
-- Clients: search, messaging, avatar display, lifetime value
-- Availability: schedule management
-- Documents: list, review, approval pipeline
-- Journal: CRUD, sequential numbering, compliance checks, audit logging
-- Revenue: payment tracking, reports
-- Services Catalog: pricing rules, service management
-- CRM: activities, contacts, pipeline
-- Lead Portal: discovery, proposals, social scraping
-- Business Clients: B2B management
-- Email Management: templates, IONOS sync, queue processing
-- Team & Invites: notary invitations, role assignment
-- Settings: platform configuration, import/export
-- Compliance Report: session audits, seal verification
-- Audit Log: event history, filtering
-- Task Queue: assignment, status tracking
-- Process Flows: workflow steps, automations, email triggers
-- Webhooks: event management
-- Notary Pages: multi-tenant page management
-- Build Tracker: platform scan, gap analysis, AI analyst
-- Content Workspace, Templates, Apostille, Performance, Integration Testing
+---
 
-### 5. RON Session (2,294 lines, ~100 items)
-- 4-step wizard: setup, ID/KBA verification, oath administration, finalization
-- Session management: waiting room, recording panel, compliance banner
-- Signing platform integration (8 platforms): SignNow, DocuSign, etc.
-- Journal entry auto-creation, attestation panel, e-sign consent
-- Ohio compliance: ORC §147.63 recording consent, KBA limits, age verification
-- Session timeout, reconnection handling
+## Phase 2: Portal Site Customization (PRO-0016 to PRO-0026)
 
-### 6. DocuDex Editor (1,537 lines, ~80 items)
-- TipTap editor: all extensions, toolbar actions, formatting
-- Sidebar tabs: Templates, Layouts, AI, Elements, Shapes, Design, Translate, History
-- QR Code: currently broken (placeholder only)
-- Import/Export: DOCX import via mammoth, PDF/DOCX export
-- AI features: autocomplete, continue writing, smart format, compliance check
-- Page management: add, delete, reorder, zoom
-- Find & Replace, table toolbar, compliance watermarks
+**Update `PortalNotaryPageTab.tsx`:**
+- Add **Nav Service Selector** card — multi-checkbox list of enrolled services, stored in `nav_services` jsonb, max 6 items
+- Add **accent_color** picker + **font_family** selector (Inter, Merriweather, Roboto, Playfair Display, Open Sans)
+- Add **gallery photos** section (up to 6 images) using same signed-URL upload pattern
+- Expand service description from single-line Input to Textarea with character count
+- Add **custom pricing controls** for mobile notary (travel fee/mile, minimum travel fee, max radius) with platform floor enforcement
+- Add **platform fee floor UI** — read-only "Platform Minimum" badge next to price fields, prevent save if below floor
+- Add **Profit Dashboard card** — Total Earnings, Platform Fees, Your Profit, Pending from `profit_share_transactions`
+- Add **Service Enrollment Request** dialog — shows all platform services, professional checks desired ones, creates `professional_service_enrollments` with `is_active=false`
+- Save new fields (`accent_color`, `font_family`, `nav_services`, `gallery_photos`, `professional_type`) in `handleSave`
+- Rename tab label dynamically based on role
 
-### 7. Edge Functions (48 functions, ~150 items)
-- Authentication & security: JWT verification, admin role checks, CORS headers, rate limiting
-- AI functions: tools, extractors, compliance scan, style match, document review
-- Email functions: IONOS SMTP, queue processing, appointment reminders, welcome sequence
-- Payment functions: Stripe integration, webhooks, refunds
-- Integration functions: SignNow, HubSpot, Google Calendar
-- Lead functions: discovery, scraping, proposals
-- Document functions: OCR, translation, export, detection
+---
 
-### 8. Database & RLS (~80 items)
-- Table coverage: 30+ tables with RLS policies
-- Trigger validation: 18 triggers for business logic
-- Index optimization: 23 performance indexes
-- Function security: SECURITY DEFINER patterns, search_path settings
-- Data integrity: fee cap enforcement, booking conflict prevention, journal numbering
+## Phase 3: Public Site Rendering (PRO-0027 to PRO-0035)
 
-### 9. Type Safety & Code Quality (~100 items)
-- 1,166 `any` type usages across 67 files
-- Empty catch blocks in 35 files
-- Missing error boundaries on specific routes
-- Console statement cleanup verification
+**Update `NotaryPage.tsx`:**
+- Render **dynamic navbar** from `nav_services` — horizontal service links with smooth scroll to sections
+- Apply **theme_color, accent_color, font_family** via CSS custom properties on the page container
+- Add **gallery section** between About and Services if `gallery_photos` has entries
+- Render **service cards with custom pricing** from `professional_service_enrollments` (fallback to `services_offered` jsonb)
+- Add **referral tracking** — "Book Now" button passes `?ref=<user_id>` to `/book`
+- Add **professional type badge** (Commissioned Notary, Signing Agent, etc.)
+- Add **JSON-LD LocalBusiness** schema with services and areas
+- Add **/professionals** route to App.tsx (reuse NotaryDirectory pattern with type filter)
 
-### 10. SEO, Performance & Accessibility (~50 items)
-- Meta tags, JSON-LD schema, Open Graph
-- Lazy loading, code splitting, stale time configuration
-- WCAG 2.1 AA compliance: skip links, ARIA labels, keyboard navigation
-- Dark mode consistency across all pages
+**Update `BookAppointment.tsx`:**
+- Read `?ref=` param from URL, store as `referral_professional_id` on appointment creation
 
-## Deliverables
+---
 
-### 1. `/mnt/documents/notardex-comprehensive-audit.docx` (~40+ pages)
-Sections:
-1. Executive Summary & Platform Overview
-2. Public Pages Audit (per-page breakdown)
-3. Authentication & Security Audit
-4. Client Portal Functionality Audit
-5. Admin Dashboard Audit (per-sub-page)
-6. RON Session Flow Audit
-7. DocuDex Editor Audit
-8. Edge Functions Audit (per-function)
-9. Database & RLS Audit
-10. Type Safety & Code Quality
-11. SEO & Performance
-12. Ohio Compliance Checklist
-13. Enhancement Roadmap (prioritized)
+## Phase 4: Profit Share Engine (PRO-0036 to PRO-0043)
 
-### 2. `/mnt/documents/notardex-comprehensive-audit-tasks.csv`
-Columns: ID, Domain, Category, Item, Type (Bug/Enhancement/Wiring/Compliance/TypeSafety), Priority (P0-P3), Complexity, Status, Description
-- 1,000+ rows organized by domain
-- Types: Bug Fix, Enhancement, Wiring Fix, Compliance Gap, Type Safety, Performance, UX, SEO, Security, Accessibility
+**Database function** `calculate_profit_share(p_payment_id, p_professional_id)`:
+- Looks up `profit_share_config` for the service
+- Calculates: platform_fee = max(min_platform_fee, gross × (1 - share%/100))
+- Professional share = gross - platform_fee
+- Inserts into `profit_share_transactions` (idempotent — checks existing)
+
+**Default configuration:**
+- 70% professional / 30% platform for human services
+- Notarization: professional keeps $5/act statutory fee, platform keeps RON/KBA/processing
+- Platform base fees enforced as floors (RON $25, KBA $15, Stripe 2.9%+$0.30)
+
+**Trigger enhancement:**
+- The payment trigger (from Phase 1) calls `calculate_profit_share` when payment status → 'paid' AND `referral_professional_id` IS NOT NULL
+
+**Dispute flow:**
+- `profit_share_transactions.status` supports: `pending`, `paid`, `disputed`
+- Professional can flag disputed (UI in Phase 2 profit dashboard)
+
+---
+
+## Files Created/Modified
+
+| Action | File |
+|--------|------|
+| Create | Migration SQL (2 migrations) |
+| Modify | `src/pages/portal/PortalNotaryPageTab.tsx` — full customization expansion |
+| Modify | `src/pages/NotaryPage.tsx` — dynamic nav, colors, gallery, referral |
+| Modify | `src/pages/BookAppointment.tsx` — referral param handling |
+| Modify | `src/App.tsx` — add /professionals route |
+| Modify | `src/integrations/supabase/types.ts` — auto-updated |
 
 ## Technical Notes
-- Uses `docx` npm package for DOCX generation (already installed at /tmp)
-- CSV generated via heredoc
-- Both files QA'd via LibreOffice PDF conversion and page inspection
-- No code changes to the project
+- Extends `notary_pages` rather than creating separate table to maintain backward compatibility
+- All RLS uses `has_role()` SECURITY DEFINER pattern
+- Profit share trigger uses SECURITY DEFINER to bypass RLS
+- Ohio $5/act cap enforced in profit share calculation
+- Platform fee floors are non-negotiable and enforced at both UI and DB level
 
