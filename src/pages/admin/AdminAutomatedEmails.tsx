@@ -1262,7 +1262,42 @@ function IntegrationSetupTab() {
                 </ul>
               </div>
 
-              {/* Retry logic */}
+              {/* Stripe External Emails Explainer */}
+              <div className="rounded-md bg-violet-500/5 border border-violet-500/10 p-3 space-y-2">
+                <h4 className="text-xs font-semibold text-violet-700 dark:text-violet-400 flex items-center gap-1">
+                  <CreditCard className="h-3 w-3" /> Stripe External Emails
+                </h4>
+                <p className="text-[11px] text-muted-foreground">
+                  The emails marked <Badge className="bg-violet-500/10 text-violet-700 text-[8px] font-bold mx-0.5">Stripe</Badge> are
+                  sent <strong>directly by Stripe's platform</strong>, not by NotarDex. Their content and delivery are controlled in your{" "}
+                  <a href="https://dashboard.stripe.com/settings/emails" target="_blank" rel="noopener noreferrer" className="underline text-primary">Stripe Dashboard → Settings → Emails</a>.
+                  NotarDex receives webhook events for payment lifecycle changes and updates payment status accordingly.
+                </p>
+                <ul className="text-[11px] text-muted-foreground space-y-0.5">
+                  <li>• <strong>Payment receipts</strong> — Stripe sends automatic receipts on successful charges; enable/disable in Stripe → Settings → Customer emails</li>
+                  <li>• <strong>Refund confirmations</strong> — sent when a refund is processed; tracked via <code className="bg-muted px-1 py-0.5 rounded text-[9px]">charge.refunded</code> webhook</li>
+                  <li>• <strong>Failed payment notices</strong> — Stripe notifies customers of failed charges; tracked via <code className="bg-muted px-1 py-0.5 rounded text-[9px]">payment_intent.payment_failed</code></li>
+                  <li>• <strong>Subscription emails</strong> — invoices, upcoming payments, and cancellation notices are sent by Stripe Billing</li>
+                  <li>• <strong>Webhook tracking</strong> — all Stripe events are logged to <code className="bg-muted px-1 py-0.5 rounded text-[9px]">webhook_events</code> and <code className="bg-muted px-1 py-0.5 rounded text-[9px]">audit_log</code> with idempotency checks</li>
+                </ul>
+              </div>
+
+              {/* Google Calendar External Emails Explainer */}
+              <div className="rounded-md bg-emerald-500/5 border border-emerald-500/10 p-3 space-y-2">
+                <h4 className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
+                  <Calendar className="h-3 w-3" /> Google Calendar Emails
+                </h4>
+                <p className="text-[11px] text-muted-foreground">
+                  The emails marked <Badge className="bg-emerald-500/10 text-emerald-700 text-[8px] font-bold mx-0.5">Google</Badge> are
+                  sent <strong>directly by Google Calendar</strong> when events are created, updated, or deleted through the calendar sync.
+                  Calendar invite formatting and reminder schedules are managed by Google.
+                </p>
+                <ul className="text-[11px] text-muted-foreground space-y-0.5">
+                  <li>• <strong>Calendar invites (ICS)</strong> — Google sends invitations with .ics attachments when an appointment syncs to calendar via <code className="bg-muted px-1 py-0.5 rounded text-[9px]">google-calendar-sync</code></li>
+                  <li>• <strong>Event reminders</strong> — Google sends default reminders (30 min before); configurable per-calendar in Google Calendar settings</li>
+                  <li>• <strong>Reschedule notifications</strong> — Google automatically notifies attendees when appointment times change</li>
+                  <li>• <strong>Cancellation emails</strong> — sent when an appointment is cancelled and the calendar event is deleted</li>
+                </ul>
               <div className="rounded-md bg-muted/50 border border-border p-3 space-y-2">
                 <h4 className="text-xs font-semibold">Retry & Delivery Logic</h4>
                 <ul className="space-y-1 text-[11px] text-muted-foreground">
