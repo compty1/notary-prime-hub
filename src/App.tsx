@@ -197,7 +197,8 @@ function AnimatedRoutes() {
       <Route path="/solutions/small-business" element={<SR><ForSmallBusiness /></SR>} />
       <Route path="/solutions/individuals" element={<SR><ForIndividuals /></SR>} />
       <Route path="/notaries" element={<SR msg="Notary directory failed to load"><NotaryDirectory /></SR>} />
-      <Route path="/n/:slug" element={<SR msg="Notary page failed to load"><NotaryPage /></SR>} />
+      <Route path="/professionals" element={<SR msg="Professional directory failed to load"><NotaryDirectory /></SR>} />
+      <Route path="/n/:slug" element={<SR msg="Professional page failed to load"><NotaryPage /></SR>} />
       <Route path="/digitize" element={<ProtectedRoute><SR msg="Document digitize failed to load"><DocumentDigitize /></SR></ProtectedRoute>} />
       <Route path="/request" element={<ProtectedRoute><SR msg="Service request failed to load"><ServiceRequest /></SR></ProtectedRoute>} />
       <Route path="/mailroom" element={<ProtectedRoute><SR msg="Mailroom failed to load"><VirtualMailroom /></SR></ProtectedRoute>} />
