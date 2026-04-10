@@ -75,6 +75,7 @@ const sidebarGroups = [
       { title: "Integration Testing", url: "/admin/integrations", icon: Plug, adminOnly: true },
       { title: "User Management", url: "/admin/users", icon: Shield, adminOnly: true },
       { title: "Notary Pages", url: "/admin/notary-pages", icon: Globe, adminOnly: true },
+      { title: "Professionals", url: "/admin/professionals", icon: Users, adminOnly: true },
       { title: "Build Tracker", url: "/admin/build-tracker", icon: Bug, adminOnly: true },
       { title: "Resources", url: "/admin/resources", icon: BookOpen, adminOnly: false },
       { title: "Settings", url: "/admin/settings", icon: Settings, adminOnly: true },
