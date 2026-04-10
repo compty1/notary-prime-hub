@@ -552,7 +552,7 @@ export default function PortalEmailsTab() {
                   "Compliant with Ohio data privacy and ORC §147 notary communication requirements.",
                 ].map((text, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-green-600 mt-0.5 shrink-0" />
+                    <CheckCircle2 className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
                     <span dangerouslySetInnerHTML={{ __html: text.replace(/never|from your Gmail/gi, m => `<strong>${m}</strong>`) }} />
                   </li>
                 ))}
