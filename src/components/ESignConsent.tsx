@@ -15,12 +15,12 @@ interface ESignConsentProps {
 export function ESignConsent({ consented, onConsentChange, consentTimestamp, sessionId }: ESignConsentProps) {
   const handleConsentChange = useCallback(async (checked: boolean) => {
     onConsentChange(checked);
-    // Persist consent timestamp to DB when granted
+    // Persist consent timestamp to notarization_sessions when granted
     if (checked && sessionId) {
       try {
         await supabase
-          .from("session_tracking" as any)
-          .update({ esign_consent: true, esign_consent_at: new Date().toISOString() } as any)
+          .from("notarization_sessions")
+          .update({ esign_consent: true, esign_consent_at: new Date().toISOString() })
           .eq("id", sessionId);
       } catch (err) {
         console.error("Failed to persist e-sign consent:", err);
