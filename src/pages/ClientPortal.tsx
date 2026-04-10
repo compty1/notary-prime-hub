@@ -434,10 +434,10 @@ export default function ClientPortal() {
                       <Link to="/book"><Button size="sm" variant="outline" className="rounded-xl font-bold text-xs">Book New</Button></Link>
                     </div>
                     {upcoming.length === 0 ? (
-                      <div className="py-8 text-center"><Calendar className="mx-auto mb-3 h-10 w-10 text-gray-300" /><p className="text-sm text-muted-foreground font-medium">No upcoming appointments</p></div>
+                      <div className="py-8 text-center"><Calendar className="mx-auto mb-3 h-10 w-10 text-muted-foreground/50" /><p className="text-sm text-muted-foreground font-medium">No upcoming appointments</p></div>
                     ) : (
                       <div className="space-y-3">{upcoming.slice(0, 3).map(a => (
-                        <div key={a.id} className="flex items-center justify-between p-3 rounded-xl bg-muted hover:bg-gray-100 transition-colors">
+                        <div key={a.id} className="flex items-center justify-between p-3 rounded-xl bg-muted hover:bg-muted transition-colors">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center"><FileText className="h-5 w-5 text-primary" /></div>
                             <div><p className="text-sm font-bold text-foreground">{a.service_type}</p><p className="text-xs text-muted-foreground font-medium">{formatDate(a.scheduled_date)} at {a.scheduled_time}</p></div>
@@ -526,7 +526,7 @@ export default function ClientPortal() {
             <div className="space-y-6">
             <h2 className="text-xl font-black text-foreground">Document Pipeline</h2>
             {documents.length === 0 ? (
-              <Card className="rounded-[24px] border-border"><CardContent className="py-12 text-center text-muted-foreground"><FileText className="mx-auto mb-4 h-12 w-12 text-gray-300" /><p className="font-medium">No documents to track</p></CardContent></Card>
+              <Card className="rounded-[24px] border-border"><CardContent className="py-12 text-center text-muted-foreground"><FileText className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" /><p className="font-medium">No documents to track</p></CardContent></Card>
             ) : (
               <div className="space-y-4">
                 {documents.map(doc => (
@@ -537,7 +537,7 @@ export default function ClientPortal() {
                       <div className="flex justify-between mt-2">
                         {pipelineSteps.map((ps, i) => {
                           const isComplete = pipelineSteps.findIndex(s => s.key === doc.status) >= i;
-                          return <div key={ps.key} className="flex flex-col items-center gap-1"><ps.icon className={`h-3 w-3 ${isComplete ? "text-primary" : "text-gray-300"}`} /><span className={`text-[9px] font-bold ${isComplete ? "text-foreground" : "text-gray-300"}`}>{ps.label}</span></div>;
+                          return <div key={ps.key} className="flex flex-col items-center gap-1"><ps.icon className={`h-3 w-3 ${isComplete ? "text-primary" : "text-muted-foreground/50"}`} /><span className={`text-[9px] font-bold ${isComplete ? "text-foreground" : "text-muted-foreground/50"}`}>{ps.label}</span></div>;
                         })}
                       </div>
                     </CardContent>
@@ -626,7 +626,7 @@ export default function ClientPortal() {
             </div>
             {showPaymentForm && <PaymentForm onSuccess={() => { setShowPaymentForm(false); supabase.from("payments").select("*").eq("client_id", user!.id).order("created_at", { ascending: false }).then(({ data }) => { if (data) setPayments(data); }); }} onCancel={() => setShowPaymentForm(false)} />}
             {payments.length === 0 && !showPaymentForm ? (
-              <Card className="rounded-[24px] border-border"><CardContent className="py-12 text-center text-muted-foreground"><DollarSign className="mx-auto mb-4 h-12 w-12 text-gray-300" /><p className="font-medium">No payment history yet</p></CardContent></Card>
+              <Card className="rounded-[24px] border-border"><CardContent className="py-12 text-center text-muted-foreground"><DollarSign className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" /><p className="font-medium">No payment history yet</p></CardContent></Card>
             ) : payments.length > 0 ? (
               <div className="space-y-3">
                 {payments.map(p => {
@@ -641,7 +641,7 @@ export default function ClientPortal() {
                         </div>
                         <div className="flex items-center gap-2">
                           {p.status === "pending" && <Button size="sm" className="text-xs rounded-xl font-bold bg-foreground text-background" onClick={() => setPayingPaymentId(p.id)}><CreditCard className="mr-1 h-3 w-3" /> Pay Now</Button>}
-                          <Badge className={`text-[10px] font-black uppercase tracking-wider rounded-lg ${p.status === "paid" ? "bg-emerald-50 text-emerald-600" : p.status === "pending" ? "bg-primary/10 text-primary" : "bg-gray-100 text-muted-foreground"}`}>{p.status}</Badge>
+                          <Badge className={`text-[10px] font-black uppercase tracking-wider rounded-lg ${p.status === "paid" ? "bg-emerald-50 text-emerald-600" : p.status === "pending" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>{p.status}</Badge>
                           {p.invoice_url && <a href={p.invoice_url} target="_blank" rel="noreferrer"><Button size="sm" variant="outline" className="text-xs rounded-xl font-bold">View Invoice</Button></a>}
                         </div>
                       </CardContent>
@@ -660,7 +660,7 @@ export default function ClientPortal() {
             {past.filter(a => a.status === "completed").length > 0 ? (
               <Card className="rounded-[24px] border-border shadow-sm"><CardContent className="p-6 space-y-4">
                 <div><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Select Appointment</Label><Select value={reviewForm.appointment_id} onValueChange={v => setReviewForm({ ...reviewForm, appointment_id: v })}><SelectTrigger className="bg-muted border-none rounded-xl mt-1"><SelectValue placeholder="Choose completed appointment..." /></SelectTrigger><SelectContent>{past.filter(a => a.status === "completed" && !reviews.some(r => r.appointment_id === a.id)).map(a => <SelectItem key={a.id} value={a.id}>{a.service_type} — {formatDate(a.scheduled_date)}</SelectItem>)}</SelectContent></Select></div>
-                <div><Label id="rating-label" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Rating</Label><div className="flex gap-1 mt-1" role="radiogroup" aria-labelledby="rating-label">{[1,2,3,4,5].map(n => <button key={n} role="radio" aria-checked={reviewForm.rating === n} aria-label={`${n} star${n > 1 ? "s" : ""}`} onClick={() => setReviewForm({ ...reviewForm, rating: n })} onKeyDown={e => { if (e.key === "ArrowRight" && reviewForm.rating < 5) setReviewForm({ ...reviewForm, rating: reviewForm.rating + 1 }); if (e.key === "ArrowLeft" && reviewForm.rating > 1) setReviewForm({ ...reviewForm, rating: reviewForm.rating - 1 }); }} tabIndex={reviewForm.rating === n ? 0 : -1} className="p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"><Star className={`h-6 w-6 ${n <= reviewForm.rating ? "text-primary fill-primary" : "text-gray-300"}`} /></button>)}</div></div>
+                <div><Label id="rating-label" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Rating</Label><div className="flex gap-1 mt-1" role="radiogroup" aria-labelledby="rating-label">{[1,2,3,4,5].map(n => <button key={n} role="radio" aria-checked={reviewForm.rating === n} aria-label={`${n} star${n > 1 ? "s" : ""}`} onClick={() => setReviewForm({ ...reviewForm, rating: n })} onKeyDown={e => { if (e.key === "ArrowRight" && reviewForm.rating < 5) setReviewForm({ ...reviewForm, rating: reviewForm.rating + 1 }); if (e.key === "ArrowLeft" && reviewForm.rating > 1) setReviewForm({ ...reviewForm, rating: reviewForm.rating - 1 }); }} tabIndex={reviewForm.rating === n ? 0 : -1} className="p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"><Star className={`h-6 w-6 ${n <= reviewForm.rating ? "text-primary fill-primary" : "text-muted-foreground/50"}`} /></button>)}</div></div>
                 <div><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Comment (optional)</Label><Textarea value={reviewForm.comment} onChange={e => setReviewForm({ ...reviewForm, comment: e.target.value })} rows={3} placeholder="Tell us about your experience..." className="bg-muted border-none rounded-xl mt-1" /></div>
                 <Button disabled={!reviewForm.appointment_id || submittingReview} onClick={async () => {
                   if (!user || !reviewForm.appointment_id) return;
@@ -672,9 +672,9 @@ export default function ClientPortal() {
                 }} className="rounded-xl font-bold bg-foreground text-background shadow-block">{submittingReview ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Star className="mr-1 h-4 w-4" />} Submit Review</Button>
               </CardContent></Card>
             ) : (
-              <Card className="rounded-[24px] border-border"><CardContent className="py-12 text-center text-muted-foreground"><Star className="mx-auto mb-4 h-12 w-12 text-gray-300" /><p className="font-bold text-foreground mb-1">No reviews yet</p><p className="text-sm font-medium">Complete an appointment to leave feedback.</p></CardContent></Card>
+              <Card className="rounded-[24px] border-border"><CardContent className="py-12 text-center text-muted-foreground"><Star className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" /><p className="font-bold text-foreground mb-1">No reviews yet</p><p className="text-sm font-medium">Complete an appointment to leave feedback.</p></CardContent></Card>
             )}
-            {reviews.length > 0 && <><h3 className="text-lg font-black text-foreground mt-6">Your Reviews</h3><div className="space-y-3">{reviews.map(r => <Card key={r.id} className="rounded-[24px] border-border shadow-sm"><CardContent className="p-4"><div className="flex items-center gap-1 mb-2">{[1,2,3,4,5].map(n => <Star key={n} className={`h-4 w-4 ${n <= r.rating ? "text-primary fill-primary" : "text-gray-300"}`} />)}</div>{r.comment && <p className="text-sm text-muted-foreground font-medium">{r.comment}</p>}<p className="text-xs text-muted-foreground font-medium mt-2">{new Date(r.created_at).toLocaleDateString()}</p></CardContent></Card>)}</div></>}
+            {reviews.length > 0 && <><h3 className="text-lg font-black text-foreground mt-6">Your Reviews</h3><div className="space-y-3">{reviews.map(r => <Card key={r.id} className="rounded-[24px] border-border shadow-sm"><CardContent className="p-4"><div className="flex items-center gap-1 mb-2">{[1,2,3,4,5].map(n => <Star key={n} className={`h-4 w-4 ${n <= r.rating ? "text-primary fill-primary" : "text-muted-foreground/50"}`} />)}</div>{r.comment && <p className="text-sm text-muted-foreground font-medium">{r.comment}</p>}<p className="text-xs text-muted-foreground font-medium mt-2">{new Date(r.created_at).toLocaleDateString()}</p></CardContent></Card>)}</div></>}
             </div>
           )}
 
@@ -702,14 +702,14 @@ export default function ClientPortal() {
               }} size="sm" className="rounded-xl font-bold bg-foreground text-background shadow-block">{savingReminder ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Bell className="mr-1 h-4 w-4" />} Set Reminder</Button>
             </CardContent></Card>
             {reminders.length === 0 ? (
-              <Card className="rounded-[24px] border-border"><CardContent className="py-12 text-center text-muted-foreground"><Bell className="mx-auto mb-4 h-12 w-12 text-gray-300" /><p className="font-medium">No reminders set</p></CardContent></Card>
+              <Card className="rounded-[24px] border-border"><CardContent className="py-12 text-center text-muted-foreground"><Bell className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" /><p className="font-medium">No reminders set</p></CardContent></Card>
             ) : (
               <div className="space-y-3">{reminders.map((rem: any) => {
                 const doc = documents.find(d => d.id === rem.document_id);
                 const expiryDate = new Date(rem.expiry_date + "T00:00:00");
                 const daysUntil = Math.ceil((expiryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
                 const isUrgent = daysUntil <= rem.remind_days_before, isExpired = daysUntil <= 0;
-                return (<Card key={rem.id} className={`rounded-[24px] border-border shadow-sm ${isExpired ? "border-destructive/50" : isUrgent ? "border-primary/50" : ""}`}><CardContent className="flex items-center justify-between p-4"><div className="flex items-center gap-3"><Bell className={`h-5 w-5 ${isExpired ? "text-destructive" : isUrgent ? "text-primary" : "text-muted-foreground"}`} /><div><p className="text-sm font-bold text-foreground">{doc?.file_name || "Unknown document"}</p><p className="text-xs text-muted-foreground font-medium">Expires: {expiryDate.toLocaleDateString()} · Remind {rem.remind_days_before}d before</p></div></div><div className="flex items-center gap-2"><Badge className={`text-[10px] font-black uppercase tracking-wider rounded-lg ${isExpired ? "bg-destructive/10 text-destructive" : isUrgent ? "bg-primary/10 text-primary" : "bg-gray-100 text-muted-foreground"}`}>{isExpired ? "Expired" : `${daysUntil}d remaining`}</Badge><Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={async () => { const { error } = await supabase.from("document_reminders").delete().eq("id", rem.id); if (!error) { setReminders(prev => prev.filter((r: any) => r.id !== rem.id)); toast({ title: "Reminder removed" }); } }}><XCircle className="h-3 w-3" /></Button></div></CardContent></Card>);
+                return (<Card key={rem.id} className={`rounded-[24px] border-border shadow-sm ${isExpired ? "border-destructive/50" : isUrgent ? "border-primary/50" : ""}`}><CardContent className="flex items-center justify-between p-4"><div className="flex items-center gap-3"><Bell className={`h-5 w-5 ${isExpired ? "text-destructive" : isUrgent ? "text-primary" : "text-muted-foreground"}`} /><div><p className="text-sm font-bold text-foreground">{doc?.file_name || "Unknown document"}</p><p className="text-xs text-muted-foreground font-medium">Expires: {expiryDate.toLocaleDateString()} · Remind {rem.remind_days_before}d before</p></div></div><div className="flex items-center gap-2"><Badge className={`text-[10px] font-black uppercase tracking-wider rounded-lg ${isExpired ? "bg-destructive/10 text-destructive" : isUrgent ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>{isExpired ? "Expired" : `${daysUntil}d remaining`}</Badge><Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={async () => { const { error } = await supabase.from("document_reminders").delete().eq("id", rem.id); if (!error) { setReminders(prev => prev.filter((r: any) => r.id !== rem.id)); toast({ title: "Reminder removed" }); } }}><XCircle className="h-3 w-3" /></Button></div></CardContent></Card>);
               })}</div>
             )}
             </div>

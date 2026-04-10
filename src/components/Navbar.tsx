@@ -160,13 +160,13 @@ export function Navbar() {
 
           <Link
             to="/solutions/small-business"
-            className="px-3 py-2 text-sm font-bold text-gray-500 transition-colors hover:text-foreground"
+            className="px-3 py-2 text-sm font-bold text-muted-foreground transition-colors hover:text-foreground"
           >
             For Businesses
           </Link>
           <Link
             to="/fee-calculator"
-            className="px-3 py-2 text-sm font-bold text-gray-500 transition-colors hover:text-foreground"
+            className="px-3 py-2 text-sm font-bold text-muted-foreground transition-colors hover:text-foreground"
           >
             Pricing
           </Link>
@@ -178,7 +178,7 @@ export function Navbar() {
               </Link>
             ) : (
               <Link to="/login">
-                <Button size="sm" variant="ghost" className="text-sm font-bold text-gray-500 hover:text-foreground">Sign In</Button>
+                <Button size="sm" variant="ghost" className="text-sm font-bold text-muted-foreground hover:text-foreground">Sign In</Button>
               </Link>
             )}
             <Link to="/book">

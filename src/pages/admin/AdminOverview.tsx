@@ -306,7 +306,7 @@ export default function AdminOverview() {
 
       {/* Live Calendar Widget */}
       <div className="mb-8">
-        <Card className="rounded-[24px] border-gray-100 bg-white">
+        <Card className="rounded-[24px] border-border bg-card">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -357,11 +357,11 @@ export default function AdminOverview() {
         {statCards.map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
             <Link to={s.link}>
-              <Card className="rounded-[24px] border-gray-100 hover:shadow-md transition-all cursor-pointer bg-white">
+              <Card className="rounded-[24px] border-border hover:shadow-md transition-all cursor-pointer bg-card">
                 <CardContent className="p-5">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-50 mb-3"><s.icon className={`h-5 w-5 ${s.color}`} /></div>
-                  <p className="text-4xl font-black text-[#212529]">{s.value}</p>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">{s.label}</p>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted mb-3"><s.icon className={`h-5 w-5 ${s.color}`} /></div>
+                  <p className="text-4xl font-black text-foreground">{s.value}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">{s.label}</p>
                 </CardContent>
               </Card>
             </Link>
@@ -371,8 +371,8 @@ export default function AdminOverview() {
 
       {/* Analytics Charts */}
       <div className="mb-8 grid gap-6 lg:grid-cols-3">
-        <Card className="rounded-[24px] border-gray-100 bg-white lg:col-span-1">
-          <CardHeader className="pb-2"><CardTitle className="text-[10px] font-black uppercase tracking-widest text-gray-400">Appointments by Month</CardTitle></CardHeader>
+        <Card className="rounded-[24px] border-border bg-white lg:col-span-1">
+          <CardHeader className="pb-2"><CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Appointments by Month</CardTitle></CardHeader>
           <CardContent>
             {monthlyAppointments.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
@@ -384,12 +384,12 @@ export default function AdminOverview() {
                   <Bar dataKey="appointments" fill="hsl(43, 74%, 49%)" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
-            ) : <p className="py-10 text-center text-sm text-gray-400">No data yet</p>}
+            ) : <p className="py-10 text-center text-sm text-muted-foreground">No data yet</p>}
           </CardContent>
         </Card>
 
-        <Card className="rounded-[24px] border-gray-100 bg-white lg:col-span-1">
-          <CardHeader className="pb-2"><CardTitle className="text-[10px] font-black uppercase tracking-widest text-gray-400">Revenue Trend</CardTitle></CardHeader>
+        <Card className="rounded-[24px] border-border bg-white lg:col-span-1">
+          <CardHeader className="pb-2"><CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Revenue Trend</CardTitle></CardHeader>
           <CardContent>
             {monthlyRevenue.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
@@ -401,12 +401,12 @@ export default function AdminOverview() {
                   <Line type="monotone" dataKey="revenue" stroke="#212529" strokeWidth={2} dot={{ fill: "hsl(43, 74%, 49%)", r: 4 }} />
                 </LineChart>
               </ResponsiveContainer>
-            ) : <p className="py-10 text-center text-sm text-gray-400">No data yet</p>}
+            ) : <p className="py-10 text-center text-sm text-muted-foreground">No data yet</p>}
           </CardContent>
         </Card>
 
-        <Card className="rounded-[24px] border-gray-100 bg-white lg:col-span-1">
-          <CardHeader className="pb-2"><CardTitle className="text-[10px] font-black uppercase tracking-widest text-gray-400">Status Breakdown</CardTitle></CardHeader>
+        <Card className="rounded-[24px] border-border bg-white lg:col-span-1">
+          <CardHeader className="pb-2"><CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Status Breakdown</CardTitle></CardHeader>
           <CardContent>
             {statusBreakdown.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
@@ -417,7 +417,7 @@ export default function AdminOverview() {
                   <Tooltip contentStyle={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, fontSize: 12 }} />
                 </PieChart>
               </ResponsiveContainer>
-            ) : <p className="py-10 text-center text-sm text-gray-400">No data yet</p>}
+            ) : <p className="py-10 text-center text-sm text-muted-foreground">No data yet</p>}
           </CardContent>
         </Card>
       </div>
@@ -431,21 +431,21 @@ export default function AdminOverview() {
       {recentActivity.length > 0 && (
         <div className="mb-8">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-black text-[#212529] flex items-center gap-2">
-              <ScrollText className="h-5 w-5 text-gray-400" /> Recent Activity
+            <h2 className="text-lg font-black text-foreground flex items-center gap-2">
+              <ScrollText className="h-5 w-5 text-muted-foreground" /> Recent Activity
             </h2>
             <Link to="/admin/audit-log"><Button variant="ghost" size="sm" className="text-xs rounded-xl">View All →</Button></Link>
           </div>
-          <Card className="rounded-[24px] border-gray-100 bg-white">
+          <Card className="rounded-[24px] border-border bg-card">
             <CardContent className="p-0">
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-border">
                 {recentActivity.map((log) => (
-                  <div key={log.id} className="flex items-center justify-between px-5 py-3 hover:bg-gray-50/50">
+                  <div key={log.id} className="flex items-center justify-between px-5 py-3 hover:bg-muted/50">
                     <div className="flex items-center gap-3">
-                      <Badge className="text-xs bg-gray-100 text-gray-600 rounded-lg">{log.action.replace(/_/g, " ")}</Badge>
-                      <span className="text-xs text-gray-400">{log.entity_type || ""}</span>
+                      <Badge className="text-xs bg-muted text-muted-foreground rounded-lg">{log.action.replace(/_/g, " ")}</Badge>
+                      <span className="text-xs text-muted-foreground">{log.entity_type || ""}</span>
                     </div>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-muted-foreground">
                       {new Date(log.created_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
                     </span>
                   </div>
@@ -461,16 +461,16 @@ export default function AdminOverview() {
         const todayAppts = allAppointments.filter(a => a.scheduled_date === today && !["cancelled", "no_show"].includes(a.status));
         return todayAppts.length > 0 ? (
           <div className="mb-8">
-            <h2 className="mb-4 text-lg font-black text-[#212529] flex items-center gap-2">
+            <h2 className="mb-4 text-lg font-black text-foreground flex items-center gap-2">
               <Clock className="h-5 w-5 text-amber-500" /> Today's Schedule ({todayAppts.length})
             </h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {todayAppts.sort((a, b) => (a.scheduled_time || "").localeCompare(b.scheduled_time || "")).map((a) => (
-                <Card key={a.id} className="rounded-[24px] border-gray-100 bg-white hover:shadow-md transition-shadow">
+                <Card key={a.id} className="rounded-[24px] border-border bg-white hover:shadow-md transition-shadow">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-lg font-black text-[#212529]">{formatTime(a.scheduled_time || "00:00")}</span>
-                      <Badge className={`${statusColors[a.status] || "bg-gray-100"} rounded-lg text-xs`}>{a.status.replace(/_/g, " ")}</Badge>
+                      <span className="text-lg font-black text-foreground">{formatTime(a.scheduled_time || "00:00")}</span>
+                      <Badge className={`${statusColors[a.status] || "bg-muted"} rounded-lg text-xs`}>{a.status.replace(/_/g, " ")}</Badge>
                     </div>
                     <p className="text-sm font-bold text-foreground">{getClientName(a.client_id)}</p>
                     <p className="text-xs text-muted-foreground">{a.service_type} • {(a.notarization_type || "").replace("_", " ")}</p>
@@ -483,31 +483,31 @@ export default function AdminOverview() {
         ) : null;
       })()}
 
-      <h2 className="mb-4 text-lg font-black text-[#212529]">Recent Appointments</h2>
+      <h2 className="mb-4 text-lg font-black text-foreground">Recent Appointments</h2>
       {appointments.length === 0 ? (
-        <Card className="rounded-[24px] border-gray-100 bg-white"><CardContent className="py-8 text-center text-gray-400">No appointments yet</CardContent></Card>
+        <Card className="rounded-[24px] border-border bg-card"><CardContent className="py-8 text-center text-muted-foreground">No appointments yet</CardContent></Card>
       ) : (
-        <Card className="rounded-[24px] border-gray-100 bg-white">
+        <Card className="rounded-[24px] border-border bg-card">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[600px]">
-                <thead><tr className="border-b border-gray-100">
-                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Client</th>
-                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Date</th>
-                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Time</th>
-                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Service</th>
-                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Type</th>
-                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Status</th>
+                <thead><tr className="border-b border-border">
+                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-muted-foreground">Client</th>
+                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-muted-foreground">Date</th>
+                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-muted-foreground">Time</th>
+                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-muted-foreground">Service</th>
+                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-muted-foreground">Type</th>
+                  <th className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-muted-foreground">Status</th>
                 </tr></thead>
                 <tbody>
                   {appointments.map((a) => (
-                    <tr key={a.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50">
-                      <td className="px-5 py-3 font-bold text-[#212529]">{getClientName(a.client_id)}</td>
-                      <td className="px-5 py-3 text-gray-600">{formatDate(a.scheduled_date)}</td>
-                      <td className="px-5 py-3 text-gray-600">{formatTime(a.scheduled_time)}</td>
-                      <td className="px-5 py-3 text-gray-600">{a.service_type}</td>
-                      <td className="px-5 py-3 capitalize text-gray-600">{(a.notarization_type || "").replace("_", " ")}</td>
-                      <td className="px-5 py-3"><Badge className={`${statusColors[a.status] || "bg-gray-100"} rounded-lg`}>{a.status.replace(/_/g, " ")}</Badge></td>
+                    <tr key={a.id} className="border-b border-border/50 last:border-0 hover:bg-muted/50">
+                      <td className="px-5 py-3 font-bold text-foreground">{getClientName(a.client_id)}</td>
+                      <td className="px-5 py-3 text-muted-foreground">{formatDate(a.scheduled_date)}</td>
+                      <td className="px-5 py-3 text-muted-foreground">{formatTime(a.scheduled_time)}</td>
+                      <td className="px-5 py-3 text-muted-foreground">{a.service_type}</td>
+                      <td className="px-5 py-3 capitalize text-muted-foreground">{(a.notarization_type || "").replace("_", " ")}</td>
+                      <td className="px-5 py-3"><Badge className={`${statusColors[a.status] || "bg-muted"} rounded-lg`}>{a.status.replace(/_/g, " ")}</Badge></td>
                     </tr>
                   ))}
                 </tbody>
