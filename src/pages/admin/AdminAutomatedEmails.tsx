@@ -923,19 +923,34 @@ const INTEGRATIONS: IntegrationSection[] = [
   },
 ];
 
-const EMAIL_PIPELINE_MAP = [
-  { emailType: "Booking Confirmation", trigger: "New appointment created", edgeFunction: "send-appointment-emails", provider: "IONOS SMTP" },
-  { emailType: "24hr Reminder", trigger: "Scheduled (cron)", edgeFunction: "send-appointment-reminders", provider: "IONOS SMTP" },
-  { emailType: "30min Reminder", trigger: "Scheduled (cron)", edgeFunction: "send-appointment-reminders", provider: "IONOS SMTP" },
-  { emailType: "Completion / Thank You", trigger: "Appointment status → completed", edgeFunction: "send-followup-sequence", provider: "IONOS SMTP" },
-  { emailType: "Feedback Request (NPS)", trigger: "Completion +2 days", edgeFunction: "send-followup-sequence", provider: "IONOS SMTP" },
-  { emailType: "Referral Invitation", trigger: "Completion +5 days", edgeFunction: "send-followup-sequence", provider: "IONOS SMTP" },
-  { emailType: "Welcome Onboarding (3-part)", trigger: "New user signup", edgeFunction: "send-welcome-sequence", provider: "IONOS SMTP" },
-  { emailType: "Document Status Update", trigger: "Document status change", edgeFunction: "send-document-notification", provider: "IONOS SMTP" },
-  { emailType: "Direct Correspondence", trigger: "Admin sends from CRM", edgeFunction: "send-correspondence", provider: "IONOS SMTP → Resend fallback" },
-  { emailType: "Auth Emails (OTP, Recovery)", trigger: "Auth events", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue" },
-  { emailType: "Payment Receipt", trigger: "Stripe payment.succeeded", edgeFunction: "stripe-webhook", provider: "IONOS SMTP" },
-  { emailType: "Lead Confirmation", trigger: "Contact form submission", edgeFunction: "submit-lead", provider: "IONOS SMTP" },
+const EMAIL_PIPELINE_MAP: { emailType: string; trigger: string; edgeFunction: string; provider: string; source: "notardex" | "signnow" | "lovable" }[] = [
+  // --- NotarDex Internal Emails ---
+  { emailType: "Booking Confirmation", trigger: "New appointment created", edgeFunction: "send-appointment-emails", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "24hr Reminder", trigger: "Scheduled (cron)", edgeFunction: "send-appointment-reminders", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "30min Reminder", trigger: "Scheduled (cron)", edgeFunction: "send-appointment-reminders", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "Completion / Thank You", trigger: "Appointment status → completed", edgeFunction: "send-followup-sequence", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "Feedback Request (NPS)", trigger: "Completion +2 days", edgeFunction: "send-followup-sequence", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "Referral Invitation", trigger: "Completion +5 days", edgeFunction: "send-followup-sequence", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "Welcome Onboarding (3-part)", trigger: "New user signup", edgeFunction: "send-welcome-sequence", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "Document Status Update", trigger: "Document status change", edgeFunction: "send-document-notification", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "Direct Correspondence", trigger: "Admin sends from CRM", edgeFunction: "send-correspondence", provider: "IONOS SMTP → Resend fallback", source: "notardex" },
+  { emailType: "Payment Receipt", trigger: "Stripe payment.succeeded", edgeFunction: "stripe-webhook", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "Lead Confirmation", trigger: "Contact form submission", edgeFunction: "submit-lead", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "RON Session Link", trigger: "Session ready / notary sends", edgeFunction: "send-appointment-emails", provider: "IONOS SMTP", source: "notardex" },
+  { emailType: "Document Ready for Download", trigger: "Document status → notarized", edgeFunction: "send-document-notification", provider: "IONOS SMTP", source: "notardex" },
+  // --- Auth Emails (Lovable Email Queue) ---
+  { emailType: "Signup Confirmation", trigger: "Auth: new signup", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue", source: "lovable" },
+  { emailType: "Password Recovery", trigger: "Auth: forgot password", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue", source: "lovable" },
+  { emailType: "Magic Link Login", trigger: "Auth: magic link request", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue", source: "lovable" },
+  { emailType: "Email Change Verification", trigger: "Auth: email change", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue", source: "lovable" },
+  { emailType: "Team / Notary Invite", trigger: "Auth: admin invites user", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue", source: "lovable" },
+  { emailType: "Reauthentication Code", trigger: "Auth: sensitive action", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue", source: "lovable" },
+  // --- SignNow External Emails (sent by SignNow, NOT by NotarDex) ---
+  { emailType: "Signing Invitation", trigger: "Document uploaded + invite sent via SignNow", edgeFunction: "signnow (action: send_invite)", provider: "SignNow Platform", source: "signnow" },
+  { emailType: "Signing Reminder", trigger: "Auto-scheduled by SignNow for unsigned docs", edgeFunction: "N/A (SignNow internal)", provider: "SignNow Platform", source: "signnow" },
+  { emailType: "Document Completed", trigger: "All parties have signed", edgeFunction: "signnow-webhook (event: document.complete)", provider: "SignNow Platform", source: "signnow" },
+  { emailType: "Invite Viewed", trigger: "Signer opens document link", edgeFunction: "signnow-webhook (event: document.update)", provider: "SignNow Platform", source: "signnow" },
+  { emailType: "Invite Cancelled", trigger: "Admin cancels signing invitation", edgeFunction: "signnow (action: cancel_invite)", provider: "SignNow Platform", source: "signnow" },
 ];
 
 function IntegrationSetupTab() {
