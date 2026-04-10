@@ -193,6 +193,7 @@ export default function PortalNotaryPageTab() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <Label>Profile Photo</Label>
+              <p className="text-[10px] text-muted-foreground mb-1">Square image, min 200×200px. JPG/PNG/WebP.</p>
               <div className="mt-1 flex items-center gap-3">
                 {page.profile_photo_path ? (
                   <img src={page.profile_photo_path} alt="Profile" className="h-16 w-16 rounded-full object-cover border" />
@@ -201,30 +202,43 @@ export default function PortalNotaryPageTab() {
                     {page.display_name?.charAt(0)?.toUpperCase() || "N"}
                   </div>
                 )}
-                <div>
-                  <input ref={profileInputRef} type="file" accept="image/*" className="hidden"
+                <div className="flex flex-col gap-1">
+                  <input ref={profileInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
                     onChange={e => e.target.files?.[0] && handlePhotoUpload(e.target.files[0], "profile")} />
                   <Button variant="outline" size="sm" onClick={() => profileInputRef.current?.click()} disabled={uploadingProfile}>
                     {uploadingProfile ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Upload className="h-3 w-3 mr-1" />}
-                    Upload
+                    {page.profile_photo_path ? "Replace" : "Upload"}
                   </Button>
+                  {page.profile_photo_path && (
+                    <Button variant="ghost" size="sm" className="text-destructive text-xs h-7" onClick={() => updateField("profile_photo_path", null)}>
+                      <Trash2 className="h-3 w-3 mr-1" /> Remove
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
             <div>
               <Label>Cover Photo</Label>
+              <p className="text-[10px] text-muted-foreground mb-1">Recommended 1200×400px landscape. JPG/PNG/WebP.</p>
               <div className="mt-1">
                 {page.cover_photo_path ? (
                   <img src={page.cover_photo_path} alt="Cover" className="h-24 w-full rounded-lg object-cover border" />
                 ) : (
                   <div className="flex h-24 items-center justify-center rounded-lg border bg-muted text-sm text-muted-foreground">No cover photo</div>
                 )}
-                <input ref={coverInputRef} type="file" accept="image/*" className="hidden"
+                <input ref={coverInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
                   onChange={e => e.target.files?.[0] && handlePhotoUpload(e.target.files[0], "cover")} />
-                <Button variant="outline" size="sm" className="mt-2" onClick={() => coverInputRef.current?.click()} disabled={uploadingCover}>
-                  {uploadingCover ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Upload className="h-3 w-3 mr-1" />}
-                  Upload Cover
-                </Button>
+                <div className="flex gap-2 mt-2">
+                  <Button variant="outline" size="sm" onClick={() => coverInputRef.current?.click()} disabled={uploadingCover}>
+                    {uploadingCover ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Upload className="h-3 w-3 mr-1" />}
+                    {page.cover_photo_path ? "Replace Cover" : "Upload Cover"}
+                  </Button>
+                  {page.cover_photo_path && (
+                    <Button variant="ghost" size="sm" className="text-destructive text-xs h-7" onClick={() => updateField("cover_photo_path", null)}>
+                      <Trash2 className="h-3 w-3 mr-1" /> Remove
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
