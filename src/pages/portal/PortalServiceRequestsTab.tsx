@@ -33,6 +33,7 @@ export default function PortalServiceRequestsTab({ serviceRequests: initialReque
   const [statusFilter, setStatusFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [cancelRequestId, setCancelRequestId] = useState<string | null>(null);
   const [requests, setRequests] = useState(initialRequests);
 
   // Sync with parent prop
