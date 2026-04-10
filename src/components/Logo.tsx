@@ -46,7 +46,7 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
               )}
               style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
             >
-              NOTAR<span className="text-primary">DEX</span>
+              NOTAR
             </span>
             {subtitle && (
               <span className="block text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">
