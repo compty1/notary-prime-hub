@@ -166,6 +166,17 @@ export default function BookingReviewStep(props: ReviewStepProps) {
         </div>
       </div>
 
+      {/* Cancellation Policy */}
+      <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-1">
+        <p className="text-xs font-medium text-foreground flex items-center gap-1.5">
+          <Clock className="h-3 w-3 text-primary" /> Cancellation Policy
+        </p>
+        <p className="text-[11px] text-muted-foreground">
+          Free cancellation/reschedule with 2+ hours' notice. No-show fee of $25 may apply.
+          {props.notarizationType === "in_person" && " Travel fees are non-refundable once the notary has departed."}
+        </p>
+      </div>
+
       {/* Click-wrap Terms Agreement */}
       <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-2">
         <div className="flex items-start gap-2">
@@ -176,9 +187,9 @@ export default function BookingReviewStep(props: ReviewStepProps) {
           />
           <Label htmlFor="terms-accept" className="text-xs leading-relaxed cursor-pointer">
             I have read and agree to the{" "}
-            <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link>{" "}
-            and{" "}
-            <Link to="/terms#privacy" className="text-primary hover:underline">Privacy Policy</Link>.
+            <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link>,{" "}
+            <Link to="/terms#privacy" className="text-primary hover:underline">Privacy Policy</Link>, and{" "}
+            <Link to="/signer-rights" className="text-primary hover:underline">Signer Rights</Link>.
             I understand that notarization fees are non-refundable after the session begins.
           </Label>
         </div>
