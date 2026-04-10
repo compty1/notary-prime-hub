@@ -127,11 +127,29 @@ export default function BookingReviewStep(props: ReviewStepProps) {
                 {showGuestPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
-            {props.validationErrors?.guestPassword && <p className="text-xs text-destructive mt-1">{props.validationErrors.guestPassword}</p>}
+            {props.validationErrors?.guestPassword && <p className="text-xs text-destructive mt-1" role="alert">{props.validationErrors.guestPassword}</p>}
           </div>
-          {!props.validationErrors?.guestPassword && props.guestPassword && props.guestPassword.length < 8 && <p className="text-xs text-destructive">Password must be at least 8 characters.</p>}
-          {!props.validationErrors?.guestPassword && props.guestPassword && props.guestPassword.length >= 8 && (!/[A-Z]/.test(props.guestPassword) || !/[0-9]/.test(props.guestPassword)) && <p className="text-xs text-destructive">Include at least one uppercase letter and one number.</p>}
-          <p className="text-xs text-muted-foreground">Already have an account? <Link to="/login" className="text-primary hover:underline">Sign in</Link></p>
+          {/* Password requirements checklist */}
+          {props.guestPassword && (
+            <div className="space-y-1 text-xs" aria-live="polite">
+              <p className={`flex items-center gap-1 ${props.guestPassword.length >= 8 ? "text-primary" : "text-muted-foreground"}`}>
+                {props.guestPassword.length >= 8 ? <CheckCircle className="h-3 w-3" /> : <span className="h-3 w-3 rounded-full border border-muted-foreground inline-block" />} 8+ characters
+              </p>
+              <p className={`flex items-center gap-1 ${/[A-Z]/.test(props.guestPassword) ? "text-primary" : "text-muted-foreground"}`}>
+                {/[A-Z]/.test(props.guestPassword) ? <CheckCircle className="h-3 w-3" /> : <span className="h-3 w-3 rounded-full border border-muted-foreground inline-block" />} Uppercase letter
+              </p>
+              <p className={`flex items-center gap-1 ${/[a-z]/.test(props.guestPassword) ? "text-primary" : "text-muted-foreground"}`}>
+                {/[a-z]/.test(props.guestPassword) ? <CheckCircle className="h-3 w-3" /> : <span className="h-3 w-3 rounded-full border border-muted-foreground inline-block" />} Lowercase letter
+              </p>
+              <p className={`flex items-center gap-1 ${/[0-9]/.test(props.guestPassword) ? "text-primary" : "text-muted-foreground"}`}>
+                {/[0-9]/.test(props.guestPassword) ? <CheckCircle className="h-3 w-3" /> : <span className="h-3 w-3 rounded-full border border-muted-foreground inline-block" />} Number
+              </p>
+              <p className={`flex items-center gap-1 ${/[^A-Za-z0-9]/.test(props.guestPassword) ? "text-primary" : "text-muted-foreground"}`}>
+                {/[^A-Za-z0-9]/.test(props.guestPassword) ? <CheckCircle className="h-3 w-3" /> : <span className="h-3 w-3 rounded-full border border-muted-foreground inline-block" />} Special character (recommended)
+              </p>
+            </div>
+          )}
+          <p className="text-xs text-muted-foreground">By creating an account, you agree to our terms. Already have an account? <Link to="/login" className="text-primary hover:underline">Sign in</Link></p>
         </div>
       )}
 
