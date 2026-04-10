@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { useSettings } from "@/hooks/useSettings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -101,6 +102,7 @@ const emptyPage: Partial<NotaryPage> = {
 
 export default function AdminNotaryPages() {
   usePageMeta({ title: "Admin — Notary Pages", noIndex: true });
+  const { get: getSetting } = useSettings();
   const { toast } = useToast();
   const [pages, setPages] = useState<NotaryPage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -155,7 +157,19 @@ export default function AdminNotaryPages() {
       });
       await fetchEnrollments(p.user_id);
     } else {
-      setEditPage({ ...emptyPage });
+      // Pre-populate from global settings
+      setEditPage({
+        ...emptyPage,
+        phone: getSetting("notary_phone", ""),
+        email: getSetting("notary_email", ""),
+        service_areas: getSetting("service_area", "") ? [getSetting("service_area", "")] : [],
+        credentials: {
+          commission_number: getSetting("commission_number", ""),
+          commission_expiration: getSetting("commission_expiration_date", ""),
+          commissioned_state: "Ohio",
+          commissioned_county: getSetting("commission_county", ""),
+        },
+      });
       setEnrollments([]);
     }
     setEditDialogOpen(true);

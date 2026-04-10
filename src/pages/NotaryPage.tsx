@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { useSettings } from "@/hooks/useSettings";
 import { PageShell } from "@/components/PageShell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -90,6 +91,7 @@ async function resolveStorageUrl(path: string | null): Promise<string | null> {
 
 export default function NotaryPage() {
   const { slug } = useParams<{ slug: string }>();
+  const { get } = useSettings();
   const [page, setPage] = useState<NotaryPageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -598,11 +600,12 @@ export default function NotaryPage() {
             <div className="space-y-4">
               {[
                 { q: "What documents do I need to bring?", a: "Bring a valid, government-issued photo ID (driver's license, passport, or state ID). The document(s) you need notarized should be unsigned — you'll sign in the notary's presence." },
-                { q: "How much does notarization cost?", a: "Ohio law caps notary fees at $5 per notarial act. Additional fees may apply for travel, after-hours service, or document preparation." },
-                { q: "Can I get documents notarized online?", a: "Yes! Remote Online Notarization (RON) is authorized in Ohio. You'll connect via secure video, verify your identity, and complete the signing electronically." },
+                { q: "How much does notarization cost?", a: `Ohio law caps notary fees at $${get("base_fee_per_signature", "5")} per notarial act. RON sessions start at $${get("ron_base_service_fee", "25")}. Additional fees may apply for travel ($${get("travel_fee_minimum", "35")} minimum), after-hours service ($${get("after_hours_fee", "35")}), or document preparation.` },
+                { q: "Can I get documents notarized online?", a: "Yes! Remote Online Notarization (RON) is authorized in Ohio under ORC §147.65–.66. You'll connect via secure video, verify your identity through knowledge-based authentication, and complete the signing electronically." },
                 { q: "What types of documents can be notarized?", a: "Common documents include affidavits, powers of attorney, real estate documents, loan packages, medical directives, vehicle titles, and more." },
-                { q: "Do I need an appointment?", a: "Appointments are recommended to ensure availability, but same-day bookings are often available through our online scheduling." },
+                { q: "Do I need an appointment?", a: `Appointments are recommended to ensure availability. We're available ${get("business_hours", "Mon-Fri 9AM-6PM, Sat 10AM-2PM")}. Same-day bookings are often available through our online scheduling.` },
                 { q: "How long does a notarization take?", a: "Most notarizations take 10-15 minutes. Loan signings and complex packages may take 30-60 minutes." },
+                { q: "What area do you serve?", a: `We serve ${get("service_area", "Franklin County & Greater Columbus, OH")}. Mobile notary services are available within ${get("max_travel_miles", "30")} miles. Remote Online Notarization is available to anyone located in Ohio.` },
               ].map((item, i) => (
                 <motion.div key={i} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: i * 0.05 }} viewport={{ once: true }}>
                   <Card>
@@ -705,9 +708,33 @@ export default function NotaryPage() {
 
         {/* Print styles + Footer */}
         <style>{`@media print { nav, button, .no-print { display: none !important; } section { break-inside: avoid; } }`}</style>
-        <div className="border-t bg-muted/20 py-6 text-center text-xs text-muted-foreground no-print">
-          Powered by <Link to="/" className="font-semibold hover:underline">{BRAND.name}</Link> —
-          Professional {creds.commissioned_state || "Ohio"} Notary Services
+        <div className="border-t bg-muted/20 no-print">
+          <div className="mx-auto max-w-6xl px-4 py-8">
+            <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+              <div className="text-center sm:text-left">
+                <p className="text-sm font-semibold text-foreground">{page.display_name}</p>
+                <p className="text-xs text-muted-foreground">{professionalLabel} — {creds.commissioned_state || "Ohio"}</p>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
+                {page.phone && (
+                  <a href={`tel:${page.phone}`} className="flex items-center gap-1 hover:text-foreground"><Phone className="h-3 w-3" /> {page.phone}</a>
+                )}
+                {page.email && (
+                  <a href={`mailto:${page.email}`} className="flex items-center gap-1 hover:text-foreground"><Mail className="h-3 w-3" /> {page.email}</a>
+                )}
+              </div>
+            </div>
+            <div className="mt-4 flex flex-col items-center gap-2 border-t pt-4 sm:flex-row sm:justify-between">
+              <p className="text-xs text-muted-foreground">
+                {get("copyright_text", `© ${new Date().getFullYear()} ${get("site_name", BRAND.name)}. All rights reserved.`)}
+              </p>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <Link to="/terms-privacy" className="hover:text-foreground">Terms & Privacy</Link>
+                <Link to="/accessibility" className="hover:text-foreground">Accessibility</Link>
+                <span>Powered by <Link to="/" className="font-semibold hover:underline">{get("site_name", BRAND.name)}</Link></span>
+              </div>
+            </div>
+          </div>
         </div>
       </PageShell>
     </div>

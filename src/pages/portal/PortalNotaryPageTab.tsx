@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSettings } from "@/hooks/useSettings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -79,6 +80,7 @@ const PROFESSIONAL_TYPES = [
 
 export default function PortalNotaryPageTab() {
   const { user } = useAuth();
+  const { get: getSetting } = useSettings();
   const { toast } = useToast();
   const [page, setPage] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -300,11 +302,18 @@ export default function PortalNotaryPageTab() {
     setCreatingPage(true);
     const { data: profile } = await supabase.from("profiles").select("full_name, email").eq("user_id", user.id).single();
     const slug = (profile?.full_name || "my-page").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").substring(0, 50);
+    const serviceArea = getSetting("service_area", "");
     const { data, error } = await supabase.from("notary_pages").insert({
       user_id: user.id,
       slug,
       display_name: profile?.full_name || "My Professional Page",
       email: profile?.email || user.email || "",
+      phone: getSetting("notary_phone", ""),
+      service_areas: serviceArea ? [serviceArea] : [],
+      credentials: {
+        commissioned_state: "Ohio",
+        commissioned_county: getSetting("commission_county", ""),
+      },
       is_published: false,
     } as any).select().single();
     if (error) {
