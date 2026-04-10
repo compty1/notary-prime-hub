@@ -70,6 +70,7 @@ const forms: FormEntry[] = [
     ref: "ORC §147.55",
     desc: "Standard verification that a signer signed willingly.",
     items: ["State of Ohio / County of...", "Acknowledged before me", "Signer Name", "Date of Act", "Notary Seal"],
+    anatomyKey: "acknowledgment",
     anatomy: {
       acknowledgment: "Proof the signer appeared and declared the signature is theirs.",
       capacity: "Implicitly confirms the signer is acting as themselves and of their own free will.",
