@@ -65,12 +65,37 @@ const SERVICE_TEMPLATE_KEYS: { key: keyof ServiceEmailTemplates; label: string; 
 
 const DEFAULT_SERVICE_TEMPLATE: EmailTemplate = { enabled: false, subject: "", body: "" };
 
-function defaultServiceTemplates(): ServiceEmailTemplates {
+function defaultServiceTemplates(serviceName?: string): ServiceEmailTemplates {
+  if (!serviceName) {
+    return {
+      booking_confirmation: { ...DEFAULT_SERVICE_TEMPLATE },
+      reminder: { ...DEFAULT_SERVICE_TEMPLATE },
+      follow_up: { ...DEFAULT_SERVICE_TEMPLATE },
+      completion: { ...DEFAULT_SERVICE_TEMPLATE },
+    };
+  }
+  // Generate smart defaults based on service name
   return {
-    booking_confirmation: { ...DEFAULT_SERVICE_TEMPLATE },
-    reminder: { ...DEFAULT_SERVICE_TEMPLATE },
-    follow_up: { ...DEFAULT_SERVICE_TEMPLATE },
-    completion: { ...DEFAULT_SERVICE_TEMPLATE },
+    booking_confirmation: {
+      enabled: true,
+      subject: `Your ${serviceName} Appointment is Confirmed — {{confirmation_number}}`,
+      body: `<h2>Appointment Confirmed</h2><p>Dear {{client_name}},</p><p>Your <strong>${serviceName}</strong> appointment has been confirmed.</p><ul><li><strong>Date:</strong> {{date}}</li><li><strong>Time:</strong> {{time}}</li><li><strong>Confirmation #:</strong> {{confirmation_number}}</li><li><strong>Location:</strong> {{location}}</li></ul><p>Please have a valid government-issued photo ID ready for your appointment.</p><p>If you need to reschedule, please do so at least 24 hours in advance through your <a href="{{portal_link}}">client portal</a>.</p><p>Thank you for choosing NotaryDex!</p>`,
+    },
+    reminder: {
+      enabled: true,
+      subject: `Reminder: Your ${serviceName} Appointment Tomorrow — {{date}}`,
+      body: `<h2>Appointment Reminder</h2><p>Hi {{client_name}},</p><p>This is a friendly reminder that your <strong>${serviceName}</strong> appointment is scheduled for:</p><ul><li><strong>Date:</strong> {{date}}</li><li><strong>Time:</strong> {{time}}</li><li><strong>Location:</strong> {{location}}</li></ul><p><strong>What to bring:</strong></p><ul><li>Valid government-issued photo ID (driver's license, passport, or state ID)</li><li>Any documents that need to be notarized</li><li>Payment method</li></ul><p>Need to reschedule? Visit your <a href="{{portal_link}}">client portal</a> or contact us as soon as possible.</p>`,
+    },
+    follow_up: {
+      enabled: true,
+      subject: `How Was Your ${serviceName} Experience? — NotaryDex`,
+      body: `<h2>We Value Your Feedback</h2><p>Hi {{client_name}},</p><p>Thank you for using NotaryDex for your <strong>${serviceName}</strong> on {{date}}.</p><p>We'd love to hear about your experience! Your feedback helps us improve our services for everyone.</p><p>How would you rate your experience? Please take a moment to share your thoughts in your <a href="{{portal_link}}">client portal</a>.</p><p>If you were satisfied with our service, we'd appreciate it if you'd consider referring us to friends, family, or colleagues who may need notary services.</p><p>Thank you again for choosing NotaryDex!</p>`,
+    },
+    completion: {
+      enabled: true,
+      subject: `Your ${serviceName} is Complete — NotaryDex`,
+      body: `<h2>Notarization Complete</h2><p>Dear {{client_name}},</p><p>Your <strong>${serviceName}</strong> has been successfully completed.</p><p>Your notarized documents are now available for download in your <a href="{{portal_link}}">client portal</a>.</p><p><strong>Important:</strong> Please review your documents for accuracy. Notarized documents are legally binding records. If you have any questions or concerns, please contact us within 24 hours.</p><p>Thank you for choosing NotaryDex for your notarization needs. We look forward to serving you again!</p>`,
+    },
   };
 }
 
