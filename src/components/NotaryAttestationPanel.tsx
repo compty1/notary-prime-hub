@@ -21,6 +21,8 @@ interface NotaryAttestationPanelProps {
   recordingConsent: boolean;
   recordingConsentAt: string | null;
   sessionUniqueId: string | null;
+  /** Notarization session DB ID for persisting attestation */
+  sessionId?: string;
   onAttestationComplete: (notes: string) => void;
   disabled?: boolean;
 }
