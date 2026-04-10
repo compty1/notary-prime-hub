@@ -538,7 +538,13 @@ export default function BookAppointment() {
       appointmentResultId = rebookingId;
     } else {
       const { data: insertedData, error } = await supabase.from("appointments").insert(payload).select("id").single();
-      if (error) { sessionStorage.removeItem(BOOKING_STORAGE_KEY); toast({ title: "Booking failed", description: error.message, variant: "destructive" }); setSubmitting(false); return; }
+      if (error) {
+        sessionStorage.removeItem(BOOKING_STORAGE_KEY);
+        const isDuplicate = error.message?.includes("already exists");
+        toast({ title: isDuplicate ? "Duplicate Booking" : "Booking failed", description: isDuplicate ? "You already have an appointment at this date and time. Please choose a different slot." : error.message, variant: "destructive" });
+        setSubmitting(false);
+        return;
+      }
       appointmentResultId = insertedData.id;
     }
     sessionStorage.removeItem(BOOKING_STORAGE_KEY);

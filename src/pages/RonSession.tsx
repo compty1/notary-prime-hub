@@ -170,6 +170,10 @@ export default function RonSession() {
   const [witnessVerified, setWitnessVerified] = useState(false);
   const [witnessName, setWitnessName] = useState("");
   const [witnessIdType, setWitnessIdType] = useState("");
+  // Signature by mark — Ohio ORC §147.54 requires 2 credible witnesses
+  const [isSignatureByMark, setIsSignatureByMark] = useState(false);
+  const [witness2Name, setWitness2Name] = useState("");
+  const [witness2Verified, setWitness2Verified] = useState(false);
 
   const hasNativeKba = PLATFORMS_WITH_NATIVE_KBA.includes(signingPlatform);
 
@@ -603,6 +607,11 @@ export default function RonSession() {
     }
     if (!recordingConsent) {
       toast({ title: "Recording consent required", description: "Ohio ORC §147.66 requires explicit recording consent before finalizing a RON session.", variant: "destructive" });
+      return;
+    }
+    // Ohio ORC §147.54: Signature by mark requires 2 credible witnesses
+    if (isSignatureByMark && (!witnessVerified || !witness2Verified || !witnessName.trim() || !witness2Name.trim())) {
+      toast({ title: "Two witnesses required", description: "Ohio ORC §147.54 requires two credible witnesses for signature by mark. Both must be verified.", variant: "destructive" });
       return;
     }
     if (!recordingUrl || !recordingUrl.trim()) {
@@ -1917,57 +1926,89 @@ export default function RonSession() {
               </CardContent>
             </Card>
 
-            {/* Witness ID Verification — Ohio RON compliance */}
-            {(appointment?.signer_count || 1) > 1 && (
-              <Card className="border-border/50">
-                <CardContent className="p-4">
-                  <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
-                    <Shield className="h-4 w-4 text-primary" /> Witness Verification
-                  </h3>
-                  <p className="text-[10px] text-muted-foreground mb-2">
-                    Ohio ORC §147.66 requires identity verification for witnesses present during RON sessions.
+            {/* Signature by Mark + Witness Verification — Ohio RON compliance */}
+            <Card className="border-border/50">
+              <CardContent className="p-4">
+                <h3 className="mb-3 flex items-center gap-2 font-sans text-sm font-semibold">
+                  <PenTool className="h-4 w-4 text-primary" /> Signing Method
+                </h3>
+                <div className="flex items-center gap-2 mb-3">
+                  <Switch checked={isSignatureByMark} onCheckedChange={setIsSignatureByMark} />
+                  <Label className="text-xs">Signer is using a mark (X) instead of signature</Label>
+                </div>
+                {isSignatureByMark && (
+                  <p className="text-[10px] text-destructive font-medium mb-2">
+                    ⚠ Ohio ORC §147.54: Signature by mark requires TWO credible witnesses who can attest to the signer's identity.
                   </p>
-                  <div className="space-y-2">
-                    <div>
-                      <Label className="text-xs">Witness Name</Label>
-                      <Input className="h-8 text-xs" placeholder="Full legal name" value={witnessName} onChange={e => setWitnessName(e.target.value)} />
+                )}
+
+                {((appointment?.signer_count || 1) > 1 || isSignatureByMark) && (
+                  <div className="space-y-3">
+                    <p className="text-[10px] text-muted-foreground">
+                      Ohio ORC §147.66 requires identity verification for witnesses present during RON sessions.
+                    </p>
+                    {/* Witness 1 */}
+                    <div className="space-y-2 rounded-lg border border-border/50 p-3">
+                      <p className="text-xs font-semibold">Witness 1</p>
+                      <div>
+                        <Label className="text-xs">Name</Label>
+                        <Input className="h-8 text-xs" placeholder="Full legal name" value={witnessName} onChange={e => setWitnessName(e.target.value)} />
+                      </div>
+                      <div>
+                        <Label className="text-xs">ID Type</Label>
+                        <Select value={witnessIdType} onValueChange={setWitnessIdType}>
+                          <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select..." /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="drivers_license">Driver's License</SelectItem>
+                            <SelectItem value="passport">Passport</SelectItem>
+                            <SelectItem value="state_id">State ID</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Switch checked={witnessVerified} onCheckedChange={async (checked) => {
+                          setWitnessVerified(checked);
+                          if (checked && appointmentId) {
+                            await logAuditEvent("witness_id_verified", {
+                              entityType: "appointment",
+                              entityId: appointmentId,
+                              details: { witness_name: witnessName, witness_id_type: witnessIdType, witness_number: 1 } as Record<string, Json | undefined>,
+                            });
+                          }
+                        }} />
+                        <Label className="text-xs">Witness 1 ID Verified</Label>
+                      </div>
+                      {witnessVerified && <Badge variant="secondary" className="bg-primary/10 text-primary text-xs"><CheckCircle className="mr-1 h-3 w-3" /> Verified</Badge>}
                     </div>
-                    <div>
-                      <Label className="text-xs">Witness ID Type</Label>
-                      <Select value={witnessIdType} onValueChange={setWitnessIdType}>
-                        <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select..." /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="drivers_license">Driver's License</SelectItem>
-                          <SelectItem value="passport">Passport</SelectItem>
-                          <SelectItem value="state_id">State ID</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Switch checked={witnessVerified} onCheckedChange={async (checked) => {
-                        setWitnessVerified(checked);
-                        if (checked && appointmentId) {
-                          await logAuditEvent("witness_id_verified", {
-                            entityType: "appointment",
-                            entityId: appointmentId,
-                            details: {
-                              witness_name: witnessName,
-                              witness_id_type: witnessIdType,
-                            } as Record<string, Json | undefined>,
-                          });
-                        }
-                      }} />
-                      <Label className="text-xs">Witness ID Verified</Label>
-                    </div>
-                    {witnessVerified && (
-                      <Badge variant="secondary" className="bg-primary/10 text-primary text-xs">
-                        <CheckCircle className="mr-1 h-3 w-3" /> Witness Verified
-                      </Badge>
+
+                    {/* Witness 2 — required for signature by mark */}
+                    {isSignatureByMark && (
+                      <div className="space-y-2 rounded-lg border border-destructive/30 p-3">
+                        <p className="text-xs font-semibold">Witness 2 <Badge variant="destructive" className="text-[10px] ml-1">Required for Mark</Badge></p>
+                        <div>
+                          <Label className="text-xs">Name</Label>
+                          <Input className="h-8 text-xs" placeholder="Full legal name" value={witness2Name} onChange={e => setWitness2Name(e.target.value)} />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Switch checked={witness2Verified} onCheckedChange={async (checked) => {
+                            setWitness2Verified(checked);
+                            if (checked && appointmentId) {
+                              await logAuditEvent("witness_id_verified", {
+                                entityType: "appointment",
+                                entityId: appointmentId,
+                                details: { witness_name: witness2Name, witness_number: 2, signature_by_mark: true } as Record<string, Json | undefined>,
+                              });
+                            }
+                          }} />
+                          <Label className="text-xs">Witness 2 ID Verified</Label>
+                        </div>
+                        {witness2Verified && <Badge variant="secondary" className="bg-primary/10 text-primary text-xs"><CheckCircle className="mr-1 h-3 w-3" /> Verified</Badge>}
+                      </div>
                     )}
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                )}
+              </CardContent>
+            </Card>
 
             {/* Recording Consent */}
             <Card className="border-border/50">
