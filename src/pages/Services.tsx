@@ -211,12 +211,15 @@ export default function Services() {
           <Input placeholder="Search services..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 rounded-xl border-2 border-[hsl(220,10%,90%)]" />
         </div>
 
-        <Tabs value={activeCategory} onValueChange={setActiveCategory}>
+        <Tabs value={activeCategory} onValueChange={(val) => { setActiveCategory(val); const params = new URLSearchParams(searchParams); if (val === "all") params.delete("category"); else params.set("category", val); setSearchParams(params, { replace: true }); }}>
           <TabsList className="mb-8 overflow-x-auto flex-nowrap h-auto gap-1 w-full justify-start sm:flex-wrap sm:justify-center scroll-smooth snap-x bg-[hsl(220,10%,95%)] rounded-2xl p-1">
-            <TabsTrigger value="all" className="snap-start rounded-xl font-bold text-xs data-[state=active]:bg-white data-[state=active]:shadow-[2px_2px_0px_hsl(220,10%,85%)]">All Services</TabsTrigger>
-            {CATEGORY_ORDER.map(cat => (
-              <TabsTrigger key={cat} value={cat} className="text-xs whitespace-nowrap snap-start rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-[2px_2px_0px_hsl(220,10%,85%)]">{CATEGORY_LABELS[cat]?.label || cat}</TabsTrigger>
-            ))}
+            <TabsTrigger value="all" className="snap-start rounded-xl font-bold text-xs data-[state=active]:bg-white data-[state=active]:shadow-[2px_2px_0px_hsl(220,10%,85%)]">All Services ({services.length})</TabsTrigger>
+            {CATEGORY_ORDER.map(cat => {
+              const count = services.filter(s => s.category === cat).length;
+              return (
+                <TabsTrigger key={cat} value={cat} className="text-xs whitespace-nowrap snap-start rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-[2px_2px_0px_hsl(220,10%,85%)]">{CATEGORY_LABELS[cat]?.label || cat} ({count})</TabsTrigger>
+              );
+            })}
           </TabsList>
         </Tabs>
 
