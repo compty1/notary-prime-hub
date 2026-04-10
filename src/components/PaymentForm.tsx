@@ -78,8 +78,8 @@ function CheckoutForm({ amount, onSuccess, onCancel }: { amount: number; onSucce
     <form onSubmit={handleSubmit} className="space-y-4">
       <PaymentElement />
       {error && (
-        <div className="flex items-center gap-2 text-sm text-destructive">
-          <AlertCircle className="h-4 w-4" />
+        <div className="flex items-center gap-2 text-sm text-destructive" role="alert" aria-live="assertive">
+          <AlertCircle className="h-4 w-4" aria-hidden="true" />
           {error}
         </div>
       )}

@@ -53,72 +53,93 @@ export default function AdminOverview() {
   const [profiles, setProfiles] = useState<Record<string, string>>({});
   const [stats, setStats] = useState({ total: 0, upcoming: 0, completed: 0, clients: 0, revenue: 0 });
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [commissionAlert, setCommissionAlert] = useState<{ tone: string; text: string } | null>(null);
   const [eoAlert, setEoAlert] = useState<string | null>(null);
   const [bondAlert, setBondAlert] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
-    const [
-      { count: totalAppts },
-      { count: upcomingCount },
-      { count: completedCount },
-      { count: clientCount },
-      { data: recentAppts },
-      { data: journalData },
-      { data: settingsData },
-      { data: profileData },
-      { data: allApptData },
-    ] = await Promise.all([
-      supabase.from("appointments").select("id", { count: "exact", head: true }),
-      supabase.from("appointments").select("id", { count: "exact", head: true }).in("status", ["scheduled", "confirmed"]),
-      supabase.from("appointments").select("id", { count: "exact", head: true }).eq("status", "completed"),
-      supabase.from("profiles").select("id", { count: "exact", head: true }),
-      supabase.from("appointments").select("id, client_id, scheduled_date, scheduled_time, status, service_type, notarization_type, confirmation_number").order("scheduled_date", { ascending: false }).limit(10),
-      supabase.from("payments").select("amount, status").eq("status", "paid"),
-      supabase.from("platform_settings").select("setting_key, setting_value"),
-      supabase.from("profiles").select("user_id, full_name, email").limit(2000),
-      supabase.from("appointments").select("scheduled_date, status, notarization_type, client_id").order("scheduled_date", { ascending: true }).gte("scheduled_date", new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]).limit(1000),
-    ]);
+    setLoadError(null);
+    const timeout = setTimeout(() => {
+      setLoadError("Loading is taking longer than expected. Please check your connection.");
+      setLoading(false);
+    }, 15000);
 
-    // Fetch recent audit activity
-    const { data: activityData } = await supabase.from("audit_log").select("id, action, entity_type, entity_id, created_at, user_id").order("created_at", { ascending: false }).limit(10);
-    if (activityData) setRecentActivity(activityData);
+    try {
+      const results = await Promise.allSettled([
+        supabase.from("appointments").select("id", { count: "exact", head: true }),
+        supabase.from("appointments").select("id", { count: "exact", head: true }).in("status", ["scheduled", "confirmed"]),
+        supabase.from("appointments").select("id", { count: "exact", head: true }).eq("status", "completed"),
+        supabase.from("profiles").select("id", { count: "exact", head: true }),
+        supabase.from("appointments").select("id, client_id, scheduled_date, scheduled_time, status, service_type, notarization_type, confirmation_number").order("scheduled_date", { ascending: false }).limit(10),
+        supabase.from("payments").select("amount, status").eq("status", "paid"),
+        supabase.from("platform_settings").select("setting_key, setting_value"),
+        supabase.from("profiles").select("user_id, full_name, email").limit(2000),
+        supabase.from("appointments").select("scheduled_date, status, notarization_type, client_id").order("scheduled_date", { ascending: true }).gte("scheduled_date", new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]).limit(1000),
+      ]);
 
-    // Build profiles map
-    if (profileData) {
-      const map: Record<string, string> = {};
-      (profileData as ProfileRow[]).forEach((p) => { map[p.user_id] = p.full_name || p.email || p.user_id.slice(0, 8); });
-      setProfiles(map);
-    }
+      clearTimeout(timeout);
 
-    const totalRevenue = ((journalData || []) as PaymentRow[]).reduce((sum: number, j) => sum + (Number(j.amount) || 0), 0);
-    if (recentAppts) setAppointments(recentAppts as OverviewAppointment[]);
-    if (journalData) setJournalEntries(journalData as PaymentRow[]);
-    if (allApptData) setAllAppointments(allApptData as AllApptRow[]);
-    const uniqueClients = new Set(((allApptData || []) as AllApptRow[]).map((a) => a.client_id).filter(Boolean));
-    setStats({ total: totalAppts || 0, upcoming: upcomingCount || 0, completed: completedCount || 0, clients: uniqueClients.size || clientCount || 0, revenue: totalRevenue });
-
-    if (settingsData) {
-      const s: Record<string, string> = {};
-      (settingsData as SettingRow[]).forEach((item) => { s[item.setting_key] = item.setting_value; });
-      const now = new Date();
-      const checkExpiry = (dateStr: string | undefined, reminderDays: number) => {
-        if (!dateStr) return null;
-        const exp = new Date(dateStr);
-        const days = Math.ceil((exp.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-        if (days < 0) return { tone: "destructive", text: `Expired ${Math.abs(days)} days ago` };
-        if (days <= reminderDays) return { tone: "warning", text: `Expires in ${days} days` };
+      const getValue = (idx: number, key: string): unknown => {
+        const r = results[idx];
+        if (r.status === "fulfilled") return (r.value as unknown as Record<string, unknown>)[key];
         return null;
       };
-      const commResult = checkExpiry(s.commission_expiration_date, parseInt(s.commission_renewal_reminder_days || "90"));
-      if (commResult) setCommissionAlert({ tone: commResult.tone === "destructive" ? "border-destructive bg-destructive/10 text-destructive" : "border-amber-500 bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-300", text: `Commission: ${commResult.text}` });
-      const eoResult = checkExpiry(s.eo_expiration_date, 60);
-      if (eoResult) setEoAlert(`E&O Insurance: ${eoResult.text}`);
-      const bondResult = checkExpiry(s.bond_expiration_date, 60);
-      if (bondResult) setBondAlert(`Surety Bond: ${bondResult.text}`);
-    }
 
-    setLoading(false);
+      const totalAppts = (getValue(0, "count") as number) || 0;
+      const upcomingCount = (getValue(1, "count") as number) || 0;
+      const completedCount = (getValue(2, "count") as number) || 0;
+      const clientCount = (getValue(3, "count") as number) || 0;
+      const recentAppts = getValue(4, "data") as OverviewAppointment[] | null;
+      const paymentData = getValue(5, "data") as PaymentRow[] | null;
+      const settingsData = getValue(6, "data") as SettingRow[] | null;
+      const profileData = getValue(7, "data") as ProfileRow[] | null;
+      const allApptData = getValue(8, "data") as AllApptRow[] | null;
+
+      // Fetch recent audit activity
+      const { data: activityData } = await supabase.from("audit_log").select("id, action, entity_type, entity_id, created_at, user_id").order("created_at", { ascending: false }).limit(10);
+      if (activityData) setRecentActivity(activityData);
+
+      // Build profiles map
+      if (profileData) {
+        const map: Record<string, string> = {};
+        profileData.forEach((p) => { map[p.user_id] = p.full_name || p.email || p.user_id.slice(0, 8); });
+        setProfiles(map);
+      }
+
+      const totalRevenue = (paymentData || []).reduce((sum: number, j) => sum + (Number(j.amount) || 0), 0);
+      if (recentAppts) setAppointments(recentAppts);
+      if (paymentData) setJournalEntries(paymentData);
+      if (allApptData) setAllAppointments(allApptData);
+      const uniqueClients = new Set((allApptData || []).map((a) => a.client_id).filter(Boolean));
+      setStats({ total: totalAppts, upcoming: upcomingCount, completed: completedCount, clients: uniqueClients.size || clientCount, revenue: totalRevenue });
+
+      if (settingsData) {
+        const s: Record<string, string> = {};
+        settingsData.forEach((item) => { s[item.setting_key] = item.setting_value; });
+        const now = new Date();
+        const checkExpiry = (dateStr: string | undefined, reminderDays: number) => {
+          if (!dateStr) return null;
+          const exp = new Date(dateStr);
+          const days = Math.ceil((exp.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          if (days < 0) return { tone: "destructive", text: `Expired ${Math.abs(days)} days ago` };
+          if (days <= reminderDays) return { tone: "warning", text: `Expires in ${days} days` };
+          return null;
+        };
+        const commResult = checkExpiry(s.commission_expiration_date, parseInt(s.commission_renewal_reminder_days || "90"));
+        if (commResult) setCommissionAlert({ tone: commResult.tone === "destructive" ? "border-destructive bg-destructive/10 text-destructive" : "border-amber-500 bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-300", text: `Commission: ${commResult.text}` });
+        const eoResult = checkExpiry(s.eo_expiration_date, 60);
+        if (eoResult) setEoAlert(`E&O Insurance: ${eoResult.text}`);
+        const bondResult = checkExpiry(s.bond_expiration_date, 60);
+        if (bondResult) setBondAlert(`Surety Bond: ${bondResult.text}`);
+      }
+    } catch (err) {
+      console.error("AdminOverview fetch error:", err);
+      setLoadError("Failed to load dashboard data. Please try again.");
+    } finally {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -228,6 +249,17 @@ export default function AdminOverview() {
   };
 
   if (loading) return <OverviewSkeleton />;
+
+  if (loadError) return (
+    <div className="flex flex-col items-center justify-center gap-4 py-20">
+      <AlertTriangle className="h-12 w-12 text-destructive" />
+      <p className="text-lg font-medium text-foreground">Dashboard Load Error</p>
+      <p className="text-sm text-muted-foreground max-w-md text-center">{loadError}</p>
+      <Button onClick={() => { setLoading(true); setLoadError(null); fetchData(); }}>
+        <RefreshCw className="mr-2 h-4 w-4" /> Retry
+      </Button>
+    </div>
+  );
 
   return (
     <div>
