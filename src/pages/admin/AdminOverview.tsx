@@ -180,7 +180,8 @@ export default function AdminOverview() {
   const [calendarWeekStart, setCalendarWeekStart] = useState(() => {
     const d = new Date(); d.setDate(d.getDate() - d.getDay()); d.setHours(0,0,0,0); return d;
   });
-  const [gcalEvents, setGcalEvents] = useState<any[]>([]);
+  interface GCalEvent { summary?: string; start?: { dateTime?: string; date?: string }; end?: { dateTime?: string; date?: string }; }
+  const [gcalEvents, setGcalEvents] = useState<GCalEvent[]>([]);
   const [gcalConnected, setGcalConnected] = useState<boolean | null>(null);
 
   const weekDays = useMemo(() => {
