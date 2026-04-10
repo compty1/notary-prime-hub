@@ -1,3 +1,4 @@
+import { rateLimitGuard } from "../_shared/middleware.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -11,6 +12,7 @@ const corsHeaders = {
 Deno.serve(async (req: Request) => {
   const start = Date.now();
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const rl = rateLimitGuard(req, 20); if (rl) return rl;
 
   try {
     const supabase = createClient(
