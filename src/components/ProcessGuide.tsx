@@ -42,18 +42,15 @@ interface ProcessGuideProps {
 export function ProcessGuide({ mode = "both", compact = false }: ProcessGuideProps) {
   const [activeMode, setActiveMode] = useState<"mobile" | "ron">(mode === "ron" ? "ron" : "mobile");
 
-  const handlePrint = () => {
+  const getGuideHtml = () => {
     const steps = activeMode === "mobile" ? MOBILE_STEPS : RON_STEPS;
     const title = activeMode === "mobile" ? "Mobile Notary Process Guide — Ohio" : "Remote Online Notarization (RON) Process Guide — Ohio";
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) return;
-    printWindow.document.write(`
-      <html><head><title>${title}</title>
+    return `<html><head><title>${title}</title>
       <style>
         body { font-family: Arial, sans-serif; padding: 30px; max-width: 800px; margin: 0 auto; }
-        h1 { font-size: 20px; border-bottom: 2px solid #1a56db; padding-bottom: 8px; }
+        h1 { font-size: 20px; border-bottom: 2px solid hsl(var(--primary)); padding-bottom: 8px; }
         .step { margin: 16px 0; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; page-break-inside: avoid; }
-        .step-num { display: inline-block; width: 28px; height: 28px; border-radius: 50%; background: #1a56db; color: white; text-align: center; line-height: 28px; font-weight: bold; margin-right: 8px; }
+        .step-num { display: inline-block; width: 28px; height: 28px; border-radius: 50%; background: hsl(var(--primary)); color: white; text-align: center; line-height: 28px; font-weight: bold; margin-right: 8px; }
         .step-title { font-weight: bold; font-size: 14px; }
         .step-desc { margin: 8px 0; font-size: 13px; color: #374151; }
         .tips { margin-top: 8px; padding-left: 20px; font-size: 12px; color: #6b7280; }
@@ -72,10 +69,27 @@ export function ProcessGuide({ mode = "both", compact = false }: ProcessGuidePro
           </div>
         `).join("")}
         <div class="footer">© 2026 NotarDex. For informational purposes only. This is not legal advice.</div>
-      </body></html>
-    `);
+      </body></html>`;
+  };
+
+  const handlePrint = () => {
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+    printWindow.document.write(getGuideHtml());
     printWindow.document.close();
     printWindow.print();
+  };
+
+  const handleDownload = () => {
+    const blob = new Blob([getGuideHtml()], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${activeMode === "mobile" ? "mobile" : "ron"}-notary-process-guide.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   const steps = activeMode === "mobile" ? MOBILE_STEPS : RON_STEPS;
