@@ -157,21 +157,6 @@ function SR({ children, msg }: { children: ReactNode; msg?: string }) {
   );
 }
 
-/** R002: Redirect /notary/:slug → /n/:slug */
-const NotarySlugRedirect = lazyRetry(() => Promise.resolve({
-  default: () => {
-    const { slug } = (window as any).__RR_useParams ? (window as any).__RR_useParams() : { slug: window.location.pathname.split("/").pop() };
-    return null;
-  }
-}));
-
-function NotarySlugRedirectComponent() {
-  const params = new URLSearchParams();
-  const slug = window.location.pathname.replace("/notary/", "");
-  window.location.replace(`/n/${slug}`);
-  return null;
-}
-
 function AnimatedRoutes() {
   const location = useLocation();
 
@@ -215,8 +200,7 @@ function AnimatedRoutes() {
       <Route path="/notaries" element={<SR msg="Notary directory failed to load"><NotaryDirectory /></SR>} />
       <Route path="/professionals" element={<SR msg="Professional directory failed to load"><NotaryDirectory /></SR>} />
       <Route path="/n/:slug" element={<SR msg="Professional page failed to load"><NotaryPage /></SR>} />
-      {/* R002: Redirect old /notary/:slug URLs */}
-      <Route path="/notary/:slug" element={<NotarySlugRedirect />} />
+      <Route path="/notary/*" element={<Navigate to="/notaries" replace />} />
       <Route path="/digitize" element={<ProtectedRoute><SR msg="Document digitize failed to load"><DocumentDigitize /></SR></ProtectedRoute>} />
       <Route path="/request" element={<ProtectedRoute><SR msg="Service request failed to load"><ServiceRequest /></SR></ProtectedRoute>} />
       <Route path="/mailroom" element={<ProtectedRoute><SR msg="Mailroom failed to load"><VirtualMailroom /></SR></ProtectedRoute>} />
