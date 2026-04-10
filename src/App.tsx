@@ -102,6 +102,7 @@ const Unsubscribe = lazyRetry(() => import("./pages/Unsubscribe"));
 const AdminWebhooks = lazyRetry(() => import("./pages/admin/AdminWebhooks"));
 const AdminPerformance = lazyRetry(() => import("./pages/admin/AdminPerformance"));
 const AdminNotaryPages = lazyRetry(() => import("./pages/admin/AdminNotaryPages"));
+const AdminProfessionals = lazyRetry(() => import("./pages/admin/AdminProfessionals"));
 const AdminComplianceReport = lazyRetry(() => import("./pages/admin/AdminComplianceReport"));
 const AdminAutomatedEmails = lazyRetry(() => import("./pages/admin/AdminAutomatedEmails"));
 const Maintenance = lazyRetry(() => import("./pages/Maintenance"));
@@ -261,6 +262,7 @@ function AnimatedRoutes() {
         <Route path="performance" element={<ProtectedRoute adminOnly><SR msg="Performance failed to load"><AdminPerformance /></SR></ProtectedRoute>} />
         <Route path="compliance-report" element={<ProtectedRoute adminOnly><SR msg="Compliance report failed to load"><AdminComplianceReport /></SR></ProtectedRoute>} />
         <Route path="notary-pages" element={<ProtectedRoute adminOnly><SR msg="Notary pages failed to load"><AdminNotaryPages /></SR></ProtectedRoute>} />
+        <Route path="professionals" element={<ProtectedRoute adminOnly><SR msg="Professionals failed to load"><AdminProfessionals /></SR></ProtectedRoute>} />
         <Route path="automated-emails" element={<ProtectedRoute adminOnly><SR msg="Automated emails failed to load"><AdminAutomatedEmails /></SR></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
