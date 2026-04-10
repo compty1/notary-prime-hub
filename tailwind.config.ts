@@ -92,9 +92,9 @@ export default {
         "card-lg": "32px",
       },
       boxShadow: {
-        block: "4px 4px 0px #eab308",
+        block: "4px 4px 0px hsl(43 74% 49%)",
         "block-lg": "6px 6px 0px #212529",
-        "block-active": "0px 0px 0px #eab308",
+        "block-active": "0px 0px 0px hsl(43 74% 49%)",
       },
       fontSize: {
         label: ["10px", { letterSpacing: "0.1em", fontWeight: "900" }],
@@ -129,8 +129,8 @@ export default {
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
         "glow-pulse": {
-          "0%, 100%": { boxShadow: "0 0 15px -5px hsl(38 92% 50% / 0.25)" },
-          "50%": { boxShadow: "0 0 30px -5px hsl(38 92% 50% / 0.4)" },
+          "0%, 100%": { boxShadow: "0 0 15px -5px hsl(43 74% 49% / 0.25)" },
+          "50%": { boxShadow: "0 0 30px -5px hsl(43 74% 49% / 0.4)" },
         },
         "float": {
           "0%, 100%": { transform: "translateY(0px)" },

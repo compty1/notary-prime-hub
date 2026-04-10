@@ -13,8 +13,8 @@ interface LogoProps {
 const sizeMap = {
   sm: { icon: "h-8 w-8", text: "text-xl", gap: "gap-1.5" },
   md: { icon: "h-10 w-10", text: "text-2xl", gap: "gap-2" },
-  lg: { icon: "h-12 w-12", text: "text-[32px]", gap: "gap-2" },
-  xl: { icon: "h-14 w-14", text: "text-4xl", gap: "gap-3" },
+  lg: { icon: "h-14 w-14", text: "text-[32px]", gap: "gap-2.5" },
+  xl: { icon: "h-16 w-16", text: "text-4xl", gap: "gap-3" },
 };
 
 export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
@@ -40,16 +40,15 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
           <div className="flex flex-col">
             <span
               className={cn(
-                "font-black tracking-tighter leading-none",
+                "font-black tracking-tight leading-none uppercase",
                 s.text,
                 textColor
               )}
             >
               notar<span className="text-primary">dex</span>
-              <span className={textColor}>.</span>
             </span>
             {subtitle && (
-              <span className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">
+              <span className="block text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">
                 {subtitle}
               </span>
             )}
