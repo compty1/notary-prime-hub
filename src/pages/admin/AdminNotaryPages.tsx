@@ -414,6 +414,7 @@ export default function AdminNotaryPages() {
       {loading ? (
         <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
       ) : (
+        <>
          {/* A004: Bulk action bar */}
          {selectedIds.size > 0 && (
            <div className="flex items-center gap-3 rounded-lg border bg-muted/50 px-4 py-2">
@@ -481,7 +482,6 @@ export default function AdminNotaryPages() {
                )}
              </TableBody>
            </Table>
-           {/* PERF002: Pagination controls */}
            {adminTotalPages > 1 && (
              <div className="flex items-center justify-between border-t px-4 py-2">
                <p className="text-xs text-muted-foreground">{filtered.length} total pages</p>
@@ -493,6 +493,7 @@ export default function AdminNotaryPages() {
              </div>
            )}
          </Card>
+        </>
       )}
 
       <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
