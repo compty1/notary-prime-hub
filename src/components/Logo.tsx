@@ -40,8 +40,6 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
             NOTAR
           </span>
         )}
-          </span>
-        )}
       </div>
     );
   }
