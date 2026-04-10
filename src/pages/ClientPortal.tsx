@@ -372,7 +372,7 @@ export default function ClientPortal() {
               </Popover>
               {isAdmin && <Link to="/admin"><Button variant="outline" size="sm" className="rounded-xl font-bold">Admin</Button></Link>}
               <Link to="/book">
-                <Button size="sm" className="rounded-full bg-primary text-background font-bold hover:bg-primary/90 shadow-block hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all">
+                <Button size="sm" className="rounded-full bg-primary text-primary-foreground font-bold hover:bg-primary/90 shadow-block hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all">
                   <Plus className="mr-1 h-4 w-4" /> New Notarization
                 </Button>
               </Link>
@@ -470,7 +470,7 @@ export default function ClientPortal() {
                   <div className="relative z-10">
                     <h3 className="text-lg font-black mb-2 flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary" /> AI Document Wizard</h3>
                     <p className="text-sm text-muted-foreground font-medium mb-4 leading-relaxed">Have our AI review your documents for common errors before your appointment.</p>
-                    <Button size="sm" className="font-bold rounded-xl bg-primary text-background" onClick={e => { e.stopPropagation(); setShowWizard(true); }}>Start AI Review</Button>
+                    <Button size="sm" className="font-bold rounded-xl bg-primary text-primary-foreground" onClick={e => { e.stopPropagation(); setShowWizard(true); }}>Start AI Review</Button>
                   </div>
                 </div>
 
