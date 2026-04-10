@@ -67,9 +67,12 @@ export default function PortalNotaryPageTab() {
       setter(false);
       return;
     }
-    const { data: urlData } = supabase.storage.from("documents").getPublicUrl(path);
+    // Use signed URL (10-year expiry) since bucket is private
+    const { data: signedData } = await supabase.storage.from("documents").createSignedUrl(path, 315360000);
     const field = type === "profile" ? "profile_photo_path" : "cover_photo_path";
-    updateField(field, urlData.publicUrl);
+    if (signedData?.signedUrl) {
+      updateField(field, signedData.signedUrl);
+    }
     setter(false);
     toast({ title: `${type === "profile" ? "Profile" : "Cover"} photo uploaded` });
   };

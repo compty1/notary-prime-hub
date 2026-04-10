@@ -112,13 +112,20 @@ export default function NotaryPage() {
     ? `/book?notary=${page.slug}`
     : page.external_booking_url || `/book?notary=${page.slug}`;
 
-  const resolveStorageUrl = (path: string | null) => {
-    if (!path) return null;
-    if (path.startsWith("http")) return path;
-    return supabase.storage.from("documents").getPublicUrl(path).data.publicUrl;
-  };
-  const profilePhotoUrl = resolveStorageUrl(page.profile_photo_path);
-  const coverPhotoUrl = resolveStorageUrl(page.cover_photo_path);
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
+  const [coverPhotoUrl, setCoverPhotoUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!page) return;
+    const resolveUrl = async (path: string | null, setter: (url: string | null) => void) => {
+      if (!path) { setter(null); return; }
+      if (path.startsWith("http")) { setter(path); return; }
+      const { data } = await supabase.storage.from("documents").createSignedUrl(path, 3600);
+      setter(data?.signedUrl || null);
+    };
+    resolveUrl(page.profile_photo_path, setProfilePhotoUrl);
+    resolveUrl(page.cover_photo_path, setCoverPhotoUrl);
+  }, [page]);
 
   return (
     <PageShell>
