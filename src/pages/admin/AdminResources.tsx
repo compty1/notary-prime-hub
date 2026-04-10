@@ -53,6 +53,7 @@ const forms: FormEntry[] = [
     ref: "ORC §147.55",
     desc: "Used for Affidavits where the signer is sworn in under oath.",
     items: ["State of Ohio / County of...", "Sworn to and subscribed before me", "Signer Identity", "Date of Act", "Notary Signature/Seal"],
+    anatomyKey: "jurat",
     anatomy: {
       venue: "Indicates where the notarial act physically took place. Must match your location.",
       testimonium: "The 'Sworn to...' clause proving the oath was administered correctly.",
