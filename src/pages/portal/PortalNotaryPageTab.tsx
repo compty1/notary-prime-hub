@@ -109,6 +109,7 @@ export default function PortalNotaryPageTab() {
       if (enrollRes.data) setEnrollments(enrollRes.data);
       if (profitRes.data) {
         const txns = profitRes.data as ProfitTransaction[];
+        setProfitHistory(txns);
         setProfitStats({
           total: txns.reduce((s, t) => s + (t.gross_amount || 0), 0),
           fees: txns.reduce((s, t) => s + (t.platform_fee || 0), 0),
