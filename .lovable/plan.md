@@ -1,120 +1,124 @@
 
 
-# Professional Sites & Profit Share — Full Implementation
+# Theme & Visual Experience Audit — Full Plan
 
-## Status: Phases 1–14 Complete
+## Audit Findings
+
+### 1. Contrast Issues — Primary Gold on White
+The primary color `hsl(43 74% 49%)` (#C9A227) on white backgrounds fails WCAG AA for normal text (contrast ratio ~2.8:1). This affects:
+- **Button variant "default"**: `bg-primary text-primary-foreground` — primary-foreground is dark (#212529), so buttons are OK (dark text on gold).
+- **`text-primary` links and accents on white**: Gold text on white fails AA. Seen in Footer hover links, FAQ "View All Services →", accordion triggers, and anywhere `text-primary` appears on light backgrounds.
+- A `.text-primary-accessible` utility exists (darker gold for text) but is almost never used.
+
+### 2. Hardcoded Colors (Inconsistency)
+~50+ instances of hardcoded hex/HSL instead of semantic tokens:
+- **`bg-[#212529]`** — Used as CTA button color (hero, services, login, contact form) instead of a semantic token. Should be a named token like `bg-foreground` or a new `bg-brand-dark`.
+- **`hover:bg-[#ca9a06]`** — Hardcoded hover for primary buttons (Navbar, ForgotPassword, SignUp). Should use `hover:bg-primary/85` or a token.
+- **`bg-[#f8f9fa]`** — Used for input backgrounds, badge backgrounds, search bars. Should map to `bg-muted` or `bg-input`.
+- **`bg-[#fcfcfc]`** — Page backgrounds. Should map to `bg-background`.
+- **`text-[#212529]`** — Headings everywhere. Should be `text-foreground`.
+- **`shadow-[3px_3px_0px_#212529]`** — Hardcoded block shadow in SignUp/ForgotPassword. Should use `shadow-block`.
+- **`border-gray-100/200`** — Mixed use instead of `border-border`.
+- **`text-gray-400/500`** — Used for body text instead of `text-muted-foreground`.
+
+### 3. Button Style Inconsistency
+Three different CTA button patterns exist:
+- **Pattern A (Hero/Index)**: `bg-[#212529] text-white shadow-block` — dark charcoal CTA
+- **Pattern B (SignUp/ForgotPassword)**: `bg-primary text-white hover:bg-[#ca9a06] shadow-[3px_3px_0px_#212529]` — gold CTA with manual shadow
+- **Pattern C (Navbar)**: `bg-primary text-white shadow-block` — gold with token shadow
+
+These should be unified into one or two named button variants.
+
+### 4. Logo Inconsistencies
+- `Logo` component `showText` renders "NOTAR" in serif font — consistent.
+- Footer uses `<Logo size="sm" showText subtitle="..." theme="dark" />` — OK.
+- Login page uses `<Logo size="md" showText />` — no theme prop, defaults to `text-foreground` which is dark on light — OK.
+- SignUp uses `<Logo size="lg" />` without `showText` — icon only, no brand text. Inconsistent with Login.
+- ForgotPassword uses `<Logo size="lg" />` — icon only, same issue.
+- Admin sidebar uses `<Logo size="sm" showText={!collapsed} theme="dark" />` — OK.
+
+### 5. `glow-amber` Uses Old Color
+`.glow-amber` and `.glow-amber-lg` use `rgba(245, 158, 11, ...)` (Tailwind amber-500), not the brand gold `hsl(43 74% 49%)`. Should use `hsl(var(--primary))`.
+
+### 6. Dark Mode Gaps
+- Navbar: `bg-white/90` hardcoded, won't adapt to dark mode.
+- Footer: `bg-[hsl(222_47%_4%)]` hardcoded — works for both modes but bypasses tokens.
+- Login/SignUp right panel: `bg-[#212529]` hardcoded — fine since it's intentionally dark.
+- Admin header: `bg-white/80` hardcoded — won't adapt.
+- Client Portal: `bg-[#f8f9fa]` hardcoded — won't adapt.
+
+### 7. CTA Banner Contrast
+The gold CTA section on Index (`bg-primary`) has `text-[#212529]` for heading — OK contrast. But `text-[#212529]/70` for body text on gold is marginal.
 
 ---
 
-## Phase 1: Database Schema ✅
-- Extended `notary_pages` with branding fields (accent_color, font_family, nav_services, gallery_photos, professional_type)
-- Created `profit_share_config`, `profit_share_transactions`, `professional_service_enrollments` tables
-- Added referral tracking columns to `appointments` and `payments`
-- Full RLS, indexes, and triggers implemented
+## Implementation Plan
 
-## Phase 2: Portal Site Customization ✅
-- Nav service selector (max 6 items)
-- Color picker + font family selector
-- Gallery photos (up to 6)
-- Service description editor with character count
-- Platform fee floor enforcement UI
-- Profit dashboard card
-- Service enrollment request form
+### Step 1: Establish Missing Semantic Tokens
+Add to `index.css` `:root` and `.dark`:
+- Map `--background` to exact `#fcfcfc` / dark equivalent (already done)
+- Verify `--foreground` = `#212529` equivalent (already `222 47% 11%` ≈ correct)
+- Verify `--input` and `--muted` map to `#f8f9fa` equivalents (already close)
 
-## Phase 3: Public Site Rendering ✅
-- Dynamic navbar from nav_services
-- Custom color/font rendering via CSS custom properties
-- Gallery section
-- Service cards with custom pricing
-- Referral tracking via ?ref= parameter
-- Professional type badge
-- JSON-LD LocalBusiness schema
+### Step 2: Fix `glow-amber` Utilities
+Update `.glow-amber` and `.glow-amber-lg` in `index.css` to use `hsl(var(--primary))` instead of hardcoded `rgba(245, 158, 11, ...)`.
 
-## Phase 4: Profit Share Engine ✅
-- `calculate_profit_share()` PostgreSQL function
-- Auto-trigger on payment status → paid
-- Default 70/30 split with configurable overrides
-- Ohio $5/act statutory fee enforcement
-- Platform fee floors (RON $25, KBA $15, Stripe 2.9%+$0.30)
+### Step 3: Add a Dark CTA Button Variant
+Add a `"dark"` variant to `button.tsx`: `bg-foreground text-background shadow-block hover:bg-foreground/90`. This replaces the `bg-[#212529] text-white` pattern used across hero CTAs.
 
-## Phase 5: Admin Management Hub ✅
-- `/admin/professionals` route with full management dashboard
-- Professionals tab: publish/unpublish, feature, profit share toggle
-- Enrollments tab: approve/deactivate service enrollments
-- Profit Config tab: per-professional, per-service share % and min platform fee
-- Payouts tab: mark as paid, CSV export, pending/paid totals
-- Admin sidebar link added
+### Step 4: Unify Primary Button Hover
+Replace all `hover:bg-[#ca9a06]` with `hover:bg-primary/85` (or the button variant's built-in hover). Remove `shadow-[3px_3px_0px_#212529]` in favor of `shadow-block`.
 
-## Phase 6: Pricing Controls ✅
-- Fee breakdown card in portal showing Ohio statutory fees, RON/KBA/Stripe minimums
-- Platform fee floor enforcement via DB trigger (`enforce_enrollment_price_floor`)
-- Custom pricing validation prevents below-platform pricing
-- RON fees displayed as non-editable in portal
+### Step 5: Replace All Hardcoded Colors
+Systematic replacement across all files:
+- `bg-[#212529]` → `bg-foreground` (for CTA buttons, use the new dark variant)
+- `text-[#212529]` → `text-foreground`
+- `bg-[#f8f9fa]` → `bg-muted`
+- `bg-[#fcfcfc]` → `bg-background`
+- `text-gray-400` → `text-muted-foreground`
+- `text-gray-500` → `text-muted-foreground`
+- `border-gray-100` → `border-border`
+- `hover:bg-[#ca9a06]` → `hover:bg-primary/85`
+- `shadow-[3px_3px_0px_#212529]` → `shadow-block`
+- `bg-white` (as page/card bg) → `bg-card` or `bg-background`
 
-## Phase 7: Service Tools ✅
-- Service enrollment system with admin approval workflow
-- Professional can request services and set custom pricing/descriptions
-- Enrollments tracked with show_on_site and show_in_nav flags
+Files affected: `Index.tsx`, `Login.tsx`, `SignUp.tsx`, `ForgotPassword.tsx`, `Navbar.tsx`, `Footer.tsx`, `ClientPortal.tsx`, `AdminDashboard.tsx`, and any others found in search.
 
-## Phase 8: Notary-Specific Features ✅
-- Notary profit tracking via profit_share_transactions
-- Ohio $5/act fee cap enforcement at payment and pricing levels
-- Journal integration with profit tracking (session_id linkage)
-- Professional type "notary" and "mobile_notary" supported
+### Step 6: Fix Logo Consistency
+- **SignUp.tsx** and **ForgotPassword.tsx**: Add `showText` to Logo so brand name appears alongside icon, matching Login page.
 
-## Phase 9: Non-Notary Professionals ✅
-- Professional types: signing_agent, doc_preparer, virtual_assistant, other
-- Professional type selector in portal
-- Public page renders type-specific badges and labels
+### Step 7: Dark Mode Navbar & Admin Header
+- Navbar: `bg-white/90` → `bg-background/90`
+- Admin header: `bg-white/80` → `bg-background/80`
+- Divider in Login "or": `bg-white` → `bg-background`
 
-## Phase 10: Wiring ✅
-- Referral param in booking URL (?ref=user_id)
-- Service request referral tracking via appointments.referral_professional_id
-- Payment intent includes referral_professional_id metadata
-- Stripe webhook captures referral and sets on payment record
-- Booking confirmation shows referring professional with link
-- DB trigger auto-creates profit_share_transaction on paid payment with referral
+### Step 8: Accessible Text-on-Gold
+For the CTA banner section (`bg-primary`), ensure body text uses `text-primary-foreground` (dark) instead of `text-[#212529]/70`. Apply the existing `.text-primary-accessible` class wherever `text-primary` appears on white backgrounds, OR darken primary text color in the CSS variable approach.
 
-## Phase 11: Reporting ✅
-- Professional earnings dashboard in portal (gross, fees, profit, pending)
-- Profit history table with date, amounts, status (last 50 transactions)
-- Admin payouts tab with CSV export
-- Platform revenue tracking in admin stats cards
+### Step 9: Footer Token Alignment
+Replace `bg-[hsl(222_47%_4%)]` with `bg-sidebar` (which maps to the same dark value). Replace `text-slate-*` variants with sidebar semantic tokens.
 
-## Phase 12: Edge Functions ✅
-- `create-payment-intent` updated with referralProfessionalId
-- `stripe-webhook` updated to capture referral_professional_id from metadata
-- Profit share auto-triggered via DB trigger (no separate edge function needed)
+### Step 10: Verify & QA
+Review all pages at desktop and mobile viewport for visual consistency, confirm dark mode renders correctly, and verify WCAG AA contrast on all interactive elements.
 
-## Phase 13: UI Components ✅
-- Referral link generator with copy buttons (page link + direct booking link)
-- QR code for professional page (using qrcode.react)
-- Profit history table component
-- Fee breakdown card
-- Admin profit config dialog
-- Professional directory with type filter
+---
 
-## Phase 14: Gap Items ✅
-- NotaryDirectory expanded for all professional types with filter
-- `/professionals` route serves same directory
-- Booking flow validates professional can provide service (via referral tracking)
-- Professional page QR code in portal
-- Referral link generator in portal
-- Dark mode support (inherits from design system)
-- Mobile responsive (Tailwind responsive classes throughout)
+## Files to Modify
 
-## Files Modified/Created
+| File | Changes |
+|------|---------|
+| `src/index.css` | Fix `.glow-amber` colors |
+| `src/components/ui/button.tsx` | Add `dark` variant |
+| `src/components/Logo.tsx` | No changes needed |
+| `src/components/Navbar.tsx` | Replace hardcoded colors, dark mode bg |
+| `src/components/Footer.tsx` | Use sidebar tokens |
+| `src/pages/Index.tsx` | Replace ~20+ hardcoded color instances |
+| `src/pages/Login.tsx` | Replace hardcoded colors |
+| `src/pages/SignUp.tsx` | Replace hardcoded colors, add `showText` to Logo |
+| `src/pages/ForgotPassword.tsx` | Replace hardcoded colors, add `showText` to Logo |
+| `src/pages/ClientPortal.tsx` | Replace hardcoded colors |
+| `src/pages/admin/AdminDashboard.tsx` | Fix header dark mode |
+| `src/components/ClientSidebar.tsx` | Minor token alignment |
 
-| File | Action |
-|------|--------|
-| `src/pages/admin/AdminProfessionals.tsx` | Created — Full admin management hub |
-| `src/pages/NotaryDirectory.tsx` | Rewritten — Supports all professional types with filter |
-| `src/pages/portal/PortalNotaryPageTab.tsx` | Enhanced — QR code, referral links, profit history, fee breakdown |
-| `src/pages/NotaryPage.tsx` | Enhanced — Dynamic nav, themes, gallery, referral tracking |
-| `src/pages/BookAppointment.tsx` | Enhanced — Referral param handling |
-| `src/pages/AppointmentConfirmation.tsx` | Enhanced — Shows referring professional |
-| `src/pages/admin/AdminDashboard.tsx` | Enhanced — Added Professionals sidebar link |
-| `src/App.tsx` | Updated — Added AdminProfessionals route |
-| `supabase/functions/create-payment-intent/index.ts` | Updated — Referral tracking in metadata + payments |
-| `supabase/functions/stripe-webhook/index.ts` | Updated — Captures referral from metadata |
-| Database migrations | Schema, RLS, triggers, functions |
+**No functional or layout changes.** Only color token unification, contrast fixes, and dark mode readiness.
+
