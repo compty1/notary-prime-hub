@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { getPhoneError } from "@/lib/phoneValidation";
 import { useSettings } from "@/hooks/useSettings";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
