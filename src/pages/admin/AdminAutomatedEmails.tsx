@@ -1213,15 +1213,19 @@ function IntegrationSetupTab() {
                   </thead>
                   <tbody>
                     {EMAIL_PIPELINE_MAP.map((row, i) => {
-                      const sourceColors = {
+                      const sourceColors: Record<string, string> = {
                         notardex: "bg-primary/10 text-primary",
                         signnow: "bg-orange-500/10 text-orange-700",
                         lovable: "bg-blue-500/10 text-blue-700",
+                        stripe: "bg-violet-500/10 text-violet-700",
+                        google: "bg-emerald-500/10 text-emerald-700",
                       };
-                      const sourceLabels = {
+                      const sourceLabels: Record<string, string> = {
                         notardex: "NotarDex",
                         signnow: "SignNow",
                         lovable: "Auth System",
+                        stripe: "Stripe",
+                        google: "Google",
                       };
                       return (
                         <tr key={i} className="border-b border-border/50">
