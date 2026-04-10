@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { BRAND } from "@/lib/brand";
+import { ensureHex } from "@/lib/colorUtils";
 
 const PROFESSIONAL_TYPE_LABELS: Record<string, string> = {
   notary: "Commissioned Notary Public",
@@ -54,6 +55,14 @@ interface NotaryPageData {
   is_featured: boolean;
 }
 
+/** Resolve a storage path or URL to a displayable signed URL */
+async function resolveStorageUrl(path: string | null): Promise<string | null> {
+  if (!path) return null;
+  if (path.startsWith("http")) return path;
+  const { data } = await supabase.storage.from("documents").createSignedUrl(path, 3600);
+  return data?.signedUrl || null;
+}
+
 export default function NotaryPage() {
   const { slug } = useParams<{ slug: string }>();
   const [page, setPage] = useState<NotaryPageData | null>(null);
@@ -61,10 +70,13 @@ export default function NotaryPage() {
   const [notFound, setNotFound] = useState(false);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
   const [coverPhotoUrl, setCoverPhotoUrl] = useState<string | null>(null);
+  const [galleryUrls, setGalleryUrls] = useState<string[]>([]);
 
   usePageMeta({
     title: page?.seo_title || page?.display_name || "Notary",
     description: page?.seo_description || `Professional notary services by ${page?.display_name || "a certified notary"}.`,
+    // PU001: OG image from profile photo
+    ogImage: profilePhotoUrl || undefined,
     schema: page ? {
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
@@ -73,7 +85,13 @@ export default function NotaryPage() {
       telephone: page.phone,
       email: page.email,
       url: `https://notardex.com/n/${page.slug}`,
-      areaServed: { "@type": "State", name: "Ohio" },
+      // PU005: Use commissioned state from credentials instead of hardcoded Ohio
+      areaServed: {
+        "@type": "State",
+        name: page.credentials?.commissioned_state || "Ohio",
+      },
+      // SEO004: Add image to schema
+      image: profilePhotoUrl || undefined,
       hasOfferCatalog: {
         "@type": "OfferCatalog",
         name: "Services",
@@ -102,16 +120,18 @@ export default function NotaryPage() {
     })();
   }, [slug]);
 
+  // PU002: Resolve all photo paths (profile, cover, gallery)
   useEffect(() => {
     if (!page) return;
-    const resolveUrl = async (path: string | null, setter: (url: string | null) => void) => {
-      if (!path) { setter(null); return; }
-      if (path.startsWith("http")) { setter(path); return; }
-      const { data } = await supabase.storage.from("documents").createSignedUrl(path, 3600);
-      setter(data?.signedUrl || null);
-    };
-    resolveUrl(page.profile_photo_path, setProfilePhotoUrl);
-    resolveUrl(page.cover_photo_path, setCoverPhotoUrl);
+    resolveStorageUrl(page.profile_photo_path).then(setProfilePhotoUrl);
+    resolveStorageUrl(page.cover_photo_path).then(setCoverPhotoUrl);
+    // Resolve gallery photos
+    const gallery = Array.isArray(page.gallery_photos) ? page.gallery_photos : [];
+    if (gallery.length > 0) {
+      Promise.all(gallery.map(p => resolveStorageUrl(p))).then(urls =>
+        setGalleryUrls(urls.filter((u): u is string => !!u))
+      );
+    }
   }, [page]);
 
   if (loading) {
@@ -140,45 +160,71 @@ export default function NotaryPage() {
   const socials = page.social_links || {};
   const services = (page.services_offered || []) as Array<{ name: string; description?: string; price?: number | string }>;
   const areas = (page.service_areas || []) as string[];
-  const themeColor = page.theme_color || "hsl(43, 74%, 49%)";
-  const accentColor = page.accent_color || "#1e40af";
+  // D002: Ensure colors are hex
+  const themeColor = ensureHex(page.theme_color);
+  const accentColor = ensureHex(page.accent_color, "#1e40af");
   const fontFamily = page.font_family || "Inter";
   const navServices = Array.isArray(page.nav_services) ? page.nav_services : [];
-  const galleryPhotos = Array.isArray(page.gallery_photos) ? page.gallery_photos : [];
   const professionalType = page.professional_type || "notary";
   const professionalLabel = PROFESSIONAL_TYPE_LABELS[professionalType] || "Professional";
-  const refParam = page.user_id;
 
-  const bookingUrl = page.use_platform_booking
-    ? `/book?notary=${page.slug}&ref=${refParam}`
-    : page.external_booking_url || `/book?notary=${page.slug}&ref=${refParam}`;
+  // B001/S001: Use slug instead of user_id in ref param to prevent UUID leak
+  const refParam = page.slug;
+
+  // B004: Handle missing booking configuration
+  let bookingUrl: string | null = null;
+  let bookingLabel = "Book Appointment";
+  if (page.use_platform_booking) {
+    bookingUrl = `/book?notary=${page.slug}&ref=${refParam}`;
+  } else if (page.external_booking_url) {
+    bookingUrl = page.external_booking_url;
+  } else {
+    // No booking configured - show contact instead
+    bookingUrl = page.email ? `mailto:${page.email}` : (page.phone ? `tel:${page.phone}` : null);
+    bookingLabel = "Contact to Book";
+  }
 
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  // BUG004: Check if socials have actual non-empty values
+  const hasSocialLinks = Object.values(socials).some(v => v && String(v).trim().length > 0);
+
   return (
     <div style={{ fontFamily: `"${fontFamily}", sans-serif` }}>
-      <PageShell>
+      {/* R001: Pass hideNav to prevent double navbar */}
+      <PageShell hideNav>
         {/* Dynamic Nav Bar */}
         {navServices.length > 0 && (
-          <nav className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <nav className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" aria-label="Professional page navigation">
             <div className="mx-auto max-w-6xl flex items-center gap-1 overflow-x-auto px-4 py-2">
               {navServices.map(name => (
                 <button
                   key={name}
                   onClick={() => scrollToSection(name.toLowerCase().replace(/\s+/g, "-"))}
                   className="whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-muted"
+                  aria-label={`Go to ${name} section`}
                 >
                   {name}
                 </button>
               ))}
               <div className="ml-auto">
-                <Link to={bookingUrl}>
-                  <Button size="sm" className="gap-1 font-bold" style={{ backgroundColor: themeColor }}>
-                    <Calendar className="h-3 w-3" /> Book
-                  </Button>
-                </Link>
+                {bookingUrl && (
+                  bookingUrl.startsWith("/") ? (
+                    <Link to={bookingUrl}>
+                      <Button size="sm" className="gap-1 font-bold" style={{ backgroundColor: themeColor }}>
+                        <Calendar className="h-3 w-3" /> Book
+                      </Button>
+                    </Link>
+                  ) : (
+                    <a href={bookingUrl} target={bookingUrl.startsWith("mailto:") || bookingUrl.startsWith("tel:") ? undefined : "_blank"} rel="noopener noreferrer">
+                      <Button size="sm" className="gap-1 font-bold" style={{ backgroundColor: themeColor }}>
+                        <Calendar className="h-3 w-3" /> {bookingLabel === "Contact to Book" ? "Contact" : "Book"}
+                      </Button>
+                    </a>
+                  )
+                )}
               </div>
             </div>
           </nav>
@@ -207,7 +253,7 @@ export default function NotaryPage() {
                 style={{ borderColor: themeColor, background: `${themeColor}15` }}
               >
                 {profilePhotoUrl ? (
-                  <img src={profilePhotoUrl} alt={page.display_name} className="h-full w-full rounded-full object-cover" />
+                  <img src={profilePhotoUrl} alt={`${page.display_name} profile photo`} className="h-full w-full rounded-full object-cover" />
                 ) : (
                   <span className="text-4xl font-black" style={{ color: themeColor }}>
                     {page.display_name?.charAt(0)?.toUpperCase() || "N"}
@@ -260,13 +306,32 @@ export default function NotaryPage() {
                   )}
                 </div>
 
+                {/* SEO003: Ohio Compliance Badge */}
+                {creds.commissioned_state?.toLowerCase().includes("ohio") && (
+                  <div className="mt-2">
+                    <Badge variant="outline" className="gap-1 text-xs border-green-600 text-green-700 dark:text-green-400">
+                      <Shield className="h-3 w-3" /> Ohio Compliant — ORC §147
+                    </Badge>
+                  </div>
+                )}
+
                 {/* CTA Buttons */}
                 <div className="mt-6 flex flex-wrap items-center justify-center gap-3 md:justify-start">
-                  <Link to={bookingUrl}>
-                    <Button size="lg" className="gap-2 font-bold shadow-lg" style={{ backgroundColor: themeColor }}>
-                      <Calendar className="h-4 w-4" /> Book Appointment
-                    </Button>
-                  </Link>
+                  {bookingUrl && (
+                    bookingUrl.startsWith("/") ? (
+                      <Link to={bookingUrl}>
+                        <Button size="lg" className="gap-2 font-bold shadow-lg" style={{ backgroundColor: themeColor }}>
+                          <Calendar className="h-4 w-4" /> {bookingLabel}
+                        </Button>
+                      </Link>
+                    ) : (
+                      <a href={bookingUrl} target={bookingUrl.startsWith("mailto:") || bookingUrl.startsWith("tel:") ? undefined : "_blank"} rel="noopener noreferrer">
+                        <Button size="lg" className="gap-2 font-bold shadow-lg" style={{ backgroundColor: themeColor }}>
+                          <Calendar className="h-4 w-4" /> {bookingLabel}
+                        </Button>
+                      </a>
+                    )
+                  )}
                   {page.signing_platform_url && (
                     <a href={page.signing_platform_url} target="_blank" rel="noopener noreferrer">
                       <Button size="lg" variant="outline" className="gap-2 font-bold">
@@ -280,6 +345,17 @@ export default function NotaryPage() {
           </div>
         </section>
 
+        {/* PU007: Breadcrumb Navigation */}
+        <nav className="mx-auto max-w-6xl px-4 py-2" aria-label="Breadcrumb">
+          <ol className="flex items-center gap-1 text-xs text-muted-foreground">
+            <li><Link to="/" className="hover:text-foreground">Home</Link></li>
+            <li>/</li>
+            <li><Link to="/notaries" className="hover:text-foreground">Directory</Link></li>
+            <li>/</li>
+            <li className="text-foreground font-medium">{page.display_name}</li>
+          </ol>
+        </nav>
+
         {/* About / Bio */}
         {page.bio && (
           <section id="about" className="mx-auto max-w-4xl px-4 py-12">
@@ -292,12 +368,12 @@ export default function NotaryPage() {
           </section>
         )}
 
-        {/* Gallery */}
-        {galleryPhotos.length > 0 && (
+        {/* Gallery - PU002: Use resolved URLs */}
+        {galleryUrls.length > 0 && (
           <section className="mx-auto max-w-6xl px-4 py-12">
             <h2 className="mb-4 text-2xl font-bold">Gallery</h2>
             <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
-              {galleryPhotos.map((url, i) => (
+              {galleryUrls.map((url, i) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -306,7 +382,8 @@ export default function NotaryPage() {
                   viewport={{ once: true }}
                   className="aspect-[4/3] overflow-hidden rounded-xl border shadow-sm"
                 >
-                  <img src={url} alt={`${page.display_name} gallery ${i + 1}`} className="h-full w-full object-cover" loading="lazy" />
+                  {/* ACC001: Descriptive alt text */}
+                  <img src={url} alt={`${page.display_name} - gallery photo ${i + 1} of ${galleryUrls.length}`} className="h-full w-full object-cover" loading="lazy" />
                 </motion.div>
               ))}
             </div>
@@ -423,20 +500,21 @@ export default function NotaryPage() {
               </a>
             )}
           </div>
-          {Object.keys(socials).length > 0 && (
+          {/* BUG004: Only show social links section if at least one has a value */}
+          {hasSocialLinks && (
             <div className="mt-4 flex gap-3">
-              {socials.facebook && (
-                <a href={socials.facebook} target="_blank" rel="noopener noreferrer" className="rounded-full border p-2 transition-colors hover:bg-muted">
+              {socials.facebook && socials.facebook.trim() && (
+                <a href={socials.facebook} target="_blank" rel="noopener noreferrer" className="rounded-full border p-2 transition-colors hover:bg-muted" aria-label="Facebook">
                   <Facebook className="h-5 w-5" />
                 </a>
               )}
-              {socials.linkedin && (
-                <a href={socials.linkedin} target="_blank" rel="noopener noreferrer" className="rounded-full border p-2 transition-colors hover:bg-muted">
+              {socials.linkedin && socials.linkedin.trim() && (
+                <a href={socials.linkedin} target="_blank" rel="noopener noreferrer" className="rounded-full border p-2 transition-colors hover:bg-muted" aria-label="LinkedIn">
                   <Linkedin className="h-5 w-5" />
                 </a>
               )}
-              {socials.twitter && (
-                <a href={socials.twitter} target="_blank" rel="noopener noreferrer" className="rounded-full border p-2 transition-colors hover:bg-muted">
+              {socials.twitter && socials.twitter.trim() && (
+                <a href={socials.twitter} target="_blank" rel="noopener noreferrer" className="rounded-full border p-2 transition-colors hover:bg-muted" aria-label="Twitter">
                   <Twitter className="h-5 w-5" />
                 </a>
               )}
@@ -452,11 +530,21 @@ export default function NotaryPage() {
               Schedule your appointment today. Professional, secure, and compliant.
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-              <Link to={bookingUrl}>
-                <Button size="lg" className="gap-2 font-bold shadow-lg" style={{ backgroundColor: themeColor }}>
-                  <Calendar className="h-4 w-4" /> Book Now
-                </Button>
-              </Link>
+              {bookingUrl && (
+                bookingUrl.startsWith("/") ? (
+                  <Link to={bookingUrl}>
+                    <Button size="lg" className="gap-2 font-bold shadow-lg" style={{ backgroundColor: themeColor }}>
+                      <Calendar className="h-4 w-4" /> {bookingLabel === "Contact to Book" ? "Contact to Book" : "Book Now"}
+                    </Button>
+                  </Link>
+                ) : (
+                  <a href={bookingUrl} target={bookingUrl.startsWith("mailto:") || bookingUrl.startsWith("tel:") ? undefined : "_blank"} rel="noopener noreferrer">
+                    <Button size="lg" className="gap-2 font-bold shadow-lg" style={{ backgroundColor: themeColor }}>
+                      <Calendar className="h-4 w-4" /> {bookingLabel === "Contact to Book" ? "Contact to Book" : "Book Now"}
+                    </Button>
+                  </a>
+                )
+              )}
               {page.signing_platform_url && (
                 <a href={page.signing_platform_url} target="_blank" rel="noopener noreferrer">
                   <Button size="lg" variant="outline" className="gap-2 font-bold">
@@ -471,7 +559,7 @@ export default function NotaryPage() {
         {/* Footer */}
         <div className="border-t bg-muted/20 py-4 text-center text-xs text-muted-foreground">
           Powered by <Link to="/" className="font-semibold hover:underline">{BRAND.name}</Link> —
-          Professional Ohio Notary Services
+          Professional {creds.commissioned_state || "Ohio"} Notary Services
         </div>
       </PageShell>
     </div>

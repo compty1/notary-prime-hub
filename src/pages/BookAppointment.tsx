@@ -135,7 +135,7 @@ export default function BookAppointment() {
   const [signerDob, setSignerDob] = useState("");
 
   // Notary page branding support (?notary=slug)
-  const [notaryBranding, setNotaryBranding] = useState<{ display_name: string; theme_color: string; slug: string; use_platform_booking: boolean; external_booking_url: string } | null>(null);
+  const [notaryBranding, setNotaryBranding] = useState<{ display_name: string; theme_color: string; slug: string; use_platform_booking: boolean; external_booking_url: string; user_id?: string } | null>(null);
 
   // Booking draft persistence (Phase 3.4)
   useEffect(() => {
@@ -317,7 +317,7 @@ export default function BookAppointment() {
     (async () => {
       const { data } = await supabase
         .from("notary_pages")
-        .select("display_name, theme_color, slug, use_platform_booking, external_booking_url")
+        .select("display_name, theme_color, slug, use_platform_booking, external_booking_url, user_id")
         .eq("slug", notarySlug)
         .eq("is_published", true)
         .maybeSingle();
@@ -508,8 +508,18 @@ export default function BookAppointment() {
     for (const [keyword, actType] of Object.entries(NOTARIAL_ACT_MAP)) {
       if (svcLower.includes(keyword)) { notarialActType = actType; break; }
     }
-    // Referral tracking from professional pages
+    // B001/B002: Resolve ref slug to user_id for referral tracking
     const refParam = searchParams.get("ref") || null;
+    let resolvedRefId: string | null = null;
+    let resolvedNotaryId: string | null = null;
+    if (notaryBranding?.user_id) {
+      resolvedRefId = notaryBranding.user_id;
+      resolvedNotaryId = notaryBranding.user_id;
+    } else if (refParam) {
+      // Try to resolve slug to user_id
+      const { data: refPage } = await supabase.from("notary_pages").select("user_id").eq("slug", refParam).maybeSingle();
+      if (refPage?.user_id) { resolvedRefId = refPage.user_id; resolvedNotaryId = refPage.user_id; }
+    }
 
     const payload = {
       client_id: userId,
@@ -534,9 +544,10 @@ export default function BookAppointment() {
         ? Math.max(parseFloat(pricingSettings.travel_fee_minimum || "25"), travelDistance * parseFloat(pricingSettings.travel_fee_per_mile || "0.655"))
         : 0,
       travel_distance_miles: travelDistance,
-      // Professional referral tracking
-      referral_professional_id: refParam || null,
-      referral_source: refParam ? "professional_page" : null,
+      // B002/B003/W001: Professional referral & notary assignment
+      notary_id: resolvedNotaryId,
+      referral_professional_id: resolvedRefId,
+      referral_source: resolvedRefId ? "professional_page" : null,
     };
     let appointmentResultId: string;
     if (rebookingId) {
