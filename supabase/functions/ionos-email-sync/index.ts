@@ -200,6 +200,7 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+  const rl = rateLimitGuard(req, 10); if (rl) return rl;
 
   try {
     const supabase = createClient(

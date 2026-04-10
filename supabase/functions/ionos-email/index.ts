@@ -87,6 +87,7 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+  const rl = rateLimitGuard(req, 20); if (rl) return rl;
 
   try {
     const { user, serviceClient } = await verifyAdmin(req);
