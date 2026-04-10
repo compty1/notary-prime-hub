@@ -250,6 +250,17 @@ export default function AdminOverview() {
 
   if (loading) return <OverviewSkeleton />;
 
+  if (loadError) return (
+    <div className="flex flex-col items-center justify-center gap-4 py-20">
+      <AlertTriangle className="h-12 w-12 text-destructive" />
+      <p className="text-lg font-medium text-foreground">Dashboard Load Error</p>
+      <p className="text-sm text-muted-foreground max-w-md text-center">{loadError}</p>
+      <Button onClick={() => { setLoading(true); setLoadError(null); fetchData(); }}>
+        <RefreshCw className="mr-2 h-4 w-4" /> Retry
+      </Button>
+    </div>
+  );
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
