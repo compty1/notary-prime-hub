@@ -360,16 +360,42 @@ export default function NotaryPage() {
           </div>
         </section>
 
-        {/* PU007: Breadcrumb Navigation */}
-        <nav className="mx-auto max-w-6xl px-4 py-2" aria-label="Breadcrumb">
-          <ol className="flex items-center gap-1 text-xs text-muted-foreground">
-            <li><Link to="/" className="hover:text-foreground">Home</Link></li>
-            <li>/</li>
-            <li><Link to="/notaries" className="hover:text-foreground">Directory</Link></li>
-            <li>/</li>
-            <li className="text-foreground font-medium">{page.display_name}</li>
-          </ol>
-        </nav>
+        {/* W007: Edit link for page owner + E009: Social sharing */}
+        <div className="mx-auto max-w-6xl px-4 py-2 flex items-center justify-between">
+          <nav aria-label="Breadcrumb">
+            <ol className="flex items-center gap-1 text-xs text-muted-foreground">
+              <li><Link to="/" className="hover:text-foreground">Home</Link></li>
+              <li>/</li>
+              <li><Link to="/notaries" className="hover:text-foreground">Directory</Link></li>
+              <li>/</li>
+              <li className="text-foreground font-medium">{page.display_name}</li>
+            </ol>
+          </nav>
+          <div className="flex items-center gap-2">
+            {isOwner && (
+              <Link to="/portal?tab=notary-page">
+                <Button variant="outline" size="sm" className="gap-1 text-xs">
+                  <Pencil className="h-3 w-3" /> Edit Page
+                </Button>
+              </Link>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1 text-xs"
+              onClick={() => {
+                if (navigator.share) {
+                  navigator.share({ title: page.display_name, text: page.tagline || `Professional services by ${page.display_name}`, url: window.location.href });
+                } else {
+                  navigator.clipboard.writeText(window.location.href);
+                }
+              }}
+              aria-label="Share this page"
+            >
+              <Share2 className="h-3 w-3" /> Share
+            </Button>
+          </div>
+        </div>
 
         {/* About / Bio */}
         {page.bio && (
@@ -536,6 +562,38 @@ export default function NotaryPage() {
             </div>
           )}
         </section>
+
+        {/* PU006: Contact form section */}
+        {page.email && (
+          <section className="bg-muted/30 py-12">
+            <div className="mx-auto max-w-lg px-4 text-center">
+              <h2 className="mb-2 text-2xl font-bold">Send a Message</h2>
+              <p className="mb-4 text-sm text-muted-foreground">Have a question? Reach out directly.</p>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  const subject = encodeURIComponent(String(formData.get("subject") || "Inquiry"));
+                  const body = encodeURIComponent(String(formData.get("message") || ""));
+                  window.location.href = `mailto:${page.email}?subject=${subject}&body=${body}`;
+                }}
+                className="space-y-3 text-left"
+              >
+                <div>
+                  <label className="text-sm font-medium" htmlFor="contact-subject">Subject</label>
+                  <input id="contact-subject" name="subject" required className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" placeholder="e.g. Notarization inquiry" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium" htmlFor="contact-message">Message</label>
+                  <textarea id="contact-message" name="message" required rows={3} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" placeholder="How can we help?" />
+                </div>
+                <Button type="submit" className="w-full gap-2 font-bold" style={{ backgroundColor: themeColor }}>
+                  <Mail className="h-4 w-4" /> Send Message
+                </Button>
+              </form>
+            </div>
+          </section>
+        )}
 
         {/* Bottom CTA */}
         <section className="py-12" style={{ background: `linear-gradient(135deg, ${themeColor}15, ${accentColor}05)` }}>
