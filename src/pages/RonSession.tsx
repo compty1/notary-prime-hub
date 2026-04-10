@@ -170,6 +170,10 @@ export default function RonSession() {
   const [witnessVerified, setWitnessVerified] = useState(false);
   const [witnessName, setWitnessName] = useState("");
   const [witnessIdType, setWitnessIdType] = useState("");
+  // Signature by mark — Ohio ORC §147.54 requires 2 credible witnesses
+  const [isSignatureByMark, setIsSignatureByMark] = useState(false);
+  const [witness2Name, setWitness2Name] = useState("");
+  const [witness2Verified, setWitness2Verified] = useState(false);
 
   const hasNativeKba = PLATFORMS_WITH_NATIVE_KBA.includes(signingPlatform);
 
