@@ -24,6 +24,7 @@ import { ESignConsent } from "@/components/ESignConsent";
 import { SessionTimeoutWarning } from "@/components/SessionTimeoutWarning";
 import { ComplianceBanner } from "@/components/ComplianceBanner";
 import { RonRecordingPanel } from "@/components/RonRecordingPanel";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 const oathScripts = {
   acknowledgment: "The signer personally appeared before me and acknowledged that they signed this document voluntarily for the purposes stated therein. (No verbal oath required for acknowledgments per ORC §147.55)",
