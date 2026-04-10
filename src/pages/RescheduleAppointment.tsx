@@ -28,7 +28,7 @@ export default function RescheduleAppointment() {
         const parsed = JSON.parse(stored);
         if (parsed.ts && Date.now() - parsed.ts < 3600000) return parsed.count;
       }
-    } catch {}
+    } catch (e) { console.warn("Session parse error:", e); }
     return 0;
   });
 
@@ -41,7 +41,7 @@ export default function RescheduleAppointment() {
     setLoading(true);
     setAttempts(prev => {
       const next = prev + 1;
-      try { sessionStorage.setItem("reschedule_attempts", JSON.stringify({ count: next, ts: Date.now() })); } catch {}
+      try { sessionStorage.setItem("reschedule_attempts", JSON.stringify({ count: next, ts: Date.now() })); } catch (e) { console.warn("Storage write error:", e); }
       return next;
     });
 

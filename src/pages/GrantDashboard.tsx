@@ -149,7 +149,7 @@ export default function GrantDashboard() {
             const parsed = JSON.parse(json);
             const c = parsed.choices?.[0]?.delta?.content;
             if (c) result += c;
-          } catch {}
+          } catch (e) { console.warn("Stream parse error:", e); }
         }
       }
       setContent(result);

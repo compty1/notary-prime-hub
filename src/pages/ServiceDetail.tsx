@@ -431,7 +431,7 @@ export default function ServiceDetail() {
     if (serviceId) {
       const saved = localStorage.getItem(`readiness-${serviceId}`);
       if (saved) {
-        try { setCheckedItems(new Set(JSON.parse(saved))); } catch {}
+        try { setCheckedItems(new Set(JSON.parse(saved))); } catch (e) { console.warn("Failed to parse readiness checklist:", e); }
       }
     }
   }, [serviceId]);
@@ -477,7 +477,7 @@ export default function ServiceDetail() {
   const handleShare = async () => {
     const shareData = { title: service?.name || "Service", url: window.location.href };
     if (navigator.share) {
-      try { await navigator.share(shareData); } catch {}
+      try { await navigator.share(shareData); } catch (e) { if ((e as DOMException).name !== "AbortError") console.warn("Share failed:", e); }
     } else {
       await navigator.clipboard.writeText(window.location.href);
     }

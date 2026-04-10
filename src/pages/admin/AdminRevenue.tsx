@@ -390,9 +390,77 @@ export default function AdminRevenue() {
       <Tabs defaultValue="payments" className="space-y-4">
         <TabsList>
           <TabsTrigger value="payments"><CreditCard className="mr-1 h-4 w-4" /> Payments ({payments.length})</TabsTrigger>
+          <TabsTrigger value="by-service"><Receipt className="mr-1 h-4 w-4" /> By Service</TabsTrigger>
           <TabsTrigger value="journal"><Receipt className="mr-1 h-4 w-4" /> Journal Revenue</TabsTrigger>
+          <TabsTrigger value="outstanding"><DollarSign className="mr-1 h-4 w-4" /> Outstanding</TabsTrigger>
           <TabsTrigger value="forecast"><TrendingUp className="mr-1 h-4 w-4" /> Forecast</TabsTrigger>
         </TabsList>
+
+        {/* Item 311: Revenue by Service Breakdown */}
+        <TabsContent value="by-service">
+          <Card className="border-border/50">
+            <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Revenue by Service Type</CardTitle></CardHeader>
+            <CardContent>
+              {(() => {
+                const byService: Record<string, { count: number; revenue: number }> = {};
+                filtered.forEach(e => {
+                  const svc = e.document_type || "Unknown";
+                  if (!byService[svc]) byService[svc] = { count: 0, revenue: 0 };
+                  byService[svc].count++;
+                  byService[svc].revenue += parseFloat(e.fees_charged) || 0;
+                });
+                const sorted = Object.entries(byService).sort((a, b) => b[1].revenue - a[1].revenue);
+                if (sorted.length === 0) return <p className="py-8 text-center text-sm text-muted-foreground">No journal data</p>;
+                return (
+                  <div className="space-y-2">
+                    {sorted.map(([svc, data]) => (
+                      <div key={svc} className="flex items-center justify-between rounded-lg border border-border/50 p-3">
+                        <div>
+                          <p className="font-medium text-sm">{svc}</p>
+                          <p className="text-xs text-muted-foreground">{data.count} session{data.count !== 1 ? "s" : ""}</p>
+                        </div>
+                        <p className="text-lg font-bold text-primary">${data.revenue.toFixed(2)}</p>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Item 316: Outstanding Balance Tracking */}
+        <TabsContent value="outstanding">
+          <Card className="border-border/50">
+            <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Outstanding Balances</CardTitle></CardHeader>
+            <CardContent>
+              {(() => {
+                const pending = payments.filter(p => p.status === "pending");
+                if (pending.length === 0) return <p className="py-8 text-center text-sm text-muted-foreground">No outstanding balances 🎉</p>;
+                return (
+                  <div className="space-y-2">
+                    {pending.map(p => (
+                      <div key={p.id} className="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50/50 dark:bg-amber-900/10 p-3">
+                        <div>
+                          <p className="font-medium text-sm">{profiles[p.client_id] || p.client_id.slice(0, 8)}</p>
+                          <p className="text-xs text-muted-foreground">{formatDate(p.created_at)} · {p.notes || "No notes"}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <p className="text-lg font-bold text-amber-600">${parseFloat(p.amount).toFixed(2)}</p>
+                          <Button size="sm" variant="outline" className="text-xs" onClick={() => markPaid(p.id)}>Mark Paid</Button>
+                        </div>
+                      </div>
+                    ))}
+                    <div className="mt-3 pt-3 border-t border-border/50 flex justify-between">
+                      <p className="text-sm font-medium text-muted-foreground">Total Outstanding</p>
+                      <p className="text-lg font-bold text-amber-600">${totalPending.toFixed(2)}</p>
+                    </div>
+                  </div>
+                );
+              })()}
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="payments">
           <div className="mb-4 grid gap-4 sm:grid-cols-2">

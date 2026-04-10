@@ -125,7 +125,7 @@ export default function LivePreviewTab({ themeOverlay }: Props) {
         { type: "THEME_OVERRIDE", cssVars },
         "*"
       );
-    } catch {}
+    } catch (e) { console.warn("Theme overlay postMessage failed:", e); }
   }, [themeOverlay, isLoading]);
 
   return (

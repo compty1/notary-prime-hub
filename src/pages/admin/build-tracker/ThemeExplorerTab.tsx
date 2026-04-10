@@ -166,7 +166,7 @@ export default function ThemeExplorerTab({ onPreviewTheme }: { onPreviewTheme?: 
   const saveThemes = useCallback((t: Theme[]) => {
     const bounded = t.slice(0, MAX_THEMES);
     setThemes(bounded);
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(bounded)); } catch {}
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(bounded)); } catch (e) { console.warn("Theme save error:", e); }
   }, []);
 
   const generate = useCallback(async () => {

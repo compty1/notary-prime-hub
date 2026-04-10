@@ -40,7 +40,7 @@ export default function NotaryDirectory() {
         .select("id, slug, display_name, title, tagline, profile_photo_path, theme_color, service_areas, credentials, is_featured")
         .eq("is_published", true)
         .order("is_featured", { ascending: false });
-      setNotaries((data as any[]) || []);
+      setNotaries((data as NotarySummary[]) || []);
       setLoading(false);
     })();
   }, []);

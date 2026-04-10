@@ -172,7 +172,7 @@ function DocumentExamplesSection() {
           </DialogHeader>
           {anatomy && (
             <div className="space-y-4">
-              <img src={anatomy.image} alt="Document example" className="w-full rounded-lg border" />
+              <img src={anatomy.image} alt="Document example" className="w-full rounded-lg border" loading="lazy" />
               <div className="space-y-2">
                 {anatomy.callouts.map(c => (
                   <div key={c.id} className="flex items-start gap-2 p-2 rounded bg-muted/50">

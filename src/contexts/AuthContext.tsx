@@ -192,6 +192,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
+    // Item 179: Audit log sign-out event
+    logAuditEvent("sign_out", { entityType: "auth" });
     await supabase.auth.signOut();
     setRoles([]);
     setSession(null);
@@ -210,7 +212,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
       keysToRemove.forEach(k => localStorage.removeItem(k));
-    } catch {}
+    } catch (e) { console.warn("Storage cleanup error:", e); }
     // Use navigate via location change — clears React Query cache with full reload
     window.location.href = "/";
   };
