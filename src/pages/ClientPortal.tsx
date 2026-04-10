@@ -559,19 +559,33 @@ export default function ClientPortal() {
                   <div><Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Number of Documents</Label><Input type="number" min="1" max="50" value={apostilleForm.document_count} onChange={e => setApostilleForm({ ...apostilleForm, document_count: e.target.value })} className="bg-[#f8f9fa] border-none rounded-xl mt-1" /></div>
                 </div>
                 <div><Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Notes (optional)</Label><Textarea value={apostilleForm.notes} onChange={e => setApostilleForm({ ...apostilleForm, notes: e.target.value })} rows={2} placeholder="Urgency, special instructions" maxLength={500} className="bg-[#f8f9fa] border-none rounded-xl mt-1" /></div>
-                <Button disabled={!apostilleForm.document_description.trim() || submittingApostille} onClick={async () => {
-                  if (!user) return;
-                  const confirmed = window.confirm(`Submit apostille request for "${apostilleForm.document_description}"${apostilleForm.destination_country ? ` to ${apostilleForm.destination_country}` : ""}? This will create a new service request.`);
-                  if (!confirmed) return;
-                  setSubmittingApostille(true);
-                  const { data: newReq, error } = await supabase.from("apostille_requests").insert({ client_id: user.id, document_description: apostilleForm.document_description.trim(), notes: apostilleForm.notes.trim() || null, destination_country: apostilleForm.destination_country.trim() || null, document_count: parseInt(apostilleForm.document_count) || 1 }).select().single();
-                  if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-                  else if (newReq) { toast({ title: "Apostille request submitted" }); setApostilleRequests(prev => [newReq, ...prev]); setApostilleForm({ document_description: "", notes: "", destination_country: "", document_count: "1" }); }
-                  setSubmittingApostille(false);
-                }} className="rounded-xl font-bold bg-[#212529] text-white shadow-block">
+                <AlertDialog>
+                <AlertDialogTrigger asChild>
+                <Button disabled={!apostilleForm.document_description.trim() || submittingApostille} className="rounded-xl font-bold bg-foreground text-background shadow-block">
                   {submittingApostille ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Package className="mr-1 h-4 w-4" />} Submit Request
                 </Button>
-              </CardContent>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Confirm Apostille Request</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Submit apostille request for &quot;{apostilleForm.document_description}&quot;{apostilleForm.destination_country ? ` to ${apostilleForm.destination_country}` : ""}? This will create a new service request.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={async () => {
+                      if (!user) return;
+                      setSubmittingApostille(true);
+                      const { data: newReq, error } = await supabase.from("apostille_requests").insert({ client_id: user.id, document_description: apostilleForm.document_description.trim(), notes: apostilleForm.notes.trim() || null, destination_country: apostilleForm.destination_country.trim() || null, document_count: parseInt(apostilleForm.document_count) || 1 }).select().single();
+                      if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+                      else if (newReq) { toast({ title: "Apostille request submitted" }); setApostilleRequests(prev => [newReq, ...prev]); setApostilleForm({ document_description: "", notes: "", destination_country: "", document_count: "1" }); }
+                      setSubmittingApostille(false);
+                    }}>Submit Request</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+                </AlertDialog>
+               </CardContent>
             </Card>
             {apostilleRequests.length > 0 && apostilleRequests.map(req => {
               const apoSteps = ["intake", "payment_received", "submitted_to_sos", "processing", "shipped", "delivered"];
