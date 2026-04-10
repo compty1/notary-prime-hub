@@ -253,6 +253,18 @@ export default function AppointmentConfirmation() {
           </Card>
         )}
 
+        {/* Referred By Professional */}
+        {referralProfessional && (
+          <Card className="mb-6 border-primary/20 bg-primary/5 text-left">
+            <CardContent className="p-4">
+              <p className="text-sm font-medium mb-1 flex items-center gap-2"><User className="h-4 w-4 text-primary" /> Referred by</p>
+              <Link to={`/n/${referralProfessional.slug}`} className="text-sm font-semibold text-primary hover:underline">
+                {referralProfessional.display_name}
+              </Link>
+            </CardContent>
+          </Card>
+        )}
+
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
           <CalendarDownload
             date={appointment.scheduled_date}
