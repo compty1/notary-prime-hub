@@ -1103,7 +1103,7 @@ export default function DocumentTemplates() {
                 return [...prev, { role: "assistant", content: assistantSoFar }];
               });
             }
-          } catch {}
+          } catch (e) { console.warn("Stream parse error:", e); }
         }
       }
     } catch (e: any) {
