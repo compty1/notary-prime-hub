@@ -102,7 +102,7 @@ export default function PortalNotaryPageTab() {
         supabase.from("notary_pages").select("*").eq("user_id", user.id).maybeSingle(),
         supabase.from("services").select("id, name, category, price_from, price_to, short_description").eq("is_active", true).order("display_order"),
         supabase.from("professional_service_enrollments").select("*").eq("professional_user_id", user.id),
-        supabase.from("profit_share_transactions").select("gross_amount, platform_fee, professional_share, status").eq("professional_user_id", user.id),
+        supabase.from("profit_share_transactions").select("id, gross_amount, platform_fee, professional_share, status, created_at").eq("professional_user_id", user.id).order("created_at", { ascending: false }).limit(50),
       ]);
       if (pageRes.data) { setPage(pageRes.data); setHasPage(true); }
       if (svcRes.data) setPlatformServices(svcRes.data as PlatformService[]);
