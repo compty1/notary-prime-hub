@@ -708,9 +708,33 @@ export default function NotaryPage() {
 
         {/* Print styles + Footer */}
         <style>{`@media print { nav, button, .no-print { display: none !important; } section { break-inside: avoid; } }`}</style>
-        <div className="border-t bg-muted/20 py-6 text-center text-xs text-muted-foreground no-print">
-          Powered by <Link to="/" className="font-semibold hover:underline">{BRAND.name}</Link> —
-          Professional {creds.commissioned_state || "Ohio"} Notary Services
+        <div className="border-t bg-muted/20 no-print">
+          <div className="mx-auto max-w-6xl px-4 py-8">
+            <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+              <div className="text-center sm:text-left">
+                <p className="text-sm font-semibold text-foreground">{page.display_name}</p>
+                <p className="text-xs text-muted-foreground">{professionalLabel} — {creds.commissioned_state || "Ohio"}</p>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
+                {page.phone && (
+                  <a href={`tel:${page.phone}`} className="flex items-center gap-1 hover:text-foreground"><Phone className="h-3 w-3" /> {page.phone}</a>
+                )}
+                {page.email && (
+                  <a href={`mailto:${page.email}`} className="flex items-center gap-1 hover:text-foreground"><Mail className="h-3 w-3" /> {page.email}</a>
+                )}
+              </div>
+            </div>
+            <div className="mt-4 flex flex-col items-center gap-2 border-t pt-4 sm:flex-row sm:justify-between">
+              <p className="text-xs text-muted-foreground">
+                {get("copyright_text", `© ${new Date().getFullYear()} ${get("site_name", BRAND.name)}. All rights reserved.`)}
+              </p>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <Link to="/terms-privacy" className="hover:text-foreground">Terms & Privacy</Link>
+                <Link to="/accessibility" className="hover:text-foreground">Accessibility</Link>
+                <span>Powered by <Link to="/" className="font-semibold hover:underline">{get("site_name", BRAND.name)}</Link></span>
+              </div>
+            </div>
+          </div>
         </div>
       </PageShell>
     </div>
