@@ -157,7 +157,19 @@ export default function AdminNotaryPages() {
       });
       await fetchEnrollments(p.user_id);
     } else {
-      setEditPage({ ...emptyPage });
+      // Pre-populate from global settings
+      setEditPage({
+        ...emptyPage,
+        phone: getSetting("notary_phone", ""),
+        email: getSetting("notary_email", ""),
+        service_areas: getSetting("service_area", "") ? [getSetting("service_area", "")] : [],
+        credentials: {
+          commission_number: getSetting("commission_number", ""),
+          commission_expiration: getSetting("commission_expiration_date", ""),
+          commissioned_state: "Ohio",
+          commissioned_county: getSetting("commission_county", ""),
+        },
+      });
       setEnrollments([]);
     }
     setEditDialogOpen(true);
