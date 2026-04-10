@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ALLOWED_IMAGE_MIMES } from "@/lib/fileValidation";
+import { ensureHex, sanitizeSlug } from "@/lib/colorUtils";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 interface NotaryPage {
   id: string;
@@ -90,7 +92,7 @@ const DEFAULT_SERVICES: ServiceItem[] = [
 const emptyPage: Partial<NotaryPage> = {
   slug: "", display_name: "", title: "", tagline: "", bio: "", phone: "", email: "",
   website_url: "", service_areas: [], services_offered: [], credentials: {},
-  theme_color: "hsl(43, 74%, 49%)", accent_color: "#1e40af", font_family: "Inter",
+  theme_color: "#C9A227", accent_color: "#1e40af", font_family: "Inter",
   professional_type: "notary", signing_platform_url: "", use_platform_booking: true,
   external_booking_url: "", social_links: {}, profile_photo_path: null, cover_photo_path: null,
   gallery_photos: [], nav_services: [],
@@ -115,6 +117,7 @@ export default function AdminNotaryPages() {
   const profileInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const fetchPages = async () => {
     setLoading(true);
@@ -124,7 +127,10 @@ export default function AdminNotaryPages() {
   };
 
   const fetchNotaryUsers = async () => {
-    const { data } = await supabase.from("profiles").select("user_id, full_name, email");
+    const { data: roles } = await supabase.from("user_roles").select("user_id").in("role", ["notary", "admin"] as any);
+    if (!roles || roles.length === 0) { setNotaryUsers([]); return; }
+    const userIds = roles.map(r => r.user_id);
+    const { data } = await supabase.from("profiles").select("user_id, full_name, email").in("user_id", userIds);
     setNotaryUsers((data as any[]) || []);
   };
 
@@ -142,7 +148,11 @@ export default function AdminNotaryPages() {
 
   const openEditDialog = async (p?: NotaryPage) => {
     if (p) {
-      setEditPage(p);
+      setEditPage({
+        ...p,
+        theme_color: ensureHex(p.theme_color),
+        accent_color: ensureHex(p.accent_color, "#1e40af"),
+      });
       await fetchEnrollments(p.user_id);
     } else {
       setEditPage({ ...emptyPage });
@@ -156,21 +166,24 @@ export default function AdminNotaryPages() {
   // Photo upload handler
   const handlePhotoUpload = async (file: File, type: "profile" | "cover") => {
     if (!editPage.id) { toast({ title: "Save the page first before uploading photos", variant: "destructive" }); return; }
-    if (!ALLOWED_IMAGE_MIMES.has(file.type)) { toast({ title: "Invalid file type", variant: "destructive" }); return; }
+    if (!ALLOWED_IMAGE_MIMES.has(file.type)) { toast({ title: "Invalid file type. Only JPG, PNG, WebP allowed.", variant: "destructive" }); return; }
     const setter = type === "profile" ? setUploadingProfile : setUploadingCover;
     setter(true);
     const ext = file.name.split(".").pop();
     const path = `notary-pages/${editPage.id}/${type}.${ext}`;
     const { error } = await supabase.storage.from("documents").upload(path, file, { upsert: true });
     if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); setter(false); return; }
-    const { data: signedData } = await supabase.storage.from("documents").createSignedUrl(path, 315360000);
-    if (signedData?.signedUrl) updateField(type === "profile" ? "profile_photo_path" : "cover_photo_path", signedData.signedUrl);
+    const { data: signedData } = await supabase.storage.from("documents").createSignedUrl(path, 3600);
+    if (signedData?.signedUrl) {
+      updateField(type === "profile" ? "profile_photo_path" : "cover_photo_path", path);
+    }
     setter(false);
     toast({ title: `${type === "profile" ? "Profile" : "Cover"} photo uploaded` });
   };
 
   const handleGalleryUpload = async (file: File) => {
     if (!editPage.id) { toast({ title: "Save the page first", variant: "destructive" }); return; }
+    if (!ALLOWED_IMAGE_MIMES.has(file.type)) { toast({ title: "Invalid file type. Only JPG, PNG, WebP allowed.", variant: "destructive" }); return; }
     const gallery: string[] = Array.isArray(editPage.gallery_photos) ? editPage.gallery_photos : [];
     if (gallery.length >= 6) { toast({ title: "Max 6 gallery photos", variant: "destructive" }); return; }
     setUploadingGallery(true);
@@ -178,8 +191,7 @@ export default function AdminNotaryPages() {
     const path = `notary-pages/${editPage.id}/gallery-${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from("documents").upload(path, file, { upsert: true });
     if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); setUploadingGallery(false); return; }
-    const { data: signedData } = await supabase.storage.from("documents").createSignedUrl(path, 315360000);
-    if (signedData?.signedUrl) updateField("gallery_photos", [...gallery, signedData.signedUrl]);
+    updateField("gallery_photos", [...gallery, path]);
     setUploadingGallery(false);
     toast({ title: "Gallery photo added" });
   };
@@ -211,7 +223,7 @@ export default function AdminNotaryPages() {
       const { data, error } = await supabase.from("professional_service_enrollments").insert({
         professional_user_id: editPage.user_id,
         service_id: serviceId,
-        is_active: true, // Admin approves immediately
+        is_active: true,
         show_on_site: true,
       } as any).select().single();
       if (error) { toast({ title: "Enrollment failed", description: error.message, variant: "destructive" }); return; }
@@ -249,6 +261,20 @@ export default function AdminNotaryPages() {
       toast({ title: "Missing fields", description: "Slug and display name are required.", variant: "destructive" });
       return;
     }
+    if (editPage.slug.length > 50) {
+      toast({ title: "Slug too long", description: "Maximum 50 characters.", variant: "destructive" });
+      return;
+    }
+    const { data: existingSlug } = await supabase
+      .from("notary_pages")
+      .select("id")
+      .eq("slug", editPage.slug)
+      .maybeSingle();
+    if (existingSlug && existingSlug.id !== editPage.id) {
+      toast({ title: "Slug already taken", description: `The URL /n/${editPage.slug} is already in use. Choose a different slug.`, variant: "destructive" });
+      return;
+    }
+
     setSaving(true);
     try {
       const payload: any = {
@@ -288,10 +314,11 @@ export default function AdminNotaryPages() {
     setSaving(false);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this notary page?")) return;
-    await supabase.from("notary_pages").delete().eq("id", id);
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    await supabase.from("notary_pages").delete().eq("id", deleteId);
     toast({ title: "Page deleted" });
+    setDeleteId(null);
     fetchPages();
   };
 
@@ -316,6 +343,12 @@ export default function AdminNotaryPages() {
     if (navServices.includes(name)) updateField("nav_services", navServices.filter(n => n !== name));
     else if (navServices.length < 6) updateField("nav_services", [...navServices, name]);
     else toast({ title: "Max 6 nav items", variant: "destructive" });
+  };
+
+  const resolvePhotoUrl = (path: string | null | undefined): string | null => {
+    if (!path) return null;
+    if (path.startsWith("http")) return path;
+    return null;
   };
 
   return (
@@ -355,7 +388,7 @@ export default function AdminNotaryPages() {
                 <TableRow key={p.id}>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      {p.profile_photo_path ? (
+                      {p.profile_photo_path?.startsWith("http") ? (
                         <img src={p.profile_photo_path} alt="" className="h-8 w-8 rounded-full object-cover border" />
                       ) : (
                         <div className="flex h-8 w-8 items-center justify-center rounded-full border bg-muted text-xs font-bold">
@@ -394,7 +427,7 @@ export default function AdminNotaryPages() {
                       <Button variant="ghost" size="icon" onClick={() => openEditDialog(p)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(p.id)}>
+                      <Button variant="ghost" size="icon" onClick={() => setDeleteId(p.id)}>
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </div>
@@ -408,6 +441,23 @@ export default function AdminNotaryPages() {
           </Table>
         </Card>
       )}
+
+      <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Professional Page?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this professional page and it will no longer be accessible. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Edit / Create Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
@@ -429,7 +479,7 @@ export default function AdminNotaryPages() {
             <TabsContent value="basics" className="space-y-4 mt-4">
               {!editPage.id && (
                 <div>
-                  <Label>Assign to User *</Label>
+                  <Label>Assign to User * <span className="text-xs text-muted-foreground">(Only notary/admin users)</span></Label>
                   <select className="w-full rounded-md border px-3 py-2 text-sm" value={editPage.user_id || ""}
                     onChange={e => updateField("user_id", e.target.value)}>
                     <option value="">Select a user...</option>
@@ -442,7 +492,12 @@ export default function AdminNotaryPages() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <Label>URL Slug *</Label>
-                  <Input placeholder="shane-goble" value={editPage.slug || ""} onChange={e => updateField("slug", e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))} />
+                  <Input
+                    placeholder="shane-goble"
+                    value={editPage.slug || ""}
+                    onChange={e => updateField("slug", sanitizeSlug(e.target.value))}
+                    maxLength={50}
+                  />
                   <p className="mt-1 text-xs text-muted-foreground">/n/{editPage.slug || "..."}</p>
                 </div>
                 <div>
@@ -517,7 +572,13 @@ export default function AdminNotaryPages() {
                   <p className="text-xs text-muted-foreground mb-1">Square, min 200×200px</p>
                   <div className="flex items-center gap-3 mt-1">
                     {editPage.profile_photo_path ? (
-                      <img src={editPage.profile_photo_path} alt="Profile" className="h-16 w-16 rounded-full object-cover border" />
+                      editPage.profile_photo_path.startsWith("http") ? (
+                        <img src={editPage.profile_photo_path} alt="Profile" className="h-16 w-16 rounded-full object-cover border" />
+                      ) : (
+                        <div className="flex h-16 w-16 items-center justify-center rounded-full border bg-green-50 text-xs font-medium text-green-700">
+                          ✓ Uploaded
+                        </div>
+                      )
                     ) : (
                       <div className="flex h-16 w-16 items-center justify-center rounded-full border bg-muted text-xl font-bold text-muted-foreground">
                         {editPage.display_name?.charAt(0)?.toUpperCase() || "?"}
@@ -542,7 +603,11 @@ export default function AdminNotaryPages() {
                   <Label>Cover Photo</Label>
                   <p className="text-xs text-muted-foreground mb-1">Recommended 1200×400px landscape</p>
                   {editPage.cover_photo_path ? (
-                    <img src={editPage.cover_photo_path} alt="Cover" className="h-24 w-full rounded-lg object-cover border" />
+                    editPage.cover_photo_path.startsWith("http") ? (
+                      <img src={editPage.cover_photo_path} alt="Cover" className="h-24 w-full rounded-lg object-cover border" />
+                    ) : (
+                      <div className="flex h-24 items-center justify-center rounded-lg border bg-green-50 text-sm font-medium text-green-700">✓ Cover uploaded</div>
+                    )
                   ) : (
                     <div className="flex h-24 items-center justify-center rounded-lg border bg-muted text-sm text-muted-foreground">No cover photo</div>
                   )}
@@ -571,7 +636,11 @@ export default function AdminNotaryPages() {
                 <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
                   {(Array.isArray(editPage.gallery_photos) ? editPage.gallery_photos : []).map((url: string, i: number) => (
                     <div key={i} className="group relative aspect-square rounded-lg border overflow-hidden">
-                      <img src={url} alt={`Gallery ${i + 1}`} className="h-full w-full object-cover" />
+                      {url.startsWith("http") ? (
+                        <img src={url} alt={`Gallery ${i + 1}`} className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-green-50 text-xs text-green-700">✓ Photo {i + 1}</div>
+                      )}
                       <button onClick={() => removeGalleryPhoto(i)}
                         className="absolute top-1 right-1 rounded-full bg-destructive/80 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Trash2 className="h-3 w-3 text-white" />
@@ -700,14 +769,14 @@ export default function AdminNotaryPages() {
                 <div>
                   <Label>Primary Color</Label>
                   <div className="flex gap-2">
-                    <Input type="color" value={editPage.theme_color || "hsl(43, 74%, 49%)"} onChange={e => updateField("theme_color", e.target.value)} className="h-10 w-14 p-1" />
-                    <Input value={editPage.theme_color || "hsl(43, 74%, 49%)"} onChange={e => updateField("theme_color", e.target.value)} className="flex-1 font-mono" />
+                    <Input type="color" value={ensureHex(editPage.theme_color)} onChange={e => updateField("theme_color", e.target.value)} className="h-10 w-14 p-1" />
+                    <Input value={editPage.theme_color || "#C9A227"} onChange={e => updateField("theme_color", e.target.value)} className="flex-1 font-mono" />
                   </div>
                 </div>
                 <div>
                   <Label>Accent Color</Label>
                   <div className="flex gap-2">
-                    <Input type="color" value={editPage.accent_color || "#1e40af"} onChange={e => updateField("accent_color", e.target.value)} className="h-10 w-14 p-1" />
+                    <Input type="color" value={ensureHex(editPage.accent_color, "#1e40af")} onChange={e => updateField("accent_color", e.target.value)} className="h-10 w-14 p-1" />
                     <Input value={editPage.accent_color || "#1e40af"} onChange={e => updateField("accent_color", e.target.value)} className="flex-1 font-mono" />
                   </div>
                 </div>
@@ -722,16 +791,16 @@ export default function AdminNotaryPages() {
                 </div>
               </div>
               {/* Live preview swatch */}
-              <div className="rounded-xl border p-4" style={{ background: `linear-gradient(135deg, ${editPage.theme_color || "hsl(43, 74%, 49%)"}22, ${editPage.accent_color || "#1e40af"}08)` }}>
+              <div className="rounded-xl border p-4" style={{ background: `linear-gradient(135deg, ${ensureHex(editPage.theme_color)}22, ${ensureHex(editPage.accent_color, "#1e40af")}08)` }}>
                 <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 rounded-full border-2" style={{ borderColor: editPage.theme_color || "hsl(43, 74%, 49%)", background: `${editPage.theme_color || "hsl(43, 74%, 49%)"}15` }}>
-                    <div className="flex h-full w-full items-center justify-center text-lg font-bold" style={{ color: editPage.theme_color || "hsl(43, 74%, 49%)", fontFamily: editPage.font_family || "Inter" }}>
+                  <div className="h-12 w-12 rounded-full border-2" style={{ borderColor: ensureHex(editPage.theme_color), background: `${ensureHex(editPage.theme_color)}15` }}>
+                    <div className="flex h-full w-full items-center justify-center text-lg font-bold" style={{ color: ensureHex(editPage.theme_color), fontFamily: editPage.font_family || "Inter" }}>
                       {editPage.display_name?.charAt(0)?.toUpperCase() || "?"}
                     </div>
                   </div>
                   <div style={{ fontFamily: editPage.font_family || "Inter" }}>
                     <p className="font-bold">{editPage.display_name || "Name"}</p>
-                    <p className="text-sm" style={{ color: editPage.theme_color || "hsl(43, 74%, 49%)" }}>{editPage.title || "Title"}</p>
+                    <p className="text-sm" style={{ color: ensureHex(editPage.theme_color) }}>{editPage.title || "Title"}</p>
                   </div>
                 </div>
               </div>
