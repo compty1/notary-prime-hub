@@ -465,14 +465,14 @@ export default function PortalNotaryPageTab() {
             <div>
               <Label>Primary Color</Label>
               <div className="flex gap-2">
-                <Input type="color" value={page.theme_color || "hsl(43, 74%, 49%)"} onChange={e => updateField("theme_color", e.target.value)} className="h-10 w-14 p-1" />
-                <Input value={page.theme_color || "hsl(43, 74%, 49%)"} onChange={e => updateField("theme_color", e.target.value)} className="flex-1 font-mono" />
+                <Input type="color" value={ensureHex(page.theme_color)} onChange={e => updateField("theme_color", e.target.value)} className="h-10 w-14 p-1" />
+                <Input value={page.theme_color || "#C9A227"} onChange={e => updateField("theme_color", e.target.value)} className="flex-1 font-mono" />
               </div>
             </div>
             <div>
               <Label>Accent Color</Label>
               <div className="flex gap-2">
-                <Input type="color" value={page.accent_color || "#1e40af"} onChange={e => updateField("accent_color", e.target.value)} className="h-10 w-14 p-1" />
+                <Input type="color" value={ensureHex(page.accent_color, "#1e40af")} onChange={e => updateField("accent_color", e.target.value)} className="h-10 w-14 p-1" />
                 <Input value={page.accent_color || "#1e40af"} onChange={e => updateField("accent_color", e.target.value)} className="flex-1 font-mono" />
               </div>
             </div>
