@@ -71,10 +71,13 @@ export default function NotaryPage() {
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
   const [coverPhotoUrl, setCoverPhotoUrl] = useState<string | null>(null);
   const [galleryUrls, setGalleryUrls] = useState<string[]>([]);
+  const [isOwner, setIsOwner] = useState(false);
 
   usePageMeta({
     title: page?.seo_title || page?.display_name || "Notary",
     description: page?.seo_description || `Professional notary services by ${page?.display_name || "a certified notary"}.`,
+    // SEO001: noIndex for unpublished pages
+    noIndex: page ? !page.is_published : false,
     // PU001: OG image from profile photo
     ogImage: profilePhotoUrl || undefined,
     schema: page ? {
@@ -104,6 +107,7 @@ export default function NotaryPage() {
     } : null,
   });
 
+  // PERF001: Single query + parallel photo resolution
   useEffect(() => {
     if (!slug) return;
     (async () => {
@@ -114,25 +118,32 @@ export default function NotaryPage() {
         .eq("slug", slug)
         .eq("is_published", true)
         .maybeSingle();
-      if (error || !data) setNotFound(true);
-      else setPage(data as unknown as NotaryPageData);
+      if (error || !data) { setNotFound(true); setLoading(false); return; }
+      const pageData = data as unknown as NotaryPageData;
+      setPage(pageData);
+
+      // W007: Check if current user is the page owner
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser && currentUser.id === pageData.user_id) setIsOwner(true);
+
+      // Resolve all photos in parallel
+      const [profileUrl, coverUrl] = await Promise.all([
+        resolveStorageUrl(pageData.profile_photo_path),
+        resolveStorageUrl(pageData.cover_photo_path),
+      ]);
+      setProfilePhotoUrl(profileUrl);
+      setCoverPhotoUrl(coverUrl);
+
+      const gallery = Array.isArray(pageData.gallery_photos) ? pageData.gallery_photos : [];
+      if (gallery.length > 0) {
+        const urls = await Promise.all(gallery.map(p => resolveStorageUrl(p)));
+        setGalleryUrls(urls.filter((u): u is string => !!u));
+      }
       setLoading(false);
     })();
   }, [slug]);
 
-  // PU002: Resolve all photo paths (profile, cover, gallery)
-  useEffect(() => {
-    if (!page) return;
-    resolveStorageUrl(page.profile_photo_path).then(setProfilePhotoUrl);
-    resolveStorageUrl(page.cover_photo_path).then(setCoverPhotoUrl);
-    // Resolve gallery photos
-    const gallery = Array.isArray(page.gallery_photos) ? page.gallery_photos : [];
-    if (gallery.length > 0) {
-      Promise.all(gallery.map(p => resolveStorageUrl(p))).then(urls =>
-        setGalleryUrls(urls.filter((u): u is string => !!u))
-      );
-    }
-  }, [page]);
+  // Photo resolution now happens in the main useEffect above (PERF001)
 
   if (loading) {
     return (
