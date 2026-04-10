@@ -144,6 +144,8 @@ export type Database = {
           notary_id: string | null
           notes: string | null
           recurrence_rule: string | null
+          referral_professional_id: string | null
+          referral_source: string | null
           refusal_reason: string | null
           refused_at: string | null
           rescheduled_from: string | null
@@ -179,6 +181,8 @@ export type Database = {
           notary_id?: string | null
           notes?: string | null
           recurrence_rule?: string | null
+          referral_professional_id?: string | null
+          referral_source?: string | null
           refusal_reason?: string | null
           refused_at?: string | null
           rescheduled_from?: string | null
@@ -214,6 +218,8 @@ export type Database = {
           notary_id?: string | null
           notes?: string | null
           recurrence_rule?: string | null
+          referral_professional_id?: string | null
+          referral_source?: string | null
           refusal_reason?: string | null
           refused_at?: string | null
           rescheduled_from?: string | null
@@ -2189,6 +2195,7 @@ export type Database = {
       }
       notary_pages: {
         Row: {
+          accent_color: string | null
           bio: string | null
           cover_photo_path: string | null
           created_at: string
@@ -2197,11 +2204,17 @@ export type Database = {
           display_name: string
           email: string | null
           external_booking_url: string | null
+          font_family: string | null
+          gallery_photos: Json | null
           id: string
           is_featured: boolean | null
           is_published: boolean | null
+          nav_services: Json | null
           phone: string | null
+          professional_type: string | null
           profile_photo_path: string | null
+          profit_share_enabled: boolean | null
+          profit_share_percentage: number | null
           seo_description: string | null
           seo_title: string | null
           service_areas: Json | null
@@ -2218,6 +2231,7 @@ export type Database = {
           website_url: string | null
         }
         Insert: {
+          accent_color?: string | null
           bio?: string | null
           cover_photo_path?: string | null
           created_at?: string
@@ -2226,11 +2240,17 @@ export type Database = {
           display_name?: string
           email?: string | null
           external_booking_url?: string | null
+          font_family?: string | null
+          gallery_photos?: Json | null
           id?: string
           is_featured?: boolean | null
           is_published?: boolean | null
+          nav_services?: Json | null
           phone?: string | null
+          professional_type?: string | null
           profile_photo_path?: string | null
+          profit_share_enabled?: boolean | null
+          profit_share_percentage?: number | null
           seo_description?: string | null
           seo_title?: string | null
           service_areas?: Json | null
@@ -2247,6 +2267,7 @@ export type Database = {
           website_url?: string | null
         }
         Update: {
+          accent_color?: string | null
           bio?: string | null
           cover_photo_path?: string | null
           created_at?: string
@@ -2255,11 +2276,17 @@ export type Database = {
           display_name?: string
           email?: string | null
           external_booking_url?: string | null
+          font_family?: string | null
+          gallery_photos?: Json | null
           id?: string
           is_featured?: boolean | null
           is_published?: boolean | null
+          nav_services?: Json | null
           phone?: string | null
+          professional_type?: string | null
           profile_photo_path?: string | null
+          profit_share_enabled?: boolean | null
+          profit_share_percentage?: number | null
           seo_description?: string | null
           seo_title?: string | null
           service_areas?: Json | null
@@ -2407,6 +2434,7 @@ export type Database = {
           method: string | null
           notes: string | null
           paid_at: string | null
+          referral_professional_id: string | null
           refund_amount: number | null
           refunded_at: string | null
           status: string
@@ -2423,6 +2451,7 @@ export type Database = {
           method?: string | null
           notes?: string | null
           paid_at?: string | null
+          referral_professional_id?: string | null
           refund_amount?: number | null
           refunded_at?: string | null
           status?: string
@@ -2439,6 +2468,7 @@ export type Database = {
           method?: string | null
           notes?: string | null
           paid_at?: string | null
+          referral_professional_id?: string | null
           refund_amount?: number | null
           refunded_at?: string | null
           status?: string
@@ -2521,6 +2551,62 @@ export type Database = {
         }
         Relationships: []
       }
+      professional_service_enrollments: {
+        Row: {
+          created_at: string
+          custom_description: string | null
+          custom_price_from: number | null
+          custom_price_to: number | null
+          custom_short_description: string | null
+          display_order: number | null
+          id: string
+          is_active: boolean
+          professional_user_id: string
+          service_id: string
+          show_in_nav: boolean
+          show_on_site: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          custom_description?: string | null
+          custom_price_from?: number | null
+          custom_price_to?: number | null
+          custom_short_description?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean
+          professional_user_id: string
+          service_id: string
+          show_in_nav?: boolean
+          show_on_site?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          custom_description?: string | null
+          custom_price_from?: number | null
+          custom_price_to?: number | null
+          custom_short_description?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean
+          professional_user_id?: string
+          service_id?: string
+          show_in_nav?: boolean
+          show_on_site?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_service_enrollments_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           address: string | null
@@ -2598,6 +2684,129 @@ export type Database = {
           zip?: string | null
         }
         Relationships: []
+      }
+      profit_share_config: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          min_platform_fee: number
+          professional_user_id: string
+          service_id: string | null
+          share_percentage: number
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          min_platform_fee?: number
+          professional_user_id: string
+          service_id?: string | null
+          share_percentage?: number
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          min_platform_fee?: number
+          professional_user_id?: string
+          service_id?: string | null
+          share_percentage?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profit_share_config_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profit_share_transactions: {
+        Row: {
+          appointment_id: string | null
+          created_at: string
+          gross_amount: number
+          id: string
+          notes: string | null
+          paid_at: string | null
+          payment_id: string | null
+          period_end: string | null
+          period_start: string | null
+          platform_fee: number
+          professional_share: number
+          professional_user_id: string
+          service_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          created_at?: string
+          gross_amount?: number
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          payment_id?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          platform_fee?: number
+          professional_share?: number
+          professional_user_id: string
+          service_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string | null
+          created_at?: string
+          gross_amount?: number
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          payment_id?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          platform_fee?: number
+          professional_share?: number
+          professional_user_id?: string
+          service_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profit_share_transactions_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profit_share_transactions_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profit_share_transactions_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       promo_codes: {
         Row: {
@@ -3769,6 +3978,10 @@ export type Database = {
       }
     }
     Functions: {
+      calculate_profit_share: {
+        Args: { p_payment_id: string; p_professional_id: string }
+        Returns: undefined
+      }
       check_and_reserve_slot: {
         Args: {
           p_client_id: string
