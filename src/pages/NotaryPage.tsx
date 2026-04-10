@@ -14,7 +14,7 @@ import {
 import { motion } from "framer-motion";
 import { BRAND } from "@/lib/brand";
 import { ensureHex } from "@/lib/colorUtils";
-import { sanitizeText } from "@/lib/sanitize";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 const PROFESSIONAL_TYPE_LABELS: Record<string, string> = {
   notary: "Commissioned Notary Public",
