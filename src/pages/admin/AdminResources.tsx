@@ -1,5 +1,5 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -11,12 +11,16 @@ import {
   Search, FileText, Users, Shield, AlertTriangle, CheckCircle, BookOpen, ExternalLink,
   GraduationCap, Scale, Gavel, Globe, Briefcase, Notebook, Stamp, Fingerprint,
   MapPin, Plus, TrendingUp, Zap, FileCheck, UserCheck, ShieldAlert, XCircle,
-  FileSearch, Info, Copy, Download, Car, Building2, PenTool, Eye, Printer, ImageIcon
+  FileSearch, Info, Copy, Download, Car, Building2, PenTool, Eye, Printer, ImageIcon,
+  MessageSquare, Send, Loader2, Bot
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { AnatomyDiagram } from "@/components/AnatomyDiagram";
+import { AnatomyDiagram, DOCUMENT_ANATOMY } from "@/components/AnatomyDiagram";
 import { ProcessGuide } from "@/components/ProcessGuide";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import ReactMarkdown from "react-markdown";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // DATA: FORM VAULT
@@ -32,17 +36,25 @@ interface FormEntry {
   certificateText?: string;
   ohioTip?: string;
   exampleImage?: string;
+  anatomyKey?: string;
 }
 
-/** Map form names to example document images */
+import juratImg from "@/assets/documents/jurat-certificate.jpg";
+import ackImg from "@/assets/documents/acknowledgment-certificate.jpg";
+import corpImg from "@/assets/documents/corporate-acknowledgment.jpg";
+import poaImg from "@/assets/documents/poa-acknowledgment.jpg";
+import copyImg from "@/assets/documents/copy-certification.jpg";
+import markImg from "@/assets/documents/signature-by-mark.jpg";
+import vehicleImg from "@/assets/documents/vehicle-title-notarization.jpg";
+
 const formImageMap: Record<string, string> = {
-  "Ohio Jurat (Individual)": "/images/documents/jurat-certificate.jpg",
-  "Acknowledgment (Individual)": "/images/documents/acknowledgment-certificate.jpg",
-  "Acknowledgment (Corp/LLC)": "/images/documents/corporate-acknowledgment.jpg",
-  "Attorney-in-Fact (POA)": "/images/documents/poa-acknowledgment.jpg",
-  "Copy Certification": "/images/documents/copy-certification.jpg",
-  "Signature by Mark (The X)": "/images/documents/signature-by-mark.jpg",
-  "Ohio Vehicle Title (Seller)": "/images/documents/vehicle-title-notarization.jpg",
+  "Ohio Jurat (Individual)": juratImg,
+  "Acknowledgment (Individual)": ackImg,
+  "Acknowledgment (Corp/LLC)": corpImg,
+  "Attorney-in-Fact (POA)": poaImg,
+  "Copy Certification": copyImg,
+  "Signature by Mark (The X)": markImg,
+  "Ohio Vehicle Title (Seller)": vehicleImg,
 };
 
 const forms: FormEntry[] = [
@@ -52,6 +64,7 @@ const forms: FormEntry[] = [
     ref: "ORC §147.55",
     desc: "Used for Affidavits where the signer is sworn in under oath.",
     items: ["State of Ohio / County of...", "Sworn to and subscribed before me", "Signer Identity", "Date of Act", "Notary Signature/Seal"],
+    anatomyKey: "jurat",
     anatomy: {
       venue: "Indicates where the notarial act physically took place. Must match your location.",
       testimonium: "The 'Sworn to...' clause proving the oath was administered correctly.",
@@ -68,6 +81,7 @@ const forms: FormEntry[] = [
     ref: "ORC §147.55",
     desc: "Standard verification that a signer signed willingly.",
     items: ["State of Ohio / County of...", "Acknowledged before me", "Signer Name", "Date of Act", "Notary Seal"],
+    anatomyKey: "acknowledgment",
     anatomy: {
       acknowledgment: "Proof the signer appeared and declared the signature is theirs.",
       capacity: "Implicitly confirms the signer is acting as themselves and of their own free will.",
@@ -79,6 +93,7 @@ const forms: FormEntry[] = [
   {
     category: "Corporate",
     name: "Acknowledgment (Corp/LLC)",
+    anatomyKey: "corporate",
     ref: "ORC §147.55",
     desc: "Signer acting as an officer or agent for a company.",
     items: ["Officer Name", "Title (e.g. Managing Member)", "Entity Name (LLC/INC)", "State of Incorporation"],
@@ -93,6 +108,7 @@ const forms: FormEntry[] = [
   {
     category: "Specialized",
     name: "Attorney-in-Fact (POA)",
+    anatomyKey: "poa",
     ref: "Common Law",
     desc: "When signing on behalf of a Principal under a Power of Attorney.",
     items: ["Agent Name", "As Attorney-in-Fact for...", "Principal Name", "Date of POA Reference"],
@@ -106,6 +122,7 @@ const forms: FormEntry[] = [
   {
     category: "Specialized",
     name: "Copy Certification",
+    anatomyKey: "copy_certification",
     ref: "ORC §147.51",
     desc: "Certifying that a copy is a true replica of an original document.",
     items: ["Type of Document", "Date of Certification", "Custody Statement", "Notary Signature"],
@@ -119,6 +136,7 @@ const forms: FormEntry[] = [
   {
     category: "Specialized",
     name: "Signature by Mark (The X)",
+    anatomyKey: "signature_by_mark",
     ref: "ORC §147.542",
     desc: "Signer cannot sign name but can make a mark.",
     items: ["The Mark (X)", "Witness 1 Signature", "Witness 2 Signature", "Notary Explanation"],
@@ -132,6 +150,7 @@ const forms: FormEntry[] = [
   {
     category: "Vehicle",
     name: "Ohio Vehicle Title (Seller)",
+    anatomyKey: "vehicle_title",
     ref: "ORC §4505.06",
     desc: "Transfer of title — requires strict Jurat compliance. High discipline risk.",
     items: ["Price/Value", "Odometer Reading", "Buyer Info (Name/Address)", "Seller Signature Under Oath"],
@@ -146,6 +165,7 @@ const forms: FormEntry[] = [
   {
     category: "General",
     name: "Oath/Affirmation (Oral)",
+    anatomyKey: "oath_affirmation",
     ref: "ORC §147.14",
     desc: "Verbal oath not attached to a written document.",
     items: ["Identity Verification", "Verbal Script", "Witnessing of Response", "Journal Entry"],
@@ -159,6 +179,7 @@ const forms: FormEntry[] = [
   {
     category: "Correction",
     name: "Certificate Correction",
+    anatomyKey: "certificate_correction",
     ref: "ORC §147.54",
     desc: "Amending a certificate after an error is discovered.",
     items: ["Original Date", "Description of Error", "Date of Correction", "Explanation Statement"],
@@ -519,6 +540,7 @@ function getCircumstanceIcon(name: string) {
 
 export default function AdminResources() {
   usePageMeta({ title: "NotarDex — Ohio Notary Toolkit", noIndex: true });
+  const { user } = useAuth();
 
   const [activeTab, setActiveTab] = useState("vault");
   const [searchTerm, setSearchTerm] = useState("");
@@ -529,6 +551,66 @@ export default function AdminResources() {
   const [simFeedback, setSimFeedback] = useState<{ type: "success" | "error"; msg: string } | null>(null);
   const [showSimulator, setShowSimulator] = useState(false);
   const [simScore, setSimScore] = useState({ correct: 0, total: 0 });
+
+  // AI Chat state for document assistant
+  const [docChatMessages, setDocChatMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
+  const [docChatInput, setDocChatInput] = useState("");
+  const [docChatLoading, setDocChatLoading] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [docChatMessages]);
+
+  // Reset chat when form changes
+  useEffect(() => { setDocChatMessages([]); setDocChatInput(""); }, [selectedForm?.name]);
+
+  const sendDocChat = async () => {
+    if (!docChatInput.trim() || docChatLoading || !selectedForm) return;
+    const userMsg = { role: "user" as const, content: docChatInput.trim() };
+    const updated = [...docChatMessages, userMsg];
+    setDocChatMessages(updated);
+    setDocChatInput("");
+    setDocChatLoading(true);
+
+    try {
+      // Save user message to chat_messages for history
+      if (user) {
+        await supabase.from("chat_messages").insert({
+          sender_id: user.id,
+          message: `[Doc Q: ${selectedForm.name}] ${userMsg.content}`,
+          is_admin: true,
+        });
+      }
+
+      const systemPrompt = `You are NotarDex AI, an Ohio notary law expert. The user is asking about: "${selectedForm.name}" (${selectedForm.ref}). Certificate text: "${selectedForm.certificateText || ""}". Ohio tip: "${selectedForm.ohioTip || ""}". Provide accurate, Ohio-specific answers citing ORC sections. Be concise but thorough.`;
+
+      const { data, error } = await supabase.functions.invoke("notary-assistant", {
+        body: {
+          messages: [
+            { role: "system", content: systemPrompt },
+            ...updated.map(m => ({ role: m.role, content: m.content })),
+          ],
+        },
+      });
+
+      if (error) throw error;
+      const reply = data?.reply || data?.text || data?.response || "I couldn't generate a response.";
+      const assistantMsg = { role: "assistant" as const, content: reply };
+      setDocChatMessages(prev => [...prev, assistantMsg]);
+
+      // Save AI response to chat_messages for history
+      if (user) {
+        await supabase.from("chat_messages").insert({
+          sender_id: user.id,
+          message: `[Doc A: ${selectedForm.name}] ${reply}`,
+          is_admin: true,
+        });
+      }
+    } catch (e: any) {
+      setDocChatMessages(prev => [...prev, { role: "assistant", content: `Error: ${e.message}` }]);
+    } finally {
+      setDocChatLoading(false);
+    }
+  };
 
   // Filtered forms
   const filteredForms = formCategory === "All" ? forms : forms.filter(f => f.category === formCategory);
