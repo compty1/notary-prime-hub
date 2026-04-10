@@ -158,9 +158,18 @@ function SR({ children, msg }: { children: ReactNode; msg?: string }) {
 }
 
 /** R002: Redirect /notary/:slug → /n/:slug */
-function NotarySlugRedirect() {
-  const { slug } = require("react-router-dom").useParams();
-  return <Navigate to={`/n/${slug}`} replace />;
+const NotarySlugRedirect = lazyRetry(() => Promise.resolve({
+  default: () => {
+    const { slug } = (window as any).__RR_useParams ? (window as any).__RR_useParams() : { slug: window.location.pathname.split("/").pop() };
+    return null;
+  }
+}));
+
+function NotarySlugRedirectComponent() {
+  const params = new URLSearchParams();
+  const slug = window.location.pathname.replace("/notary/", "");
+  window.location.replace(`/n/${slug}`);
+  return null;
 }
 
 function AnimatedRoutes() {
