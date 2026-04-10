@@ -533,7 +533,7 @@ function ServiceTemplatesTab() {
 
   useEffect(() => { load(); }, [load]);
 
-  const getTemplates = (s: ServiceRow): ServiceEmailTemplates => s.email_templates ?? defaultServiceTemplates();
+  const getTemplates = (s: ServiceRow): ServiceEmailTemplates => s.email_templates ?? defaultServiceTemplates(s.name);
 
   const updateLocal = (id: string, templates: ServiceEmailTemplates) => {
     setServices(prev => prev.map(s => (s.id === id ? { ...s, email_templates: templates } : s)));
