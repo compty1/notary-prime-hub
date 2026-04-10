@@ -34,8 +34,21 @@ const formatTime = (timeStr: string) => {
 
 export { formatDate, formatTime };
 
+interface AppointmentItem {
+  id: string;
+  client_id: string;
+  scheduled_date: string;
+  scheduled_time: string;
+  status: string;
+  service_type: string;
+  notarization_type?: string;
+  confirmation_number?: string | null;
+  location?: string | null;
+  notes?: string | null;
+}
+
 interface Props {
-  appointments: any[];
+  appointments: AppointmentItem[];
   loading: boolean;
   zoomLink: string;
   onCancelClick: (id: string) => void;
@@ -51,7 +64,7 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
   const inSession = filteredAppointments.filter(a => a.status === "in_session");
   const past = filteredAppointments.filter(a => ["completed", "cancelled", "no_show"].includes(a.status));
 
-  const isSessionNear = (appt: any) => {
+  const isSessionNear = (appt: AppointmentItem) => {
     const diff = new Date(`${appt.scheduled_date}T${appt.scheduled_time}`).getTime() - Date.now();
     return diff <= 15 * 60 * 1000 && diff > -60 * 60 * 1000;
   };
