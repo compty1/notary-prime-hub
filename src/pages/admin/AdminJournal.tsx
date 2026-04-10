@@ -219,21 +219,27 @@ export default function AdminJournal() {
   const exportJSONBackup = () => {
     const backup = {
       exported_at: new Date().toISOString(),
-      format: "notary_journal_backup_v1",
+      format: "notary_journal_backup_v2_ohio_compliant",
+      orc_section: "§147.542",
       entry_count: filtered.length,
       entries: filtered.map(e => ({
         journal_number: e.journal_number,
-        created_at: e.created_at,
-        signer_name: e.signer_name,
-        signer_address: e.signer_address,
+        entry_date: e.created_at,
+        entry_time: e.entry_time,
+        notarial_act_type: e.service_performed,
         document_type: e.document_type,
         document_description: e.document_description,
-        service_performed: e.service_performed,
-        notarization_type: e.notarization_type,
+        document_date: e.document_date,
+        signer_name: e.signer_name,
+        signer_address: e.signer_address,
         id_type: e.id_type,
-        id_number: e.id_number,
+        id_serial_number: e.id_number,
         id_expiration: e.id_expiration,
-        fees_charged: e.fees_charged,
+        fee_charged: e.fees_charged,
+        notary_commission_number: e.notary_commission_number,
+        communication_technology: e.communication_technology || (e.notarization_type === "ron" ? "audio-video" : "in-person"),
+        credential_analysis_method: e.credential_analysis_method,
+        notarization_type: e.notarization_type,
         platform_fees: e.platform_fees,
         travel_fee: e.travel_fee,
         net_profit: e.net_profit,
@@ -249,7 +255,7 @@ export default function AdminJournal() {
     const a = document.createElement("a");
     a.href = url; a.download = `notary-journal-backup-${new Date().toISOString().split("T")[0]}.json`; a.click();
     URL.revokeObjectURL(url);
-    toast({ title: "Journal backup exported", description: "JSON backup file downloaded." });
+    toast({ title: "Journal backup exported", description: "Ohio-compliant JSON backup with all ORC §147.542 fields." });
   };
 
   const exportPrintablePDF = () => {
