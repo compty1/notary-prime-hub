@@ -9,16 +9,36 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CharCounter } from "@/components/CharCounter";
 import { useToast } from "@/hooks/use-toast";
 import {
   Loader2, Copy, Save, Globe, Eye, Upload, Plus, Trash2, Image as ImageIcon,
   Award, Shield, CheckCircle, MapPin, Facebook, Linkedin, Twitter, Search,
+  DollarSign, TrendingUp, Palette, Type, LayoutList, AlertTriangle,
 } from "lucide-react";
 
 interface ServiceItem {
   name: string;
   description: string;
   price: string;
+}
+
+interface PlatformService {
+  id: string;
+  name: string;
+  category: string;
+  price_from: number | null;
+  price_to: number | null;
+  short_description: string | null;
+}
+
+interface ProfitTransaction {
+  gross_amount: number;
+  platform_fee: number;
+  professional_share: number;
+  status: string;
 }
 
 const DEFAULT_SERVICES: ServiceItem[] = [
@@ -32,6 +52,23 @@ const DEFAULT_SERVICES: ServiceItem[] = [
   { name: "ID Verification & KBA", description: "Knowledge-based authentication", price: "Included with RON" },
 ];
 
+const FONT_OPTIONS = [
+  { value: "Inter", label: "Inter (Modern)" },
+  { value: "Merriweather", label: "Merriweather (Serif)" },
+  { value: "Roboto", label: "Roboto (Clean)" },
+  { value: "Playfair Display", label: "Playfair Display (Elegant)" },
+  { value: "Open Sans", label: "Open Sans (Friendly)" },
+];
+
+const PROFESSIONAL_TYPES = [
+  { value: "notary", label: "Commissioned Notary Public" },
+  { value: "signing_agent", label: "Signing Agent" },
+  { value: "doc_preparer", label: "Document Preparer" },
+  { value: "virtual_assistant", label: "Virtual Assistant" },
+  { value: "mobile_notary", label: "Mobile Notary" },
+  { value: "other", label: "Other Professional" },
+];
+
 export default function PortalNotaryPageTab() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -41,14 +78,37 @@ export default function PortalNotaryPageTab() {
   const [hasPage, setHasPage] = useState(false);
   const [uploadingProfile, setUploadingProfile] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadingGallery, setUploadingGallery] = useState(false);
   const profileInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+
+  // Platform services for enrollment
+  const [platformServices, setPlatformServices] = useState<PlatformService[]>([]);
+  const [enrollments, setEnrollments] = useState<any[]>([]);
+  const [profitStats, setProfitStats] = useState({ total: 0, fees: 0, profit: 0, pending: 0 });
 
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const { data } = await supabase.from("notary_pages").select("*").eq("user_id", user.id).maybeSingle();
-      if (data) { setPage(data); setHasPage(true); }
+      const [pageRes, svcRes, enrollRes, profitRes] = await Promise.all([
+        supabase.from("notary_pages").select("*").eq("user_id", user.id).maybeSingle(),
+        supabase.from("services").select("id, name, category, price_from, price_to, short_description").eq("is_active", true).order("display_order"),
+        supabase.from("professional_service_enrollments").select("*").eq("professional_user_id", user.id),
+        supabase.from("profit_share_transactions").select("gross_amount, platform_fee, professional_share, status").eq("professional_user_id", user.id),
+      ]);
+      if (pageRes.data) { setPage(pageRes.data); setHasPage(true); }
+      if (svcRes.data) setPlatformServices(svcRes.data as PlatformService[]);
+      if (enrollRes.data) setEnrollments(enrollRes.data);
+      if (profitRes.data) {
+        const txns = profitRes.data as ProfitTransaction[];
+        setProfitStats({
+          total: txns.reduce((s, t) => s + (t.gross_amount || 0), 0),
+          fees: txns.reduce((s, t) => s + (t.platform_fee || 0), 0),
+          profit: txns.filter(t => t.status === "paid").reduce((s, t) => s + (t.professional_share || 0), 0),
+          pending: txns.filter(t => t.status === "pending").reduce((s, t) => s + (t.professional_share || 0), 0),
+        });
+      }
       setLoading(false);
     })();
   }, [user]);
@@ -67,14 +127,31 @@ export default function PortalNotaryPageTab() {
       setter(false);
       return;
     }
-    // Use signed URL (10-year expiry) since bucket is private
     const { data: signedData } = await supabase.storage.from("documents").createSignedUrl(path, 315360000);
     const field = type === "profile" ? "profile_photo_path" : "cover_photo_path";
-    if (signedData?.signedUrl) {
-      updateField(field, signedData.signedUrl);
-    }
+    if (signedData?.signedUrl) updateField(field, signedData.signedUrl);
     setter(false);
     toast({ title: `${type === "profile" ? "Profile" : "Cover"} photo uploaded` });
+  };
+
+  const handleGalleryUpload = async (file: File) => {
+    if (!user || !page) return;
+    const gallery: string[] = Array.isArray(page.gallery_photos) ? page.gallery_photos : [];
+    if (gallery.length >= 6) { toast({ title: "Max 6 gallery photos", variant: "destructive" }); return; }
+    setUploadingGallery(true);
+    const ext = file.name.split(".").pop();
+    const path = `notary-pages/${page.id}/gallery-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("documents").upload(path, file, { upsert: true });
+    if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); setUploadingGallery(false); return; }
+    const { data: signedData } = await supabase.storage.from("documents").createSignedUrl(path, 315360000);
+    if (signedData?.signedUrl) updateField("gallery_photos", [...gallery, signedData.signedUrl]);
+    setUploadingGallery(false);
+    toast({ title: "Gallery photo added" });
+  };
+
+  const removeGalleryPhoto = (index: number) => {
+    const gallery: string[] = Array.isArray(page.gallery_photos) ? page.gallery_photos : [];
+    updateField("gallery_photos", gallery.filter((_, i) => i !== index));
   };
 
   const handleSave = async () => {
@@ -100,6 +177,11 @@ export default function PortalNotaryPageTab() {
       seo_title: page.seo_title,
       seo_description: page.seo_description,
       theme_color: page.theme_color,
+      accent_color: page.accent_color,
+      font_family: page.font_family,
+      nav_services: page.nav_services,
+      gallery_photos: page.gallery_photos,
+      professional_type: page.professional_type,
       is_published: page.is_published,
     } as any).eq("id", page.id);
     if (error) toast({ title: "Error saving", description: error.message, variant: "destructive" });
@@ -110,6 +192,18 @@ export default function PortalNotaryPageTab() {
   const copyLink = () => {
     navigator.clipboard.writeText(`${window.location.origin}/n/${page?.slug}`);
     toast({ title: "Link copied!" });
+  };
+
+  // Nav services helpers
+  const navServices: string[] = Array.isArray(page?.nav_services) ? page.nav_services : [];
+  const toggleNavService = (name: string) => {
+    if (navServices.includes(name)) {
+      updateField("nav_services", navServices.filter(n => n !== name));
+    } else if (navServices.length < 6) {
+      updateField("nav_services", [...navServices, name]);
+    } else {
+      toast({ title: "Max 6 nav items", variant: "destructive" });
+    }
   };
 
   // Services helpers
@@ -142,6 +236,27 @@ export default function PortalNotaryPageTab() {
   const socials = page?.social_links || {};
   const updateSocial = (key: string, value: string) => updateField("social_links", { ...socials, [key]: value });
 
+  // Enrollment management
+  const handleEnrollService = async (serviceId: string) => {
+    if (!user) return;
+    const existing = enrollments.find(e => e.service_id === serviceId);
+    if (existing) {
+      await supabase.from("professional_service_enrollments").delete().eq("id", existing.id);
+      setEnrollments(enrollments.filter(e => e.service_id !== serviceId));
+      toast({ title: "Service removed from enrollment" });
+    } else {
+      const { data, error } = await supabase.from("professional_service_enrollments").insert({
+        professional_user_id: user.id,
+        service_id: serviceId,
+        is_active: false,
+        show_on_site: true,
+      } as any).select().single();
+      if (error) { toast({ title: "Enrollment failed", description: error.message, variant: "destructive" }); return; }
+      if (data) setEnrollments([...enrollments, data]);
+      toast({ title: "Service enrollment requested", description: "Pending admin approval." });
+    }
+  };
+
   if (loading) return <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
 
   if (!hasPage) {
@@ -151,19 +266,21 @@ export default function PortalNotaryPageTab() {
           <Globe className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
           <h3 className="text-lg font-semibold">No Personal Page Yet</h3>
           <p className="mt-2 text-sm text-muted-foreground">
-            Your personal notary service page hasn't been set up yet. Contact your admin to create one.
+            Your personal service page hasn't been set up yet. Contact your admin to create one.
           </p>
         </CardContent>
       </Card>
     );
   }
 
+  const professionalLabel = PROFESSIONAL_TYPES.find(t => t.value === page.professional_type)?.label || "Professional";
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold">My Notary Page</h2>
+          <h2 className="text-xl font-bold">My {professionalLabel} Page</h2>
           <p className="text-sm text-muted-foreground">Customize your public-facing service page</p>
         </div>
         <div className="flex gap-2">
@@ -185,6 +302,79 @@ export default function PortalNotaryPageTab() {
         </Badge>
         <span className="font-mono text-sm text-muted-foreground">/n/{page.slug}</span>
       </div>
+
+      {/* Profit Dashboard */}
+      <Card className="border-primary/20 bg-primary/5">
+        <CardHeader><CardTitle className="flex items-center gap-2"><TrendingUp className="h-4 w-4" /> Earnings Dashboard</CardTitle></CardHeader>
+        <CardContent>
+          <div className="grid gap-4 sm:grid-cols-4">
+            <div className="text-center">
+              <p className="text-xs font-medium uppercase text-muted-foreground">Gross Revenue</p>
+              <p className="text-2xl font-bold">${profitStats.total.toFixed(2)}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs font-medium uppercase text-muted-foreground">Platform Fees</p>
+              <p className="text-2xl font-bold text-muted-foreground">${profitStats.fees.toFixed(2)}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs font-medium uppercase text-muted-foreground">Your Profit</p>
+              <p className="text-2xl font-bold text-green-600">${profitStats.profit.toFixed(2)}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs font-medium uppercase text-muted-foreground">Pending Payout</p>
+              <p className="text-2xl font-bold text-amber-600">${profitStats.pending.toFixed(2)}</p>
+            </div>
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground text-center">
+            Earnings from bookings made through your personal page. Platform fees cover processing, technology, and compliance.
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Theme & Branding */}
+      <Card>
+        <CardHeader><CardTitle className="flex items-center gap-2"><Palette className="h-4 w-4" /> Theme & Branding</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div>
+              <Label>Professional Type</Label>
+              <Select value={page.professional_type || "notary"} onValueChange={v => updateField("professional_type", v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {PROFESSIONAL_TYPES.map(t => (
+                    <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Primary Color</Label>
+              <div className="flex gap-2">
+                <Input type="color" value={page.theme_color || "#eab308"} onChange={e => updateField("theme_color", e.target.value)} className="h-10 w-14 p-1" />
+                <Input value={page.theme_color || "#eab308"} onChange={e => updateField("theme_color", e.target.value)} className="flex-1 font-mono" />
+              </div>
+            </div>
+            <div>
+              <Label>Accent Color</Label>
+              <div className="flex gap-2">
+                <Input type="color" value={page.accent_color || "#1e40af"} onChange={e => updateField("accent_color", e.target.value)} className="h-10 w-14 p-1" />
+                <Input value={page.accent_color || "#1e40af"} onChange={e => updateField("accent_color", e.target.value)} className="flex-1 font-mono" />
+              </div>
+            </div>
+          </div>
+          <div>
+            <Label className="flex items-center gap-1"><Type className="h-3 w-3" /> Font Family</Label>
+            <Select value={page.font_family || "Inter"} onValueChange={v => updateField("font_family", v)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {FONT_OPTIONS.map(f => (
+                  <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Photos */}
       <Card>
@@ -242,6 +432,34 @@ export default function PortalNotaryPageTab() {
               </div>
             </div>
           </div>
+
+          {/* Gallery Photos */}
+          <Separator />
+          <div>
+            <Label className="flex items-center gap-2 mb-2">Gallery Photos <Badge variant="secondary">{(Array.isArray(page.gallery_photos) ? page.gallery_photos : []).length}/6</Badge></Label>
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+              {(Array.isArray(page.gallery_photos) ? page.gallery_photos : []).map((url: string, i: number) => (
+                <div key={i} className="group relative aspect-square rounded-lg border overflow-hidden">
+                  <img src={url} alt={`Gallery ${i + 1}`} className="h-full w-full object-cover" />
+                  <button onClick={() => removeGalleryPhoto(i)}
+                    className="absolute top-1 right-1 rounded-full bg-destructive/80 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Trash2 className="h-3 w-3 text-white" />
+                  </button>
+                </div>
+              ))}
+              {(Array.isArray(page.gallery_photos) ? page.gallery_photos : []).length < 6 && (
+                <button
+                  onClick={() => galleryInputRef.current?.click()}
+                  disabled={uploadingGallery}
+                  className="flex aspect-square items-center justify-center rounded-lg border-2 border-dashed text-muted-foreground hover:bg-muted/50 transition-colors"
+                >
+                  {uploadingGallery ? <Loader2 className="h-5 w-5 animate-spin" /> : <Plus className="h-5 w-5" />}
+                </button>
+              )}
+            </div>
+            <input ref={galleryInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
+              onChange={e => e.target.files?.[0] && handleGalleryUpload(e.target.files[0])} />
+          </div>
         </CardContent>
       </Card>
 
@@ -253,17 +471,45 @@ export default function PortalNotaryPageTab() {
             <div><Label>Display Name</Label><Input value={page.display_name || ""} onChange={e => updateField("display_name", e.target.value)} /></div>
             <div><Label>Title</Label><Input value={page.title || ""} onChange={e => updateField("title", e.target.value)} /></div>
           </div>
-          <div><Label>Tagline</Label><Input value={page.tagline || ""} onChange={e => updateField("tagline", e.target.value)} /></div>
-          <div><Label>Bio</Label><Textarea rows={5} value={page.bio || ""} onChange={e => updateField("bio", e.target.value)} /></div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <Label>Theme Color</Label>
-              <div className="flex gap-2">
-                <Input type="color" value={page.theme_color || "#eab308"} onChange={e => updateField("theme_color", e.target.value)} className="h-10 w-14 p-1" />
-                <Input value={page.theme_color || "#eab308"} onChange={e => updateField("theme_color", e.target.value)} className="flex-1 font-mono" />
-              </div>
-            </div>
+          <div>
+            <Label>Tagline</Label>
+            <Input value={page.tagline || ""} onChange={e => updateField("tagline", e.target.value)} maxLength={120} />
+            <div className="mt-1 text-right"><CharCounter current={(page.tagline || "").length} max={120} /></div>
           </div>
+          <div>
+            <Label>Bio</Label>
+            <Textarea rows={5} value={page.bio || ""} onChange={e => updateField("bio", e.target.value)} maxLength={2000} />
+            <div className="mt-1 text-right"><CharCounter current={(page.bio || "").length} max={2000} /></div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Nav Service Selector */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><LayoutList className="h-4 w-4" /> Header Navigation Services</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-3">
+            Select up to 6 services to show in your public page's navigation bar. Visitors can quick-jump to these sections.
+          </p>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {services.map((svc, i) => (
+              <label key={i} className="flex items-center gap-2 rounded-lg border p-2 cursor-pointer hover:bg-muted/50 transition-colors">
+                <Checkbox
+                  checked={navServices.includes(svc.name)}
+                  onCheckedChange={() => toggleNavService(svc.name)}
+                />
+                <span className="text-sm font-medium truncate">{svc.name}</span>
+              </label>
+            ))}
+          </div>
+          {navServices.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1">
+              <span className="text-xs text-muted-foreground mr-1">Nav items:</span>
+              {navServices.map(n => <Badge key={n} variant="outline" className="text-xs">{n}</Badge>)}
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -330,16 +576,63 @@ export default function PortalNotaryPageTab() {
           )}
           {services.map((svc, i) => (
             <div key={i} className="flex gap-2 items-start rounded-lg border p-3">
-              <div className="flex-1 grid gap-2 sm:grid-cols-3">
-                <Input placeholder="Service name" value={svc.name || ""} onChange={e => updateService(i, "name", e.target.value)} />
-                <Input placeholder="Description" value={svc.description || ""} onChange={e => updateService(i, "description", e.target.value)} />
-                <Input placeholder="Price" value={svc.price || ""} onChange={e => updateService(i, "price", e.target.value)} />
+              <div className="flex-1 space-y-2">
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <Input placeholder="Service name" value={svc.name || ""} onChange={e => updateService(i, "name", e.target.value)} />
+                  <Input placeholder="Price" value={svc.price || ""} onChange={e => updateService(i, "price", e.target.value)} />
+                </div>
+                <Textarea placeholder="Service description — explain what's included, requirements, etc."
+                  value={svc.description || ""} onChange={e => updateService(i, "description", e.target.value)}
+                  rows={2} className="text-sm" maxLength={500} />
+                <div className="text-right"><CharCounter current={(svc.description || "").length} max={500} /></div>
               </div>
               <Button variant="ghost" size="icon" onClick={() => removeService(i)} className="shrink-0">
                 <Trash2 className="h-4 w-4 text-destructive" />
               </Button>
             </div>
           ))}
+          <div className="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800 p-3">
+            <div className="flex items-start gap-2">
+              <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+              <div className="text-xs text-amber-800 dark:text-amber-300">
+                <p className="font-medium">Platform Fee Floors</p>
+                <p>Notarization: $5/act (Ohio ORC §147.08) • RON session: $25 • KBA: $15 • Prices cannot be set below platform minimums.</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Platform Service Enrollment */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><DollarSign className="h-4 w-4" /> Platform Service Enrollment</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-3">
+            Enroll in platform services to offer them on your personal page. Pending enrollments require admin approval.
+          </p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {platformServices.slice(0, 20).map(svc => {
+              const enrollment = enrollments.find(e => e.service_id === svc.id);
+              return (
+                <div key={svc.id} className="flex items-center justify-between rounded-lg border p-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{svc.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{svc.category} • {svc.price_from != null ? `$${svc.price_from}` : "Quote"}</p>
+                  </div>
+                  <div className="flex items-center gap-2 ml-2">
+                    {enrollment?.is_active && <Badge variant="default" className="text-xs">Active</Badge>}
+                    {enrollment && !enrollment.is_active && <Badge variant="secondary" className="text-xs">Pending</Badge>}
+                    <Checkbox
+                      checked={!!enrollment}
+                      onCheckedChange={() => handleEnrollService(svc.id)}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </CardContent>
       </Card>
 
@@ -397,11 +690,15 @@ export default function PortalNotaryPageTab() {
       <Card>
         <CardHeader><CardTitle className="flex items-center gap-2"><Search className="h-4 w-4" /> SEO Settings</CardTitle></CardHeader>
         <CardContent className="space-y-4">
-          <div><Label>SEO Title</Label><Input value={page.seo_title || ""} onChange={e => updateField("seo_title", e.target.value)} placeholder={`${page.display_name} — Ohio Notary Public`} />
-            <p className="mt-1 text-xs text-muted-foreground">{(page.seo_title || "").length}/60 characters</p>
+          <div>
+            <Label>SEO Title</Label>
+            <Input value={page.seo_title || ""} onChange={e => updateField("seo_title", e.target.value)} placeholder={`${page.display_name} — Ohio Notary Public`} maxLength={60} />
+            <div className="mt-1 text-right"><CharCounter current={(page.seo_title || "").length} max={60} /></div>
           </div>
-          <div><Label>SEO Description</Label><Textarea rows={2} value={page.seo_description || ""} onChange={e => updateField("seo_description", e.target.value)} placeholder="Professional Ohio notary services..." />
-            <p className="mt-1 text-xs text-muted-foreground">{(page.seo_description || "").length}/160 characters</p>
+          <div>
+            <Label>SEO Description</Label>
+            <Textarea rows={2} value={page.seo_description || ""} onChange={e => updateField("seo_description", e.target.value)} placeholder="Professional Ohio notary services..." maxLength={160} />
+            <div className="mt-1 text-right"><CharCounter current={(page.seo_description || "").length} max={160} /></div>
           </div>
         </CardContent>
       </Card>
