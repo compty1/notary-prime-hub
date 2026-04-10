@@ -628,8 +628,9 @@ export default function NotaryPage() {
           </div>
         </section>
 
-        {/* Footer */}
-        <div className="border-t bg-muted/20 py-4 text-center text-xs text-muted-foreground">
+        {/* E013: Print-friendly styles + Footer */}
+        <style>{`@media print { nav, button, .no-print { display: none !important; } section { break-inside: avoid; } }`}</style>
+        <div className="border-t bg-muted/20 py-4 text-center text-xs text-muted-foreground no-print">
           Powered by <Link to="/" className="font-semibold hover:underline">{BRAND.name}</Link> —
           Professional {creds.commissioned_state || "Ohio"} Notary Services
         </div>
