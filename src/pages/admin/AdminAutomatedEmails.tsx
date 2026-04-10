@@ -948,7 +948,7 @@ const INTEGRATIONS: IntegrationSection[] = [
   },
 ];
 
-const EMAIL_PIPELINE_MAP: { emailType: string; trigger: string; edgeFunction: string; provider: string; source: "notardex" | "signnow" | "lovable" }[] = [
+const EMAIL_PIPELINE_MAP: { emailType: string; trigger: string; edgeFunction: string; provider: string; source: "notardex" | "signnow" | "lovable" | "stripe" | "google" }[] = [
   // --- NotarDex Internal Emails ---
   { emailType: "Booking Confirmation", trigger: "New appointment created", edgeFunction: "send-appointment-emails", provider: "IONOS SMTP", source: "notardex" },
   { emailType: "24hr Reminder", trigger: "Scheduled (cron)", edgeFunction: "send-appointment-reminders", provider: "IONOS SMTP", source: "notardex" },
@@ -970,12 +970,24 @@ const EMAIL_PIPELINE_MAP: { emailType: string; trigger: string; edgeFunction: st
   { emailType: "Email Change Verification", trigger: "Auth: email change", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue", source: "lovable" },
   { emailType: "Team / Notary Invite", trigger: "Auth: admin invites user", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue", source: "lovable" },
   { emailType: "Reauthentication Code", trigger: "Auth: sensitive action", edgeFunction: "auth-email-hook → process-email-queue", provider: "Lovable Email Queue", source: "lovable" },
-  // --- SignNow External Emails (sent by SignNow, NOT by NotarDex) ---
+  // --- SignNow External Emails ---
   { emailType: "Signing Invitation", trigger: "Document uploaded + invite sent via SignNow", edgeFunction: "signnow (action: send_invite)", provider: "SignNow Platform", source: "signnow" },
   { emailType: "Signing Reminder", trigger: "Auto-scheduled by SignNow for unsigned docs", edgeFunction: "N/A (SignNow internal)", provider: "SignNow Platform", source: "signnow" },
   { emailType: "Document Completed", trigger: "All parties have signed", edgeFunction: "signnow-webhook (event: document.complete)", provider: "SignNow Platform", source: "signnow" },
   { emailType: "Invite Viewed", trigger: "Signer opens document link", edgeFunction: "signnow-webhook (event: document.update)", provider: "SignNow Platform", source: "signnow" },
   { emailType: "Invite Cancelled", trigger: "Admin cancels signing invitation", edgeFunction: "signnow (action: cancel_invite)", provider: "SignNow Platform", source: "signnow" },
+  // --- Stripe External Emails ---
+  { emailType: "Payment Receipt", trigger: "Successful charge / payment_intent.succeeded", edgeFunction: "stripe-webhook (idempotency logged)", provider: "Stripe Platform", source: "stripe" },
+  { emailType: "Refund Confirmation", trigger: "charge.refunded event", edgeFunction: "stripe-webhook (status → refunded)", provider: "Stripe Platform", source: "stripe" },
+  { emailType: "Payment Failed Notice", trigger: "payment_intent.payment_failed", edgeFunction: "stripe-webhook (status → failed)", provider: "Stripe Platform", source: "stripe" },
+  { emailType: "Subscription Confirmation", trigger: "customer.subscription.created", edgeFunction: "stripe-webhook (plan updated)", provider: "Stripe Platform", source: "stripe" },
+  { emailType: "Subscription Cancelled", trigger: "customer.subscription.deleted", edgeFunction: "stripe-webhook (plan → free)", provider: "Stripe Platform", source: "stripe" },
+  { emailType: "Invoice / Upcoming Payment", trigger: "invoice.upcoming / invoice.payment_succeeded", edgeFunction: "N/A (Stripe internal)", provider: "Stripe Platform", source: "stripe" },
+  // --- Google Calendar External Emails ---
+  { emailType: "Calendar Invite (ICS)", trigger: "Appointment booked + calendar sync", edgeFunction: "google-calendar-sync", provider: "Google Calendar", source: "google" },
+  { emailType: "Event Reminder", trigger: "Auto-scheduled by Google (default 30min)", edgeFunction: "N/A (Google internal)", provider: "Google Calendar", source: "google" },
+  { emailType: "Event Updated", trigger: "Appointment rescheduled", edgeFunction: "google-calendar-sync (update)", provider: "Google Calendar", source: "google" },
+  { emailType: "Event Cancelled", trigger: "Appointment cancelled", edgeFunction: "google-calendar-sync (delete)", provider: "Google Calendar", source: "google" },
 ];
 
 function IntegrationSetupTab() {
@@ -1201,15 +1213,19 @@ function IntegrationSetupTab() {
                   </thead>
                   <tbody>
                     {EMAIL_PIPELINE_MAP.map((row, i) => {
-                      const sourceColors = {
+                      const sourceColors: Record<string, string> = {
                         notardex: "bg-primary/10 text-primary",
                         signnow: "bg-orange-500/10 text-orange-700",
                         lovable: "bg-blue-500/10 text-blue-700",
+                        stripe: "bg-violet-500/10 text-violet-700",
+                        google: "bg-emerald-500/10 text-emerald-700",
                       };
-                      const sourceLabels = {
+                      const sourceLabels: Record<string, string> = {
                         notardex: "NotarDex",
                         signnow: "SignNow",
                         lovable: "Auth System",
+                        stripe: "Stripe",
+                        google: "Google",
                       };
                       return (
                         <tr key={i} className="border-b border-border/50">
@@ -1246,7 +1262,44 @@ function IntegrationSetupTab() {
                 </ul>
               </div>
 
-              {/* Retry logic */}
+              {/* Stripe External Emails Explainer */}
+              <div className="rounded-md bg-violet-500/5 border border-violet-500/10 p-3 space-y-2">
+                <h4 className="text-xs font-semibold text-violet-700 dark:text-violet-400 flex items-center gap-1">
+                  <CreditCard className="h-3 w-3" /> Stripe External Emails
+                </h4>
+                <p className="text-[11px] text-muted-foreground">
+                  The emails marked <Badge className="bg-violet-500/10 text-violet-700 text-[8px] font-bold mx-0.5">Stripe</Badge> are
+                  sent <strong>directly by Stripe's platform</strong>, not by NotarDex. Their content and delivery are controlled in your{" "}
+                  <a href="https://dashboard.stripe.com/settings/emails" target="_blank" rel="noopener noreferrer" className="underline text-primary">Stripe Dashboard → Settings → Emails</a>.
+                  NotarDex receives webhook events for payment lifecycle changes and updates payment status accordingly.
+                </p>
+                <ul className="text-[11px] text-muted-foreground space-y-0.5">
+                  <li>• <strong>Payment receipts</strong> — Stripe sends automatic receipts on successful charges; enable/disable in Stripe → Settings → Customer emails</li>
+                  <li>• <strong>Refund confirmations</strong> — sent when a refund is processed; tracked via <code className="bg-muted px-1 py-0.5 rounded text-[9px]">charge.refunded</code> webhook</li>
+                  <li>• <strong>Failed payment notices</strong> — Stripe notifies customers of failed charges; tracked via <code className="bg-muted px-1 py-0.5 rounded text-[9px]">payment_intent.payment_failed</code></li>
+                  <li>• <strong>Subscription emails</strong> — invoices, upcoming payments, and cancellation notices are sent by Stripe Billing</li>
+                  <li>• <strong>Webhook tracking</strong> — all Stripe events are logged to <code className="bg-muted px-1 py-0.5 rounded text-[9px]">webhook_events</code> and <code className="bg-muted px-1 py-0.5 rounded text-[9px]">audit_log</code> with idempotency checks</li>
+                </ul>
+              </div>
+
+              {/* Google Calendar External Emails Explainer */}
+              <div className="rounded-md bg-emerald-500/5 border border-emerald-500/10 p-3 space-y-2">
+                <h4 className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
+                  <Calendar className="h-3 w-3" /> Google Calendar Emails
+                </h4>
+                <p className="text-[11px] text-muted-foreground">
+                  The emails marked <Badge className="bg-emerald-500/10 text-emerald-700 text-[8px] font-bold mx-0.5">Google</Badge> are
+                  sent <strong>directly by Google Calendar</strong> when events are created, updated, or deleted through the calendar sync.
+                  Calendar invite formatting and reminder schedules are managed by Google.
+                </p>
+                <ul className="text-[11px] text-muted-foreground space-y-0.5">
+                  <li>• <strong>Calendar invites (ICS)</strong> — Google sends invitations with .ics attachments when an appointment syncs to calendar via <code className="bg-muted px-1 py-0.5 rounded text-[9px]">google-calendar-sync</code></li>
+                  <li>• <strong>Event reminders</strong> — Google sends default reminders (30 min before); configurable per-calendar in Google Calendar settings</li>
+                  <li>• <strong>Reschedule notifications</strong> — Google automatically notifies attendees when appointment times change</li>
+                  <li>• <strong>Cancellation emails</strong> — sent when an appointment is cancelled and the calendar event is deleted</li>
+                </ul>
+              </div>
+
               <div className="rounded-md bg-muted/50 border border-border p-3 space-y-2">
                 <h4 className="text-xs font-semibold">Retry & Delivery Logic</h4>
                 <ul className="space-y-1 text-[11px] text-muted-foreground">
