@@ -80,21 +80,21 @@ export default function AdminOverview() {
 
       clearTimeout(timeout);
 
-      const getValue = <T,>(idx: number, key: string): T | null => {
+      const getValue = (idx: number, key: string): unknown => {
         const r = results[idx];
-        if (r.status === "fulfilled") return (r.value as Record<string, unknown>)[key] as T;
+        if (r.status === "fulfilled") return (r.value as Record<string, unknown>)[key];
         return null;
       };
 
-      const totalAppts = getValue<number>(0, "count") || 0;
-      const upcomingCount = getValue<number>(1, "count") || 0;
-      const completedCount = getValue<number>(2, "count") || 0;
-      const clientCount = getValue<number>(3, "count") || 0;
-      const recentAppts = getValue<OverviewAppointment[]>(4, "data");
-      const paymentData = getValue<PaymentRow[]>(5, "data");
-      const settingsData = getValue<SettingRow[]>(6, "data");
-      const profileData = getValue<ProfileRow[]>(7, "data");
-      const allApptData = getValue<AllApptRow[]>(8, "data");
+      const totalAppts = (getValue(0, "count") as number) || 0;
+      const upcomingCount = (getValue(1, "count") as number) || 0;
+      const completedCount = (getValue(2, "count") as number) || 0;
+      const clientCount = (getValue(3, "count") as number) || 0;
+      const recentAppts = getValue(4, "data") as OverviewAppointment[] | null;
+      const paymentData = getValue(5, "data") as PaymentRow[] | null;
+      const settingsData = getValue(6, "data") as SettingRow[] | null;
+      const profileData = getValue(7, "data") as ProfileRow[] | null;
+      const allApptData = getValue(8, "data") as AllApptRow[] | null;
 
       // Fetch recent audit activity
       const { data: activityData } = await supabase.from("audit_log").select("id, action, entity_type, entity_id, created_at, user_id").order("created_at", { ascending: false }).limit(10);
