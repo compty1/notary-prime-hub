@@ -94,10 +94,10 @@ export default function Login() {
           <Link to="/" className="mb-8 block">
             <Logo size="md" showText />
           </Link>
-          <h1 className="mb-1 text-2xl font-black tracking-tight text-[#212529]">
+          <h1 className="mb-1 text-2xl font-black tracking-tight text-foreground">
             {forgotMode ? "Reset Password" : "Log in"}
           </h1>
-          <p className="mb-8 text-sm text-gray-400 font-medium">
+          <p className="mb-8 text-sm text-muted-foreground font-medium">
             {forgotMode
               ? resetSent ? "Check your email for a reset link" : "Enter your email to receive a reset link"
               : "Sign in to manage your documents and appointments"}
@@ -106,15 +106,15 @@ export default function Login() {
           {forgotMode ? (
             <form onSubmit={handleForgotPassword} className="space-y-4">
               <div>
-                <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Email</Label>
-                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className="bg-[#f8f9fa] border-none rounded-xl mt-1" />
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Email</Label>
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className="bg-muted border-none rounded-xl mt-1" />
               </div>
               {!resetSent && (
                 <Button type="submit" className="w-full rounded-2xl font-bold bg-[#212529] text-white shadow-block hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all" disabled={submitting}>
                   {submitting ? "Sending..." : "Send Reset Link"}
                 </Button>
               )}
-              <Button type="button" variant="ghost" className="w-full text-sm font-bold text-gray-400" onClick={() => { setForgotMode(false); setResetSent(false); }}>
+              <Button type="button" variant="ghost" className="w-full text-sm font-bold text-muted-foreground" onClick={() => { setForgotMode(false); setResetSent(false); }}>
                 Back to Sign In
               </Button>
             </form>
@@ -123,7 +123,7 @@ export default function Login() {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full rounded-xl font-bold border-gray-200"
+                className="w-full rounded-xl font-bold border-border"
                 onClick={async () => {
                   const { error } = await lovable.auth.signInWithOAuth("google", {
                     redirect_uri: `${window.location.origin}/portal`,
@@ -136,20 +136,20 @@ export default function Login() {
               </Button>
 
               <div className="relative">
-                <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-gray-100" /></div>
-                <div className="relative flex justify-center text-xs uppercase"><span className="bg-white px-2 text-gray-400 font-bold">or</span></div>
+                <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
+                <div className="relative flex justify-center text-xs uppercase"><span className="bg-white px-2 text-muted-foreground font-bold">or</span></div>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Email</Label>
-                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className="bg-[#f8f9fa] border-none rounded-xl mt-1" />
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Email</Label>
+                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className="bg-muted border-none rounded-xl mt-1" />
                 </div>
                 <div>
-                   <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Password</Label>
+                   <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Password</Label>
                    <div className="relative">
-                     <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" className="bg-[#f8f9fa] border-none rounded-xl mt-1" />
-                     <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#212529]" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Hide password" : "Show password"}>
+                     <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" className="bg-muted border-none rounded-xl mt-1" />
+                     <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Hide password" : "Show password"}>
                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                      </button>
                    </div>
@@ -166,9 +166,9 @@ export default function Login() {
               </form>
             </div>
           )}
-          <p className="mt-6 text-center text-sm text-gray-400 font-medium">
+          <p className="mt-6 text-center text-sm text-muted-foreground font-medium">
             Don't have an account?{" "}
-            <Link to="/signup" className="font-bold text-[#212529] hover:underline">Create your account</Link>
+            <Link to="/signup" className="font-bold text-foreground hover:underline">Create your account</Link>
           </p>
         </div>
       </div>
@@ -179,7 +179,7 @@ export default function Login() {
             <Shield className="h-8 w-8 text-primary" />
           </div>
           <h2 className="mb-3 text-2xl font-black text-white">Secure Document Services</h2>
-          <p className="text-gray-400 font-medium">In-person and remote online notarization, fully compliant with Ohio Revised Code §147.</p>
+          <p className="text-muted-foreground font-medium">In-person and remote online notarization, fully compliant with Ohio Revised Code §147.</p>
         </div>
       </div>
     </div>

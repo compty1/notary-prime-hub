@@ -87,22 +87,22 @@ export default function SignUp() {
 
   if (signupSuccess) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#fcfcfc] px-4">
-        <div className="w-full max-w-md rounded-[24px] border border-gray-100 bg-white p-8 shadow-sm">
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <div className="w-full max-w-md rounded-[24px] border border-border bg-white p-8 shadow-sm">
           <div className="flex flex-col items-center text-center">
             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
               <CheckCircle className="h-8 w-8 text-primary" />
             </div>
-            <h2 className="text-2xl font-black text-[#212529] mb-2">Check Your Email</h2>
+            <h2 className="text-2xl font-black text-foreground mb-2">Check Your Email</h2>
             <p className="text-muted-foreground mb-2">We sent a verification link to</p>
-            <p className="font-bold text-[#212529] mb-4">{email}</p>
+            <p className="font-bold text-foreground mb-4">{email}</p>
             <p className="text-sm text-muted-foreground mb-2">Click the link in the email to verify your account, then sign in.</p>
             <p className="text-xs text-muted-foreground mb-4">Don't see it? Check your spam or junk folder.</p>
             <Button variant="outline" size="sm" onClick={handleResendVerification} disabled={submitting} className="mb-4 rounded-xl">
               {submitting ? "Sending..." : "Resend Verification Email"}
             </Button>
             <Link to="/login">
-              <Button className="rounded-xl bg-primary text-white hover:bg-[#ca9a06] shadow-[3px_3px_0px_#212529]">Go to Sign In</Button>
+              <Button className="rounded-xl bg-primary text-white hover:bg-primary/85 shadow-block">Go to Sign In</Button>
             </Link>
           </div>
         </div>
@@ -111,29 +111,29 @@ export default function SignUp() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#fcfcfc]">
+    <div className="flex min-h-screen bg-background">
       {/* Left — Form */}
       <div className="flex flex-1 items-center justify-center px-6 py-12">
         <div className="w-full max-w-md">
           <Link to="/" className="mb-8 inline-block">
             <Logo size="lg" />
           </Link>
-          <h1 className="text-3xl font-black text-[#212529] mb-1">Create Account</h1>
+          <h1 className="text-3xl font-black text-foreground mb-1">Create Account</h1>
           <p className="text-muted-foreground mb-8">Sign up to book notary appointments</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest text-gray-500">Full Name</Label>
-              <Input id="name" value={fullName} onChange={(e) => setFullName(e.target.value)} required autoComplete="name" className="mt-1 rounded-xl border-gray-200 bg-white" />
+              <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Full Name</Label>
+              <Input id="name" value={fullName} onChange={(e) => setFullName(e.target.value)} required autoComplete="name" className="mt-1 rounded-xl border-border bg-white" />
             </div>
             <div>
-              <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-gray-500">Email</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className="mt-1 rounded-xl border-gray-200 bg-white" />
+              <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Email</Label>
+              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className="mt-1 rounded-xl border-border bg-white" />
             </div>
             <div>
-              <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-gray-500">Password</Label>
+              <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Password</Label>
               <div className="relative mt-1">
-                <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" className="rounded-xl border-gray-200 bg-white pr-10" />
+                <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" className="rounded-xl border-border bg-white pr-10" />
                 <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Hide password" : "Show password"}>
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -152,8 +152,8 @@ export default function SignUp() {
               {!password && <p className="mt-1 text-xs text-muted-foreground">Minimum 8 characters with uppercase, lowercase, numbers & special characters</p>}
             </div>
             <div>
-              <Label htmlFor="confirmPassword" className="text-[10px] font-black uppercase tracking-widest text-gray-500">Confirm Password</Label>
-              <Input id="confirmPassword" type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} className="mt-1 rounded-xl border-gray-200 bg-white" />
+              <Label htmlFor="confirmPassword" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Confirm Password</Label>
+              <Input id="confirmPassword" type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} className="mt-1 rounded-xl border-border bg-white" />
               {confirmPassword && password !== confirmPassword && (
                 <p className="mt-1 text-xs text-destructive">Passwords don't match</p>
               )}
@@ -164,17 +164,17 @@ export default function SignUp() {
                 I agree to the <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link> and <Link to="/terms" className="text-primary hover:underline">Privacy Policy</Link>
               </Label>
             </div>
-            <Button type="submit" className="w-full rounded-xl bg-primary text-white font-bold hover:bg-[#ca9a06] shadow-[3px_3px_0px_#212529] h-11" disabled={submitting || !acceptTerms}>
+            <Button type="submit" className="w-full rounded-xl bg-primary text-white font-bold hover:bg-primary/85 shadow-block h-11" disabled={submitting || !acceptTerms}>
               {submitting ? "Creating account..." : "Create Account"}
             </Button>
             <div className="relative my-4">
-              <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-gray-200" /></div>
-              <div className="relative flex justify-center text-xs uppercase"><span className="bg-[#fcfcfc] px-2 text-muted-foreground">or</span></div>
+              <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
+              <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">or</span></div>
             </div>
             <Button
               type="button"
               variant="outline"
-              className="w-full rounded-xl border-gray-200"
+              className="w-full rounded-xl border-border"
               onClick={async () => {
                 const { error } = await lovable.auth.signInWithOAuth("google", {
                   redirect_uri: `${window.location.origin}/portal`,
@@ -188,7 +188,7 @@ export default function SignUp() {
           </form>
           <p className="mt-6 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link to="/login" className="font-bold text-[#212529] hover:underline">Sign in</Link>
+            <Link to="/login" className="font-bold text-foreground hover:underline">Sign in</Link>
           </p>
         </div>
       </div>
@@ -200,17 +200,17 @@ export default function SignUp() {
             <Shield className="h-10 w-10 text-primary" />
           </div>
           <h2 className="text-3xl font-black">Ohio's Trusted<br />Notary Platform</h2>
-          <p className="text-gray-400">Join thousands of Ohioans who trust NotarDex for secure, compliant notarization services.</p>
+          <p className="text-muted-foreground">Join thousands of Ohioans who trust NotarDex for secure, compliant notarization services.</p>
           <div className="grid grid-cols-2 gap-4 text-left">
             <div className="rounded-2xl bg-white/5 p-4">
               <FileText className="h-5 w-5 text-primary mb-2" />
               <p className="text-sm font-bold">Document Upload</p>
-              <p className="text-xs text-gray-400">Secure cloud storage</p>
+              <p className="text-xs text-muted-foreground">Secure cloud storage</p>
             </div>
             <div className="rounded-2xl bg-white/5 p-4">
               <Lock className="h-5 w-5 text-primary mb-2" />
               <p className="text-sm font-bold">Bank-Level Security</p>
-              <p className="text-xs text-gray-400">End-to-end encryption</p>
+              <p className="text-xs text-muted-foreground">End-to-end encryption</p>
             </div>
           </div>
         </div>

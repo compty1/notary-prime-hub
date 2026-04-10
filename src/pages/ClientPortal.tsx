@@ -297,7 +297,7 @@ export default function ClientPortal() {
   const qrUrl = `${window.location.origin}/mobile-upload${selectedApptId ? `?appointment_id=${selectedApptId}` : ""}`;
   if (initialLoad) {
     return (
-      <div className="min-h-screen bg-[#f8f9fa] flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <PortalLoadingSkeleton />
       </div>
     );
@@ -324,48 +324,48 @@ export default function ClientPortal() {
         />
         <SidebarInset className="flex-1">
           {/* Header */}
-          <header className="sticky top-0 z-30 h-20 border-b border-gray-100 bg-white/80 backdrop-blur-sm flex items-center justify-between px-6 gap-4">
+          <header className="sticky top-0 z-30 h-20 border-b border-border bg-background/80 backdrop-blur-sm flex items-center justify-between px-6 gap-4">
             <div className="flex items-center gap-4">
-              <SidebarTrigger className="text-gray-400 hover:text-foreground" />
-              <div className="hidden md:flex items-center bg-[#f8f9fa] rounded-full px-4 py-2 w-80">
-                <Search className="h-4 w-4 text-gray-400 mr-2" />
-                <input type="text" placeholder="Search appointments or documents..." value={portalSearch} onChange={e => setPortalSearch(e.target.value)} className="bg-transparent border-none outline-none text-sm w-full text-foreground placeholder:text-gray-400" />
+              <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
+              <div className="hidden md:flex items-center bg-muted rounded-full px-4 py-2 w-80">
+                <Search className="h-4 w-4 text-muted-foreground mr-2" />
+                <input type="text" placeholder="Search appointments or documents..." value={portalSearch} onChange={e => setPortalSearch(e.target.value)} className="bg-transparent border-none outline-none text-sm w-full text-foreground placeholder:text-muted-foreground" />
               </div>
             </div>
             <div className="flex items-center gap-3">
               <Popover>
                 <PopoverTrigger asChild>
-                  <button className="p-2 text-gray-400 hover:bg-[#f8f9fa] rounded-full relative" aria-label="Notifications">
+                  <button className="p-2 text-muted-foreground hover:bg-muted rounded-full relative" aria-label="Notifications">
                     <Bell className="h-5 w-5" />
                     {(payments.filter(p => p.status === "pending").length + unreadCount) > 0 && (
                       <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full border-2 border-white" />
                     )}
                   </button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80 p-0 rounded-[24px] border-gray-100" align="end">
-                  <div className="p-3 border-b border-gray-100">
-                    <h4 className="text-sm font-black text-[#212529]">Notifications</h4>
+                <PopoverContent className="w-80 p-0 rounded-[24px] border-border" align="end">
+                  <div className="p-3 border-b border-border">
+                    <h4 className="text-sm font-black text-foreground">Notifications</h4>
                   </div>
                   <div className="max-h-64 overflow-y-auto divide-y divide-gray-50">
                     {payments.filter(p => p.status === "pending").map(p => (
-                      <div key={p.id} className="p-3 hover:bg-[#f8f9fa] cursor-pointer" onClick={() => handleSectionChange("payments")}>
-                        <div className="flex items-center gap-2"><CreditCard className="h-4 w-4 text-destructive" /><span className="text-sm font-bold text-[#212529]">Payment Due: ${Number(p.amount).toFixed(2)}</span></div>
-                        <p className="text-xs text-gray-400 font-medium ml-6">{p.notes || "Pending payment"}</p>
+                      <div key={p.id} className="p-3 hover:bg-muted cursor-pointer" onClick={() => handleSectionChange("payments")}>
+                        <div className="flex items-center gap-2"><CreditCard className="h-4 w-4 text-destructive" /><span className="text-sm font-bold text-foreground">Payment Due: ${Number(p.amount).toFixed(2)}</span></div>
+                        <p className="text-xs text-muted-foreground font-medium ml-6">{p.notes || "Pending payment"}</p>
                       </div>
                     ))}
                     {upcoming.slice(0, 3).map(a => (
-                      <div key={a.id} className="p-3 hover:bg-[#f8f9fa] cursor-pointer" onClick={() => handleSectionChange("appointments")}>
-                        <div className="flex items-center gap-2"><Calendar className="h-4 w-4 text-primary" /><span className="text-sm font-bold text-[#212529]">{a.service_type}</span></div>
-                        <p className="text-xs text-gray-400 font-medium ml-6">{formatDate(a.scheduled_date)} at {a.scheduled_time}</p>
+                      <div key={a.id} className="p-3 hover:bg-muted cursor-pointer" onClick={() => handleSectionChange("appointments")}>
+                        <div className="flex items-center gap-2"><Calendar className="h-4 w-4 text-primary" /><span className="text-sm font-bold text-foreground">{a.service_type}</span></div>
+                        <p className="text-xs text-muted-foreground font-medium ml-6">{formatDate(a.scheduled_date)} at {a.scheduled_time}</p>
                       </div>
                     ))}
                     {unreadCount > 0 && (
-                      <div className="p-3 hover:bg-[#f8f9fa] cursor-pointer" onClick={() => handleSectionChange("chat")}>
-                        <div className="flex items-center gap-2"><MessageSquare className="h-4 w-4 text-primary" /><span className="text-sm font-bold text-[#212529]">{unreadCount} unread message{unreadCount > 1 ? "s" : ""}</span></div>
+                      <div className="p-3 hover:bg-muted cursor-pointer" onClick={() => handleSectionChange("chat")}>
+                        <div className="flex items-center gap-2"><MessageSquare className="h-4 w-4 text-primary" /><span className="text-sm font-bold text-foreground">{unreadCount} unread message{unreadCount > 1 ? "s" : ""}</span></div>
                       </div>
                     )}
                     {payments.filter(p => p.status === "pending").length === 0 && upcoming.length === 0 && unreadCount === 0 && (
-                      <div className="p-6 text-center text-sm text-gray-400 font-medium">No notifications</div>
+                      <div className="p-6 text-center text-sm text-muted-foreground font-medium">No notifications</div>
                     )}
                   </div>
                 </PopoverContent>
@@ -380,7 +380,7 @@ export default function ClientPortal() {
           </header>
 
           {/* Main Content */}
-          <main className="p-6 bg-[#f8f9fa] min-h-[calc(100vh-5rem)]" aria-live="polite">
+          <main className="p-6 bg-muted min-h-[calc(100vh-5rem)]" aria-live="polite">
             <div className="max-w-6xl mx-auto space-y-6" role="region" aria-label={`${activeSection} section`}>
 
           {/* OVERVIEW */}
@@ -393,8 +393,8 @@ export default function ClientPortal() {
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-xl bg-primary/20 animate-pulse"><Shield className="h-5 w-5 text-primary" /></div>
                     <div>
-                      <p className="font-black text-sm text-[#212529]">Your notarization session is active</p>
-                      <p className="text-xs text-gray-400 font-medium">Join now to complete your notarization</p>
+                      <p className="font-black text-sm text-foreground">Your notarization session is active</p>
+                      <p className="text-xs text-muted-foreground font-medium">Join now to complete your notarization</p>
                     </div>
                   </div>
                   <Link to={`/ron-session?id=${appointments.find(a => a.status === "in_session")?.id}`}>
@@ -406,43 +406,43 @@ export default function ClientPortal() {
 
             {/* Stat Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card className="rounded-[24px] border-gray-100 shadow-sm"><CardContent className="p-6">
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Upcoming Appts</p>
-                <p className="text-4xl font-black text-[#212529]">{upcoming.length}</p>
+              <Card className="rounded-[24px] border-border shadow-sm"><CardContent className="p-6">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">Upcoming Appts</p>
+                <p className="text-4xl font-black text-foreground">{upcoming.length}</p>
               </CardContent></Card>
-              <Card className="rounded-[24px] border-gray-100 shadow-sm"><CardContent className="p-6">
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Documents</p>
-                <p className="text-4xl font-black text-[#212529]">{documents.length}</p>
+              <Card className="rounded-[24px] border-border shadow-sm"><CardContent className="p-6">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">Documents</p>
+                <p className="text-4xl font-black text-foreground">{documents.length}</p>
               </CardContent></Card>
-              <Card className="rounded-[24px] border-gray-100 shadow-sm"><CardContent className="p-6">
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Total Paid</p>
-                <p className="text-4xl font-black text-[#212529]">${payments.filter(p => p.status === "paid").reduce((s, p) => s + Number(p.amount), 0).toFixed(0)}</p>
+              <Card className="rounded-[24px] border-border shadow-sm"><CardContent className="p-6">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">Total Paid</p>
+                <p className="text-4xl font-black text-foreground">${payments.filter(p => p.status === "paid").reduce((s, p) => s + Number(p.amount), 0).toFixed(0)}</p>
               </CardContent></Card>
-              <Card className="rounded-[24px] border-gray-100 shadow-sm"><CardContent className="p-6">
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Action Needed</p>
-                <p className="text-4xl font-black text-[#212529]">{payments.filter(p => p.status === "pending").length + unreadCount}</p>
+              <Card className="rounded-[24px] border-border shadow-sm"><CardContent className="p-6">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">Action Needed</p>
+                <p className="text-4xl font-black text-foreground">{payments.filter(p => p.status === "pending").length + unreadCount}</p>
               </CardContent></Card>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-6">
                 <PortalOnboardingChecklist profile={profile} documents={documents} appointments={appointments} onEditProfile={() => setEditProfileOpen(true)} />
-                <Card className="rounded-[24px] border-gray-100 shadow-sm">
+                <Card className="rounded-[24px] border-border shadow-sm">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-black text-[#212529]">Upcoming Appointments</h3>
+                      <h3 className="font-black text-foreground">Upcoming Appointments</h3>
                       <Link to="/book"><Button size="sm" variant="outline" className="rounded-xl font-bold text-xs">Book New</Button></Link>
                     </div>
                     {upcoming.length === 0 ? (
-                      <div className="py-8 text-center"><Calendar className="mx-auto mb-3 h-10 w-10 text-gray-300" /><p className="text-sm text-gray-400 font-medium">No upcoming appointments</p></div>
+                      <div className="py-8 text-center"><Calendar className="mx-auto mb-3 h-10 w-10 text-gray-300" /><p className="text-sm text-muted-foreground font-medium">No upcoming appointments</p></div>
                     ) : (
                       <div className="space-y-3">{upcoming.slice(0, 3).map(a => (
-                        <div key={a.id} className="flex items-center justify-between p-3 rounded-xl bg-[#f8f9fa] hover:bg-gray-100 transition-colors">
+                        <div key={a.id} className="flex items-center justify-between p-3 rounded-xl bg-muted hover:bg-gray-100 transition-colors">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center"><FileText className="h-5 w-5 text-primary" /></div>
-                            <div><p className="text-sm font-bold text-[#212529]">{a.service_type}</p><p className="text-xs text-gray-400 font-medium">{formatDate(a.scheduled_date)} at {a.scheduled_time}</p></div>
+                            <div><p className="text-sm font-bold text-foreground">{a.service_type}</p><p className="text-xs text-muted-foreground font-medium">{formatDate(a.scheduled_date)} at {a.scheduled_time}</p></div>
                           </div>
-                          <Badge className="text-[10px] font-black uppercase tracking-wider bg-[#f8f9fa] text-gray-500 border-gray-200 rounded-lg">{a.status.replace(/_/g, " ")}</Badge>
+                          <Badge className="text-[10px] font-black uppercase tracking-wider bg-muted text-muted-foreground border-border rounded-lg">{a.status.replace(/_/g, " ")}</Badge>
                         </div>
                       ))}</div>
                     )}
@@ -451,10 +451,10 @@ export default function ClientPortal() {
                 {payments.filter(p => p.status === "pending").length > 0 && (
                   <Card className="rounded-[24px] border-destructive/30 bg-destructive/5">
                     <CardContent className="p-6">
-                      <h3 className="font-black text-[#212529] mb-3">Pending Payments</h3>
+                      <h3 className="font-black text-foreground mb-3">Pending Payments</h3>
                       {payments.filter(p => p.status === "pending").slice(0, 3).map(p => (
                         <div key={p.id} className="flex items-center justify-between p-3 rounded-xl bg-white mb-2">
-                          <div><p className="text-sm font-bold text-[#212529]">${Number(p.amount).toFixed(2)}</p><p className="text-xs text-gray-400 font-medium">{p.notes || "Payment pending"}</p></div>
+                          <div><p className="text-sm font-bold text-foreground">${Number(p.amount).toFixed(2)}</p><p className="text-xs text-muted-foreground font-medium">{p.notes || "Payment pending"}</p></div>
                           <Button size="sm" className="rounded-xl font-bold text-xs" onClick={() => handleSectionChange("payments")}><CreditCard className="mr-1 h-3 w-3" /> Pay Now</Button>
                         </div>
                       ))}
@@ -469,7 +469,7 @@ export default function ClientPortal() {
                   <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform"><Sparkles className="h-24 w-24" /></div>
                   <div className="relative z-10">
                     <h3 className="text-lg font-black mb-2 flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary" /> AI Document Wizard</h3>
-                    <p className="text-sm text-gray-400 font-medium mb-4 leading-relaxed">Have our AI review your documents for common errors before your appointment.</p>
+                    <p className="text-sm text-muted-foreground font-medium mb-4 leading-relaxed">Have our AI review your documents for common errors before your appointment.</p>
                     <Button size="sm" className="font-bold rounded-xl bg-primary text-white" onClick={e => { e.stopPropagation(); setShowWizard(true); }}>Start AI Review</Button>
                   </div>
                 </div>
@@ -480,12 +480,12 @@ export default function ClientPortal() {
                   return (
                     <Card className="rounded-[24px] border-primary/20 bg-primary/5">
                       <CardContent className="p-5">
-                        <h4 className="font-black text-sm text-[#212529] flex items-center gap-2 mb-3"><Shield className="h-4 w-4 text-primary" /> Session Prep Checklist</h4>
-                        <p className="text-xs text-gray-400 font-medium mb-3">Your RON session is{" "}{ronAppt ? new Date(ronAppt.scheduled_date + "T" + ronAppt.scheduled_time).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "soon"}.</p>
+                        <h4 className="font-black text-sm text-foreground flex items-center gap-2 mb-3"><Shield className="h-4 w-4 text-primary" /> Session Prep Checklist</h4>
+                        <p className="text-xs text-muted-foreground font-medium mb-3">Your RON session is{" "}{ronAppt ? new Date(ronAppt.scheduled_date + "T" + ronAppt.scheduled_time).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "soon"}.</p>
                         <div className="space-y-2">
-                          <div className="flex items-center gap-2 text-xs">{hasDocuments ? <CheckCircle className="h-3.5 w-3.5 text-emerald-500" /> : <AlertCircle className="h-3.5 w-3.5 text-gray-400" />}<span className={hasDocuments ? "text-[#212529] font-medium" : "text-gray-400 font-medium"}>Documents uploaded</span></div>
-                          <div className="flex items-center gap-2 text-xs"><CheckCircle className="h-3.5 w-3.5 text-emerald-500" /><span className="text-[#212529] font-medium">Government photo ID ready</span></div>
-                          <div className="flex items-center gap-2 text-xs"><CheckCircle className="h-3.5 w-3.5 text-emerald-500" /><span className="text-[#212529] font-medium">Camera & microphone access</span></div>
+                          <div className="flex items-center gap-2 text-xs">{hasDocuments ? <CheckCircle className="h-3.5 w-3.5 text-emerald-500" /> : <AlertCircle className="h-3.5 w-3.5 text-muted-foreground" />}<span className={hasDocuments ? "text-foreground font-medium" : "text-muted-foreground font-medium"}>Documents uploaded</span></div>
+                          <div className="flex items-center gap-2 text-xs"><CheckCircle className="h-3.5 w-3.5 text-emerald-500" /><span className="text-foreground font-medium">Government photo ID ready</span></div>
+                          <div className="flex items-center gap-2 text-xs"><CheckCircle className="h-3.5 w-3.5 text-emerald-500" /><span className="text-foreground font-medium">Camera & microphone access</span></div>
                         </div>
                         <Link to={`/ron-session?id=${ronAppt?.id}`}><Button size="sm" className="w-full mt-3 text-xs rounded-xl font-bold bg-[#212529] text-white">Go to Session</Button></Link>
                       </CardContent>
@@ -498,8 +498,8 @@ export default function ClientPortal() {
                     <div className="flex gap-4">
                       <div className="shrink-0 text-primary"><Eye className="h-6 w-6" /></div>
                       <div>
-                        <h4 className="font-black text-sm text-[#212529]">Need Help?</h4>
-                        <p className="text-xs text-gray-500 font-medium mt-1 leading-relaxed">Our support team is available 24/7.</p>
+                        <h4 className="font-black text-sm text-foreground">Need Help?</h4>
+                        <p className="text-xs text-muted-foreground font-medium mt-1 leading-relaxed">Our support team is available 24/7.</p>
                         <button onClick={() => handleSectionChange("chat")} className="mt-3 text-primary text-xs font-bold underline">Message Support</button>
                       </div>
                     </div>
@@ -524,20 +524,20 @@ export default function ClientPortal() {
 
           {activeSection === "status" && (
             <div className="space-y-6">
-            <h2 className="text-xl font-black text-[#212529]">Document Pipeline</h2>
+            <h2 className="text-xl font-black text-foreground">Document Pipeline</h2>
             {documents.length === 0 ? (
-              <Card className="rounded-[24px] border-gray-100"><CardContent className="py-12 text-center text-gray-400"><FileText className="mx-auto mb-4 h-12 w-12 text-gray-300" /><p className="font-medium">No documents to track</p></CardContent></Card>
+              <Card className="rounded-[24px] border-border"><CardContent className="py-12 text-center text-muted-foreground"><FileText className="mx-auto mb-4 h-12 w-12 text-gray-300" /><p className="font-medium">No documents to track</p></CardContent></Card>
             ) : (
               <div className="space-y-4">
                 {documents.map(doc => (
-                  <Card key={doc.id} className="rounded-[24px] border-gray-100 shadow-sm">
+                  <Card key={doc.id} className="rounded-[24px] border-border shadow-sm">
                     <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-3"><span className="text-sm font-bold text-[#212529] truncate">{doc.file_name}</span><Badge className="text-[10px] font-black uppercase tracking-wider bg-[#f8f9fa] text-gray-500 border-gray-200 rounded-lg">{doc.status.replace(/_/g, " ")}</Badge></div>
+                      <div className="flex items-center justify-between mb-3"><span className="text-sm font-bold text-foreground truncate">{doc.file_name}</span><Badge className="text-[10px] font-black uppercase tracking-wider bg-muted text-muted-foreground border-border rounded-lg">{doc.status.replace(/_/g, " ")}</Badge></div>
                       <Progress value={getDocPipelineProgress(doc.status)} className="h-2" />
                       <div className="flex justify-between mt-2">
                         {pipelineSteps.map((ps, i) => {
                           const isComplete = pipelineSteps.findIndex(s => s.key === doc.status) >= i;
-                          return <div key={ps.key} className="flex flex-col items-center gap-1"><ps.icon className={`h-3 w-3 ${isComplete ? "text-primary" : "text-gray-300"}`} /><span className={`text-[9px] font-bold ${isComplete ? "text-[#212529]" : "text-gray-300"}`}>{ps.label}</span></div>;
+                          return <div key={ps.key} className="flex flex-col items-center gap-1"><ps.icon className={`h-3 w-3 ${isComplete ? "text-primary" : "text-gray-300"}`} /><span className={`text-[9px] font-bold ${isComplete ? "text-foreground" : "text-gray-300"}`}>{ps.label}</span></div>;
                         })}
                       </div>
                     </CardContent>
@@ -567,7 +567,7 @@ export default function ClientPortal() {
                   <div><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Destination Country</Label><Input value={apostilleForm.destination_country} onChange={e => setApostilleForm({ ...apostilleForm, destination_country: e.target.value })} placeholder="e.g. Germany" className="bg-muted border-none rounded-xl mt-1" /></div>
                   <div><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Number of Documents</Label><Input type="number" min="1" max="50" value={apostilleForm.document_count} onChange={e => setApostilleForm({ ...apostilleForm, document_count: e.target.value })} className="bg-muted border-none rounded-xl mt-1" /></div>
                 </div>
-                <div><Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Notes (optional)</Label><Textarea value={apostilleForm.notes} onChange={e => setApostilleForm({ ...apostilleForm, notes: e.target.value })} rows={2} placeholder="Urgency, special instructions" maxLength={500} className="bg-[#f8f9fa] border-none rounded-xl mt-1" /></div>
+                <div><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Notes (optional)</Label><Textarea value={apostilleForm.notes} onChange={e => setApostilleForm({ ...apostilleForm, notes: e.target.value })} rows={2} placeholder="Urgency, special instructions" maxLength={500} className="bg-muted border-none rounded-xl mt-1" /></div>
                 <AlertDialog>
                 <AlertDialogTrigger asChild>
                 <Button disabled={!apostilleForm.document_description.trim() || submittingApostille} className="rounded-xl font-bold bg-foreground text-background shadow-block">
@@ -601,12 +601,12 @@ export default function ClientPortal() {
               const apoLabels = ["Intake", "Payment", "SOS", "Processing", "Shipped", "Delivered"];
               const currentIdx = apoSteps.indexOf(req.status);
               return (
-                <Card key={req.id} className="rounded-[24px] border-gray-100 shadow-sm">
+                <Card key={req.id} className="rounded-[24px] border-border shadow-sm">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-2"><span className="text-sm font-bold text-foreground">{req.document_description}</span><Badge className={`text-[10px] font-black uppercase tracking-wider rounded-lg ${req.status === "delivered" ? "bg-emerald-50 text-emerald-600" : "bg-primary/10 text-primary"}`}>{req.status.replace(/_/g, " ")}</Badge></div>
                     <div className="flex items-center gap-1 my-3">{apoSteps.map((s, i) => (<div key={s} className="flex items-center flex-1"><div className={`flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold ${i <= currentIdx ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>{i < currentIdx ? "✓" : i + 1}</div>{i < apoSteps.length - 1 && <div className={`flex-1 h-0.5 mx-1 ${i < currentIdx ? "bg-primary" : "bg-muted"}`} />}</div>))}</div>
-                    <div className="flex justify-between text-[9px] font-bold text-gray-400 mb-2">{apoLabels.map(l => <span key={l}>{l}</span>)}</div>
-                    <div className="flex items-center gap-4 text-xs text-gray-400 font-medium">
+                    <div className="flex justify-between text-[9px] font-bold text-muted-foreground mb-2">{apoLabels.map(l => <span key={l}>{l}</span>)}</div>
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground font-medium">
                       <span>Fee: ${parseFloat(req.fee || "0").toFixed(2)}</span>
                       {req.destination_country && <span>→ {req.destination_country}</span>}
                       {req.tracking_number && <span>Tracking: {req.tracking_number}</span>}
@@ -621,27 +621,27 @@ export default function ClientPortal() {
           {activeSection === "payments" && (
             <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-black text-[#212529]">Payments & Invoices</h2>
+              <h2 className="text-xl font-black text-foreground">Payments & Invoices</h2>
               {!showPaymentForm && <Button size="sm" onClick={() => setShowPaymentForm(true)} className="rounded-xl font-bold bg-[#212529] text-white shadow-block"><CreditCard className="mr-1 h-4 w-4" /> Make Payment</Button>}
             </div>
             {showPaymentForm && <PaymentForm onSuccess={() => { setShowPaymentForm(false); supabase.from("payments").select("*").eq("client_id", user!.id).order("created_at", { ascending: false }).then(({ data }) => { if (data) setPayments(data); }); }} onCancel={() => setShowPaymentForm(false)} />}
             {payments.length === 0 && !showPaymentForm ? (
-              <Card className="rounded-[24px] border-gray-100"><CardContent className="py-12 text-center text-gray-400"><DollarSign className="mx-auto mb-4 h-12 w-12 text-gray-300" /><p className="font-medium">No payment history yet</p></CardContent></Card>
+              <Card className="rounded-[24px] border-border"><CardContent className="py-12 text-center text-muted-foreground"><DollarSign className="mx-auto mb-4 h-12 w-12 text-gray-300" /><p className="font-medium">No payment history yet</p></CardContent></Card>
             ) : payments.length > 0 ? (
               <div className="space-y-3">
                 {payments.map(p => {
                   const linkedAppt = appointments.find(a => a.id === p.appointment_id);
                   return (
-                    <Card key={p.id} className="rounded-[24px] border-gray-100 shadow-sm">
+                    <Card key={p.id} className="rounded-[24px] border-border shadow-sm">
                       <CardContent className="flex items-center justify-between p-4">
                         <div>
-                          <p className="font-black text-sm text-[#212529]">${parseFloat(p.amount).toFixed(2)}</p>
+                          <p className="font-black text-sm text-foreground">${parseFloat(p.amount).toFixed(2)}</p>
                           {linkedAppt && <p className="text-xs text-primary font-bold">{linkedAppt.service_type}</p>}
-                          <p className="text-xs text-gray-400 font-medium">{new Date(p.created_at).toLocaleDateString()} · {p.method || "N/A"}{p.paid_at ? ` · Paid ${new Date(p.paid_at).toLocaleDateString()}` : ""}</p>
+                          <p className="text-xs text-muted-foreground font-medium">{new Date(p.created_at).toLocaleDateString()} · {p.method || "N/A"}{p.paid_at ? ` · Paid ${new Date(p.paid_at).toLocaleDateString()}` : ""}</p>
                         </div>
                         <div className="flex items-center gap-2">
                           {p.status === "pending" && <Button size="sm" className="text-xs rounded-xl font-bold bg-[#212529] text-white" onClick={() => setPayingPaymentId(p.id)}><CreditCard className="mr-1 h-3 w-3" /> Pay Now</Button>}
-                          <Badge className={`text-[10px] font-black uppercase tracking-wider rounded-lg ${p.status === "paid" ? "bg-emerald-50 text-emerald-600" : p.status === "pending" ? "bg-primary/10 text-primary" : "bg-gray-100 text-gray-400"}`}>{p.status}</Badge>
+                          <Badge className={`text-[10px] font-black uppercase tracking-wider rounded-lg ${p.status === "paid" ? "bg-emerald-50 text-emerald-600" : p.status === "pending" ? "bg-primary/10 text-primary" : "bg-gray-100 text-muted-foreground"}`}>{p.status}</Badge>
                           {p.invoice_url && <a href={p.invoice_url} target="_blank" rel="noreferrer"><Button size="sm" variant="outline" className="text-xs rounded-xl font-bold">View Invoice</Button></a>}
                         </div>
                       </CardContent>
@@ -656,12 +656,12 @@ export default function ClientPortal() {
 
           {activeSection === "reviews" && (
             <div className="space-y-6">
-            <h2 className="text-xl font-black text-[#212529]">Leave a Review</h2>
+            <h2 className="text-xl font-black text-foreground">Leave a Review</h2>
             {past.filter(a => a.status === "completed").length > 0 ? (
-              <Card className="rounded-[24px] border-gray-100 shadow-sm"><CardContent className="p-6 space-y-4">
-                <div><Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Select Appointment</Label><Select value={reviewForm.appointment_id} onValueChange={v => setReviewForm({ ...reviewForm, appointment_id: v })}><SelectTrigger className="bg-[#f8f9fa] border-none rounded-xl mt-1"><SelectValue placeholder="Choose completed appointment..." /></SelectTrigger><SelectContent>{past.filter(a => a.status === "completed" && !reviews.some(r => r.appointment_id === a.id)).map(a => <SelectItem key={a.id} value={a.id}>{a.service_type} — {formatDate(a.scheduled_date)}</SelectItem>)}</SelectContent></Select></div>
-                <div><Label id="rating-label" className="text-[10px] font-black uppercase tracking-widest text-gray-400">Rating</Label><div className="flex gap-1 mt-1" role="radiogroup" aria-labelledby="rating-label">{[1,2,3,4,5].map(n => <button key={n} role="radio" aria-checked={reviewForm.rating === n} aria-label={`${n} star${n > 1 ? "s" : ""}`} onClick={() => setReviewForm({ ...reviewForm, rating: n })} onKeyDown={e => { if (e.key === "ArrowRight" && reviewForm.rating < 5) setReviewForm({ ...reviewForm, rating: reviewForm.rating + 1 }); if (e.key === "ArrowLeft" && reviewForm.rating > 1) setReviewForm({ ...reviewForm, rating: reviewForm.rating - 1 }); }} tabIndex={reviewForm.rating === n ? 0 : -1} className="p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"><Star className={`h-6 w-6 ${n <= reviewForm.rating ? "text-primary fill-primary" : "text-gray-300"}`} /></button>)}</div></div>
-                <div><Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Comment (optional)</Label><Textarea value={reviewForm.comment} onChange={e => setReviewForm({ ...reviewForm, comment: e.target.value })} rows={3} placeholder="Tell us about your experience..." className="bg-[#f8f9fa] border-none rounded-xl mt-1" /></div>
+              <Card className="rounded-[24px] border-border shadow-sm"><CardContent className="p-6 space-y-4">
+                <div><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Select Appointment</Label><Select value={reviewForm.appointment_id} onValueChange={v => setReviewForm({ ...reviewForm, appointment_id: v })}><SelectTrigger className="bg-muted border-none rounded-xl mt-1"><SelectValue placeholder="Choose completed appointment..." /></SelectTrigger><SelectContent>{past.filter(a => a.status === "completed" && !reviews.some(r => r.appointment_id === a.id)).map(a => <SelectItem key={a.id} value={a.id}>{a.service_type} — {formatDate(a.scheduled_date)}</SelectItem>)}</SelectContent></Select></div>
+                <div><Label id="rating-label" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Rating</Label><div className="flex gap-1 mt-1" role="radiogroup" aria-labelledby="rating-label">{[1,2,3,4,5].map(n => <button key={n} role="radio" aria-checked={reviewForm.rating === n} aria-label={`${n} star${n > 1 ? "s" : ""}`} onClick={() => setReviewForm({ ...reviewForm, rating: n })} onKeyDown={e => { if (e.key === "ArrowRight" && reviewForm.rating < 5) setReviewForm({ ...reviewForm, rating: reviewForm.rating + 1 }); if (e.key === "ArrowLeft" && reviewForm.rating > 1) setReviewForm({ ...reviewForm, rating: reviewForm.rating - 1 }); }} tabIndex={reviewForm.rating === n ? 0 : -1} className="p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"><Star className={`h-6 w-6 ${n <= reviewForm.rating ? "text-primary fill-primary" : "text-gray-300"}`} /></button>)}</div></div>
+                <div><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Comment (optional)</Label><Textarea value={reviewForm.comment} onChange={e => setReviewForm({ ...reviewForm, comment: e.target.value })} rows={3} placeholder="Tell us about your experience..." className="bg-muted border-none rounded-xl mt-1" /></div>
                 <Button disabled={!reviewForm.appointment_id || submittingReview} onClick={async () => {
                   if (!user || !reviewForm.appointment_id) return;
                   setSubmittingReview(true);
@@ -672,9 +672,9 @@ export default function ClientPortal() {
                 }} className="rounded-xl font-bold bg-[#212529] text-white shadow-block">{submittingReview ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Star className="mr-1 h-4 w-4" />} Submit Review</Button>
               </CardContent></Card>
             ) : (
-              <Card className="rounded-[24px] border-gray-100"><CardContent className="py-12 text-center text-gray-400"><Star className="mx-auto mb-4 h-12 w-12 text-gray-300" /><p className="font-bold text-[#212529] mb-1">No reviews yet</p><p className="text-sm font-medium">Complete an appointment to leave feedback.</p></CardContent></Card>
+              <Card className="rounded-[24px] border-border"><CardContent className="py-12 text-center text-muted-foreground"><Star className="mx-auto mb-4 h-12 w-12 text-gray-300" /><p className="font-bold text-foreground mb-1">No reviews yet</p><p className="text-sm font-medium">Complete an appointment to leave feedback.</p></CardContent></Card>
             )}
-            {reviews.length > 0 && <><h3 className="text-lg font-black text-[#212529] mt-6">Your Reviews</h3><div className="space-y-3">{reviews.map(r => <Card key={r.id} className="rounded-[24px] border-gray-100 shadow-sm"><CardContent className="p-4"><div className="flex items-center gap-1 mb-2">{[1,2,3,4,5].map(n => <Star key={n} className={`h-4 w-4 ${n <= r.rating ? "text-primary fill-primary" : "text-gray-300"}`} />)}</div>{r.comment && <p className="text-sm text-gray-500 font-medium">{r.comment}</p>}<p className="text-xs text-gray-400 font-medium mt-2">{new Date(r.created_at).toLocaleDateString()}</p></CardContent></Card>)}</div></>}
+            {reviews.length > 0 && <><h3 className="text-lg font-black text-foreground mt-6">Your Reviews</h3><div className="space-y-3">{reviews.map(r => <Card key={r.id} className="rounded-[24px] border-border shadow-sm"><CardContent className="p-4"><div className="flex items-center gap-1 mb-2">{[1,2,3,4,5].map(n => <Star key={n} className={`h-4 w-4 ${n <= r.rating ? "text-primary fill-primary" : "text-gray-300"}`} />)}</div>{r.comment && <p className="text-sm text-muted-foreground font-medium">{r.comment}</p>}<p className="text-xs text-muted-foreground font-medium mt-2">{new Date(r.created_at).toLocaleDateString()}</p></CardContent></Card>)}</div></>}
             </div>
           )}
 
@@ -684,13 +684,13 @@ export default function ClientPortal() {
 
           {activeSection === "reminders" && (
             <div className="space-y-6">
-            <h2 className="text-xl font-black text-[#212529]">Document Reminders & Renewals</h2>
-            <Card className="rounded-[24px] border-gray-100 shadow-sm"><CardContent className="p-6 space-y-4">
-              <h3 className="text-sm font-black text-[#212529]">Set Expiry Reminder</h3>
+            <h2 className="text-xl font-black text-foreground">Document Reminders & Renewals</h2>
+            <Card className="rounded-[24px] border-border shadow-sm"><CardContent className="p-6 space-y-4">
+              <h3 className="text-sm font-black text-foreground">Set Expiry Reminder</h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div><Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Document</Label><Select value={reminderForm.document_id} onValueChange={v => setReminderForm({ ...reminderForm, document_id: v })}><SelectTrigger className="text-xs bg-[#f8f9fa] border-none rounded-xl mt-1"><SelectValue placeholder="Select document..." /></SelectTrigger><SelectContent>{documents.map(d => <SelectItem key={d.id} value={d.id} className="text-xs">{d.file_name}</SelectItem>)}</SelectContent></Select></div>
-                <div><Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Expiry Date</Label><Input type="date" value={reminderForm.expiry_date} onChange={e => setReminderForm({ ...reminderForm, expiry_date: e.target.value })} className="bg-[#f8f9fa] border-none rounded-xl mt-1" /></div>
-                <div><Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Remind Before</Label><Select value={reminderForm.remind_days_before} onValueChange={v => setReminderForm({ ...reminderForm, remind_days_before: v })}><SelectTrigger className="text-xs bg-[#f8f9fa] border-none rounded-xl mt-1"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="7">7 days</SelectItem><SelectItem value="14">14 days</SelectItem><SelectItem value="30">30 days</SelectItem><SelectItem value="60">60 days</SelectItem><SelectItem value="90">90 days</SelectItem></SelectContent></Select></div>
+                <div><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Document</Label><Select value={reminderForm.document_id} onValueChange={v => setReminderForm({ ...reminderForm, document_id: v })}><SelectTrigger className="text-xs bg-muted border-none rounded-xl mt-1"><SelectValue placeholder="Select document..." /></SelectTrigger><SelectContent>{documents.map(d => <SelectItem key={d.id} value={d.id} className="text-xs">{d.file_name}</SelectItem>)}</SelectContent></Select></div>
+                <div><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Expiry Date</Label><Input type="date" value={reminderForm.expiry_date} onChange={e => setReminderForm({ ...reminderForm, expiry_date: e.target.value })} className="bg-muted border-none rounded-xl mt-1" /></div>
+                <div><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Remind Before</Label><Select value={reminderForm.remind_days_before} onValueChange={v => setReminderForm({ ...reminderForm, remind_days_before: v })}><SelectTrigger className="text-xs bg-muted border-none rounded-xl mt-1"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="7">7 days</SelectItem><SelectItem value="14">14 days</SelectItem><SelectItem value="30">30 days</SelectItem><SelectItem value="60">60 days</SelectItem><SelectItem value="90">90 days</SelectItem></SelectContent></Select></div>
               </div>
               <Button disabled={!reminderForm.document_id || !reminderForm.expiry_date || savingReminder} onClick={async () => {
                 if (!user) return;
@@ -702,14 +702,14 @@ export default function ClientPortal() {
               }} size="sm" className="rounded-xl font-bold bg-[#212529] text-white shadow-block">{savingReminder ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Bell className="mr-1 h-4 w-4" />} Set Reminder</Button>
             </CardContent></Card>
             {reminders.length === 0 ? (
-              <Card className="rounded-[24px] border-gray-100"><CardContent className="py-12 text-center text-gray-400"><Bell className="mx-auto mb-4 h-12 w-12 text-gray-300" /><p className="font-medium">No reminders set</p></CardContent></Card>
+              <Card className="rounded-[24px] border-border"><CardContent className="py-12 text-center text-muted-foreground"><Bell className="mx-auto mb-4 h-12 w-12 text-gray-300" /><p className="font-medium">No reminders set</p></CardContent></Card>
             ) : (
               <div className="space-y-3">{reminders.map((rem: any) => {
                 const doc = documents.find(d => d.id === rem.document_id);
                 const expiryDate = new Date(rem.expiry_date + "T00:00:00");
                 const daysUntil = Math.ceil((expiryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
                 const isUrgent = daysUntil <= rem.remind_days_before, isExpired = daysUntil <= 0;
-                return (<Card key={rem.id} className={`rounded-[24px] border-gray-100 shadow-sm ${isExpired ? "border-destructive/50" : isUrgent ? "border-primary/50" : ""}`}><CardContent className="flex items-center justify-between p-4"><div className="flex items-center gap-3"><Bell className={`h-5 w-5 ${isExpired ? "text-destructive" : isUrgent ? "text-primary" : "text-gray-400"}`} /><div><p className="text-sm font-bold text-[#212529]">{doc?.file_name || "Unknown document"}</p><p className="text-xs text-gray-400 font-medium">Expires: {expiryDate.toLocaleDateString()} · Remind {rem.remind_days_before}d before</p></div></div><div className="flex items-center gap-2"><Badge className={`text-[10px] font-black uppercase tracking-wider rounded-lg ${isExpired ? "bg-destructive/10 text-destructive" : isUrgent ? "bg-primary/10 text-primary" : "bg-gray-100 text-gray-400"}`}>{isExpired ? "Expired" : `${daysUntil}d remaining`}</Badge><Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={async () => { const { error } = await supabase.from("document_reminders").delete().eq("id", rem.id); if (!error) { setReminders(prev => prev.filter((r: any) => r.id !== rem.id)); toast({ title: "Reminder removed" }); } }}><XCircle className="h-3 w-3" /></Button></div></CardContent></Card>);
+                return (<Card key={rem.id} className={`rounded-[24px] border-border shadow-sm ${isExpired ? "border-destructive/50" : isUrgent ? "border-primary/50" : ""}`}><CardContent className="flex items-center justify-between p-4"><div className="flex items-center gap-3"><Bell className={`h-5 w-5 ${isExpired ? "text-destructive" : isUrgent ? "text-primary" : "text-muted-foreground"}`} /><div><p className="text-sm font-bold text-foreground">{doc?.file_name || "Unknown document"}</p><p className="text-xs text-muted-foreground font-medium">Expires: {expiryDate.toLocaleDateString()} · Remind {rem.remind_days_before}d before</p></div></div><div className="flex items-center gap-2"><Badge className={`text-[10px] font-black uppercase tracking-wider rounded-lg ${isExpired ? "bg-destructive/10 text-destructive" : isUrgent ? "bg-primary/10 text-primary" : "bg-gray-100 text-muted-foreground"}`}>{isExpired ? "Expired" : `${daysUntil}d remaining`}</Badge><Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={async () => { const { error } = await supabase.from("document_reminders").delete().eq("id", rem.id); if (!error) { setReminders(prev => prev.filter((r: any) => r.id !== rem.id)); toast({ title: "Reminder removed" }); } }}><XCircle className="h-3 w-3" /></Button></div></CardContent></Card>);
               })}</div>
             )}
             </div>
@@ -717,10 +717,10 @@ export default function ClientPortal() {
 
           {activeSection === "services" && (
             <div className="space-y-6">
-            <div className="flex items-center justify-between"><h2 className="text-xl font-black text-[#212529]">Available Services</h2><Button variant="outline" size="sm" onClick={() => setShowWizard(!showWizard)} className="rounded-xl font-bold"><Sparkles className="mr-1 h-3 w-3" /> {showWizard ? "Hide Guide" : "Not Sure What You Need?"}</Button></div>
-            <Card className="rounded-[24px] border-primary/20 bg-primary/5"><CardContent className="flex items-center justify-between p-4"><div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20"><FileText className="h-5 w-5 text-primary" /></div><div><h3 className="text-sm font-black text-[#212529]">Digitize Documents</h3><p className="text-xs text-gray-400 font-medium">Upload scanned documents and convert them to editable digital formats</p></div></div><Link to="/digitize"><Button size="sm" className="rounded-xl font-bold bg-[#212529] text-white shadow-block"><ArrowRight className="mr-1 h-3 w-3" /> Start</Button></Link></CardContent></Card>
+            <div className="flex items-center justify-between"><h2 className="text-xl font-black text-foreground">Available Services</h2><Button variant="outline" size="sm" onClick={() => setShowWizard(!showWizard)} className="rounded-xl font-bold"><Sparkles className="mr-1 h-3 w-3" /> {showWizard ? "Hide Guide" : "Not Sure What You Need?"}</Button></div>
+            <Card className="rounded-[24px] border-primary/20 bg-primary/5"><CardContent className="flex items-center justify-between p-4"><div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20"><FileText className="h-5 w-5 text-primary" /></div><div><h3 className="text-sm font-black text-foreground">Digitize Documents</h3><p className="text-xs text-muted-foreground font-medium">Upload scanned documents and convert them to editable digital formats</p></div></div><Link to="/digitize"><Button size="sm" className="rounded-xl font-bold bg-[#212529] text-white shadow-block"><ArrowRight className="mr-1 h-3 w-3" /> Start</Button></Link></CardContent></Card>
             <div className="grid gap-4 sm:grid-cols-2">{services.map(svc => (
-              <Card key={svc.id} className="rounded-[24px] border-gray-100 shadow-sm hover:shadow-md transition-shadow"><CardContent className="p-4"><div className="flex items-start justify-between"><div><h3 className="text-sm font-black text-[#212529]">{svc.name}</h3>{svc.short_description && <p className="text-xs text-gray-400 font-medium mt-1">{svc.short_description}</p>}</div><Badge className="text-[10px] font-black uppercase tracking-wider rounded-lg bg-[#f8f9fa] text-gray-500 border-gray-200 shrink-0 ml-2">{svc.pricing_model === "custom" ? "Quote" : svc.price_from ? `$${svc.price_from}${svc.price_to && svc.price_to > svc.price_from ? `–$${svc.price_to}` : ""}` : "Contact"}</Badge></div>{svc.description && <p className="text-xs text-gray-400 font-medium mt-2 line-clamp-2">{svc.description}</p>}<div className="flex gap-2 mt-3"><Link to={getServiceUrl(svc)}><Button size="sm" className="text-xs rounded-xl font-bold bg-[#212529] text-white">{getServiceCTA(svc)}</Button></Link><Link to={`/services/${svc.id}`}><Button size="sm" variant="outline" className="text-xs rounded-xl font-bold">View Details</Button></Link></div></CardContent></Card>
+              <Card key={svc.id} className="rounded-[24px] border-border shadow-sm hover:shadow-md transition-shadow"><CardContent className="p-4"><div className="flex items-start justify-between"><div><h3 className="text-sm font-black text-foreground">{svc.name}</h3>{svc.short_description && <p className="text-xs text-muted-foreground font-medium mt-1">{svc.short_description}</p>}</div><Badge className="text-[10px] font-black uppercase tracking-wider rounded-lg bg-muted text-muted-foreground border-border shrink-0 ml-2">{svc.pricing_model === "custom" ? "Quote" : svc.price_from ? `$${svc.price_from}${svc.price_to && svc.price_to > svc.price_from ? `–$${svc.price_to}` : ""}` : "Contact"}</Badge></div>{svc.description && <p className="text-xs text-muted-foreground font-medium mt-2 line-clamp-2">{svc.description}</p>}<div className="flex gap-2 mt-3"><Link to={getServiceUrl(svc)}><Button size="sm" className="text-xs rounded-xl font-bold bg-[#212529] text-white">{getServiceCTA(svc)}</Button></Link><Link to={`/services/${svc.id}`}><Button size="sm" variant="outline" className="text-xs rounded-xl font-bold">View Details</Button></Link></div></CardContent></Card>
             ))}</div>
             </div>
           )}
