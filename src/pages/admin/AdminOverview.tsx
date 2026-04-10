@@ -221,7 +221,7 @@ export default function AdminOverview() {
 
   const getGcalForDay = (date: Date) => {
     const dateStr = date.toISOString().split("T")[0];
-    return gcalEvents.filter((e: any) => {
+    return gcalEvents.filter((e) => {
       const start = e.start?.dateTime || e.start?.date || "";
       return start.startsWith(dateStr);
     });
