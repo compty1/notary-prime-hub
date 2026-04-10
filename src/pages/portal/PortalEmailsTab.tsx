@@ -497,11 +497,11 @@ export default function PortalEmailsTab() {
             <CardContent className="space-y-4">
               {settings.gmail_connected ? (
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3 rounded-lg border border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-800 p-4">
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <div className="flex items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 p-4">
+                    <CheckCircle2 className="h-5 w-5 text-primary" />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-green-800 dark:text-green-300">Gmail Connected</p>
-                      <p className="text-xs text-green-600 dark:text-green-400">{settings.gmail_email}</p>
+                      <p className="text-sm font-medium text-foreground">Gmail Connected</p>
+                      <p className="text-xs text-muted-foreground">{settings.gmail_email}</p>
                     </div>
                     <Button variant="outline" size="sm" onClick={handleGmailDisconnect} className="text-xs">Disconnect</Button>
                   </div>
