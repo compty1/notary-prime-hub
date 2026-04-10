@@ -25,7 +25,7 @@ export function OnboardingWizard({ profile, onComplete }: OnboardingWizardProps)
     address: String(profile?.address || ""),
     city: String(profile?.city || ""),
     state: String(profile?.state || "OH"),
-    zip: String(profile?.zip_code || ""),
+    zip: String(profile?.zip_code ?? ""),
   });
 
   const steps = [

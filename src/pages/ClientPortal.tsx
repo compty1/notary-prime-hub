@@ -787,7 +787,7 @@ export default function ClientPortal() {
             profileForm.address !== (profile.address || "") ||
             profileForm.city !== (profile.city || "") ||
             profileForm.state !== (profile.state || "") ||
-            profileForm.zip !== (profile.zip_code || "")
+            profileForm.zip !== (profile.zip || "")
           );
           if (hasChanges && !open) {
             // Instead of window.confirm, just allow closing — the dialog has Cancel button
