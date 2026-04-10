@@ -507,6 +507,9 @@ export default function BookAppointment() {
     for (const [keyword, actType] of Object.entries(NOTARIAL_ACT_MAP)) {
       if (svcLower.includes(keyword)) { notarialActType = actType; break; }
     }
+    // Referral tracking from professional pages
+    const refParam = searchParams.get("ref") || null;
+
     const payload = {
       client_id: userId,
       service_type: data.serviceType || serviceType,
@@ -530,6 +533,9 @@ export default function BookAppointment() {
         ? Math.max(parseFloat(pricingSettings.travel_fee_minimum || "25"), travelDistance * parseFloat(pricingSettings.travel_fee_per_mile || "0.655"))
         : 0,
       travel_distance_miles: travelDistance,
+      // Professional referral tracking
+      referral_professional_id: refParam || null,
+      referral_source: refParam ? "professional_page" : null,
     };
     let appointmentResultId: string;
     if (rebookingId) {
