@@ -120,7 +120,7 @@ export default function NotaryDirectory() {
             {filtered.map((pro, i) => {
               const creds = pro.credentials || {};
               const areas = (pro.service_areas || []) as string[];
-              const themeColor = pro.theme_color || "#eab308";
+              const themeColor = pro.theme_color || "hsl(43, 74%, 49%)";
               const typeLabel = PROFESSIONAL_TYPES[pro.professional_type] || "Professional";
 
               return (

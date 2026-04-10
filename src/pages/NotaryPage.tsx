@@ -140,7 +140,7 @@ export default function NotaryPage() {
   const socials = page.social_links || {};
   const services = (page.services_offered || []) as Array<{ name: string; description?: string; price?: number | string }>;
   const areas = (page.service_areas || []) as string[];
-  const themeColor = page.theme_color || "#eab308";
+  const themeColor = page.theme_color || "hsl(43, 74%, 49%)";
   const accentColor = page.accent_color || "#1e40af";
   const fontFamily = page.font_family || "Inter";
   const navServices = Array.isArray(page.nav_services) ? page.nav_services : [];

@@ -74,7 +74,7 @@ export const statusIcon: Record<string, React.ReactNode> = {
 };
 
 export const sevColors: Record<string, string> = {
-  critical: "#ef4444", high: "#f97316", medium: "#eab308", low: "#3b82f6", info: "#94a3b8",
+  critical: "#ef4444", high: "#f97316", medium: "hsl(43, 74%, 49%)", low: "#3b82f6", info: "#94a3b8",
 };
 
 export type SortField = "title" | "category" | "severity" | "status" | "impact_area" | "updated_at" | "created_at";

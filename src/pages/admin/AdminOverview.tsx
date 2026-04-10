@@ -381,7 +381,7 @@ export default function AdminOverview() {
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#9ca3af" }} />
                   <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} allowDecimals={false} />
                   <Tooltip contentStyle={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, fontSize: 12 }} />
-                  <Bar dataKey="appointments" fill="#eab308" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="appointments" fill="hsl(43, 74%, 49%)" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : <p className="py-10 text-center text-sm text-gray-400">No data yet</p>}
@@ -398,7 +398,7 @@ export default function AdminOverview() {
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#9ca3af" }} />
                   <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} tickFormatter={(v) => `$${v}`} />
                   <Tooltip contentStyle={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, fontSize: 12 }} formatter={(value: number) => [`$${value.toFixed(2)}`, "Revenue"]} />
-                  <Line type="monotone" dataKey="revenue" stroke="#212529" strokeWidth={2} dot={{ fill: "#eab308", r: 4 }} />
+                  <Line type="monotone" dataKey="revenue" stroke="#212529" strokeWidth={2} dot={{ fill: "hsl(43, 74%, 49%)", r: 4 }} />
                 </LineChart>
               </ResponsiveContainer>
             ) : <p className="py-10 text-center text-sm text-gray-400">No data yet</p>}

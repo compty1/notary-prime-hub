@@ -5,9 +5,9 @@ export function MobileFAB() {
     <a
       href="tel:6143006890"
       aria-label="Call NotarDex"
-      className="fixed bottom-24 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#eab308] text-white shadow-lg shadow-yellow-500/20 md:hidden hover:-translate-y-0.5 active:scale-95 transition-all"
+      className="fixed bottom-24 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20 md:hidden hover:-translate-y-0.5 active:scale-95 transition-all"
     >
-      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#eab308] opacity-20" />
+      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-20" />
       <Phone className="h-6 w-6" />
     </a>
   );

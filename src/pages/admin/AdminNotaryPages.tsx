@@ -90,7 +90,7 @@ const DEFAULT_SERVICES: ServiceItem[] = [
 const emptyPage: Partial<NotaryPage> = {
   slug: "", display_name: "", title: "", tagline: "", bio: "", phone: "", email: "",
   website_url: "", service_areas: [], services_offered: [], credentials: {},
-  theme_color: "#eab308", accent_color: "#1e40af", font_family: "Inter",
+  theme_color: "hsl(43, 74%, 49%)", accent_color: "#1e40af", font_family: "Inter",
   professional_type: "notary", signing_platform_url: "", use_platform_booking: true,
   external_booking_url: "", social_links: {}, profile_photo_path: null, cover_photo_path: null,
   gallery_photos: [], nav_services: [],
@@ -700,8 +700,8 @@ export default function AdminNotaryPages() {
                 <div>
                   <Label>Primary Color</Label>
                   <div className="flex gap-2">
-                    <Input type="color" value={editPage.theme_color || "#eab308"} onChange={e => updateField("theme_color", e.target.value)} className="h-10 w-14 p-1" />
-                    <Input value={editPage.theme_color || "#eab308"} onChange={e => updateField("theme_color", e.target.value)} className="flex-1 font-mono" />
+                    <Input type="color" value={editPage.theme_color || "hsl(43, 74%, 49%)"} onChange={e => updateField("theme_color", e.target.value)} className="h-10 w-14 p-1" />
+                    <Input value={editPage.theme_color || "hsl(43, 74%, 49%)"} onChange={e => updateField("theme_color", e.target.value)} className="flex-1 font-mono" />
                   </div>
                 </div>
                 <div>
@@ -722,16 +722,16 @@ export default function AdminNotaryPages() {
                 </div>
               </div>
               {/* Live preview swatch */}
-              <div className="rounded-xl border p-4" style={{ background: `linear-gradient(135deg, ${editPage.theme_color || "#eab308"}22, ${editPage.accent_color || "#1e40af"}08)` }}>
+              <div className="rounded-xl border p-4" style={{ background: `linear-gradient(135deg, ${editPage.theme_color || "hsl(43, 74%, 49%)"}22, ${editPage.accent_color || "#1e40af"}08)` }}>
                 <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 rounded-full border-2" style={{ borderColor: editPage.theme_color || "#eab308", background: `${editPage.theme_color || "#eab308"}15` }}>
-                    <div className="flex h-full w-full items-center justify-center text-lg font-bold" style={{ color: editPage.theme_color || "#eab308", fontFamily: editPage.font_family || "Inter" }}>
+                  <div className="h-12 w-12 rounded-full border-2" style={{ borderColor: editPage.theme_color || "hsl(43, 74%, 49%)", background: `${editPage.theme_color || "hsl(43, 74%, 49%)"}15` }}>
+                    <div className="flex h-full w-full items-center justify-center text-lg font-bold" style={{ color: editPage.theme_color || "hsl(43, 74%, 49%)", fontFamily: editPage.font_family || "Inter" }}>
                       {editPage.display_name?.charAt(0)?.toUpperCase() || "?"}
                     </div>
                   </div>
                   <div style={{ fontFamily: editPage.font_family || "Inter" }}>
                     <p className="font-bold">{editPage.display_name || "Name"}</p>
-                    <p className="text-sm" style={{ color: editPage.theme_color || "#eab308" }}>{editPage.title || "Title"}</p>
+                    <p className="text-sm" style={{ color: editPage.theme_color || "hsl(43, 74%, 49%)" }}>{editPage.title || "Title"}</p>
                   </div>
                 </div>
               </div>
