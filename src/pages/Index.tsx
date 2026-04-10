@@ -281,7 +281,7 @@ export default function Index() {
               <motion.div variants={fadeUp} custom={4} className="mt-8 flex items-center gap-3">
                 <div className="flex -space-x-2">
                   {[1,2,3].map(i => (
-                    <div key={i} className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white" />
+                    <div key={i} className="w-8 h-8 rounded-full bg-muted border-2 border-white" />
                   ))}
                 </div>
                 <p className="text-sm text-muted-foreground font-medium">
@@ -304,14 +304,14 @@ export default function Index() {
                   <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Document</span>
                 </div>
                 <div className="space-y-2">
-                  <div className="h-2 bg-gray-100 rounded-full w-full" />
-                  <div className="h-2 bg-gray-100 rounded-full w-3/4" />
-                  <div className="h-2 bg-gray-100 rounded-full w-5/6" />
-                  <div className="h-2 bg-gray-100 rounded-full w-2/3" />
+                  <div className="h-2 bg-muted rounded-full w-full" />
+                  <div className="h-2 bg-muted rounded-full w-3/4" />
+                  <div className="h-2 bg-muted rounded-full w-5/6" />
+                  <div className="h-2 bg-muted rounded-full w-2/3" />
                 </div>
                 <div className="mt-4 flex items-center gap-2">
                   <div className="h-6 w-16 bg-primary/20 rounded-md" />
-                  <div className="h-6 w-12 bg-gray-100 rounded-md" />
+                  <div className="h-6 w-12 bg-muted rounded-md" />
                 </div>
               </div>
 
@@ -324,7 +324,7 @@ export default function Index() {
                   </div>
                   <Play className="h-3 w-3 text-muted-foreground" />
                 </div>
-                <div className="bg-gray-700 rounded-xl h-24 flex items-center justify-center">
+                <div className="bg-foreground/70 rounded-xl h-24 flex items-center justify-center">
                   <Video className="h-8 w-8 text-muted-foreground" />
                 </div>
               </div>
