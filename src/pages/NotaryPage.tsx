@@ -402,11 +402,9 @@ export default function NotaryPage() {
         {page.bio && (
           <section id="about" className="mx-auto max-w-4xl px-4 py-12">
             <h2 className="mb-4 text-2xl font-bold">About</h2>
-            <div className="prose prose-lg max-w-none text-muted-foreground dark:prose-invert">
-              {page.bio.split("\n").map((p, i) => (
-                <p key={i}>{p}</p>
-              ))}
-            </div>
+            {/* S004: Sanitize bio content */}
+            <div className="prose prose-lg max-w-none text-muted-foreground dark:prose-invert"
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.bio.replace(/\n/g, "<br />")) }} />
           </section>
         )}
 
