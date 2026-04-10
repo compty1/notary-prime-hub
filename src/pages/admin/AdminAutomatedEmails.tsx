@@ -1298,6 +1298,8 @@ function IntegrationSetupTab() {
                   <li>• <strong>Reschedule notifications</strong> — Google automatically notifies attendees when appointment times change</li>
                   <li>• <strong>Cancellation emails</strong> — sent when an appointment is cancelled and the calendar event is deleted</li>
                 </ul>
+              </div>
+
               <div className="rounded-md bg-muted/50 border border-border p-3 space-y-2">
                 <h4 className="text-xs font-semibold">Retry & Delivery Logic</h4>
                 <ul className="space-y-1 text-[11px] text-muted-foreground">
