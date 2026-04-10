@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -9,10 +9,12 @@ import { Badge } from "@/components/ui/badge";
 import {
   MapPin, Phone, Mail, Globe, Calendar, Shield, Award, CheckCircle,
   ExternalLink, FileSignature, Star, Facebook, Linkedin, Twitter, User,
+  Share2, Pencil,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { BRAND } from "@/lib/brand";
 import { ensureHex } from "@/lib/colorUtils";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 const PROFESSIONAL_TYPE_LABELS: Record<string, string> = {
   notary: "Commissioned Notary Public",
@@ -71,10 +73,13 @@ export default function NotaryPage() {
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
   const [coverPhotoUrl, setCoverPhotoUrl] = useState<string | null>(null);
   const [galleryUrls, setGalleryUrls] = useState<string[]>([]);
+  const [isOwner, setIsOwner] = useState(false);
 
   usePageMeta({
     title: page?.seo_title || page?.display_name || "Notary",
     description: page?.seo_description || `Professional notary services by ${page?.display_name || "a certified notary"}.`,
+    // SEO001: noIndex for unpublished pages
+    noIndex: page ? !page.is_published : false,
     // PU001: OG image from profile photo
     ogImage: profilePhotoUrl || undefined,
     schema: page ? {
@@ -104,6 +109,7 @@ export default function NotaryPage() {
     } : null,
   });
 
+  // PERF001: Single query + parallel photo resolution
   useEffect(() => {
     if (!slug) return;
     (async () => {
@@ -114,25 +120,32 @@ export default function NotaryPage() {
         .eq("slug", slug)
         .eq("is_published", true)
         .maybeSingle();
-      if (error || !data) setNotFound(true);
-      else setPage(data as unknown as NotaryPageData);
+      if (error || !data) { setNotFound(true); setLoading(false); return; }
+      const pageData = data as unknown as NotaryPageData;
+      setPage(pageData);
+
+      // W007: Check if current user is the page owner
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser && currentUser.id === pageData.user_id) setIsOwner(true);
+
+      // Resolve all photos in parallel
+      const [profileUrl, coverUrl] = await Promise.all([
+        resolveStorageUrl(pageData.profile_photo_path),
+        resolveStorageUrl(pageData.cover_photo_path),
+      ]);
+      setProfilePhotoUrl(profileUrl);
+      setCoverPhotoUrl(coverUrl);
+
+      const gallery = Array.isArray(pageData.gallery_photos) ? pageData.gallery_photos : [];
+      if (gallery.length > 0) {
+        const urls = await Promise.all(gallery.map(p => resolveStorageUrl(p)));
+        setGalleryUrls(urls.filter((u): u is string => !!u));
+      }
       setLoading(false);
     })();
   }, [slug]);
 
-  // PU002: Resolve all photo paths (profile, cover, gallery)
-  useEffect(() => {
-    if (!page) return;
-    resolveStorageUrl(page.profile_photo_path).then(setProfilePhotoUrl);
-    resolveStorageUrl(page.cover_photo_path).then(setCoverPhotoUrl);
-    // Resolve gallery photos
-    const gallery = Array.isArray(page.gallery_photos) ? page.gallery_photos : [];
-    if (gallery.length > 0) {
-      Promise.all(gallery.map(p => resolveStorageUrl(p))).then(urls =>
-        setGalleryUrls(urls.filter((u): u is string => !!u))
-      );
-    }
-  }, [page]);
+  // Photo resolution now happens in the main useEffect above (PERF001)
 
   if (loading) {
     return (
@@ -348,26 +361,50 @@ export default function NotaryPage() {
           </div>
         </section>
 
-        {/* PU007: Breadcrumb Navigation */}
-        <nav className="mx-auto max-w-6xl px-4 py-2" aria-label="Breadcrumb">
-          <ol className="flex items-center gap-1 text-xs text-muted-foreground">
-            <li><Link to="/" className="hover:text-foreground">Home</Link></li>
-            <li>/</li>
-            <li><Link to="/notaries" className="hover:text-foreground">Directory</Link></li>
-            <li>/</li>
-            <li className="text-foreground font-medium">{page.display_name}</li>
-          </ol>
-        </nav>
+        {/* W007: Edit link for page owner + E009: Social sharing */}
+        <div className="mx-auto max-w-6xl px-4 py-2 flex items-center justify-between">
+          <nav aria-label="Breadcrumb">
+            <ol className="flex items-center gap-1 text-xs text-muted-foreground">
+              <li><Link to="/" className="hover:text-foreground">Home</Link></li>
+              <li>/</li>
+              <li><Link to="/notaries" className="hover:text-foreground">Directory</Link></li>
+              <li>/</li>
+              <li className="text-foreground font-medium">{page.display_name}</li>
+            </ol>
+          </nav>
+          <div className="flex items-center gap-2">
+            {isOwner && (
+              <Link to="/portal?tab=notary-page">
+                <Button variant="outline" size="sm" className="gap-1 text-xs">
+                  <Pencil className="h-3 w-3" /> Edit Page
+                </Button>
+              </Link>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1 text-xs"
+              onClick={() => {
+                if (navigator.share) {
+                  navigator.share({ title: page.display_name, text: page.tagline || `Professional services by ${page.display_name}`, url: window.location.href });
+                } else {
+                  navigator.clipboard.writeText(window.location.href);
+                }
+              }}
+              aria-label="Share this page"
+            >
+              <Share2 className="h-3 w-3" /> Share
+            </Button>
+          </div>
+        </div>
 
         {/* About / Bio */}
         {page.bio && (
           <section id="about" className="mx-auto max-w-4xl px-4 py-12">
             <h2 className="mb-4 text-2xl font-bold">About</h2>
-            <div className="prose prose-lg max-w-none text-muted-foreground dark:prose-invert">
-              {page.bio.split("\n").map((p, i) => (
-                <p key={i}>{p}</p>
-              ))}
-            </div>
+            {/* S004: Sanitize bio content */}
+            <div className="prose prose-lg max-w-none text-muted-foreground dark:prose-invert"
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.bio.replace(/\n/g, "<br />")) }} />
           </section>
         )}
 
@@ -524,6 +561,38 @@ export default function NotaryPage() {
             </div>
           )}
         </section>
+
+        {/* PU006: Contact form section */}
+        {page.email && (
+          <section className="bg-muted/30 py-12">
+            <div className="mx-auto max-w-lg px-4 text-center">
+              <h2 className="mb-2 text-2xl font-bold">Send a Message</h2>
+              <p className="mb-4 text-sm text-muted-foreground">Have a question? Reach out directly.</p>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  const subject = encodeURIComponent(String(formData.get("subject") || "Inquiry"));
+                  const body = encodeURIComponent(String(formData.get("message") || ""));
+                  window.location.href = `mailto:${page.email}?subject=${subject}&body=${body}`;
+                }}
+                className="space-y-3 text-left"
+              >
+                <div>
+                  <label className="text-sm font-medium" htmlFor="contact-subject">Subject</label>
+                  <input id="contact-subject" name="subject" required className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" placeholder="e.g. Notarization inquiry" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium" htmlFor="contact-message">Message</label>
+                  <textarea id="contact-message" name="message" required rows={3} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" placeholder="How can we help?" />
+                </div>
+                <Button type="submit" className="w-full gap-2 font-bold" style={{ backgroundColor: themeColor }}>
+                  <Mail className="h-4 w-4" /> Send Message
+                </Button>
+              </form>
+            </div>
+          </section>
+        )}
 
         {/* Bottom CTA */}
         <section className="py-12" style={{ background: `linear-gradient(135deg, ${themeColor}15, ${accentColor}05)` }}>

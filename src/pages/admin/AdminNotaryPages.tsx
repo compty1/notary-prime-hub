@@ -291,6 +291,8 @@ export default function AdminNotaryPages() {
         gallery_photos: editPage.gallery_photos, nav_services: editPage.nav_services,
         seo_title: editPage.seo_title, seo_description: editPage.seo_description,
         is_published: editPage.is_published, is_featured: editPage.is_featured,
+        // BUG005: Ensure updated_at is refreshed on save
+        updated_at: new Date().toISOString(),
       };
 
       if (editPage.id) {
