@@ -640,10 +640,12 @@ export default function RonSession() {
         return;
       }
     }
-    // Item 405: Confirmation dialog
-    if (!window.confirm("Are you sure you want to finalize this session? This will mark the appointment as completed, create a journal entry, e-seal verification, and payment record. This action cannot be undone.")) {
-      return;
-    }
+    setShowFinalizeDialog(true);
+    return;
+  };
+
+  const executeFinalization = async () => {
+    setShowFinalizeDialog(false);
     setCompleting(true);
 
     // Fetch notary name from settings (Item 353, 422)
