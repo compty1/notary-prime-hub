@@ -363,11 +363,23 @@ export default function PortalNotaryPageTab() {
         <p className="text-[10px] text-muted-foreground">Auto-saved {lastAutoSave.toLocaleTimeString()}</p>
       )}
 
+      {/* P002: Editable slug */}
       <div className="flex items-center gap-3">
         <Badge variant={page.is_published ? "default" : "secondary"}>
           {page.is_published ? "Published" : "Draft"}
         </Badge>
-        <span className="font-mono text-sm text-muted-foreground">/n/{page.slug}</span>
+        <div className="flex items-center gap-1">
+          <span className="text-sm text-muted-foreground">/n/</span>
+          <Input
+            value={page.slug || ""}
+            onChange={e => {
+              const sanitized = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-/, "").substring(0, 50);
+              updateField("slug", sanitized);
+            }}
+            className="h-7 w-40 font-mono text-sm px-2"
+            maxLength={50}
+          />
+        </div>
       </div>
 
       {/* Profit Dashboard */}
@@ -423,11 +435,31 @@ export default function PortalNotaryPageTab() {
                 </div>
               </div>
             </div>
+            {/* W005: Downloadable QR code */}
             <div className="flex flex-col items-center gap-2">
-              <div className="rounded-lg border p-3 bg-white">
+              <div className="rounded-lg border p-3 bg-white" id="qr-code-container">
                 <QRCodeSVG value={`${window.location.origin}/n/${page?.slug}`} size={120} />
               </div>
               <p className="text-xs text-muted-foreground">Scan to visit your page</p>
+              <Button variant="outline" size="sm" className="gap-1 text-xs" onClick={() => {
+                const svg = document.querySelector("#qr-code-container svg");
+                if (!svg) return;
+                const svgData = new XMLSerializer().serializeToString(svg);
+                const canvas = document.createElement("canvas");
+                canvas.width = 240; canvas.height = 240;
+                const ctx = canvas.getContext("2d");
+                const img = new Image();
+                img.onload = () => {
+                  ctx?.drawImage(img, 0, 0, 240, 240);
+                  const link = document.createElement("a");
+                  link.download = `${page?.slug || "qr"}-qr-code.png`;
+                  link.href = canvas.toDataURL("image/png");
+                  link.click();
+                };
+                img.src = "data:image/svg+xml;base64," + btoa(svgData);
+              }}>
+                <Download className="h-3 w-3" /> Download QR
+              </Button>
             </div>
           </div>
         </CardContent>

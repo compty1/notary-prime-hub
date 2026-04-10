@@ -303,6 +303,11 @@ export default function AdminNotaryPages() {
         if (!editPage.user_id) {
           toast({ title: "Select a user", variant: "destructive" }); setSaving(false); return;
         }
+        // DI003: Validate user_id actually exists
+        const { data: userExists } = await supabase.from("profiles").select("user_id").eq("user_id", editPage.user_id).maybeSingle();
+        if (!userExists) {
+          toast({ title: "Invalid user", description: "The selected user does not exist.", variant: "destructive" }); setSaving(false); return;
+        }
         payload.user_id = editPage.user_id;
         const { error } = await supabase.from("notary_pages").insert(payload);
         if (error) throw error;
@@ -339,6 +344,42 @@ export default function AdminNotaryPages() {
     p.slug.toLowerCase().includes(search.toLowerCase())
   );
 
+  // PERF002: Admin page list pagination
+  const ADMIN_PAGE_SIZE = 20;
+  const [adminCurrentPage, setAdminCurrentPage] = useState(1);
+  const adminTotalPages = Math.ceil(filtered.length / ADMIN_PAGE_SIZE);
+  const paginatedPages = filtered.slice((adminCurrentPage - 1) * ADMIN_PAGE_SIZE, adminCurrentPage * ADMIN_PAGE_SIZE);
+
+  // A004: Bulk selection state
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+  const toggleAll = () => {
+    if (selectedIds.size === paginatedPages.length) setSelectedIds(new Set());
+    else setSelectedIds(new Set(paginatedPages.map(p => p.id)));
+  };
+  const bulkPublish = async (publish: boolean) => {
+    for (const id of selectedIds) {
+      await supabase.from("notary_pages").update({ is_published: publish } as any).eq("id", id);
+    }
+    setSelectedIds(new Set());
+    fetchPages();
+    toast({ title: `${selectedIds.size} pages ${publish ? "published" : "unpublished"}` });
+  };
+  const bulkDelete = async () => {
+    for (const id of selectedIds) {
+      await supabase.from("notary_pages").delete().eq("id", id);
+    }
+    setSelectedIds(new Set());
+    fetchPages();
+    toast({ title: `${selectedIds.size} pages deleted` });
+  };
+
   // Nav services helpers
   const navServices: string[] = Array.isArray(editPage.nav_services) ? editPage.nav_services : [];
   const toggleNavService = (name: string) => {
@@ -373,75 +414,86 @@ export default function AdminNotaryPages() {
       {loading ? (
         <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
       ) : (
-        <Card>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Professional</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Slug</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Featured</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.map(p => (
-                <TableRow key={p.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      {p.profile_photo_path?.startsWith("http") ? (
-                        <img src={p.profile_photo_path} alt="" className="h-8 w-8 rounded-full object-cover border" />
-                      ) : (
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full border bg-muted text-xs font-bold">
-                          {p.display_name?.charAt(0)?.toUpperCase() || "?"}
-                        </div>
-                      )}
-                      <span className="font-medium">{p.display_name}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="text-xs">
-                      {PROFESSIONAL_TYPES.find(t => t.value === (p as any).professional_type)?.label || "Notary"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="font-mono text-sm text-muted-foreground">/n/{p.slug}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={p.is_published ? "default" : "secondary"}
-                      className="cursor-pointer"
-                      onClick={() => togglePublish(p)}
-                    >
-                      {p.is_published ? "Published" : "Draft"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Switch checked={p.is_featured} onCheckedChange={() => toggleFeatured(p)} />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => window.open(`/n/${p.slug}`, "_blank")}>
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/n/${p.slug}`); toast({ title: "Link copied!" }); }}>
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" onClick={() => openEditDialog(p)}>
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" onClick={() => setDeleteId(p.id)}>
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {filtered.length === 0 && (
-                <TableRow><TableCell colSpan={6} className="py-8 text-center text-muted-foreground">No pages found</TableCell></TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </Card>
+        <>
+         {/* A004: Bulk action bar */}
+         {selectedIds.size > 0 && (
+           <div className="flex items-center gap-3 rounded-lg border bg-muted/50 px-4 py-2">
+             <span className="text-sm font-medium">{selectedIds.size} selected</span>
+             <Button variant="outline" size="sm" onClick={() => bulkPublish(true)}>Publish</Button>
+             <Button variant="outline" size="sm" onClick={() => bulkPublish(false)}>Unpublish</Button>
+             <Button variant="destructive" size="sm" onClick={bulkDelete}>Delete</Button>
+             <Button variant="ghost" size="sm" onClick={() => setSelectedIds(new Set())}>Clear</Button>
+           </div>
+         )}
+
+         <Card>
+           <Table>
+             <TableHeader>
+               <TableRow>
+                 <TableHead className="w-10"><Checkbox checked={selectedIds.size === paginatedPages.length && paginatedPages.length > 0} onCheckedChange={toggleAll} /></TableHead>
+                 <TableHead>Professional</TableHead>
+                 <TableHead>Type</TableHead>
+                 <TableHead>Slug</TableHead>
+                 <TableHead>Status</TableHead>
+                 <TableHead>Featured</TableHead>
+                 <TableHead className="text-right">Actions</TableHead>
+               </TableRow>
+             </TableHeader>
+             <TableBody>
+               {paginatedPages.map(p => (
+                 <TableRow key={p.id}>
+                   <TableCell><Checkbox checked={selectedIds.has(p.id)} onCheckedChange={() => toggleSelect(p.id)} /></TableCell>
+                   <TableCell>
+                     <div className="flex items-center gap-2">
+                       {p.profile_photo_path?.startsWith("http") ? (
+                         <img src={p.profile_photo_path} alt="" className="h-8 w-8 rounded-full object-cover border" />
+                       ) : (
+                         <div className="flex h-8 w-8 items-center justify-center rounded-full border bg-muted text-xs font-bold">
+                           {p.display_name?.charAt(0)?.toUpperCase() || "?"}
+                         </div>
+                       )}
+                       <span className="font-medium">{p.display_name}</span>
+                     </div>
+                   </TableCell>
+                   <TableCell>
+                     <Badge variant="outline" className="text-xs">
+                       {PROFESSIONAL_TYPES.find(t => t.value === (p as any).professional_type)?.label || "Notary"}
+                     </Badge>
+                   </TableCell>
+                   <TableCell className="font-mono text-sm text-muted-foreground">/n/{p.slug}</TableCell>
+                   <TableCell>
+                     <Badge variant={p.is_published ? "default" : "secondary"} className="cursor-pointer" onClick={() => togglePublish(p)}>
+                       {p.is_published ? "Published" : "Draft"}
+                     </Badge>
+                   </TableCell>
+                   <TableCell><Switch checked={p.is_featured} onCheckedChange={() => toggleFeatured(p)} /></TableCell>
+                   <TableCell className="text-right">
+                     <div className="flex items-center justify-end gap-1">
+                       <Button variant="ghost" size="icon" onClick={() => window.open(`/n/${p.slug}`, "_blank")}><Eye className="h-4 w-4" /></Button>
+                       <Button variant="ghost" size="icon" onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/n/${p.slug}`); toast({ title: "Link copied!" }); }}><Copy className="h-4 w-4" /></Button>
+                       <Button variant="ghost" size="icon" onClick={() => openEditDialog(p)}><Pencil className="h-4 w-4" /></Button>
+                       <Button variant="ghost" size="icon" onClick={() => setDeleteId(p.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                     </div>
+                   </TableCell>
+                 </TableRow>
+               ))}
+               {paginatedPages.length === 0 && (
+                 <TableRow><TableCell colSpan={7} className="py-8 text-center text-muted-foreground">No pages found</TableCell></TableRow>
+               )}
+             </TableBody>
+           </Table>
+           {adminTotalPages > 1 && (
+             <div className="flex items-center justify-between border-t px-4 py-2">
+               <p className="text-xs text-muted-foreground">{filtered.length} total pages</p>
+               <div className="flex items-center gap-1">
+                 <Button variant="outline" size="sm" disabled={adminCurrentPage === 1} onClick={() => setAdminCurrentPage(p => p - 1)}>Prev</Button>
+                 <span className="px-2 text-sm">{adminCurrentPage}/{adminTotalPages}</span>
+                 <Button variant="outline" size="sm" disabled={adminCurrentPage === adminTotalPages} onClick={() => setAdminCurrentPage(p => p + 1)}>Next</Button>
+               </div>
+             </div>
+           )}
+         </Card>
+        </>
       )}
 
       <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
@@ -463,13 +515,15 @@ export default function AdminNotaryPages() {
 
       {/* Edit / Create Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
+         {/* UX001: Responsive dialog — full-screen on mobile */}
+         <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto w-[95vw] sm:w-auto">
           <DialogHeader>
             <DialogTitle>{editPage.id ? "Edit Professional Page" : "Create Professional Page"}</DialogTitle>
           </DialogHeader>
 
           <Tabs defaultValue="basics" className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
+             {/* UX001: Scrollable tabs on mobile */}
+             <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5">
               <TabsTrigger value="basics">Basics</TabsTrigger>
               <TabsTrigger value="photos">Photos</TabsTrigger>
               <TabsTrigger value="services">Services</TabsTrigger>
