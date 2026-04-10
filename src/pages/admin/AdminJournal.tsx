@@ -186,40 +186,60 @@ export default function AdminJournal() {
   };
 
   const exportCSV = () => {
-    const headers = ["Journal #", "Date", "Signer Name", "Document Type", "Service", "Type", "ID Type", "ID Number", "Fee Charged", "Platform Fees", "Travel Fee", "Net Profit", "Oath", "Notes"];
+    // ORC §147.542: All 14 required fields plus operational fields
+    const headers = [
+      "Journal #", "Date", "Time", "Notarial Act Type", "Document Type", "Document Date",
+      "Signer Name", "Signer Address", "ID Type", "ID Serial Number", "ID Expiration",
+      "Fee Charged", "Notary Commission #", "Communication Technology", "Credential Analysis Method",
+      "Notarization Type", "Platform Fees", "Travel Fee", "Net Profit", "Oath Administered",
+      "Witnesses", "Notes",
+    ];
+    const esc = (v: string) => `"${(v || "").replace(/"/g, '""')}"`;
     const rows = filtered.map((e) => [
-      e.journal_number || "", new Date(e.created_at).toLocaleDateString(), e.signer_name, e.document_type,
-      e.service_performed, e.notarization_type, e.id_type || "", e.id_number || "",
-      e.fees_charged || "", e.platform_fees || "", e.travel_fee || "", e.net_profit || "",
-      e.oath_administered ? "Yes" : "No", (e.notes || "").replace(/,/g, ";"),
+      esc(e.journal_number || ""), esc(new Date(e.created_at).toLocaleDateString()),
+      esc(e.entry_time || ""), esc(e.service_performed || ""), esc(e.document_type || ""),
+      esc(e.document_date || ""), esc(e.signer_name || ""), esc(e.signer_address || ""),
+      esc(e.id_type || ""), esc(e.id_number || ""), esc(e.id_expiration || ""),
+      esc(String(e.fees_charged || "")), esc(e.notary_commission_number || ""),
+      esc(e.communication_technology || (e.notarization_type === "ron" ? "audio-video" : "in-person")),
+      esc(e.credential_analysis_method || ""), esc(e.notarization_type || ""),
+      esc(String(e.platform_fees || "")), esc(String(e.travel_fee || "")),
+      esc(String(e.net_profit || "")), e.oath_administered ? "Yes" : "No",
+      esc(String(e.witnesses_present || "0")), esc(e.notes || ""),
     ]);
     const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url; a.download = `notary-journal-${new Date().toISOString().split("T")[0]}.csv`; a.click();
     URL.revokeObjectURL(url);
-    toast({ title: "Journal exported", description: "CSV file downloaded." });
+    toast({ title: "Journal exported", description: "Ohio-compliant CSV with all ORC §147.542 fields." });
   };
 
   const exportJSONBackup = () => {
     const backup = {
       exported_at: new Date().toISOString(),
-      format: "notary_journal_backup_v1",
+      format: "notary_journal_backup_v2_ohio_compliant",
+      orc_section: "§147.542",
       entry_count: filtered.length,
       entries: filtered.map(e => ({
         journal_number: e.journal_number,
-        created_at: e.created_at,
-        signer_name: e.signer_name,
-        signer_address: e.signer_address,
+        entry_date: e.created_at,
+        entry_time: e.entry_time,
+        notarial_act_type: e.service_performed,
         document_type: e.document_type,
         document_description: e.document_description,
-        service_performed: e.service_performed,
-        notarization_type: e.notarization_type,
+        document_date: e.document_date,
+        signer_name: e.signer_name,
+        signer_address: e.signer_address,
         id_type: e.id_type,
-        id_number: e.id_number,
+        id_serial_number: e.id_number,
         id_expiration: e.id_expiration,
-        fees_charged: e.fees_charged,
+        fee_charged: e.fees_charged,
+        notary_commission_number: e.notary_commission_number,
+        communication_technology: e.communication_technology || (e.notarization_type === "ron" ? "audio-video" : "in-person"),
+        credential_analysis_method: e.credential_analysis_method,
+        notarization_type: e.notarization_type,
         platform_fees: e.platform_fees,
         travel_fee: e.travel_fee,
         net_profit: e.net_profit,
@@ -235,7 +255,7 @@ export default function AdminJournal() {
     const a = document.createElement("a");
     a.href = url; a.download = `notary-journal-backup-${new Date().toISOString().split("T")[0]}.json`; a.click();
     URL.revokeObjectURL(url);
-    toast({ title: "Journal backup exported", description: "JSON backup file downloaded." });
+    toast({ title: "Journal backup exported", description: "Ohio-compliant JSON backup with all ORC §147.542 fields." });
   };
 
   const exportPrintablePDF = () => {
