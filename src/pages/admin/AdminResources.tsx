@@ -39,15 +39,22 @@ interface FormEntry {
   anatomyKey?: string;
 }
 
-/** Map form names to example document images */
+import juratImg from "@/assets/documents/jurat-certificate.jpg";
+import ackImg from "@/assets/documents/acknowledgment-certificate.jpg";
+import corpImg from "@/assets/documents/corporate-acknowledgment.jpg";
+import poaImg from "@/assets/documents/poa-acknowledgment.jpg";
+import copyImg from "@/assets/documents/copy-certification.jpg";
+import markImg from "@/assets/documents/signature-by-mark.jpg";
+import vehicleImg from "@/assets/documents/vehicle-title-notarization.jpg";
+
 const formImageMap: Record<string, string> = {
-  "Ohio Jurat (Individual)": "/images/documents/jurat-certificate.jpg",
-  "Acknowledgment (Individual)": "/images/documents/acknowledgment-certificate.jpg",
-  "Acknowledgment (Corp/LLC)": "/images/documents/corporate-acknowledgment.jpg",
-  "Attorney-in-Fact (POA)": "/images/documents/poa-acknowledgment.jpg",
-  "Copy Certification": "/images/documents/copy-certification.jpg",
-  "Signature by Mark (The X)": "/images/documents/signature-by-mark.jpg",
-  "Ohio Vehicle Title (Seller)": "/images/documents/vehicle-title-notarization.jpg",
+  "Ohio Jurat (Individual)": juratImg,
+  "Acknowledgment (Individual)": ackImg,
+  "Acknowledgment (Corp/LLC)": corpImg,
+  "Attorney-in-Fact (POA)": poaImg,
+  "Copy Certification": copyImg,
+  "Signature by Mark (The X)": markImg,
+  "Ohio Vehicle Title (Seller)": vehicleImg,
 };
 
 const forms: FormEntry[] = [
