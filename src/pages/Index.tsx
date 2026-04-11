@@ -370,8 +370,8 @@ export default function Index() {
                 className="relative z-10 group"
               >
                 <div className="bg-card rounded-[24px] border border-border p-6 shadow-card hover:-translate-y-1 transition-all duration-300">
-                  <div className="w-14 h-14 rounded-xl border-2 border-border flex items-center justify-center mb-5 group-hover:bg-primary group-hover:border-primary group-hover:text-primary-foreground transition-all">
-                    <step.icon className="w-7 h-7 text-muted-foreground group-hover:text-primary-foreground transition-colors" />
+                  <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-5">
+                    <Icon3D src={step.icon3d} alt={step.title} className="w-12 h-12" />
                   </div>
                   <h3 className="text-xl font-bold text-foreground mb-2">{step.title}</h3>
                   <p className="text-sm text-muted-foreground font-medium leading-relaxed">{step.desc}</p>
@@ -433,8 +433,8 @@ export default function Index() {
                 <Card className="group h-full rounded-[24px] border-border hover:border-primary/30 transition-all shadow-sm hover:shadow-card">
                   <CardContent className="p-8">
                     <div className="mb-4 flex items-center gap-3">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 transition-colors group-hover:bg-primary/15">
-                        <s.icon className="h-7 w-7 text-primary" />
+                      <div className="flex h-14 w-14 items-center justify-center">
+                        <Icon3D src={s.icon3d} alt={s.title} className="h-14 w-14" />
                       </div>
                       <Badge className="text-[10px] font-bold uppercase tracking-wider bg-muted text-muted-foreground border-border">{s.badge}</Badge>
                     </div>
@@ -464,8 +464,8 @@ export default function Index() {
             {otherServices.map((service) => (
               <Link key={service.title} to={service.to}>
                 <div className="bg-card p-6 rounded-[24px] border border-border shadow-sm flex flex-col items-center text-center hover:border-primary/30 hover:-translate-y-0.5 transition-all cursor-pointer group">
-                  <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center text-muted-foreground mb-4 group-hover:bg-primary/10 group-hover:text-primary transition">
-                    <service.icon className="w-6 h-6" />
+                  <div className="w-12 h-12 flex items-center justify-center mb-4">
+                    <Icon3D src={service.icon3d} alt={service.title} className="w-10 h-10" />
                   </div>
                   <h3 className="font-bold text-foreground text-sm">{service.title}</h3>
                   <p className="text-xs text-muted-foreground font-medium mt-1">{service.desc}</p>
