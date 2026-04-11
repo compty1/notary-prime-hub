@@ -1012,7 +1012,7 @@ export function DocuDexEditor({
 
           {/* Save status (ST-005) — #171: Autosave indicator with dot */}
           <span className="text-[10px] text-muted-foreground shrink-0 hidden md:inline flex items-center gap-1">
-            <span className={cn("inline-block h-1.5 w-1.5 rounded-full", autosaveStatus === "saving" ? "bg-amber-500 animate-pulse" : autosaveStatus === "unsaved" ? "bg-amber-400" : autosaveStatus === "saved" ? "bg-green-500" : "bg-muted-foreground/30")} />
+            <span className={cn("inline-block h-1.5 w-1.5 rounded-full", autosaveStatus === "saving" ? "bg-amber-500 animate-pulse" : autosaveStatus === "unsaved" ? "bg-amber-400" : autosaveStatus === "saved" ? "bg-success" : "bg-muted-foreground/30")} />
             {saving ? "Auto-saving..." : isDirty ? "Unsaved changes" : lastSaved ? `Saved ${lastSaved}` : "Ready"}
           </span>
 
@@ -1371,7 +1371,7 @@ export function DocuDexEditor({
             <span className="font-medium">{pages.length} page{pages.length !== 1 ? "s" : ""}</span>
             <span aria-label={`${totalWords} words`}>{totalWords.toLocaleString()} words</span>
             {wordGoalProgress !== null && (
-              <span className={wordGoalProgress >= 100 ? "text-green-600" : ""}>
+              <span className={wordGoalProgress >= 100 ? "text-success" : ""}>
                 Goal: {wordGoalProgress}%
               </span>
             )}
