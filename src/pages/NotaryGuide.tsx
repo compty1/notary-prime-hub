@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Shield, FileText, Home, Briefcase, Scale, Heart, ChevronRight, Search, Users, Clock, CreditCard, MapPin, Monitor, CheckCircle, AlertTriangle, Info, ImageIcon } from "lucide-react";
+import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/Logo";
@@ -30,6 +31,7 @@ const documentExampleImages: Record<string, { src: string; label: string }> = {
 const documentCategories = [
   {
     icon: Home,
+    icon3d: FEATURE_3D_ICON.realEstate,
     title: "Real Estate Documents",
     color: "text-blue-600",
     bgColor: "bg-blue-50",
@@ -71,6 +73,7 @@ const documentCategories = [
   },
   {
     icon: Scale,
+    icon3d: FEATURE_3D_ICON.court,
     title: "Legal Documents",
     color: "text-purple-600",
     bgColor: "bg-purple-50",
@@ -112,6 +115,7 @@ const documentCategories = [
   },
   {
     icon: Heart,
+    icon3d: FEATURE_3D_ICON.wills,
     title: "Estate Planning Documents",
     color: "text-rose-600",
     bgColor: "bg-rose-50",
@@ -153,6 +157,7 @@ const documentCategories = [
   },
   {
     icon: Briefcase,
+    icon3d: FEATURE_3D_ICON.corporate,
     title: "Business Documents",
     color: "text-amber-600",
     bgColor: "bg-amber-50",
@@ -304,10 +309,8 @@ export default function NotaryGuide() {
             {filteredCategories.map((category, catIdx) => (
               <motion.div key={category.title} initial="hidden" whileInView="visible" viewport={{ once: true }}>
                 <motion.div variants={fadeUp} custom={catIdx}>
-                  <div className="mb-4 flex items-center gap-3">
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${category.bgColor}`}>
-                      <category.icon className={`h-5 w-5 ${category.color}`} />
-                    </div>
+                    <div className="mb-4 flex items-center gap-3">
+                     <Icon3D src={category.icon3d} alt={category.title} className="h-12 w-12" />
                     <h3 className="font-sans text-xl font-semibold text-foreground">{category.title}</h3>
                   </div>
                   <Accordion type="single" collapsible className="space-y-2">
