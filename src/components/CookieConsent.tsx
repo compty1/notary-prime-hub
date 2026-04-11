@@ -125,9 +125,12 @@ const CookieConsentInner = () => {
 };
 
 export function CookieConsent() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  if (!mounted) return null;
   return (
-    <AnimatePresence>
-      <CookieConsentInner />
+    <AnimatePresence mode="wait">
+      <CookieConsentInner key="cookie-consent" />
     </AnimatePresence>
   );
 }

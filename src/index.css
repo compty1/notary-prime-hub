@@ -299,11 +299,17 @@ button, a, [role="button"] {
 /* GAP-0015/0035: Interactive card hover */
 .interactive-card {
   transition: all 0.25s ease;
+  will-change: transform, box-shadow;
 }
 .interactive-card:hover {
   transform: translateY(-4px);
   border-color: hsl(var(--primary) / 0.3);
   box-shadow: 0 16px 32px -8px hsl(48 91% 52% / 0.12);
+}
+
+/* GAP-0468/0478: will-change hints for animated elements */
+.animate-will-change {
+  will-change: transform, opacity;
 }
 
 /* Gradient mesh background — warm accents */
