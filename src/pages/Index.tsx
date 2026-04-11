@@ -447,6 +447,47 @@ export default function Index() {
         </div>
       </section>
 
+      {/* ===== Admin Services ===== */}
+      <section className="py-20 bg-accent">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-12"
+          >
+            Admin<br />Services
+          </motion.h2>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {[
+              { icon3d: FEATURE_3D_ICON.email, title: "Email Management & Correspondence", desc: "Professional email management, drafting, and correspondence handling." },
+              { icon3d: FEATURE_3D_ICON.checklist, title: "Certified Document Prep", desc: "Bulk document preparation for government agencies, HR departments, and legal firms. Standardized formatting, quality control, and compliance verification." },
+              { icon3d: FEATURE_3D_ICON.newsletter, title: "Company/Organization Newsletters", desc: "Professional newsletter creation and distribution for businesses and organizations." },
+              { icon3d: FEATURE_3D_ICON.taskList, title: "Data Entry & Records Management", desc: "Accurate data entry, database management, and record keeping services." },
+            ].map((service, i) => (
+              <motion.div
+                key={service.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+              >
+                <div className="bg-card p-5 rounded-[24px] border border-border shadow-sm flex items-start gap-4 hover:border-primary/30 hover:-translate-y-0.5 transition-all">
+                  <div className="w-[64px] h-[64px] flex-shrink-0 flex items-center justify-center">
+                    <Icon3D src={service.icon3d} alt={service.title} className="w-[56px] h-[56px]" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-foreground text-sm mb-1">{service.title}</h3>
+                    <p className="text-xs text-muted-foreground font-medium leading-relaxed">{service.desc}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* AI Helper */}
       <WhatDoINeed />
 
