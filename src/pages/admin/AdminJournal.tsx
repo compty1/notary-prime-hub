@@ -34,7 +34,7 @@ export default function AdminJournal() {
     document_type: "", document_description: "", service_performed: "acknowledgment",
     notarization_type: "in_person" as "in_person" | "ron", fees_charged: "",
     witnesses_present: "0", oath_administered: false, notes: "",
-    platform_fees: "", travel_fee: "",
+    platform_fee: "", travel_fee: "",
   });
 
   const fetchEntries = async () => {
@@ -90,7 +90,7 @@ export default function AdminJournal() {
       signer_name: "", signer_address: "", id_type: "", id_number: "", id_expiration: "",
       document_type: "", document_description: "", service_performed: "acknowledgment",
       notarization_type: "in_person", fees_charged: "", witnesses_present: "0",
-      oath_administered: false, notes: "", platform_fees: "", travel_fee: "",
+      oath_administered: false, notes: "", platform_fee: "", travel_fee: "",
     });
     setSelectedAppointment("");
     setEditingEntry(null);
@@ -106,7 +106,7 @@ export default function AdminJournal() {
       notarization_type: entry.notarization_type || "in_person",
       fees_charged: entry.fees_charged?.toString() || "", witnesses_present: entry.witnesses_present?.toString() || "0",
       oath_administered: entry.oath_administered || false, notes: entry.notes || "",
-      platform_fees: entry.platform_fees?.toString() || "", travel_fee: entry.travel_fee?.toString() || "",
+      platform_fee: entry.platform_fee?.toString() || "", travel_fee: entry.travel_fee?.toString() || "",
     });
     setSelectedAppointment(entry.appointment_id || "");
     setDialogOpen(true);
@@ -134,7 +134,7 @@ export default function AdminJournal() {
     }
 
     const feesCharged = form.fees_charged ? parseFloat(form.fees_charged) : null;
-    const platformFees = form.platform_fees ? parseFloat(form.platform_fees) : null;
+    const platformFees = form.platform_fee ? parseFloat(form.platform_fee) : null;
     const travelFee = form.travel_fee ? parseFloat(form.travel_fee) : null;
     const netProfit = feesCharged !== null ? feesCharged - (platformFees || 0) - (travelFee || 0) : null;
 
@@ -147,7 +147,7 @@ export default function AdminJournal() {
       notarization_type: form.notarization_type, fees_charged: feesCharged,
       witnesses_present: parseInt(form.witnesses_present) || 0, oath_administered: form.oath_administered,
       oath_timestamp: form.oath_administered ? new Date().toISOString() : null,
-      notes: form.notes || null, platform_fees: platformFees, travel_fee: travelFee, net_profit: netProfit,
+      notes: form.notes || null, platform_fee: platformFees, travel_fee: travelFee, net_profit: netProfit,
     };
 
     let error;
@@ -203,7 +203,7 @@ export default function AdminJournal() {
       esc(String(e.fees_charged || "")), esc(e.notary_commission_number || ""),
       esc(e.communication_technology || (e.notarization_type === "ron" ? "audio-video" : "in-person")),
       esc(e.credential_analysis_method || ""), esc(e.notarization_type || ""),
-      esc(String(e.platform_fees || "")), esc(String(e.travel_fee || "")),
+      esc(String(e.platform_fee || "")), esc(String(e.travel_fee || "")),
       esc(String(e.net_profit || "")), e.oath_administered ? "Yes" : "No",
       esc(String(e.witnesses_present || "0")), esc(e.notes || ""),
     ]);
@@ -240,7 +240,7 @@ export default function AdminJournal() {
         communication_technology: e.communication_technology || (e.notarization_type === "ron" ? "audio-video" : "in-person"),
         credential_analysis_method: e.credential_analysis_method,
         notarization_type: e.notarization_type,
-        platform_fees: e.platform_fees,
+        platform_fee: e.platform_fee,
         travel_fee: e.travel_fee,
         net_profit: e.net_profit,
         oath_administered: e.oath_administered,
@@ -436,12 +436,12 @@ export default function AdminJournal() {
                 <div className="rounded-lg border border-border/50 p-3 space-y-3">
                   <p className="text-sm font-medium flex items-center gap-2"><DollarSign className="h-4 w-4 text-primary" /> Profit Tracking</p>
                   <div className="grid gap-4 sm:grid-cols-2">
-                     <div><Label>Platform Fees ($)</Label><Input type="number" step="0.01" min="0" value={form.platform_fees} onChange={(e) => setForm({ ...form, platform_fees: e.target.value })} placeholder="KBA + SignNow fees" /></div>
+                     <div><Label>Platform Fees ($)</Label><Input type="number" step="0.01" min="0" value={form.platform_fee} onChange={(e) => setForm({ ...form, platform_fee: e.target.value })} placeholder="KBA + SignNow fees" /></div>
                      <div><Label>Travel Fee ($)</Label><Input type="number" step="0.01" min="0" value={form.travel_fee} onChange={(e) => setForm({ ...form, travel_fee: e.target.value })} placeholder="Travel costs" /></div>
                   </div>
                   {form.fees_charged && (
                     <p className="text-xs text-muted-foreground">
-                      Net profit: ${((parseFloat(form.fees_charged) || 0) - (parseFloat(form.platform_fees) || 0) - (parseFloat(form.travel_fee) || 0)).toFixed(2)}
+                      Net profit: ${((parseFloat(form.fees_charged) || 0) - (parseFloat(form.platform_fee) || 0) - (parseFloat(form.travel_fee) || 0)).toFixed(2)}
                     </p>
                   )}
                 </div>

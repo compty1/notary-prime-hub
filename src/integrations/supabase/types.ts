@@ -524,38 +524,6 @@ export type Database = {
         }
         Relationships: []
       }
-      business_roles: {
-        Row: {
-          business_id: string
-          created_at: string
-          id: string
-          role: string
-          user_id: string
-        }
-        Insert: {
-          business_id: string
-          created_at?: string
-          id?: string
-          role?: string
-          user_id: string
-        }
-        Update: {
-          business_id?: string
-          created_at?: string
-          id?: string
-          role?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "business_roles_business_id_fkey"
-            columns: ["business_id"]
-            isOneToOne: false
-            referencedRelation: "business_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       chat_messages: {
         Row: {
           attachment_url: string | null
@@ -1612,6 +1580,53 @@ export type Database = {
           },
         ]
       }
+      feedback: {
+        Row: {
+          appointment_id: string | null
+          comment: string | null
+          created_at: string
+          feedback_type: string
+          id: string
+          is_public: boolean | null
+          nps_score: number | null
+          rating: number
+          service_id: string | null
+          user_id: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          comment?: string | null
+          created_at?: string
+          feedback_type?: string
+          id?: string
+          is_public?: boolean | null
+          nps_score?: number | null
+          rating: number
+          service_id?: string | null
+          user_id: string
+        }
+        Update: {
+          appointment_id?: string | null
+          comment?: string | null
+          created_at?: string
+          feedback_type?: string
+          id?: string
+          is_public?: boolean | null
+          nps_score?: number | null
+          rating?: number
+          service_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       financial_transactions: {
         Row: {
           amount: number
@@ -2300,7 +2315,6 @@ export type Database = {
           oath_administered: boolean | null
           oath_timestamp: string | null
           platform_fee: number | null
-          platform_fees: number | null
           platform_markup: number | null
           recording_url: string | null
           service_performed: string
@@ -2333,7 +2347,6 @@ export type Database = {
           oath_administered?: boolean | null
           oath_timestamp?: string | null
           platform_fee?: number | null
-          platform_fees?: number | null
           platform_markup?: number | null
           recording_url?: string | null
           service_performed?: string
@@ -2366,7 +2379,6 @@ export type Database = {
           oath_administered?: boolean | null
           oath_timestamp?: string | null
           platform_fee?: number | null
-          platform_fees?: number | null
           platform_markup?: number | null
           recording_url?: string | null
           service_performed?: string
@@ -4176,6 +4188,99 @@ export type Database = {
           verification_note?: string | null
         }
         Relationships: []
+      }
+      journal_entries_legacy: {
+        Row: {
+          appointment_id: string | null
+          communication_technology: string | null
+          created_at: string | null
+          document_type: string | null
+          entry_date: string | null
+          entry_time: string | null
+          id: string | null
+          id_number: string | null
+          id_type: string | null
+          journal_number: string | null
+          notarial_act_type: string | null
+          notary_name: string | null
+          notary_user_id: string | null
+          notes: string | null
+          signer_address: string | null
+          signer_name: string | null
+        }
+        Insert: {
+          appointment_id?: string | null
+          communication_technology?: never
+          created_at?: string | null
+          document_type?: string | null
+          entry_date?: never
+          entry_time?: never
+          id?: string | null
+          id_number?: string | null
+          id_type?: string | null
+          journal_number?: never
+          notarial_act_type?: string | null
+          notary_name?: string | null
+          notary_user_id?: string | null
+          notes?: string | null
+          signer_address?: string | null
+          signer_name?: string | null
+        }
+        Update: {
+          appointment_id?: string | null
+          communication_technology?: never
+          created_at?: string | null
+          document_type?: string | null
+          entry_date?: never
+          entry_time?: never
+          id?: string | null
+          id_number?: string | null
+          id_type?: string | null
+          journal_number?: never
+          notarial_act_type?: string | null
+          notary_name?: string | null
+          notary_user_id?: string | null
+          notes?: string | null
+          signer_address?: string | null
+          signer_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notary_journal_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notary_journal_created_by_fkey"
+            columns: ["notary_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      public_feedback: {
+        Row: {
+          appointment_id: string | null
+          comment: string | null
+          created_at: string | null
+          feedback_type: string | null
+          id: string | null
+          rating: number | null
+          reviewer_name: string | null
+          service_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       public_reviews: {
         Row: {
