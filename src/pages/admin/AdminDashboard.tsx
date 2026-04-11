@@ -73,6 +73,8 @@ const sidebarGroups = [
       { title: "Permit Filings", url: "/admin/permit-filings", icon: FileCheck, adminOnly: true },
       { title: "Compliance Cal.", url: "/admin/compliance-calendars", icon: CalendarCheck, adminOnly: true },
       { title: "Print Marketplace", url: "/admin/print-orders", icon: ShoppingBag, adminOnly: true },
+      { title: "Vendors", url: "/admin/vendors", icon: Building2, adminOnly: true },
+      { title: "Print Pricing", url: "/admin/print-pricing", icon: DollarSign, adminOnly: true },
     ],
   },
   {
