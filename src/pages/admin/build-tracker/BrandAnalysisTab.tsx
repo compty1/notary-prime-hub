@@ -68,7 +68,7 @@ Provide a JSON response with this EXACT structure (no markdown, just raw JSON):
 }`;
 
 function ScoreBar({ label, value, icon }: { label: string; value: number; icon: React.ReactNode }) {
-  const color = value >= 80 ? "text-green-600 dark:text-green-400" : value >= 60 ? "text-yellow-600 dark:text-yellow-400" : "text-orange-600 dark:text-orange-400";
+  const color = value >= 80 ? "text-success" : value >= 60 ? "text-warning-foreground" : "text-destructive";
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
