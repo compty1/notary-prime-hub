@@ -61,6 +61,18 @@ const sidebarGroups = [
       { title: "Courier", url: "/admin/courier", icon: Truck, adminOnly: true },
       { title: "Background Checks", url: "/admin/background-checks", icon: ShieldCheck, adminOnly: true },
       { title: "VA Tasks", url: "/admin/va-tasks", icon: ClipboardList, adminOnly: true },
+      { title: "Real Estate", url: "/admin/real-estate", icon: Home, adminOnly: true },
+    ],
+  },
+  {
+    label: "Filing & Legal",
+    items: [
+      { title: "Recorder Filings", url: "/admin/recorder-filings", icon: FileText, adminOnly: true },
+      { title: "SOS Filings", url: "/admin/sos-filings", icon: Building2, adminOnly: true },
+      { title: "Court Forms", url: "/admin/court-forms", icon: Scale, adminOnly: true },
+      { title: "Permit Filings", url: "/admin/permit-filings", icon: FileCheck, adminOnly: true },
+      { title: "Compliance Cal.", url: "/admin/compliance-calendars", icon: CalendarCheck, adminOnly: true },
+      { title: "Print Marketplace", url: "/admin/print-orders", icon: ShoppingBag, adminOnly: true },
     ],
   },
   {
