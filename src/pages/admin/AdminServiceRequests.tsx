@@ -252,7 +252,7 @@ export default function AdminServiceRequests() {
           <SelectTrigger className="w-[140px]"><SelectValue placeholder="Platform" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Platforms</SelectItem>
-            <SelectItem value="notardex">NotarDex</SelectItem>
+            <SelectItem value="notardex">Notar</SelectItem>
             <SelectItem value="fiverr">Fiverr</SelectItem>
             <SelectItem value="upwork">Upwork</SelectItem>
             <SelectItem value="direct">Direct</SelectItem>

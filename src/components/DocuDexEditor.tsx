@@ -523,7 +523,7 @@ export function DocuDexEditor({
   const aiGenerateFullPage = async (prompt: string) => {
     setAiLoading(true);
     try {
-      const systemPrompt = `You are a professional document writer for NotarDex. Generate document content in clean HTML (p, h1-h3, ul, ol, li, strong, em, table, tr, td, th tags). ${clientName ? `Client: ${clientName}.` : ""} ${serviceName ? `Service: ${serviceName}.` : ""} Style: professional legal/business.`;
+      const systemPrompt = `You are a professional document writer for Notar. Generate document content in clean HTML (p, h1-h3, ul, ol, li, strong, em, table, tr, td, th tags). ${clientName ? `Client: ${clientName}.` : ""} ${serviceName ? `Service: ${serviceName}.` : ""} Style: professional legal/business.`;
       const resp = await supabase.functions.invoke("notary-assistant", {
         body: { messages: [{ role: "system", content: systemPrompt }, { role: "user", content: prompt }] },
       });
@@ -584,7 +584,7 @@ export function DocuDexEditor({
     setAiLoading(true);
     try {
       const currentContent = pages.map(p => stripHtml(p.html)).join("\n\n---\n\n");
-      const systemPrompt = `You are DocuDex AI, a document assistant for NotarDex. The user is editing "${title || "Untitled"}". Current content:\n\n${currentContent.slice(0, 8000)}\n\nHelp edit, draft, or improve. Use clean HTML tags. Be concise.`;
+      const systemPrompt = `You are DocuDex AI, a document assistant for Notar. The user is editing "${title || "Untitled"}". Current content:\n\n${currentContent.slice(0, 8000)}\n\nHelp edit, draft, or improve. Use clean HTML tags. Be concise.`;
       const resp = await supabase.functions.invoke("notary-assistant", {
         body: { messages: [{ role: "system", content: systemPrompt }, ...newMessages.slice(-10)] },
       });

@@ -136,7 +136,7 @@ export function AdminNotificationCenter() {
   useEffect(() => {
     if (browserNotifs && unreadCount > 0 && document.visibilityState === "hidden") {
       try {
-        new Notification("NotarDex — New Notification", {
+        new Notification("Notar — New Notification", {
           body: notifications.find(n => !n.read)?.title || "You have new notifications",
           icon: "/favicon.svg",
         });

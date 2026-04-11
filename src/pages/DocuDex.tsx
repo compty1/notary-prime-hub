@@ -11,7 +11,7 @@ import { safeGetItem, safeRemoveItem } from "@/lib/safeStorage";
 
 export default function DocuDex() {
   usePageMeta({
-    title: "DocuDex — Document Studio | NotarDex",
+    title: "DocuDex — Document Studio | Notar",
     description: "Create, edit, and generate professional documents with AI assistance. Multi-page canvas editor with templates, translation, and export.",
   });
   const { user } = useAuth();

@@ -26,7 +26,7 @@ export default function Login() {
   
   const [rateLimitEnd, setRateLimitEnd] = useState<number | null>(null);
 
-  usePageMeta({ title: forgotMode ? "Reset Password" : "Sign In", description: "Sign in to your NotarDex account to access notarization services, document management, and your client portal.", noIndex: true });
+  usePageMeta({ title: forgotMode ? "Reset Password" : "Sign In", description: "Sign in to your Notar account to access notarization services, document management, and your client portal.", noIndex: true });
 
   useEffect(() => {
     if (!loading && user) {
@@ -110,7 +110,7 @@ export default function Login() {
                 <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className="bg-muted border-none rounded-xl mt-1" />
               </div>
               {!resetSent && (
-                <Button type="submit" className="w-full rounded-2xl font-bold bg-foreground text-background shadow-block hover:bg-foreground/90 hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all" disabled={submitting}>
+                <Button type="submit" className="w-full rounded-2xl font-bold bg-foreground text-background shadow-soft hover:bg-foreground/90 hover:-translate-y-0.5 active:translate-y-0 active:shadow-soft transition-all" disabled={submitting}>
                   {submitting ? "Sending..." : "Send Reset Link"}
                 </Button>
               )}
@@ -160,7 +160,7 @@ export default function Login() {
                 {rateLimitSeconds > 0 && (
                   <p className="text-sm text-destructive text-center font-bold">Too many attempts. Try again in {rateLimitSeconds}s</p>
                 )}
-                <Button type="submit" className="w-full rounded-2xl font-bold bg-foreground text-background shadow-block hover:bg-foreground/90 hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all" disabled={submitting || rateLimitSeconds > 0}>
+                <Button type="submit" className="w-full rounded-2xl font-bold bg-foreground text-background shadow-soft hover:bg-foreground/90 hover:-translate-y-0.5 active:translate-y-0 active:shadow-soft transition-all" disabled={submitting || rateLimitSeconds > 0}>
                   {submitting ? "Signing in..." : rateLimitSeconds > 0 ? `Wait ${rateLimitSeconds}s` : "Continue"}
                 </Button>
               </form>

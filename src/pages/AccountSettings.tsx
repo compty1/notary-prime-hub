@@ -19,7 +19,7 @@ import { PasswordStrengthMeter } from "@/components/PasswordStrengthMeter";
 import { MFASetup } from "@/components/MFASetup";
 
 export default function AccountSettings() {
-  usePageMeta({ title: "Account Settings", description: "Manage your NotarDex account — update password, notification preferences, and security settings.", noIndex: true });
+  usePageMeta({ title: "Account Settings", description: "Manage your Notar account — update password, notification preferences, and security settings.", noIndex: true });
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   const [currentPassword, setCurrentPassword] = useState("");

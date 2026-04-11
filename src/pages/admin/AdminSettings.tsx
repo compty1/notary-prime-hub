@@ -239,11 +239,11 @@ export default function AdminSettings() {
             <Card className="border-border/50">
               <CardHeader><CardTitle className="font-sans text-lg flex items-center gap-2"><Globe className="h-5 w-5 text-primary" /> Site Identity</CardTitle></CardHeader>
               <CardContent className="space-y-4">
-                <div><Label>Site Name</Label><Input value={editValues.site_name || ""} onChange={(e) => updateValue("site_name", e.target.value)} placeholder="NotarDex" /></div>
+                <div><Label>Site Name</Label><Input value={editValues.site_name || ""} onChange={(e) => updateValue("site_name", e.target.value)} placeholder="Notar" /></div>
                 <div><Label>Tagline / Slogan</Label><Input value={editValues.site_tagline || ""} onChange={(e) => updateValue("site_tagline", e.target.value)} placeholder="Professional Ohio Notary Services" /></div>
                 <div><Label>Support Email</Label><Input type="email" value={editValues.support_email || ""} onChange={(e) => updateValue("support_email", e.target.value)} placeholder="support@notardex.com" /></div>
                 <div><Label>Support Phone</Label><Input value={editValues.support_phone || ""} onChange={(e) => updateValue("support_phone", e.target.value)} placeholder="(614) 300-6890" /></div>
-                <div><Label>Copyright Text</Label><Input value={editValues.copyright_text || ""} onChange={(e) => updateValue("copyright_text", e.target.value)} placeholder="© 2025 NotarDex. All rights reserved." /></div>
+                <div><Label>Copyright Text</Label><Input value={editValues.copyright_text || ""} onChange={(e) => updateValue("copyright_text", e.target.value)} placeholder="© 2025 Notar. All rights reserved." /></div>
               </CardContent>
             </Card>
 
@@ -389,7 +389,7 @@ export default function AdminSettings() {
               <CardContent className="space-y-4">
                 <div>
                   <Label>Default Meta Title</Label>
-                  <Input value={editValues.meta_title || ""} onChange={(e) => updateValue("meta_title", e.target.value)} placeholder="NotarDex — Ohio Online Notary Services" maxLength={60} />
+                  <Input value={editValues.meta_title || ""} onChange={(e) => updateValue("meta_title", e.target.value)} placeholder="Notar — Ohio Online Notary Services" maxLength={60} />
                   <p className="text-xs text-muted-foreground mt-1">{(editValues.meta_title || "").length}/60 characters</p>
                 </div>
                 <div>
@@ -450,7 +450,7 @@ export default function AdminSettings() {
                 </div>
                 <div>
                   <Label>Footer Disclaimer Text</Label>
-                  <Textarea value={editValues.footer_disclaimer || ""} onChange={(e) => updateValue("footer_disclaimer", e.target.value)} placeholder="NotarDex provides notary services in accordance with Ohio law..." className="min-h-[60px]" />
+                  <Textarea value={editValues.footer_disclaimer || ""} onChange={(e) => updateValue("footer_disclaimer", e.target.value)} placeholder="Notar provides notary services in accordance with Ohio law..." className="min-h-[60px]" />
                 </div>
                 <div>
                   <Label>Custom Footer HTML</Label>
@@ -533,7 +533,7 @@ export default function AdminSettings() {
             <Card className="border-border/50">
               <CardHeader><CardTitle className="font-sans text-lg flex items-center gap-2"><MapPin className="h-5 w-5 text-primary" /> Business Settings</CardTitle></CardHeader>
               <CardContent className="space-y-4">
-                <div><Label>Business Name</Label><Input value={editValues.business_name || ""} onChange={(e) => updateValue("business_name", e.target.value)} placeholder="NotarDex LLC" /></div>
+                <div><Label>Business Name</Label><Input value={editValues.business_name || ""} onChange={(e) => updateValue("business_name", e.target.value)} placeholder="Notar LLC" /></div>
                 <div><Label>Business Phone Number</Label><Input value={editValues.notary_phone || ""} onChange={(e) => updateValue("notary_phone", e.target.value)} placeholder="(614) 300-6890" /></div>
                 <div><Label>Business Email</Label><Input type="email" value={editValues.notary_email || ""} onChange={(e) => updateValue("notary_email", e.target.value)} placeholder="contact@notardex.com" /></div>
                 <div><Label>Notary Base Address</Label><Input value={editValues.notary_base_address || ""} onChange={(e) => updateValue("notary_base_address", e.target.value)} placeholder="Columbus, OH" /></div>
@@ -610,7 +610,7 @@ export default function AdminSettings() {
               <CardContent className="space-y-4">
                 <div>
                   <Label>Welcome Message</Label>
-                  <Textarea value={editValues.portal_welcome_message || ""} onChange={(e) => updateValue("portal_welcome_message", e.target.value)} placeholder="Welcome to your NotarDex portal..." className="min-h-[60px]" />
+                  <Textarea value={editValues.portal_welcome_message || ""} onChange={(e) => updateValue("portal_welcome_message", e.target.value)} placeholder="Welcome to your Notar portal..." className="min-h-[60px]" />
                 </div>
                 {[
                   { key: "portal_show_pricing", label: "Show Pricing", desc: "Display service prices in client portal" },
@@ -766,7 +766,7 @@ export default function AdminSettings() {
                   <Badge className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary text-xs ml-auto flex-shrink-0">Configured</Badge>
                 </div>
                 <div><Label>Reply-To Email</Label><Input type="email" value={editValues.reply_to_email || ""} onChange={(e) => updateValue("reply_to_email", e.target.value)} placeholder="noreply@notardex.com" /></div>
-                <div><Label>Sender Display Name</Label><Input value={editValues.email_sender_name || ""} onChange={(e) => updateValue("email_sender_name", e.target.value)} placeholder="NotarDex" /></div>
+                <div><Label>Sender Display Name</Label><Input value={editValues.email_sender_name || ""} onChange={(e) => updateValue("email_sender_name", e.target.value)} placeholder="Notar" /></div>
               </CardContent>
             </Card>
           </div>

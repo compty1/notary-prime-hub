@@ -464,7 +464,7 @@ export default function NotaryGuide() {
               <li><strong>Healthcare Directives (ORC §1337.12):</strong> 2 witnesses required — specific disqualifications apply</li>
               <li><strong>Living Wills (ORC §2133.02):</strong> 2 witnesses required — cannot be attending physician or healthcare agent</li>
             </ul>
-            <p>NotarDex provides witness services at <strong>$15 per witness</strong> per session. It is the signer's responsibility to arrange their own witnesses if preferred. If you need witnesses provided, please request them when booking.</p>
+            <p>Notar provides witness services at <strong>$15 per witness</strong> per session. It is the signer's responsibility to arrange their own witnesses if preferred. If you need witnesses provided, please request them when booking.</p>
           </div>
         </div>
       </section>

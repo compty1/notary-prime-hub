@@ -142,9 +142,9 @@ const DEFAULT_GLOBAL_TEMPLATES: GlobalTemplate[] = [
   { id: "booking-receipt", name: "booking_receipt", label: "Booking Receipt", subject: "Payment Receipt — {{confirmation_number}}", bodyHtml: "<h2>Payment Receipt</h2><p>Dear {{client_name}},</p><p>Payment of <strong>{{fee_amount}}</strong> received for {{service_type}}.</p><p>Confirmation: {{confirmation_number}}</p><p>Date: {{date}} at {{time}}</p>", category: "appointment", tags: ["client_name", "fee_amount", "service_type", "confirmation_number", "date", "time"], sampleData: { client_name: "Jane Smith", fee_amount: "$25.00", service_type: "Notarization", confirmation_number: "NTR-20260401-a1b2c3", date: "April 1, 2026", time: "2:30 PM" } },
   { id: "doc-ready", name: "document_ready", label: "Document Ready Notification", subject: "Your Document is Ready — NotaryDex", bodyHtml: "<h2>Document Ready</h2><p>Hi {{client_name}},</p><p>Your document <strong>{{document_name}}</strong> has been processed and is ready for download.</p><p><a href='{{portal_link}}'>View Document</a></p>", category: "notification", tags: ["client_name", "document_name", "portal_link"], sampleData: { client_name: "Jane Smith", document_name: "Power of Attorney", portal_link: "https://notardex.com/portal" } },
   { id: "ron-link", name: "ron_session_link", label: "RON Session Link", subject: "Your RON Session Link — NotaryDex", bodyHtml: "<h2>RON Session Ready</h2><p>Hi {{client_name}},</p><p>Your Remote Online Notarization session is ready. Click below to join:</p><p><a href='{{session_link}}'>Join RON Session</a></p><p>Please have your government-issued photo ID ready.</p>", category: "notification", tags: ["client_name", "session_link"], sampleData: { client_name: "Jane Smith", session_link: "https://notardex.com/ron-session/abc123" } },
-  { id: "signnow-invite", name: "signnow_invite", label: "SignNow — Signing Invitation (External)", subject: "Sent by SignNow: Document Ready for Signing", bodyHtml: "<h2>SignNow Signing Invitation</h2><p><em>This email is sent automatically by SignNow when a document is uploaded for e-signing.</em></p><p>The signer receives a direct link to review and sign the document on SignNow's platform. NotarDex tracks the invite via webhook.</p><p><strong>Note:</strong> This template is informational — the actual email content is controlled by SignNow.</p>", category: "notification", tags: ["client_name", "document_name"], sampleData: { client_name: "Jane Smith", document_name: "Power of Attorney" } },
-  { id: "signnow-reminder", name: "signnow_reminder", label: "SignNow — Signing Reminder (External)", subject: "Sent by SignNow: Reminder to Sign Document", bodyHtml: "<h2>SignNow Signing Reminder</h2><p><em>SignNow automatically sends reminders to signers who haven't completed signing.</em></p><p>Reminder frequency is configured in your SignNow account settings. NotarDex tracks these events for status visibility.</p>", category: "notification", tags: ["client_name", "document_name"], sampleData: { client_name: "Jane Smith", document_name: "Affidavit" } },
-  { id: "signnow-completed", name: "signnow_completion", label: "SignNow — Document Completed (External)", subject: "Sent by SignNow: Document Signed Successfully", bodyHtml: "<h2>SignNow Completion Notification</h2><p><em>SignNow sends this email to all parties when a document is fully signed.</em></p><p>The completed, signed document is attached or linked in SignNow's email. NotarDex captures the completion event and updates the appointment status.</p>", category: "notification", tags: ["client_name", "document_name"], sampleData: { client_name: "Jane Smith", document_name: "Deed of Trust" } },
+  { id: "signnow-invite", name: "signnow_invite", label: "SignNow — Signing Invitation (External)", subject: "Sent by SignNow: Document Ready for Signing", bodyHtml: "<h2>SignNow Signing Invitation</h2><p><em>This email is sent automatically by SignNow when a document is uploaded for e-signing.</em></p><p>The signer receives a direct link to review and sign the document on SignNow's platform. Notar tracks the invite via webhook.</p><p><strong>Note:</strong> This template is informational — the actual email content is controlled by SignNow.</p>", category: "notification", tags: ["client_name", "document_name"], sampleData: { client_name: "Jane Smith", document_name: "Power of Attorney" } },
+  { id: "signnow-reminder", name: "signnow_reminder", label: "SignNow — Signing Reminder (External)", subject: "Sent by SignNow: Reminder to Sign Document", bodyHtml: "<h2>SignNow Signing Reminder</h2><p><em>SignNow automatically sends reminders to signers who haven't completed signing.</em></p><p>Reminder frequency is configured in your SignNow account settings. Notar tracks these events for status visibility.</p>", category: "notification", tags: ["client_name", "document_name"], sampleData: { client_name: "Jane Smith", document_name: "Affidavit" } },
+  { id: "signnow-completed", name: "signnow_completion", label: "SignNow — Document Completed (External)", subject: "Sent by SignNow: Document Signed Successfully", bodyHtml: "<h2>SignNow Completion Notification</h2><p><em>SignNow sends this email to all parties when a document is fully signed.</em></p><p>The completed, signed document is attached or linked in SignNow's email. Notar captures the completion event and updates the appointment status.</p>", category: "notification", tags: ["client_name", "document_name"], sampleData: { client_name: "Jane Smith", document_name: "Deed of Trust" } },
 ];
 
 // --- Master template branding ---
@@ -949,7 +949,7 @@ const INTEGRATIONS: IntegrationSection[] = [
 ];
 
 const EMAIL_PIPELINE_MAP: { emailType: string; trigger: string; edgeFunction: string; provider: string; source: "notardex" | "signnow" | "lovable" | "stripe" | "google" }[] = [
-  // --- NotarDex Internal Emails ---
+  // --- Notar Internal Emails ---
   { emailType: "Booking Confirmation", trigger: "New appointment created", edgeFunction: "send-appointment-emails", provider: "IONOS SMTP", source: "notardex" },
   { emailType: "24hr Reminder", trigger: "Scheduled (cron)", edgeFunction: "send-appointment-reminders", provider: "IONOS SMTP", source: "notardex" },
   { emailType: "30min Reminder", trigger: "Scheduled (cron)", edgeFunction: "send-appointment-reminders", provider: "IONOS SMTP", source: "notardex" },
@@ -1221,7 +1221,7 @@ function IntegrationSetupTab() {
                         google: "bg-emerald-500/10 text-emerald-700",
                       };
                       const sourceLabels: Record<string, string> = {
-                        notardex: "NotarDex",
+                        notardex: "Notar",
                         signnow: "SignNow",
                         lovable: "Auth System",
                         stripe: "Stripe",
@@ -1250,9 +1250,9 @@ function IntegrationSetupTab() {
                 </h4>
                 <p className="text-[11px] text-muted-foreground">
                   The emails marked <Badge className="bg-orange-500/10 text-orange-700 text-[8px] font-bold mx-0.5">SignNow</Badge> are
-                  sent <strong>directly by SignNow's platform</strong>, not by NotarDex. Their content, branding, and delivery schedule are
+                  sent <strong>directly by SignNow's platform</strong>, not by Notar. Their content, branding, and delivery schedule are
                   controlled in your <a href="https://app.signnow.com" target="_blank" rel="noopener noreferrer" className="underline text-primary">SignNow account settings</a>.
-                  NotarDex receives webhook events for these emails and tracks them in the CRM timeline and <code className="bg-muted px-1 py-0.5 rounded text-[9px]">signnow_documents</code> table.
+                  Notar receives webhook events for these emails and tracks them in the CRM timeline and <code className="bg-muted px-1 py-0.5 rounded text-[9px]">signnow_documents</code> table.
                 </p>
                 <ul className="text-[11px] text-muted-foreground space-y-0.5">
                   <li>• <strong>Signing invitations</strong> — sent when you use "Send Invite" in RON Session; customizable in SignNow → Settings → Notifications</li>
@@ -1269,9 +1269,9 @@ function IntegrationSetupTab() {
                 </h4>
                 <p className="text-[11px] text-muted-foreground">
                   The emails marked <Badge className="bg-violet-500/10 text-violet-700 text-[8px] font-bold mx-0.5">Stripe</Badge> are
-                  sent <strong>directly by Stripe's platform</strong>, not by NotarDex. Their content and delivery are controlled in your{" "}
+                  sent <strong>directly by Stripe's platform</strong>, not by Notar. Their content and delivery are controlled in your{" "}
                   <a href="https://dashboard.stripe.com/settings/emails" target="_blank" rel="noopener noreferrer" className="underline text-primary">Stripe Dashboard → Settings → Emails</a>.
-                  NotarDex receives webhook events for payment lifecycle changes and updates payment status accordingly.
+                  Notar receives webhook events for payment lifecycle changes and updates payment status accordingly.
                 </p>
                 <ul className="text-[11px] text-muted-foreground space-y-0.5">
                   <li>• <strong>Payment receipts</strong> — Stripe sends automatic receipts on successful charges; enable/disable in Stripe → Settings → Customer emails</li>

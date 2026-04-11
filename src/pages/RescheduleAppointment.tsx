@@ -11,7 +11,7 @@ import { useParams } from "react-router-dom";
 import { usePageMeta } from "@/hooks/usePageMeta";
 
 export default function RescheduleAppointment() {
-  usePageMeta({ title: "Reschedule Appointment | NotarDex", description: "Reschedule your notarization appointment online." });
+  usePageMeta({ title: "Reschedule Appointment | Notar", description: "Reschedule your notarization appointment online." });
   const { confirmationNumber } = useParams<{ confirmationNumber: string }>();
   const { toast } = useToast();
   const [email, setEmail] = useState("");

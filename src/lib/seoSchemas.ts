@@ -4,7 +4,7 @@
  */
 
 const DOMAIN = "https://notardex.com";
-const BUSINESS_NAME = "NotarDex — Ohio Notary Public";
+const BUSINESS_NAME = "Notar — Ohio Notary Public";
 const PHONE = "(614) 300-6890";
 const EMAIL = "contact@notardex.com";
 
@@ -147,8 +147,8 @@ export function howToSchema(steps: { name: string; text: string }[]) {
   return {
     "@context": "https://schema.org",
     "@type": "HowTo",
-    name: "How to Get a Document Notarized Online with NotarDex",
-    description: "Complete guide to remote online notarization in Ohio via NotarDex.",
+    name: "How to Get a Document Notarized Online with Notar",
+    description: "Complete guide to remote online notarization in Ohio via Notar.",
     step: steps.map((s, i) => ({
       "@type": "HowToStep",
       position: i + 1,

@@ -112,8 +112,8 @@ const securityDomains = [
 
 export default function Security() {
   usePageMeta({
-    title: "Security Overview | NotarDex",
-    description: "NotarDex security practices: encryption, access controls, audit logging, infrastructure, and vulnerability management for secure online notarization.",
+    title: "Security Overview | Notar",
+    description: "Notar security practices: encryption, access controls, audit logging, infrastructure, and vulnerability management for secure online notarization.",
   });
 
   return (
@@ -132,14 +132,14 @@ export default function Security() {
               </Badge>
               <h1 className="text-4xl font-bold mb-4">Platform Security</h1>
               <p className="text-lg text-muted-foreground max-w-xl">
-                NotarDex employs enterprise-grade security measures to protect your documents,
+                Notar employs enterprise-grade security measures to protect your documents,
                 identity information, and notarial records at every layer.
               </p>
             </div>
             <div className="flex-shrink-0">
               <img
                 src={securityBadge}
-                alt="NotarDex Platform Security — SOC 2 Type II Aligned, 256-bit Encryption"
+                alt="Notar Platform Security — SOC 2 Type II Aligned, 256-bit Encryption"
                 className="w-48 h-48 rounded-2xl object-cover shadow-xl"
                 loading="lazy"
                 width={192}

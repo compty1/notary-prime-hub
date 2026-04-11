@@ -539,7 +539,7 @@ function getCircumstanceIcon(name: string) {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export default function AdminResources() {
-  usePageMeta({ title: "NotarDex — Ohio Notary Toolkit", noIndex: true });
+  usePageMeta({ title: "Notar — Ohio Notary Toolkit", noIndex: true });
   const { user } = useAuth();
 
   const [activeTab, setActiveTab] = useState("vault");
@@ -581,7 +581,7 @@ export default function AdminResources() {
         });
       }
 
-      const systemPrompt = `You are NotarDex AI, an Ohio notary law expert. The user is asking about: "${selectedForm.name}" (${selectedForm.ref}). Certificate text: "${selectedForm.certificateText || ""}". Ohio tip: "${selectedForm.ohioTip || ""}". Provide accurate, Ohio-specific answers citing ORC sections. Be concise but thorough.`;
+      const systemPrompt = `You are Notar AI, an Ohio notary law expert. The user is asking about: "${selectedForm.name}" (${selectedForm.ref}). Certificate text: "${selectedForm.certificateText || ""}". Ohio tip: "${selectedForm.ohioTip || ""}". Provide accurate, Ohio-specific answers citing ORC sections. Be concise but thorough.`;
 
       const { data, error } = await supabase.functions.invoke("notary-assistant", {
         body: {
@@ -652,7 +652,7 @@ export default function AdminResources() {
         <div className="flex items-center gap-3 mb-1">
           <Shield className="h-7 w-7 text-primary" />
           <h1 className="font-sans text-2xl font-bold text-foreground italic">
-            NotarDex
+            Notar
             <span className="ml-2 text-xs font-normal not-italic uppercase tracking-[0.2em] text-muted-foreground">
               Ohio Notary Toolkit
             </span>

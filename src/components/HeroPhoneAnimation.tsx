@@ -72,7 +72,7 @@ export default function HeroPhoneAnimation() {
           {/* Header */}
           <div className="flex items-center justify-between px-5 pt-12 pb-3">
             <span className="font-heading text-base font-bold text-white tracking-tight">
-              NotarDex<span className="text-primary">.com</span>
+              Notar<span className="text-primary">.com</span>
             </span>
             <Lock className="w-3.5 h-3.5 text-primary" />
           </div>
