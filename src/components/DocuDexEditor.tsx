@@ -17,6 +17,8 @@ import SuperScript from "@tiptap/extension-superscript";
 import ImageExt from "@tiptap/extension-image";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import FontFamily from "@tiptap/extension-font-family";
+import TaskList from "@tiptap/extension-task-list";
+import TaskItem from "@tiptap/extension-task-item";
 import { FontSize } from "./docudex/FontSizeExtension";
 import DOMPurify from "dompurify";
 import mammoth from "mammoth";
