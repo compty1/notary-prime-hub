@@ -42,6 +42,10 @@ const sidebarGroups = [
       { title: "DocuDex Pro", url: "/admin/docudex-pro", icon: FileEdit, adminOnly: false },
       { title: "Content Workspace", url: "/admin/content-workspace", icon: PenTool, adminOnly: true },
       { title: "Apostille", url: "/admin/apostille", icon: Package, adminOnly: true },
+      { title: "RON Recordings", url: "/admin/ron-recordings", icon: Video, adminOnly: true },
+      { title: "Loan Signing", url: "/admin/loan-signing", icon: FileSignature, adminOnly: true },
+      { title: "I-9 Verifications", url: "/admin/i9-verifications", icon: UserCheck, adminOnly: true },
+      { title: "Print Queue", url: "/admin/print-jobs", icon: Printer, adminOnly: true },
     ],
   },
   {
