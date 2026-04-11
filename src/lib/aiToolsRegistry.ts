@@ -46,6 +46,8 @@ const CATEGORY_ICONS: Record<ToolCategory, LucideIcon> = {
   "Communication": Mail,
   "Compliance & Legal": Shield,
   "Creative & Strategy": Lightbulb,
+  "UX Consulting": LayoutGrid,
+  "Financial Operations": DollarSign,
 };
 export { CATEGORY_ICONS };
 
