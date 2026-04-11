@@ -243,25 +243,35 @@ export default function Services() {
           <div className="space-y-16">
             {grouped.map((group) => (
               <section key={group.category}>
-                <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.35 }} className="mb-6">
-                  <h2 className="text-2xl font-bold text-foreground">{group.label}</h2>
-                  <p className="text-sm text-muted-foreground">{group.description}</p>
+                <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.35 }} className="mb-6 flex items-center gap-4">
+                  {CATEGORY_3D_ICON[group.category] && (
+                    <Icon3D src={CATEGORY_3D_ICON[group.category]} alt={group.label} className="h-12 w-12 flex-shrink-0" />
+                  )}
+                  <div>
+                    <h2 className="text-2xl font-bold text-foreground">{group.label}</h2>
+                    <p className="text-sm text-muted-foreground">{group.description}</p>
+                  </div>
                 </motion.div>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {group.items.map((s, i) => {
+                    const icon3dSrc = SERVICE_ICON_3D[s.icon || "FileText"];
                     const IconComp = SERVICE_ICON_MAP[s.icon || "FileText"] || FileText;
                     const { url: actionUrl, label: actionLabel } = getServiceAction(s);
                     return (
                       <motion.div key={s.id} initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.25, delay: i * 0.03 }}>
-                        <Card className="group h-full rounded-[24px] border-2 border-border shadow-md hover:shadow-lg hover:shadow-primary/20 transition-shadow" role="article">
+                        <Card className="group h-full rounded-card border-2 border-border shadow-card interactive-card" role="article">
                           <CardContent className="flex h-full flex-col p-6">
                             <div className="mb-3 flex items-start justify-between">
-                              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                                <IconComp className="h-5 w-5 text-primary" />
-                              </div>
+                              {icon3dSrc ? (
+                                <Icon3D src={icon3dSrc} alt={s.name} className="h-12 w-12" />
+                              ) : (
+                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                                  <IconComp className="h-5 w-5 text-primary" />
+                                </div>
+                              )}
                               <div className="flex items-center gap-1.5">
                                 {s.is_popular && (
-                                  <Badge className="text-[10px] px-1.5 py-0 bg-primary text-foreground font-bold rounded-md">Popular</Badge>
+                                  <Badge className="text-[10px] px-1.5 py-0 bg-primary text-primary-foreground font-bold rounded-md">Popular</Badge>
                                 )}
                                 <Badge variant="outline" className="text-xs font-mono font-bold rounded-lg border-2">{formatPrice(s)}</Badge>
                               </div>
@@ -276,13 +286,13 @@ export default function Services() {
                                 <Button size="sm" variant="outline" className="w-full rounded-xl font-bold border-2">More Info</Button>
                               </Link>
                               {!user && PROTECTED_PREFIXES.some(p => actionUrl.startsWith(p)) ? (
-                                <Button size="sm" className="flex-1 rounded-xl font-bold bg-primary text-foreground hover:bg-primary/90 shadow-md"
+                                <Button size="sm" className="flex-1 rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary/90 shadow-md"
                                   onClick={() => navigate(`/login?redirect=${encodeURIComponent(actionUrl)}`)}>
                                   {actionLabel} <ChevronRight className="ml-1 h-3 w-3" />
                                 </Button>
                               ) : (
                                 <Link to={actionUrl} className="flex-1">
-                                  <Button size="sm" className="w-full rounded-xl font-bold bg-primary text-foreground hover:bg-primary/90 shadow-md">
+                                  <Button size="sm" className="w-full rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary/90 shadow-md">
                                     {actionLabel} <ChevronRight className="ml-1 h-3 w-3" />
                                   </Button>
                                 </Link>
