@@ -269,6 +269,8 @@ function AnimatedRoutes() {
         <Route path="notary-pages" element={<ProtectedRoute adminOnly><SR msg="Notary pages failed to load"><AdminNotaryPages /></SR></ProtectedRoute>} />
         <Route path="professionals" element={<ProtectedRoute adminOnly><SR msg="Professionals failed to load"><AdminProfessionals /></SR></ProtectedRoute>} />
         <Route path="automated-emails" element={<ProtectedRoute adminOnly><SR msg="Automated emails failed to load"><AdminAutomatedEmails /></SR></ProtectedRoute>} />
+        <Route path="finances" element={<ProtectedRoute adminOnly><SR msg="Finances failed to load"><AdminFinances /></SR></ProtectedRoute>} />
+        <Route path="email-health" element={<ProtectedRoute adminOnly><SR msg="Email health failed to load"><AdminEmailHealth /></SR></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="*" element={<NotFound />} />
