@@ -356,7 +356,7 @@ export default function RonInfo() {
                   <tr key={s.state} className={`border-b border-border/30 last:border-0 ${s.state === "Ohio" ? "bg-primary/5" : ""}`}>
                     <td className="px-3 py-2 font-medium">{s.state}</td>
                     <td className="px-3 py-2">
-                      <Badge className={s.status === "permanent" ? "bg-primary/10 text-primary" : s.status === "temporary" ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"}>
+                      <Badge className={s.status === "permanent" ? "bg-primary/10 text-primary" : s.status === "temporary" ? "bg-warning/10 text-warning-foreground" : "bg-destructive/10 text-destructive"}>
                         {s.status === "permanent" ? "Permanent Law" : s.status === "temporary" ? "Temporary" : "No Law"}
                       </Badge>
                     </td>
