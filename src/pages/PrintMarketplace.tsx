@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { PRINT_CATEGORIES, PRINT_PRODUCTS, type PrintProduct } from "@/lib/printCatalog";
+import { PrintOrderTracker } from "@/components/PrintOrderTracker";
 import { Search, ShoppingCart, Package, Minus, Plus } from "lucide-react";
 
 export default function PrintMarketplace() {
@@ -90,33 +91,47 @@ export default function PrintMarketplace() {
           </div>
         </div>
 
-        {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filtered.map((p, i) => (
-            <Card key={i} className="cursor-pointer hover:border-primary/40 transition-colors group" onClick={() => openProduct(p)}>
-              <CardHeader className="pb-2">
-                <div className="h-32 rounded-lg bg-muted flex items-center justify-center mb-2">
-                  <Package className="h-12 w-12 text-muted-foreground/40 group-hover:text-primary/60 transition-colors" />
-                </div>
-                <CardTitle className="text-sm font-medium">{p.name}</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <p className="text-xs text-muted-foreground line-clamp-2 mb-2">{p.description}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-primary">From ${p.base_price.toFixed(2)}</span>
-                  <Badge variant="outline" className="text-[10px]">{p.turnaround_days}-day</Badge>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {/* Product Grid + Order Tracker */}
+        <div className="flex gap-6">
+          <div className="flex-1">
+            {/* Product Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {filtered.map((p, i) => (
+                <Card key={i} className="cursor-pointer hover:border-primary/40 transition-colors group" onClick={() => openProduct(p)}>
+                  <CardHeader className="pb-2">
+                    <div className="h-32 rounded-lg bg-muted flex items-center justify-center mb-2">
+                      <Package className="h-12 w-12 text-muted-foreground/40 group-hover:text-primary/60 transition-colors" />
+                    </div>
+                    <CardTitle className="text-sm font-medium">{p.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <p className="text-xs text-muted-foreground line-clamp-2 mb-2">{p.description}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-semibold text-primary">From ${p.base_price.toFixed(2)}</span>
+                      <Badge variant="outline" className="text-[10px]">{p.turnaround_days}-day</Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
-        {filtered.length === 0 && (
-          <div className="text-center py-16 text-muted-foreground">
-            <Package className="h-12 w-12 mx-auto mb-3 opacity-40" />
-            <p>No products found</p>
+            {filtered.length === 0 && (
+              <div className="text-center py-16 text-muted-foreground">
+                <Package className="h-12 w-12 mx-auto mb-3 opacity-40" />
+                <p>No products found</p>
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Sidebar Order Tracker */}
+          {cart.length > 0 && (
+            <div className="hidden lg:block w-80 shrink-0">
+              <div className="sticky top-24">
+                <PrintOrderTracker cart={cart} onClearCart={() => setCart([])} />
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Product Detail Dialog */}
         <Dialog open={!!selectedProduct} onOpenChange={o => !o && setSelectedProduct(null)}>

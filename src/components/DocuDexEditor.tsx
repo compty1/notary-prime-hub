@@ -17,6 +17,8 @@ import SuperScript from "@tiptap/extension-superscript";
 import ImageExt from "@tiptap/extension-image";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import FontFamily from "@tiptap/extension-font-family";
+import TaskList from "@tiptap/extension-task-list";
+import TaskItem from "@tiptap/extension-task-item";
 import { FontSize } from "./docudex/FontSizeExtension";
 import DOMPurify from "dompurify";
 import mammoth from "mammoth";
@@ -184,6 +186,8 @@ export function DocuDexEditor({
       ImageExt.configure({ inline: false, allowBase64: true }),
       HorizontalRule,
       Placeholder.configure({ placeholder: "Start typing or select a template..." }),
+      TaskList,
+      TaskItem.configure({ nested: true }),
     ],
     content: pages[activePageIdx]?.html || "",
     onUpdate: ({ editor: ed }) => {
