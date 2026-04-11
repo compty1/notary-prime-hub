@@ -1782,6 +1782,68 @@ export type Database = {
         }
         Relationships: []
       }
+      i9_verifications: {
+        Row: {
+          appointment_id: string | null
+          client_id: string
+          created_at: string
+          document_list_a: string[] | null
+          document_list_b: string[] | null
+          document_list_c: string[] | null
+          employee_name: string
+          employer_address: string | null
+          employer_name: string | null
+          id: string
+          notary_notes: string | null
+          section_completed: string
+          status: string
+          updated_at: string
+          verification_date: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          client_id: string
+          created_at?: string
+          document_list_a?: string[] | null
+          document_list_b?: string[] | null
+          document_list_c?: string[] | null
+          employee_name: string
+          employer_address?: string | null
+          employer_name?: string | null
+          id?: string
+          notary_notes?: string | null
+          section_completed?: string
+          status?: string
+          updated_at?: string
+          verification_date?: string
+        }
+        Update: {
+          appointment_id?: string | null
+          client_id?: string
+          created_at?: string
+          document_list_a?: string[] | null
+          document_list_b?: string[] | null
+          document_list_c?: string[] | null
+          employee_name?: string
+          employer_address?: string | null
+          employer_name?: string | null
+          id?: string
+          notary_notes?: string | null
+          section_completed?: string
+          status?: string
+          updated_at?: string
+          verification_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "i9_verifications_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       journal_entries: {
         Row: {
           appointment_id: string | null
@@ -1991,6 +2053,65 @@ export type Database = {
           zip?: string | null
         }
         Relationships: []
+      }
+      loan_signing_packages: {
+        Row: {
+          appointment_id: string | null
+          client_id: string
+          created_at: string
+          document_count: number
+          fee: number | null
+          id: string
+          lender_name: string | null
+          notes: string | null
+          package_type: string
+          scanback_deadline: string | null
+          scanback_required: boolean
+          status: string
+          title_company: string | null
+          updated_at: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          client_id: string
+          created_at?: string
+          document_count?: number
+          fee?: number | null
+          id?: string
+          lender_name?: string | null
+          notes?: string | null
+          package_type?: string
+          scanback_deadline?: string | null
+          scanback_required?: boolean
+          status?: string
+          title_company?: string | null
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string | null
+          client_id?: string
+          created_at?: string
+          document_count?: number
+          fee?: number | null
+          id?: string
+          lender_name?: string | null
+          notes?: string | null
+          package_type?: string
+          scanback_deadline?: string | null
+          scanback_required?: boolean
+          status?: string
+          title_company?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loan_signing_packages_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       mailroom_items: {
         Row: {
@@ -2841,6 +2962,77 @@ export type Database = {
         }
         Relationships: []
       }
+      print_jobs: {
+        Row: {
+          binding_type: string | null
+          client_id: string
+          color: boolean
+          completed_at: string | null
+          copies: number
+          created_at: string
+          document_id: string | null
+          double_sided: boolean
+          file_name: string
+          file_path: string | null
+          id: string
+          notes: string | null
+          page_count: number
+          paper_size: string
+          price: number | null
+          priority: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          binding_type?: string | null
+          client_id: string
+          color?: boolean
+          completed_at?: string | null
+          copies?: number
+          created_at?: string
+          document_id?: string | null
+          double_sided?: boolean
+          file_name: string
+          file_path?: string | null
+          id?: string
+          notes?: string | null
+          page_count?: number
+          paper_size?: string
+          price?: number | null
+          priority?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          binding_type?: string | null
+          client_id?: string
+          color?: boolean
+          completed_at?: string | null
+          copies?: number
+          created_at?: string
+          document_id?: string | null
+          double_sided?: boolean
+          file_name?: string
+          file_path?: string | null
+          id?: string
+          notes?: string | null
+          page_count?: number
+          paper_size?: string
+          price?: number | null
+          priority?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "print_jobs_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       professional_service_enrollments: {
         Row: {
           created_at: string
@@ -3400,6 +3592,128 @@ export type Database = {
             columns: ["session_id"]
             isOneToOne: false
             referencedRelation: "notarization_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ron_recordings: {
+        Row: {
+          appointment_id: string | null
+          consent_verified: boolean
+          created_at: string
+          created_by: string
+          duration_seconds: number | null
+          file_name: string
+          file_path: string
+          file_size_bytes: number | null
+          id: string
+          notes: string | null
+          recording_type: string
+          retention_expires_at: string | null
+          session_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          consent_verified?: boolean
+          created_at?: string
+          created_by: string
+          duration_seconds?: number | null
+          file_name: string
+          file_path: string
+          file_size_bytes?: number | null
+          id?: string
+          notes?: string | null
+          recording_type?: string
+          retention_expires_at?: string | null
+          session_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string | null
+          consent_verified?: boolean
+          created_at?: string
+          created_by?: string
+          duration_seconds?: number | null
+          file_name?: string
+          file_path?: string
+          file_size_bytes?: number | null
+          id?: string
+          notes?: string | null
+          recording_type?: string
+          retention_expires_at?: string | null
+          session_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ron_recordings_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ron_recordings_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "notarization_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scanback_tracking: {
+        Row: {
+          created_at: string
+          delivery_confirmed_at: string | null
+          document_name: string
+          id: string
+          notes: string | null
+          package_id: string
+          page_count: number | null
+          scan_status: string
+          scanned_at: string | null
+          shipped_at: string | null
+          shipping_carrier: string | null
+          tracking_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          delivery_confirmed_at?: string | null
+          document_name: string
+          id?: string
+          notes?: string | null
+          package_id: string
+          page_count?: number | null
+          scan_status?: string
+          scanned_at?: string | null
+          shipped_at?: string | null
+          shipping_carrier?: string | null
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          delivery_confirmed_at?: string | null
+          document_name?: string
+          id?: string
+          notes?: string | null
+          package_id?: string
+          page_count?: number | null
+          scan_status?: string
+          scanned_at?: string | null
+          shipped_at?: string | null
+          shipping_carrier?: string | null
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scanback_tracking_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "loan_signing_packages"
             referencedColumns: ["id"]
           },
         ]

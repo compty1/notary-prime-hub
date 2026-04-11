@@ -109,6 +109,10 @@ const AdminComplianceReport = lazyRetry(() => import("./pages/admin/AdminComplia
 const AdminAutomatedEmails = lazyRetry(() => import("./pages/admin/AdminAutomatedEmails"));
 const AdminFinances = lazyRetry(() => import("./pages/admin/AdminFinances"));
 const AdminEmailHealth = lazyRetry(() => import("./pages/admin/AdminEmailHealth"));
+const AdminRonRecordings = lazyRetry(() => import("./pages/admin/AdminRonRecordings"));
+const AdminLoanSigning = lazyRetry(() => import("./pages/admin/AdminLoanSigning"));
+const AdminI9Verifications = lazyRetry(() => import("./pages/admin/AdminI9Verifications"));
+const AdminPrintJobs = lazyRetry(() => import("./pages/admin/AdminPrintJobs"));
 const Maintenance = lazyRetry(() => import("./pages/Maintenance"));
 const ForNotaries = lazyRetry(() => import("./pages/solutions/ForNotaries"));
 const ForHospitals = lazyRetry(() => import("./pages/solutions/ForHospitals"));
@@ -272,6 +276,10 @@ function AnimatedRoutes() {
         <Route path="automated-emails" element={<SR msg="Automated emails failed to load"><AdminAutomatedEmails /></SR>} />
         <Route path="finances" element={<SR msg="Finances failed to load"><AdminFinances /></SR>} />
         <Route path="email-health" element={<SR msg="Email health failed to load"><AdminEmailHealth /></SR>} />
+        <Route path="ron-recordings" element={<SR msg="RON recordings failed to load"><AdminRonRecordings /></SR>} />
+        <Route path="loan-signing" element={<SR msg="Loan signing failed to load"><AdminLoanSigning /></SR>} />
+        <Route path="i9-verifications" element={<SR msg="I-9 verifications failed to load"><AdminI9Verifications /></SR>} />
+        <Route path="print-jobs" element={<SR msg="Print queue failed to load"><AdminPrintJobs /></SR>} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="*" element={<NotFound />} />
