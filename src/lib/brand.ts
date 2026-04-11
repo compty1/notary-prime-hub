@@ -2,7 +2,7 @@
 export const BRAND = {
   name: "Notar",
   initials: "N",
-  tagline: "Safe, Secure, Legal — Remote Online Notarization",
+  tagline: "Legal Online Notarization",
   taglineShort: "Notary & Document Services",
   fullTitle: "Notar — Ohio Notary Public | In-Person & RON",
   domain: "Notar.com",

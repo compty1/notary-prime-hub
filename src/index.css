@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap&font-display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=DM+Serif+Display&family=DM+Mono:wght@400;500&display=swap&font-display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,8 +6,8 @@
 
 @layer base {
   :root {
-    /* Notar Brand: Warm & Friendly — Light mode */
-    --background: 45 100% 97%;
+    /* Notar Brand v2.0: Warm & Friendly — Light mode */
+    --background: 48 100% 97%;
     --foreground: 0 0% 10%;
 
     --card: 0 0% 100%;
@@ -16,10 +16,10 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
 
-    --primary: 48 91% 52%;
+    --primary: 45 86% 48%;
     --primary-foreground: 0 0% 10%;
 
-    --secondary: 45 30% 90%;
+    --secondary: 44 22% 90%;
     --secondary-foreground: 0 0% 15%;
 
     --muted: 45 40% 95%;
@@ -31,13 +31,13 @@
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 45 20% 90%;
+    --border: 44 22% 90%;
     --input: 45 20% 92%;
-    --ring: 48 91% 52%;
+    --ring: 45 86% 48%;
 
     --radius: 0.75rem;
 
-    --primary-glow: 48 91% 62%;
+    --primary-glow: 45 86% 58%;
     --primary-light: 48 100% 95%;
     --mint: 48 60% 85%;
     --surface-elevated: 0 0% 100%;
@@ -45,25 +45,25 @@
 
     --sidebar-background: 0 0% 10%;
     --sidebar-foreground: 45 20% 85%;
-    --sidebar-primary: 48 91% 52%;
+    --sidebar-primary: 45 86% 48%;
     --sidebar-primary-foreground: 0 0% 10%;
     --sidebar-accent: 0 0% 16%;
     --sidebar-accent-foreground: 45 20% 85%;
     --sidebar-border: 0 0% 18%;
-    --sidebar-ring: 48 91% 52%;
+    --sidebar-ring: 45 86% 48%;
 
-    --accent-warm: 48 91% 52%;
+    --accent-warm: 45 86% 48%;
     --accent-warm-foreground: 0 0% 10%;
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
-    --warning: 48 91% 52%;
+    --warning: 45 86% 48%;
     --warning-foreground: 0 0% 10%;
     --info: 210 100% 52%;
     --info-foreground: 0 0% 100%;
   }
 
   .dark {
-    /* Notar Brand: Dark mode — Warm charcoal base */
+    /* Notar Brand v2.0: Dark mode — Warm charcoal base */
     --background: 30 10% 8%;
     --foreground: 45 20% 95%;
 
@@ -73,7 +73,7 @@
     --popover: 30 10% 12%;
     --popover-foreground: 45 20% 95%;
 
-    --primary: 48 91% 52%;
+    --primary: 45 86% 48%;
     --primary-foreground: 0 0% 10%;
 
     --secondary: 30 10% 20%;
@@ -82,17 +82,17 @@
     --muted: 30 10% 16%;
     --muted-foreground: 45 10% 55%;
 
-    --accent: 48 91% 52%;
-    --accent-foreground: 0 0% 10%;
+    --accent: 30 10% 16%;
+    --accent-foreground: 45 20% 95%;
 
     --destructive: 0 62% 35%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 30 10% 20%;
     --input: 30 10% 20%;
-    --ring: 48 91% 52%;
+    --ring: 45 86% 48%;
 
-    --primary-glow: 48 91% 62%;
+    --primary-glow: 45 86% 58%;
     --primary-light: 48 40% 18%;
     --mint: 48 40% 30%;
     --surface-elevated: 30 10% 14%;
@@ -100,18 +100,18 @@
 
     --sidebar-background: 30 10% 5%;
     --sidebar-foreground: 45 20% 85%;
-    --sidebar-primary: 48 91% 52%;
+    --sidebar-primary: 45 86% 48%;
     --sidebar-primary-foreground: 0 0% 10%;
     --sidebar-accent: 30 10% 14%;
     --sidebar-accent-foreground: 45 20% 85%;
     --sidebar-border: 30 10% 14%;
-    --sidebar-ring: 48 91% 52%;
+    --sidebar-ring: 45 86% 48%;
 
-    --accent-warm: 48 91% 52%;
+    --accent-warm: 45 86% 48%;
     --accent-warm-foreground: 0 0% 10%;
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
-    --warning: 48 91% 52%;
+    --warning: 45 86% 48%;
     --warning-foreground: 0 0% 10%;
     --info: 210 80% 55%;
     --info-foreground: 0 0% 100%;
@@ -173,14 +173,22 @@
     font-family: 'DM Sans', system-ui, sans-serif;
   }
 
-  .text-gradient-primary {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(48 91% 52%) 0%, hsl(42 100% 65%) 100%);
+  .font-display {
+    font-family: 'DM Serif Display', Georgia, serif;
   }
 
-  /* GAP-0007: Hero gradient transitions smoothly to next section */
+  .font-mono {
+    font-family: 'DM Mono', monospace;
+  }
+
+  .text-gradient-primary {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(45 86% 48%) 0%, hsl(42 92% 60%) 100%);
+  }
+
+  /* GAP-0007: Hero gradient — white-to-cream wash */
   .bg-gradient-hero {
-    background: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(48 100% 95%) 40%, hsl(48 91% 70%) 100%);
+    background: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(48 100% 97%) 40%, hsl(48 95% 93%) 100%);
   }
 
   .dark .bg-gradient-hero {
@@ -189,7 +197,7 @@
 
   /* WCAG AA-compliant amber for text on white backgrounds (4.5:1+) */
   .text-primary-accessible {
-    color: hsl(38 92% 35%);
+    color: hsl(38 82% 31%);
   }
   .dark .text-primary-accessible {
     color: hsl(38 92% 55%);
@@ -304,7 +312,7 @@ button, a, [role="button"] {
 .interactive-card:hover {
   transform: translateY(-4px);
   border-color: hsl(var(--primary) / 0.3);
-  box-shadow: 0 16px 32px -8px hsl(48 91% 52% / 0.12);
+  box-shadow: 0 16px 32px -8px hsl(45 86% 48% / 0.12);
 }
 
 /* GAP-0468/0478: will-change hints for animated elements */
@@ -315,9 +323,9 @@ button, a, [role="button"] {
 /* Gradient mesh background — warm accents */
 .gradient-mesh {
   background:
-    radial-gradient(ellipse at 20% 50%, hsl(48 91% 52% / 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, hsl(42 100% 65% / 0.05) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, hsl(48 91% 52% / 0.03) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, hsl(45 86% 48% / 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, hsl(42 92% 60% / 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, hsl(45 86% 48% / 0.03) 0%, transparent 50%);
 }
 
 /* Grid pattern overlay */

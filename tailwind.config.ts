@@ -16,8 +16,9 @@ export default {
       fontFamily: {
         sans: ['"DM Sans"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
         heading: ['"DM Sans"', 'system-ui', 'sans-serif'],
-        display: ['"DM Sans"', 'system-ui', 'sans-serif'],
+        display: ['"DM Serif Display"', 'Georgia', 'serif'],
         body: ['"DM Sans"', 'system-ui', 'sans-serif'],
+        mono: ['"DM Mono"', 'monospace'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -92,12 +93,12 @@ export default {
         "card-lg": "32px",
       },
       boxShadow: {
-        block: "0 2px 8px -2px hsl(48 91% 52% / 0.15)",
-        "block-lg": "0 8px 24px -6px hsl(48 91% 52% / 0.18)",
-        "block-active": "0 1px 4px -1px hsl(48 91% 52% / 0.1)",
+        block: "0 2px 8px -2px hsl(45 86% 48% / 0.15)",
+        "block-lg": "0 8px 24px -6px hsl(45 86% 48% / 0.18)",
+        "block-active": "0 1px 4px -1px hsl(45 86% 48% / 0.1)",
         soft: "0 2px 12px -4px hsl(0 0% 0% / 0.06)",
         card: "0 4px 20px -6px hsl(0 0% 0% / 0.08)",
-        "card-hover": "0 12px 32px -8px hsl(48 91% 52% / 0.15)",
+        "card-hover": "0 12px 32px -8px hsl(45 86% 48% / 0.15)",
       },
       fontSize: {
         label: ["10px", { letterSpacing: "0.1em", fontWeight: "700" }],
@@ -132,8 +133,8 @@ export default {
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
         "glow-pulse": {
-          "0%, 100%": { boxShadow: "0 0 15px -5px hsl(48 91% 52% / 0.2)" },
-          "50%": { boxShadow: "0 0 30px -5px hsl(48 91% 52% / 0.35)" },
+          "0%, 100%": { boxShadow: "0 0 15px -5px hsl(45 86% 48% / 0.2)" },
+          "50%": { boxShadow: "0 0 30px -5px hsl(45 86% 48% / 0.35)" },
         },
         "float": {
           "0%, 100%": { transform: "translateY(0px)" },

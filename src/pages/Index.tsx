@@ -238,7 +238,7 @@ export default function Index() {
               <motion.h1
                 variants={blurIn}
                 custom={0}
-                className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.08] text-foreground mb-6"
+                className="text-5xl md:text-6xl lg:text-7xl font-display font-bold tracking-tight leading-[1.08] text-foreground mb-6"
               >
                 Legal Online<br />
                 Notarization
