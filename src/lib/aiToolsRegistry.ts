@@ -2540,6 +2540,8 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
   "Communication",
   "Compliance & Legal",
   "Creative & Strategy",
+  "UX Consulting",
+  "Financial Operations",
 ];
 
 export function getToolById(id: string): AITool | undefined {
