@@ -100,7 +100,7 @@ export function Navbar() {
       </a>
       <div className="container mx-auto flex items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-3">
-          <Logo size="sm" showText theme="dark" className="[&_img]:h-[120px] [&_img]:w-[120px] [&_span]:text-5xl" />
+          <Logo size="sm" showText className="[&_img]:h-[102px] [&_img]:w-[102px] [&_span]:text-4xl [&_span]:text-foreground" />
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">
