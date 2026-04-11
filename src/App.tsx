@@ -107,6 +107,8 @@ const AdminNotaryPages = lazyRetry(() => import("./pages/admin/AdminNotaryPages"
 const AdminProfessionals = lazyRetry(() => import("./pages/admin/AdminProfessionals"));
 const AdminComplianceReport = lazyRetry(() => import("./pages/admin/AdminComplianceReport"));
 const AdminAutomatedEmails = lazyRetry(() => import("./pages/admin/AdminAutomatedEmails"));
+const AdminFinances = lazyRetry(() => import("./pages/admin/AdminFinances"));
+const AdminEmailHealth = lazyRetry(() => import("./pages/admin/AdminEmailHealth"));
 const Maintenance = lazyRetry(() => import("./pages/Maintenance"));
 const ForNotaries = lazyRetry(() => import("./pages/solutions/ForNotaries"));
 const ForHospitals = lazyRetry(() => import("./pages/solutions/ForHospitals"));
