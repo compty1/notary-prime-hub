@@ -24,10 +24,11 @@ import {
 import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
 import { fadeUp, blurIn, scaleReveal } from "@/lib/animations";
+import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 
 const primaryServices = [
   {
-    icon: Globe,
+    icon3d: FEATURE_3D_ICON.ron,
     title: "Remote Online Notarization",
     badge: "Most Popular",
     desc: "Get documents notarized from anywhere via secure video call. Ohio-authorized under ORC §147.65-.66 with full identity verification, KBA, and tamper-evident seals.",
@@ -36,7 +37,7 @@ const primaryServices = [
     features: ["Available 24/7", "All 50 states accepted", "10-year recording retention"],
   },
   {
-    icon: Car,
+    icon3d: FEATURE_3D_ICON.mobile,
     title: "Mobile Notarization",
     badge: "Central Ohio",
     desc: "We come to you — home, office, hospital, or any location within the greater Columbus area. Same-day appointments available for Franklin County.",
@@ -47,12 +48,12 @@ const primaryServices = [
 ];
 
 const otherServices = [
-  { icon: Copy, title: "Certified Copy Services", desc: "Certified true copies of original documents", to: "/services?category=notarization" },
-  { icon: Briefcase, title: "Loan Signing Agent", desc: "Professional loan document signing services", to: "/loan-signing" },
-  { icon: UserCheck, title: "I-9 / Employment Verification", desc: "Authorized agent for Form I-9 completion", to: "/services?category=verification" },
-  { icon: Stamp, title: "Apostille Facilitation", desc: "Document authentication for international use", to: "/services?category=authentication" },
-  { icon: Scale, title: "Power of Attorney", desc: "POA notarization with proper witnessing", to: "/services?category=notarization" },
-  { icon: BookOpen, title: "Oaths & Affirmations", desc: "Sworn statements, jurats, and affidavits", to: "/services?category=notarization" },
+  { icon3d: FEATURE_3D_ICON.copy, title: "Certified Copy Services", desc: "Certified true copies of original documents", to: "/services?category=notarization" },
+  { icon3d: FEATURE_3D_ICON.loan, title: "Loan Signing Agent", desc: "Professional loan document signing services", to: "/loan-signing" },
+  { icon3d: FEATURE_3D_ICON.i9, title: "I-9 / Employment Verification", desc: "Authorized agent for Form I-9 completion", to: "/services?category=verification" },
+  { icon3d: FEATURE_3D_ICON.apostille, title: "Apostille Facilitation", desc: "Document authentication for international use", to: "/services?category=authentication" },
+  { icon3d: FEATURE_3D_ICON.poa, title: "Power of Attorney", desc: "POA notarization with proper witnessing", to: "/services?category=notarization" },
+  { icon3d: FEATURE_3D_ICON.oath, title: "Oaths & Affirmations", desc: "Sworn statements, jurats, and affidavits", to: "/services?category=notarization" },
 ];
 
 const fallbackTestimonials = [
@@ -62,10 +63,10 @@ const fallbackTestimonials = [
 ];
 
 const howItWorksSteps = [
-  { num: "1", title: "Upload Document", icon: UploadCloud, desc: "Formats: PDF, JPEG. Verify text clarity before uploading." },
-  { num: "2", title: "Identity Verification", icon: Fingerprint, desc: "Secure KBA or biometric scan. Have your government ID ready." },
-  { num: "3", title: "Live Notary Session", icon: Video, desc: "Connect via video chat with a commissioned Notary Public." },
-  { num: "4", title: "Download Doc", icon: Download, desc: "Receive your secure, digitally notarized file immediately." },
+  { num: "1", title: "Upload Document", icon3d: FEATURE_3D_ICON.upload, desc: "Formats: PDF, JPEG. Verify text clarity before uploading." },
+  { num: "2", title: "Identity Verification", icon3d: FEATURE_3D_ICON.identity, desc: "Secure KBA or biometric scan. Have your government ID ready." },
+  { num: "3", title: "Live Notary Session", icon3d: FEATURE_3D_ICON.video, desc: "Connect via video chat with a commissioned Notary Public." },
+  { num: "4", title: "Download Doc", icon3d: FEATURE_3D_ICON.download, desc: "Receive your secure, digitally notarized file immediately." },
 ];
 
 const faqs = [
@@ -369,8 +370,8 @@ export default function Index() {
                 className="relative z-10 group"
               >
                 <div className="bg-card rounded-[24px] border border-border p-6 shadow-card hover:-translate-y-1 transition-all duration-300">
-                  <div className="w-14 h-14 rounded-xl border-2 border-border flex items-center justify-center mb-5 group-hover:bg-primary group-hover:border-primary group-hover:text-primary-foreground transition-all">
-                    <step.icon className="w-7 h-7 text-muted-foreground group-hover:text-primary-foreground transition-colors" />
+                  <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-5">
+                    <Icon3D src={step.icon3d} alt={step.title} className="w-12 h-12" />
                   </div>
                   <h3 className="text-xl font-bold text-foreground mb-2">{step.title}</h3>
                   <p className="text-sm text-muted-foreground font-medium leading-relaxed">{step.desc}</p>
@@ -432,8 +433,8 @@ export default function Index() {
                 <Card className="group h-full rounded-[24px] border-border hover:border-primary/30 transition-all shadow-sm hover:shadow-card">
                   <CardContent className="p-8">
                     <div className="mb-4 flex items-center gap-3">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 transition-colors group-hover:bg-primary/15">
-                        <s.icon className="h-7 w-7 text-primary" />
+                      <div className="flex h-14 w-14 items-center justify-center">
+                        <Icon3D src={s.icon3d} alt={s.title} className="h-14 w-14" />
                       </div>
                       <Badge className="text-[10px] font-bold uppercase tracking-wider bg-muted text-muted-foreground border-border">{s.badge}</Badge>
                     </div>
@@ -463,8 +464,8 @@ export default function Index() {
             {otherServices.map((service) => (
               <Link key={service.title} to={service.to}>
                 <div className="bg-card p-6 rounded-[24px] border border-border shadow-sm flex flex-col items-center text-center hover:border-primary/30 hover:-translate-y-0.5 transition-all cursor-pointer group">
-                  <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center text-muted-foreground mb-4 group-hover:bg-primary/10 group-hover:text-primary transition">
-                    <service.icon className="w-6 h-6" />
+                  <div className="w-12 h-12 flex items-center justify-center mb-4">
+                    <Icon3D src={service.icon3d} alt={service.title} className="w-10 h-10" />
                   </div>
                   <h3 className="font-bold text-foreground text-sm">{service.title}</h3>
                   <p className="text-xs text-muted-foreground font-medium mt-1">{service.desc}</p>

@@ -5,15 +5,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PageShell } from "@/components/PageShell";
 import { motion } from "framer-motion";
-import { Scale, FileText, Users, Monitor, BookOpen, DollarSign, ArrowRight, CheckCircle } from "lucide-react";
+import { ArrowRight, CheckCircle } from "lucide-react";
+import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 
 const features = [
-  { icon: FileText, title: "Affidavits & Depositions", desc: "Sworn statements, affidavits, and deposition transcripts notarized with proper jurat or acknowledgment certificates." },
-  { icon: Scale, title: "Power of Attorney", desc: "General, durable, limited, and healthcare POA documents — executed per Ohio ORC §1337.60 requirements." },
-  { icon: BookOpen, title: "Court Filings & Discovery", desc: "Verified pleadings, interrogatory responses, and discovery documents notarized for court submission deadlines." },
-  { icon: Users, title: "Witness Coordination", desc: "Impartial witnesses provided for document executions requiring attestation — estate plans, wills, and healthcare directives." },
-  { icon: Monitor, title: "Digital Journal & Audit Trail", desc: "Complete notarial records with sequential journal entries, signer ID details, and e-seal verification for litigation support." },
-  { icon: DollarSign, title: "Volume & Retainer Pricing", desc: "Dedicated notary availability for firms with recurring needs. Flat-rate retainer packages and priority scheduling." },
+  { icon3d: FEATURE_3D_ICON.affidavit, title: "Affidavits & Depositions", desc: "Sworn statements, affidavits, and deposition transcripts notarized with proper jurat or acknowledgment certificates." },
+  { icon3d: FEATURE_3D_ICON.poa, title: "Power of Attorney", desc: "General, durable, limited, and healthcare POA documents — executed per Ohio ORC §1337.60 requirements." },
+  { icon3d: FEATURE_3D_ICON.court, title: "Court Filings & Discovery", desc: "Verified pleadings, interrogatory responses, and discovery documents notarized for court submission deadlines." },
+  { icon3d: FEATURE_3D_ICON.witness, title: "Witness Coordination", desc: "Impartial witnesses provided for document executions requiring attestation — estate plans, wills, and healthcare directives." },
+  { icon3d: FEATURE_3D_ICON.journal, title: "Digital Journal & Audit Trail", desc: "Complete notarial records with sequential journal entries, signer ID details, and e-seal verification for litigation support." },
+  { icon3d: FEATURE_3D_ICON.retainer, title: "Volume & Retainer Pricing", desc: "Dedicated notary availability for firms with recurring needs. Flat-rate retainer packages and priority scheduling." },
 ];
 
 const complianceItems = [
@@ -55,7 +56,7 @@ export default function ForLawFirms() {
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">
               <div className="relative rounded-2xl border border-border bg-card p-8 shadow-lg">
-                <Scale className="mx-auto mb-4 h-16 w-16 text-primary" />
+                <Icon3D src={FEATURE_3D_ICON.lawFirm} alt="Law firm notarization" className="mx-auto mb-4 h-20 w-20" />
                 <p className="text-center text-lg font-semibold text-foreground">Trusted by Ohio Law Firms</p>
                 <p className="mt-2 text-center text-sm text-muted-foreground">Volume pricing & priority scheduling</p>
                 <div className="absolute -bottom-3 -right-3 rounded-full bg-accent px-4 py-2 text-xs font-bold text-accent-foreground shadow-lg">
@@ -78,7 +79,9 @@ export default function ForLawFirms() {
               <motion.div key={f.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
                 <Card className="h-full border-border/50 hover:border-primary/20 transition-colors">
                   <CardContent className="p-6">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10"><f.icon className="h-6 w-6 text-primary" /></div>
+                    <div className="mb-4">
+                      <Icon3D src={f.icon3d} alt={f.title} className="h-14 w-14" />
+                    </div>
                     <h3 className="mb-2 font-sans text-lg font-semibold text-foreground">{f.title}</h3>
                     <p className="text-sm text-muted-foreground">{f.desc}</p>
                   </CardContent>
@@ -111,7 +114,7 @@ export default function ForLawFirms() {
 
       <section className="py-16">
         <div className="container mx-auto px-4 text-center">
-          <Scale className="mx-auto mb-4 h-12 w-12 text-primary" />
+          <Icon3D src={FEATURE_3D_ICON.lawFirm} alt="Partner with us" className="mx-auto mb-4 h-16 w-16" />
           <h2 className="mb-4 font-sans text-3xl font-bold text-foreground">Partner With Us</h2>
           <p className="mx-auto mb-8 max-w-lg text-muted-foreground">Set up a firm account for priority scheduling, volume pricing, and dedicated notary availability for your practice.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
