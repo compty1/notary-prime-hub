@@ -161,7 +161,7 @@ export default function Services() {
       <section className="relative overflow-hidden border-b-2 border-border bg-card py-16 md:py-20">
         <div className="container relative mx-auto px-4 text-center">
           <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Everything you need</p>
-          <h1 className="mb-4 text-4xl font-bold text-[hsl(220,26%,14%)] md:text-5xl">
+          <h1 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">
             Services
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
@@ -174,23 +174,23 @@ export default function Services() {
       <WhatDoINeed />
 
       {/* AI Tools — Block Shadow cards */}
-      <section className="border-b-2 border-border bg-[hsl(45,96%,50%)]/5 py-12">
+      <section className="border-b-2 border-border bg-primary/5 py-12">
         <div className="container mx-auto px-4">
           <div className="mb-8 text-center">
-            <Badge className="mb-3 bg-[hsl(45,96%,50%)]/10 text-[hsl(45,96%,40%)] border-[hsl(45,96%,50%)]/20 rounded-lg font-bold"><Sparkles className="mr-1 h-3 w-3" /> AI-Powered</Badge>
-            <h2 className="mb-2 text-2xl font-bold text-[hsl(220,26%,14%)] md:text-3xl">Do It Yourself</h2>
+            <Badge className="mb-3 bg-primary/10 text-[hsl(45,96%,40%)] border-[hsl(45,96%,50%)]/20 rounded-lg font-bold"><Sparkles className="mr-1 h-3 w-3" /> AI-Powered</Badge>
+            <h2 className="mb-2 text-2xl font-bold text-foreground md:text-3xl">Do It Yourself</h2>
             <p className="mx-auto max-w-lg text-muted-foreground">Every tool is enhanced with AI — smarter suggestions, auto-fill, and intelligent recommendations.</p>
           </div>
           <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-3">
             {aiTools.map((tool, i) => (
               <motion.div key={tool.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
-                <Card className="group h-full rounded-[24px] border-2 border-border shadow-[4px_4px_0px_hsl(220,10%,85%)] hover:shadow-[6px_6px_0px_hsl(45,96%,50%)] transition-shadow">
+                <Card className="group h-full rounded-[24px] border-2 border-border shadow-md hover:shadow-lg hover:shadow-primary/20 transition-shadow">
                   <CardContent className="flex h-full flex-col items-center p-6 text-center">
                     <Icon3D src={tool.icon3d} alt={tool.title} className="h-14 w-14 mb-4" />
                     <h3 className="mb-2 font-bold text-foreground">{tool.title}</h3>
                     <p className="mb-4 flex-1 text-sm text-muted-foreground">{tool.description}</p>
                     <Link to={tool.link} className="w-full">
-                      <Button variant="outline" className="w-full rounded-xl font-bold border-2 group-hover:bg-[hsl(45,96%,50%)] group-hover:text-[hsl(220,26%,14%)] group-hover:border-[hsl(220,26%,14%)] transition-colors">
+                      <Button variant="outline" className="w-full rounded-xl font-bold border-2 group-hover:bg-primary group-hover:text-foreground group-hover:border-primary transition-colors">
                         {tool.cta} <ArrowRight className="ml-2 h-3 w-3" />
                       </Button>
                     </Link>
@@ -211,7 +211,7 @@ export default function Services() {
         </div>
 
         <Tabs value={activeCategory} onValueChange={(val) => { setActiveCategory(val); const params = new URLSearchParams(searchParams); if (val === "all") params.delete("category"); else params.set("category", val); setSearchParams(params, { replace: true }); }}>
-          <TabsList className="mb-8 overflow-x-auto flex-nowrap h-auto gap-1 w-full justify-start sm:flex-wrap sm:justify-center scroll-smooth snap-x bg-[hsl(220,10%,95%)] rounded-2xl p-1">
+          <TabsList className="mb-8 overflow-x-auto flex-nowrap h-auto gap-1 w-full justify-start sm:flex-wrap sm:justify-center scroll-smooth snap-x bg-muted rounded-2xl p-1">
             <TabsTrigger value="all" className="snap-start rounded-xl font-bold text-xs data-[state=active]:bg-card data-[state=active]:shadow-sm">All Services ({services.length})</TabsTrigger>
             {CATEGORY_ORDER.map(cat => {
               const count = services.filter(s => s.category === cat).length;
@@ -244,7 +244,7 @@ export default function Services() {
             {grouped.map((group) => (
               <section key={group.category}>
                 <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.35 }} className="mb-6">
-                  <h2 className="text-2xl font-bold text-[hsl(220,26%,14%)]">{group.label}</h2>
+                  <h2 className="text-2xl font-bold text-foreground">{group.label}</h2>
                   <p className="text-sm text-muted-foreground">{group.description}</p>
                 </motion.div>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -253,15 +253,15 @@ export default function Services() {
                     const { url: actionUrl, label: actionLabel } = getServiceAction(s);
                     return (
                       <motion.div key={s.id} initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.25, delay: i * 0.03 }}>
-                        <Card className="group h-full rounded-[24px] border-2 border-border shadow-[4px_4px_0px_hsl(220,10%,85%)] hover:shadow-[6px_6px_0px_hsl(45,96%,50%)] transition-shadow" role="article">
+                        <Card className="group h-full rounded-[24px] border-2 border-border shadow-md hover:shadow-lg hover:shadow-primary/20 transition-shadow" role="article">
                           <CardContent className="flex h-full flex-col p-6">
                             <div className="mb-3 flex items-start justify-between">
-                              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[hsl(45,96%,50%)]/10 group-hover:bg-[hsl(45,96%,50%)]/20 transition-colors">
+                              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
                                 <IconComp className="h-5 w-5 text-[hsl(45,96%,50%)]" />
                               </div>
                               <div className="flex items-center gap-1.5">
                                 {s.is_popular && (
-                                  <Badge className="text-[10px] px-1.5 py-0 bg-[hsl(45,96%,50%)] text-[hsl(220,26%,14%)] font-bold rounded-md">Popular</Badge>
+                                  <Badge className="text-[10px] px-1.5 py-0 bg-primary text-foreground font-bold rounded-md">Popular</Badge>
                                 )}
                                 <Badge variant="outline" className="text-xs font-mono font-bold rounded-lg border-2">{formatPrice(s)}</Badge>
                               </div>
@@ -273,13 +273,13 @@ export default function Services() {
                                 <Button size="sm" variant="outline" className="w-full rounded-xl font-bold border-2">More Info</Button>
                               </Link>
                               {!user && PROTECTED_PREFIXES.some(p => actionUrl.startsWith(p)) ? (
-                                <Button size="sm" className="flex-1 rounded-xl font-bold bg-[hsl(45,96%,50%)] text-[hsl(220,26%,14%)] hover:bg-[hsl(45,96%,45%)] shadow-[3px_3px_0px_hsl(220,26%,14%)]"
+                                <Button size="sm" className="flex-1 rounded-xl font-bold bg-primary text-foreground hover:bg-primary/90 shadow-md"
                                   onClick={() => navigate(`/login?redirect=${encodeURIComponent(actionUrl)}`)}>
                                   {actionLabel} <ChevronRight className="ml-1 h-3 w-3" />
                                 </Button>
                               ) : (
                                 <Link to={actionUrl} className="flex-1">
-                                  <Button size="sm" className="w-full rounded-xl font-bold bg-[hsl(45,96%,50%)] text-[hsl(220,26%,14%)] hover:bg-[hsl(45,96%,45%)] shadow-[3px_3px_0px_hsl(220,26%,14%)]">
+                                  <Button size="sm" className="w-full rounded-xl font-bold bg-primary text-foreground hover:bg-primary/90 shadow-md">
                                     {actionLabel} <ChevronRight className="ml-1 h-3 w-3" />
                                   </Button>
                                 </Link>
@@ -300,10 +300,10 @@ export default function Services() {
       {/* CTA — Block Shadow */}
       <section className="border-t-2 border-border bg-card py-16">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="mb-4 text-2xl font-bold text-[hsl(220,26%,14%)]">Ready to Get Started?</h2>
+          <h2 className="mb-4 text-2xl font-bold text-foreground">Ready to Get Started?</h2>
           <p className="mb-6 text-muted-foreground">Book an appointment or contact us for a custom quote.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link to="/book"><Button size="lg" className="rounded-xl font-bold bg-[hsl(45,96%,50%)] text-[hsl(220,26%,14%)] hover:bg-[hsl(45,96%,45%)] shadow-[4px_4px_0px_hsl(220,26%,14%)] px-8">Notarize Now</Button></Link>
+            <Link to="/book"><Button size="lg" className="rounded-xl font-bold bg-primary text-foreground hover:bg-primary/90 shadow-lg px-8">Notarize Now</Button></Link>
             <Link to="/fee-calculator"><Button size="lg" variant="outline" className="rounded-xl font-bold border-2">View Pricing</Button></Link>
             <Link to="/loan-signing"><Button size="lg" variant="outline" className="rounded-xl font-bold border-2">Loan Signing Partnership</Button></Link>
             <Link to="/ron-check"><Button size="lg" variant="outline" className="rounded-xl font-bold border-2">RON Eligibility Checker</Button></Link>
