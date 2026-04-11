@@ -46,6 +46,21 @@ const sidebarGroups = [
       { title: "Loan Signing", url: "/admin/loan-signing", icon: FileSignature, adminOnly: true },
       { title: "I-9 Verifications", url: "/admin/i9-verifications", icon: UserCheck, adminOnly: true },
       { title: "Print Queue", url: "/admin/print-jobs", icon: Printer, adminOnly: true },
+      { title: "Translations", url: "/admin/translations", icon: Languages, adminOnly: true },
+      { title: "Scrivener", url: "/admin/scrivener", icon: PenLine, adminOnly: true },
+      { title: "Identity Certs", url: "/admin/identity-certificates", icon: Award, adminOnly: true },
+    ],
+  },
+  {
+    label: "Field Services",
+    items: [
+      { title: "Fingerprinting", url: "/admin/fingerprinting", icon: Fingerprint, adminOnly: true },
+      { title: "Process Serving", url: "/admin/process-serving", icon: Scale, adminOnly: true },
+      { title: "Skip Tracing", url: "/admin/skip-tracing", icon: Crosshair, adminOnly: true },
+      { title: "Vital Records", url: "/admin/vital-records", icon: Heart, adminOnly: true },
+      { title: "Courier", url: "/admin/courier", icon: Truck, adminOnly: true },
+      { title: "Background Checks", url: "/admin/background-checks", icon: ShieldCheck, adminOnly: true },
+      { title: "VA Tasks", url: "/admin/va-tasks", icon: ClipboardList, adminOnly: true },
     ],
   },
   {
