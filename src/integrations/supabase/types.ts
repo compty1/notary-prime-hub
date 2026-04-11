@@ -1165,6 +1165,51 @@ export type Database = {
           },
         ]
       }
+      designs: {
+        Row: {
+          created_at: string
+          design_data: Json | null
+          id: string
+          preview_url: string | null
+          product_type: string
+          status: string
+          template_id: string | null
+          thumbnail_url: string | null
+          title: string | null
+          updated_at: string
+          user_id: string
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          design_data?: Json | null
+          id?: string
+          preview_url?: string | null
+          product_type: string
+          status?: string
+          template_id?: string | null
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id: string
+          version?: number
+        }
+        Update: {
+          created_at?: string
+          design_data?: Json | null
+          id?: string
+          preview_url?: string | null
+          product_type?: string
+          status?: string
+          template_id?: string | null
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+          version?: number
+        }
+        Relationships: []
+      }
       docudex_comments: {
         Row: {
           content: string
@@ -3619,6 +3664,88 @@ export type Database = {
           },
         ]
       }
+      print_order_communications: {
+        Row: {
+          attachments: string[] | null
+          created_at: string
+          id: string
+          message: string
+          order_id: string
+          sender_id: string | null
+          sender_type: string
+        }
+        Insert: {
+          attachments?: string[] | null
+          created_at?: string
+          id?: string
+          message: string
+          order_id: string
+          sender_id?: string | null
+          sender_type?: string
+        }
+        Update: {
+          attachments?: string[] | null
+          created_at?: string
+          id?: string
+          message?: string
+          order_id?: string
+          sender_id?: string | null
+          sender_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "print_order_communications_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "print_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      print_order_files: {
+        Row: {
+          created_at: string
+          file_name: string
+          file_size: number | null
+          file_type: string
+          file_url: string
+          id: string
+          order_id: string
+          uploaded_by: string | null
+          version: number | null
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          file_size?: number | null
+          file_type: string
+          file_url: string
+          id?: string
+          order_id: string
+          uploaded_by?: string | null
+          version?: number | null
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          file_size?: number | null
+          file_type?: string
+          file_url?: string
+          id?: string
+          order_id?: string
+          uploaded_by?: string | null
+          version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "print_order_files_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "print_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       print_orders: {
         Row: {
           client_id: string
@@ -3677,6 +3804,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      print_pricing_rules: {
+        Row: {
+          base_price: number
+          cost_basis: number | null
+          created_at: string
+          effective_date: string | null
+          end_date: string | null
+          finish_surcharges: Json | null
+          id: string
+          is_active: boolean
+          margin_target: number | null
+          product_type: string
+          quantity_breaks: Json | null
+          rush_multiplier: number | null
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          base_price: number
+          cost_basis?: number | null
+          created_at?: string
+          effective_date?: string | null
+          end_date?: string | null
+          finish_surcharges?: Json | null
+          id?: string
+          is_active?: boolean
+          margin_target?: number | null
+          product_type: string
+          quantity_breaks?: Json | null
+          rush_multiplier?: number | null
+          tier?: string
+          updated_at?: string
+        }
+        Update: {
+          base_price?: number
+          cost_basis?: number | null
+          created_at?: string
+          effective_date?: string | null
+          end_date?: string | null
+          finish_surcharges?: Json | null
+          id?: string
+          is_active?: boolean
+          margin_target?: number | null
+          product_type?: string
+          quantity_breaks?: Json | null
+          rush_multiplier?: number | null
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       print_products: {
         Row: {
@@ -5543,6 +5721,72 @@ export type Database = {
           stripe_subscription_id?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      vendors: {
+        Row: {
+          capabilities: Json | null
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          location: string | null
+          name: string
+          notes: string | null
+          on_time_rate: number | null
+          partnership_tier: string
+          quality_score: number | null
+          specialties: string[] | null
+          total_orders: number | null
+          total_revenue: number | null
+          updated_at: string
+          website_url: string | null
+          wholesale_pricing: Json | null
+        }
+        Insert: {
+          capabilities?: Json | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          name: string
+          notes?: string | null
+          on_time_rate?: number | null
+          partnership_tier?: string
+          quality_score?: number | null
+          specialties?: string[] | null
+          total_orders?: number | null
+          total_revenue?: number | null
+          updated_at?: string
+          website_url?: string | null
+          wholesale_pricing?: Json | null
+        }
+        Update: {
+          capabilities?: Json | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          name?: string
+          notes?: string | null
+          on_time_rate?: number | null
+          partnership_tier?: string
+          quality_score?: number | null
+          specialties?: string[] | null
+          total_orders?: number | null
+          total_revenue?: number | null
+          updated_at?: string
+          website_url?: string | null
+          wholesale_pricing?: Json | null
         }
         Relationships: []
       }
