@@ -1,112 +1,92 @@
 
 
-# Brand Theme Overhaul Plan: "Notar" Refresh
+# 3D Icon Replacement Plan
 
-## Summary of Desired Theme (from attached PDFs/screenshots)
+## Current State
+- The `src/assets/icons-3d/` folder contains 33 AI-generated placeholder icons
+- The `src/lib/icon3dMap.tsx` utility exists with mappings but is **not imported anywhere** -- zero pages use it
+- All public-facing pages (Index, Services, About, all 6 solution pages, portals) still render flat Lucide icons for feature/service cards
+- The uploaded **Notar-2.pdf** contains 30 high-quality professional 3D icons that should replace the generated ones
 
-The target design shifts from the current **dark charcoal + gold "Block Shadow"** aesthetic to a **bright, warm, friendly** visual system characterized by:
+## Phase 1: Extract and Replace Icon Assets
 
-- **Background**: Warm yellow/cream (#FFF9E6 to #FFFDF5) instead of near-white #fcfcfc
-- **Primary color**: Warm golden-yellow (#F5C518 / hsl(48 91% 52%)) — brighter, more saturated than current amber
-- **Accent sections**: Soft yellow panels (#FFF3CD / #FFECB3) for service cards and content blocks
-- **Typography**: Clean sans-serif ("Open Sauce" / similar modern rounded sans) — NOT the current Georgia serif wordmark or Space Grotesk headers
-- **Icons**: 3D illustrated icons (from Notar.pdf icon set) replacing flat Lucide line icons for feature/service cards
-- **Logo**: Gold starburst/seal checkmark badge + "Notar" wordmark (clean sans-serif, not uppercase serif)
-- **Cards**: Soft yellow backgrounds with rounded corners, NO block shadows
-- **Buttons**: Dark (#1a1a1a) pill-shaped CTAs with white text, secondary outlined buttons
-- **Overall feel**: Playful, modern, approachable — similar to Notion, Linear, or Canva marketing pages
+Copy all 30 icons from the parsed PDF into `src/assets/icons-3d/`, replacing the AI-generated files. Icon-to-filename mapping based on visual inspection:
 
-## Technical Details
+| PDF Image | Filename | Description |
+|-----------|----------|-------------|
+| img_p1_1 | checklist.png | Document with green checkmarks |
+| img_p1_2 | notary-agent.png | Person with yellow checklist |
+| img_p1_3 | identity-verify.png | Person in crosshair target |
+| img_p1_4 | doc-shield.png | Document with shield + checkmark |
+| img_p1_5 | certificate.png | Clipboard with seal ribbon |
+| img_p1_6 | task-list.png | Blue board with 4 checkmarks |
+| img_p1_7 | warning.png | Yellow triangle exclamation |
+| img_p1_8 | folders.png | Stacked folders with docs |
+| img_p1_9 | scroll.png | White scroll with blue text |
+| img_p1_10 | doc-search.png | Document with magnifying glass |
+| img_p1_11 | receipt.png | Blue receipt with checkmarks |
+| img_p1_12 | lightbulb.png | Yellow lightbulb |
+| img_p1_13 | handshake.png | Handshake with green check |
+| img_p1_14 | verified-badge.png | Green starburst checkmark |
+| img_p1_15 | calendar.png | Calendar with clock |
+| img_p1_16 | analytics.png | Folder with charts/docs |
+| img_p1_17 | folder-verified.png | Yellow folder with blue verified badge |
+| img_p1_18 | rocket.png | Rocket with coins launching |
+| img_p1_19 | video-call.png | Video conference on monitor |
+| img_p1_20 | cloud-upload.png | Cloud with folder arrows |
+| img_p1_21 | pie-chart.png | Pie chart with data points |
+| img_p1_22 | cloud-security.png | Cloud with shield lock |
+| img_p1_23 | award.png | Gold star award badge |
+| img_p1_24 | team-review.png | Two people with clipboard |
+| img_p1_25 | medal.png | Gold medal with star |
+| img_p1_26 | tools.png | Purple wrench/gear tool |
+| img_p1_27 | password.png | Monitor with lock/password |
+| img_p1_28 | email.png | Orange envelope with notification |
+| img_p1_29 | thumbs-up.png | Thumbs up with blue badge |
+| img_p1_30 | workflow.png | Process flow with checkmark/star |
+| page_1_image_1_v2 | globe-docs.png | Globe with location pin and docs |
 
-### Phase 1: Design Tokens & CSS Variables
+## Phase 2: Wire Icons Into Pages
 
-**File: `src/index.css`**
-- Update `:root` CSS variables:
-  - `--background`: warm cream (48 100% 97%)
-  - `--primary`: brighter yellow (48 91% 52%)
-  - `--card`: white stays, but add warm yellow card variant
-  - `--foreground`: keep dark (#1a1a1a)
-  - `--muted`: warm cream tones instead of cool grays
-  - `--accent`: warm yellow panel color
-  - Remove `shadow-block` usage from base styles
-  - Update dark mode variables to complement warm palette
-- Update gradient utilities (`.bg-gradient-hero`, `.glass`, `.glass-card`) to warm yellow tones
-- Replace `.geo-pattern` diagonal lines with softer dot pattern
+Replace Lucide icon usage with `Icon3D` component across all public-facing pages:
 
-**File: `tailwind.config.ts`**
-- Update `fontFamily` — replace Space Grotesk/Georgia with a modern rounded sans (e.g., "DM Sans", "Inter", or "Plus Jakarta Sans" as primary for both headings and body)
-- Remove `shadow-block` / `shadow-block-lg` box shadows
-- Add softer shadow tokens (`shadow-soft`, `shadow-card`)
-- Update `borderRadius.card` to larger value (28-32px)
-- Adjust animation keyframes if needed
+**Files to update (feature/service card icons only -- NOT navigation or functional UI icons):**
 
-### Phase 2: Logo & Brand Identity
+1. **`src/pages/Index.tsx`** -- `primaryServices` array, `otherServices`, how-it-works steps, feature cards
+2. **`src/pages/Services.tsx`** -- service category cards
+3. **`src/pages/About.tsx`** -- values/feature cards
+4. **`src/pages/solutions/ForIndividuals.tsx`** -- 6 feature cards
+5. **`src/pages/solutions/ForLawFirms.tsx`** -- 6 feature cards
+6. **`src/pages/solutions/ForHospitals.tsx`** -- 6 feature cards
+7. **`src/pages/solutions/ForRealEstate.tsx`** -- 6 feature cards
+8. **`src/pages/solutions/ForSmallBusiness.tsx`** -- 6 feature cards
+9. **`src/pages/solutions/ForNotaries.tsx`** -- 6 feature cards
+10. **`src/pages/ClientPortal.tsx`** / **`src/components/PortalQuickActions.tsx`** -- quick action cards
+11. **`src/pages/RonInfo.tsx`** -- RON feature cards
+12. **`src/pages/NotaryGuide.tsx`** -- guide step icons
 
-**File: `src/components/Logo.tsx`**
-- Replace shield-keyhole icon with gold starburst/seal checkmark (from uploaded logo screenshot)
-- Change wordmark from uppercase serif "NOTAR" to clean sans "Notar"
-- Generate and save new logo icon asset
+For each page, the pattern changes from:
+```tsx
+// Before
+<f.icon className="h-6 w-6 text-primary" />
 
-**File: `src/lib/brand.ts`**
-- Update `name` to "Notar" (not "NotarDex")
-- Update taglines and references
+// After
+import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
+<Icon3D src={FEATURE_3D_ICON.video} alt="Video call" className="h-12 w-12" />
+```
 
-### Phase 3: 3D Icon Assets
+Lucide icons will be **kept** for:
+- Admin sidebar navigation
+- Inline functional icons (ArrowRight, CheckCircle, Loader2, etc.)
+- Form controls, buttons, and interactive elements
 
-- Extract all 3D icons from Notar.pdf (there are ~80+ icons)
-- Copy key service/feature icons into `src/assets/icons-3d/`
-- Create an icon mapping utility (`src/lib/icon3dMap.ts`) that maps service categories to their 3D icon asset paths
-- These replace Lucide icons in: service cards, hero sections, feature grids, how-it-works steps
+## Phase 3: Update icon3dMap Mappings
 
-### Phase 4: Component Updates
-
-**Buttons (`src/components/ui/button.tsx`)**
-- Update `default` variant: dark bg (#1a1a1a), white text, pill-shaped (rounded-full), no block shadow
-- Update `accent`/`dark` variants to match
-- Add `secondary` outlined variant with rounded-full
-
-**Cards (`src/components/ui/card.tsx`)**
-- Default to softer shadows instead of block shadows
-- Add `warm` variant with yellow/cream background
-
-**Badge, Tabs, Accordion** — update to warm color palette
-
-**Navbar (`src/components/Navbar.tsx`)**
-- Light/white background with new logo
-- Clean sans-serif navigation text
-
-**Footer (`src/components/Footer.tsx`)**
-- Update to warm dark or keep dark sidebar with warm accents
-
-### Phase 5: Page-Level Updates
-
-All pages using Lucide icons for service/feature display need 3D icon replacements:
-- `src/pages/Index.tsx` — hero, services grid, how-it-works, testimonials
-- `src/pages/Services.tsx` — service cards, AI tools section
-- `src/pages/About.tsx` — team, values
-- `src/pages/admin/AdminDashboard.tsx` — sidebar icons stay Lucide (functional), but dashboard cards get warm styling
-- All solution pages (`ForHospitals`, `ForLawFirms`, etc.)
-- `src/pages/ClientPortal.tsx`, `src/pages/BusinessPortal.tsx` — portal cards
-
-### Phase 6: Dark Mode Adaptation
-- Update `.dark` CSS variables to complement warm palette (warm dark navy/charcoal base with yellow accents preserved)
-
-### Phase 7: CSV Audit & Tracking
-- Generate comprehensive CSV at `/mnt/documents/brand_rebrand_audit.csv` listing every file, element, current style, target style, and status
+Expand `FEATURE_3D_ICON` and `CATEGORY_3D_ICON` to cover all service types used across pages (vehicle titles, wills, real estate, hospitals, etc.).
 
 ## Deliverables
-
-1. Updated CSS variables and Tailwind config
-2. New logo component and assets
-3. 3D icon assets extracted and mapped
-4. All component variants updated
-5. Page-level visual updates across ~30+ pages
-6. Dark mode compatibility
-7. Full audit CSV with implementation tracking
-
-## What Will NOT Change
-- All functionality, routing, data, database, edge functions, auth flows
-- Lucide icons in admin sidebar navigation (functional, not decorative)
-- Component logic and state management
-- All API integrations and Supabase connections
+- 31 professional 3D icon PNGs replacing AI-generated ones
+- ~12 page files updated to use `Icon3D` component
+- Updated `icon3dMap.tsx` with comprehensive mappings
+- All Lucide icons retained for functional/navigation use
 
