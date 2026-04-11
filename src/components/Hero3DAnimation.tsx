@@ -2,8 +2,7 @@ import { useEffect, useRef } from "react";
 
 /**
  * Interactive canvas-based 3D-style floating animation for the hero section.
- * Responds to mouse movement for parallax effect.
- * Uses Notar brand colors: gold primary + vibrant blue accent.
+ * Responds to mouse movement for parallax effect. Bigger, bolder elements.
  */
 export default function Hero3DAnimation() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -34,7 +33,6 @@ export default function Hero3DAnimation() {
     resize();
     window.addEventListener("resize", resize);
 
-    // Mouse tracking for parallax
     const handleMouseMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       mouseRef.current = {
@@ -45,74 +43,109 @@ export default function Hero3DAnimation() {
     canvas.addEventListener("mousemove", handleMouseMove);
 
     // Brand colors
-    const brandGold = "#F5C518";
-    const brandGoldLight = "#FDE68A";
-    const brandDark = "#1a1a1a";
-    const brandWhite = "#FFFFFF";
-    const brandBlue = "#3B82F6"; // vibrant blue accent
+    const gold = "#F5C518";
+    const goldLight = "#FDE68A";
+    const dark = "#1a1a1a";
+    const white = "#FFFFFF";
+    const blue = "#3B82F6";
+    const blueLight = "#60A5FA";
 
     interface FloatingObj {
       x: number; y: number; size: number; rotation: number;
       rotSpeed: number; floatOffset: number; floatSpeed: number;
-      floatAmp: number; type: "doc" | "seal" | "shield" | "checkmark" | "pen";
+      floatAmp: number; type: "doc" | "seal" | "shield" | "badge" | "pen" | "stamp";
       opacity: number; parallaxFactor: number;
     }
 
     const objects: FloatingObj[] = [
-      { x: 0.22, y: 0.28, size: 95, rotation: -0.12, rotSpeed: 0.003, floatOffset: 0, floatSpeed: 0.7, floatAmp: 14, type: "doc", opacity: 1, parallaxFactor: 0.03 },
-      { x: 0.7, y: 0.2, size: 78, rotation: 0.1, rotSpeed: -0.004, floatOffset: 2, floatSpeed: 0.55, floatAmp: 16, type: "doc", opacity: 0.92, parallaxFactor: 0.05 },
-      { x: 0.48, y: 0.52, size: 65, rotation: 0, rotSpeed: 0.008, floatOffset: 1, floatSpeed: 0.9, floatAmp: 9, type: "seal", opacity: 1, parallaxFactor: 0.02 },
-      { x: 0.78, y: 0.58, size: 48, rotation: 0.08, rotSpeed: -0.005, floatOffset: 3, floatSpeed: 0.65, floatAmp: 11, type: "shield", opacity: 0.88, parallaxFactor: 0.06 },
-      { x: 0.28, y: 0.72, size: 38, rotation: 0, rotSpeed: 0, floatOffset: 1.5, floatSpeed: 0.85, floatAmp: 7, type: "checkmark", opacity: 0.9, parallaxFactor: 0.04 },
-      { x: 0.6, y: 0.75, size: 42, rotation: -0.3, rotSpeed: 0.002, floatOffset: 2.5, floatSpeed: 0.6, floatAmp: 10, type: "pen", opacity: 0.85, parallaxFactor: 0.07 },
+      // Large main document — center-left
+      { x: 0.2, y: 0.25, size: 130, rotation: -0.1, rotSpeed: 0.002, floatOffset: 0, floatSpeed: 0.6, floatAmp: 16, type: "doc", opacity: 1, parallaxFactor: 0.025 },
+      // Second document — right
+      { x: 0.72, y: 0.15, size: 105, rotation: 0.08, rotSpeed: -0.003, floatOffset: 2, floatSpeed: 0.5, floatAmp: 18, type: "doc", opacity: 0.95, parallaxFactor: 0.04 },
+      // Gold notary seal — center, prominent
+      { x: 0.5, y: 0.48, size: 85, rotation: 0, rotSpeed: 0.006, floatOffset: 1, floatSpeed: 0.8, floatAmp: 10, type: "seal", opacity: 1, parallaxFactor: 0.015 },
+      // Blue shield — right
+      { x: 0.82, y: 0.55, size: 60, rotation: 0.06, rotSpeed: -0.004, floatOffset: 3, floatSpeed: 0.55, floatAmp: 13, type: "shield", opacity: 0.9, parallaxFactor: 0.05 },
+      // Badge — bottom center
+      { x: 0.35, y: 0.72, size: 48, rotation: 0, rotSpeed: 0, floatOffset: 1.5, floatSpeed: 0.75, floatAmp: 8, type: "badge", opacity: 0.92, parallaxFactor: 0.035 },
+      // Pen — bottom right
+      { x: 0.65, y: 0.78, size: 55, rotation: -0.35, rotSpeed: 0.002, floatOffset: 2.5, floatSpeed: 0.5, floatAmp: 11, type: "pen", opacity: 0.88, parallaxFactor: 0.06 },
+      // Small stamp — top center
+      { x: 0.55, y: 0.12, size: 42, rotation: 0.15, rotSpeed: 0.003, floatOffset: 0.8, floatSpeed: 0.7, floatAmp: 9, type: "stamp", opacity: 0.85, parallaxFactor: 0.045 },
     ];
 
     interface Particle { x: number; y: number; size: number; speed: number; opacity: number; offset: number; color: string }
 
-    const particles: Particle[] = Array.from({ length: 35 }, () => ({
+    const particles: Particle[] = Array.from({ length: 40 }, () => ({
       x: Math.random(), y: Math.random(),
-      size: 1.5 + Math.random() * 4,
-      speed: 0.15 + Math.random() * 0.45,
-      opacity: 0.1 + Math.random() * 0.3,
+      size: 1.5 + Math.random() * 5,
+      speed: 0.12 + Math.random() * 0.4,
+      opacity: 0.08 + Math.random() * 0.25,
       offset: Math.random() * Math.PI * 2,
-      color: Math.random() > 0.6 ? brandBlue : brandGold,
+      color: Math.random() > 0.55 ? blue : gold,
     }));
+
+    function rrect(x: number, y: number, w: number, h: number, r: number | number[]) {
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+    }
 
     function drawDocument(cx: number, cy: number, size: number, rotation: number) {
       ctx.save();
       ctx.translate(cx, cy);
       ctx.rotate(rotation);
-      const w = size * 0.7, h = size, r = 8;
+      const w = size * 0.65, h = size, r = 10;
 
-      ctx.shadowColor = "rgba(0,0,0,0.12)";
-      ctx.shadowBlur = 24;
-      ctx.shadowOffsetY = 10;
+      // Drop shadow
+      ctx.shadowColor = "rgba(0,0,0,0.15)";
+      ctx.shadowBlur = 30;
+      ctx.shadowOffsetY = 12;
 
-      ctx.fillStyle = brandWhite;
-      ctx.beginPath();
-      ctx.roundRect(-w / 2, -h / 2, w, h, r);
+      // Paper
+      ctx.fillStyle = white;
+      rrect(-w / 2, -h / 2, w, h, r);
       ctx.fill();
       ctx.shadowColor = "transparent";
 
-      // Blue header bar
-      ctx.fillStyle = brandBlue;
-      ctx.beginPath();
-      ctx.roundRect(-w / 2, -h / 2, w, 16, [r, r, 0, 0]);
+      // Blue header
+      ctx.fillStyle = blue;
+      rrect(-w / 2, -h / 2, w, 20, [r, r, 0, 0]);
       ctx.fill();
+
+      // Header dots
+      ctx.fillStyle = white;
+      for (let i = 0; i < 3; i++) {
+        ctx.beginPath();
+        ctx.arc(-w / 2 + 14 + i * 10, -h / 2 + 10, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
 
       // Text lines
       ctx.fillStyle = "#e2e8f0";
-      const lineY = -h / 2 + 30;
-      for (let i = 0; i < 5; i++) {
-        const lw = w * (0.4 + Math.random() * 0.4);
-        ctx.fillRect(-w / 2 + 10, lineY + i * 13, lw, 4);
+      const lineY = -h / 2 + 34;
+      for (let i = 0; i < 6; i++) {
+        const lw = w * (0.35 + Math.random() * 0.45);
+        ctx.fillRect(-w / 2 + 12, lineY + i * 14, lw, 5);
       }
 
-      // Gold seal stamp
-      ctx.fillStyle = brandGold;
+      // Gold seal stamp at bottom right
+      ctx.fillStyle = gold;
       ctx.beginPath();
-      ctx.arc(w / 2 - 16, h / 2 - 16, 12, 0, Math.PI * 2);
+      ctx.arc(w / 2 - 18, h / 2 - 18, 14, 0, Math.PI * 2);
       ctx.fill();
+      ctx.strokeStyle = "#D4A80A";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Check in seal
+      ctx.strokeStyle = dark;
+      ctx.lineWidth = 2;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(w / 2 - 23, h / 2 - 18);
+      ctx.lineTo(w / 2 - 19, h / 2 - 14);
+      ctx.lineTo(w / 2 - 13, h / 2 - 22);
+      ctx.stroke();
 
       ctx.restore();
     }
@@ -122,47 +155,63 @@ export default function Hero3DAnimation() {
       ctx.translate(cx, cy);
       ctx.rotate(rotation);
 
-      const glow = ctx.createRadialGradient(0, 0, size * 0.25, 0, 0, size * 0.75);
-      glow.addColorStop(0, "rgba(245, 197, 24, 0.3)");
+      // Outer glow
+      const glow = ctx.createRadialGradient(0, 0, size * 0.2, 0, 0, size * 0.8);
+      glow.addColorStop(0, "rgba(245, 197, 24, 0.35)");
       glow.addColorStop(1, "rgba(245, 197, 24, 0)");
       ctx.fillStyle = glow;
       ctx.beginPath();
-      ctx.arc(0, 0, size * 0.75, 0, Math.PI * 2);
+      ctx.arc(0, 0, size * 0.8, 0, Math.PI * 2);
       ctx.fill();
 
-      const points = 18;
-      const outerR = size * 0.5, innerR = size * 0.38;
-      ctx.fillStyle = brandGold;
+      // Starburst
+      const points = 20;
+      const outerR = size * 0.52, innerR = size * 0.4;
+      ctx.fillStyle = gold;
+      ctx.shadowColor = "rgba(245, 197, 24, 0.3)";
+      ctx.shadowBlur = 20;
       ctx.beginPath();
       for (let i = 0; i < points * 2; i++) {
         const angle = (i * Math.PI) / points;
-        const r2 = i % 2 === 0 ? outerR : innerR;
-        const px = Math.cos(angle) * r2, py = Math.sin(angle) * r2;
+        const r = i % 2 === 0 ? outerR : innerR;
+        const px = Math.cos(angle) * r, py = Math.sin(angle) * r;
         if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
       }
       ctx.closePath();
       ctx.fill();
+      ctx.shadowColor = "transparent";
 
-      ctx.fillStyle = brandDark;
+      // Inner circle
+      ctx.fillStyle = dark;
       ctx.beginPath();
-      ctx.arc(0, 0, size * 0.24, 0, Math.PI * 2);
+      ctx.arc(0, 0, size * 0.26, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.strokeStyle = brandGold;
-      ctx.lineWidth = 3;
+      // Gold ring
+      ctx.strokeStyle = goldLight;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, 0, size * 0.26, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Checkmark inside
+      ctx.strokeStyle = gold;
+      ctx.lineWidth = 3.5;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       ctx.beginPath();
-      ctx.moveTo(-7, 0); ctx.lineTo(-2, 6); ctx.lineTo(8, -5);
+      ctx.moveTo(-8, 0); ctx.lineTo(-3, 7); ctx.lineTo(9, -6);
       ctx.stroke();
 
-      // Pulse
-      const pulseR = size * 0.52 + Math.sin(t * 2) * 5;
-      ctx.strokeStyle = `rgba(245, 197, 24, ${0.25 + Math.sin(t * 2) * 0.15})`;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.arc(0, 0, pulseR, 0, Math.PI * 2);
-      ctx.stroke();
+      // Pulse rings
+      for (let r = 0; r < 2; r++) {
+        const pulseR = size * (0.55 + r * 0.12) + Math.sin(t * 1.8 + r) * 5;
+        ctx.strokeStyle = `rgba(245, 197, 24, ${(0.2 - r * 0.08) + Math.sin(t * 1.8 + r) * 0.1})`;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.arc(0, 0, pulseR, 0, Math.PI * 2);
+        ctx.stroke();
+      }
 
       ctx.restore();
     }
@@ -171,49 +220,65 @@ export default function Hero3DAnimation() {
       ctx.save();
       ctx.translate(cx, cy);
       ctx.rotate(rotation);
-      ctx.shadowColor = "rgba(59, 130, 246, 0.2)";
-      ctx.shadowBlur = 16;
-      ctx.shadowOffsetY = 4;
+      ctx.shadowColor = "rgba(59, 130, 246, 0.25)";
+      ctx.shadowBlur = 20;
+      ctx.shadowOffsetY = 6;
 
       const s = size * 0.5;
-      ctx.fillStyle = brandBlue;
+      // Shield gradient
+      const grad = ctx.createLinearGradient(0, -s, 0, s);
+      grad.addColorStop(0, blueLight);
+      grad.addColorStop(1, blue);
+      ctx.fillStyle = grad;
       ctx.beginPath();
       ctx.moveTo(0, -s);
-      ctx.bezierCurveTo(s * 0.8, -s * 0.7, s, -s * 0.2, s, s * 0.1);
+      ctx.bezierCurveTo(s * 0.85, -s * 0.7, s, -s * 0.2, s, s * 0.1);
       ctx.bezierCurveTo(s, s * 0.6, s * 0.3, s * 0.9, 0, s * 1.1);
       ctx.bezierCurveTo(-s * 0.3, s * 0.9, -s, s * 0.6, -s, s * 0.1);
-      ctx.bezierCurveTo(-s, -s * 0.2, -s * 0.8, -s * 0.7, 0, -s);
+      ctx.bezierCurveTo(-s, -s * 0.2, -s * 0.85, -s * 0.7, 0, -s);
       ctx.closePath();
       ctx.fill();
       ctx.shadowColor = "transparent";
 
-      ctx.strokeStyle = brandWhite;
-      ctx.lineWidth = 3;
+      // Highlight
+      ctx.fillStyle = "rgba(255,255,255,0.15)";
+      ctx.beginPath();
+      ctx.ellipse(-s * 0.2, -s * 0.3, s * 0.3, s * 0.4, -0.3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Checkmark
+      ctx.strokeStyle = white;
+      ctx.lineWidth = 3.5;
       ctx.lineCap = "round"; ctx.lineJoin = "round";
       ctx.beginPath();
-      ctx.moveTo(-7, 2); ctx.lineTo(-2, 8); ctx.lineTo(8, -4);
+      ctx.moveTo(-8, 2); ctx.lineTo(-3, 9); ctx.lineTo(9, -5);
       ctx.stroke();
 
       ctx.restore();
     }
 
-    function drawCheckmark(cx: number, cy: number, size: number) {
+    function drawBadge(cx: number, cy: number, size: number) {
       ctx.save();
       ctx.translate(cx, cy);
-      ctx.shadowColor = "rgba(59, 130, 246, 0.25)";
-      ctx.shadowBlur = 14;
+      ctx.shadowColor = "rgba(59, 130, 246, 0.3)";
+      ctx.shadowBlur = 16;
 
-      ctx.fillStyle = brandBlue;
+      // Circle
+      const grad = ctx.createRadialGradient(0, -size * 0.1, 0, 0, 0, size * 0.5);
+      grad.addColorStop(0, blueLight);
+      grad.addColorStop(1, blue);
+      ctx.fillStyle = grad;
       ctx.beginPath();
       ctx.arc(0, 0, size * 0.5, 0, Math.PI * 2);
       ctx.fill();
       ctx.shadowColor = "transparent";
 
-      ctx.strokeStyle = brandWhite;
-      ctx.lineWidth = 3;
+      // Checkmark
+      ctx.strokeStyle = white;
+      ctx.lineWidth = 3.5;
       ctx.lineCap = "round"; ctx.lineJoin = "round";
       ctx.beginPath();
-      ctx.moveTo(-6, 1); ctx.lineTo(-2, 6); ctx.lineTo(7, -4);
+      ctx.moveTo(-7, 1); ctx.lineTo(-2, 7); ctx.lineTo(8, -5);
       ctx.stroke();
 
       ctx.restore();
@@ -223,25 +288,28 @@ export default function Hero3DAnimation() {
       ctx.save();
       ctx.translate(cx, cy);
       ctx.rotate(rotation);
-      ctx.shadowColor = "rgba(0,0,0,0.1)";
-      ctx.shadowBlur = 10;
+      ctx.shadowColor = "rgba(0,0,0,0.12)";
+      ctx.shadowBlur = 14;
 
-      const h = size, w = size * 0.18;
-      // Pen body
-      ctx.fillStyle = brandDark;
-      ctx.beginPath();
-      ctx.roundRect(-w / 2, -h / 2, w, h * 0.75, 4);
+      const h = size, w = size * 0.2;
+      // Body
+      ctx.fillStyle = dark;
+      rrect(-w / 2, -h / 2, w, h * 0.72, 5);
       ctx.fill();
 
-      // Gold clip
-      ctx.fillStyle = brandGold;
-      ctx.fillRect(-w / 2 - 2, -h / 2 + 4, 3, h * 0.3);
+      // Gold band
+      ctx.fillStyle = gold;
+      ctx.fillRect(-w / 2, -h / 2 + h * 0.72 - 4, w, 8);
 
-      // Pen tip
-      ctx.fillStyle = brandGold;
+      // Clip
+      ctx.fillStyle = gold;
+      ctx.fillRect(-w / 2 - 3, -h / 2 + 6, 3, h * 0.28);
+
+      // Tip
+      ctx.fillStyle = gold;
       ctx.beginPath();
-      ctx.moveTo(-w / 2, -h / 2 + h * 0.75);
-      ctx.lineTo(w / 2, -h / 2 + h * 0.75);
+      ctx.moveTo(-w / 2, -h / 2 + h * 0.72 + 4);
+      ctx.lineTo(w / 2, -h / 2 + h * 0.72 + 4);
       ctx.lineTo(0, h / 2);
       ctx.closePath();
       ctx.fill();
@@ -250,24 +318,48 @@ export default function Hero3DAnimation() {
       ctx.restore();
     }
 
-    function drawConnections(t: number) {
-      const positions = objects.map((o) => {
-        const mx = mouseRef.current.x, my = mouseRef.current.y;
-        return {
-          x: o.x * width + (mx - 0.5) * width * o.parallaxFactor,
-          y: o.y * height + Math.sin(t * o.floatSpeed + o.floatOffset) * o.floatAmp + (my - 0.5) * height * o.parallaxFactor,
-        };
-      });
+    function drawStamp(cx: number, cy: number, size: number, rotation: number) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(rotation);
+      ctx.shadowColor = "rgba(0,0,0,0.1)";
+      ctx.shadowBlur = 12;
 
-      ctx.setLineDash([4, 8]);
+      // Handle
+      ctx.fillStyle = dark;
+      rrect(-size * 0.12, -size * 0.4, size * 0.24, size * 0.35, 4);
+      ctx.fill();
+
+      // Base
+      ctx.fillStyle = gold;
+      rrect(-size * 0.3, -size * 0.08, size * 0.6, size * 0.18, 3);
+      ctx.fill();
+
+      // Stamp pad
+      ctx.fillStyle = blue;
+      rrect(-size * 0.35, size * 0.12, size * 0.7, size * 0.1, 3);
+      ctx.fill();
+
+      ctx.shadowColor = "transparent";
+      ctx.restore();
+    }
+
+    function drawConnections(t: number) {
+      const mx = mouseRef.current.x, my = mouseRef.current.y;
+      const positions = objects.map((o) => ({
+        x: o.x * width + (mx - 0.5) * width * o.parallaxFactor,
+        y: o.y * height + Math.sin(t * o.floatSpeed + o.floatOffset) * o.floatAmp + (my - 0.5) * height * o.parallaxFactor,
+      }));
+
+      ctx.setLineDash([5, 10]);
       ctx.lineWidth = 1;
       for (let i = 0; i < positions.length; i++) {
         for (let j = i + 1; j < positions.length; j++) {
           const dx = positions[i].x - positions[j].x;
           const dy = positions[i].y - positions[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 320) {
-            const alpha = 0.08 * (1 - dist / 320);
+          if (dist < 350) {
+            const alpha = 0.06 * (1 - dist / 350);
             ctx.strokeStyle = `rgba(59, 130, 246, ${alpha})`;
             ctx.beginPath();
             ctx.moveTo(positions[i].x, positions[i].y);
@@ -286,22 +378,22 @@ export default function Hero3DAnimation() {
 
       const mx = mouseRef.current.x, my = mouseRef.current.y;
 
-      // Background radial glow
+      // Dual radial glow following mouse
       const bgGlow = ctx.createRadialGradient(
-        width * (0.4 + mx * 0.2), height * (0.3 + my * 0.2), 0,
-        width * 0.5, height * 0.4, width * 0.65
+        width * (0.35 + mx * 0.25), height * (0.25 + my * 0.2), 0,
+        width * 0.5, height * 0.4, width * 0.7
       );
-      bgGlow.addColorStop(0, "rgba(59, 130, 246, 0.05)");
-      bgGlow.addColorStop(0.5, "rgba(245, 197, 24, 0.04)");
-      bgGlow.addColorStop(1, "rgba(245, 197, 24, 0)");
+      bgGlow.addColorStop(0, "rgba(59, 130, 246, 0.06)");
+      bgGlow.addColorStop(0.4, "rgba(245, 197, 24, 0.04)");
+      bgGlow.addColorStop(1, "transparent");
       ctx.fillStyle = bgGlow;
       ctx.fillRect(0, 0, width, height);
 
       // Particles
       particles.forEach((p) => {
-        const px = p.x * width + (mx - 0.5) * 8;
-        const py = p.y * height + Math.sin(t * p.speed + p.offset) * 12 + (my - 0.5) * 8;
-        ctx.fillStyle = p.color === brandBlue
+        const px = p.x * width + (mx - 0.5) * 10;
+        const py = p.y * height + Math.sin(t * p.speed + p.offset) * 14 + (my - 0.5) * 10;
+        ctx.fillStyle = p.color === blue
           ? `rgba(59, 130, 246, ${p.opacity})`
           : `rgba(245, 197, 24, ${p.opacity})`;
         ctx.beginPath();
@@ -324,8 +416,9 @@ export default function Hero3DAnimation() {
           case "doc": drawDocument(ox, oy, o.size, rot); break;
           case "seal": drawSeal(ox, oy, o.size, rot, t); break;
           case "shield": drawShield(ox, oy, o.size, rot); break;
-          case "checkmark": drawCheckmark(ox, oy, o.size); break;
+          case "badge": drawBadge(ox, oy, o.size); break;
           case "pen": drawPen(ox, oy, o.size, rot); break;
+          case "stamp": drawStamp(ox, oy, o.size, rot); break;
         }
         ctx.globalAlpha = 1;
       });
@@ -343,7 +436,7 @@ export default function Hero3DAnimation() {
   }, []);
 
   return (
-    <div className="relative w-full h-full min-h-[420px]" aria-hidden="true">
+    <div className="relative w-full h-full min-h-[480px]" aria-hidden="true">
       <canvas
         ref={canvasRef}
         className="w-full h-full cursor-crosshair"

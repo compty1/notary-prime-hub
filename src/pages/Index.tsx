@@ -231,8 +231,8 @@ export default function Index() {
   return (
     <PageShell>
       {/* ===== HERO ===== */}
-      <section className="relative bg-gradient-hero overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 relative z-10">
+      <section className="relative bg-gradient-hero overflow-hidden pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div initial="hidden" animate="visible">
               <motion.h1
@@ -275,17 +275,15 @@ export default function Index() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="relative hidden lg:flex items-center justify-center min-h-[420px]"
+              className="relative hidden lg:flex items-center justify-center min-h-[480px]"
             >
               <Hero3DAnimation />
             </motion.div>
           </div>
         </div>
-      </section>
 
-      {/* ===== About Us ===== */}
-      <section className="py-20 bg-gradient-hero">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* About Us — inside same gradient */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -360,10 +358,10 @@ export default function Index() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { icon: Lock, title: "Secure & Tamper-Evident", desc: "Advanced cryptographic seals ensure document integrity." },
-              { icon: Clock, title: "Convenient & Fast", desc: "Connect with a notary 24/7 in just a few minutes." },
-              { icon: FileCheck2, title: "Legally Binding", desc: "Accepted Nationwide. Full legal validity guaranteed." },
-              { icon: ShieldCheck, title: "Audit Trail & Encryption", desc: "Comprehensive session logs and military-grade encryption." },
+              { icon3d: FEATURE_3D_ICON.lockShield, title: "Secure & Tamper-Evident", desc: "Advanced cryptographic seals ensure document integrity." },
+              { icon3d: FEATURE_3D_ICON.clockFast, title: "Convenient & Fast", desc: "Connect with a notary 24/7 in just a few minutes." },
+              { icon3d: FEATURE_3D_ICON.legalDoc, title: "Legally Binding", desc: "Accepted Nationwide. Full legal validity guaranteed." },
+              { icon3d: FEATURE_3D_ICON.encryption, title: "Audit Trail & Encryption", desc: "Comprehensive session logs and military-grade encryption." },
             ].map((benefit, idx) => (
               <motion.div
                 key={benefit.title}
@@ -373,8 +371,8 @@ export default function Index() {
                 transition={{ delay: idx * 0.1 }}
                 className="bg-sidebar-accent/50 backdrop-blur-sm p-8 rounded-[24px] border border-sidebar-border text-center hover:-translate-y-1 transition duration-300 group"
               >
-                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/20 transition-colors">
-                  <benefit.icon className="w-8 h-8 text-primary" />
+                <div className="w-20 h-20 flex items-center justify-center mx-auto mb-6">
+                  <Icon3D src={benefit.icon3d} alt={benefit.title} className="w-20 h-20" />
                 </div>
                 <h3 className="text-lg font-bold mb-2 text-sidebar-foreground">{benefit.title}</h3>
                 <p className="text-sm text-sidebar-foreground/50 font-medium">{benefit.desc}</p>
