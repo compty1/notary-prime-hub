@@ -158,6 +158,9 @@ export default function BookingReviewStep(props: ReviewStepProps) {
         <OhioComplianceNotice type={notarizationType === "ron" ? "ron" : "in_person"} />
       )}
 
+      {/* GAP-0212: Signer preparation checklist */}
+      <SignerChecklist type={notarizationType === "ron" ? "ron" : "in_person"} />
+
       {/* Pre-signing warning */}
       <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 flex items-start gap-3">
         <AlertTriangle className="h-5 w-5 flex-shrink-0 text-destructive mt-0.5" />

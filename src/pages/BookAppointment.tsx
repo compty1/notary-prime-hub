@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { getPhoneError } from "@/lib/phoneValidation";
 import { useSettings } from "@/hooks/useSettings";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
+import { UrgencyBanner } from "@/components/UrgencyBanner";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
@@ -755,6 +756,7 @@ export default function BookAppointment() {
 
   return (
     <PageShell>
+      <UrgencyBanner variant="slots" />
       <OfflineIndicator />
       <div className="container mx-auto max-w-2xl px-4 py-12">
         <Breadcrumbs />
