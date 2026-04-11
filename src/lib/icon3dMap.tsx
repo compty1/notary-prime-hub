@@ -30,6 +30,7 @@ import email from "@/assets/icons-3d/email.png";
 import thumbsUp from "@/assets/icons-3d/thumbs-up.png";
 import workflow from "@/assets/icons-3d/workflow.png";
 import globeDocs from "@/assets/icons-3d/globe-docs.png";
+import newsletterMegaphone from "@/assets/icons-3d/newsletter-megaphone.jpg";
 
 export const ICON_3D = {
   checklist,
@@ -143,6 +144,8 @@ export const FEATURE_3D_ICON: Record<string, string> = {
   analytics: analytics,
   password: password,
   taskList: taskList,
+  checklist: checklist,
+  newsletter: newsletterMegaphone,
 };
 
 /** Render a 3D icon image element */
