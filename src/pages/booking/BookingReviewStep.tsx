@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Monitor, Calendar, Shield, DollarSign, AlertTriangle, Clock, Eye, EyeOff, CreditCard, Tag, Loader2, CheckCircle } from "lucide-react";
 import { formatTimeSlot, isDigitalOnly, HAGUE_COUNTRIES } from "./bookingConstants";
 import { OhioComplianceNotice } from "@/components/OhioComplianceNotice";
+import { SignerChecklist } from "@/components/SignerChecklist";
 
 interface ReviewStepProps {
   isNonNotarial: boolean;
@@ -156,6 +157,9 @@ export default function BookingReviewStep(props: ReviewStepProps) {
       {!props.isNonNotarial && (
         <OhioComplianceNotice type={notarizationType === "ron" ? "ron" : "in_person"} />
       )}
+
+      {/* GAP-0212: Signer preparation checklist */}
+      <SignerChecklist type={notarizationType === "ron" ? "ron" : "in_person"} />
 
       {/* Pre-signing warning */}
       <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 flex items-start gap-3">

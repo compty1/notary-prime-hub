@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
-import { ChevronRight, FileText, Search, Sparkles, ArrowRight, Mail, Scan, FileEdit, Wand2 } from "lucide-react";
+import { ChevronRight, FileText, Search, Sparkles, ArrowRight, Mail, Scan, FileEdit, Wand2, Clock } from "lucide-react";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
@@ -267,7 +267,10 @@ export default function Services() {
                               </div>
                             </div>
                             <h3 className="mb-1 text-base font-bold text-foreground">{s.name}</h3>
-                            <p className="mb-4 flex-1 text-sm text-muted-foreground">{s.description || s.short_description}</p>
+                            <p className="mb-3 flex-1 text-sm text-muted-foreground">{s.description || s.short_description}</p>
+                            {s.estimated_turnaround && (
+                              <p className="mb-3 text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" /> Est. {s.estimated_turnaround}</p>
+                            )}
                             <div className="flex gap-2">
                               <Link to={`/services/${s.id}`} className="flex-1">
                                 <Button size="sm" variant="outline" className="w-full rounded-xl font-bold border-2">More Info</Button>
