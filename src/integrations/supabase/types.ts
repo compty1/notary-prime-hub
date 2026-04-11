@@ -1165,6 +1165,222 @@ export type Database = {
           },
         ]
       }
+      docudex_comments: {
+        Row: {
+          content: string
+          created_at: string
+          document_id: string
+          id: string
+          page_index: number
+          position: Json | null
+          resolved: boolean
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          document_id: string
+          id?: string
+          page_index?: number
+          position?: Json | null
+          resolved?: boolean
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          document_id?: string
+          id?: string
+          page_index?: number
+          position?: Json | null
+          resolved?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "docudex_comments_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "docudex_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      docudex_documents: {
+        Row: {
+          created_at: string
+          document_hash: string | null
+          font_family: string | null
+          footer_html: string | null
+          header_html: string | null
+          id: string
+          is_template: boolean
+          last_auto_saved_at: string | null
+          margins: Json | null
+          page_size: string
+          pages: Json
+          template_category: string | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          user_id: string
+          watermark: string | null
+        }
+        Insert: {
+          created_at?: string
+          document_hash?: string | null
+          font_family?: string | null
+          footer_html?: string | null
+          header_html?: string | null
+          id?: string
+          is_template?: boolean
+          last_auto_saved_at?: string | null
+          margins?: Json | null
+          page_size?: string
+          pages?: Json
+          template_category?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          user_id: string
+          watermark?: string | null
+        }
+        Update: {
+          created_at?: string
+          document_hash?: string | null
+          font_family?: string | null
+          footer_html?: string | null
+          header_html?: string | null
+          id?: string
+          is_template?: boolean
+          last_auto_saved_at?: string | null
+          margins?: Json | null
+          page_size?: string
+          pages?: Json
+          template_category?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+          watermark?: string | null
+        }
+        Relationships: []
+      }
+      docudex_shares: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          document_id: string
+          id: string
+          permission: string
+          shared_with_email: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          document_id: string
+          id?: string
+          permission?: string
+          shared_with_email: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          document_id?: string
+          id?: string
+          permission?: string
+          shared_with_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "docudex_shares_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "docudex_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      docudex_templates: {
+        Row: {
+          category: string
+          content: Json
+          created_at: string
+          created_by: string | null
+          icon: string | null
+          id: string
+          is_public: boolean
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          use_count: number
+        }
+        Insert: {
+          category?: string
+          content?: Json
+          created_at?: string
+          created_by?: string | null
+          icon?: string | null
+          id?: string
+          is_public?: boolean
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          use_count?: number
+        }
+        Update: {
+          category?: string
+          content?: Json
+          created_at?: string
+          created_by?: string | null
+          icon?: string | null
+          id?: string
+          is_public?: boolean
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          use_count?: number
+        }
+        Relationships: []
+      }
+      docudex_versions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          document_id: string
+          id: string
+          label: string | null
+          pages: Json
+          version_number: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          document_id: string
+          id?: string
+          label?: string | null
+          pages?: Json
+          version_number?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          document_id?: string
+          id?: string
+          label?: string | null
+          pages?: Json
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "docudex_versions_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "docudex_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       document_bundles: {
         Row: {
           bundle_type: string
@@ -3471,8 +3687,13 @@ export type Database = {
           id: string
           image_url: string | null
           is_active: boolean
+          min_quantity: number | null
           name: string
           options: Json | null
+          price_tiers: Json | null
+          sort_order: number | null
+          subcategory: string | null
+          turnaround_days: number | null
           updated_at: string
         }
         Insert: {
@@ -3483,8 +3704,13 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean
+          min_quantity?: number | null
           name: string
           options?: Json | null
+          price_tiers?: Json | null
+          sort_order?: number | null
+          subcategory?: string | null
+          turnaround_days?: number | null
           updated_at?: string
         }
         Update: {
@@ -3495,8 +3721,13 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean
+          min_quantity?: number | null
           name?: string
           options?: Json | null
+          price_tiers?: Json | null
+          sort_order?: number | null
+          subcategory?: string | null
+          turnaround_days?: number | null
           updated_at?: string
         }
         Relationships: []
