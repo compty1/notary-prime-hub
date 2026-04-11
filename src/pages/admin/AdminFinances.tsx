@@ -107,7 +107,8 @@ export default function AdminFinances() {
   const totalRevenue = payments.reduce((s, p) => s + Number(p.amount || 0), 0);
   const totalExpenses = transactions.filter(t => t.type === "expense").reduce((s, t) => s + Number(t.amount || 0), 0);
   const totalMileageDeduction = mileageLogs.reduce((s, m) => s + Number(m.total_deduction || 0), 0);
-  const netProfit = totalRevenue - totalExpenses - totalMileageDeduction;
+  const totalAmortized = amortized.reduce((s, a) => s + Number(a.monthly_amount || (Number(a.annual_amount) / 12)), 0);
+  const netProfit = totalRevenue - totalExpenses - totalMileageDeduction - totalAmortized;
   const monthlyBurn = recurring.filter(r => r.is_active).reduce((s, r) => {
     const amt = Number(r.amount || 0);
     return s + (r.frequency === "yearly" ? amt / 12 : r.frequency === "quarterly" ? amt / 3 : r.frequency === "weekly" ? amt * 4.33 : amt);
