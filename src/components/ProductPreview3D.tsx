@@ -12,12 +12,12 @@ const PRODUCT_VISUALS: Record<string, { bg: string; icon: string; shape: string 
   stationery: { bg: "from-blue-500/15 to-sky-400/15", icon: "📄", shape: "paper" },
   marketing: { bg: "from-orange-500/15 to-amber-400/15", icon: "📢", shape: "brochure" },
   signage: { bg: "from-green-500/15 to-emerald-400/15", icon: "🪧", shape: "banner" },
-  apparel: { bg: "from-purple-500/15 to-violet-400/15", icon: "👕", shape: "tshirt" },
+  apparel: { bg: "from-purple-500/15 to-violet-400/15", icon: "👕", shape: "default" },
   "legal-supplies": { bg: "from-red-500/15 to-rose-400/15", icon: "⚖️", shape: "stamp" },
-  packaging: { bg: "from-yellow-500/15 to-amber-400/15", icon: "📦", shape: "box" },
-  promotional: { bg: "from-pink-500/15 to-fuchsia-400/15", icon: "🎁", shape: "pen" },
+  packaging: { bg: "from-yellow-500/15 to-amber-400/15", icon: "📦", shape: "default" },
+  promotional: { bg: "from-pink-500/15 to-fuchsia-400/15", icon: "🎁", shape: "default" },
   books: { bg: "from-indigo-500/15 to-blue-400/15", icon: "📚", shape: "book" },
-  notebooks: { bg: "from-teal-500/15 to-cyan-400/15", icon: "📓", shape: "notebook" },
+  notebooks: { bg: "from-teal-500/15 to-cyan-400/15", icon: "📓", shape: "book" },
   stickers: { bg: "from-lime-500/15 to-green-400/15", icon: "🏷️", shape: "sticker" },
 };
 
@@ -85,7 +85,6 @@ function DefaultShape({ icon }: { icon: string }) {
 const SHAPE_MAP: Record<string, React.FC> = {
   card: CardShape,
   book: BookShape,
-  notebook: BookShape,
   banner: BannerShape,
   stamp: StampShape,
   sticker: StickerShape,

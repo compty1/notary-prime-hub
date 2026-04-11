@@ -72,6 +72,10 @@ const BusinessCardDesigner = lazyRetry(() => import("./pages/design/BusinessCard
 const StickerDesigner = lazyRetry(() => import("./pages/design/StickerDesigner"));
 const NotebookConfigurator = lazyRetry(() => import("./pages/design/NotebookConfigurator"));
 const BookCoverDesigner = lazyRetry(() => import("./pages/design/BookCoverDesigner"));
+const LetterheadDesigner = lazyRetry(() => import("./pages/design/LetterheadDesigner"));
+const ApparelDesigner = lazyRetry(() => import("./pages/design/ApparelDesigner"));
+const SignageDesigner = lazyRetry(() => import("./pages/design/SignageDesigner"));
+const PromoDesigner = lazyRetry(() => import("./pages/design/PromoDesigner"));
 const VendorPortal = lazyRetry(() => import("./pages/VendorPortal"));
 
 // Admin pages
@@ -138,8 +142,6 @@ const AdminPrintOrders = lazyRetry(() => import("./pages/admin/AdminPrintOrders"
 const AdminCourtForms = lazyRetry(() => import("./pages/admin/AdminCourtForms"));
 const AdminPermitFilings = lazyRetry(() => import("./pages/admin/AdminPermitFilings"));
 const AdminComplianceCalendars = lazyRetry(() => import("./pages/admin/AdminComplianceCalendars"));
-const AdminVendors = lazyRetry(() => import("./pages/admin/AdminVendors"));
-const AdminPrintPricing = lazyRetry(() => import("./pages/admin/AdminPrintPricing"));
 const Maintenance = lazyRetry(() => import("./pages/Maintenance"));
 const ForNotaries = lazyRetry(() => import("./pages/solutions/ForNotaries"));
 const ForHospitals = lazyRetry(() => import("./pages/solutions/ForHospitals"));
@@ -258,16 +260,6 @@ function AnimatedRoutes() {
       <Route path="/docudex" element={<ProtectedRoute><SR msg="DocuDex failed to load"><DocuDex /></SR></ProtectedRoute>} />
       <Route path="/print-shop" element={<SR msg="Print shop failed to load"><PrintMarketplace /></SR>} />
       <Route path="/pricing-menu" element={<SR msg="Pricing menu failed to load"><PricingMenu /></SR>} />
-      <Route path="/design/studio" element={<ProtectedRoute><SR msg="Design studio failed to load"><DesignStudio /></SR></ProtectedRoute>} />
-      <Route path="/design/business-cards" element={<ProtectedRoute><SR msg="Business card designer failed to load"><BusinessCardDesigner /></SR></ProtectedRoute>} />
-      <Route path="/design/stickers" element={<ProtectedRoute><SR msg="Sticker designer failed to load"><StickerDesigner /></SR></ProtectedRoute>} />
-      <Route path="/design/notebooks" element={<ProtectedRoute><SR msg="Notebook configurator failed to load"><NotebookConfigurator /></SR></ProtectedRoute>} />
-      <Route path="/design/book-covers" element={<ProtectedRoute><SR msg="Book cover designer failed to load"><BookCoverDesigner /></SR></ProtectedRoute>} />
-      <Route path="/design/letterhead" element={<ProtectedRoute><SR msg="Design studio failed to load"><DesignStudio /></SR></ProtectedRoute>} />
-      <Route path="/design/apparel" element={<ProtectedRoute><SR msg="Design studio failed to load"><DesignStudio /></SR></ProtectedRoute>} />
-      <Route path="/design/signage" element={<ProtectedRoute><SR msg="Design studio failed to load"><DesignStudio /></SR></ProtectedRoute>} />
-      <Route path="/design/promo" element={<ProtectedRoute><SR msg="Design studio failed to load"><DesignStudio /></SR></ProtectedRoute>} />
-      <Route path="/vendor/dashboard" element={<ProtectedRoute><SR msg="Vendor portal failed to load"><VendorPortal /></SR></ProtectedRoute>} />
       <Route path="/track/:token" element={<SR msg="Session tracker failed to load"><SessionTracker /></SR>} />
       <Route path="/reschedule/:confirmationNumber" element={<SR msg="Reschedule failed to load"><RescheduleAppointment /></SR>} />
       <Route path="/account-settings" element={<ProtectedRoute><SR msg="Account settings failed to load"><AccountSettings /></SR></ProtectedRoute>} />
@@ -336,8 +328,6 @@ function AnimatedRoutes() {
         <Route path="court-forms" element={<SR msg="Court forms failed to load"><AdminCourtForms /></SR>} />
         <Route path="permit-filings" element={<SR msg="Permit filings failed to load"><AdminPermitFilings /></SR>} />
         <Route path="compliance-calendars" element={<SR msg="Compliance calendars failed to load"><AdminComplianceCalendars /></SR>} />
-        <Route path="vendors" element={<ProtectedRoute adminOnly><SR msg="Vendors failed to load"><AdminVendors /></SR></ProtectedRoute>} />
-        <Route path="print-pricing" element={<ProtectedRoute adminOnly><SR msg="Print pricing failed to load"><AdminPrintPricing /></SR></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="*" element={<NotFound />} />

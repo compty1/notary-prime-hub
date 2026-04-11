@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -11,9 +12,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useToast } from "@/hooks/use-toast";
 import { PRINT_CATEGORIES, PRINT_PRODUCTS, type PrintProduct } from "@/lib/printCatalog";
 import { PrintOrderTracker } from "@/components/PrintOrderTracker";
-import { Search, ShoppingCart, Package, Minus, Plus } from "lucide-react";
+import { Search, ShoppingCart, Package, Minus, Plus, PenTool } from "lucide-react";
 
 export default function PrintMarketplace() {
+  const navigate = useNavigate();
   usePageMeta({
     title: "Print & Brand Shop | NotarDex",
     description: "Order custom business cards, stationery, signage, apparel, and notary supplies. Professional printing with fast turnaround.",
@@ -67,12 +69,17 @@ export default function PrintMarketplace() {
             <h1 className="text-3xl font-bold font-heading text-foreground">Print & Brand Shop</h1>
             <p className="text-muted-foreground mt-1">Professional printing for your business</p>
           </div>
-          {cart.length > 0 && (
-            <Button variant="outline" className="gap-2">
-              <ShoppingCart className="h-4 w-4" />
-              Cart ({cart.length}) — ${cartTotal.toFixed(2)}
+          <div className="flex gap-2">
+            <Button variant="outline" className="gap-2" onClick={() => navigate("/design/studio")}>
+              <PenTool className="h-4 w-4" /> Design Studio
             </Button>
-          )}
+            {cart.length > 0 && (
+              <Button variant="outline" className="gap-2">
+                <ShoppingCart className="h-4 w-4" />
+                Cart ({cart.length}) — ${cartTotal.toFixed(2)}
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Filters */}
