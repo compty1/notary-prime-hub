@@ -138,6 +138,8 @@ const AdminPrintOrders = lazyRetry(() => import("./pages/admin/AdminPrintOrders"
 const AdminCourtForms = lazyRetry(() => import("./pages/admin/AdminCourtForms"));
 const AdminPermitFilings = lazyRetry(() => import("./pages/admin/AdminPermitFilings"));
 const AdminComplianceCalendars = lazyRetry(() => import("./pages/admin/AdminComplianceCalendars"));
+const AdminVendors = lazyRetry(() => import("./pages/admin/AdminVendors"));
+const AdminPrintPricing = lazyRetry(() => import("./pages/admin/AdminPrintPricing"));
 const Maintenance = lazyRetry(() => import("./pages/Maintenance"));
 const ForNotaries = lazyRetry(() => import("./pages/solutions/ForNotaries"));
 const ForHospitals = lazyRetry(() => import("./pages/solutions/ForHospitals"));
