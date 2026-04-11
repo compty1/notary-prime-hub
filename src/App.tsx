@@ -290,6 +290,16 @@ function AnimatedRoutes() {
         <Route path="loan-signing" element={<SR msg="Loan signing failed to load"><AdminLoanSigning /></SR>} />
         <Route path="i9-verifications" element={<SR msg="I-9 verifications failed to load"><AdminI9Verifications /></SR>} />
         <Route path="print-jobs" element={<SR msg="Print queue failed to load"><AdminPrintJobs /></SR>} />
+        <Route path="fingerprinting" element={<SR msg="Fingerprinting failed to load"><AdminFingerprinting /></SR>} />
+        <Route path="process-serving" element={<SR msg="Process serving failed to load"><AdminProcessServing /></SR>} />
+        <Route path="skip-tracing" element={<SR msg="Skip tracing failed to load"><AdminSkipTracing /></SR>} />
+        <Route path="vital-records" element={<SR msg="Vital records failed to load"><AdminVitalRecords /></SR>} />
+        <Route path="scrivener" element={<SR msg="Scrivener failed to load"><AdminScrivener /></SR>} />
+        <Route path="translations" element={<SR msg="Translations failed to load"><AdminTranslations /></SR>} />
+        <Route path="courier" element={<SR msg="Courier failed to load"><AdminCourier /></SR>} />
+        <Route path="va-tasks" element={<SR msg="VA tasks failed to load"><AdminVATasks /></SR>} />
+        <Route path="background-checks" element={<SR msg="Background checks failed to load"><AdminBackgroundChecks /></SR>} />
+        <Route path="identity-certificates" element={<SR msg="Identity certificates failed to load"><AdminIdentityCertificates /></SR>} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="*" element={<NotFound />} />
