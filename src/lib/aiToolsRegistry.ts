@@ -24,7 +24,9 @@ export type ToolCategory =
   | "Analysis & Insights"
   | "Communication"
   | "Compliance & Legal"
-  | "Creative & Strategy";
+  | "Creative & Strategy"
+  | "UX Consulting"
+  | "Financial Operations";
 
 export interface AITool {
   id: string;
