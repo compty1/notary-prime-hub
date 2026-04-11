@@ -54,8 +54,7 @@ export function PageShell({ children, hideNav = false, hideFooter = false }: Pag
       <BackToTop />
       <MobileFAB />
       {!isInternalRoute && <AILeadChatbot />}
-      {/* GAP: SessionTimeoutWarning now rendered for authenticated users */}
-      {user && <SessionTimeoutWarning />}
+      {/* SessionTimeoutWarning is used in RON sessions, not here */}
       {cookieConsentEnabled && <CookieConsent />}
       <OfflineIndicator />
     </div>
