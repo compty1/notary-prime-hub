@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { PRINT_CATEGORIES, PRINT_PRODUCTS, type PrintProduct } from "@/lib/printCatalog";
+import { PrintOrderTracker } from "@/components/PrintOrderTracker";
 import { Search, ShoppingCart, Package, Minus, Plus } from "lucide-react";
 
 export default function PrintMarketplace() {
@@ -90,6 +91,9 @@ export default function PrintMarketplace() {
           </div>
         </div>
 
+        {/* Product Grid + Order Tracker */}
+        <div className="flex gap-6">
+        <div className="flex-1">
         {/* Product Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filtered.map((p, i) => (
