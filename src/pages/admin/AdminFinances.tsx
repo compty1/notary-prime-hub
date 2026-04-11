@@ -189,7 +189,26 @@ export default function AdminFinances() {
           </div>
         </TabsContent>
 
-        <TabsContent value="expenses">
+        <TabsContent value="pnl">
+          <Card><CardHeader><CardTitle className="text-sm">Profit & Loss Statement</CardTitle></CardHeader><CardContent>
+            <Table><TableHeader><TableRow><TableHead>Line Item</TableHead><TableHead className="text-right">Amount</TableHead></TableRow></TableHeader>
+              <TableBody>
+                <TableRow className="font-bold bg-muted/30"><TableCell>Revenue</TableCell><TableCell className="text-right text-success">{formatCurrency(totalRevenue)}</TableCell></TableRow>
+                <TableRow><TableCell className="pl-6">Notarization Fees ({payments.length} sessions)</TableCell><TableCell className="text-right">{formatCurrency(totalRevenue)}</TableCell></TableRow>
+                <TableRow className="font-bold bg-muted/30"><TableCell>Cost of Services</TableCell><TableCell className="text-right text-destructive">({formatCurrency(totalExpenses)})</TableCell></TableRow>
+                {pieData.slice(0, 8).map((cat) => (
+                  <TableRow key={cat.name}><TableCell className="pl-6">{cat.name}</TableCell><TableCell className="text-right">({formatCurrency(cat.value)})</TableCell></TableRow>
+                ))}
+                <TableRow className="font-bold bg-muted/30"><TableCell>Other Deductions</TableCell><TableCell className="text-right text-destructive">({formatCurrency(totalMileageDeduction + totalAmortized)})</TableCell></TableRow>
+                <TableRow><TableCell className="pl-6">Mileage Deduction</TableCell><TableCell className="text-right">({formatCurrency(totalMileageDeduction)})</TableCell></TableRow>
+                <TableRow><TableCell className="pl-6">Amortized Expenses</TableCell><TableCell className="text-right">({formatCurrency(totalAmortized)})</TableCell></TableRow>
+                <TableRow className="font-bold text-lg border-t-2"><TableCell>Net Profit</TableCell><TableCell className={`text-right ${netProfit >= 0 ? "text-success" : "text-destructive"}`}>{formatCurrency(netProfit)}</TableCell></TableRow>
+                <TableRow><TableCell className="pl-6 text-muted-foreground">Profit Margin</TableCell><TableCell className="text-right text-muted-foreground">{totalRevenue > 0 ? `${((netProfit / totalRevenue) * 100).toFixed(1)}%` : "N/A"}</TableCell></TableRow>
+              </TableBody>
+            </Table>
+          </CardContent></Card>
+        </TabsContent>
+
           <Card><CardContent className="pt-4">
             <Table><TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Description</TableHead><TableHead>Category</TableHead><TableHead>Vendor</TableHead><TableHead className="text-right">Amount</TableHead></TableRow></TableHeader>
               <TableBody>
