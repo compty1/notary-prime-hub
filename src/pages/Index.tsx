@@ -270,25 +270,21 @@ export default function Index() {
               </motion.div>
             </motion.div>
 
-            {/* Hero 3D Illustration */}
+            {/* Hero Interactive Animation */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="relative hidden lg:flex items-center justify-center"
+              className="relative hidden lg:flex items-center justify-center min-h-[420px]"
             >
-              <img
-                src={heroIllustration}
-                alt="Notarization documents and security verification icons"
-                className="w-full max-w-md object-contain drop-shadow-xl"
-              />
+              <Hero3DAnimation />
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* ===== About Us ===== */}
-      <section className="py-20 bg-primary">
+      <section className="py-20 bg-gradient-hero">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -296,11 +292,12 @@ export default function Index() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
+              className="flex items-center justify-center"
             >
               <img
                 src={aboutIllustration}
                 alt="3D illustration of document folders"
-                className="w-full max-w-sm mx-auto object-contain drop-shadow-2xl"
+                className="w-full max-w-sm mx-auto object-contain"
               />
             </motion.div>
             <motion.div
