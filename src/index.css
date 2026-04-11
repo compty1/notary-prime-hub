@@ -123,7 +123,7 @@
     @apply border-border;
   }
 
-  /* WCAG 2.1 AA — Visible focus indicators */
+  /* WCAG 2.1 AA — Visible focus indicators (GAP-0012/0032) */
   *:focus-visible {
     @apply outline-2 outline-offset-2 outline-ring;
     outline-style: solid;
@@ -134,38 +134,26 @@
     @apply sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-md focus:bg-primary focus:text-primary-foreground focus:text-sm focus:font-medium;
   }
 
-  /* Minimum touch targets on mobile */
-  @media (pointer: coarse) {
-    button, a, [role="button"], input, select, textarea {
-      min-height: 44px;
-      min-width: 44px;
-    }
-  }
-
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
+  /* GAP-0005: Consistent heading typography */
   h1, h2, h3, h4, h5, h6 {
     font-family: 'DM Sans', system-ui, sans-serif;
     font-weight: 700;
     letter-spacing: -0.02em;
   }
 
+  /* GAP-0011/0031: Standardized heading scale */
+  h1 { font-size: clamp(2rem, 5vw, 3.5rem); }
+  h2 { font-size: clamp(1.5rem, 4vw, 2.5rem); }
+  h3 { font-size: clamp(1.25rem, 3vw, 1.75rem); }
+
   /* ARIA live region styling */
   [aria-live] {
     @apply sr-only;
-  }
-
-  /* Reduced motion support */
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
-    }
   }
 
   /* High contrast mode improvements */
@@ -190,6 +178,7 @@
     background-image: linear-gradient(135deg, hsl(48 91% 52%) 0%, hsl(42 100% 65%) 100%);
   }
 
+  /* GAP-0007: Hero gradient transitions smoothly to next section */
   .bg-gradient-hero {
     background: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(48 100% 95%) 40%, hsl(48 91% 70%) 100%);
   }
@@ -253,23 +242,23 @@
     background-image: radial-gradient(circle, hsl(var(--primary) / 0.06) 1.5px, transparent 1.5px);
     background-size: 28px 28px;
   }
+
+  /* GAP-0003: Scrollbar styling */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
 
-/* Scroll behavior */
+/* GAP-0025: Smooth scroll behavior */
 html {
   scroll-behavior: smooth;
 }
 
-/* Touch target sizes for mobile */
-@media (pointer: coarse) {
-  button, a, [role="button"], input[type="checkbox"], input[type="radio"],
-  [data-radix-collection-item] {
-    min-height: 44px;
-    min-width: 44px;
-  }
-}
-
-/* Focus indicators */
+/* GAP-0012: Focus indicators */
 :focus-visible {
   outline: 2px solid hsl(var(--primary));
   outline-offset: 2px;
@@ -279,7 +268,7 @@ html {
   outline-color: hsl(var(--primary));
 }
 
-/* Micro-interactions */
+/* GAP-0010/0018: Micro-interactions */
 button, a, [role="button"] {
   transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.2s ease;
 }
@@ -289,7 +278,7 @@ button, a, [role="button"] {
   box-shadow: 0 8px 24px -6px hsl(var(--primary) / 0.12);
 }
 
-/* Interactive card hover */
+/* GAP-0015/0035: Interactive card hover */
 .interactive-card {
   transition: all 0.25s ease;
 }
@@ -361,16 +350,6 @@ button, a, [role="button"] {
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
 /* Consolidated print stylesheet */
 @media print {
   nav, footer, .fixed, .sticky, [role="dialog"], .sr-only,
@@ -390,19 +369,9 @@ button, a, [role="button"] {
   @page { margin: 1in; }
 }
 
-@layer utilities {
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: hsl(var(--muted-foreground) / 0.3); border-radius: 10px; }
-}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: hsl(var(--muted-foreground) / 0.3); border-radius: 10px; }
 
 /* Mobile responsive: admin tables horizontal scroll */
 @media (max-width: 768px) {
@@ -423,7 +392,7 @@ button:active, a[role="button"]:active {
   transition: transform 0.1s ease;
 }
 
-/* High Contrast Mode */
+/* GAP-0013: High Contrast Mode */
 .high-contrast {
   --background: 0 0% 100%;
   --foreground: 0 0% 0%;
@@ -458,7 +427,7 @@ button:active, a[role="button"]:active {
   }
 }
 
-/* Reduced motion */
+/* Consolidated reduced motion — GAP-0003: removed all duplicates */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -494,12 +463,6 @@ button:active, a[role="button"]:active {
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
-/* Print styles */
-@media print {
-  nav, footer, .no-print, [role="banner"] { display: none !important; }
-  body { font-size: 12pt; color: #000; background: #fff; }
-}
-
 /* High Contrast / Forced Colors Mode (A11-004) */
 @media (forced-colors: active) {
   .docudex-canvas {
@@ -522,17 +485,5 @@ button:active, a[role="button"]:active {
   }
   .docudex-canvas [role="toolbar"] {
     border-bottom: 2px solid CanvasText !important;
-  }
-}
-
-/* #117 / #3627: Respect prefers-reduced-motion globally */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
 }
