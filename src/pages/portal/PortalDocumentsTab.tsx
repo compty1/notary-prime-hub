@@ -316,6 +316,12 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
         </div>
       )}
 
+      {/* Document Retention Policy Notice (GAP-0597) */}
+      <div className="flex items-center gap-2 rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-xs text-muted-foreground">
+        <Info className="h-4 w-4 flex-shrink-0 text-primary" />
+        <span>Documents are securely retained for <strong>10 years</strong> per Ohio ORC §147.66. Notarized documents include tamper-evident seals. Contact us for early deletion requests.</span>
+      </div>
+
       {/* FC-1: AI Review Results Dialog */}
       {showReviewDialog && reviewResults[showReviewDialog] && (
         <Dialog open={!!showReviewDialog} onOpenChange={() => setShowReviewDialog(null)}>
