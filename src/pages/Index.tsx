@@ -19,7 +19,7 @@ import {
   ShieldCheck, Clock, FileCheck2, UploadCloud, Fingerprint, Video, Download,
   Scale, Home, Briefcase, FileText, Smartphone, CheckCircle2, Lock, ChevronRight,
   Phone, Mail, Send, Loader2, ArrowRight, Globe, Car, Copy, UserCheck, Stamp, BookOpen, Star,
-  FileSignature, Play, Check
+  FileSignature, Check
 } from "lucide-react";
 import WhatDoINeed from "@/components/WhatDoINeed";
 import Hero3DAnimation from "@/components/Hero3DAnimation";
