@@ -91,6 +91,7 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
     <div className="space-y-6">
       {/* Progress tracker for client journey */}
       <ClientProgressTracker appointments={appointments} documents={[]} />
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="font-sans text-xl font-semibold">Upcoming Appointments</h2>
         <div className="flex items-center gap-2 flex-wrap">
           {/* ID 403: Status filter tabs */}
