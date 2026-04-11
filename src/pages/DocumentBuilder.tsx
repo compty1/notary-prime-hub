@@ -235,7 +235,7 @@ export default function DocumentBuilder() {
             <Card className="border-border/50">
               <CardContent className="p-6">
                 <h2 className="font-sans text-xl font-semibold mb-4">Preview: {docTypeLabels[docType]}</h2>
-                <div className="whitespace-pre-wrap font-serif text-sm leading-relaxed border rounded-lg p-6 bg-white text-gray-900 mb-4">{buildDocument()}</div>
+                <div className="whitespace-pre-wrap font-serif text-sm leading-relaxed border rounded-lg p-6 bg-white text-foreground mb-4">{buildDocument()}</div>
                 <div className="flex gap-2 flex-wrap">
                   <Button variant="outline" onClick={() => setShowPreview(false)}><ChevronLeft className="mr-1 h-4 w-4" /> Edit</Button>
                   <Button onClick={handlePrint} className=""><Printer className="mr-1 h-4 w-4" /> Print / Save PDF</Button>

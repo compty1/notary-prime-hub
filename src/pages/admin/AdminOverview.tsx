@@ -371,7 +371,7 @@ export default function AdminOverview() {
 
       {/* Analytics Charts */}
       <div className="mb-8 grid gap-6 lg:grid-cols-3">
-        <Card className="rounded-[24px] border-border bg-white lg:col-span-1">
+        <Card className="rounded-[24px] border-border bg-card lg:col-span-1">
           <CardHeader className="pb-2"><CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Appointments by Month</CardTitle></CardHeader>
           <CardContent>
             {monthlyAppointments.length > 0 ? (
@@ -388,7 +388,7 @@ export default function AdminOverview() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-[24px] border-border bg-white lg:col-span-1">
+        <Card className="rounded-[24px] border-border bg-card lg:col-span-1">
           <CardHeader className="pb-2"><CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Revenue Trend</CardTitle></CardHeader>
           <CardContent>
             {monthlyRevenue.length > 0 ? (
@@ -405,7 +405,7 @@ export default function AdminOverview() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-[24px] border-border bg-white lg:col-span-1">
+        <Card className="rounded-[24px] border-border bg-card lg:col-span-1">
           <CardHeader className="pb-2"><CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Status Breakdown</CardTitle></CardHeader>
           <CardContent>
             {statusBreakdown.length > 0 ? (
@@ -466,7 +466,7 @@ export default function AdminOverview() {
             </h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {todayAppts.sort((a, b) => (a.scheduled_time || "").localeCompare(b.scheduled_time || "")).map((a) => (
-                <Card key={a.id} className="rounded-[24px] border-border bg-white hover:shadow-md transition-shadow">
+                <Card key={a.id} className="rounded-[24px] border-border bg-card hover:shadow-md transition-shadow">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-lg font-black text-foreground">{formatTime(a.scheduled_time || "00:00")}</span>

@@ -453,7 +453,7 @@ export default function ClientPortal() {
                     <CardContent className="p-6">
                       <h3 className="font-black text-foreground mb-3">Pending Payments</h3>
                       {payments.filter(p => p.status === "pending").slice(0, 3).map(p => (
-                        <div key={p.id} className="flex items-center justify-between p-3 rounded-xl bg-white mb-2">
+                        <div key={p.id} className="flex items-center justify-between p-3 rounded-xl bg-card mb-2">
                           <div><p className="text-sm font-bold text-foreground">${Number(p.amount).toFixed(2)}</p><p className="text-xs text-muted-foreground font-medium">{p.notes || "Payment pending"}</p></div>
                           <Button size="sm" className="rounded-xl font-bold text-xs" onClick={() => handleSectionChange("payments")}><CreditCard className="mr-1 h-3 w-3" /> Pay Now</Button>
                         </div>
