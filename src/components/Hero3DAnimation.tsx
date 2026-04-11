@@ -103,13 +103,13 @@ export default function Hero3DAnimation() {
 
       // Paper
       ctx.fillStyle = white;
-      roundRectPath(-w / 2, -h / 2, w, h, r);
+      rrect(-w / 2, -h / 2, w, h, r);
       ctx.fill();
       ctx.shadowColor = "transparent";
 
       // Blue header
       ctx.fillStyle = blue;
-      roundRectPath(-w / 2, -h / 2, w, 20, [r, r, 0, 0]);
+      rrect(-w / 2, -h / 2, w, 20, [r, r, 0, 0]);
       ctx.fill();
 
       // Header dots
@@ -294,7 +294,7 @@ export default function Hero3DAnimation() {
       const h = size, w = size * 0.2;
       // Body
       ctx.fillStyle = dark;
-      roundRectPath(-w / 2, -h / 2, w, h * 0.72, 5);
+      rrect(-w / 2, -h / 2, w, h * 0.72, 5);
       ctx.fill();
 
       // Gold band
@@ -327,17 +327,17 @@ export default function Hero3DAnimation() {
 
       // Handle
       ctx.fillStyle = dark;
-      roundRectPath(-size * 0.12, -size * 0.4, size * 0.24, size * 0.35, 4);
+      rrect(-size * 0.12, -size * 0.4, size * 0.24, size * 0.35, 4);
       ctx.fill();
 
       // Base
       ctx.fillStyle = gold;
-      roundRectPath(-size * 0.3, -size * 0.08, size * 0.6, size * 0.18, 3);
+      rrect(-size * 0.3, -size * 0.08, size * 0.6, size * 0.18, 3);
       ctx.fill();
 
       // Stamp pad
       ctx.fillStyle = blue;
-      roundRectPath(-size * 0.35, size * 0.12, size * 0.7, size * 0.1, 3);
+      rrect(-size * 0.35, size * 0.12, size * 0.7, size * 0.1, 3);
       ctx.fill();
 
       ctx.shadowColor = "transparent";
