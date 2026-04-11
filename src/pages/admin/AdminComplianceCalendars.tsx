@@ -1,5 +1,4 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
-import { PageShell } from "@/components/PageShell";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -20,7 +19,14 @@ export default function AdminComplianceCalendars() {
   });
 
   return (
-    <PageShell title="Compliance Calendars" description="Manage client compliance deadlines and renewal schedules." icon={CalendarCheck}>
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <CalendarCheck className="h-6 w-6 text-primary" />
+        <div>
+          <h1 className="text-2xl font-bold">Compliance Calendars</h1>
+          <p className="text-sm text-muted-foreground">Manage client compliance deadlines and renewal schedules.</p>
+        </div>
+      </div>
       {isLoading ? <p className="text-muted-foreground">Loading...</p> : (
         <div className="rounded-xl border bg-card">
           <Table>
@@ -45,6 +51,6 @@ export default function AdminComplianceCalendars() {
           </Table>
         </div>
       )}
-    </PageShell>
+    </div>
   );
 }

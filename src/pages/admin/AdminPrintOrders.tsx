@@ -1,12 +1,11 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
-import { PageShell } from "@/components/PageShell";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import { ShoppingBag, Package, Users } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 
 export default function AdminPrintOrders() {
   usePageMeta({ title: "Print Marketplace", noIndex: true });
@@ -39,14 +38,20 @@ export default function AdminPrintOrders() {
   });
 
   return (
-    <PageShell title="Print Marketplace" description="Orders, product catalog, and vendor management." icon={ShoppingBag}>
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <ShoppingBag className="h-6 w-6 text-primary" />
+        <div>
+          <h1 className="text-2xl font-bold">Print Marketplace</h1>
+          <p className="text-sm text-muted-foreground">Orders, product catalog, and vendor management.</p>
+        </div>
+      </div>
       <Tabs defaultValue="orders" className="space-y-4">
         <TabsList>
           <TabsTrigger value="orders">Orders ({orders.length})</TabsTrigger>
           <TabsTrigger value="products">Products ({products.length})</TabsTrigger>
           <TabsTrigger value="vendors">Vendors ({vendors.length})</TabsTrigger>
         </TabsList>
-
         <TabsContent value="orders">
           <div className="rounded-xl border bg-card">
             <Table>
@@ -71,7 +76,6 @@ export default function AdminPrintOrders() {
             </Table>
           </div>
         </TabsContent>
-
         <TabsContent value="products">
           <div className="rounded-xl border bg-card">
             <Table>
@@ -93,7 +97,6 @@ export default function AdminPrintOrders() {
             </Table>
           </div>
         </TabsContent>
-
         <TabsContent value="vendors">
           <div className="rounded-xl border bg-card">
             <Table>
@@ -116,6 +119,6 @@ export default function AdminPrintOrders() {
           </div>
         </TabsContent>
       </Tabs>
-    </PageShell>
+    </div>
   );
 }

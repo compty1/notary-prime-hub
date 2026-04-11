@@ -1,16 +1,12 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
-import { PageShell } from "@/components/PageShell";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { format } from "date-fns";
-import { Plus, FileText } from "lucide-react";
+import { FileText } from "lucide-react";
 
 const statusColors: Record<string, string> = { pending: "secondary", submitted: "default", recorded: "default", rejected: "destructive" };
 
@@ -30,8 +26,15 @@ export default function AdminRecorderFilings() {
   });
 
   return (
-    <PageShell title="County Recorder Filings" description="Track document recordings with county recorders." icon={FileText}>
-      <div className="flex items-center justify-between mb-4">
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <FileText className="h-6 w-6 text-primary" />
+        <div>
+          <h1 className="text-2xl font-bold">County Recorder Filings</h1>
+          <p className="text-sm text-muted-foreground">Track document recordings with county recorders.</p>
+        </div>
+      </div>
+      <div className="flex items-center justify-between">
         <Select value={filter} onValueChange={setFilter}>
           <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
@@ -68,6 +71,6 @@ export default function AdminRecorderFilings() {
           </Table>
         </div>
       )}
-    </PageShell>
+    </div>
   );
 }

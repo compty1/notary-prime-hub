@@ -1,5 +1,4 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
-import { PageShell } from "@/components/PageShell";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -21,20 +20,26 @@ export default function AdminCourtForms() {
   });
 
   return (
-    <PageShell title="Court Form Typing" description="UPL-compliant court form preparation services." icon={Scale}>
-      <Alert className="mb-4 border-amber-500/50 bg-amber-500/10">
-        <ShieldAlert className="h-4 w-4 text-amber-500" />
-        <AlertDescription className="text-amber-700 dark:text-amber-300">
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <Scale className="h-6 w-6 text-primary" />
+        <div>
+          <h1 className="text-2xl font-bold">Court Form Typing</h1>
+          <p className="text-sm text-muted-foreground">UPL-compliant court form preparation services.</p>
+        </div>
+      </div>
+      <Alert className="border-destructive/50 bg-destructive/10">
+        <ShieldAlert className="h-4 w-4 text-destructive" />
+        <AlertDescription className="text-destructive">
           <strong>UPL Compliance:</strong> This service involves typing only — no legal advice. All jobs require client-signed UPL disclaimer before work begins.
         </AlertDescription>
       </Alert>
-
       {isLoading ? <p className="text-muted-foreground">Loading...</p> : (
         <div className="rounded-xl border bg-card">
           <Table>
             <TableHeader><TableRow>
               <TableHead>Form</TableHead><TableHead>Court</TableHead><TableHead>County</TableHead>
-              <TableHead>Case #</TableHead><TableHead>UPL Accepted</TableHead><TableHead>Fee</TableHead>
+              <TableHead>Case #</TableHead><TableHead>UPL</TableHead><TableHead>Fee</TableHead>
               <TableHead>Status</TableHead><TableHead>Date</TableHead>
             </TableRow></TableHeader>
             <TableBody>
@@ -60,6 +65,6 @@ export default function AdminCourtForms() {
           </Table>
         </div>
       )}
-    </PageShell>
+    </div>
   );
 }

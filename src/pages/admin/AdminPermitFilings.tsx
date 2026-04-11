@@ -1,5 +1,4 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
-import { PageShell } from "@/components/PageShell";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -20,7 +19,14 @@ export default function AdminPermitFilings() {
   });
 
   return (
-    <PageShell title="Business Permits & Licenses" description="Track permit and license filing requests." icon={FileCheck}>
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <FileCheck className="h-6 w-6 text-primary" />
+        <div>
+          <h1 className="text-2xl font-bold">Business Permits & Licenses</h1>
+          <p className="text-sm text-muted-foreground">Track permit and license filing requests.</p>
+        </div>
+      </div>
       {isLoading ? <p className="text-muted-foreground">Loading...</p> : (
         <div className="rounded-xl border bg-card">
           <Table>
@@ -48,6 +54,6 @@ export default function AdminPermitFilings() {
           </Table>
         </div>
       )}
-    </PageShell>
+    </div>
   );
 }
