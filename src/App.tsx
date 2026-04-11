@@ -113,6 +113,16 @@ const AdminRonRecordings = lazyRetry(() => import("./pages/admin/AdminRonRecordi
 const AdminLoanSigning = lazyRetry(() => import("./pages/admin/AdminLoanSigning"));
 const AdminI9Verifications = lazyRetry(() => import("./pages/admin/AdminI9Verifications"));
 const AdminPrintJobs = lazyRetry(() => import("./pages/admin/AdminPrintJobs"));
+const AdminFingerprinting = lazyRetry(() => import("./pages/admin/AdminFingerprinting"));
+const AdminProcessServing = lazyRetry(() => import("./pages/admin/AdminProcessServing"));
+const AdminSkipTracing = lazyRetry(() => import("./pages/admin/AdminSkipTracing"));
+const AdminVitalRecords = lazyRetry(() => import("./pages/admin/AdminVitalRecords"));
+const AdminScrivener = lazyRetry(() => import("./pages/admin/AdminScrivener"));
+const AdminTranslations = lazyRetry(() => import("./pages/admin/AdminTranslations"));
+const AdminCourier = lazyRetry(() => import("./pages/admin/AdminCourier"));
+const AdminVATasks = lazyRetry(() => import("./pages/admin/AdminVATasks"));
+const AdminBackgroundChecks = lazyRetry(() => import("./pages/admin/AdminBackgroundChecks"));
+const AdminIdentityCertificates = lazyRetry(() => import("./pages/admin/AdminIdentityCertificates"));
 const Maintenance = lazyRetry(() => import("./pages/Maintenance"));
 const ForNotaries = lazyRetry(() => import("./pages/solutions/ForNotaries"));
 const ForHospitals = lazyRetry(() => import("./pages/solutions/ForHospitals"));
