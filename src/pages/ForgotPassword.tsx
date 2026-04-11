@@ -105,7 +105,7 @@ export default function ResetPassword() {
           {success ? (
             <div className="flex flex-col items-center gap-4 py-4 rounded-[24px] border border-border bg-card p-8">
               <CheckCircle className="h-12 w-12 text-primary" />
-              <Link to="/login"><Button className="rounded-xl bg-primary text-white hover:bg-primary/85 shadow-soft">Go to Sign In</Button></Link>
+              <Link to="/login"><Button className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/85 shadow-soft">Go to Sign In</Button></Link>
             </div>
           ) : requestSent ? (
             <div className="flex flex-col items-center gap-4 py-8 text-center rounded-[24px] border border-border bg-card p-8">
@@ -143,7 +143,7 @@ export default function ResetPassword() {
                   </button>
                 </div>
               </div>
-              <Button type="submit" className="w-full rounded-xl bg-primary text-white font-bold hover:bg-primary/85 shadow-soft h-11" disabled={submitting}>
+              <Button type="submit" className="w-full rounded-xl bg-primary text-primary-foreground font-bold hover:bg-primary/85 shadow-soft h-11" disabled={submitting}>
                 {submitting ? "Updating..." : "Update Password"}
               </Button>
             </form>
@@ -153,7 +153,7 @@ export default function ResetPassword() {
                 <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Email Address</Label>
                 <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" autoComplete="email" className="mt-1 rounded-xl border-border bg-card" />
               </div>
-              <Button type="submit" className="w-full rounded-xl bg-primary text-white font-bold hover:bg-primary/85 shadow-soft h-11" disabled={submitting || cooldown > 0}>
+              <Button type="submit" className="w-full rounded-xl bg-primary text-primary-foreground font-bold hover:bg-primary/85 shadow-soft h-11" disabled={submitting || cooldown > 0}>
                 {submitting ? "Sending..." : cooldown > 0 ? `Wait ${cooldown}s` : "Send Reset Link"}
               </Button>
               <p className="text-center text-sm text-muted-foreground">
