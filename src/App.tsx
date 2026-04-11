@@ -307,6 +307,13 @@ function AnimatedRoutes() {
         <Route path="va-tasks" element={<SR msg="VA tasks failed to load"><AdminVATasks /></SR>} />
         <Route path="background-checks" element={<SR msg="Background checks failed to load"><AdminBackgroundChecks /></SR>} />
         <Route path="identity-certificates" element={<SR msg="Identity certificates failed to load"><AdminIdentityCertificates /></SR>} />
+        <Route path="recorder-filings" element={<SR msg="Recorder filings failed to load"><AdminRecorderFilings /></SR>} />
+        <Route path="sos-filings" element={<SR msg="SOS filings failed to load"><AdminSOSFilings /></SR>} />
+        <Route path="real-estate" element={<SR msg="Real estate failed to load"><AdminRealEstate /></SR>} />
+        <Route path="print-orders" element={<SR msg="Print orders failed to load"><AdminPrintOrders /></SR>} />
+        <Route path="court-forms" element={<SR msg="Court forms failed to load"><AdminCourtForms /></SR>} />
+        <Route path="permit-filings" element={<SR msg="Permit filings failed to load"><AdminPermitFilings /></SR>} />
+        <Route path="compliance-calendars" element={<SR msg="Compliance calendars failed to load"><AdminComplianceCalendars /></SR>} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="*" element={<NotFound />} />
