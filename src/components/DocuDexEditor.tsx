@@ -1603,6 +1603,23 @@ export function DocuDexEditor({
             </div>
           </div>
         )}
+
+        {/* Template Name Dialog (replaces window.prompt) */}
+        <DocuDexTemplateNameDialog
+          open={showTemplateNameDlg}
+          onOpenChange={setShowTemplateNameDlg}
+          defaultName={title || "Custom Template"}
+          onSave={confirmSaveTemplate}
+        />
+
+        {/* Header/Footer Editor Dialog (replaces raw HTML input) */}
+        <DocuDexHeaderFooterEditor
+          open={showHeaderFooterEditorDialog}
+          onOpenChange={setShowHeaderFooterEditorDialog}
+          headerHtml={headerHtml}
+          footerHtml={footerHtml}
+          onApply={(h, f) => { setHeaderHtml(h); setFooterHtml(f); }}
+        />
       </div>
     </TooltipProvider>
   );
