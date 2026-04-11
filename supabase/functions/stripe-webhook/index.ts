@@ -131,11 +131,24 @@ Deno.serve(async (req) => {
       case "customer.subscription.updated": {
         const sub = event.data.object as any;
         const customerId = sub.customer;
-        // Look up user by stripe customer ID in profiles
         const { data: prof } = await supabase.from("profiles").select("user_id").eq("stripe_customer_id", customerId).limit(1);
         if (prof && prof.length > 0) {
+          const userId = prof[0].user_id;
           const plan = sub.status === "active" ? (sub.items?.data?.[0]?.price?.lookup_key || "pro") : "free";
-          await supabase.from("profiles").update({ plan } as any).eq("user_id", prof[0].user_id);
+          await supabase.from("profiles").update({ plan } as any).eq("user_id", userId);
+          // Sync to user_subscriptions if table exists
+          await supabase.from("user_subscriptions" as any).upsert({
+            user_id: userId,
+            stripe_subscription_id: sub.id,
+            stripe_customer_id: customerId,
+            plan: sub.items?.data?.[0]?.price?.lookup_key || "pro",
+            status: sub.status,
+            cancel_at_period_end: sub.cancel_at_period_end || false,
+            current_period_start: sub.current_period_start ? new Date(sub.current_period_start * 1000).toISOString() : null,
+            current_period_end: sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null,
+          }, { onConflict: "stripe_subscription_id" }).then(({ error }) => {
+            if (error) console.warn("user_subscriptions upsert:", error.message);
+          });
         }
         break;
       }
@@ -145,6 +158,32 @@ Deno.serve(async (req) => {
         const { data: prof } = await supabase.from("profiles").select("user_id").eq("stripe_customer_id", customerId).limit(1);
         if (prof && prof.length > 0) {
           await supabase.from("profiles").update({ plan: "free" } as any).eq("user_id", prof[0].user_id);
+          await supabase.from("user_subscriptions" as any)
+            .update({ status: "canceled" })
+            .eq("stripe_subscription_id", sub.id)
+            .then(({ error }) => { if (error) console.warn("sub delete sync:", error.message); });
+        }
+        break;
+      }
+      case "invoice.payment_failed": {
+        const invoice = event.data.object as any;
+        const subId = invoice.subscription;
+        if (subId) {
+          await supabase.from("user_subscriptions" as any)
+            .update({ status: "past_due" })
+            .eq("stripe_subscription_id", subId)
+            .then(({ error }) => { if (error) console.warn("invoice.payment_failed sync:", error.message); });
+        }
+        break;
+      }
+      case "invoice.paid": {
+        const invoice = event.data.object as any;
+        const subId = invoice.subscription;
+        if (subId) {
+          await supabase.from("user_subscriptions" as any)
+            .update({ status: "active" })
+            .eq("stripe_subscription_id", subId)
+            .then(({ error }) => { if (error) console.warn("invoice.paid sync:", error.message); });
         }
         break;
       }
