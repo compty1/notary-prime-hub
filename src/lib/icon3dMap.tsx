@@ -1,8 +1,8 @@
 // 3D Icon mapping for service categories and features
 import checklist from "@/assets/icons-3d/checklist.png";
 import notaryAgent from "@/assets/icons-3d/notary-agent.png";
-import identityVerify from "@/assets/icons-3d/identity-verify.png";
-import docShield from "@/assets/icons-3d/doc-shield.png";
+import identityVerify from "@/assets/icons-3d/identity-verify-clean.png";
+import docShield from "@/assets/icons-3d/doc-shield-clean.png";
 import certificate from "@/assets/icons-3d/certificate.png";
 import taskList from "@/assets/icons-3d/task-list.png";
 import warning from "@/assets/icons-3d/warning.png";
@@ -31,6 +31,10 @@ import thumbsUp from "@/assets/icons-3d/thumbs-up.png";
 import workflow from "@/assets/icons-3d/workflow.png";
 import globeDocs from "@/assets/icons-3d/globe-docs.png";
 import newsletterMegaphone from "@/assets/icons-3d/newsletter-megaphone.jpg";
+import lockShield from "@/assets/icons-3d/lock-shield.png";
+import clockFast from "@/assets/icons-3d/clock-fast.png";
+import legalDoc from "@/assets/icons-3d/legal-doc.png";
+import encryption from "@/assets/icons-3d/encryption.png";
 
 export const ICON_3D = {
   checklist,
@@ -64,6 +68,10 @@ export const ICON_3D = {
   thumbsUp,
   workflow,
   globeDocs,
+  lockShield,
+  clockFast,
+  legalDoc,
+  encryption,
 } as const;
 
 // Maps service categories to their best-fit 3D icon
@@ -133,6 +141,11 @@ export const FEATURE_3D_ICON: Record<string, string> = {
   subscription: receipt,
   witness: teamReview,
   urgent: warning,
+  // Key Benefits
+  lockShield: lockShield,
+  clockFast: clockFast,
+  legalDoc: legalDoc,
+  encryption: encryption,
   // Generic
   tools: tools,
   workflow: workflow,
