@@ -65,6 +65,15 @@ export default function AdminFinances() {
     },
   });
 
+  // Fetch amortized expenses
+  const { data: amortized = [] } = useQuery({
+    queryKey: ["amortized-expenses"],
+    queryFn: async () => {
+      const { data } = await supabase.from("amortized_expenses").select("*, expense_categories(category_name)").order("start_date", { ascending: false });
+      return data || [];
+    },
+  });
+
   // Fetch revenue (payments)
   const { data: payments = [] } = useQuery({
     queryKey: ["revenue-payments"],
