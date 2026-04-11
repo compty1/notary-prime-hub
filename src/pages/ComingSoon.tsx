@@ -147,7 +147,7 @@ export default function ComingSoon() {
           </a>
           <Link to="/terms" className="transition-colors hover:text-primary">Terms & Privacy</Link>
         </div>
-        <p className="mt-3">© {new Date().getFullYear()} NotarDex. Ohio Notary & Document Services.</p>
+        <p className="mt-3">© {new Date().getFullYear()} Notar. Ohio Notary & Document Services.</p>
       </footer>
       <AILeadChatbot />
     </main>

@@ -17,7 +17,7 @@ const complianceSections = [
     icon: Scale,
     title: "Ohio RON Legal Basis",
     content: [
-      "NotarDex operates under the full authority of Ohio Revised Code (ORC) §147.60–147.66, which establishes the legal framework for Remote Online Notarization in the State of Ohio.",
+      "Notar operates under the full authority of Ohio Revised Code (ORC) §147.60–147.66, which establishes the legal framework for Remote Online Notarization in the State of Ohio.",
       "Our notaries hold active commissions issued by the Ohio Secretary of State and maintain current RON authorization as required by ORC §147.63.",
       "All notarial acts performed through our platform carry the same legal validity and enforceability as traditional in-person notarizations under Ohio law.",
     ],
@@ -31,7 +31,7 @@ const complianceSections = [
     icon: Fingerprint,
     title: "Identity Verification Standards",
     content: [
-      "NotarDex employs a multi-layered identity verification process that meets or exceeds Ohio RON requirements:",
+      "Notar employs a multi-layered identity verification process that meets or exceeds Ohio RON requirements:",
       "**Credential Analysis**: Government-issued photo IDs are analyzed using automated credential authentication technology to verify document authenticity, detect tampering, and confirm that the ID has not expired.",
       "**Knowledge-Based Authentication (KBA)**: Signers must successfully answer a series of identity-proofing questions generated from authoritative public and proprietary data sources. Per ORC §147.66, signers are permitted a maximum of 2 KBA attempts before the session is terminated.",
       "**Biometric Verification**: Where applicable, facial recognition technology compares the signer's live appearance to their government-issued photo ID in real time during the video session.",
@@ -51,7 +51,7 @@ const complianceSections = [
     icon: Lock,
     title: "Data Handling & Encryption",
     content: [
-      "All data transmitted through NotarDex is protected by TLS 1.2+ encryption in transit. Data at rest is encrypted using AES-256 encryption.",
+      "All data transmitted through Notar is protected by TLS 1.2+ encryption in transit. Data at rest is encrypted using AES-256 encryption.",
       "Document integrity is verified using SHA-256 cryptographic hash values that are generated at the time of upload and validated before and after notarization to ensure no tampering has occurred.",
       "Tamper-evident digital seals are applied to all notarized documents, providing visual and cryptographic proof of authenticity that can be independently verified through our Seal Verification Portal.",
     ],
@@ -60,7 +60,7 @@ const complianceSections = [
     icon: BookOpen,
     title: "Notary Journal & Recordkeeping",
     content: [
-      "NotarDex maintains electronic notary journals in compliance with ORC §147.04 and ORC §147.551. Each journal entry includes:",
+      "Notar maintains electronic notary journals in compliance with ORC §147.04 and ORC §147.551. Each journal entry includes:",
       "• Date and time of the notarial act",
       "• Type of notarial act performed (Acknowledgment, Jurat, Oath/Affirmation, etc.)",
       "• Signer's printed name, signature, and address",
@@ -74,7 +74,7 @@ const complianceSections = [
     icon: Shield,
     title: "Fee Disclosure & Transparency",
     content: [
-      "NotarDex complies with Ohio statutory fee caps as established by ORC §147.08. The statutory maximum per notarial act is $5.00 per signature for traditional notarizations.",
+      "Notar complies with Ohio statutory fee caps as established by ORC §147.08. The statutory maximum per notarial act is $5.00 per signature for traditional notarizations.",
       "RON platform fees, technology charges, and any additional service fees (travel, after-hours, witnesses) are disclosed transparently before the session begins. No hidden fees are charged.",
       "Detailed fee breakdowns are available on our Pricing page and are confirmed during the booking process before any charges are processed.",
     ],
@@ -83,8 +83,8 @@ const complianceSections = [
 
 export default function Compliance() {
   usePageMeta({
-    title: "Compliance & Legal Standards | NotarDex",
-    description: "NotarDex compliance with Ohio RON law (ORC §147.60–147.66), identity verification standards, audit trail requirements, and data handling practices.",
+    title: "Compliance & Legal Standards | Notar",
+    description: "Notar compliance with Ohio RON law (ORC §147.60–147.66), identity verification standards, audit trail requirements, and data handling practices.",
   });
 
   return (
@@ -103,14 +103,14 @@ export default function Compliance() {
               </Badge>
               <h1 className="text-4xl font-bold mb-4">Compliance & Legal Standards</h1>
               <p className="text-lg text-muted-foreground max-w-xl">
-                NotarDex is fully compliant with Ohio Revised Code §147.60–147.66 and maintains
+                Notar is fully compliant with Ohio Revised Code §147.60–147.66 and maintains
                 the highest standards of identity verification, data security, and notarial recordkeeping.
               </p>
             </div>
             <div className="flex-shrink-0">
               <img
                 src={securityBadge}
-                alt="NotarDex Security and Compliance Verification Badge — SOC 2 Type II, MISMO Certified, 256-bit Encryption"
+                alt="Notar Security and Compliance Verification Badge — SOC 2 Type II, MISMO Certified, 256-bit Encryption"
                 className="w-48 h-48 rounded-2xl object-cover shadow-xl"
                 loading="lazy"
                 width={192}
@@ -160,7 +160,7 @@ export default function Compliance() {
               <div>
                 <h3 className="font-semibold text-foreground mb-1">Important Legal Disclaimer</h3>
                 <p className="text-sm text-muted-foreground">
-                  NotarDex is not a law firm and does not provide legal advice. Our notaries are not attorneys
+                  Notar is not a law firm and does not provide legal advice. Our notaries are not attorneys
                   (unless separately licensed) and cannot advise you on the legal sufficiency or consequences
                   of your documents. We notarize signatures — we do not draft, review, or validate legal documents.
                   If you need legal advice, please consult a licensed attorney. Per ORC §147.01, a notary public

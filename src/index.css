@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Lato:wght@300;400;700;900&display=swap&font-display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap&font-display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,113 +6,113 @@
 
 @layer base {
   :root {
-    /* NotarDex Brand: Block Shadow — Light mode */
-    --background: 0 0% 99%;
-    --foreground: 222 47% 11%;
+    /* Notar Brand: Warm & Friendly — Light mode */
+    --background: 45 100% 97%;
+    --foreground: 0 0% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 0 0% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 0 0% 10%;
 
-    --primary: 43 74% 49%;
-    --primary-foreground: 222 47% 11%;
+    --primary: 48 91% 52%;
+    --primary-foreground: 0 0% 10%;
 
-    --secondary: 215 20% 65%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 45 30% 90%;
+    --secondary-foreground: 0 0% 15%;
 
-    --muted: 210 17% 97%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 45 40% 95%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 43 74% 49%;
-    --accent-foreground: 222 47% 11%;
+    --accent: 45 100% 90%;
+    --accent-foreground: 0 0% 10%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 94%;
-    --input: 220 14% 96%;
-    --ring: 43 74% 49%;
+    --border: 45 20% 90%;
+    --input: 45 20% 92%;
+    --ring: 48 91% 52%;
 
-    --radius: 0.625rem;
+    --radius: 0.75rem;
 
-    --primary-glow: 43 74% 58%;
-    --primary-light: 43 80% 95%;
-    --mint: 43 50% 80%;
+    --primary-glow: 48 91% 62%;
+    --primary-light: 48 100% 95%;
+    --mint: 48 60% 85%;
     --surface-elevated: 0 0% 100%;
-    --light-gray: 220 14% 96%;
+    --light-gray: 45 20% 96%;
 
-    --sidebar-background: 222 47% 11%;
-    --sidebar-foreground: 215 20% 85%;
-    --sidebar-primary: 43 74% 49%;
-    --sidebar-primary-foreground: 222 47% 11%;
-    --sidebar-accent: 222 40% 18%;
-    --sidebar-accent-foreground: 215 20% 85%;
-    --sidebar-border: 222 30% 20%;
-    --sidebar-ring: 43 74% 49%;
+    --sidebar-background: 0 0% 10%;
+    --sidebar-foreground: 45 20% 85%;
+    --sidebar-primary: 48 91% 52%;
+    --sidebar-primary-foreground: 0 0% 10%;
+    --sidebar-accent: 0 0% 16%;
+    --sidebar-accent-foreground: 45 20% 85%;
+    --sidebar-border: 0 0% 18%;
+    --sidebar-ring: 48 91% 52%;
 
-    --accent-warm: 43 74% 49%;
-    --accent-warm-foreground: 222 47% 11%;
+    --accent-warm: 48 91% 52%;
+    --accent-warm-foreground: 0 0% 10%;
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
-    --warning: 43 74% 49%;
-    --warning-foreground: 222 47% 11%;
+    --warning: 48 91% 52%;
+    --warning-foreground: 0 0% 10%;
     --info: 210 100% 52%;
     --info-foreground: 0 0% 100%;
   }
 
   .dark {
-    /* NotarDex Brand: Dark mode — Deep slate base */
-    --background: 222 47% 7%;
-    --foreground: 215 20% 95%;
+    /* Notar Brand: Dark mode — Warm charcoal base */
+    --background: 30 10% 8%;
+    --foreground: 45 20% 95%;
 
-    --card: 222 40% 11%;
-    --card-foreground: 215 20% 95%;
+    --card: 30 10% 12%;
+    --card-foreground: 45 20% 95%;
 
-    --popover: 222 40% 11%;
-    --popover-foreground: 215 20% 95%;
+    --popover: 30 10% 12%;
+    --popover-foreground: 45 20% 95%;
 
-    --primary: 43 74% 49%;
-    --primary-foreground: 222 47% 11%;
+    --primary: 48 91% 52%;
+    --primary-foreground: 0 0% 10%;
 
-    --secondary: 222 30% 20%;
-    --secondary-foreground: 215 20% 95%;
+    --secondary: 30 10% 20%;
+    --secondary-foreground: 45 20% 95%;
 
-    --muted: 222 30% 16%;
-    --muted-foreground: 215 16% 55%;
+    --muted: 30 10% 16%;
+    --muted-foreground: 45 10% 55%;
 
-    --accent: 43 74% 49%;
-    --accent-foreground: 222 47% 11%;
+    --accent: 48 91% 52%;
+    --accent-foreground: 0 0% 10%;
 
     --destructive: 0 62% 35%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 222 25% 20%;
-    --input: 222 25% 20%;
-    --ring: 43 74% 49%;
+    --border: 30 10% 20%;
+    --input: 30 10% 20%;
+    --ring: 48 91% 52%;
 
-    --primary-glow: 43 74% 58%;
-    --primary-light: 43 40% 18%;
-    --mint: 43 40% 30%;
-    --surface-elevated: 222 35% 14%;
-    --light-gray: 222 30% 12%;
+    --primary-glow: 48 91% 62%;
+    --primary-light: 48 40% 18%;
+    --mint: 48 40% 30%;
+    --surface-elevated: 30 10% 14%;
+    --light-gray: 30 10% 12%;
 
-    --sidebar-background: 222 47% 5%;
-    --sidebar-foreground: 215 20% 85%;
-    --sidebar-primary: 43 74% 49%;
-    --sidebar-primary-foreground: 222 47% 11%;
-    --sidebar-accent: 222 40% 14%;
-    --sidebar-accent-foreground: 215 20% 85%;
-    --sidebar-border: 222 30% 14%;
-    --sidebar-ring: 43 74% 49%;
+    --sidebar-background: 30 10% 5%;
+    --sidebar-foreground: 45 20% 85%;
+    --sidebar-primary: 48 91% 52%;
+    --sidebar-primary-foreground: 0 0% 10%;
+    --sidebar-accent: 30 10% 14%;
+    --sidebar-accent-foreground: 45 20% 85%;
+    --sidebar-border: 30 10% 14%;
+    --sidebar-ring: 48 91% 52%;
 
-    --accent-warm: 43 74% 49%;
-    --accent-warm-foreground: 222 47% 11%;
+    --accent-warm: 48 91% 52%;
+    --accent-warm-foreground: 0 0% 10%;
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
-    --warning: 43 74% 49%;
-    --warning-foreground: 222 47% 11%;
+    --warning: 48 91% 52%;
+    --warning-foreground: 0 0% 10%;
     --info: 210 80% 55%;
     --info-foreground: 0 0% 100%;
   }
@@ -144,13 +144,13 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Lato', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-family: 'DM Sans', system-ui, sans-serif;
     font-weight: 700;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.02em;
   }
 
   /* ARIA live region styling */
@@ -178,24 +178,24 @@
 
 @layer utilities {
   .font-heading {
-    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-family: 'DM Sans', system-ui, sans-serif;
   }
 
   .font-body {
-    font-family: 'Lato', system-ui, sans-serif;
+    font-family: 'DM Sans', system-ui, sans-serif;
   }
 
   .text-gradient-primary {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(43 74% 49%) 0%, hsl(38 92% 70%) 100%);
+    background-image: linear-gradient(135deg, hsl(48 91% 52%) 0%, hsl(42 100% 65%) 100%);
   }
 
   .bg-gradient-hero {
-    background: linear-gradient(160deg, hsl(222 47% 11%) 0%, hsl(222 40% 15%) 40%, hsl(222 47% 11%) 100%);
+    background: linear-gradient(160deg, hsl(45 100% 97%) 0%, hsl(48 100% 93%) 50%, hsl(45 100% 97%) 100%);
   }
 
   .dark .bg-gradient-hero {
-    background: linear-gradient(160deg, hsl(222 47% 5%) 0%, hsl(222 40% 11%) 50%, hsl(222 47% 7%) 100%);
+    background: linear-gradient(160deg, hsl(30 10% 5%) 0%, hsl(30 10% 11%) 50%, hsl(30 10% 7%) 100%);
   }
 
   /* WCAG AA-compliant amber for text on white backgrounds (4.5:1+) */
@@ -213,24 +213,24 @@
   .glass {
     @apply backdrop-blur-xl border;
     background: hsla(0, 0%, 100%, 0.92);
-    border-color: hsla(220, 13%, 91%, 0.6);
+    border-color: hsla(45, 20%, 90%, 0.6);
   }
 
   .dark .glass {
-    background: hsla(222, 40%, 11%, 0.88);
-    border-color: hsla(222, 25%, 20%, 0.6);
+    background: hsla(30, 10%, 12%, 0.88);
+    border-color: hsla(30, 10%, 20%, 0.6);
   }
 
   .glass-card {
     background: hsla(0, 0%, 100%, 0.95);
     backdrop-filter: blur(12px);
-    border: 1px solid hsla(220, 13%, 91%, 0.6);
+    border: 1px solid hsla(45, 20%, 90%, 0.6);
     box-shadow: 0 1px 3px 0 hsla(0, 0%, 0%, 0.03);
   }
 
   .dark .glass-card {
-    background: hsla(222, 40%, 11%, 0.8);
-    border-color: hsla(222, 25%, 20%, 0.6);
+    background: hsla(30, 10%, 12%, 0.8);
+    border-color: hsla(30, 10%, 20%, 0.6);
   }
 
   .glow-primary {
@@ -250,13 +250,8 @@
   }
 
   .geo-pattern {
-    background-image: repeating-linear-gradient(
-      -45deg,
-      transparent,
-      transparent 20px,
-      hsl(var(--primary) / 0.04) 20px,
-      hsl(var(--primary) / 0.04) 21px
-    );
+    background-image: radial-gradient(circle, hsl(var(--primary) / 0.06) 1.5px, transparent 1.5px);
+    background-size: 28px 28px;
   }
 }
 
@@ -291,38 +286,38 @@ button, a, [role="button"] {
 
 .hover-lift:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px -2px hsl(var(--primary) / 0.15);
+  box-shadow: 0 8px 24px -6px hsl(var(--primary) / 0.12);
 }
 
 /* Interactive card hover */
 .interactive-card {
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
 .interactive-card:hover {
   transform: translateY(-4px);
   border-color: hsl(var(--primary) / 0.3);
-  box-shadow: 0 12px 20px -4px hsl(43 74% 49% / 0.1);
+  box-shadow: 0 16px 32px -8px hsl(48 91% 52% / 0.12);
 }
 
-/* Gradient mesh background — amber accents */
+/* Gradient mesh background — warm accents */
 .gradient-mesh {
   background:
-    radial-gradient(ellipse at 20% 50%, hsl(43 74% 49% / 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, hsl(38 92% 60% / 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, hsl(43 74% 49% / 0.02) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, hsl(48 91% 52% / 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, hsl(42 100% 65% / 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, hsl(48 91% 52% / 0.03) 0%, transparent 50%);
 }
 
 /* Grid pattern overlay */
 .grid-pattern {
   background-image:
-    linear-gradient(hsl(220 13% 91% / 0.4) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(220 13% 91% / 0.4) 1px, transparent 1px);
+    linear-gradient(hsl(45 20% 90% / 0.4) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(45 20% 90% / 0.4) 1px, transparent 1px);
   background-size: 60px 60px;
 }
 
 /* Dot pattern */
 .dot-pattern {
-  background-image: radial-gradient(circle, hsl(var(--primary) / 0.04) 1px, transparent 1px);
+  background-image: radial-gradient(circle, hsl(var(--primary) / 0.05) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 

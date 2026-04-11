@@ -1,6 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import logoIcon from "@/assets/logo-icon.png";
+import notarLogo from "@/assets/notar-logo.png";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg" | "xl";
@@ -26,27 +26,26 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
       <div
         ref={ref}
         className={cn("group flex items-center", s.gap, className)}
-        aria-label="NotarDex logo"
+        aria-label="Notar logo"
       >
         <img
-          src={logoIcon}
-          alt="NotarDex"
+          src={notarLogo}
+          alt="Notar"
           className={cn(s.icon, "object-contain transition-transform group-hover:-translate-y-0.5")}
         />
         {showText && (
           <span
             className={cn(
-              "font-black tracking-tight leading-none uppercase",
+              "font-bold tracking-tight leading-none",
               s.text,
               textColor
             )}
-            style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
           >
-            NOTAR
+            Notar
           </span>
         )}
         {subtitle && (
-          <span className="block text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+          <span className="block text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
             {subtitle}
           </span>
         )}

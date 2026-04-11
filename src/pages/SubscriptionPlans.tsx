@@ -95,7 +95,7 @@ const partnerBenefits = [
 ];
 
 export default function SubscriptionPlans() {
-  usePageMeta({ title: "Pricing & Plans | NotarDex", description: "Transparent notary pricing — Individual ($25/notarization), Business Essentials ($49/mo), Business Pro ($149/mo), and Enterprise plans." });
+  usePageMeta({ title: "Pricing & Plans | Notar", description: "Transparent notary pricing — Individual ($25/notarization), Business Essentials ($49/mo), Business Pro ($149/mo), and Enterprise plans." });
   const { user } = useAuth();
   const navTo = useNavigate();
   const { toast } = useToast();

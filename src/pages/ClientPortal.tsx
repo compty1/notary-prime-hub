@@ -372,7 +372,7 @@ export default function ClientPortal() {
               </Popover>
               {isAdmin && <Link to="/admin"><Button variant="outline" size="sm" className="rounded-xl font-bold">Admin</Button></Link>}
               <Link to="/book">
-                <Button size="sm" className="rounded-full bg-primary text-primary-foreground font-bold hover:bg-primary/90 shadow-block hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all">
+                <Button size="sm" className="rounded-full bg-primary text-primary-foreground font-bold hover:bg-primary/90 shadow-soft hover:-translate-y-0.5 active:translate-y-0 active:shadow-soft transition-all">
                   <Plus className="mr-1 h-4 w-4" /> New Notarization
                 </Button>
               </Link>
@@ -398,7 +398,7 @@ export default function ClientPortal() {
                     </div>
                   </div>
                   <Link to={`/ron-session?id=${appointments.find(a => a.status === "in_session")?.id}`}>
-                    <Button size="sm" className="rounded-xl bg-foreground text-background font-bold shadow-block">Join Session <ArrowRight className="ml-1 h-3 w-3" /></Button>
+                    <Button size="sm" className="rounded-xl bg-foreground text-background font-bold shadow-soft">Join Session <ArrowRight className="ml-1 h-3 w-3" /></Button>
                   </Link>
                 </CardContent>
               </Card>
@@ -570,7 +570,7 @@ export default function ClientPortal() {
                 <div><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Notes (optional)</Label><Textarea value={apostilleForm.notes} onChange={e => setApostilleForm({ ...apostilleForm, notes: e.target.value })} rows={2} placeholder="Urgency, special instructions" maxLength={500} className="bg-muted border-none rounded-xl mt-1" /></div>
                 <AlertDialog>
                 <AlertDialogTrigger asChild>
-                <Button disabled={!apostilleForm.document_description.trim() || submittingApostille} className="rounded-xl font-bold bg-foreground text-background shadow-block">
+                <Button disabled={!apostilleForm.document_description.trim() || submittingApostille} className="rounded-xl font-bold bg-foreground text-background shadow-soft">
                   {submittingApostille ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Package className="mr-1 h-4 w-4" />} Submit Request
                 </Button>
                 </AlertDialogTrigger>
@@ -622,7 +622,7 @@ export default function ClientPortal() {
             <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-black text-foreground">Payments & Invoices</h2>
-              {!showPaymentForm && <Button size="sm" onClick={() => setShowPaymentForm(true)} className="rounded-xl font-bold bg-foreground text-background shadow-block"><CreditCard className="mr-1 h-4 w-4" /> Make Payment</Button>}
+              {!showPaymentForm && <Button size="sm" onClick={() => setShowPaymentForm(true)} className="rounded-xl font-bold bg-foreground text-background shadow-soft"><CreditCard className="mr-1 h-4 w-4" /> Make Payment</Button>}
             </div>
             {showPaymentForm && <PaymentForm onSuccess={() => { setShowPaymentForm(false); supabase.from("payments").select("*").eq("client_id", user!.id).order("created_at", { ascending: false }).then(({ data }) => { if (data) setPayments(data); }); }} onCancel={() => setShowPaymentForm(false)} />}
             {payments.length === 0 && !showPaymentForm ? (
@@ -669,7 +669,7 @@ export default function ClientPortal() {
                   if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
                   else { toast({ title: "Review submitted!" }); setReviewForm({ appointment_id: "", rating: 5, comment: "" }); const { data: revs } = await supabase.from("reviews").select("*").eq("client_id", user.id); if (revs) setReviews(revs); }
                   setSubmittingReview(false);
-                }} className="rounded-xl font-bold bg-foreground text-background shadow-block">{submittingReview ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Star className="mr-1 h-4 w-4" />} Submit Review</Button>
+                }} className="rounded-xl font-bold bg-foreground text-background shadow-soft">{submittingReview ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Star className="mr-1 h-4 w-4" />} Submit Review</Button>
               </CardContent></Card>
             ) : (
               <Card className="rounded-[24px] border-border"><CardContent className="py-12 text-center text-muted-foreground"><Star className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" /><p className="font-bold text-foreground mb-1">No reviews yet</p><p className="text-sm font-medium">Complete an appointment to leave feedback.</p></CardContent></Card>
@@ -699,7 +699,7 @@ export default function ClientPortal() {
                 if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
                 else if (data) { toast({ title: "Reminder set" }); setReminders(prev => [...prev, data].sort((a: any, b: any) => a.expiry_date.localeCompare(b.expiry_date))); setReminderForm({ document_id: "", expiry_date: "", remind_days_before: "30" }); }
                 setSavingReminder(false);
-              }} size="sm" className="rounded-xl font-bold bg-foreground text-background shadow-block">{savingReminder ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Bell className="mr-1 h-4 w-4" />} Set Reminder</Button>
+              }} size="sm" className="rounded-xl font-bold bg-foreground text-background shadow-soft">{savingReminder ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Bell className="mr-1 h-4 w-4" />} Set Reminder</Button>
             </CardContent></Card>
             {reminders.length === 0 ? (
               <Card className="rounded-[24px] border-border"><CardContent className="py-12 text-center text-muted-foreground"><Bell className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" /><p className="font-medium">No reminders set</p></CardContent></Card>
@@ -718,7 +718,7 @@ export default function ClientPortal() {
           {activeSection === "services" && (
             <div className="space-y-6">
             <div className="flex items-center justify-between"><h2 className="text-xl font-black text-foreground">Available Services</h2><Button variant="outline" size="sm" onClick={() => setShowWizard(!showWizard)} className="rounded-xl font-bold"><Sparkles className="mr-1 h-3 w-3" /> {showWizard ? "Hide Guide" : "Not Sure What You Need?"}</Button></div>
-            <Card className="rounded-[24px] border-primary/20 bg-primary/5"><CardContent className="flex items-center justify-between p-4"><div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20"><FileText className="h-5 w-5 text-primary" /></div><div><h3 className="text-sm font-black text-foreground">Digitize Documents</h3><p className="text-xs text-muted-foreground font-medium">Upload scanned documents and convert them to editable digital formats</p></div></div><Link to="/digitize"><Button size="sm" className="rounded-xl font-bold bg-foreground text-background shadow-block"><ArrowRight className="mr-1 h-3 w-3" /> Start</Button></Link></CardContent></Card>
+            <Card className="rounded-[24px] border-primary/20 bg-primary/5"><CardContent className="flex items-center justify-between p-4"><div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20"><FileText className="h-5 w-5 text-primary" /></div><div><h3 className="text-sm font-black text-foreground">Digitize Documents</h3><p className="text-xs text-muted-foreground font-medium">Upload scanned documents and convert them to editable digital formats</p></div></div><Link to="/digitize"><Button size="sm" className="rounded-xl font-bold bg-foreground text-background shadow-soft"><ArrowRight className="mr-1 h-3 w-3" /> Start</Button></Link></CardContent></Card>
             <div className="grid gap-4 sm:grid-cols-2">{services.map(svc => (
               <Card key={svc.id} className="rounded-[24px] border-border shadow-sm hover:shadow-md transition-shadow"><CardContent className="p-4"><div className="flex items-start justify-between"><div><h3 className="text-sm font-black text-foreground">{svc.name}</h3>{svc.short_description && <p className="text-xs text-muted-foreground font-medium mt-1">{svc.short_description}</p>}</div><Badge className="text-[10px] font-black uppercase tracking-wider rounded-lg bg-muted text-muted-foreground border-border shrink-0 ml-2">{svc.pricing_model === "custom" ? "Quote" : svc.price_from ? `$${svc.price_from}${svc.price_to && svc.price_to > svc.price_from ? `–$${svc.price_to}` : ""}` : "Contact"}</Badge></div>{svc.description && <p className="text-xs text-muted-foreground font-medium mt-2 line-clamp-2">{svc.description}</p>}<div className="flex gap-2 mt-3"><Link to={getServiceUrl(svc)}><Button size="sm" className="text-xs rounded-xl font-bold bg-foreground text-background">{getServiceCTA(svc)}</Button></Link><Link to={`/services/${svc.id}`}><Button size="sm" variant="outline" className="text-xs rounded-xl font-bold">View Details</Button></Link></div></CardContent></Card>
             ))}</div>

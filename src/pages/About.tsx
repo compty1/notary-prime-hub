@@ -34,7 +34,7 @@ export default function About() {
   const [commissionExp, setCommissionExp] = useState<string | null>(null);
   const [eoStatus, setEoStatus] = useState<string | null>(null);
   const [bondStatus, setBondStatus] = useState<string | null>(null);
-  usePageMeta({ title: "About NotarDex | Ohio Notary Services", description: "Learn about NotarDex — Ohio-commissioned notary providing in-person and remote online notarization (RON) in Franklin County, Columbus." });
+  usePageMeta({ title: "About Notar | Ohio Notary Services", description: "Learn about Notar — Ohio-commissioned notary providing in-person and remote online notarization (RON) in Franklin County, Columbus." });
 
   useEffect(() => {
     supabase.from("platform_settings").select("setting_key, setting_value")
@@ -71,13 +71,13 @@ export default function About() {
                 <Award className="mr-1 h-3 w-3" /> NNA Certified Notary Signing Agent
               </Badge>
               <h1 className="mb-3 text-4xl font-black text-[hsl(220,26%,14%)] md:text-5xl">
-                NotarDex
+                Notar
               </h1>
               <p className="mb-2 text-xl text-muted-foreground">
                 Professional Notary & Document Services — Ohio
               </p>
               <p className="text-muted-foreground/70 max-w-xl">
-                NotarDex is a team of Ohio-commissioned notaries providing professional notarization, 
+                Notar is a team of Ohio-commissioned notaries providing professional notarization, 
                 document management, and business services throughout Franklin County and the greater Columbus area.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
@@ -137,7 +137,7 @@ export default function About() {
             </motion.h2>
             <motion.div variants={fadeUp} custom={1} className="prose prose-sm dark:prose-invert max-w-none">
               <p className="text-muted-foreground leading-relaxed">
-                NotarDex was founded with a clear mission: to make professional notarization accessible, secure,
+                Notar was founded with a clear mission: to make professional notarization accessible, secure,
                 and convenient for everyone. Based in Columbus, Ohio, our team of Ohio-commissioned Notaries Public
                 and NNA Certified Notary Signing Agents brings together deep expertise in notarial law, document
                 management, and digital security.
@@ -153,10 +153,10 @@ export default function About() {
                 Remote Online Notarization. Compliance with Ohio Revised Code §147 and all applicable regulations.
               </p>
               <p className="text-muted-foreground leading-relaxed mt-4">
-                Beyond traditional notarization, the NotarDex team specializes in document digitization, secure cloud
+                Beyond traditional notarization, the Notar team specializes in document digitization, secure cloud
                 storage, form preparation, apostille facilitation, and business document management. Whether you need
                 a simple notarization for a power of attorney, a complex real estate closing, I-9 employment verification,
-                or full document digitization services — NotarDex delivers professional, reliable service with a focus
+                or full document digitization services — Notar delivers professional, reliable service with a focus
                 on compliance and client convenience.
               </p>
               <p className="text-muted-foreground leading-relaxed mt-4">

@@ -28,7 +28,7 @@ export default function ResetPassword() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [cooldown, setCooldown] = useState(0);
 
-  usePageMeta({ title: "Reset Password", description: "Reset your NotarDex account password securely.", noIndex: true });
+  usePageMeta({ title: "Reset Password", description: "Reset your Notar account password securely.", noIndex: true });
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -105,7 +105,7 @@ export default function ResetPassword() {
           {success ? (
             <div className="flex flex-col items-center gap-4 py-4 rounded-[24px] border border-border bg-white p-8">
               <CheckCircle className="h-12 w-12 text-primary" />
-              <Link to="/login"><Button className="rounded-xl bg-primary text-white hover:bg-primary/85 shadow-block">Go to Sign In</Button></Link>
+              <Link to="/login"><Button className="rounded-xl bg-primary text-white hover:bg-primary/85 shadow-soft">Go to Sign In</Button></Link>
             </div>
           ) : requestSent ? (
             <div className="flex flex-col items-center gap-4 py-8 text-center rounded-[24px] border border-border bg-white p-8">
@@ -143,7 +143,7 @@ export default function ResetPassword() {
                   </button>
                 </div>
               </div>
-              <Button type="submit" className="w-full rounded-xl bg-primary text-white font-bold hover:bg-primary/85 shadow-block h-11" disabled={submitting}>
+              <Button type="submit" className="w-full rounded-xl bg-primary text-white font-bold hover:bg-primary/85 shadow-soft h-11" disabled={submitting}>
                 {submitting ? "Updating..." : "Update Password"}
               </Button>
             </form>
@@ -153,7 +153,7 @@ export default function ResetPassword() {
                 <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Email Address</Label>
                 <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" autoComplete="email" className="mt-1 rounded-xl border-border bg-white" />
               </div>
-              <Button type="submit" className="w-full rounded-xl bg-primary text-white font-bold hover:bg-primary/85 shadow-block h-11" disabled={submitting || cooldown > 0}>
+              <Button type="submit" className="w-full rounded-xl bg-primary text-white font-bold hover:bg-primary/85 shadow-soft h-11" disabled={submitting || cooldown > 0}>
                 {submitting ? "Sending..." : cooldown > 0 ? `Wait ${cooldown}s` : "Send Reset Link"}
               </Button>
               <p className="text-center text-sm text-muted-foreground">

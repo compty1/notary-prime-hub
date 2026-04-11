@@ -33,7 +33,7 @@ export function setJsonLd(data: Record<string, any>) {
 export const ORGANIZATION_JSONLD = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
-  name: "NotarDex — Ohio Notary & Document Services",
+  name: "Notar — Ohio Notary & Document Services",
   url: SITE_DOMAIN,
   telephone: "+16143006890",
   email: "contact@notardex.com",
@@ -60,7 +60,7 @@ export function serviceJsonLd(name: string, description: string, price?: string)
     "@type": "Service",
     name,
     description,
-    provider: { "@type": "LocalBusiness", name: "NotarDex" },
+    provider: { "@type": "LocalBusiness", name: "Notar" },
     areaServed: { "@type": "State", name: "Ohio" },
     ...(price ? { offers: { "@type": "Offer", price, priceCurrency: "USD" } } : {}),
   };
@@ -98,7 +98,7 @@ export function reviewAggregateJsonLd(ratingValue: number, reviewCount: number, 
   return {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    name: "NotarDex — Ohio Notary & Document Services",
+    name: "Notar — Ohio Notary & Document Services",
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue,
@@ -116,7 +116,7 @@ export function setOpenGraphMeta(opts: { title: string; description: string; ima
     "og:description": opts.description,
     "og:type": opts.type || "website",
     "og:url": opts.url ? `${SITE_DOMAIN}${opts.url}` : SITE_DOMAIN,
-    "og:site_name": "NotarDex",
+    "og:site_name": "Notar",
   };
   if (opts.image) tags["og:image"] = opts.image;
 

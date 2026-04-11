@@ -14,10 +14,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['"Lato"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        heading: ['"Plus Jakarta Sans"', '"Space Grotesk"', 'system-ui', 'sans-serif'],
-        display: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
-        body: ['"Lato"', 'system-ui', 'sans-serif'],
+        sans: ['"DM Sans"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        heading: ['"DM Sans"', 'system-ui', 'sans-serif'],
+        display: ['"DM Sans"', 'system-ui', 'sans-serif'],
+        body: ['"DM Sans"', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -88,16 +88,19 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
-        card: "24px",
+        card: "28px",
         "card-lg": "32px",
       },
       boxShadow: {
-        block: "4px 4px 0px hsl(43 74% 49%)",
-        "block-lg": "6px 6px 0px #212529",
-        "block-active": "0px 0px 0px hsl(43 74% 49%)",
+        block: "0 2px 8px -2px hsl(48 91% 52% / 0.15)",
+        "block-lg": "0 8px 24px -6px hsl(48 91% 52% / 0.18)",
+        "block-active": "0 1px 4px -1px hsl(48 91% 52% / 0.1)",
+        soft: "0 2px 12px -4px hsl(0 0% 0% / 0.06)",
+        card: "0 4px 20px -6px hsl(0 0% 0% / 0.08)",
+        "card-hover": "0 12px 32px -8px hsl(48 91% 52% / 0.15)",
       },
       fontSize: {
-        label: ["10px", { letterSpacing: "0.1em", fontWeight: "900" }],
+        label: ["10px", { letterSpacing: "0.1em", fontWeight: "700" }],
       },
       keyframes: {
         "accordion-down": {
@@ -129,8 +132,8 @@ export default {
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
         "glow-pulse": {
-          "0%, 100%": { boxShadow: "0 0 15px -5px hsl(43 74% 49% / 0.25)" },
-          "50%": { boxShadow: "0 0 30px -5px hsl(43 74% 49% / 0.4)" },
+          "0%, 100%": { boxShadow: "0 0 15px -5px hsl(48 91% 52% / 0.2)" },
+          "50%": { boxShadow: "0 0 30px -5px hsl(48 91% 52% / 0.35)" },
         },
         "float": {
           "0%, 100%": { transform: "translateY(0px)" },

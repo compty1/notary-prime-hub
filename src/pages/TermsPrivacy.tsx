@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function TermsPrivacy() {
-  usePageMeta({ title: "Terms of Service & Privacy Policy | NotarDex", description: "NotarDex terms of service, privacy policy, data retention, refund policy, and foreign language document policy. Learn how we protect your information under Ohio law." });
+  usePageMeta({ title: "Terms of Service & Privacy Policy | Notar", description: "Notar terms of service, privacy policy, data retention, refund policy, and foreign language document policy. Learn how we protect your information under Ohio law." });
   return (
     <PageShell>
       <div className="container mx-auto max-w-3xl px-4 py-12 space-y-12">
@@ -20,10 +20,10 @@ export default function TermsPrivacy() {
             <p><strong>Effective Date:</strong> January 1, 2026</p>
 
             <h2 className="font-sans text-lg font-semibold text-foreground">1. Acceptance of Terms</h2>
-            <p>By accessing or using the NotarDex platform ("Platform"), including our website, mobile applications, and Remote Online Notarization (RON) services, you agree to be bound by these Terms of Service. If you do not agree, do not use our services.</p>
+            <p>By accessing or using the Notar platform ("Platform"), including our website, mobile applications, and Remote Online Notarization (RON) services, you agree to be bound by these Terms of Service. If you do not agree, do not use our services.</p>
 
             <h2 className="font-sans text-lg font-semibold text-foreground">2. Services Provided</h2>
-            <p>NotarDex provides in-person and remote online notarization (RON) services, document preparation assistance, document digitization, apostille facilitation, and related business document services. Our RON services operate in compliance with Ohio Revised Code §147.60–147.66 and all applicable Ohio laws. Our notaries are commissioned as Notaries Public in the State of Ohio.</p>
+            <p>Notar provides in-person and remote online notarization (RON) services, document preparation assistance, document digitization, apostille facilitation, and related business document services. Our RON services operate in compliance with Ohio Revised Code §147.60–147.66 and all applicable Ohio laws. Our notaries are commissioned as Notaries Public in the State of Ohio.</p>
 
             <h2 className="font-sans text-lg font-semibold text-foreground">3. Eligibility</h2>
             <p>You must be at least 18 years old and possess a valid, unexpired government-issued photo ID to use our notarization services. For RON sessions, you must also successfully complete Knowledge-Based Authentication (KBA) as required by ORC §147.65–.66. The signer must be of sound mind, acting voluntarily, and aware of the nature and consequences of the document being signed.</p>
@@ -47,10 +47,10 @@ export default function TermsPrivacy() {
             <p>We request at least 2 hours' notice for cancellations. Appointments may be rescheduled through the client portal at no charge with 2+ hours' notice. No-show fees of $25 may apply. For mobile appointments, travel fees are non-refundable once the notary has departed. If the signer fails to appear or lacks valid identification upon arrival, the full travel fee plus a $25 service charge will apply.</p>
 
             <h2 className="font-sans text-lg font-semibold text-foreground">10. Prohibited Uses</h2>
-            <p>You may not use NotarDex to: notarize documents you know to be fraudulent or illegal; impersonate another person during identity verification; submit falsified identification documents; circumvent identity verification requirements; or notarize prohibited documents (e.g., Ohio vital records including birth, death, and marriage certificates).</p>
+            <p>You may not use Notar to: notarize documents you know to be fraudulent or illegal; impersonate another person during identity verification; submit falsified identification documents; circumvent identity verification requirements; or notarize prohibited documents (e.g., Ohio vital records including birth, death, and marriage certificates).</p>
 
             <h2 className="font-sans text-lg font-semibold text-foreground">11. Intellectual Property</h2>
-            <p>All content, features, and functionality of the NotarDex platform — including text, graphics, logos, icons, images, and software — are the exclusive property of NotarDex and protected by copyright, trademark, and other intellectual property laws.</p>
+            <p>All content, features, and functionality of the Notar platform — including text, graphics, logos, icons, images, and software — are the exclusive property of Notar and protected by copyright, trademark, and other intellectual property laws.</p>
 
             <h2 className="font-sans text-lg font-semibold text-foreground">12. Limitation of Liability</h2>
             <p>Our liability is limited to the fees paid for the specific notarial act in question. We maintain a $25,000 surety bond as required by Ohio law and carry E&O insurance. We are not liable for the legal consequences of documents you choose to notarize, for system outages beyond our control, or for any indirect, incidental, or consequential damages.</p>
@@ -126,13 +126,13 @@ export default function TermsPrivacy() {
             <p>We use essential cookies for authentication and session management. We use analytics cookies to understand usage patterns and improve our platform. You can manage cookie preferences through our cookie consent banner.</p>
 
             <h3 className="font-sans text-lg font-semibold text-foreground">Children's Privacy</h3>
-            <p>NotarDex is not intended for use by individuals under 18 years of age. We do not knowingly collect personal information from minors. If we become aware of such collection, we will delete the data promptly.</p>
+            <p>Notar is not intended for use by individuals under 18 years of age. We do not knowingly collect personal information from minors. If we become aware of such collection, we will delete the data promptly.</p>
 
             <h3 className="font-sans text-lg font-semibold text-foreground">Your Rights</h3>
             <p>You may request access to, correction of, or deletion of your personal information by contacting us through your client portal or by email. Note that we cannot delete notary journal entries or RON session recordings as they are legally required records under Ohio law.</p>
 
             <h3 className="font-sans text-lg font-semibold text-foreground">Contact</h3>
-            <p>For questions about this privacy policy, contact NotarDex at the contact information provided on our website or email <a href="mailto:privacy@notardex.com" className="text-primary hover:underline">privacy@notardex.com</a>.</p>
+            <p>For questions about this privacy policy, contact Notar at the contact information provided on our website or email <a href="mailto:privacy@notardex.com" className="text-primary hover:underline">privacy@notardex.com</a>.</p>
           </div>
         </section>
 

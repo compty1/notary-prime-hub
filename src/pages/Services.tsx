@@ -159,8 +159,8 @@ export default function Services() {
       {/* Hero — Block Shadow */}
       <section className="relative overflow-hidden border-b-2 border-[hsl(220,10%,90%)] bg-white py-16 md:py-20">
         <div className="container relative mx-auto px-4 text-center">
-          <p className="mb-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Everything you need</p>
-          <h1 className="mb-4 text-4xl font-black text-[hsl(220,26%,14%)] md:text-5xl">
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Everything you need</p>
+          <h1 className="mb-4 text-4xl font-bold text-[hsl(220,26%,14%)] md:text-5xl">
             Services
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
@@ -177,7 +177,7 @@ export default function Services() {
         <div className="container mx-auto px-4">
           <div className="mb-8 text-center">
             <Badge className="mb-3 bg-[hsl(45,96%,50%)]/10 text-[hsl(45,96%,40%)] border-[hsl(45,96%,50%)]/20 rounded-lg font-bold"><Sparkles className="mr-1 h-3 w-3" /> AI-Powered</Badge>
-            <h2 className="mb-2 text-2xl font-black text-[hsl(220,26%,14%)] md:text-3xl">Do It Yourself</h2>
+            <h2 className="mb-2 text-2xl font-bold text-[hsl(220,26%,14%)] md:text-3xl">Do It Yourself</h2>
             <p className="mx-auto max-w-lg text-muted-foreground">Every tool is enhanced with AI — smarter suggestions, auto-fill, and intelligent recommendations.</p>
           </div>
           <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-3">
@@ -188,7 +188,7 @@ export default function Services() {
                     <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[hsl(45,96%,50%)]/10 group-hover:bg-[hsl(45,96%,50%)]/20 transition-colors">
                       <tool.icon className="h-7 w-7 text-[hsl(45,96%,50%)]" />
                     </div>
-                    <h3 className="mb-2 font-black text-foreground">{tool.title}</h3>
+                    <h3 className="mb-2 font-bold text-foreground">{tool.title}</h3>
                     <p className="mb-4 flex-1 text-sm text-muted-foreground">{tool.description}</p>
                     <Link to={tool.link} className="w-full">
                       <Button variant="outline" className="w-full rounded-xl font-bold border-2 group-hover:bg-[hsl(45,96%,50%)] group-hover:text-[hsl(220,26%,14%)] group-hover:border-[hsl(220,26%,14%)] transition-colors">
@@ -245,7 +245,7 @@ export default function Services() {
             {grouped.map((group) => (
               <section key={group.category}>
                 <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.35 }} className="mb-6">
-                  <h2 className="text-2xl font-black text-[hsl(220,26%,14%)]">{group.label}</h2>
+                  <h2 className="text-2xl font-bold text-[hsl(220,26%,14%)]">{group.label}</h2>
                   <p className="text-sm text-muted-foreground">{group.description}</p>
                 </motion.div>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -262,12 +262,12 @@ export default function Services() {
                               </div>
                               <div className="flex items-center gap-1.5">
                                 {s.is_popular && (
-                                  <Badge className="text-[10px] px-1.5 py-0 bg-[hsl(45,96%,50%)] text-[hsl(220,26%,14%)] font-black rounded-md">Popular</Badge>
+                                  <Badge className="text-[10px] px-1.5 py-0 bg-[hsl(45,96%,50%)] text-[hsl(220,26%,14%)] font-bold rounded-md">Popular</Badge>
                                 )}
                                 <Badge variant="outline" className="text-xs font-mono font-bold rounded-lg border-2">{formatPrice(s)}</Badge>
                               </div>
                             </div>
-                            <h3 className="mb-1 text-base font-black text-foreground">{s.name}</h3>
+                            <h3 className="mb-1 text-base font-bold text-foreground">{s.name}</h3>
                             <p className="mb-4 flex-1 text-sm text-muted-foreground">{s.description || s.short_description}</p>
                             <div className="flex gap-2">
                               <Link to={`/services/${s.id}`} className="flex-1">
@@ -301,7 +301,7 @@ export default function Services() {
       {/* CTA — Block Shadow */}
       <section className="border-t-2 border-[hsl(220,10%,90%)] bg-white py-16">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="mb-4 text-2xl font-black text-[hsl(220,26%,14%)]">Ready to Get Started?</h2>
+          <h2 className="mb-4 text-2xl font-bold text-[hsl(220,26%,14%)]">Ready to Get Started?</h2>
           <p className="mb-6 text-muted-foreground">Book an appointment or contact us for a custom quote.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link to="/book"><Button size="lg" className="rounded-xl font-bold bg-[hsl(45,96%,50%)] text-[hsl(220,26%,14%)] hover:bg-[hsl(45,96%,45%)] shadow-[4px_4px_0px_hsl(220,26%,14%)] px-8">Notarize Now</Button></Link>

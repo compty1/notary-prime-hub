@@ -56,9 +56,9 @@ const otherServices = [
 ];
 
 const fallbackTestimonials = [
-  { name: "Sarah M.", text: "NotarDex made our home closing so easy. Professional, punctual, and thorough.", rating: 5 },
+  { name: "Sarah M.", text: "Notar made our home closing so easy. Professional, punctual, and thorough.", rating: 5 },
   { name: "James R.", text: "Used the remote notarization while traveling. Incredibly convenient and secure.", rating: 5 },
-  { name: "Lisa K.", text: "Best notary experience I've had. Will definitely use NotarDex again for our business documents.", rating: 5 },
+  { name: "Lisa K.", text: "Best notary experience I've had. Will definitely use Notar again for our business documents.", rating: 5 },
 ];
 
 const howItWorksSteps = [
@@ -94,11 +94,11 @@ function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: strin
     return () => clearInterval(timer);
   }, [isInView, value]);
 
-  return <span ref={ref} aria-live="polite" className="font-black tabular-nums">{count.toLocaleString()}{suffix}</span>;
+  return <span ref={ref} aria-live="polite" className="font-bold tabular-nums">{count.toLocaleString()}{suffix}</span>;
 }
 
 export default function Index() {
-  usePageMeta({ title: "Ohio Notary & Document Services | NotarDex", description: "Trusted Ohio notary services — in-person and remote online notarization (RON) in Franklin County, Columbus. Book online, get notarized today.", schema: ORGANIZATION_JSONLD });
+  usePageMeta({ title: "Ohio Notary & Document Services | Notar", description: "Trusted Ohio notary services — in-person and remote online notarization (RON) in Franklin County, Columbus. Book online, get notarized today.", schema: ORGANIZATION_JSONLD });
   const { toast } = useToast();
   const [contactForm, setContactForm] = useState({ name: "", email: "", phone: "", service: "", message: "" });
   const [honeypot, setHoneypot] = useState("");
@@ -109,7 +109,7 @@ export default function Index() {
   // #3947/#3948: Set Open Graph + Twitter meta
   useEffect(() => {
     setOpenGraphMeta({
-      title: "Ohio Notary & Document Services | NotarDex",
+      title: "Ohio Notary & Document Services | Notar",
       description: "Trusted Ohio notary services — in-person and remote online notarization (RON). Book online, get notarized today.",
       url: "/",
       type: "website",
@@ -186,7 +186,7 @@ export default function Index() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": "NotarDex — Ohio Notary Public",
+    "name": "Notar — Ohio Notary Public",
     "description": "Professional notary services in Columbus, Ohio. In-person and Remote Online Notarization (RON).",
     "url": "https://notardex.com",
     "telephone": contactInfo.phone,
@@ -236,14 +236,14 @@ export default function Index() {
             <motion.div initial="hidden" animate="visible">
               {/* RON Badge Pill */}
               <motion.div variants={blurIn} custom={0} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted border border-border mb-6">
-                <span className="text-label font-black uppercase tracking-widest text-muted-foreground">Ohio RON Authorized</span>
+                <span className="text-label font-bold uppercase tracking-widest text-muted-foreground">Ohio RON Authorized</span>
                 <ShieldCheck className="h-4 w-4 text-emerald-500" />
               </motion.div>
 
               <motion.h1
                 variants={blurIn}
                 custom={1}
-                className="text-6xl md:text-7xl font-black tracking-tighter leading-[1.1] text-foreground mb-6"
+                className="text-6xl md:text-7xl font-bold tracking-tighter leading-[1.1] text-foreground mb-6"
               >
                 Legal documents{" "}
                 <span className="relative inline-block">
@@ -265,7 +265,7 @@ export default function Index() {
                 <Link to="/book?type=ron">
                   <Button
                     size="lg"
-                    className="rounded-2xl px-8 py-4 font-bold text-lg bg-foreground text-white shadow-block hover:-translate-y-0.5 active:translate-y-1 active:shadow-block-active transition-all"
+                    className="rounded-2xl px-8 py-4 font-bold text-lg bg-foreground text-white shadow-soft hover:-translate-y-0.5 active:translate-y-1 active:shadow-soft transition-all"
                   >
                     Start Notarization <ChevronRight className="ml-1 h-5 w-5" />
                   </Button>
@@ -285,7 +285,7 @@ export default function Index() {
                   ))}
                 </div>
                 <p className="text-sm text-muted-foreground font-medium">
-                  <span className="font-black text-foreground">2,400+</span> documents notarized
+                  <span className="font-bold text-foreground">2,400+</span> documents notarized
                 </p>
               </motion.div>
             </motion.div>
@@ -301,7 +301,7 @@ export default function Index() {
               <div className="absolute top-8 left-8 w-56 bg-white rounded-[24px] border border-border shadow-lg p-5 rotate-6 hover:rotate-2 transition-transform duration-500">
                 <div className="flex items-center gap-2 mb-3">
                   <FileSignature className="h-5 w-5 text-primary" />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Document</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Document</span>
                 </div>
                 <div className="space-y-2">
                   <div className="h-2 bg-muted rounded-full w-full" />
@@ -320,7 +320,7 @@ export default function Index() {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">LIVE RON</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">LIVE RON</span>
                   </div>
                   <Play className="h-3 w-3 text-muted-foreground" />
                 </div>
@@ -353,8 +353,8 @@ export default function Index() {
       <section id="how-it-works" className="py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <p className="text-label font-black uppercase tracking-widest text-muted-foreground mb-3">How It Works</p>
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight text-foreground mb-4">The 4-Step Process</h2>
+            <p className="text-label font-bold uppercase tracking-widest text-muted-foreground mb-3">How It Works</p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-4">The 4-Step Process</h2>
             <p className="text-lg text-muted-foreground font-medium max-w-2xl mx-auto">Complete your notarization online quickly and securely from anywhere in the world.</p>
           </div>
 
@@ -371,11 +371,11 @@ export default function Index() {
                 transition={{ delay: idx * 0.1 }}
                 className="relative z-10 group"
               >
-                <div className="bg-white rounded-[24px] border border-border p-6 shadow-block-lg hover:-translate-y-1 transition-all duration-300">
+                <div className="bg-white rounded-[24px] border border-border p-6 shadow-card hover:-translate-y-1 transition-all duration-300">
                   <div className="w-14 h-14 rounded-xl border-2 border-border flex items-center justify-center mb-5 group-hover:bg-primary group-hover:border-primary group-hover:text-white transition-all">
                     <step.icon className="w-7 h-7 text-muted-foreground group-hover:text-white transition-colors" />
                   </div>
-                  <h3 className="text-xl font-black text-foreground mb-2">{step.title}</h3>
+                  <h3 className="text-xl font-bold text-foreground mb-2">{step.title}</h3>
                   <p className="text-sm text-muted-foreground font-medium leading-relaxed">{step.desc}</p>
                 </div>
               </motion.div>
@@ -388,8 +388,8 @@ export default function Index() {
       <section id="benefits" className="py-20 bg-foreground text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <p className="text-label font-black uppercase tracking-widest text-muted-foreground mb-3">Why NotarDex</p>
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white mb-4">Key Benefits</h2>
+            <p className="text-label font-bold uppercase tracking-widest text-muted-foreground mb-3">Why Notar</p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-4">Key Benefits</h2>
             <div className="w-16 h-1 bg-primary mx-auto rounded-full" />
           </div>
 
@@ -411,7 +411,7 @@ export default function Index() {
                 <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/20 transition-colors">
                   <benefit.icon className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-lg font-black mb-2">{benefit.title}</h3>
+                <h3 className="text-lg font-bold mb-2">{benefit.title}</h3>
                 <p className="text-sm text-muted-foreground font-medium">{benefit.desc}</p>
               </motion.div>
             ))}
@@ -423,8 +423,8 @@ export default function Index() {
       <section id="services" className="py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <p className="text-label font-black uppercase tracking-widest text-muted-foreground mb-3">Our Services</p>
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight text-foreground mb-4">Services We Handle</h2>
+            <p className="text-label font-bold uppercase tracking-widest text-muted-foreground mb-3">Our Services</p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-4">Services We Handle</h2>
             <p className="text-lg text-muted-foreground font-medium max-w-2xl mx-auto">Expert notarization for all your personal and business documents.</p>
           </div>
 
@@ -438,9 +438,9 @@ export default function Index() {
                       <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 transition-colors group-hover:bg-primary/15">
                         <s.icon className="h-7 w-7 text-primary" />
                       </div>
-                      <Badge className="text-[10px] font-black uppercase tracking-wider bg-muted text-muted-foreground border-border">{s.badge}</Badge>
+                      <Badge className="text-[10px] font-bold uppercase tracking-wider bg-muted text-muted-foreground border-border">{s.badge}</Badge>
                     </div>
-                    <h3 className="mb-3 text-xl font-black text-foreground">{s.title}</h3>
+                    <h3 className="mb-3 text-xl font-bold text-foreground">{s.title}</h3>
                     <p className="mb-5 text-sm text-muted-foreground font-medium leading-relaxed">{s.desc}</p>
                     <ul className="mb-6 space-y-2">
                       {s.features.map((f) => (
@@ -451,7 +451,7 @@ export default function Index() {
                       ))}
                     </ul>
                     <Link to={s.cta}>
-                      <Button className="w-full font-bold rounded-2xl bg-foreground text-white shadow-block hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all">
+                      <Button className="w-full font-bold rounded-2xl bg-foreground text-white shadow-soft hover:-translate-y-0.5 active:translate-y-0 active:shadow-soft transition-all">
                         {s.ctaLabel} <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     </Link>
@@ -469,7 +469,7 @@ export default function Index() {
                   <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center text-muted-foreground mb-4 group-hover:bg-primary/10 group-hover:text-primary transition">
                     <service.icon className="w-6 h-6" />
                   </div>
-                  <h3 className="font-black text-foreground text-sm">{service.title}</h3>
+                  <h3 className="font-bold text-foreground text-sm">{service.title}</h3>
                   <p className="text-xs text-muted-foreground font-medium mt-1">{service.desc}</p>
                 </div>
               </Link>
@@ -494,7 +494,7 @@ export default function Index() {
             ].map(badge => (
               <div key={badge.label} className="flex items-center gap-2 text-muted-foreground">
                 <badge.icon className="h-5 w-5" />
-                <span className="text-xs font-black uppercase tracking-widest">{badge.label}</span>
+                <span className="text-xs font-bold uppercase tracking-widest">{badge.label}</span>
               </div>
             ))}
           </div>
@@ -505,8 +505,8 @@ export default function Index() {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="mx-auto mb-12 max-w-2xl text-center">
-            <p className="text-label font-black uppercase tracking-widest text-muted-foreground mb-3">Testimonials</p>
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight text-foreground">What Clients Say</h2>
+            <p className="text-label font-bold uppercase tracking-widest text-muted-foreground mb-3">Testimonials</p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">What Clients Say</h2>
           </div>
           <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-3">
             {testimonials.map((t, i) => (
@@ -519,7 +519,7 @@ export default function Index() {
                       ))}
                     </div>
                     <p className="mb-4 text-sm text-muted-foreground font-medium">{t.text}</p>
-                    <p className="text-sm font-black text-foreground">{t.name}</p>
+                    <p className="text-sm font-bold text-foreground">{t.name}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -531,10 +531,10 @@ export default function Index() {
       {/* ===== CTA Banner ===== */}
       <section className="bg-primary py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-black tracking-tight text-foreground mb-6">Ready to Notarize Your Document?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-6">Ready to Notarize Your Document?</h2>
           <p className="text-foreground/70 text-lg font-medium mb-8">Join thousands of users who have securely notarized their documents online.</p>
           <Link to="/book">
-            <Button size="lg" className="bg-foreground text-white px-10 py-4 rounded-2xl font-bold text-lg shadow-block hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all">
+            <Button size="lg" className="bg-foreground text-white px-10 py-4 rounded-2xl font-bold text-lg shadow-soft hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all">
               Book a Session Now
             </Button>
           </Link>
@@ -545,8 +545,8 @@ export default function Index() {
       <section id="faq" className="border-t border-border bg-white py-20">
         <div className="container mx-auto px-4">
           <div className="mx-auto mb-12 max-w-2xl text-center">
-            <p className="text-label font-black uppercase tracking-widest text-muted-foreground mb-3">FAQ</p>
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight text-foreground">Frequently Asked Questions</h2>
+            <p className="text-label font-bold uppercase tracking-widest text-muted-foreground mb-3">FAQ</p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">Frequently Asked Questions</h2>
           </div>
           <div className="mx-auto max-w-2xl">
             <Accordion type="single" collapsible className="space-y-2">
@@ -564,7 +564,7 @@ export default function Index() {
       {/* ===== Contact Form ===== */}
       <section id="contact" className="py-20 bg-background">
         <div className="container mx-auto px-4">
-          <h2 className="mb-4 text-center text-3xl md:text-4xl font-black tracking-tight text-foreground">Get in Touch</h2>
+          <h2 className="mb-4 text-center text-3xl md:text-4xl font-bold tracking-tight text-foreground">Get in Touch</h2>
           <p className="mx-auto mb-12 max-w-xl text-center text-muted-foreground font-medium">
             Have a question or need notarization services? Fill out the form below and we'll respond within 24 hours — we typically respond within 2 hours during business hours.
           </p>
@@ -574,22 +574,22 @@ export default function Index() {
                 <form onSubmit={handleContactSubmit} className="space-y-4">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="contact-name" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Name *</Label>
+                      <Label htmlFor="contact-name" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Name *</Label>
                       <Input id="contact-name" placeholder="Your full name" value={contactForm.name} onChange={(e) => setContactForm((prev) => ({ ...prev, name: e.target.value }))} maxLength={100} required aria-required="true" autoComplete="name" className="bg-muted border-none rounded-xl focus:ring-2 focus:ring-primary" />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="contact-email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Email *</Label>
+                      <Label htmlFor="contact-email" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Email *</Label>
                       <Input id="contact-email" type="email" inputMode="email" placeholder="you@example.com" value={contactForm.email} onChange={(e) => setContactForm((prev) => ({ ...prev, email: e.target.value }))} maxLength={255} required aria-required="true" autoComplete="email" className="bg-muted border-none rounded-xl focus:ring-2 focus:ring-primary" />
                     </div>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="contact-phone" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Phone</Label>
+                      <Label htmlFor="contact-phone" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Phone</Label>
                       <Input id="contact-phone" type="tel" inputMode="tel" placeholder="(614) 000-0000" value={contactForm.phone} onChange={(e) => setContactForm((prev) => ({ ...prev, phone: e.target.value }))} maxLength={20} autoComplete="tel" className="bg-muted border-none rounded-xl focus:ring-2 focus:ring-primary" />
                       <p className="text-xs text-muted-foreground font-medium">Used only for appointment coordination.</p>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="contact-service" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Service Needed</Label>
+                      <Label htmlFor="contact-service" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Service Needed</Label>
                       <Select value={contactForm.service} onValueChange={(v) => setContactForm((prev) => ({ ...prev, service: v }))}>
                         <SelectTrigger id="contact-service" className="bg-muted border-none rounded-xl">
                           <SelectValue placeholder="Select a service" />
@@ -609,7 +609,7 @@ export default function Index() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="contact-message" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Message *</Label>
+                    <Label htmlFor="contact-message" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Message *</Label>
                     <Textarea id="contact-message" placeholder="Tell us about your notarization needs..." value={contactForm.message} onChange={(e) => setContactForm((prev) => ({ ...prev, message: e.target.value }))} maxLength={1000} rows={4} required aria-required="true" className="bg-muted border-none rounded-xl focus:ring-2 focus:ring-primary" />
                   </div>
                   {/* Honeypot */}
@@ -625,7 +625,7 @@ export default function Index() {
                     </Label>
                   </div>
                   <div aria-live="polite" className="text-sm text-destructive" />
-                  <Button type="submit" className="w-full rounded-2xl font-bold bg-foreground text-white shadow-block hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all" disabled={submitting || !agreeTerms}>
+                  <Button type="submit" className="w-full rounded-2xl font-bold bg-foreground text-white shadow-soft hover:-translate-y-0.5 active:translate-y-0 active:shadow-soft transition-all" disabled={submitting || !agreeTerms}>
                     {submitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending...</> : <><Send className="mr-2 h-4 w-4" /> Send Message</>}
                   </Button>
                 </form>
@@ -638,29 +638,29 @@ export default function Index() {
       {/* ===== Industry Insights ===== */}
       <section className="border-t border-border bg-white py-16">
         <div className="container mx-auto px-4">
-          <h2 className="mb-8 text-center text-2xl font-black tracking-tight text-foreground">Industry Insights</h2>
+          <h2 className="mb-8 text-center text-2xl font-bold tracking-tight text-foreground">Industry Insights</h2>
           <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-2">
             <Card className="rounded-[24px] border-border shadow-sm">
               <CardContent className="p-6">
-                <h3 className="mb-2 text-base font-black text-foreground">Why Remote Notarization is Growing 300% Year-Over-Year</h3>
+                <h3 className="mb-2 text-base font-bold text-foreground">Why Remote Notarization is Growing 300% Year-Over-Year</h3>
                 <p className="text-sm text-muted-foreground font-medium">The adoption of RON has accelerated dramatically since 2020. Over 40 states now have RON legislation, and major GSEs (Fannie Mae, Freddie Mac) accept RON for mortgage transactions. Ohio was among the early adopters under ORC §147.65-.66.</p>
               </CardContent>
             </Card>
             <Card className="rounded-[24px] border-border shadow-sm">
               <CardContent className="p-6">
-                <h3 className="mb-2 text-base font-black text-foreground">Understanding Ohio's Electronic Notarization Standards</h3>
+                <h3 className="mb-2 text-base font-bold text-foreground">Understanding Ohio's Electronic Notarization Standards</h3>
                 <p className="text-sm text-muted-foreground font-medium">Ohio's RON framework requires multi-factor identity verification including credential analysis and Knowledge-Based Authentication (KBA), plus full session recording stored for 10+ years. These MISMO-compliant standards exceed the security of traditional in-person notarization.</p>
               </CardContent>
             </Card>
             <Card className="rounded-[24px] border-border shadow-sm">
               <CardContent className="p-6">
-                <h3 className="mb-2 text-base font-black text-foreground">What Title Companies Should Know About RON Closings</h3>
+                <h3 className="mb-2 text-base font-bold text-foreground">What Title Companies Should Know About RON Closings</h3>
                 <p className="text-sm text-muted-foreground font-medium">Title companies benefit from RON with faster closing timelines, reduced scheduling friction, and a complete audit trail. ALTA best practices now include RON as a standard closing option.</p>
               </CardContent>
             </Card>
             <Card className="rounded-[24px] border-border shadow-sm">
               <CardContent className="p-6">
-                <h3 className="mb-2 text-base font-black text-foreground">Common Notarization Mistakes and How to Avoid Them</h3>
+                <h3 className="mb-2 text-base font-bold text-foreground">Common Notarization Mistakes and How to Avoid Them</h3>
                 <p className="text-sm text-muted-foreground font-medium">From incomplete certificates to improper identification, common errors can invalidate a notarization and delay important transactions. Working with an experienced, Ohio-commissioned notary ensures compliance with ORC §147.</p>
               </CardContent>
             </Card>

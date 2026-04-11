@@ -53,12 +53,12 @@ function DropdownNav({ label, linkTo, children }: { label: string; linkTo?: stri
         {linkTo ? (
           <Link
             to={linkTo}
-            className="relative px-3 py-2 text-sm font-bold text-muted-foreground transition-colors hover:text-foreground"
+            className="relative px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
           >
             {label}
           </Link>
         ) : (
-          <span className="px-3 py-2 text-sm font-bold text-muted-foreground cursor-default">{label}</span>
+          <span className="px-3 py-2 text-sm font-semibold text-muted-foreground cursor-default">{label}</span>
         )}
         <PopoverTrigger asChild>
           <button className="-ml-2 p-1 text-muted-foreground hover:text-foreground transition-colors" aria-label={`${label} menu`}>
@@ -68,7 +68,7 @@ function DropdownNav({ label, linkTo, children }: { label: string; linkTo?: stri
         <PopoverContent
           align="start"
           sideOffset={4}
-          className="w-[420px] p-4"
+          className="w-[420px] p-4 rounded-2xl shadow-card"
           onMouseEnter={() => setOpen(true)}
           onMouseLeave={() => setOpen(false)}
         >
@@ -94,8 +94,8 @@ export function Navbar() {
   const portalLabel = isAdmin || isNotary ? "Dashboard" : "Portal";
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-md h-20 flex items-center print:hidden" aria-label="Main navigation" role="navigation">
-      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm focus:font-bold">
+    <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-md h-16 flex items-center print:hidden" aria-label="Main navigation" role="navigation">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-full focus:text-sm focus:font-semibold">
         Skip to main content
       </a>
       <div className="container mx-auto flex items-center justify-between px-4">
@@ -111,7 +111,7 @@ export function Navbar() {
                 <Link
                   key={cat.key}
                   to={`/services?category=${cat.key}`}
-                  className="rounded-lg p-2 hover:bg-muted transition-colors"
+                  className="rounded-xl p-2.5 hover:bg-accent transition-colors"
                 >
                   <p className="text-sm font-medium text-foreground">{cat.label}</p>
                   <p className="text-xs text-muted-foreground">{cat.desc}</p>
@@ -132,7 +132,7 @@ export function Navbar() {
                 <Link
                   key={link.to}
                   to={link.to}
-                  className="flex items-start gap-3 rounded-lg p-2 hover:bg-muted transition-colors"
+                  className="flex items-start gap-3 rounded-xl p-2.5 hover:bg-accent transition-colors"
                 >
                   <div>
                     <p className="text-sm font-medium text-foreground">{link.label}</p>
@@ -150,7 +150,7 @@ export function Navbar() {
                 <Link
                   key={link.to}
                   to={link.to}
-                  className="flex items-start gap-3 rounded-lg p-2 hover:bg-muted transition-colors"
+                  className="flex items-start gap-3 rounded-xl p-2.5 hover:bg-accent transition-colors"
                 >
                   <p className="text-sm font-medium text-foreground">{link.label}</p>
                 </Link>
@@ -160,13 +160,13 @@ export function Navbar() {
 
           <Link
             to="/solutions/small-business"
-            className="px-3 py-2 text-sm font-bold text-muted-foreground transition-colors hover:text-foreground"
+            className="px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
           >
             For Businesses
           </Link>
           <Link
             to="/fee-calculator"
-            className="px-3 py-2 text-sm font-bold text-muted-foreground transition-colors hover:text-foreground"
+            className="px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
           >
             Pricing
           </Link>
@@ -174,17 +174,18 @@ export function Navbar() {
           <div className="ml-4 flex items-center gap-3">
             {user ? (
               <Link to={portalLink}>
-                <Button variant="ghost" size="sm" className="text-sm font-bold text-muted-foreground hover:text-foreground hover:bg-muted">{portalLabel}</Button>
+                <Button variant="ghost" size="sm" className="text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted">{portalLabel}</Button>
               </Link>
             ) : (
               <Link to="/login">
-                <Button size="sm" variant="ghost" className="text-sm font-bold text-muted-foreground hover:text-foreground">Sign In</Button>
+                <Button size="sm" variant="ghost" className="text-sm font-semibold text-muted-foreground hover:text-foreground">Sign In</Button>
               </Link>
             )}
             <Link to="/book">
               <Button
                 size="sm"
-                className="rounded-full bg-primary text-primary-foreground font-bold px-6 hover:bg-primary/85 shadow-block hover:-translate-y-0.5 active:translate-y-0 active:shadow-block-active transition-all"
+                variant="accent"
+                className="px-6 font-bold"
               >
                 Start Notarizing
               </Button>
@@ -203,16 +204,16 @@ export function Navbar() {
               {/* Services collapsible */}
               <button
                 onClick={() => setServicesExpanded(!servicesExpanded)}
-                className="flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
               >
                 Services
                 <ChevronDown className={cn("h-4 w-4 transition-transform", servicesExpanded && "rotate-180")} />
               </button>
               {servicesExpanded && (
                 <div className="ml-4 space-y-1">
-                  <Link to="/services" className="block rounded-lg px-4 py-2 text-sm text-primary font-medium hover:bg-muted">All Services</Link>
+                  <Link to="/services" className="block rounded-xl px-4 py-2 text-sm text-primary font-medium hover:bg-muted">All Services</Link>
                   {serviceCategories.map((cat) => (
-                    <Link key={cat.key} to={`/services?category=${cat.key}`} className="block rounded-lg px-4 py-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground">
+                    <Link key={cat.key} to={`/services?category=${cat.key}`} className="block rounded-xl px-4 py-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground">
                       {cat.label}
                     </Link>
                   ))}
@@ -222,7 +223,7 @@ export function Navbar() {
               {/* Solutions collapsible */}
               <button
                 onClick={() => setSolutionsExpanded(!solutionsExpanded)}
-                className="flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
               >
                 Solutions
                 <ChevronDown className={cn("h-4 w-4 transition-transform", solutionsExpanded && "rotate-180")} />
@@ -230,14 +231,14 @@ export function Navbar() {
               {solutionsExpanded && (
                 <div className="ml-4 space-y-1">
                   {solutionLinks.map((link) => (
-                    <Link key={link.to} to={link.to} className="block rounded-lg px-4 py-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground">
+                    <Link key={link.to} to={link.to} className="block rounded-xl px-4 py-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground">
                       {link.label}
                     </Link>
                   ))}
                 </div>
               )}
 
-              <Link to="/ai-tools" className="rounded-lg px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted">
+              <Link to="/ai-tools" className="rounded-xl px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted">
                 AI Tools Hub
               </Link>
 
@@ -245,7 +246,7 @@ export function Navbar() {
                 <Link
                   key={link.to}
                   to={link.to}
-                  className="rounded-lg px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                  className="rounded-xl px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
                 >
                   {link.label}
                 </Link>
@@ -261,7 +262,7 @@ export function Navbar() {
                 </Link>
               )}
               <Link to="/book">
-                <Button className="w-full font-bold bg-primary text-primary-foreground hover:bg-primary/85">Start Notarizing</Button>
+                <Button variant="accent" className="w-full font-bold">Start Notarizing</Button>
               </Link>
             </div>
           </SheetContent>

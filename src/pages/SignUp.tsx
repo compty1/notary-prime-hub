@@ -32,7 +32,7 @@ export default function SignUp() {
 
   const strength = useMemo(() => getPasswordStrength(password), [password]);
 
-  usePageMeta({ title: "Sign Up", description: "Create a free NotarDex account to book notarization appointments, upload documents, and access Ohio notary services online.", noIndex: true });
+  usePageMeta({ title: "Sign Up", description: "Create a free Notar account to book notarization appointments, upload documents, and access Ohio notary services online.", noIndex: true });
 
   if (!loading && user) {
     if (isAdmin || isNotary) return <Navigate to="/admin" replace />;
@@ -102,7 +102,7 @@ export default function SignUp() {
               {submitting ? "Sending..." : "Resend Verification Email"}
             </Button>
             <Link to="/login">
-              <Button className="rounded-xl bg-primary text-white hover:bg-primary/85 shadow-block">Go to Sign In</Button>
+              <Button className="rounded-xl bg-primary text-white hover:bg-primary/85 shadow-soft">Go to Sign In</Button>
             </Link>
           </div>
         </div>
@@ -164,7 +164,7 @@ export default function SignUp() {
                 I agree to the <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link> and <Link to="/terms" className="text-primary hover:underline">Privacy Policy</Link>
               </Label>
             </div>
-            <Button type="submit" className="w-full rounded-xl bg-primary text-white font-bold hover:bg-primary/85 shadow-block h-11" disabled={submitting || !acceptTerms}>
+            <Button type="submit" className="w-full rounded-xl bg-primary text-white font-bold hover:bg-primary/85 shadow-soft h-11" disabled={submitting || !acceptTerms}>
               {submitting ? "Creating account..." : "Create Account"}
             </Button>
             <div className="relative my-4">
@@ -200,7 +200,7 @@ export default function SignUp() {
             <Shield className="h-10 w-10 text-primary" />
           </div>
           <h2 className="text-3xl font-black">Ohio's Trusted<br />Notary Platform</h2>
-          <p className="text-muted-foreground">Join thousands of Ohioans who trust NotarDex for secure, compliant notarization services.</p>
+          <p className="text-muted-foreground">Join thousands of Ohioans who trust Notar for secure, compliant notarization services.</p>
           <div className="grid grid-cols-2 gap-4 text-left">
             <div className="rounded-2xl bg-white/5 p-4">
               <FileText className="h-5 w-5 text-primary mb-2" />

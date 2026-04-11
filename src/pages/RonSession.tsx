@@ -650,7 +650,7 @@ export default function RonSession() {
 
     // Fetch notary name from settings (Item 353, 422)
     const { data: notaryNameData } = await supabase.from("platform_settings").select("setting_value").eq("setting_key", "notary_name").single();
-    const notaryNameSetting = notaryNameData?.setting_value || "NotarDex";
+    const notaryNameSetting = notaryNameData?.setting_value || "Notar";
 
     // Item 406: Capture signer location state
     const signerLocationState = clientProfile?.state || null;
@@ -761,7 +761,7 @@ export default function RonSession() {
       appointment_id: appointmentId,
       created_by: user.id,
       signer_name: clientProfile?.full_name || null,
-      notary_name: notaryNameSetting || "NotarDex",
+      notary_name: notaryNameSetting || "Notar",
       commissioned_state: "OH",
       status: "valid",
       document_hash: documentHash,
@@ -976,7 +976,7 @@ export default function RonSession() {
                   <Shield className="h-4 w-4 text-primary-foreground" />
                 </div>
                 <div>
-                  <span className="text-sm font-bold">NotarDex RON</span>
+                  <span className="text-sm font-bold">Notar RON</span>
                   <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Secure Session</p>
                 </div>
               </div>
@@ -1157,7 +1157,7 @@ export default function RonSession() {
               <Shield className="text-primary-foreground w-4 h-4" />
             </div>
             <div>
-              <span className="text-sm font-bold leading-none">NotarDex RON</span>
+              <span className="text-sm font-bold leading-none">Notar RON</span>
               <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mt-0.5">Active Session</p>
             </div>
           </div>

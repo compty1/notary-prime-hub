@@ -892,7 +892,7 @@ export default function PortalNotaryPageTab() {
           <div><Label>Signing Platform URL (paste SignNow or other link)</Label><Input value={page.signing_platform_url || ""} onChange={e => updateField("signing_platform_url", e.target.value)} /></div>
           <div className="flex items-center gap-3">
             <Switch checked={page.use_platform_booking ?? true} onCheckedChange={v => updateField("use_platform_booking", v)} />
-            <Label>Use NotarDex booking system</Label>
+            <Label>Use Notar booking system</Label>
           </div>
           {!page.use_platform_booking && (
             <div><Label>External Booking URL</Label><Input value={page.external_booking_url || ""} onChange={e => updateField("external_booking_url", e.target.value)} /></div>

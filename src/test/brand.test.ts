@@ -3,12 +3,12 @@ import { BRAND } from "@/lib/brand";
 
 describe("BRAND constants", () => {
   it("has correct brand name", () => {
-    expect(BRAND.name).toBe("NotarDex");
+    expect(BRAND.name).toBe("Notar");
   });
 
   it("generates correct footer text", () => {
     expect(BRAND.footerText(2026)).toContain("2026");
-    expect(BRAND.footerText(2026)).toContain("NotarDex");
+    expect(BRAND.footerText(2026)).toContain("Notar");
   });
 
   it("generates correct calendar description for RON", () => {

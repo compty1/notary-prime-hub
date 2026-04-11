@@ -24,10 +24,10 @@ function generateICS(appt: any): string {
   const dtEnd = endDate.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 
   return [
-    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Notar//NotarDex.com//EN",
+    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Notar//Notar.com//EN",
     "BEGIN:VEVENT", `DTSTART:${dtStart}`, `DTEND:${dtEnd}`,
     `SUMMARY:Notarization — ${appt.service_type}`,
-    `DESCRIPTION:${appt.notarization_type === "ron" ? "Remote Online Notarization (RON) session" : "In-person notarization appointment"} with NotarDex`,
+    `DESCRIPTION:${appt.notarization_type === "ron" ? "Remote Online Notarization (RON) session" : "In-person notarization appointment"} with Notar`,
     `LOCATION:${appt.location || (appt.notarization_type === "ron" ? "Online — Video Call" : "TBD")}`,
     "STATUS:CONFIRMED", "END:VEVENT", "END:VCALENDAR",
   ].join("\r\n");
@@ -103,7 +103,7 @@ const getCrossSells = (appt: any) => {
 };
 
 export default function AppointmentConfirmation() {
-  usePageMeta({ title: "Appointment Confirmed — NotarDex", description: "Your notarization appointment has been confirmed. Review your session details, download a calendar invite, and prepare for your appointment." });
+  usePageMeta({ title: "Appointment Confirmed — Notar", description: "Your notarization appointment has been confirmed. Review your session details, download a calendar invite, and prepare for your appointment." });
   const [searchParams] = useSearchParams();
   const appointmentId = searchParams.get("id");
   const { user } = useAuth();
@@ -245,7 +245,7 @@ export default function AppointmentConfirmation() {
           <Card className="mb-6 border-border/50 text-left">
             <CardContent className="p-4">
               <p className="text-sm font-medium mb-2 flex items-center gap-2"><User className="h-4 w-4 text-primary" /> Your Notary</p>
-              <p className="text-sm font-medium">{notaryProfile.full_name || "NotarDex"}</p>
+              <p className="text-sm font-medium">{notaryProfile.full_name || "Notar"}</p>
               {notaryProfile.phone && <p className="text-xs text-muted-foreground mt-1">📞 {notaryProfile.phone}</p>}
               {notaryProfile.email && <p className="text-xs text-muted-foreground">✉️ {notaryProfile.email}</p>}
               {notaryProfile.state && <p className="text-xs text-muted-foreground">Commissioned in {notaryProfile.state}</p>}

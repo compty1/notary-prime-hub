@@ -59,7 +59,7 @@ export function ProcessGuide({ mode = "both", compact = false }: ProcessGuidePro
         @media print { body { padding: 15px; } }
       </style></head><body>
         <h1>${title}</h1>
-        <p style="color:#6b7280;font-size:12px;">NotarDex — Professional Ohio Notary Services</p>
+        <p style="color:#6b7280;font-size:12px;">Notar — Professional Ohio Notary Services</p>
         ${steps.map(s => `
           <div class="step">
             <span class="step-num">${s.step}</span>
@@ -68,7 +68,7 @@ export function ProcessGuide({ mode = "both", compact = false }: ProcessGuidePro
             ${s.tips ? `<ul class="tips">${s.tips.map(t => `<li>✓ ${t}</li>`).join("")}</ul>` : ""}
           </div>
         `).join("")}
-        <div class="footer">© 2026 NotarDex. For informational purposes only. This is not legal advice.</div>
+        <div class="footer">© 2026 Notar. For informational purposes only. This is not legal advice.</div>
       </body></html>`;
   };
 

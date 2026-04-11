@@ -7,7 +7,7 @@ import { PageShell } from "@/components/PageShell";
 export default function Accessibility() {
   usePageMeta({
     title: "Accessibility Statement",
-    description: "NotarDex is committed to ensuring digital accessibility for all users in compliance with WCAG 2.1 AA standards.",
+    description: "Notar is committed to ensuring digital accessibility for all users in compliance with WCAG 2.1 AA standards.",
   });
 
   return (
@@ -27,7 +27,7 @@ export default function Accessibility() {
             <CardContent className="p-6 space-y-4">
               <h2 className="text-xl font-semibold text-foreground">Our Commitment</h2>
               <p className="text-muted-foreground leading-relaxed">
-                NotarDex is committed to ensuring digital accessibility for people with disabilities.
+                Notar is committed to ensuring digital accessibility for people with disabilities.
                 We are continually improving the user experience for everyone, and applying the relevant
                 accessibility standards to ensure we provide equal access to all users.
               </p>
@@ -39,7 +39,7 @@ export default function Accessibility() {
               <h2 className="text-xl font-semibold text-foreground">Conformance Status</h2>
               <p className="text-muted-foreground leading-relaxed">
                 The Web Content Accessibility Guidelines (WCAG) defines requirements for designers
-                and developers to improve accessibility for people with disabilities. NotarDex
+                and developers to improve accessibility for people with disabilities. Notar
                 strives to conform to <strong>WCAG 2.1 Level AA</strong>.
               </p>
               <div className="space-y-3 mt-4">
@@ -67,7 +67,7 @@ export default function Accessibility() {
             <CardContent className="p-6 space-y-4">
               <h2 className="text-xl font-semibold text-foreground">Assistive Technologies</h2>
               <p className="text-muted-foreground leading-relaxed">
-                NotarDex is designed to be compatible with the following assistive technologies:
+                Notar is designed to be compatible with the following assistive technologies:
               </p>
               <ul className="list-disc list-inside text-muted-foreground space-y-1 ml-2">
                 <li>Screen readers (NVDA, JAWS, VoiceOver)</li>
@@ -98,7 +98,7 @@ export default function Accessibility() {
                 <div>
                   <h2 className="text-lg font-semibold text-foreground mb-2">Feedback & Contact</h2>
                   <p className="text-muted-foreground text-sm leading-relaxed">
-                    We welcome your feedback on the accessibility of NotarDex. If you encounter
+                    We welcome your feedback on the accessibility of Notar. If you encounter
                     accessibility barriers or have suggestions for improvement, please contact us:
                   </p>
                   <div className="mt-3 space-y-1 text-sm text-foreground">
