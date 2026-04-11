@@ -1760,6 +1760,11 @@ export default function RonSession() {
               </CardContent>
             </Card>
 
+            {/* GAP-0217: SignNow Status Panel */}
+            {signingPlatform === "signnow" && appointmentId && (
+              <SignNowStatusPanel appointmentId={appointmentId} />
+            )}
+
             {/* Notary Session Guide - Phase 2 */}
             <NotarySessionGuide
               documentType={documentName || appointment?.service_type || ""}
