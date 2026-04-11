@@ -18,6 +18,19 @@ const TOOL_IDS = new Set([
   "ron-session-summary","notary-commission-checklist",
   // Resume & missing tools
   "resume-analyzer","executive-summary","proposal-template",
+  // UX Consulting Tools
+  "ux-heuristic-audit","ux-user-journey-map","ux-accessibility-audit",
+  "ux-information-architecture","ux-design-system-audit","ux-usability-test-plan",
+  "ux-conversion-optimizer","ux-micro-copy","ux-competitive-ux-analysis",
+  "ux-wireframe-spec","ux-design-critique","ux-onboarding-flow",
+  "ux-form-optimizer","ux-persona-builder","ux-mobile-audit",
+  // Financial Operations Tools
+  "fin-cash-flow-forecast","fin-pricing-strategy","fin-budget-template",
+  "fin-invoice-analyzer","fin-profit-loss","fin-expense-optimizer",
+  "fin-tax-prep-checklist","fin-kpi-dashboard","fin-revenue-model",
+  "fin-vendor-comparison","fin-collections-playbook","fin-financial-health-check",
+  "fin-grant-budget","fin-subscription-analyzer","fin-roi-calculator",
+  "fin-payroll-planning","fin-break-even-analysis","fin-quarterly-report",
 ]);
 
 Deno.serve(async (req) => {
