@@ -261,7 +261,7 @@ function AnimatedRoutes() {
         <Route path="availability" element={<SR msg="Availability failed to load"><AdminAvailability /></SR>} />
         <Route path="documents" element={<SR msg="Documents failed to load"><AdminDocuments /></SR>} />
         <Route path="journal" element={<SR msg="Journal failed to load"><AdminJournal /></SR>} />
-        <Route path="revenue" element={<SR msg="Revenue failed to load"><AdminRevenue /></SR>} />
+        <Route path="revenue" element={<ProtectedRoute adminOnly><SR msg="Revenue failed to load"><AdminRevenue /></SR></ProtectedRoute>} />
         <Route path="templates" element={<SR msg="Templates failed to load"><AdminTemplates /></SR>} />
         <Route path="apostille" element={<SR msg="Apostille failed to load"><AdminApostille /></SR>} />
         <Route path="chat" element={<SR msg="Chat failed to load"><AdminChat /></SR>} />
@@ -269,29 +269,29 @@ function AnimatedRoutes() {
         <Route path="services" element={<SR msg="Services failed to load"><AdminServices /></SR>} />
         <Route path="resources" element={<SR msg="Resources failed to load"><AdminResources /></SR>} />
         <Route path="ai-assistant" element={<SR msg="AI Assistant failed to load"><AdminAIAssistant /></SR>} />
-        <Route path="audit-log" element={<SR msg="Audit log failed to load"><AdminAuditLog /></SR>} />
+        <Route path="audit-log" element={<ProtectedRoute adminOnly><SR msg="Audit log failed to load"><AdminAuditLog /></SR></ProtectedRoute>} />
         <Route path="team" element={<SR msg="Team failed to load"><AdminTeam /></SR>} />
         <Route path="email-management" element={<SR msg="Email management failed to load"><AdminEmailManagement /></SR>} />
         <Route path="leads" element={<SR msg="Lead portal failed to load"><AdminLeadPortal /></SR>} />
-        <Route path="users" element={<SR msg="User management failed to load"><AdminUsers /></SR>} />
+        <Route path="users" element={<ProtectedRoute adminOnly><SR msg="User management failed to load"><AdminUsers /></SR></ProtectedRoute>} />
         <Route path="service-requests" element={<SR msg="Service requests failed to load"><AdminServiceRequests /></SR>} />
         <Route path="content-workspace" element={<SR msg="Content workspace failed to load"><AdminContentWorkspace /></SR>} />
         <Route path="task-queue" element={<SR msg="Task queue failed to load"><AdminTaskQueue /></SR>} />
-        <Route path="crm" element={<SR msg="CRM failed to load"><AdminCRM /></SR>} />
-        <Route path="build-tracker" element={<SR msg="Build tracker failed to load"><AdminBuildTracker /></SR>} />
+        <Route path="crm" element={<ProtectedRoute adminOnly><SR msg="CRM failed to load"><AdminCRM /></SR></ProtectedRoute>} />
+        <Route path="build-tracker" element={<ProtectedRoute adminOnly><SR msg="Build tracker failed to load"><AdminBuildTracker /></SR></ProtectedRoute>} />
         <Route path="docudex-pro" element={<SR msg="DocuDex Pro failed to load"><AdminDocuDexPro /></SR>} />
         <Route path="process-flows" element={<SR msg="Process flows failed to load"><AdminProcessFlows /></SR>} />
-        <Route path="settings" element={<SR msg="Settings failed to load"><AdminSettings /></SR>} />
-        <Route path="integrations" element={<SR msg="Integration testing failed to load"><AdminIntegrationTest /></SR>} />
+        <Route path="settings" element={<ProtectedRoute adminOnly><SR msg="Settings failed to load"><AdminSettings /></SR></ProtectedRoute>} />
+        <Route path="integrations" element={<ProtectedRoute adminOnly><SR msg="Integration testing failed to load"><AdminIntegrationTest /></SR></ProtectedRoute>} />
         <Route path="client-emails" element={<SR msg="Client emails failed to load"><AdminClientEmails /></SR>} />
         <Route path="mailbox" element={<SR msg="Mailbox failed to load"><AdminMailbox /></SR>} />
-        <Route path="webhooks" element={<SR msg="Webhooks failed to load"><AdminWebhooks /></SR>} />
+        <Route path="webhooks" element={<ProtectedRoute adminOnly><SR msg="Webhooks failed to load"><AdminWebhooks /></SR></ProtectedRoute>} />
         <Route path="performance" element={<SR msg="Performance failed to load"><AdminPerformance /></SR>} />
         <Route path="compliance-report" element={<SR msg="Compliance report failed to load"><AdminComplianceReport /></SR>} />
         <Route path="notary-pages" element={<SR msg="Notary pages failed to load"><AdminNotaryPages /></SR>} />
         <Route path="professionals" element={<SR msg="Professionals failed to load"><AdminProfessionals /></SR>} />
         <Route path="automated-emails" element={<SR msg="Automated emails failed to load"><AdminAutomatedEmails /></SR>} />
-        <Route path="finances" element={<SR msg="Finances failed to load"><AdminFinances /></SR>} />
+        <Route path="finances" element={<ProtectedRoute adminOnly><SR msg="Finances failed to load"><AdminFinances /></SR></ProtectedRoute>} />
         <Route path="email-health" element={<SR msg="Email health failed to load"><AdminEmailHealth /></SR>} />
         <Route path="ron-recordings" element={<SR msg="RON recordings failed to load"><AdminRonRecordings /></SR>} />
         <Route path="loan-signing" element={<SR msg="Loan signing failed to load"><AdminLoanSigning /></SR>} />

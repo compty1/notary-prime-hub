@@ -5645,6 +5645,99 @@ export type Database = {
           },
         ]
       }
+      notary_pages_public: {
+        Row: {
+          accent_color: string | null
+          bio: string | null
+          cover_photo_path: string | null
+          created_at: string | null
+          credentials: Json | null
+          display_name: string | null
+          external_booking_url: string | null
+          font_family: string | null
+          gallery_photos: Json | null
+          id: string | null
+          is_featured: boolean | null
+          is_published: boolean | null
+          nav_services: Json | null
+          professional_type: string | null
+          profile_photo_path: string | null
+          seo_description: string | null
+          seo_title: string | null
+          service_areas: Json | null
+          services_offered: Json | null
+          slug: string | null
+          social_links: Json | null
+          tagline: string | null
+          theme_color: string | null
+          title: string | null
+          updated_at: string | null
+          use_platform_booking: boolean | null
+          user_id: string | null
+          website_url: string | null
+        }
+        Insert: {
+          accent_color?: string | null
+          bio?: string | null
+          cover_photo_path?: string | null
+          created_at?: string | null
+          credentials?: Json | null
+          display_name?: string | null
+          external_booking_url?: string | null
+          font_family?: string | null
+          gallery_photos?: Json | null
+          id?: string | null
+          is_featured?: boolean | null
+          is_published?: boolean | null
+          nav_services?: Json | null
+          professional_type?: string | null
+          profile_photo_path?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          service_areas?: Json | null
+          services_offered?: Json | null
+          slug?: string | null
+          social_links?: Json | null
+          tagline?: string | null
+          theme_color?: string | null
+          title?: string | null
+          updated_at?: string | null
+          use_platform_booking?: boolean | null
+          user_id?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          accent_color?: string | null
+          bio?: string | null
+          cover_photo_path?: string | null
+          created_at?: string | null
+          credentials?: Json | null
+          display_name?: string | null
+          external_booking_url?: string | null
+          font_family?: string | null
+          gallery_photos?: Json | null
+          id?: string | null
+          is_featured?: boolean | null
+          is_published?: boolean | null
+          nav_services?: Json | null
+          professional_type?: string | null
+          profile_photo_path?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          service_areas?: Json | null
+          services_offered?: Json | null
+          slug?: string | null
+          social_links?: Json | null
+          tagline?: string | null
+          theme_color?: string | null
+          title?: string | null
+          updated_at?: string | null
+          use_platform_booking?: boolean | null
+          user_id?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       public_feedback: {
         Row: {
           appointment_id: string | null
