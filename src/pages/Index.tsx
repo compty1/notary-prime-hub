@@ -232,74 +232,87 @@ export default function Index() {
     <PageShell>
       {/* ===== HERO ===== */}
       <section className="relative bg-gradient-hero overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div initial="hidden" animate="visible">
-              {/* RON Badge Pill */}
-              <motion.div variants={blurIn} custom={0} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted border border-border mb-6">
-                <span className="text-label font-bold uppercase tracking-widest text-muted-foreground">Ohio RON Authorized</span>
-                <ShieldCheck className="h-4 w-4 text-emerald-500" />
-              </motion.div>
-
               <motion.h1
                 variants={blurIn}
-                custom={1}
-                className="text-6xl md:text-7xl font-bold tracking-tighter leading-[1.1] text-foreground mb-6"
+                custom={0}
+                className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.08] text-foreground mb-6"
               >
-                Legal documents{" "}
-                <span className="relative inline-block">
-                  notarized
-                  <span className="absolute bottom-1 left-0 w-full h-3 bg-primary/30 -z-10 rounded-sm" />
-                </span>{" "}
-                in minutes.
+                Legal Online<br />
+                Notarization
               </motion.h1>
 
               <motion.p
                 variants={blurIn}
-                custom={2}
-                className="text-lg text-muted-foreground font-medium mb-8 max-w-lg leading-relaxed"
+                custom={1}
+                className="text-base md:text-lg text-muted-foreground font-medium mb-8 max-w-md leading-relaxed"
               >
-                Secure biometric verification, state-approved standards, and 24/7 availability. Trusted by thousands across Ohio.
+                We are a team of passionate certified notaries specializing in secure document authentication.
               </motion.p>
 
-              <motion.div variants={fadeUp} custom={3} className="flex flex-col sm:flex-row gap-4 items-start">
+              <motion.div variants={fadeUp} custom={2} className="flex flex-row gap-4 items-center">
                 <Link to="/book?type=ron">
                   <Button
                     size="lg"
                     variant="dark"
-                    className="rounded-2xl px-8 py-4 font-bold text-lg"
+                    className="rounded-full px-8 py-3 font-bold text-base"
                   >
-                    Start Notarization <ChevronRight className="ml-1 h-5 w-5" />
+                    Notarize Now
                   </Button>
                 </Link>
                 <Link to="/ron-info">
-                  <Button variant="ghost" size="lg" className="rounded-2xl px-8 py-4 font-bold text-lg text-muted-foreground hover:text-foreground">
-                    View Requirements
+                  <Button variant="outline" size="lg" className="rounded-full px-8 py-3 font-bold text-base border-foreground/20 text-foreground hover:bg-foreground/5">
+                    More Info
                   </Button>
                 </Link>
               </motion.div>
-
-              {/* Social proof */}
-              <motion.div variants={fadeUp} custom={4} className="mt-8 flex items-center gap-3">
-                <div className="flex -space-x-2">
-                  {[1,2,3].map(i => (
-                    <div key={i} className="w-8 h-8 rounded-full bg-muted border-2 border-background" />
-                  ))}
-                </div>
-                <p className="text-sm text-muted-foreground font-medium">
-                  <span className="font-bold text-foreground">2,400+</span> documents notarized
-                </p>
-              </motion.div>
             </motion.div>
 
-            {/* Hero 3D Animation */}
+            {/* Hero 3D Illustration */}
             <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7, delay: 0.3 }}
-              className="relative hidden lg:block min-h-[420px]"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="relative hidden lg:flex items-center justify-center"
             >
-              <Hero3DAnimation />
+              <img
+                src={heroIllustration}
+                alt="Notarization documents and security verification icons"
+                className="w-full max-w-md object-contain drop-shadow-xl"
+              />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== About Us ===== */}
+      <section className="py-20 bg-primary">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <img
+                src={aboutIllustration}
+                alt="3D illustration of document folders"
+                className="w-full max-w-sm mx-auto object-contain drop-shadow-2xl"
+              />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+            >
+              <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-primary-foreground mb-6">About us</h2>
+              <p className="text-lg text-primary-foreground/80 font-medium leading-relaxed max-w-lg">
+                We are a team of passionate creatives specializing in branding, content, and design. Our goal is to provide our clients with innovative ideas that translate to real, wonderful experiences.
+              </p>
             </motion.div>
           </div>
         </div>
