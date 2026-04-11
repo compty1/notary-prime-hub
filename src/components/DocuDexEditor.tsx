@@ -116,7 +116,7 @@ export function DocuDexEditor({
   const [watermark, setWatermark] = useState("none");
   const [headerHtml, setHeaderHtml] = useState("");
   const [footerHtml, setFooterHtml] = useState(DEFAULT_FOOTER);
-  const [showHeaderFooterEditor, setShowHeaderFooterEditor] = useState(false);
+  // showHeaderFooterEditor moved to line ~698 area
   const [customTemplates, setCustomTemplates] = useState<CustomTemplate[]>(() => {
     try { return JSON.parse(safeGetItem("docudex_custom_templates") || "[]"); } catch { return []; }
   });
