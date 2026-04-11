@@ -19,9 +19,10 @@ import {
   ShieldCheck, Clock, FileCheck2, UploadCloud, Fingerprint, Video, Download,
   Scale, Home, Briefcase, FileText, Smartphone, CheckCircle2, Lock, ChevronRight,
   Phone, Mail, Send, Loader2, ArrowRight, Globe, Car, Copy, UserCheck, Stamp, BookOpen, Star,
-  FileSignature, Play, Check
+  FileSignature, Check
 } from "lucide-react";
 import WhatDoINeed from "@/components/WhatDoINeed";
+import Hero3DAnimation from "@/components/Hero3DAnimation";
 import { PageShell } from "@/components/PageShell";
 import { fadeUp, blurIn, scaleReveal } from "@/lib/animations";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
@@ -290,59 +291,14 @@ export default function Index() {
               </motion.div>
             </motion.div>
 
-            {/* Hero Floating Composition */}
+            {/* Hero 3D Animation */}
             <motion.div
               initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7, delay: 0.3 }}
-              className="relative hidden lg:flex items-center justify-center min-h-[420px]"
+              className="relative hidden lg:block min-h-[420px]"
             >
-              {/* Document Card */}
-              <div className="absolute top-8 left-8 w-56 bg-card rounded-[24px] border border-border shadow-lg p-5 rotate-6 hover:rotate-2 transition-transform duration-500">
-                <div className="flex items-center gap-2 mb-3">
-                  <FileSignature className="h-5 w-5 text-primary" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Document</span>
-                </div>
-                <div className="space-y-2">
-                  <div className="h-2 bg-muted rounded-full w-full" />
-                  <div className="h-2 bg-muted rounded-full w-3/4" />
-                  <div className="h-2 bg-muted rounded-full w-5/6" />
-                  <div className="h-2 bg-muted rounded-full w-2/3" />
-                </div>
-                <div className="mt-4 flex items-center gap-2">
-                  <div className="h-6 w-16 bg-primary/20 rounded-md" />
-                  <div className="h-6 w-12 bg-muted rounded-md" />
-                </div>
-              </div>
-
-              {/* Dark Video Frame */}
-              <div className="absolute top-20 right-4 w-52 bg-sidebar rounded-[24px] shadow-xl p-4 -rotate-6 hover:rotate-0 transition-transform duration-500">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-sidebar-foreground/60">LIVE RON</span>
-                  </div>
-                  <Play className="h-3 w-3 text-sidebar-foreground/60" />
-                </div>
-                <div className="bg-sidebar-accent rounded-xl h-24 flex items-center justify-center">
-                  <Video className="h-8 w-8 text-sidebar-foreground/40" />
-                </div>
-              </div>
-
-              {/* Golden Seal */}
-              <div className="absolute bottom-12 left-16 w-24 h-24 animate-bounce-slow">
-                <div className="relative w-full h-full">
-                  <div className="absolute inset-0 rounded-full border-2 border-dashed border-primary/40 animate-spin-slow" />
-                  <div className="absolute inset-2 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-                    <Stamp className="h-8 w-8 text-primary-foreground" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Emerald Checkmark Badge */}
-              <div className="absolute bottom-24 right-12 bg-emerald-500 text-white rounded-full p-3 shadow-lg">
-                <Check className="h-5 w-5" />
-              </div>
+              <Hero3DAnimation />
             </motion.div>
           </div>
         </div>
