@@ -85,7 +85,7 @@ export default function Hero3DAnimation() {
       color: Math.random() > 0.55 ? blue : gold,
     }));
 
-    function roundRect(x: number, y: number, w: number, h: number, r: number) {
+    function roundRectPath(x: number, y: number, w: number, h: number, r: number | number[]) {
       ctx.beginPath();
       ctx.roundRect(x, y, w, h, r);
     }
