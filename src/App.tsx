@@ -262,6 +262,16 @@ function AnimatedRoutes() {
       <Route path="/docudex" element={<ProtectedRoute><SR msg="DocuDex failed to load"><DocuDex /></SR></ProtectedRoute>} />
       <Route path="/print-shop" element={<SR msg="Print shop failed to load"><PrintMarketplace /></SR>} />
       <Route path="/pricing-menu" element={<SR msg="Pricing menu failed to load"><PricingMenu /></SR>} />
+      <Route path="/design-studio" element={<ProtectedRoute><SR msg="Design studio failed to load"><DesignStudio /></SR></ProtectedRoute>} />
+      <Route path="/design/business-cards" element={<ProtectedRoute><SR><BusinessCardDesigner /></SR></ProtectedRoute>} />
+      <Route path="/design/stickers" element={<ProtectedRoute><SR><StickerDesigner /></SR></ProtectedRoute>} />
+      <Route path="/design/notebooks" element={<ProtectedRoute><SR><NotebookConfigurator /></SR></ProtectedRoute>} />
+      <Route path="/design/book-covers" element={<ProtectedRoute><SR><BookCoverDesigner /></SR></ProtectedRoute>} />
+      <Route path="/design/letterhead" element={<ProtectedRoute><SR><LetterheadDesigner /></SR></ProtectedRoute>} />
+      <Route path="/design/apparel" element={<ProtectedRoute><SR><ApparelDesigner /></SR></ProtectedRoute>} />
+      <Route path="/design/signage" element={<ProtectedRoute><SR><SignageDesigner /></SR></ProtectedRoute>} />
+      <Route path="/design/promo" element={<ProtectedRoute><SR><PromoDesigner /></SR></ProtectedRoute>} />
+      <Route path="/vendor-portal" element={<ProtectedRoute><SR msg="Vendor portal failed to load"><VendorPortal /></SR></ProtectedRoute>} />
       <Route path="/track/:token" element={<SR msg="Session tracker failed to load"><SessionTracker /></SR>} />
       <Route path="/reschedule/:confirmationNumber" element={<SR msg="Reschedule failed to load"><RescheduleAppointment /></SR>} />
       <Route path="/account-settings" element={<ProtectedRoute><SR msg="Account settings failed to load"><AccountSettings /></SR></ProtectedRoute>} />
