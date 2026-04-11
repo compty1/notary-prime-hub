@@ -33,6 +33,15 @@ export const INTAKE_ONLY_SERVICES = new Set([
   "Email Support Handling", "Live Chat Support", "Website Content Updates",
   "UX Audit & Heuristic Review", "User Flow & Workflow Testing",
   "Usability Testing & Report", "UX Research & Persona Development",
+  // Court form packages
+  "Divorce Filing Package", "Custody/Visitation Package", "Eviction Filing Package",
+  "Name Change Package", "Guardianship Package", "Small Claims Filing",
+  "Expungement Package", "Adoption Filing Package", "Probate Filing Package",
+  "Civil Protection Order",
+  // Legal support
+  "Process Serving", "Skip Tracing", "Court Form Preparation", "Vital Records Request",
+  // Real estate support
+  "Property Photography", "Lockbox Coordination", "Open House Support", "Tenant Document Services",
 ]);
 
 export const SAAS_LINKS: Record<string, string> = {
@@ -49,6 +58,7 @@ export const SAAS_LINKS: Record<string, string> = {
 
 export const SUBSCRIPTION_SERVICES = new Set([
   "Business Subscription Plans", "API & Integration Services", "White-Label Partner Programs",
+  "Starter Plan", "Professional Plan", "Enterprise Plan", "Document Storage Vault", "Virtual Mailroom",
 ]);
 
 export const PORTAL_SERVICES = new Set([
@@ -102,11 +112,18 @@ export const CATEGORY_LABELS: Record<string, { label: string; description: strin
   customer_service: { label: "Customer Service", description: "Email support, live chat, and customer communication" },
   technical_support: { label: "Technical Support", description: "Website updates, content management, and tech tasks" },
   ux_testing: { label: "User Experience", description: "UX audits, usability testing, workflow analysis, and research" },
+  court_forms: { label: "Court Form Packages", description: "Ohio court form typing and filing packages" },
+  real_estate: { label: "Real Estate", description: "Deed transfers, title searches, and closing support" },
+  real_estate_support: { label: "Real Estate Support", description: "Photography, lockbox, and tenant document services" },
+  legal_support: { label: "Legal Support", description: "Process serving, skip tracing, and vital records" },
+  print: { label: "Print & Supplies", description: "Business cards, stamps, embossers, and branded materials" },
+  subscription: { label: "Subscriptions", description: "Monthly plans for RON sessions, storage, and mailroom" },
 };
 
 export const CATEGORY_ORDER = [
   "notarization", "verification", "document_services", "authentication",
   "business", "recurring", "consulting", "business_services",
   "admin_support", "content_creation", "research", "customer_service",
-  "technical_support", "ux_testing",
+  "technical_support", "ux_testing", "court_forms", "real_estate",
+  "real_estate_support", "legal_support", "print", "subscription",
 ];
