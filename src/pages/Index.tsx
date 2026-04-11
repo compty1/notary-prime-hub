@@ -281,12 +281,9 @@ export default function Index() {
             </motion.div>
           </div>
         </div>
-      </section>
 
-      {/* ===== About Us ===== */}
-      <section className="py-20 bg-gradient-hero">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        {/* About Us — inside same gradient */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
