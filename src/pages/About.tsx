@@ -60,7 +60,7 @@ export default function About() {
       {/* Breadcrumbs */}
       <div className="container mx-auto max-w-4xl px-4 pt-4"><Breadcrumbs /></div>
       {/* Hero — Block Shadow */}
-      <section className="relative overflow-hidden border-b-2 border-[hsl(220,10%,90%)] bg-white py-16 md:py-24">
+      <section className="relative overflow-hidden border-b-2 border-border bg-card py-16 md:py-24">
         <div className="container relative mx-auto max-w-4xl px-4">
           <motion.div initial="hidden" animate="visible" className="flex flex-col md:flex-row items-center gap-8">
             <motion.div variants={fadeUp} custom={0} className="flex-shrink-0">
@@ -178,7 +178,7 @@ export default function About() {
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {credentials.map((cred, i) => (
               <motion.div key={cred.title} variants={scaleReveal} custom={i}>
-                <Card className="h-full rounded-[24px] border-2 border-[hsl(220,10%,90%)] shadow-[4px_4px_0px_hsl(220,10%,85%)] hover:shadow-[6px_6px_0px_hsl(45,96%,50%)] transition-shadow">
+                <Card className="h-full rounded-[24px] border-2 border-border shadow-[4px_4px_0px_hsl(220,10%,85%)] hover:shadow-[6px_6px_0px_hsl(45,96%,50%)] transition-shadow">
                   <CardContent className="p-6">
                     <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-[hsl(45,96%,50%)]/10">
                       <cred.icon className="h-5 w-5 text-[hsl(45,96%,50%)]" />
@@ -234,7 +234,7 @@ export default function About() {
       </section>
 
       {/* Commission Verification */}
-      <section className="border-t-2 border-[hsl(220,10%,90%)] py-8">
+      <section className="border-t-2 border-border py-8">
         <div className="container mx-auto max-w-4xl px-4 text-center">
           <p className="text-sm text-muted-foreground">
             Verify our notary commission status on the{" "}
@@ -251,7 +251,7 @@ export default function About() {
       </section>
 
       {/* CTA — Block Shadow */}
-      <section className="border-t-2 border-[hsl(220,10%,90%)] bg-white py-16">
+      <section className="border-t-2 border-border bg-card py-16">
         <div className="container mx-auto max-w-2xl px-4 text-center">
           <h2 className="mb-4 text-2xl font-black text-[hsl(220,26%,14%)]">Get in Touch</h2>
           <p className="mb-2 text-muted-foreground">

@@ -487,7 +487,7 @@ function GlobalTemplatesTab({ master, editedTemplates, setEditedTemplates, onSav
               <Eye className="h-3.5 w-3.5 text-muted-foreground" />
               <span className="text-xs font-medium text-muted-foreground">Live Preview</span>
             </div>
-            <div className="border rounded-lg overflow-hidden bg-white">
+            <div className="border rounded-lg overflow-hidden bg-card">
               <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(preview) }} className="text-sm" />
             </div>
           </div>
@@ -743,7 +743,7 @@ function ServiceTemplatesTab() {
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Email Preview</DialogTitle></DialogHeader>
-          <div className="border rounded-lg p-4 bg-white text-foreground" dangerouslySetInnerHTML={{ __html: sanitizeHtml(previewHtml) }} />
+          <div className="border rounded-lg p-4 bg-card text-foreground" dangerouslySetInnerHTML={{ __html: sanitizeHtml(previewHtml) }} />
         </DialogContent>
       </Dialog>
     </div>

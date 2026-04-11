@@ -157,7 +157,7 @@ export default function Services() {
   return (
     <PageShell>
       {/* Hero — Block Shadow */}
-      <section className="relative overflow-hidden border-b-2 border-[hsl(220,10%,90%)] bg-white py-16 md:py-20">
+      <section className="relative overflow-hidden border-b-2 border-border bg-white py-16 md:py-20">
         <div className="container relative mx-auto px-4 text-center">
           <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Everything you need</p>
           <h1 className="mb-4 text-4xl font-bold text-[hsl(220,26%,14%)] md:text-5xl">
@@ -173,7 +173,7 @@ export default function Services() {
       <WhatDoINeed />
 
       {/* AI Tools — Block Shadow cards */}
-      <section className="border-b-2 border-[hsl(220,10%,90%)] bg-[hsl(45,96%,50%)]/5 py-12">
+      <section className="border-b-2 border-border bg-[hsl(45,96%,50%)]/5 py-12">
         <div className="container mx-auto px-4">
           <div className="mb-8 text-center">
             <Badge className="mb-3 bg-[hsl(45,96%,50%)]/10 text-[hsl(45,96%,40%)] border-[hsl(45,96%,50%)]/20 rounded-lg font-bold"><Sparkles className="mr-1 h-3 w-3" /> AI-Powered</Badge>
@@ -183,7 +183,7 @@ export default function Services() {
           <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-3">
             {aiTools.map((tool, i) => (
               <motion.div key={tool.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
-                <Card className="group h-full rounded-[24px] border-2 border-[hsl(220,10%,90%)] shadow-[4px_4px_0px_hsl(220,10%,85%)] hover:shadow-[6px_6px_0px_hsl(45,96%,50%)] transition-shadow">
+                <Card className="group h-full rounded-[24px] border-2 border-border shadow-[4px_4px_0px_hsl(220,10%,85%)] hover:shadow-[6px_6px_0px_hsl(45,96%,50%)] transition-shadow">
                   <CardContent className="flex h-full flex-col items-center p-6 text-center">
                     <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[hsl(45,96%,50%)]/10 group-hover:bg-[hsl(45,96%,50%)]/20 transition-colors">
                       <tool.icon className="h-7 w-7 text-[hsl(45,96%,50%)]" />
@@ -208,7 +208,7 @@ export default function Services() {
         <Breadcrumbs />
         <div className="relative mb-4 max-w-md mx-auto">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="Search services..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 rounded-xl border-2 border-[hsl(220,10%,90%)]" />
+          <Input placeholder="Search services..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 rounded-xl border-2 border-border" />
         </div>
 
         <Tabs value={activeCategory} onValueChange={(val) => { setActiveCategory(val); const params = new URLSearchParams(searchParams); if (val === "all") params.delete("category"); else params.set("category", val); setSearchParams(params, { replace: true }); }}>
@@ -254,7 +254,7 @@ export default function Services() {
                     const { url: actionUrl, label: actionLabel } = getServiceAction(s);
                     return (
                       <motion.div key={s.id} initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.25, delay: i * 0.03 }}>
-                        <Card className="group h-full rounded-[24px] border-2 border-[hsl(220,10%,90%)] shadow-[4px_4px_0px_hsl(220,10%,85%)] hover:shadow-[6px_6px_0px_hsl(45,96%,50%)] transition-shadow" role="article">
+                        <Card className="group h-full rounded-[24px] border-2 border-border shadow-[4px_4px_0px_hsl(220,10%,85%)] hover:shadow-[6px_6px_0px_hsl(45,96%,50%)] transition-shadow" role="article">
                           <CardContent className="flex h-full flex-col p-6">
                             <div className="mb-3 flex items-start justify-between">
                               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[hsl(45,96%,50%)]/10 group-hover:bg-[hsl(45,96%,50%)]/20 transition-colors">
@@ -299,7 +299,7 @@ export default function Services() {
       </div>
 
       {/* CTA — Block Shadow */}
-      <section className="border-t-2 border-[hsl(220,10%,90%)] bg-white py-16">
+      <section className="border-t-2 border-border bg-white py-16">
         <div className="container mx-auto px-4 text-center">
           <h2 className="mb-4 text-2xl font-bold text-[hsl(220,26%,14%)]">Ready to Get Started?</h2>
           <p className="mb-6 text-muted-foreground">Book an appointment or contact us for a custom quote.</p>

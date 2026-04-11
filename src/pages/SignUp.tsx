@@ -88,7 +88,7 @@ export default function SignUp() {
   if (signupSuccess) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
-        <div className="w-full max-w-md rounded-[24px] border border-border bg-white p-8 shadow-sm">
+        <div className="w-full max-w-md rounded-[24px] border border-border bg-card p-8 shadow-sm">
           <div className="flex flex-col items-center text-center">
             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
               <CheckCircle className="h-8 w-8 text-primary" />
@@ -124,16 +124,16 @@ export default function SignUp() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Full Name</Label>
-              <Input id="name" value={fullName} onChange={(e) => setFullName(e.target.value)} required autoComplete="name" className="mt-1 rounded-xl border-border bg-white" />
+              <Input id="name" value={fullName} onChange={(e) => setFullName(e.target.value)} required autoComplete="name" className="mt-1 rounded-xl border-border bg-card" />
             </div>
             <div>
               <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Email</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className="mt-1 rounded-xl border-border bg-white" />
+              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className="mt-1 rounded-xl border-border bg-card" />
             </div>
             <div>
               <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Password</Label>
               <div className="relative mt-1">
-                <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" className="rounded-xl border-border bg-white pr-10" />
+                <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" className="rounded-xl border-border bg-card pr-10" />
                 <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Hide password" : "Show password"}>
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -153,7 +153,7 @@ export default function SignUp() {
             </div>
             <div>
               <Label htmlFor="confirmPassword" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Confirm Password</Label>
-              <Input id="confirmPassword" type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} className="mt-1 rounded-xl border-border bg-white" />
+              <Input id="confirmPassword" type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} className="mt-1 rounded-xl border-border bg-card" />
               {confirmPassword && password !== confirmPassword && (
                 <p className="mt-1 text-xs text-destructive">Passwords don't match</p>
               )}
@@ -202,12 +202,12 @@ export default function SignUp() {
           <h2 className="text-3xl font-black">Ohio's Trusted<br />Notary Platform</h2>
           <p className="text-muted-foreground">Join thousands of Ohioans who trust Notar for secure, compliant notarization services.</p>
           <div className="grid grid-cols-2 gap-4 text-left">
-            <div className="rounded-2xl bg-white/5 p-4">
+            <div className="rounded-2xl bg-card/5 p-4">
               <FileText className="h-5 w-5 text-primary mb-2" />
               <p className="text-sm font-bold">Document Upload</p>
               <p className="text-xs text-muted-foreground">Secure cloud storage</p>
             </div>
-            <div className="rounded-2xl bg-white/5 p-4">
+            <div className="rounded-2xl bg-card/5 p-4">
               <Lock className="h-5 w-5 text-primary mb-2" />
               <p className="text-sm font-bold">Bank-Level Security</p>
               <p className="text-xs text-muted-foreground">End-to-end encryption</p>

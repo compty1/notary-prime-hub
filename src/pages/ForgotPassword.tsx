@@ -103,12 +103,12 @@ export default function ResetPassword() {
           </p>
 
           {success ? (
-            <div className="flex flex-col items-center gap-4 py-4 rounded-[24px] border border-border bg-white p-8">
+            <div className="flex flex-col items-center gap-4 py-4 rounded-[24px] border border-border bg-card p-8">
               <CheckCircle className="h-12 w-12 text-primary" />
               <Link to="/login"><Button className="rounded-xl bg-primary text-white hover:bg-primary/85 shadow-soft">Go to Sign In</Button></Link>
             </div>
           ) : requestSent ? (
-            <div className="flex flex-col items-center gap-4 py-8 text-center rounded-[24px] border border-border bg-white p-8">
+            <div className="flex flex-col items-center gap-4 py-8 text-center rounded-[24px] border border-border bg-card p-8">
               <CheckCircle className="h-12 w-12 text-primary" />
               <p className="text-sm text-muted-foreground">Check your email for a password reset link. It may take a minute to arrive.</p>
               <Link to="/login"><Button variant="outline" className="rounded-xl border-border"><ArrowLeft className="mr-1 h-4 w-4" /> Back to Sign In</Button></Link>
@@ -118,7 +118,7 @@ export default function ResetPassword() {
               <div>
                 <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">New Password</Label>
                 <div className="relative mt-1">
-                  <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" className="rounded-xl border-border bg-white pr-10" />
+                  <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" className="rounded-xl border-border bg-card pr-10" />
                   <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Hide password" : "Show password"}>
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -137,7 +137,7 @@ export default function ResetPassword() {
               <div>
                 <Label htmlFor="confirm" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Confirm Password</Label>
                 <div className="relative mt-1">
-                  <Input id="confirm" type={showConfirm ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} className="rounded-xl border-border bg-white pr-10" />
+                  <Input id="confirm" type={showConfirm ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} className="rounded-xl border-border bg-card pr-10" />
                   <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowConfirm(!showConfirm)} aria-label={showConfirm ? "Hide password" : "Show password"}>
                     {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -151,7 +151,7 @@ export default function ResetPassword() {
             <form onSubmit={handleRequestReset} className="space-y-4">
               <div>
                 <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Email Address</Label>
-                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" autoComplete="email" className="mt-1 rounded-xl border-border bg-white" />
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" autoComplete="email" className="mt-1 rounded-xl border-border bg-card" />
               </div>
               <Button type="submit" className="w-full rounded-xl bg-primary text-white font-bold hover:bg-primary/85 shadow-soft h-11" disabled={submitting || cooldown > 0}>
                 {submitting ? "Sending..." : cooldown > 0 ? `Wait ${cooldown}s` : "Send Reset Link"}

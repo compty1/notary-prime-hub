@@ -446,7 +446,7 @@ export default function PortalNotaryPageTab() {
             </div>
             {/* W005: Downloadable QR code */}
             <div className="flex flex-col items-center gap-2">
-              <div className="rounded-lg border p-3 bg-white" id="qr-code-container">
+              <div className="rounded-lg border p-3 bg-card" id="qr-code-container">
                 <QRCodeSVG value={`${window.location.origin}/n/${page?.slug}`} size={120} />
               </div>
               <p className="text-xs text-muted-foreground">Scan to visit your page</p>
