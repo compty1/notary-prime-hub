@@ -22,6 +22,7 @@ import {
   FileSignature, Play, Check
 } from "lucide-react";
 import WhatDoINeed from "@/components/WhatDoINeed";
+import Hero3DAnimation from "@/components/Hero3DAnimation";
 import { PageShell } from "@/components/PageShell";
 import { fadeUp, blurIn, scaleReveal } from "@/lib/animations";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
