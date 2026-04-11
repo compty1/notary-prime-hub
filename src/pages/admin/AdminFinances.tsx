@@ -161,7 +161,7 @@ export default function AdminFinances() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList><TabsTrigger value="overview">Overview</TabsTrigger><TabsTrigger value="expenses">Expenses</TabsTrigger><TabsTrigger value="recurring">Recurring</TabsTrigger><TabsTrigger value="mileage">Mileage</TabsTrigger><TabsTrigger value="tax">Tax Prep</TabsTrigger></TabsList>
+        <TabsList className="flex-wrap"><TabsTrigger value="overview">Overview</TabsTrigger><TabsTrigger value="pnl">P&L</TabsTrigger><TabsTrigger value="expenses">Expenses</TabsTrigger><TabsTrigger value="recurring">Recurring</TabsTrigger><TabsTrigger value="amortized">Amortized</TabsTrigger><TabsTrigger value="mileage">Mileage</TabsTrigger><TabsTrigger value="tax">Tax Prep</TabsTrigger></TabsList>
 
         <TabsContent value="overview" className="space-y-4">
           <div className="grid md:grid-cols-2 gap-4">
