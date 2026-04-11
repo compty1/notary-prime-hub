@@ -248,6 +248,30 @@ export default function AdminFinances() {
           </CardContent></Card>
         </TabsContent>
 
+        <TabsContent value="amortized">
+          <Card><CardContent className="pt-4">
+            <p className="text-sm text-muted-foreground mb-4">Track large expenses spread over time (e.g., notary bond, E&O insurance, commission renewals).</p>
+            <Table><TableHeader><TableRow><TableHead>Expense</TableHead><TableHead>Category</TableHead><TableHead>Period</TableHead><TableHead className="text-right">Annual</TableHead><TableHead className="text-right">Monthly</TableHead></TableRow></TableHeader>
+              <TableBody>
+                {amortized.map((a: any) => (
+                  <TableRow key={a.id}>
+                    <TableCell className="text-sm font-medium">{a.name}</TableCell>
+                    <TableCell><Badge variant="outline" className="text-xs">{a.expense_categories?.category_name || "—"}</Badge></TableCell>
+                    <TableCell className="text-sm">{formatDate(a.start_date)} – {formatDate(a.end_date)}</TableCell>
+                    <TableCell className="text-right">{formatCurrency(Number(a.annual_amount))}</TableCell>
+                    <TableCell className="text-right font-medium text-primary">{formatCurrency(Number(a.monthly_amount || (Number(a.annual_amount) / 12)))}</TableCell>
+                  </TableRow>
+                ))}
+                {amortized.length === 0 && <TableRow><TableCell colSpan={5} className="text-center text-sm text-muted-foreground py-8">No amortized expenses yet</TableCell></TableRow>}
+              </TableBody>
+            </Table>
+            <div className="mt-3 p-3 rounded-lg bg-muted/50 flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Total Monthly Amortization</span>
+              <span className="text-lg font-bold text-primary">{formatCurrency(totalAmortized)}</span>
+            </div>
+          </CardContent></Card>
+        </TabsContent>
+
         <TabsContent value="mileage">
           <Card><CardContent className="pt-4">
             <div className="mb-4 p-3 rounded-lg bg-muted/50 flex items-center justify-between">
