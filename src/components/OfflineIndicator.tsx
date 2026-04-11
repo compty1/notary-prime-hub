@@ -7,13 +7,17 @@ import { supabase } from "@/integrations/supabase/client";
 async function defaultHandler(action: string, payload: unknown): Promise<boolean> {
   try {
     const p = payload as Record<string, unknown>;
+    const table = p.table as string;
+    if (!table) return false;
+    // Use supabase.from with explicit cast for dynamic table names
+    const client = supabase as any;
     switch (action) {
       case "insert": {
-        const { error } = await supabase.from(p.table as string).insert(p.data as Record<string, unknown>);
+        const { error } = await client.from(table).insert(p.data);
         return !error;
       }
       case "update": {
-        const { error } = await supabase.from(p.table as string).update(p.data as Record<string, unknown>).eq("id", p.id as string);
+        const { error } = await client.from(table).update(p.data).eq("id", p.id);
         return !error;
       }
       default:
