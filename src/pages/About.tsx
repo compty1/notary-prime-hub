@@ -8,6 +8,7 @@ import {
   Shield, Award, MapPin, Phone, Mail, ChevronRight, CheckCircle,
   FileText, Monitor, Users, Briefcase
 } from "lucide-react";
+import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/PageShell";

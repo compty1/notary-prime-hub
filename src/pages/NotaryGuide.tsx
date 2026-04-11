@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Shield, FileText, Home, Briefcase, Scale, Heart, ChevronRight, Search, Users, Clock, CreditCard, MapPin, Monitor, CheckCircle, AlertTriangle, Info, ImageIcon } from "lucide-react";
+import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/Logo";
