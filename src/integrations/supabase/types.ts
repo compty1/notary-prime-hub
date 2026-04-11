@@ -2636,6 +2636,83 @@ export type Database = {
         }
         Relationships: []
       }
+      outbound_webhook_log: {
+        Row: {
+          attempted_at: string
+          event_type: string
+          id: string
+          payload: Json
+          response_body: string | null
+          response_status: number | null
+          retry_count: number
+          webhook_id: string
+        }
+        Insert: {
+          attempted_at?: string
+          event_type: string
+          id?: string
+          payload?: Json
+          response_body?: string | null
+          response_status?: number | null
+          retry_count?: number
+          webhook_id: string
+        }
+        Update: {
+          attempted_at?: string
+          event_type?: string
+          id?: string
+          payload?: Json
+          response_body?: string | null
+          response_status?: number | null
+          retry_count?: number
+          webhook_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "outbound_webhook_log_webhook_id_fkey"
+            columns: ["webhook_id"]
+            isOneToOne: false
+            referencedRelation: "outbound_webhooks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      outbound_webhooks: {
+        Row: {
+          created_at: string
+          description: string | null
+          events_subscribed: string[]
+          id: string
+          is_active: boolean
+          last_triggered_at: string | null
+          secret: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          events_subscribed?: string[]
+          id?: string
+          is_active?: boolean
+          last_triggered_at?: string | null
+          secret?: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          events_subscribed?: string[]
+          id?: string
+          is_active?: boolean
+          last_triggered_at?: string | null
+          secret?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
