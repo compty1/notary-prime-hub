@@ -1,83 +1,66 @@
 
 
-# Notar Brand Identity Correction Plan
+# Full Implementation Plan — All 9 Documents
 
-## Overview
+Given the massive scope (9 documents covering DocuDex enhancements, codebase audit fixes, print marketplace, services expansion, pricing, admin tooling, untapped services, and brand identity), this must be broken into sequential phases executed across multiple messages.
 
-The uploaded Brand Identity v2.0 document identifies 10 specific gaps (B-001 through B-010) between the current codebase and the intended brand identity. This plan implements all corrections without changing unrelated functionality.
+## What's Already Done
+- Brand Identity v2.0 color/font corrections (B-001 through B-010)
+- 10 new service admin dashboards (Phases 2-5)
+- 33 new AI tools in registry (Phase 6)
+- Database tables for fingerprinting, process serving, skip trace, vital records, translations, scrivener, courier, VA tasks, background checks, identity certificates, recorder filings, SOS filings, real estate, print orders, court forms, permit filings, compliance calendars
 
-## Changes
+## Remaining Work — Phased Execution
 
-### 1. Fix Primary Gold Color (B-001) — Highest Priority
+### Phase A: Critical Bug Fixes (Codebase Audit)
+- **SEC-001**: Remove any hardcoded API keys, rotate credentials
+- **SEC-002**: Add admin auth guard to unprotected admin routes
+- **HIGH findings**: Fix database architecture gaps, performance issues, missing admin tools, financial tracking
+- **MEDIUM findings**: Fix broken forms, workflow gaps, integration issues, settings pages, automation gaps
+- ~31 findings total across all severities
 
-**`src/index.css`**: Replace all `48 91% 52%` with `45 86% 48%` across both `:root` and `.dark` blocks. This affects `--primary`, `--ring`, `--accent-warm`, `--warning`, `--sidebar-primary`, `--sidebar-ring`. Also update `--primary-glow` from `48 91% 62%` to `45 86% 58%`. In dark mode, also change `--accent` from `48 91% 52%` to the correct dark accent value `30 10% 16%` (currently it incorrectly uses primary gold).
+### Phase B: DocuDex Canva-Style Transformation
+1. **8 critical bugs**: Fix `window.prompt()` for links, raw HTML header/footer input, broken table insertion, missing toolbar buttons for installed extensions
+2. **Architecture refactor**: Break 77KB monolith `DocuDexEditor.tsx` into modular components (toolbar, sidebar, canvas, template gallery)
+3. **Visual Template Gallery**: 60+ templates with thumbnails organized by service category
+4. **Advanced toolbar**: Link dialog, table picker, indent/outdent, page breaks, columns, checklists
+5. **AI Content Engine**: Template-aware drafting, inline autocomplete, legal clause generation
+6. **Visual Design Tools**: Header/footer builder, zoom controls, print preview, brand kit
+7. **Document Management**: Supabase-backed storage replacing localStorage, auto-save, version diffing
+8. **5 new database tables**: `docudex_documents`, `docudex_templates`, `docudex_versions`, `docudex_comments`, `docudex_shares`
 
-**`tailwind.config.ts`**: Update all hardcoded `hsl(48 91% 52%)` in `boxShadow` and `keyframes.glow-pulse` to `hsl(45 86% 48%)`.
+### Phase C: Print Marketplace & Creative Tools
+1. **Product catalog**: 50+ print products across categories (business cards, stationery, signage, apparel, etc.)
+2. **3D product preview engine**: Interactive previews for print products
+3. **Native design tools**: Business card designer, flyer builder, sticker creator
+4. **Admin tools**: Print order management, vendor management, fulfillment tracking
+5. **Client order flow**: Product selection → design → preview → checkout
+6. **Database tables**: `print_products`, `print_vendors`, `print_orders` (partially done — enhance existing)
 
-**`public/favicon.svg`**: Update the gold circle fill from `hsl(43, 74%, 49%)` to `hsl(45, 86%, 48%)`.
+### Phase D: Services Expansion & Pricing
+1. **9 service categories / 30+ service lines** from Platform Services Expansion Guide
+2. **Pricing menu integration**: Dynamic pricing from NotarDex Pricing Menu document
+3. **Untapped services**: High-margin opportunities from Expansion Report
+4. **Admin dashboard enhancements** from Admin Dashboard specification
+5. **Client-facing service pages**: Update Services page with full catalog
 
-### 2. Fix Background Cream (B-004)
-
-**`src/index.css`**: Change `:root` `--background` from `45 100% 97%` to `48 100% 97%` (#FFFCF0).
-
-### 3. Fix Secondary/Border Colors (B-005)
-
-**`src/index.css`**: Change `:root` `--secondary` from `45 30% 90%` to `44 22% 90%` and `--border` from `45 20% 90%` to `44 22% 90%`.
-
-### 4. Fix Hardcoded Gradient HSL Values (B-009)
-
-**`src/index.css`**: Update all hardcoded HSL references:
-- `.text-gradient-primary`: `hsl(48 91% 52%)` → `hsl(45 86% 48%)`, `hsl(42 100% 65%)` → `hsl(42 92% 60%)`
-- `.bg-gradient-hero`: `hsl(48 100% 95%)` → `hsl(48 95% 93%)`, `hsl(48 91% 70%)` → `hsl(45 86% 65%)`
-- `.interactive-card:hover box-shadow`: `hsl(48 91% 52% / 0.12)` → `hsl(45 86% 48% / 0.12)`
-- `.gradient-mesh`: all old gold values → corrected equivalents
-- `.text-primary-accessible`: update to `hsl(38 82% 31%)` per the document's accessible amber spec
-
-### 5. Fix Hero Gradient (B-010)
-
-**`src/index.css`**: Update `.bg-gradient-hero` to: `linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(48 100% 97%) 40%, hsl(48 95% 93%) 100%)` — creating the white-to-cream wash.
-
-### 6. Add DM Serif Display Font (B-006)
-
-**`src/index.css`**: Extend the Google Fonts import to include `family=DM+Serif+Display:wght@400`. Add `.font-display` utility class.
-
-**`tailwind.config.ts`**: Update `fontFamily.display` to `['"DM Serif Display"', 'Georgia', 'serif']`.
-
-**`src/pages/Index.tsx`**: Apply `font-display` class to the hero headline ("Legal Online Notarization") for warmth and authority.
-
-### 7. Add DM Mono Font (B-007)
-
-**`src/index.css`**: Extend Google Fonts import to include `family=DM+Mono:wght@400;500`.
-
-**`tailwind.config.ts`**: Add `mono: ['"DM Mono"', 'monospace']` to `fontFamily`.
-
-### 8. Update Accessible Amber Text Class
-
-**`src/index.css`**: Update `.text-primary-accessible` to use `hsl(38 82% 31%)` in light mode (per document spec of #8F630E).
-
-### 9. Favicon SVG Color Fix
-
-**`public/favicon.svg`**: Update the background rect fill and gold accent circle to use corrected brand colors.
+### Phase E: Admin Dashboard & Tooling Architecture
+1. **Missing admin tools** identified in audit and admin spec document
+2. **Process flow automations**: Email sequences, status workflows, assignment logic
+3. **Financial dashboards**: Revenue tracking, expense management, P&L views
+4. **Integration health**: SignNow, Stripe, HubSpot monitoring panels
 
 ---
 
-## Files Modified
+## Execution Order
+Due to message-size constraints, each phase will be implemented across 2-3 messages. **Phase A (bug fixes) goes first** as it addresses security and stability. Then Phase B (DocuDex), Phase C (Print), Phase D (Services), Phase E (Admin).
 
-| File | Changes |
-|------|---------|
-| `src/index.css` | Color tokens, fonts, gradients, accessible amber |
-| `tailwind.config.ts` | Font families, hardcoded shadow HSL values |
-| `src/pages/Index.tsx` | Hero headline font class |
-| `public/favicon.svg` | Brand gold color |
-| `src/lib/brand.ts` | Update tagline to "Legal Online Notarization" |
+## Files Affected
+- ~15 existing files modified for bug fixes
+- ~20 new components for DocuDex refactor
+- ~10 new admin pages for print/services
+- ~5 database migrations
+- Edge function updates for AI features
 
-## What Is NOT Changed
-
-- No pages removed or restructured
-- No components deleted
-- No routing changes
-- No database changes
-- No admin dashboard modifications
-- Dark mode warm charcoal base retained as-is (only gold references updated)
-- All existing functionality preserved
+Shall I proceed with **Phase A (Critical Bug Fixes)** first?
 
