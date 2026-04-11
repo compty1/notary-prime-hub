@@ -109,6 +109,10 @@ const AdminComplianceReport = lazyRetry(() => import("./pages/admin/AdminComplia
 const AdminAutomatedEmails = lazyRetry(() => import("./pages/admin/AdminAutomatedEmails"));
 const AdminFinances = lazyRetry(() => import("./pages/admin/AdminFinances"));
 const AdminEmailHealth = lazyRetry(() => import("./pages/admin/AdminEmailHealth"));
+const AdminRonRecordings = lazyRetry(() => import("./pages/admin/AdminRonRecordings"));
+const AdminLoanSigning = lazyRetry(() => import("./pages/admin/AdminLoanSigning"));
+const AdminI9Verifications = lazyRetry(() => import("./pages/admin/AdminI9Verifications"));
+const AdminPrintJobs = lazyRetry(() => import("./pages/admin/AdminPrintJobs"));
 const Maintenance = lazyRetry(() => import("./pages/Maintenance"));
 const ForNotaries = lazyRetry(() => import("./pages/solutions/ForNotaries"));
 const ForHospitals = lazyRetry(() => import("./pages/solutions/ForHospitals"));
