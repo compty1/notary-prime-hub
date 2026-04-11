@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useRef } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { logAuditEvent } from "@/lib/auditLog";
 import { safeGetJson, safeSetJson } from "@/lib/safeStorage";
+import { generateSessionFingerprint, IdleTimeoutManager } from "@/lib/sessionSecurity";
 
 type UserRole = "admin" | "client" | "notary";
 
