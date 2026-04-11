@@ -58,6 +58,7 @@ export const SAAS_LINKS: Record<string, string> = {
 
 export const SUBSCRIPTION_SERVICES = new Set([
   "Business Subscription Plans", "API & Integration Services", "White-Label Partner Programs",
+  "Starter Plan", "Professional Plan", "Enterprise Plan", "Document Storage Vault", "Virtual Mailroom",
 ]);
 
 export const PORTAL_SERVICES = new Set([
