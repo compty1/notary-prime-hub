@@ -15,6 +15,7 @@ import { PrintOrderTracker } from "@/components/PrintOrderTracker";
 import { Search, ShoppingCart, Package, Minus, Plus, PenTool } from "lucide-react";
 
 export default function PrintMarketplace() {
+  const navigate = useNavigate();
   usePageMeta({
     title: "Print & Brand Shop | NotarDex",
     description: "Order custom business cards, stationery, signage, apparel, and notary supplies. Professional printing with fast turnaround.",
