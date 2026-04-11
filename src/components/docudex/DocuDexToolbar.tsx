@@ -292,11 +292,12 @@ export function DocuDexToolbar({ editor, brandFont, onBrandFontChange, onImageUp
       <ToolBtn title="Insert Image" onClick={onImageUpload}>
         <ImageIcon className="h-3.5 w-3.5" />
       </ToolBtn>
-      <ToolBtn title="Insert Table" onClick={insertTable}>
-        <Table className="h-3.5 w-3.5" />
-      </ToolBtn>
+      <DocuDexTablePicker editor={editor} />
       <ToolBtn title="Horizontal Rule" onClick={() => editor.chain().focus().setHorizontalRule().run()}>
         <Minus className="h-3.5 w-3.5" />
+      </ToolBtn>
+      <ToolBtn title="Page Break" onClick={() => editor.chain().focus().setHorizontalRule().run()}>
+        <SeparatorHorizontal className="h-3.5 w-3.5" />
       </ToolBtn>
 
       <Separator />
@@ -308,6 +309,9 @@ export function DocuDexToolbar({ editor, brandFont, onBrandFontChange, onImageUp
       <ToolBtn title="Find & Replace (Ctrl+F)" onClick={onFindReplace}>
         <Search className="h-3.5 w-3.5" />
       </ToolBtn>
+
+      {/* Link Dialog */}
+      <DocuDexLinkDialog open={showLinkDialog} onOpenChange={setShowLinkDialog} editor={editor} />
     </div>
   );
 }
