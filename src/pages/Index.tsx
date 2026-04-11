@@ -106,7 +106,6 @@ export default function Index() {
   const [lastSubmitTime, setLastSubmitTime] = useState(0);
   const [agreeTerms, setAgreeTerms] = useState(false);
 
-  // #3947/#3948: Set Open Graph + Twitter meta
   useEffect(() => {
     setOpenGraphMeta({
       title: "Ohio Notary & Document Services | Notar",
@@ -212,7 +211,6 @@ export default function Index() {
     })),
   };
 
-  // #3639: Review aggregate schema
   const reviewSchema = reviewAggregateJsonLd(5, testimonials.length);
 
   useEffect(() => {
@@ -229,8 +227,8 @@ export default function Index() {
 
   return (
     <PageShell>
-      {/* ===== HERO — Light with Floating Composition ===== */}
-      <section className="relative bg-gradient-to-b from-[#fcfcfc] to-white overflow-hidden">
+      {/* ===== HERO ===== */}
+      <section className="relative bg-gradient-hero overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div initial="hidden" animate="visible">
@@ -265,7 +263,8 @@ export default function Index() {
                 <Link to="/book?type=ron">
                   <Button
                     size="lg"
-                    className="rounded-2xl px-8 py-4 font-bold text-lg bg-foreground text-white shadow-soft hover:-translate-y-0.5 active:translate-y-1 active:shadow-soft transition-all"
+                    variant="dark"
+                    className="rounded-2xl px-8 py-4 font-bold text-lg"
                   >
                     Start Notarization <ChevronRight className="ml-1 h-5 w-5" />
                   </Button>
@@ -281,7 +280,7 @@ export default function Index() {
               <motion.div variants={fadeUp} custom={4} className="mt-8 flex items-center gap-3">
                 <div className="flex -space-x-2">
                   {[1,2,3].map(i => (
-                    <div key={i} className="w-8 h-8 rounded-full bg-muted border-2 border-white" />
+                    <div key={i} className="w-8 h-8 rounded-full bg-muted border-2 border-background" />
                   ))}
                 </div>
                 <p className="text-sm text-muted-foreground font-medium">
@@ -298,7 +297,7 @@ export default function Index() {
               className="relative hidden lg:flex items-center justify-center min-h-[420px]"
             >
               {/* Document Card */}
-              <div className="absolute top-8 left-8 w-56 bg-white rounded-[24px] border border-border shadow-lg p-5 rotate-6 hover:rotate-2 transition-transform duration-500">
+              <div className="absolute top-8 left-8 w-56 bg-card rounded-[24px] border border-border shadow-lg p-5 rotate-6 hover:rotate-2 transition-transform duration-500">
                 <div className="flex items-center gap-2 mb-3">
                   <FileSignature className="h-5 w-5 text-primary" />
                   <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Document</span>
@@ -316,26 +315,25 @@ export default function Index() {
               </div>
 
               {/* Dark Video Frame */}
-              <div className="absolute top-20 right-4 w-52 bg-foreground rounded-[24px] shadow-xl p-4 -rotate-6 hover:rotate-0 transition-transform duration-500">
+              <div className="absolute top-20 right-4 w-52 bg-sidebar rounded-[24px] shadow-xl p-4 -rotate-6 hover:rotate-0 transition-transform duration-500">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">LIVE RON</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-sidebar-foreground/60">LIVE RON</span>
                   </div>
-                  <Play className="h-3 w-3 text-muted-foreground" />
+                  <Play className="h-3 w-3 text-sidebar-foreground/60" />
                 </div>
-                <div className="bg-foreground/70 rounded-xl h-24 flex items-center justify-center">
-                  <Video className="h-8 w-8 text-muted-foreground" />
+                <div className="bg-sidebar-accent rounded-xl h-24 flex items-center justify-center">
+                  <Video className="h-8 w-8 text-sidebar-foreground/40" />
                 </div>
               </div>
 
               {/* Golden Seal */}
               <div className="absolute bottom-12 left-16 w-24 h-24 animate-bounce-slow">
                 <div className="relative w-full h-full">
-                  {/* Dashed spinning ring */}
                   <div className="absolute inset-0 rounded-full border-2 border-dashed border-primary/40 animate-spin-slow" />
                   <div className="absolute inset-2 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-                    <Stamp className="h-8 w-8 text-white" />
+                    <Stamp className="h-8 w-8 text-primary-foreground" />
                   </div>
                 </div>
               </div>
@@ -349,7 +347,7 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ===== 4-Step Process — Block Shadow Cards ===== */}
+      {/* ===== 4-Step Process ===== */}
       <section id="how-it-works" className="py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -359,7 +357,6 @@ export default function Index() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
-            {/* Connecting dashed line */}
             <div className="hidden lg:block absolute top-1/2 left-[12.5%] right-[12.5%] border-t-2 border-dashed border-border -translate-y-1/2 z-0" />
 
             {howItWorksSteps.map((step, idx) => (
@@ -371,9 +368,9 @@ export default function Index() {
                 transition={{ delay: idx * 0.1 }}
                 className="relative z-10 group"
               >
-                <div className="bg-white rounded-[24px] border border-border p-6 shadow-card hover:-translate-y-1 transition-all duration-300">
-                  <div className="w-14 h-14 rounded-xl border-2 border-border flex items-center justify-center mb-5 group-hover:bg-primary group-hover:border-primary group-hover:text-white transition-all">
-                    <step.icon className="w-7 h-7 text-muted-foreground group-hover:text-white transition-colors" />
+                <div className="bg-card rounded-[24px] border border-border p-6 shadow-card hover:-translate-y-1 transition-all duration-300">
+                  <div className="w-14 h-14 rounded-xl border-2 border-border flex items-center justify-center mb-5 group-hover:bg-primary group-hover:border-primary group-hover:text-primary-foreground transition-all">
+                    <step.icon className="w-7 h-7 text-muted-foreground group-hover:text-primary-foreground transition-colors" />
                   </div>
                   <h3 className="text-xl font-bold text-foreground mb-2">{step.title}</h3>
                   <p className="text-sm text-muted-foreground font-medium leading-relaxed">{step.desc}</p>
@@ -385,11 +382,11 @@ export default function Index() {
       </section>
 
       {/* ===== Key Benefits ===== */}
-      <section id="benefits" className="py-20 bg-foreground text-white">
+      <section id="benefits" className="py-20 bg-sidebar text-sidebar-foreground">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <p className="text-label font-bold uppercase tracking-widest text-muted-foreground mb-3">Why Notar</p>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-4">Key Benefits</h2>
+            <p className="text-label font-bold uppercase tracking-widest text-sidebar-foreground/50 mb-3">Why Notar</p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-sidebar-foreground mb-4">Key Benefits</h2>
             <div className="w-16 h-1 bg-primary mx-auto rounded-full" />
           </div>
 
@@ -406,13 +403,13 @@ export default function Index() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className="bg-white/5 backdrop-blur-sm p-8 rounded-[24px] border border-white/10 text-center hover:-translate-y-1 transition duration-300 group"
+                className="bg-sidebar-accent/50 backdrop-blur-sm p-8 rounded-[24px] border border-sidebar-border text-center hover:-translate-y-1 transition duration-300 group"
               >
                 <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/20 transition-colors">
                   <benefit.icon className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-lg font-bold mb-2">{benefit.title}</h3>
-                <p className="text-sm text-muted-foreground font-medium">{benefit.desc}</p>
+                <h3 className="text-lg font-bold mb-2 text-sidebar-foreground">{benefit.title}</h3>
+                <p className="text-sm text-sidebar-foreground/50 font-medium">{benefit.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -432,7 +429,7 @@ export default function Index() {
           <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-2 mb-12">
             {primaryServices.map((s, i) => (
               <motion.div key={s.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
-                <Card className="group h-full rounded-[24px] border-border hover:border-primary/30 transition-all shadow-sm hover:shadow-md">
+                <Card className="group h-full rounded-[24px] border-border hover:border-primary/30 transition-all shadow-sm hover:shadow-card">
                   <CardContent className="p-8">
                     <div className="mb-4 flex items-center gap-3">
                       <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 transition-colors group-hover:bg-primary/15">
@@ -451,7 +448,7 @@ export default function Index() {
                       ))}
                     </ul>
                     <Link to={s.cta}>
-                      <Button className="w-full font-bold rounded-2xl bg-foreground text-white shadow-soft hover:-translate-y-0.5 active:translate-y-0 active:shadow-soft transition-all">
+                      <Button variant="dark" className="w-full font-bold rounded-2xl">
                         {s.ctaLabel} <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     </Link>
@@ -465,7 +462,7 @@ export default function Index() {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:gap-8 max-w-5xl mx-auto">
             {otherServices.map((service) => (
               <Link key={service.title} to={service.to}>
-                <div className="bg-white p-6 rounded-[24px] border border-border shadow-sm flex flex-col items-center text-center hover:border-primary/30 hover:-translate-y-0.5 transition-all cursor-pointer group">
+                <div className="bg-card p-6 rounded-[24px] border border-border shadow-sm flex flex-col items-center text-center hover:border-primary/30 hover:-translate-y-0.5 transition-all cursor-pointer group">
                   <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center text-muted-foreground mb-4 group-hover:bg-primary/10 group-hover:text-primary transition">
                     <service.icon className="w-6 h-6" />
                   </div>
@@ -481,7 +478,7 @@ export default function Index() {
       {/* AI Helper */}
       <WhatDoINeed />
 
-      {/* ===== Trust Badges (#3642) ===== */}
+      {/* ===== Trust Badges ===== */}
       <section className="py-12 bg-muted border-t border-border">
         <div className="max-w-5xl mx-auto px-4">
           <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
@@ -502,7 +499,7 @@ export default function Index() {
       </section>
 
       {/* ===== Testimonials ===== */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-card">
         <div className="container mx-auto px-4">
           <div className="mx-auto mb-12 max-w-2xl text-center">
             <p className="text-label font-bold uppercase tracking-widest text-muted-foreground mb-3">Testimonials</p>
@@ -531,10 +528,10 @@ export default function Index() {
       {/* ===== CTA Banner ===== */}
       <section className="bg-primary py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-6">Ready to Notarize Your Document?</h2>
-          <p className="text-foreground/70 text-lg font-medium mb-8">Join thousands of users who have securely notarized their documents online.</p>
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-primary-foreground mb-6">Ready to Notarize Your Document?</h2>
+          <p className="text-primary-foreground/70 text-lg font-medium mb-8">Join thousands of users who have securely notarized their documents online.</p>
           <Link to="/book">
-            <Button size="lg" className="bg-foreground text-white px-10 py-4 rounded-2xl font-bold text-lg shadow-soft hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all">
+            <Button size="lg" variant="dark" className="px-10 py-4 rounded-2xl font-bold text-lg">
               Book a Session Now
             </Button>
           </Link>
@@ -542,7 +539,7 @@ export default function Index() {
       </section>
 
       {/* ===== FAQ ===== */}
-      <section id="faq" className="border-t border-border bg-white py-20">
+      <section id="faq" className="border-t border-border bg-card py-20">
         <div className="container mx-auto px-4">
           <div className="mx-auto mb-12 max-w-2xl text-center">
             <p className="text-label font-bold uppercase tracking-widest text-muted-foreground mb-3">FAQ</p>
@@ -625,7 +622,7 @@ export default function Index() {
                     </Label>
                   </div>
                   <div aria-live="polite" className="text-sm text-destructive" />
-                  <Button type="submit" className="w-full rounded-2xl font-bold bg-foreground text-white shadow-soft hover:-translate-y-0.5 active:translate-y-0 active:shadow-soft transition-all" disabled={submitting || !agreeTerms}>
+                  <Button type="submit" variant="dark" className="w-full rounded-2xl font-bold" disabled={submitting || !agreeTerms}>
                     {submitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending...</> : <><Send className="mr-2 h-4 w-4" /> Send Message</>}
                   </Button>
                 </form>
@@ -636,7 +633,7 @@ export default function Index() {
       </section>
 
       {/* ===== Industry Insights ===== */}
-      <section className="border-t border-border bg-white py-16">
+      <section className="border-t border-border bg-card py-16">
         <div className="container mx-auto px-4">
           <h2 className="mb-8 text-center text-2xl font-bold tracking-tight text-foreground">Industry Insights</h2>
           <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-2">
