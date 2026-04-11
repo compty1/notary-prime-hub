@@ -24,12 +24,12 @@ export function EmptyState({ icon = "documents", title, description, actionLabel
   const Icon = iconMap[icon];
 
   return (
-    <div className="flex flex-col items-center justify-center py-12 text-center">
-      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
-        <Icon className="h-8 w-8 text-muted-foreground" />
+    <div className="flex flex-col items-center justify-center py-16 text-center">
+      <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-muted/60 border border-border">
+        <Icon className="h-10 w-10 text-muted-foreground/60" />
       </div>
-      <h3 className="mb-1 text-lg font-semibold text-foreground">{title}</h3>
-      <p className="mb-4 max-w-sm text-sm text-muted-foreground">{description}</p>
+      <h3 className="mb-2 text-lg font-bold text-foreground">{title}</h3>
+      <p className="mb-6 max-w-sm text-sm text-muted-foreground leading-relaxed">{description}</p>
       {actionLabel && actionTo && (
         <Link to={actionTo}>
           <Button size="sm">{actionLabel}</Button>
