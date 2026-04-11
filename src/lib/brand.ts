@@ -1,19 +1,19 @@
-// Centralized brand configuration for NotarDex
+// Centralized brand configuration for Notar
 export const BRAND = {
-  name: "NotarDex",
+  name: "Notar",
   initials: "N",
   tagline: "Safe, Secure, Legal — Remote Online Notarization",
   taglineShort: "Notary & Document Services",
-  fullTitle: "NotarDex — Ohio Notary Public | In-Person & RON",
-  domain: "NotarDex.com",
-  company: "NotarDex",
-  legalName: "NotarDex Notary Services",
-  footerText: (year: number) => `© ${year} NotarDex.com. All rights reserved.`,
-  calendarProdId: "-//NotarDex//NotarDex.com//EN",
+  fullTitle: "Notar — Ohio Notary Public | In-Person & RON",
+  domain: "Notar.com",
+  company: "Notar",
+  legalName: "Notar Notary Services",
+  footerText: (year: number) => `© ${year} Notar. All rights reserved.`,
+  calendarProdId: "-//Notar//Notar.com//EN",
   calendarDescription: (type: string) =>
     type === "ron"
-      ? "Remote Online Notarization (RON) session with NotarDex"
-      : "In-person notarization appointment with NotarDex",
+      ? "Remote Online Notarization (RON) session with Notar"
+      : "In-person notarization appointment with Notar",
   defaultPhone: "(614) 300-6890",
   defaultEmail: "contact@notardex.com",
   teamLead: {
