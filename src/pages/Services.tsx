@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
 import { ChevronRight, FileText, Search, Sparkles, ArrowRight, Mail, Scan, FileEdit, Wand2, Clock } from "lucide-react";
-import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
+import { Icon3D, FEATURE_3D_ICON, CATEGORY_3D_ICON, SERVICE_ICON_3D } from "@/lib/icon3dMap";
 import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";

@@ -42,7 +42,7 @@ const stateCategories = [
     description: "Even states without their own RON laws must accept Ohio RON notarizations under the U.S. Constitution's Full Faith and Credit Clause (Article IV, Section 1):",
     states: "All 50 states and U.S. territories",
     badge: "Constitutional Protection",
-    color: "bg-blue-100 text-blue-800",
+    color: "bg-info/10 text-info",
   },
 ];
 
