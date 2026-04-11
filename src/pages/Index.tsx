@@ -25,8 +25,8 @@ import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
 import { fadeUp, blurIn, scaleReveal } from "@/lib/animations";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
-import heroIllustration from "@/assets/hero-3d-illustration.jpg";
-import aboutIllustration from "@/assets/about-3d-illustration.jpg";
+import Hero3DAnimation from "@/components/Hero3DAnimation";
+import aboutIllustration from "@/assets/about-3d-illustration.png";
 
 const primaryServices = [
   {
@@ -270,25 +270,21 @@ export default function Index() {
               </motion.div>
             </motion.div>
 
-            {/* Hero 3D Illustration */}
+            {/* Hero Interactive Animation */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="relative hidden lg:flex items-center justify-center"
+              className="relative hidden lg:flex items-center justify-center min-h-[420px]"
             >
-              <img
-                src={heroIllustration}
-                alt="Notarization documents and security verification icons"
-                className="w-full max-w-md object-contain drop-shadow-xl"
-              />
+              <Hero3DAnimation />
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* ===== About Us ===== */}
-      <section className="py-20 bg-primary">
+      <section className="py-20 bg-gradient-hero">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -296,11 +292,12 @@ export default function Index() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
+              className="flex items-center justify-center"
             >
               <img
                 src={aboutIllustration}
                 alt="3D illustration of document folders"
-                className="w-full max-w-sm mx-auto object-contain drop-shadow-2xl"
+                className="w-full max-w-sm mx-auto object-contain"
               />
             </motion.div>
             <motion.div
@@ -309,8 +306,8 @@ export default function Index() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.15 }}
             >
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-primary-foreground mb-6">About us</h2>
-              <p className="text-lg text-primary-foreground/80 font-medium leading-relaxed max-w-lg">
+              <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-6">About us</h2>
+              <p className="text-lg text-muted-foreground font-medium leading-relaxed max-w-lg">
                 We are a team of passionate creatives specializing in branding, content, and design. Our goal is to provide our clients with innovative ideas that translate to real, wonderful experiences.
               </p>
             </motion.div>
