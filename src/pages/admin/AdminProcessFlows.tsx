@@ -124,7 +124,7 @@ export default function AdminProcessFlows() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black text-foreground flex items-center gap-2">
-            <Workflow className="h-6 w-6 text-[hsl(45,96%,50%)]" /> Process Flows & Automation
+            <Workflow className="h-6 w-6 text-primary" /> Process Flows & Automation
           </h1>
           <p className="text-sm text-muted-foreground mt-1">All service flows, automated steps, and email templates in one view</p>
         </div>
@@ -135,10 +135,10 @@ export default function AdminProcessFlows() {
         {[
           { label: "Service Flows", value: SERVICE_FLOWS.length, color: "text-foreground" },
           { label: "Steps Implemented", value: `${implementedSteps}/${totalSteps}`, color: "text-emerald-600" },
-          { label: "Automated Steps", value: automatedSteps, color: "text-[hsl(45,96%,50%)]" },
+          { label: "Automated Steps", value: automatedSteps, color: "text-primary" },
           { label: "Email Templates", value: totalEmailTemplates, color: "text-amber-600" },
         ].map((stat) => (
-          <Card key={stat.label} className="rounded-[24px] border-2 border-[hsl(220,10%,90%)] shadow-[4px_4px_0px_hsl(220,10%,85%)]">
+          <Card key={stat.label} className="rounded-[24px] border-2 border-border shadow-md">
             <CardContent className="p-4 text-center">
               <p className={`text-3xl font-black ${stat.color}`}>{stat.value}</p>
               <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-1">{stat.label}</p>
@@ -148,7 +148,7 @@ export default function AdminProcessFlows() {
       </div>
 
       <Tabs defaultValue="flows" className="space-y-6">
-        <TabsList className="bg-[hsl(220,10%,95%)] rounded-2xl p-1">
+        <TabsList className="bg-muted rounded-2xl p-1">
           <TabsTrigger value="flows" className="rounded-xl data-[state=active]:bg-card data-[state=active]:shadow-sm font-bold text-xs"><Workflow className="mr-1 h-4 w-4" /> Process Flows</TabsTrigger>
           <TabsTrigger value="emails" className="rounded-xl data-[state=active]:bg-card data-[state=active]:shadow-sm font-bold text-xs"><Mail className="mr-1 h-4 w-4" /> Email Templates</TabsTrigger>
           <TabsTrigger value="automations" className="rounded-xl data-[state=active]:bg-card data-[state=active]:shadow-sm font-bold text-xs"><Zap className="mr-1 h-4 w-4" /> Automations</TabsTrigger>
@@ -173,10 +173,10 @@ export default function AdminProcessFlows() {
 
       {/* Edit template dialog */}
       <Dialog open={!!editingTemplate} onOpenChange={() => setEditingTemplate(null)}>
-        <DialogContent className="sm:max-w-lg rounded-[24px] border-2 border-[hsl(220,10%,90%)] shadow-[6px_6px_0px_hsl(220,10%,85%)]">
+        <DialogContent className="sm:max-w-lg rounded-[24px] border-2 border-border shadow-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 font-black">
-              <Mail className="h-5 w-5 text-[hsl(45,96%,50%)]" />
+              <Mail className="h-5 w-5 text-primary" />
               Edit Template: {editingTemplate?.key.replace("email_template_", "").replace(/_/g, " ")}
             </DialogTitle>
           </DialogHeader>
@@ -184,11 +184,11 @@ export default function AdminProcessFlows() {
             value={editingTemplate?.value || ""}
             onChange={e => setEditingTemplate(prev => prev ? { ...prev, value: e.target.value } : null)}
             rows={10}
-            className="font-mono text-xs rounded-xl border-2 border-[hsl(220,10%,90%)]"
+            className="font-mono text-xs rounded-xl border-2 border-border"
           />
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditingTemplate(null)} className="rounded-xl font-bold">Cancel</Button>
-            <Button onClick={saveTemplate} disabled={saving} className="rounded-xl font-bold bg-[hsl(45,96%,50%)] text-[hsl(220,26%,14%)] hover:bg-[hsl(45,96%,45%)] shadow-[3px_3px_0px_hsl(220,26%,14%)]">
+            <Button onClick={saveTemplate} disabled={saving} className="rounded-xl font-bold bg-primary text-foreground hover:bg-primary/90 shadow-md">
               {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />}
               Save Template
             </Button>

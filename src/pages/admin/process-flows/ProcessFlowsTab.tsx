@@ -34,16 +34,16 @@ export default function ProcessFlowsTab() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder="Search flows, steps, components…"
-          className="pl-10 rounded-xl border-2 border-[hsl(220,10%,90%)]"
+          className="pl-10 rounded-xl border-2 border-border"
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
         />
       </div>
 
       {filteredFlows.map(flow => (
-        <Card key={flow.id} className="rounded-[24px] border-2 border-[hsl(220,10%,90%)] shadow-[4px_4px_0px_hsl(220,10%,85%)] overflow-hidden">
+        <Card key={flow.id} className="rounded-[24px] border-2 border-border shadow-md overflow-hidden">
           <button
-            className="w-full p-4 flex items-center justify-between hover:bg-[hsl(45,96%,50%)]/5 transition-colors"
+            className="w-full p-4 flex items-center justify-between hover:bg-primary/5 transition-colors"
             onClick={() => toggleFlow(flow.id)}
           >
             <div className="flex items-center gap-3">
@@ -66,9 +66,9 @@ export default function ProcessFlowsTab() {
           </button>
 
           {expandedFlows.has(flow.id) && (
-            <div className="border-t-2 border-[hsl(220,10%,90%)] divide-y divide-[hsl(220,10%,92%)]">
+            <div className="border-t-2 border-border divide-y divide-border">
               {flow.steps.map((step, i) => (
-                <div key={i} className="px-4 py-3 flex items-start justify-between hover:bg-[hsl(45,96%,50%)]/5">
+                <div key={i} className="px-4 py-3 flex items-start justify-between hover:bg-primary/5">
                   <div className="flex items-start gap-3">
                     <div className="mt-0.5">
                       {step.implemented ? (
@@ -80,12 +80,12 @@ export default function ProcessFlowsTab() {
                     <div>
                       <p className="text-sm font-bold text-foreground">{step.name}</p>
                       <p className="text-xs text-muted-foreground">{step.description}</p>
-                      {step.route && <p className="text-xs text-[hsl(45,96%,50%)] font-mono mt-0.5">{step.route}</p>}
+                      {step.route && <p className="text-xs text-primary font-mono mt-0.5">{step.route}</p>}
                       {step.component && <Badge variant="outline" className="text-[10px] mt-1 rounded-md font-bold border-2">{step.component}</Badge>}
                       {step.automations && step.automations.length > 0 && (
                         <div className="flex gap-1 mt-1">
                           {step.automations.map((a, ai) => (
-                            <Badge key={ai} className="bg-[hsl(45,96%,50%)]/10 text-[hsl(45,96%,40%)] text-[10px] rounded-md font-bold">
+                            <Badge key={ai} className="bg-primary/10 text-primary text-[10px] rounded-md font-bold">
                               <Zap className="h-2.5 w-2.5 mr-0.5" /> {a.name}
                             </Badge>
                           ))}

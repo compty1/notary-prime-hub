@@ -68,10 +68,10 @@ export default function About() {
               <Logo size="xl" />
             </motion.div>
             <motion.div variants={fadeUp} custom={1}>
-              <Badge className="mb-3 bg-[hsl(45,96%,50%)]/10 text-[hsl(45,96%,40%)] border-[hsl(45,96%,50%)]/20 rounded-lg font-bold">
+              <Badge className="mb-3 bg-primary/10 text-primary border-primary/20 rounded-lg font-bold">
                 <Award className="mr-1 h-3 w-3" /> NNA Certified Notary Signing Agent
               </Badge>
-              <h1 className="mb-3 text-4xl font-black text-[hsl(220,26%,14%)] md:text-5xl">
+              <h1 className="mb-3 text-4xl font-black text-foreground md:text-5xl">
                 Notar
               </h1>
               <p className="mb-2 text-xl text-muted-foreground">
@@ -133,7 +133,7 @@ export default function About() {
       <section className="py-16">
         <div className="container mx-auto max-w-4xl px-4">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }}>
-            <motion.h2 variants={fadeUp} custom={0} className="mb-6 text-3xl font-black text-[hsl(220,26%,14%)]">
+            <motion.h2 variants={fadeUp} custom={0} className="mb-6 text-3xl font-black text-foreground">
               Who We Are
             </motion.h2>
             <motion.div variants={fadeUp} custom={1} className="prose prose-sm dark:prose-invert max-w-none">
@@ -171,15 +171,15 @@ export default function About() {
       </section>
 
       {/* Credentials — Block Shadow cards */}
-      <section className="bg-[hsl(45,96%,50%)]/5 py-16">
+      <section className="bg-primary/5 py-16">
         <div className="container mx-auto max-w-4xl px-4">
-          <motion.h2 initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={0} className="mb-8 text-3xl font-black text-[hsl(220,26%,14%)] text-center">
+          <motion.h2 initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={0} className="mb-8 text-3xl font-black text-foreground text-center">
             Credentials & Certifications
           </motion.h2>
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {credentials.map((cred, i) => (
               <motion.div key={cred.title} variants={scaleReveal} custom={i}>
-                <Card className="h-full rounded-[24px] border-2 border-border shadow-[4px_4px_0px_hsl(220,10%,85%)] hover:shadow-[6px_6px_0px_hsl(45,96%,50%)] transition-shadow">
+                <Card className="h-full rounded-[24px] border-2 border-border shadow-md hover:shadow-lg hover:shadow-primary/20 transition-shadow">
                    <CardContent className="p-6">
                     <Icon3D src={cred.icon3d} alt={cred.title} className="h-12 w-12 mb-3" />
                     <h3 className="mb-2 text-base font-black">{cred.title}</h3>
@@ -197,8 +197,8 @@ export default function About() {
         <div className="container mx-auto max-w-4xl px-4">
           <div className="grid gap-8 md:grid-cols-2">
             <div>
-              <h2 className="mb-4 text-2xl font-black text-[hsl(220,26%,14%)] flex items-center gap-2">
-                <MapPin className="h-6 w-6 text-[hsl(45,96%,50%)]" /> Service Area
+              <h2 className="mb-4 text-2xl font-black text-foreground flex items-center gap-2">
+                <MapPin className="h-6 w-6 text-primary" /> Service Area
               </h2>
               <p className="mb-4 text-muted-foreground">
                 In-person notarization and mobile services available throughout central Ohio. 
@@ -206,7 +206,7 @@ export default function About() {
               </p>
               <div className="flex flex-wrap gap-2">
                 {serviceAreas.map(area => (
-                  <Badge key={area} className="bg-[hsl(220,10%,95%)] text-[hsl(220,26%,14%)] rounded-lg font-bold">{area}</Badge>
+                  <Badge key={area} className="bg-muted text-foreground rounded-lg font-bold">{area}</Badge>
                 ))}
               </div>
               <p className="mt-3 text-xs text-muted-foreground">
@@ -214,18 +214,18 @@ export default function About() {
               </p>
             </div>
             <div>
-              <h2 className="mb-4 text-2xl font-black text-[hsl(220,26%,14%)] flex items-center gap-2">
-                <Briefcase className="h-6 w-6 text-[hsl(45,96%,50%)]" /> Services Overview
+              <h2 className="mb-4 text-2xl font-black text-foreground flex items-center gap-2">
+                <Briefcase className="h-6 w-6 text-primary" /> Services Overview
               </h2>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-[hsl(45,96%,50%)]" /> In-Person & Remote Online Notarization</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-[hsl(45,96%,50%)]" /> Document Digitization & OCR</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-[hsl(45,96%,50%)]" /> Apostille & Authentication</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-[hsl(45,96%,50%)]" /> I-9 Employment Verification</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-[hsl(45,96%,50%)]" /> Real Estate & Loan Signing</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-[hsl(45,96%,50%)]" /> Document Preparation & Templates</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-[hsl(45,96%,50%)]" /> Secure Cloud Document Storage</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-[hsl(45,96%,50%)]" /> Business & Volume Services</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> In-Person & Remote Online Notarization</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Document Digitization & OCR</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Apostille & Authentication</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> I-9 Employment Verification</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Real Estate & Loan Signing</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Document Preparation & Templates</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Secure Cloud Document Storage</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Business & Volume Services</li>
               </ul>
             </div>
           </div>
@@ -241,7 +241,7 @@ export default function About() {
               href="https://www.ohiosos.gov/businesses/notary-public/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[hsl(45,96%,50%)] font-bold hover:underline"
+              className="text-primary font-bold hover:underline"
             >
               Ohio Secretary of State Notary Lookup →
             </a>
@@ -252,14 +252,14 @@ export default function About() {
       {/* CTA — Block Shadow */}
       <section className="border-t-2 border-border bg-card py-16">
         <div className="container mx-auto max-w-2xl px-4 text-center">
-          <h2 className="mb-4 text-2xl font-black text-[hsl(220,26%,14%)]">Get in Touch</h2>
+          <h2 className="mb-4 text-2xl font-black text-foreground">Get in Touch</h2>
           <p className="mb-2 text-muted-foreground">
             Message us for a response within 24 hours — we typically respond within 2 hours during business hours.
           </p>
           <p className="mb-6 text-xs text-muted-foreground">Mon–Fri 9 AM – 7 PM ET &nbsp;|&nbsp; Sat 10 AM – 4 PM ET</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link to="/book">
-              <Button size="lg" className="rounded-xl font-bold bg-[hsl(45,96%,50%)] text-[hsl(220,26%,14%)] hover:bg-[hsl(45,96%,45%)] shadow-[4px_4px_0px_hsl(220,26%,14%)]">
+              <Button size="lg" className="rounded-xl font-bold bg-primary text-foreground hover:bg-primary/90 shadow-lg">
                 Book Appointment <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             </Link>

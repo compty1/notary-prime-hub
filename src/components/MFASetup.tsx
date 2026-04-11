@@ -107,7 +107,7 @@ export function MFASetup() {
       ) : qrUri ? (
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.):</p>
-          <div className="flex justify-center rounded-lg border border-border/50 bg-white p-4">
+          <div className="flex justify-center rounded-lg border border-border/50 bg-card p-4">
             <img src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrUri)}`} alt="MFA QR Code" className="h-48 w-48" />
           </div>
           <div>
