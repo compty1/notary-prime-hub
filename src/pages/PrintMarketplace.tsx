@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -11,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useToast } from "@/hooks/use-toast";
 import { PRINT_CATEGORIES, PRINT_PRODUCTS, type PrintProduct } from "@/lib/printCatalog";
 import { PrintOrderTracker } from "@/components/PrintOrderTracker";
-import { Search, ShoppingCart, Package, Minus, Plus } from "lucide-react";
+import { Search, ShoppingCart, Package, Minus, Plus, PenTool } from "lucide-react";
 
 export default function PrintMarketplace() {
   usePageMeta({
