@@ -310,7 +310,7 @@ export default function NotaryGuide() {
               <motion.div key={category.title} initial="hidden" whileInView="visible" viewport={{ once: true }}>
                 <motion.div variants={fadeUp} custom={catIdx}>
                     <div className="mb-4 flex items-center gap-3">
-                     <Icon3D src={category.icon3d} alt={category.title} className="h-12 w-12" />
+                     <Icon3D src={category.icon3d} alt={category.title} className="h-[110px] w-[110px]" />
                     <h3 className="font-sans text-xl font-semibold text-foreground">{category.title}</h3>
                   </div>
                   <Accordion type="single" collapsible className="space-y-2">

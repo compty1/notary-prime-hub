@@ -70,7 +70,7 @@ export default function ForHospitals() {
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">
               <div className="relative rounded-2xl border border-border bg-card p-8 shadow-lg">
-                <Icon3D src={FEATURE_3D_ICON.healthcare} alt="Healthcare notarization" className="mx-auto mb-4 h-20 w-20" />
+                <Icon3D src={FEATURE_3D_ICON.healthcare} alt="Healthcare notarization" className="mx-auto mb-4 h-[184px] w-[184px]" />
                 <p className="text-center text-lg font-semibold text-foreground">Compassionate. Professional. Compliant.</p>
                 <p className="mt-2 text-center text-sm text-muted-foreground">Serving Columbus & Franklin County hospitals</p>
                 <div className="absolute -bottom-3 -right-3 rounded-full bg-accent px-4 py-2 text-xs font-bold text-accent-foreground shadow-lg">
@@ -94,7 +94,7 @@ export default function ForHospitals() {
                 <Card className="h-full border-border/50 hover:border-primary/20 transition-colors">
                   <CardContent className="p-6">
                     <div className="mb-4">
-                      <Icon3D src={f.icon3d} alt={f.title} className="h-14 w-14" />
+                      <Icon3D src={f.icon3d} alt={f.title} className="h-[129px] w-[129px]" />
                     </div>
                     <h3 className="mb-2 font-sans text-lg font-semibold text-foreground">{f.title}</h3>
                     <p className="text-sm text-muted-foreground">{f.desc}</p>
@@ -149,7 +149,7 @@ export default function ForHospitals() {
 
       <section className="py-16">
         <div className="container mx-auto px-4 text-center">
-          <Icon3D src={FEATURE_3D_ICON.bedside} alt="Bedside notarization" className="mx-auto mb-4 h-16 w-16" />
+          <Icon3D src={FEATURE_3D_ICON.bedside} alt="Bedside notarization" className="mx-auto mb-4 h-[147px] w-[147px]" />
           <h2 className="mb-4 font-sans text-3xl font-bold text-foreground">Need a Notary at Your Facility?</h2>
           <p className="mx-auto mb-8 max-w-lg text-muted-foreground">We work with hospital administration, social workers, and nursing staff to coordinate bedside notarization visits. Contact us to set up a facility account or schedule a visit.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">

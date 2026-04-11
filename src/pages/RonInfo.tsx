@@ -157,21 +157,21 @@ export default function RonInfo() {
           <div className="grid gap-6 md:grid-cols-3">
             <Card className="border-border/50 bg-primary/5">
               <CardContent className="flex flex-col items-center p-6 text-center">
-                <Icon3D src={FEATURE_3D_ICON.compliance} alt="Ohio Law" className="h-14 w-14 mb-3" />
+                <Icon3D src={FEATURE_3D_ICON.compliance} alt="Ohio Law" className="h-[129px] w-[129px] mb-3" />
                 <h3 className="mb-1 font-sans text-lg font-semibold">Ohio Law</h3>
                 <p className="text-sm text-muted-foreground">Authorized under ORC §147.65-.66</p>
               </CardContent>
             </Card>
             <Card className="border-border/50 bg-primary/5">
               <CardContent className="flex flex-col items-center p-6 text-center">
-                <Icon3D src={FEATURE_3D_ICON.security} alt="Multi-Factor Security" className="h-14 w-14 mb-3" />
+                <Icon3D src={FEATURE_3D_ICON.security} alt="Multi-Factor Security" className="h-[129px] w-[129px] mb-3" />
                 <h3 className="mb-1 font-sans text-lg font-semibold">Multi-Factor Security</h3>
                 <p className="text-sm text-muted-foreground">ID scan + KBA + live video + recording</p>
               </CardContent>
             </Card>
             <Card className="border-border/50 bg-primary/5">
               <CardContent className="flex flex-col items-center p-6 text-center">
-                <Icon3D src={FEATURE_3D_ICON.apostille} alt="50-State Recognition" className="h-14 w-14 mb-3" />
+                <Icon3D src={FEATURE_3D_ICON.apostille} alt="50-State Recognition" className="h-[129px] w-[129px] mb-3" />
                 <h3 className="mb-1 font-sans text-lg font-semibold">50-State Recognition</h3>
                 <p className="text-sm text-muted-foreground">Full Faith & Credit Clause</p>
               </CardContent>
@@ -250,7 +250,7 @@ export default function RonInfo() {
             {useCases.map((uc) => (
               <Card key={uc.title} className="border-border/50 transition-shadow hover:shadow-md">
                 <CardContent className="flex gap-4 p-6">
-                  <Icon3D src={uc.icon3d} alt={uc.title} className="h-12 w-12 flex-shrink-0" />
+                  <Icon3D src={uc.icon3d} alt={uc.title} className="h-[110px] w-[110px] flex-shrink-0" />
                   <div>
                     <h3 className="mb-1 font-sans font-semibold text-foreground">{uc.title}</h3>
                     <p className="text-sm text-muted-foreground">{uc.desc}</p>

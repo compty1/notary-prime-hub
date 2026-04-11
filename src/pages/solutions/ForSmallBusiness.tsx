@@ -47,7 +47,7 @@ export default function ForSmallBusiness() {
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">
               <div className="relative rounded-2xl border border-border bg-card p-8 shadow-lg">
-                <Icon3D src={FEATURE_3D_ICON.corporate} alt="Business notarization" className="mx-auto mb-4 h-20 w-20" />
+                <Icon3D src={FEATURE_3D_ICON.corporate} alt="Business notarization" className="mx-auto mb-4 h-[184px] w-[184px]" />
                 <p className="text-center text-lg font-semibold text-foreground">Built for Business</p>
                 <p className="mt-2 text-center text-sm text-muted-foreground">Subscription plans from $29/mo</p>
                 <div className="absolute -bottom-3 -right-3 rounded-full bg-accent px-4 py-2 text-xs font-bold text-accent-foreground shadow-lg">Volume Discounts</div>
@@ -68,7 +68,7 @@ export default function ForSmallBusiness() {
               <motion.div key={f.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
                 <Card className="h-full border-border/50 hover:border-primary/20 transition-colors">
                   <CardContent className="p-6">
-                    <div className="mb-4"><Icon3D src={f.icon3d} alt={f.title} className="h-14 w-14" /></div>
+                    <div className="mb-4"><Icon3D src={f.icon3d} alt={f.title} className="h-[129px] w-[129px]" /></div>
                     <h3 className="mb-2 font-sans text-lg font-semibold text-foreground">{f.title}</h3>
                     <p className="text-sm text-muted-foreground">{f.desc}</p>
                   </CardContent>
@@ -101,7 +101,7 @@ export default function ForSmallBusiness() {
 
       <section className="py-16">
         <div className="container mx-auto px-4 text-center">
-          <Icon3D src={FEATURE_3D_ICON.corporate} alt="Get started" className="mx-auto mb-4 h-16 w-16" />
+          <Icon3D src={FEATURE_3D_ICON.corporate} alt="Get started" className="mx-auto mb-4 h-[147px] w-[147px]" />
           <h2 className="mb-4 font-sans text-3xl font-bold text-foreground">Ready to Streamline Your Document Needs?</h2>
           <p className="mx-auto mb-8 max-w-lg text-muted-foreground">Book a one-time appointment or explore subscription plans for ongoing business notarization support.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">

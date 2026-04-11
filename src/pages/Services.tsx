@@ -186,7 +186,7 @@ export default function Services() {
               <motion.div key={tool.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
                 <Card className="group h-full rounded-[24px] border-2 border-border shadow-md hover:shadow-lg hover:shadow-primary/20 transition-shadow">
                   <CardContent className="flex h-full flex-col items-center p-6 text-center">
-                    <Icon3D src={tool.icon3d} alt={tool.title} className="h-14 w-14 mb-4" />
+                    <Icon3D src={tool.icon3d} alt={tool.title} className="h-[129px] w-[129px] mb-4" />
                     <h3 className="mb-2 font-bold text-foreground">{tool.title}</h3>
                     <p className="mb-4 flex-1 text-sm text-muted-foreground">{tool.description}</p>
                     <Link to={tool.link} className="w-full">

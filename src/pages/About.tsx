@@ -181,7 +181,7 @@ export default function About() {
               <motion.div key={cred.title} variants={scaleReveal} custom={i}>
                 <Card className="h-full rounded-[24px] border-2 border-border shadow-md hover:shadow-lg hover:shadow-primary/20 transition-shadow">
                    <CardContent className="p-6">
-                    <Icon3D src={cred.icon3d} alt={cred.title} className="h-12 w-12 mb-3" />
+                    <Icon3D src={cred.icon3d} alt={cred.title} className="h-[110px] w-[110px] mb-3" />
                     <h3 className="mb-2 text-base font-black">{cred.title}</h3>
                     <p className="text-sm text-muted-foreground">{cred.desc}</p>
                   </CardContent>
