@@ -99,8 +99,8 @@ export function Navbar() {
         Skip to main content
       </a>
       <div className="container mx-auto flex items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2">
-          <Logo size="sm" showText theme="light" />
+        <Link to="/" className="flex items-center gap-3">
+          <Logo size="sm" showText theme="dark" />
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">
