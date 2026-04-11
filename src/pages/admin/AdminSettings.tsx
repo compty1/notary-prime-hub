@@ -790,7 +790,7 @@ export default function AdminSettings() {
                   const total = checks.length;
                   return passed === total
                     ? <Badge className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary text-xs">Compliant</Badge>
-                    : <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 text-xs">{passed}/{total} Requirements Met</Badge>;
+                    : <Badge className="bg-warning/10 text-warning-foreground text-xs">{passed}/{total} Requirements Met</Badge>;
                 })()}
               </CardTitle>
             </CardHeader>
