@@ -1,121 +1,163 @@
 
 
-# Comprehensive Platform Audit — DOCX Report & CSV Gap Tracker
+# NotarDex Master Implementation Plan — Full Service Expansion
 
-## What This Delivers
-Two artifacts:
-1. **DOCX Report** (~50+ pages): Organized audit of every gap, bug, missing feature, dead code, icon issue, theme inconsistency, settings gap, and compliance concern found across the entire codebase.
-2. **CSV Tracker** (2000+ rows): Every finding as an actionable row with columns: ID, Category, Severity, Title, Description, File(s) Affected, Fix Steps, Expected Outcome, Testing Method, Status.
+## Scope Summary
 
-## Audit Scope & Categories
+The uploaded document specifies **93 services** across **20 categories** that need to be built or enhanced, plus supporting admin tools, database tables, and AI integrations. This is a massive undertaking — roughly 30-40 new database tables, 25+ new admin pages, and 15+ client-facing pages.
 
-### 1. UI/Theme & Typography Consistency (~200+ items)
-- Font inconsistency: `font-sans` vs `font-heading` vs `font-display` all resolve to DM Sans — some components use hardcoded font families or `font-semibold` instead of `font-bold`
-- Icon transparency issues: `newsletter-megaphone.jpg`, `globe-docs.jpg`, `checklist-docs.jpg`, `email-notif-2.jpg`, `ron-service.jpg`, `newsletter.jpg` — all JPGs with opaque backgrounds instead of transparent PNGs
-- Duplicate icon assets: `doc-shield.png` vs `doc-shield-clean.png`, `identity-verify.png` vs `identity-verify-clean.png`, `globe-docs.jpg` vs `globe-docs.png` — dead/unused variants
-- Hero animation only visible on `lg:` breakpoint — hidden on mobile/tablet
-- About Us copy says "branding, content, and design" — generic placeholder, not notary-specific
-- Inconsistent border radius: mix of `rounded-xl`, `rounded-[24px]`, `rounded-[32px]`, `rounded-2xl`
-- Dark mode gaps across public pages (hero gradient, about section, admin services section)
+Given Lovable's per-message constraints, this must be executed in **phases across multiple messages**. Each phase will focus on a category cluster, creating the database migrations first, then the admin UIs, then wiring into the existing service ecosystem.
 
-### 2. Admin Dashboard & Settings (~150+ items)
-- Missing settings keys not seeded in `platform_settings`: social media URLs, SEO defaults, branding overrides, feature toggles
-- AdminSettings.tsx is 880 lines — God Component, needs decomposition
-- No global font/typography controls in settings
-- No logo upload preview in settings (seal preview exists but not logo)
-- Missing maintenance mode redirect enforcement (setting exists but no route guard)
-- No settings for: hero text, about text, homepage section visibility toggles
-- AdminOverview stats may hit 1000-row query limit
-- Build Tracker uses SSE streaming which may fail silently
+---
 
-### 3. Missing/Dead Functionality (~300+ items)
-- `CookieConsent` component causes React ref warning (console error confirmed)
-- 299+ `console.log/warn/error` statements in production code across 37 files
-- Offline queue (`offlineQueue.ts`) stores actions but never replays them on reconnect
-- `SessionTimeoutWarning` component exists but isn't rendered anywhere
-- `ComplianceWatchdog` component — not imported/used on any page
-- `SignNowStatusPanel` — referenced but SignNow integration incomplete
-- `GoogleCalendarWidget` — exists but Google Calendar sync edge function lacks OAuth flow
-- `RonRecordingPanel` — no actual WebRTC/recording implementation
-- `KBAVerification` — UI only, no actual KBA provider integration
-- `IDScanAssistant` — UI only, no ID scanning API connected
-- `TechCheck` — exists but not used in RON session flow
-- `SessionWaitingRoom` — not integrated into RON session
-- `DocumentReadinessScore` — component exists, not used
-- `ClientProgressTracker` — exists but not rendered in portal
-- `RevenueForecast` — component exists, not used in AdminRevenue
-- `StyleMatchPanel` — exists, not connected
-- `TranslationPanel` — UI only, no translation API
-- `RichTextEditor` — exists but DocuDex uses TipTap directly
-- `InvoicePDFExport` — component exists but no PDF generation library connected
+## Architecture Strategy
 
-### 4. Edge Function & API Issues (~100+ items)
-- 18 database triggers listed in schema but `db-triggers` section says "no triggers" — potential sync issue
-- `google-calendar-sync` function exists but no Google OAuth credentials configured
-- `signnow` and `signnow-webhook` — SIGNNOW_API_KEY/TOKEN set but no end-to-end signing flow
-- `hubspot-sync` — HubSpot keys set but sync not triggered from CRM UI
-- `scan-id` — no actual ID scanning provider API configured
-- `discover-leads` and `scrape-social-leads` — likely violate platform ToS
-- `ionos-email-sync` and `ionos-email` — IONOS credentials set but email sync UI incomplete
-- `process-email-queue` — PGMQ functions exist but cron trigger not configured
-- `stripe-webhook` — webhook endpoint registered but no Stripe dashboard webhook URL set
-- Missing health check monitoring/alerting
+All new services will follow the existing patterns:
+- **Database**: New tables per service domain, all referencing `appointments(id)` and `client_id` where applicable. RLS policies with admin-write, user-read-own.
+- **Service Catalog**: Insert rows into the existing `services` table for each new service.
+- **Routing**: New admin pages lazy-loaded in `App.tsx` under the `/admin` parent route.
+- **Service Requests**: All services create records in `service_requests` with a `service_type` discriminator — no redundant order tables.
+- **Pricing**: Rules stored in `pricing_rules` table with appropriate `rule_type`.
 
-### 5. Database & RLS Gaps (~80+ items)
-- Functions reference `notary_journal` table but journal entries table is `journal_entries`
-- `crm_log_payment` trigger references `auth.uid()` which may be null in webhook contexts
-- `handle_new_user` hardcodes email for admin role — security concern
-- Missing RLS verification for newer tables
-- `audit_log` allows anonymous inserts from global error handler (no auth context)
-- `booking_drafts` table referenced in code but may lack RLS
+---
 
-### 6. Compliance & Security (~60+ items)
-- RON session lacks actual video recording implementation (Ohio ORC §147.63 requires it)
-- No actual KBA provider integration (Ohio ORC §147.66 requires credential analysis)
-- E-seal generation is UI-only, no cryptographic signing
-- Document hash verification (`documentHash.ts`) not integrated into seal verification flow
-- CSRF protection exists but not applied to all mutation forms
-- Session security helpers exist but `sessionSecurity.ts` not used in AuthContext
-- Rate limiter client-side only — server-side needed for auth endpoints
+## Phase 1: Core Notary Enhancements (Sections 2.1–2.9)
 
-### 7. Icon System Analysis & Grading (~50+ items)
-- 6 JPG icons with white/colored backgrounds need PNG transparency conversion
-- 5 duplicate icon files (clean vs original variants)
-- `newsletterMegaphone` imported as `.jpg` — should be `.png`
-- Missing icons for: subscription, API, white-label, witness, travel, data-entry services
-- Icon sizing inconsistent: mix of 56px, 64px, 72px, 80px, 110px across sections
-- No icon for admin sidebar items (uses Lucide, not 3D icons — intentional but inconsistent with homepage)
+**Database migrations:**
+- `ron_recordings` table (session recordings archive)
+- `loan_signing_packages` + `scanback_tracking` tables
+- `i9_verifications` table
+- `print_jobs` table
+- Surcharge rules seeded into `pricing_rules`
 
-### 8. Navigation, Routing & SEO (~40+ items)
-- `/contact` redirects to `/#contact` which may not scroll correctly with lazy loading
-- `/dashboard` redirects to `/portal` but some email templates may reference `/dashboard`
-- Missing 404 handling for `/admin/*` sub-routes
-- `sitemap.xml` likely static and not auto-generated from routes
-- Missing canonical URLs on many pages
-- `robots.txt` may not block admin routes
+**Admin UI builds:**
+- AdminJournal: Add Batch Entry tab, Fee Cap Check badge, PDF Export
+- AdminOverview: RON Dashboard tab with real-time session cards
+- New `/admin/ron-recordings` page (recording archive)
+- New `/admin/loan-signing` page (Packages, Scanbacks, Title Companies tabs)
+- New `/admin/i9-verifications` page (guided I-9 workflow)
+- New `/admin/scanbacks` page (scanback services dashboard)
+- AdminDocuments: Print Queue section
+- AdminSettings: Surcharge management (after-hours, weekends, holidays)
+- Witness Management section in AdminSettings
 
-### 9. Professional/Notary Pages (~30+ items)
-- Professional pages (`/n/:slug`) — gallery management UI exists but storage bucket permissions may block public access
-- QR code generation uses external API (`api.qrserver.com`) — no fallback
-- Google Font injection on notary pages — no CSP allowance
-- Professional service enrollments lack price validation on client side
+**Client-facing:**
+- Travel Fee Estimator on BookAppointment page
+- Auto-surcharge display on booking confirmation
 
-### 10. Performance (~30+ items)
-- LongTask warnings in console (280ms, 185ms, 207ms, 343ms)
-- 3354 regex matches for TODO/FIXME/HACK across 102 files
-- No code splitting for admin pages within the admin layout (all lazy-loaded at route level but large bundles)
-- `Hero3DAnimation` runs `requestAnimationFrame` continuously even when off-screen
-- No `will-change` or GPU acceleration hints on animated elements
+---
 
-## Technical Approach
+## Phase 2: Document & Field Services (Section 3: 10 services)
 
-1. Parse uploaded PDF for any remaining plan items
-2. Cross-reference with codebase findings above
-3. Generate Python script to create DOCX with professional formatting (cover page, TOC, categorized sections, severity badges)
-4. Generate CSV with all findings (ID, Category, Severity, Title, Description, Files, Fix Steps, Outcome, Test Method, Priority, Status)
-5. QA both artifacts visually before delivery
+**Database migrations:**
+- `fingerprint_sessions`, `live_scan_planning`, `process_serving_cases`
+- `skip_trace_requests`, `vital_records_requests`, `scrivener_jobs`
+- `translation_requests`, `courier_jobs`
 
-## Output
-- `/mnt/documents/notar-platform-audit-report.docx`
-- `/mnt/documents/notar-platform-audit-tracker.csv`
+**Admin UI builds:**
+- `/admin/fingerprinting` — FD-258 session log + supply inventory
+- `/admin/live-scan-planning` — ROI calculator + readiness checklist
+- `/admin/process-serving` — Kanban case board + affidavit generator
+- `/admin/skip-tracing` — request queue + result builder
+- `/admin/vital-records` — pipeline tracker + agency directory
+- `/admin/scrivener` — UPL-compliant form typing workflow
+- `/admin/translations` — translator directory + affidavit generator
+- `/admin/courier` — job board + chain of custody
+- Enhance AdminApostille with status pipeline + client tracking URL
+- Enhance DocumentDigitize with batch processing + OCR queue
+
+---
+
+## Phase 3: Admin/VA, Translation & Language, Identity Services (Sections 4–6)
+
+**Database migrations:**
+- `virtual_assistant_tasks`, `data_entry_projects`
+- `interpreter_directory`
+- `background_checks`, `id_verifications`, `identity_certificates`
+
+**Admin UI builds:**
+- `/admin/va-tasks` — VA task management dashboard
+- `/admin/data-entry` — data entry projects tracker
+- `/admin/interpreters` — interpreter referral directory
+- `/admin/background-checks` — BCI/FBI workflow
+- `/admin/id-verification` — batch mobile ID verification
+- `/admin/identity-certificates` — certificate generation + registry
+- Enhance `/admin/translations` with Translator Management tab, language pricing matrix, quality tiers
+- Translation Package Builder (client + admin views)
+
+---
+
+## Phase 4: Courier/Filing, Real Estate, Print Marketplace (Sections 7–9)
+
+**Database migrations:**
+- `recorder_filings`, `sos_filings`
+- `property_photography`, `lockbox_services`, `open_house_support`
+- `tenant_document_services`, `property_condition_reports`, `move_inspections`
+- `signing_ceremonies`, `document_recording_packages`
+- `print_orders`, `print_products`, `print_templates`, `print_vendors`
+- `print_vendor_routing_rules`, `design_files`, `shipping_labels`
+
+**Admin UI builds:**
+- `/admin/recorder-filings` — county recorder filing tracker
+- `/admin/sos-filings` — SOS filing pipeline
+- `/admin/photography` — property photography service
+- `/admin/real-estate-support` — lockbox, open house, tenant docs, inspections
+- `/admin/print-orders` — print marketplace order management
+- `/admin/print-products` — product catalog CRUD
+- `/admin/print-vendors` — vendor directory + routing rules
+
+---
+
+## Phase 5: Court Forms, Business Services, Immigration, Identity/Security, Tech/Automation, Marketing, Personal Services (Sections 10–16)
+
+**Database migrations:**
+- `court_form_jobs`, `permit_filings`, `compliance_calendars`, `compliance_events`
+- Immigration-safe service tables
+- Tech/automation service tables
+- Marketing/branding service tables
+
+**Admin UI builds:**
+- `/admin/court-forms` — court form typing with UPL compliance
+- `/admin/permits` — business license/permit filing
+- `/admin/compliance-calendars` — compliance calendar builder
+- Remaining category admin dashboards following the established pattern
+
+---
+
+## Phase 6: UX Consulting & Financial Operations Tools (Sections 17–18)
+
+These are primarily AI-tool-based services that extend the existing AI Tools Hub:
+- Add 15 UX consulting tool definitions to `aiToolsRegistry.ts`
+- Add 20 financial operations tool definitions to `aiToolsRegistry.ts`
+- Register all new tool IDs in the `ai-tools` edge function's `TOOL_IDS` set
+- Create appropriate system prompts and field schemas for each tool
+
+---
+
+## Cross-Cutting Work (All Phases)
+
+1. **Service catalog seeding**: INSERT all ~93 services into the `services` table with correct categories, pricing, icons, and descriptions
+2. **Sidebar navigation**: Add new admin routes to the admin sidebar component
+3. **Service detail pages**: Ensure each new service has `service_requirements` and `service_workflows` entries
+4. **Booking integration**: Add new service types to BookAppointment service type dropdown
+5. **Client portal**: Surface relevant service statuses in the client portal
+6. **Pricing rules**: Seed `pricing_rules` for each service
+
+---
+
+## Execution Order
+
+I will implement this in order: **Phase 1 first** (core notary — highest revenue impact), then phases 2-6 sequentially. Each phase will be one or more messages depending on complexity.
+
+**Shall I proceed with Phase 1?**
+
+---
+
+## Technical Notes
+
+- All new tables get RLS policies: admin full CRUD, authenticated users read/write own records
+- All admin pages follow the existing pattern: lazy-loaded, `PageShell` wrapper, shadcn/ui data tables
+- New service rows use the existing `services` table schema (no new catalog tables)
+- All fee calculations respect Ohio statutory caps where applicable
+- UPL compliance gates are mandatory for any document preparation service
 
