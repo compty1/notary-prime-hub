@@ -31,12 +31,13 @@ export function ClientFeedbackForm({ appointmentId, onSubmitted }: ClientFeedbac
   const handleSubmit = useCallback(async () => {
     if (!user || rating === 0) return;
     setSubmitting(true);
-    const { error } = await supabase.from("client_feedback" as any).insert({
+    const { error } = await supabase.from("feedback").insert({
       appointment_id: appointmentId,
-      client_id: user.id,
+      user_id: user.id,
       rating,
       nps_score: npsScore,
       comment: comment.trim() || null,
+      feedback_type: 'appointment_review',
     } as any);
     if (error) {
       toast.error("Failed to submit feedback");
