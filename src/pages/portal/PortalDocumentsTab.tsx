@@ -14,11 +14,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import BulkDocumentUpload from "@/components/BulkDocumentUpload";
 
 const docStatusColors: Record<string, string> = {
-  uploaded: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-  pending_review: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
-  approved: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
-  notarized: "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary",
-  rejected: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+  uploaded: "bg-info/10 text-info",
+  pending_review: "bg-warning/10 text-warning-foreground",
+  approved: "bg-success/10 text-success",
+  notarized: "bg-primary/10 text-primary",
+  rejected: "bg-destructive/10 text-destructive",
 };
 
 const ACCEPTED_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/tiff", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];

@@ -252,11 +252,11 @@ export default function AdminRevenue() {
   const profitMargin = totalRevenue > 0 ? ((netProfit / totalRevenue) * 100).toFixed(1) : "0.0";
 
   const statCards = [
-    { label: "Total Revenue", value: `$${totalRevenue.toFixed(2)}`, icon: DollarSign, color: "text-blue-600" },
+    { label: "Total Revenue", value: `$${totalRevenue.toFixed(2)}`, icon: DollarSign, color: "text-info" },
     { label: "YTD Revenue", value: `$${ytdRevenue.toFixed(2)}`, icon: Calendar, color: "text-primary" },
     { label: "Profit Margin", value: `${profitMargin}%`, icon: TrendingUp, color: parseFloat(profitMargin) >= 50 ? "text-primary" : "text-amber-600" },
-    { label: "Total Expenses", value: `$${totalExpenses.toFixed(2)}`, icon: TrendingDown, color: "text-red-500" },
-    { label: "Net Profit", value: `$${netProfit.toFixed(2)}`, icon: TrendingUp, color: netProfit >= 0 ? "text-primary" : "text-red-600" },
+    { label: "Total Expenses", value: `$${totalExpenses.toFixed(2)}`, icon: TrendingDown, color: "text-destructive" },
+    { label: "Net Profit", value: `$${netProfit.toFixed(2)}`, icon: TrendingUp, color: netProfit >= 0 ? "text-primary" : "text-destructive" },
     { label: "Avg Profit/Session", value: `$${avgPerSession.toFixed(2)}`, icon: Receipt, color: "text-primary" },
   ];
 

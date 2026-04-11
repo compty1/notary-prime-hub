@@ -10,10 +10,10 @@ import { ProgressTimeline } from "@/components/ProgressTimeline";
 import { supabase } from "@/integrations/supabase/client";
 
 const statusColors: Record<string, string> = {
-  submitted: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
-  in_progress: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
-  awaiting_client: "bg-orange-500/10 text-orange-700 dark:text-orange-400",
-  completed: "bg-primary/10 text-primary dark:text-primary",
+  submitted: "bg-info/10 text-info",
+  in_progress: "bg-warning/10 text-warning-foreground",
+  awaiting_client: "bg-accent/10 text-accent-foreground",
+  completed: "bg-primary/10 text-primary",
   cancelled: "bg-muted text-muted-foreground",
 };
 
@@ -110,7 +110,7 @@ export default function PortalServiceRequestsTab({ serviceRequests: initialReque
       {requests.some(r => r.status === "awaiting_client") && statusFilter !== "awaiting_client" && (
         <button
           onClick={() => setStatusFilter("awaiting_client")}
-          className="w-full flex items-center gap-2 rounded-lg border border-orange-500/30 bg-orange-500/5 px-4 py-2 text-sm text-orange-700 dark:text-orange-400 hover:bg-orange-500/10 transition-colors"
+          className="w-full flex items-center gap-2 rounded-lg border border-warning/30 bg-warning/5 px-4 py-2 text-sm text-warning-foreground hover:bg-warning/10 transition-colors"
         >
           <AlertTriangle className="h-4 w-4" />
           <span>{requests.filter(r => r.status === "awaiting_client").length} request(s) need your input</span>

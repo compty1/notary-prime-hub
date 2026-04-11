@@ -37,8 +37,8 @@ const RULE_SETS = [
 
 const severityConfig = {
   critical: { icon: AlertCircle, color: "text-destructive", bg: "bg-destructive/10", badge: "destructive" as const },
-  warning: { icon: AlertTriangle, color: "text-yellow-600 dark:text-yellow-400", bg: "bg-yellow-50 dark:bg-yellow-900/20", badge: "secondary" as const },
-  info: { icon: Info, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-900/20", badge: "outline" as const },
+  warning: { icon: AlertTriangle, color: "text-warning", bg: "bg-warning/10", badge: "secondary" as const },
+  info: { icon: Info, color: "text-info", bg: "bg-info/10", badge: "outline" as const },
 };
 
 export function ComplianceWatchdog({ documentText, className }: ComplianceWatchdogProps) {
@@ -73,7 +73,7 @@ export function ComplianceWatchdog({ documentText, className }: ComplianceWatchd
     ? "text-primary"
     : result?.overall_status === "non_compliant"
     ? "text-destructive"
-    : "text-yellow-600 dark:text-yellow-400";
+    : "text-warning";
 
   return (
     <Card className={className}>

@@ -190,7 +190,7 @@ export default function AdminOverview() {
   }, [allAppointments]);
 
   const statCards = [
-    { label: "Total Appointments", value: stats.total, icon: CalendarIcon, color: "text-blue-600", link: "/admin/appointments" },
+    { label: "Total Appointments", value: stats.total, icon: CalendarIcon, color: "text-info", link: "/admin/appointments" },
     { label: "Upcoming", value: stats.upcoming, icon: Clock, color: "text-amber-600", link: "/admin/appointments?status=scheduled" },
     { label: "Completed", value: stats.completed, icon: CheckCircle, color: "text-primary", link: "/admin/appointments?status=completed" },
     { label: "Clients", value: stats.clients, icon: Users, color: "text-purple-600", link: "/admin/clients" },

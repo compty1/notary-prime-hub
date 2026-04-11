@@ -42,7 +42,7 @@ const stateCategories = [
     description: "Even states without their own RON laws must accept Ohio RON notarizations under the U.S. Constitution's Full Faith and Credit Clause (Article IV, Section 1):",
     states: "All 50 states and U.S. territories",
     badge: "Constitutional Protection",
-    color: "bg-blue-100 text-blue-800",
+    color: "bg-info/10 text-info",
   },
 ];
 
@@ -141,10 +141,10 @@ export default function RonInfo() {
                 <Monitor className="mr-1 h-3 w-3" /> Remote Online Notarization
               </Badge>
             </motion.div>
-            <motion.h1 variants={fadeUp} custom={1} className="mb-4 font-sans text-3xl font-bold text-white md:text-5xl">
+            <motion.h1 variants={fadeUp} custom={1} className="mb-4 font-sans text-3xl font-bold text-foreground md:text-5xl">
               RON: The Future of Notarization
             </motion.h1>
-            <motion.p variants={fadeUp} custom={2} className="mx-auto max-w-2xl text-white/70">
+            <motion.p variants={fadeUp} custom={2} className="mx-auto max-w-2xl text-muted-foreground">
               More secure than traditional notarization, accepted in all 50 states, and available from anywhere. Learn why RON is the smarter choice. Notar uses <strong>SignNow</strong> as our certified RON platform — including built-in MISMO-compliant KBA.
             </motion.p>
           </motion.div>
@@ -356,7 +356,7 @@ export default function RonInfo() {
                   <tr key={s.state} className={`border-b border-border/30 last:border-0 ${s.state === "Ohio" ? "bg-primary/5" : ""}`}>
                     <td className="px-3 py-2 font-medium">{s.state}</td>
                     <td className="px-3 py-2">
-                      <Badge className={s.status === "permanent" ? "bg-primary/10 text-primary" : s.status === "temporary" ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"}>
+                      <Badge className={s.status === "permanent" ? "bg-primary/10 text-primary" : s.status === "temporary" ? "bg-warning/10 text-warning-foreground" : "bg-destructive/10 text-destructive"}>
                         {s.status === "permanent" ? "Permanent Law" : s.status === "temporary" ? "Temporary" : "No Law"}
                       </Badge>
                     </td>

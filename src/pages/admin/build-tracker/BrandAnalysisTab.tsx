@@ -68,7 +68,7 @@ Provide a JSON response with this EXACT structure (no markdown, just raw JSON):
 }`;
 
 function ScoreBar({ label, value, icon }: { label: string; value: number; icon: React.ReactNode }) {
-  const color = value >= 80 ? "text-green-600 dark:text-green-400" : value >= 60 ? "text-yellow-600 dark:text-yellow-400" : "text-orange-600 dark:text-orange-400";
+  const color = value >= 80 ? "text-success" : value >= 60 ? "text-warning-foreground" : "text-destructive";
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
@@ -297,13 +297,13 @@ export default function BrandAnalysisTab() {
           {analysis.brandGaps.length > 0 && (
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-yellow-500" /> Brand Gaps</CardTitle>
+                <CardTitle className="text-sm flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-warning" /> Brand Gaps</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">
                   {analysis.brandGaps.map((gap, idx) => (
                     <li key={idx} className="flex items-start gap-2 text-sm">
-                      <AlertTriangle className="h-3.5 w-3.5 text-yellow-500 mt-0.5 shrink-0" />
+                      <AlertTriangle className="h-3.5 w-3.5 text-warning mt-0.5 shrink-0" />
                       <span className="text-muted-foreground">{gap}</span>
                     </li>
                   ))}

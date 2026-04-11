@@ -1728,25 +1728,25 @@ export default function RonSession() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between rounded-md border border-border p-2">
                     <span className="text-[10px] text-muted-foreground">Session Encryption</span>
-                    <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 text-[10px]">
+                    <Badge variant="secondary" className="bg-success/10 text-success text-[10px]">
                       <CheckCircle className="mr-1 h-3 w-3" /> AES-256
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between rounded-md border border-border p-2">
                     <span className="text-[10px] text-muted-foreground">Participant Verified</span>
-                    <Badge variant="secondary" className={cn("text-[10px]", idVerified ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300" : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300")}>
+                    <Badge variant="secondary" className={cn("text-[10px]", idVerified ? "bg-success/10 text-success" : "bg-warning/10 text-warning-foreground")}>
                       {idVerified ? <><CheckCircle className="mr-1 h-3 w-3" /> Verified</> : <><AlertCircle className="mr-1 h-3 w-3" /> Pending</>}
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between rounded-md border border-border p-2">
                     <span className="text-[10px] text-muted-foreground">KBA Status</span>
-                    <Badge variant="secondary" className={cn("text-[10px]", kbaCompleted ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300" : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300")}>
+                    <Badge variant="secondary" className={cn("text-[10px]", kbaCompleted ? "bg-success/10 text-success" : "bg-warning/10 text-warning-foreground")}>
                       {kbaCompleted ? <><CheckCircle className="mr-1 h-3 w-3" /> Passed</> : <><AlertCircle className="mr-1 h-3 w-3" /> Pending</>}
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between rounded-md border border-border p-2">
                     <span className="text-[10px] text-muted-foreground">Recording Consent</span>
-                    <Badge variant="secondary" className={cn("text-[10px]", recordingConsent ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300" : "bg-destructive/10 text-destructive")}>
+                    <Badge variant="secondary" className={cn("text-[10px]", recordingConsent ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive")}>
                       {recordingConsent ? <><CheckCircle className="mr-1 h-3 w-3" /> Granted</> : <><AlertCircle className="mr-1 h-3 w-3" /> Required</>}
                     </Badge>
                   </div>
@@ -1926,7 +1926,7 @@ export default function RonSession() {
                 {kbaCompleted ? (
                   <Badge variant="secondary" className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary text-xs"><CheckCircle className="mr-1 h-3 w-3" /> KBA Passed</Badge>
                 ) : (
-                  <Badge variant="secondary" className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 text-xs"><AlertCircle className="mr-1 h-3 w-3" /> Awaiting KBA</Badge>
+                  <Badge variant="secondary" className="bg-warning/10 text-warning-foreground text-xs"><AlertCircle className="mr-1 h-3 w-3" /> Awaiting KBA</Badge>
                 )}
                 <p className="mt-2 text-[10px] text-muted-foreground">
                   {hasNativeKba

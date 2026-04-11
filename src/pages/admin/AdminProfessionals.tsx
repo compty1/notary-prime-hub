@@ -237,12 +237,12 @@ export default function AdminProfessionals() {
           <p className="text-xs text-muted-foreground">Pending Enrollments</p>
         </CardContent></Card>
         <Card><CardContent className="pt-6 text-center">
-          <DollarSign className="mx-auto h-5 w-5 text-green-600 mb-1" />
+          <DollarSign className="mx-auto h-5 w-5 text-success mb-1" />
           <p className="text-2xl font-bold">${totalPaid.toFixed(2)}</p>
           <p className="text-xs text-muted-foreground">Total Paid Out</p>
         </CardContent></Card>
         <Card><CardContent className="pt-6 text-center">
-          <TrendingUp className="mx-auto h-5 w-5 text-blue-600 mb-1" />
+          <TrendingUp className="mx-auto h-5 w-5 text-info mb-1" />
           <p className="text-2xl font-bold">${totalPlatformFees.toFixed(2)}</p>
           <p className="text-xs text-muted-foreground">Platform Revenue</p>
         </CardContent></Card>
@@ -348,7 +348,7 @@ export default function AdminProfessionals() {
                     <TableCell>
                       {enr.custom_price_from != null ? `$${enr.custom_price_from}${enr.custom_price_to ? ` - $${enr.custom_price_to}` : ""}` : "Platform default"}
                     </TableCell>
-                    <TableCell>{enr.show_on_site ? <CheckCircle className="h-4 w-4 text-green-600" /> : <XCircle className="h-4 w-4 text-muted-foreground" />}</TableCell>
+                    <TableCell>{enr.show_on_site ? <CheckCircle className="h-4 w-4 text-success" /> : <XCircle className="h-4 w-4 text-muted-foreground" />}</TableCell>
                     <TableCell>
                       <Badge variant={enr.is_active ? "default" : "secondary"}>{enr.is_active ? "Active" : "Pending"}</Badge>
                     </TableCell>
@@ -391,7 +391,7 @@ export default function AdminProfessionals() {
                     <TableCell>{getServiceName(cfg.service_id)}</TableCell>
                     <TableCell><Badge>{cfg.share_percentage}%</Badge></TableCell>
                     <TableCell>${cfg.min_platform_fee.toFixed(2)}</TableCell>
-                    <TableCell>{cfg.is_active ? <CheckCircle className="h-4 w-4 text-green-600" /> : <XCircle className="h-4 w-4 text-muted-foreground" />}</TableCell>
+                    <TableCell>{cfg.is_active ? <CheckCircle className="h-4 w-4 text-success" /> : <XCircle className="h-4 w-4 text-muted-foreground" />}</TableCell>
                     <TableCell>
                       <Button variant="ghost" size="sm" onClick={() => { setEditConfig(cfg); setConfigDialog(true); }}><Pencil className="h-3 w-3" /></Button>
                     </TableCell>
@@ -410,7 +410,7 @@ export default function AdminProfessionals() {
           <div className="flex items-center justify-between">
             <div className="flex gap-4">
               <Card className="px-4 py-2"><p className="text-xs text-muted-foreground">Pending</p><p className="text-lg font-bold text-amber-600">${totalPending.toFixed(2)}</p></Card>
-              <Card className="px-4 py-2"><p className="text-xs text-muted-foreground">Paid</p><p className="text-lg font-bold text-green-600">${totalPaid.toFixed(2)}</p></Card>
+              <Card className="px-4 py-2"><p className="text-xs text-muted-foreground">Paid</p><p className="text-lg font-bold text-success">${totalPaid.toFixed(2)}</p></Card>
             </div>
             <Button variant="outline" size="sm" onClick={exportTransactions} className="gap-1"><Download className="h-3 w-3" /> Export CSV</Button>
           </div>
@@ -434,7 +434,7 @@ export default function AdminProfessionals() {
                     <TableCell className="font-medium">{getProfName(txn.professional_user_id)}</TableCell>
                     <TableCell>${txn.gross_amount.toFixed(2)}</TableCell>
                     <TableCell className="text-muted-foreground">${txn.platform_fee.toFixed(2)}</TableCell>
-                    <TableCell className="font-semibold text-green-600">${txn.professional_share.toFixed(2)}</TableCell>
+                    <TableCell className="font-semibold text-success">${txn.professional_share.toFixed(2)}</TableCell>
                     <TableCell>
                       <Badge variant={txn.status === "paid" ? "default" : txn.status === "disputed" ? "destructive" : "secondary"}>
                         {txn.status}
