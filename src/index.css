@@ -258,6 +258,18 @@ html {
   scroll-behavior: smooth;
 }
 
+/* GAP-0016/0036: Standardized section spacing utility */
+.section-padding {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+@media (min-width: 768px) {
+  .section-padding {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+}
+
 /* GAP-0012: Focus indicators */
 :focus-visible {
   outline: 2px solid hsl(var(--primary));
@@ -266,6 +278,12 @@ html {
 
 .dark :focus-visible {
   outline-color: hsl(var(--primary));
+}
+
+/* GAP-0030: Standardized backdrop opacity for dialogs */
+[data-radix-popper-content-wrapper],
+[data-state="open"][role="dialog"]::backdrop {
+  background-color: hsl(0 0% 0% / 0.5);
 }
 
 /* GAP-0010/0018: Micro-interactions */
