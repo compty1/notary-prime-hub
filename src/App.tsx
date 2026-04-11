@@ -9,6 +9,8 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { lazy, Suspense, ReactNode } from "react";
 import ScrollToTop from "@/components/ScrollToTop";
 import { CommandPalette } from "@/components/CommandPalette";
+import { CookieConsent } from "@/components/CookieConsent";
+import { OfflineIndicator } from "@/components/OfflineIndicator";
 
 // Eager load critical pages
 import ComingSoon from "./pages/ComingSoon";
@@ -288,6 +290,8 @@ const App = () => (
           <ScrollToTop />
           <AuthenticatedCommandPalette />
           <AnimatedRoutes />
+          <CookieConsent />
+          <OfflineIndicator />
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>

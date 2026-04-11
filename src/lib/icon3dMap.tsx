@@ -30,7 +30,7 @@ import email from "@/assets/icons-3d/email.png";
 import thumbsUp from "@/assets/icons-3d/thumbs-up.png";
 import workflow from "@/assets/icons-3d/workflow.png";
 import globeDocs from "@/assets/icons-3d/globe-docs.png";
-import newsletterMegaphone from "@/assets/icons-3d/newsletter-megaphone.jpg";
+import newsletterMegaphone from "@/assets/icons-3d/newsletter.png";
 import lockShield from "@/assets/icons-3d/lock-shield.png";
 import clockFast from "@/assets/icons-3d/clock-fast.png";
 import legalDoc from "@/assets/icons-3d/legal-doc.png";

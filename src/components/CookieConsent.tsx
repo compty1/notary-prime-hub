@@ -1,4 +1,4 @@
-import { useState, useEffect, forwardRef } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Link } from "react-router-dom";
@@ -17,7 +17,7 @@ interface CookiePrefs {
 
 const DEFAULT_PREFS: CookiePrefs = { essential: true, analytics: false, marketing: false };
 
-const CookieConsentInner = forwardRef<HTMLDivElement>((_, ref) => {
+const CookieConsentInner = () => {
   const [visible, setVisible] = useState(false);
   const [showPrefs, setShowPrefs] = useState(false);
   const [prefs, setPrefs] = useState<CookiePrefs>(() => {
@@ -53,7 +53,7 @@ const CookieConsentInner = forwardRef<HTMLDivElement>((_, ref) => {
   if (!visible) return null;
 
   return (
-    <div ref={ref}>
+    <div>
       <motion.div
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -122,8 +122,7 @@ const CookieConsentInner = forwardRef<HTMLDivElement>((_, ref) => {
       </motion.div>
     </div>
   );
-});
-CookieConsentInner.displayName = "CookieConsentInner";
+};
 
 export function CookieConsent() {
   return (

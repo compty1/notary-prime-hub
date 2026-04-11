@@ -1,4 +1,5 @@
 import { lazy, Suspense, useState, useEffect } from "react";
+import ClientProgressTracker from "@/components/ClientProgressTracker";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -88,6 +89,8 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
 
   return (
     <div className="space-y-6">
+      {/* Progress tracker for client journey */}
+      <ClientProgressTracker appointments={appointments as any[]} documents={[]} />
       <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="font-sans text-xl font-semibold">Upcoming Appointments</h2>
         <div className="flex items-center gap-2 flex-wrap">

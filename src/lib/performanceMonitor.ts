@@ -49,12 +49,15 @@ export function initWebVitals(onMetric?: (name: string, value: number) => void) 
     clsObserver.observe({ type: "layout-shift", buffered: true });
   } catch { /* unsupported */ }
 
-  // Long Tasks (>50ms)
+  // Long Tasks (>50ms) — only log in dev to avoid console noise in production
   try {
     const longTaskObserver = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
         if (entry.duration > 100) {
-          console.warn(`[LongTask] ${Math.round(entry.duration)}ms at ${Math.round(entry.startTime)}ms`);
+          if (import.meta.env.DEV) {
+            console.warn(`[LongTask] ${Math.round(entry.duration)}ms at ${Math.round(entry.startTime)}ms`);
+          }
+          onMetric?.("LongTask", entry.duration);
         }
       }
     });
