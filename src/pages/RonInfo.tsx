@@ -141,10 +141,10 @@ export default function RonInfo() {
                 <Monitor className="mr-1 h-3 w-3" /> Remote Online Notarization
               </Badge>
             </motion.div>
-            <motion.h1 variants={fadeUp} custom={1} className="mb-4 font-sans text-3xl font-bold text-white md:text-5xl">
+            <motion.h1 variants={fadeUp} custom={1} className="mb-4 font-sans text-3xl font-bold text-foreground md:text-5xl">
               RON: The Future of Notarization
             </motion.h1>
-            <motion.p variants={fadeUp} custom={2} className="mx-auto max-w-2xl text-white/70">
+            <motion.p variants={fadeUp} custom={2} className="mx-auto max-w-2xl text-muted-foreground">
               More secure than traditional notarization, accepted in all 50 states, and available from anywhere. Learn why RON is the smarter choice. Notar uses <strong>SignNow</strong> as our certified RON platform — including built-in MISMO-compliant KBA.
             </motion.p>
           </motion.div>
