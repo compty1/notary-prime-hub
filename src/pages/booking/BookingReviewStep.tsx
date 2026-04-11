@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Monitor, Calendar, Shield, DollarSign, AlertTriangle, Clock, Eye, EyeOff, CreditCard, Tag, Loader2, CheckCircle } from "lucide-react";
 import { formatTimeSlot, isDigitalOnly, HAGUE_COUNTRIES } from "./bookingConstants";
 import { OhioComplianceNotice } from "@/components/OhioComplianceNotice";
+import { SignerChecklist } from "@/components/SignerChecklist";
 
 interface ReviewStepProps {
   isNonNotarial: boolean;

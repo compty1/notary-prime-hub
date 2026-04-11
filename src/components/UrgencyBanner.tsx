@@ -24,7 +24,7 @@ export function UrgencyBanner({ message, variant = "slots", className, dismissib
   return (
     <div className={cn(
       "relative flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium",
-      "bg-accent-warm text-accent-warm-foreground",
+      "bg-primary/10 text-primary border-b border-primary/20",
       "animate-fade-in",
       className
     )}>
