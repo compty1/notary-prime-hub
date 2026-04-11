@@ -370,8 +370,8 @@ export default function Index() {
                 className="relative z-10 group"
               >
                 <div className="bg-card rounded-[24px] border border-border p-6 shadow-card hover:-translate-y-1 transition-all duration-300">
-                  <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-5">
-                    <Icon3D src={step.icon3d} alt={step.title} className="w-12 h-12" />
+                  <div className="w-[129px] h-[129px] rounded-xl flex items-center justify-center mb-5">
+                    <Icon3D src={step.icon3d} alt={step.title} className="w-[110px] h-[110px]" />
                   </div>
                   <h3 className="text-xl font-bold text-foreground mb-2">{step.title}</h3>
                   <p className="text-sm text-muted-foreground font-medium leading-relaxed">{step.desc}</p>
@@ -433,8 +433,8 @@ export default function Index() {
                 <Card className="group h-full rounded-[24px] border-border hover:border-primary/30 transition-all shadow-sm hover:shadow-card">
                   <CardContent className="p-8">
                     <div className="mb-4 flex items-center gap-3">
-                      <div className="flex h-14 w-14 items-center justify-center">
-                        <Icon3D src={s.icon3d} alt={s.title} className="h-14 w-14" />
+                      <div className="flex h-[129px] w-[129px] items-center justify-center">
+                        <Icon3D src={s.icon3d} alt={s.title} className="h-[129px] w-[129px]" />
                       </div>
                       <Badge className="text-[10px] font-bold uppercase tracking-wider bg-muted text-muted-foreground border-border">{s.badge}</Badge>
                     </div>
@@ -464,8 +464,8 @@ export default function Index() {
             {otherServices.map((service) => (
               <Link key={service.title} to={service.to}>
                 <div className="bg-card p-6 rounded-[24px] border border-border shadow-sm flex flex-col items-center text-center hover:border-primary/30 hover:-translate-y-0.5 transition-all cursor-pointer group">
-                  <div className="w-12 h-12 flex items-center justify-center mb-4">
-                    <Icon3D src={service.icon3d} alt={service.title} className="w-10 h-10" />
+                  <div className="w-[110px] h-[110px] flex items-center justify-center mb-4">
+                    <Icon3D src={service.icon3d} alt={service.title} className="w-[92px] h-[92px]" />
                   </div>
                   <h3 className="font-bold text-foreground text-sm">{service.title}</h3>
                   <p className="text-xs text-muted-foreground font-medium mt-1">{service.desc}</p>

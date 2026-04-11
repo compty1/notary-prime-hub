@@ -26,7 +26,7 @@ export function PortalQuickActions() {
         <Link key={action.label} to={action.href}>
           <Card className="rounded-2xl border-border/50 hover:border-primary/30 hover:shadow-sm transition-all cursor-pointer">
             <CardContent className="flex flex-col items-center gap-2 p-4 text-center">
-              <Icon3D src={action.icon3d} alt={action.label} className="h-10 w-10" />
+              <Icon3D src={action.icon3d} alt={action.label} className="h-[92px] w-[92px]" />
               <span className="text-xs font-medium text-foreground">{action.label}</span>
             </CardContent>
           </Card>

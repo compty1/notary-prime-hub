@@ -47,7 +47,7 @@ export default function ForRealEstate() {
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">
               <div className="relative rounded-2xl border border-border bg-card p-8 shadow-lg">
-                <Icon3D src={FEATURE_3D_ICON.realEstate} alt="Real estate closing" className="mx-auto mb-4 h-20 w-20" />
+                <Icon3D src={FEATURE_3D_ICON.realEstate} alt="Real estate closing" className="mx-auto mb-4 h-[184px] w-[184px]" />
                 <p className="text-center text-lg font-semibold text-foreground">Closing Table Ready</p>
                 <p className="mt-2 text-center text-sm text-muted-foreground">NNA-certified signing agent</p>
                 <div className="absolute -bottom-3 -right-3 rounded-full bg-accent px-4 py-2 text-xs font-bold text-accent-foreground shadow-lg">Mobile & RON</div>
@@ -68,7 +68,7 @@ export default function ForRealEstate() {
               <motion.div key={f.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
                 <Card className="h-full border-border/50 hover:border-primary/20 transition-colors">
                   <CardContent className="p-6">
-                    <div className="mb-4"><Icon3D src={f.icon3d} alt={f.title} className="h-14 w-14" /></div>
+                    <div className="mb-4"><Icon3D src={f.icon3d} alt={f.title} className="h-[129px] w-[129px]" /></div>
                     <h3 className="mb-2 font-sans text-lg font-semibold text-foreground">{f.title}</h3>
                     <p className="text-sm text-muted-foreground">{f.desc}</p>
                   </CardContent>
@@ -101,7 +101,7 @@ export default function ForRealEstate() {
 
       <section className="py-16">
         <div className="container mx-auto px-4 text-center">
-          <Icon3D src={FEATURE_3D_ICON.realEstate} alt="Ready to close" className="mx-auto mb-4 h-16 w-16" />
+          <Icon3D src={FEATURE_3D_ICON.realEstate} alt="Ready to close" className="mx-auto mb-4 h-[147px] w-[147px]" />
           <h2 className="mb-4 font-sans text-3xl font-bold text-foreground">Ready to Close?</h2>
           <p className="mx-auto mb-8 max-w-lg text-muted-foreground">Schedule a closing, request a loan signing agent, or set up a volume account for your title company or brokerage.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">

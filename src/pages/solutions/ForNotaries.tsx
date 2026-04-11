@@ -66,7 +66,7 @@ export default function ForNotaries() {
               <motion.div key={f.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
                 <Card className="h-full border-border/50 hover:border-primary/20 transition-colors">
                   <CardContent className="p-6">
-                    <div className="mb-4"><Icon3D src={f.icon3d} alt={f.title} className="h-14 w-14" /></div>
+                    <div className="mb-4"><Icon3D src={f.icon3d} alt={f.title} className="h-[129px] w-[129px]" /></div>
                     <h3 className="mb-2 font-sans text-lg font-semibold text-foreground">{f.title}</h3>
                     <p className="text-sm text-muted-foreground">{f.desc}</p>
                   </CardContent>
@@ -99,7 +99,7 @@ export default function ForNotaries() {
 
       <section className="py-16">
         <div className="container mx-auto px-4 text-center">
-          <Icon3D src={FEATURE_3D_ICON.verified} alt="Join the platform" className="mx-auto mb-4 h-16 w-16" />
+          <Icon3D src={FEATURE_3D_ICON.verified} alt="Join the platform" className="mx-auto mb-4 h-[147px] w-[147px]" />
           <h2 className="mb-4 font-sans text-3xl font-bold text-foreground">Ready to Modernize Your Practice?</h2>
           <p className="mx-auto mb-8 max-w-lg text-muted-foreground">Join the platform today. Set up your availability, start accepting RON appointments, and let us handle compliance, scheduling, and document management.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
