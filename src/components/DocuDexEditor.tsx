@@ -32,6 +32,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { sanitizeHtml, stripHtml } from "@/lib/sanitize";
 import { logAuditEvent } from "@/lib/auditLog";
 import { AIContentPreview } from "@/components/AIContentPreview";
+import { DocuDexTemplateNameDialog } from "./docudex/DocuDexTemplateNameDialog";
+import { DocuDexHeaderFooterEditor } from "./docudex/DocuDexHeaderFooterEditor";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { safeGetItem, safeSetItem } from "@/lib/safeStorage";
@@ -691,10 +693,15 @@ export function DocuDexEditor({
     announce(`Version "${label}" saved`);
   };
 
-  // Save as custom template (TP-002)
+  // Save as custom template (TP-002) — replaced window.prompt with dialog
+  const [showTemplateNameDialog, setShowTemplateNameDialog] = useState(false);
+  const [showHeaderFooterEditor, setShowHeaderFooterEditorState] = useState(false);
+
   const saveAsTemplate = () => {
-    const templateName = window.prompt("Template name:", title || "Custom Template");
-    if (!templateName) return;
+    setShowTemplateNameDialog(true);
+  };
+
+  const confirmSaveTemplate = (templateName: string) => {
     const newTemplate: CustomTemplate = {
       id: `custom-${Date.now()}`,
       label: templateName,
