@@ -11,10 +11,10 @@ interface LogoProps {
 }
 
 const sizeMap = {
-  sm: { icon: "h-[74px] w-[74px]", text: "text-lg", gap: "gap-2" },
-  md: { icon: "h-[92px] w-[92px]", text: "text-xl", gap: "gap-2" },
-  lg: { icon: "h-[129px] w-[129px]", text: "text-2xl", gap: "gap-2.5" },
-  xl: { icon: "h-[148px] w-[148px]", text: "text-3xl", gap: "gap-3" },
+  sm: { icon: "h-[74px] w-[74px]", text: "text-2xl", gap: "gap-3" },
+  md: { icon: "h-[92px] w-[92px]", text: "text-3xl", gap: "gap-3" },
+  lg: { icon: "h-[129px] w-[129px]", text: "text-4xl", gap: "gap-4" },
+  xl: { icon: "h-[148px] w-[148px]", text: "text-5xl", gap: "gap-4" },
 };
 
 export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
