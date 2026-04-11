@@ -15,8 +15,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { formatCurrency, formatDate } from "@/lib/dateUtils";
-import { DollarSign, TrendingUp, TrendingDown, Calculator, Plus, Car, FileText, BarChart3 } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { DollarSign, TrendingUp, TrendingDown, Calculator, Plus, Car, FileText, BarChart3, CalendarClock } from "lucide-react";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from "recharts";
 
 const CHART_COLORS = ["hsl(var(--primary))", "hsl(var(--destructive))", "hsl(var(--accent))", "hsl(var(--secondary))", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899"];
 
