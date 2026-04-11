@@ -66,6 +66,7 @@ const DocuDex = lazyRetry(() => import("./pages/DocuDex"));
 const SessionTracker = lazyRetry(() => import("./pages/SessionTracker"));
 const RescheduleAppointment = lazyRetry(() => import("./pages/RescheduleAppointment"));
 const PrintMarketplace = lazyRetry(() => import("./pages/PrintMarketplace"));
+const PricingMenu = lazyRetry(() => import("./pages/PricingMenu"));
 
 // Admin pages
 const AdminDashboard = lazyRetry(() => import("./pages/admin/AdminDashboard"));
@@ -248,6 +249,7 @@ function AnimatedRoutes() {
       <Route path="/ai-tools" element={<ProtectedRoute><SR msg="AI Tools failed to load"><AITools /></SR></ProtectedRoute>} />
       <Route path="/docudex" element={<ProtectedRoute><SR msg="DocuDex failed to load"><DocuDex /></SR></ProtectedRoute>} />
       <Route path="/print-shop" element={<SR msg="Print shop failed to load"><PrintMarketplace /></SR>} />
+      <Route path="/pricing-menu" element={<SR msg="Pricing menu failed to load"><PricingMenu /></SR>} />
       <Route path="/track/:token" element={<SR msg="Session tracker failed to load"><SessionTracker /></SR>} />
       <Route path="/reschedule/:confirmationNumber" element={<SR msg="Reschedule failed to load"><RescheduleAppointment /></SR>} />
       <Route path="/account-settings" element={<ProtectedRoute><SR msg="Account settings failed to load"><AccountSettings /></SR></ProtectedRoute>} />
