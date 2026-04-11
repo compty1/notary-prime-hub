@@ -92,7 +92,7 @@ export default function AdminAppointments() {
     fees_charged: "5.00",
     oath_administered: false,
     notes: "",
-    platform_fees: "",
+    platform_fee: "",
     travel_fee: "",
   });
   const { toast } = useToast();
@@ -325,7 +325,7 @@ export default function AdminAppointments() {
   const saveQuickJournal = async () => {
     if (!quickJournalAppt || !user) return;
     const feesCharged = parseFloat(journalForm.fees_charged) || 5;
-    const platformFees = journalForm.platform_fees ? parseFloat(journalForm.platform_fees) : null;
+    const platformFees = journalForm.platform_fee ? parseFloat(journalForm.platform_fee) : null;
     const travelFee = journalForm.travel_fee ? parseFloat(journalForm.travel_fee) : null;
     const netProfit = feesCharged - (platformFees || 0) - (travelFee || 0);
 
@@ -339,7 +339,7 @@ export default function AdminAppointments() {
       oath_administered: journalForm.oath_administered,
       oath_timestamp: journalForm.oath_administered ? new Date().toISOString() : null,
       notes: journalForm.notes || null,
-      platform_fees: platformFees,
+      platform_fee: platformFees,
       travel_fee: travelFee,
       net_profit: netProfit,
       created_by: user.id,
@@ -364,7 +364,7 @@ export default function AdminAppointments() {
         details: { fees_charged: feesCharged, net_profit: netProfit },
       });
       setQuickJournalAppt(null);
-      setJournalForm({ fees_charged: "5.00", oath_administered: false, notes: "", platform_fees: "", travel_fee: "" });
+      setJournalForm({ fees_charged: "5.00", oath_administered: false, notes: "", platform_fee: "", travel_fee: "" });
     }
   };
 
@@ -971,7 +971,7 @@ export default function AdminAppointments() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <Label>Platform Fees ($)</Label>
-                  <Input type="number" step="0.01" value={journalForm.platform_fees} onChange={(e) => setJournalForm({ ...journalForm, platform_fees: e.target.value })} placeholder="0.00" />
+                  <Input type="number" step="0.01" value={journalForm.platform_fee} onChange={(e) => setJournalForm({ ...journalForm, platform_fee: e.target.value })} placeholder="0.00" />
                 </div>
                 <div>
                   <Label>Travel Fee ($)</Label>
