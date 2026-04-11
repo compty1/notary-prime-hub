@@ -127,18 +127,11 @@ function ColorPicker({ colors, activeColor, onSelect, icon: Icon, title }: {
 }
 
 export function DocuDexToolbar({ editor, brandFont, onBrandFontChange, onImageUpload, onFindReplace }: ToolbarProps) {
-  const addLink = useCallback(() => {
-    if (!editor) return;
-    const url = window.prompt("Enter URL:", "https://");
-    if (url) {
-      editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
-    }
-  }, [editor]);
+  const [showLinkDialog, setShowLinkDialog] = useState(false);
 
-  const insertTable = useCallback(() => {
-    if (!editor) return;
-    (editor.chain().focus() as any).insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
-  }, [editor]);
+  const addLink = useCallback(() => {
+    setShowLinkDialog(true);
+  }, []);
 
   if (!editor) return null;
 
