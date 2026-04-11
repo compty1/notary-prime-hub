@@ -77,11 +77,11 @@ export function Footer({ phone = BRAND.defaultPhone, email = BRAND.defaultEmail,
           <p>$25,000 surety bond &amp; E&amp;O insurance maintained. All notaries are background-checked and Ohio-commissioned.</p>
         </div>
 
-        <div className="mt-6 border-t border-sidebar-border pt-4 text-center text-sm flex flex-col md:flex-row justify-between items-center">
-          <p>{copyrightText || BRAND.footerText(new Date().getFullYear())}</p>
-          <div className="flex items-center gap-4 mt-4 md:mt-0">
-            <span className="flex items-center gap-1 text-xs"><ShieldCheck className="w-4 h-4 text-emerald-500" /> SOC 2 Aligned</span>
-            <span className="flex items-center gap-1 text-xs"><Lock className="w-4 h-4 text-emerald-500" /> AES-256 / TLS 1.2+</span>
+        <div className="mt-6 border-t border-sidebar-border pt-4 text-center text-sm flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-sidebar-foreground/50">{copyrightText || BRAND.footerText(new Date().getFullYear())}</p>
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1 text-xs text-sidebar-foreground/50"><ShieldCheck className="w-4 h-4 text-success" /> SOC 2 Aligned</span>
+            <span className="flex items-center gap-1 text-xs text-sidebar-foreground/50"><Lock className="w-4 h-4 text-success" /> AES-256 / TLS 1.2+</span>
           </div>
         </div>
       </div>
