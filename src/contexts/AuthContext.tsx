@@ -31,6 +31,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { toast } = useToast();
 
   const abortRef = React.useRef<AbortController | null>(null);
+  const idleManagerRef = useRef<IdleTimeoutManager | null>(null);
+
+  // GAP-0367: Session fingerprinting for anti-hijacking
+  useEffect(() => {
+    if (!session) {
+      idleManagerRef.current?.stop();
+      return;
+    }
+    // Store fingerprint on sign-in to detect session hijacking
+    const fp = generateSessionFingerprint();
+    const storedFp = sessionStorage.getItem("session_fp");
+    if (storedFp && storedFp !== fp) {
+      console.warn("Session fingerprint mismatch — possible session hijacking");
+      signOut();
+      return;
+    }
+    sessionStorage.setItem("session_fp", fp);
+
+    // GAP-0367: Idle timeout — 30min idle = auto sign-out
+    if (!idleManagerRef.current) {
+      idleManagerRef.current = new IdleTimeoutManager(
+        30 * 60 * 1000, // 30min
+        60 * 1000, // warn 1min before
+        () => setShowTimeoutWarning(true),
+        () => {
+          setShowTimeoutWarning(false);
+          toast({ title: "Session expired", description: "You were signed out due to inactivity.", variant: "destructive" });
+          supabase.auth.signOut();
+        }
+      );
+    }
+    idleManagerRef.current.start();
+    return () => { idleManagerRef.current?.stop(); };
+  }, [session]);
 
   const fetchRoles = async (userId: string) => {
     // Abort any in-flight role fetch
