@@ -270,12 +270,12 @@ export default function Index() {
               </motion.div>
             </motion.div>
 
-            {/* Hero Interactive Animation */}
+            {/* Hero Interactive Animation — GAP-0001: visible on all breakpoints */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="relative hidden lg:flex items-center justify-center min-h-[480px]"
+              className="relative flex items-center justify-center min-h-[320px] md:min-h-[400px] lg:min-h-[480px]"
             >
               <Hero3DAnimation />
             </motion.div>
@@ -306,7 +306,7 @@ export default function Index() {
             >
               <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-6">About us</h2>
               <p className="text-lg text-muted-foreground font-medium leading-relaxed max-w-lg">
-                We are a team of passionate creatives specializing in branding, content, and design. Our goal is to provide our clients with innovative ideas that translate to real, wonderful experiences.
+                We are a team of Ohio-commissioned notary professionals dedicated to making document authentication simple, secure, and accessible. From remote online notarization to mobile signings across Central Ohio, we combine legal expertise with modern technology to deliver fast, compliant services you can trust.
               </p>
             </motion.div>
           </div>
@@ -533,8 +533,8 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ===== CTA Banner ===== */}
-      <section className="bg-primary py-16">
+      {/* ===== CTA Banner — GAP-0020: uses brand gradient ===== */}
+      <section className="bg-gradient-primary py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-primary-foreground mb-6">Ready to Notarize Your Document?</h2>
           <p className="text-primary-foreground/70 text-lg font-medium mb-8">Join thousands of users who have securely notarized their documents online.</p>
