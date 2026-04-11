@@ -418,8 +418,8 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
                     </>
                   ) : uploadSuccess ? (
                     <>
-                      <CheckCircle className="h-8 w-8 text-green-500" />
-                      <span className="text-sm text-green-600 dark:text-green-400 font-medium">Resume uploaded & parsed!</span>
+                      <CheckCircle className="h-8 w-8 text-success" />
+                      <span className="text-sm text-success dark:text-success font-medium">Resume uploaded & parsed!</span>
                       <span className="text-xs text-muted-foreground">Click or drag to upload a different file</span>
                     </>
                   ) : isDragOver ? (

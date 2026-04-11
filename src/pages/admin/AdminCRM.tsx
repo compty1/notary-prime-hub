@@ -22,11 +22,11 @@ import {
 } from "lucide-react";
 
 const PIPELINE_STAGES = [
-  { key: "discovery", label: "Discovery", color: "bg-blue-500" },
-  { key: "proposal", label: "Proposal", color: "bg-yellow-500" },
-  { key: "negotiation", label: "Negotiation", color: "bg-orange-500" },
-  { key: "closed-won", label: "Closed Won", color: "bg-green-500" },
-  { key: "closed-lost", label: "Closed Lost", color: "bg-red-500" },
+  { key: "discovery", label: "Discovery", color: "bg-info" },
+  { key: "proposal", label: "Proposal", color: "bg-warning" },
+  { key: "negotiation", label: "Negotiation", color: "bg-accent-warm" },
+  { key: "closed-won", label: "Closed Won", color: "bg-success" },
+  { key: "closed-lost", label: "Closed Lost", color: "bg-destructive" },
 ];
 
 const LEAD_STAGES = ["new", "contacted", "qualified", "proposal", "converted", "closed-won", "closed-lost"];
@@ -299,7 +299,7 @@ export default function AdminCRM() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2 text-muted-foreground"><TrendingUp className="h-4 w-4" /><span className="text-xs">Won Revenue</span></div>
-            <p className="mt-1 text-2xl font-bold text-green-600">${wonValue.toLocaleString()}</p>
+            <p className="mt-1 text-2xl font-bold text-success">${wonValue.toLocaleString()}</p>
           </CardContent>
         </Card>
       </div>
