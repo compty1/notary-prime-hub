@@ -209,6 +209,7 @@ export default function AdminFinances() {
           </CardContent></Card>
         </TabsContent>
 
+        <TabsContent value="expenses">
           <Card><CardContent className="pt-4">
             <Table><TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Description</TableHead><TableHead>Category</TableHead><TableHead>Vendor</TableHead><TableHead className="text-right">Amount</TableHead></TableRow></TableHeader>
               <TableBody>
