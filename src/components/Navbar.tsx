@@ -94,13 +94,13 @@ export function Navbar() {
   const portalLabel = isAdmin || isNotary ? "Dashboard" : "Portal";
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-md h-20 flex items-center print:hidden" aria-label="Main navigation" role="navigation">
+    <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-md py-2 flex items-center print:hidden" aria-label="Main navigation" role="navigation">
       <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-full focus:text-sm focus:font-semibold">
         Skip to main content
       </a>
       <div className="container mx-auto flex items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-3">
-          <Logo size="sm" showText theme="dark" className="[&_img]:h-12 [&_img]:w-12 [&_span]:text-xl" />
+          <Logo size="sm" showText theme="dark" className="[&_img]:h-[120px] [&_img]:w-[120px] [&_span]:text-5xl" />
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">
