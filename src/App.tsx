@@ -258,6 +258,16 @@ function AnimatedRoutes() {
       <Route path="/docudex" element={<ProtectedRoute><SR msg="DocuDex failed to load"><DocuDex /></SR></ProtectedRoute>} />
       <Route path="/print-shop" element={<SR msg="Print shop failed to load"><PrintMarketplace /></SR>} />
       <Route path="/pricing-menu" element={<SR msg="Pricing menu failed to load"><PricingMenu /></SR>} />
+      <Route path="/design/studio" element={<ProtectedRoute><SR msg="Design studio failed to load"><DesignStudio /></SR></ProtectedRoute>} />
+      <Route path="/design/business-cards" element={<ProtectedRoute><SR msg="Business card designer failed to load"><BusinessCardDesigner /></SR></ProtectedRoute>} />
+      <Route path="/design/stickers" element={<ProtectedRoute><SR msg="Sticker designer failed to load"><StickerDesigner /></SR></ProtectedRoute>} />
+      <Route path="/design/notebooks" element={<ProtectedRoute><SR msg="Notebook configurator failed to load"><NotebookConfigurator /></SR></ProtectedRoute>} />
+      <Route path="/design/book-covers" element={<ProtectedRoute><SR msg="Book cover designer failed to load"><BookCoverDesigner /></SR></ProtectedRoute>} />
+      <Route path="/design/letterhead" element={<ProtectedRoute><SR msg="Design studio failed to load"><DesignStudio /></SR></ProtectedRoute>} />
+      <Route path="/design/apparel" element={<ProtectedRoute><SR msg="Design studio failed to load"><DesignStudio /></SR></ProtectedRoute>} />
+      <Route path="/design/signage" element={<ProtectedRoute><SR msg="Design studio failed to load"><DesignStudio /></SR></ProtectedRoute>} />
+      <Route path="/design/promo" element={<ProtectedRoute><SR msg="Design studio failed to load"><DesignStudio /></SR></ProtectedRoute>} />
+      <Route path="/vendor/dashboard" element={<ProtectedRoute><SR msg="Vendor portal failed to load"><VendorPortal /></SR></ProtectedRoute>} />
       <Route path="/track/:token" element={<SR msg="Session tracker failed to load"><SessionTracker /></SR>} />
       <Route path="/reschedule/:confirmationNumber" element={<SR msg="Reschedule failed to load"><RescheduleAppointment /></SR>} />
       <Route path="/account-settings" element={<ProtectedRoute><SR msg="Account settings failed to load"><AccountSettings /></SR></ProtectedRoute>} />
