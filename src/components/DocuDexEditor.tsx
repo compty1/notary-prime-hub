@@ -186,6 +186,8 @@ export function DocuDexEditor({
       ImageExt.configure({ inline: false, allowBase64: true }),
       HorizontalRule,
       Placeholder.configure({ placeholder: "Start typing or select a template..." }),
+      TaskList,
+      TaskItem.configure({ nested: true }),
     ],
     content: pages[activePageIdx]?.html || "",
     onUpdate: ({ editor: ed }) => {

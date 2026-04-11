@@ -274,8 +274,17 @@ export function DocuDexToolbar({ editor, brandFont, onBrandFontChange, onImageUp
       <ToolBtn title="Numbered List" active={editor.isActive("orderedList")} onClick={() => editor.chain().focus().toggleOrderedList().run()}>
         <ListOrdered className="h-3.5 w-3.5" />
       </ToolBtn>
+      <ToolBtn title="Checklist" active={editor.isActive("taskList")} onClick={() => editor.chain().focus().toggleTaskList().run()}>
+        <CheckSquare className="h-3.5 w-3.5" />
+      </ToolBtn>
       <ToolBtn title="Blockquote" active={editor.isActive("blockquote")} onClick={() => editor.chain().focus().toggleBlockquote().run()}>
         <Quote className="h-3.5 w-3.5" />
+      </ToolBtn>
+      <ToolBtn title="Indent" onClick={() => editor.chain().focus().sinkListItem("listItem").run()} disabled={!editor.can().sinkListItem("listItem")}>
+        <Indent className="h-3.5 w-3.5" />
+      </ToolBtn>
+      <ToolBtn title="Outdent" onClick={() => editor.chain().focus().liftListItem("listItem").run()} disabled={!editor.can().liftListItem("listItem")}>
+        <Outdent className="h-3.5 w-3.5" />
       </ToolBtn>
 
       <Separator />
