@@ -79,6 +79,7 @@ export const CATEGORY_3D_ICON: Record<string, string> = {
 
 // Maps feature/how-it-works concepts to icons
 export const FEATURE_3D_ICON: Record<string, string> = {
+  // Core notary
   upload: cloudUpload,
   identity: identityVerify,
   video: videoCall,
@@ -96,6 +97,52 @@ export const FEATURE_3D_ICON: Record<string, string> = {
   copy: receipt,
   i9: identityVerify,
   poa: scroll,
+  // Document types
+  wills: scroll,
+  estate: scroll,
+  trust: folderVerified,
+  healthcare: teamReview,
+  affidavit: checklist,
+  court: docSearch,
+  deed: certificate,
+  mortgage: handshake,
+  heloc: receipt,
+  corporate: folders,
+  contract: docShield,
+  operating: folders,
+  vehicle: notaryAgent,
+  immigration: globeDocs,
+  // Industry verticals
+  lawFirm: docSearch,
+  hospital: teamReview,
+  bedside: teamReview,
+  hipaa: cloudSecurity,
+  realEstate: certificate,
+  closing: handshake,
+  titleWork: folderVerified,
+  multiSigner: teamReview,
+  bulkSigning: folders,
+  // Platform features
+  journal: checklist,
+  eSeal: award,
+  smartSchedule: calendar,
+  aiTools: lightbulb,
+  revenue: pieChart,
+  retainer: receipt,
+  subscription: receipt,
+  witness: teamReview,
+  urgent: warning,
+  // Generic
+  tools: tools,
+  workflow: workflow,
+  verified: verifiedBadge,
+  rocket: rocket,
+  medal: medal,
+  email: email,
+  thumbsUp: thumbsUp,
+  analytics: analytics,
+  password: password,
+  taskList: taskList,
 };
 
 /** Render a 3D icon image element */

@@ -5,15 +5,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PageShell } from "@/components/PageShell";
 import { motion } from "framer-motion";
-import { Briefcase, FileText, Users, Monitor, CreditCard, Shield, ArrowRight, CheckCircle } from "lucide-react";
+import { ArrowRight, CheckCircle } from "lucide-react";
+import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 
 const features = [
-  { icon: FileText, title: "Corporate Resolutions & Minutes", desc: "Board resolutions, meeting minutes, and corporate governance documents notarized for official filing." },
-  { icon: Briefcase, title: "Operating & Partnership Agreements", desc: "LLC operating agreements, partnership documents, and business formation papers properly executed and notarized." },
-  { icon: Shield, title: "Contracts & Vendor Agreements", desc: "Non-disclosure agreements, vendor contracts, lease agreements, and other business documents requiring notarization." },
-  { icon: Users, title: "I-9 & Employment Verification", desc: "Employee identity verification, I-9 completion, and employment authorization documents for HR compliance." },
-  { icon: Monitor, title: "Remote Notarization", desc: "RON sessions for remote employees, out-of-state partners, or anyone who can't visit in person. Ohio-authorized and secure." },
-  { icon: CreditCard, title: "Subscription Plans", desc: "Monthly and annual plans for businesses with recurring notarization needs — flat-rate pricing, priority scheduling, and dedicated support." },
+  { icon3d: FEATURE_3D_ICON.corporate, title: "Corporate Resolutions & Minutes", desc: "Board resolutions, meeting minutes, and corporate governance documents notarized for official filing." },
+  { icon3d: FEATURE_3D_ICON.contract, title: "Operating & Partnership Agreements", desc: "LLC operating agreements, partnership documents, and business formation papers properly executed and notarized." },
+  { icon3d: FEATURE_3D_ICON.compliance, title: "Contracts & Vendor Agreements", desc: "Non-disclosure agreements, vendor contracts, lease agreements, and other business documents requiring notarization." },
+  { icon3d: FEATURE_3D_ICON.i9, title: "I-9 & Employment Verification", desc: "Employee identity verification, I-9 completion, and employment authorization documents for HR compliance." },
+  { icon3d: FEATURE_3D_ICON.ron, title: "Remote Notarization", desc: "RON sessions for remote employees, out-of-state partners, or anyone who can't visit in person. Ohio-authorized and secure." },
+  { icon3d: FEATURE_3D_ICON.subscription, title: "Subscription Plans", desc: "Monthly and annual plans for businesses with recurring notarization needs — flat-rate pricing, priority scheduling, and dedicated support." },
 ];
 
 const complianceItems = [
@@ -37,30 +38,19 @@ export default function ForSmallBusiness() {
           <div className="grid items-center gap-12 md:grid-cols-2">
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
               <Badge variant="secondary" className="mb-4">For Small Business</Badge>
-              <h1 className="mb-4 font-sans text-4xl font-bold text-foreground md:text-5xl">
-                Business Document Services Made Simple
-              </h1>
-              <p className="mb-6 text-lg text-muted-foreground">
-                From formation documents to vendor contracts, we provide reliable, affordable notarization
-                for Ohio small businesses. Subscription plans available for recurring needs.
-              </p>
+              <h1 className="mb-4 font-sans text-4xl font-bold text-foreground md:text-5xl">Business Document Services Made Simple</h1>
+              <p className="mb-6 text-lg text-muted-foreground">From formation documents to vendor contracts, we provide reliable, affordable notarization for Ohio small businesses. Subscription plans available for recurring needs.</p>
               <div className="flex flex-wrap gap-3">
-                <Link to="/book">
-                  <Button size="lg" className="rounded-full px-8">Book Appointment <ArrowRight className="ml-2 h-4 w-4" /></Button>
-                </Link>
-                <Link to="/services?category=business">
-                  <Button size="lg" variant="outline">Business Services</Button>
-                </Link>
+                <Link to="/book"><Button size="lg" className="rounded-full px-8">Book Appointment <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
+                <Link to="/services?category=business"><Button size="lg" variant="outline">Business Services</Button></Link>
               </div>
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">
               <div className="relative rounded-2xl border border-border bg-card p-8 shadow-lg">
-                <Briefcase className="mx-auto mb-4 h-16 w-16 text-primary" />
+                <Icon3D src={FEATURE_3D_ICON.corporate} alt="Business notarization" className="mx-auto mb-4 h-20 w-20" />
                 <p className="text-center text-lg font-semibold text-foreground">Built for Business</p>
                 <p className="mt-2 text-center text-sm text-muted-foreground">Subscription plans from $29/mo</p>
-                <div className="absolute -bottom-3 -right-3 rounded-full bg-accent px-4 py-2 text-xs font-bold text-accent-foreground shadow-lg">
-                  Volume Discounts
-                </div>
+                <div className="absolute -bottom-3 -right-3 rounded-full bg-accent px-4 py-2 text-xs font-bold text-accent-foreground shadow-lg">Volume Discounts</div>
               </div>
             </motion.div>
           </div>
@@ -78,7 +68,7 @@ export default function ForSmallBusiness() {
               <motion.div key={f.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
                 <Card className="h-full border-border/50 hover:border-primary/20 transition-colors">
                   <CardContent className="p-6">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10"><f.icon className="h-6 w-6 text-primary" /></div>
+                    <div className="mb-4"><Icon3D src={f.icon3d} alt={f.title} className="h-14 w-14" /></div>
                     <h3 className="mb-2 font-sans text-lg font-semibold text-foreground">{f.title}</h3>
                     <p className="text-sm text-muted-foreground">{f.desc}</p>
                   </CardContent>
@@ -111,7 +101,7 @@ export default function ForSmallBusiness() {
 
       <section className="py-16">
         <div className="container mx-auto px-4 text-center">
-          <Briefcase className="mx-auto mb-4 h-12 w-12 text-primary" />
+          <Icon3D src={FEATURE_3D_ICON.corporate} alt="Get started" className="mx-auto mb-4 h-16 w-16" />
           <h2 className="mb-4 font-sans text-3xl font-bold text-foreground">Ready to Streamline Your Document Needs?</h2>
           <p className="mx-auto mb-8 max-w-lg text-muted-foreground">Book a one-time appointment or explore subscription plans for ongoing business notarization support.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
