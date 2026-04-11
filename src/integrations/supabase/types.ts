@@ -746,6 +746,39 @@ export type Database = {
         }
         Relationships: []
       }
+      compliance_calendars: {
+        Row: {
+          calendar_name: string
+          client_id: string
+          created_at: string
+          entity_name: string | null
+          entries: Json
+          id: string
+          notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          calendar_name: string
+          client_id: string
+          created_at?: string
+          entity_name?: string | null
+          entries?: Json
+          id?: string
+          notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          calendar_name?: string
+          client_id?: string
+          created_at?: string
+          entity_name?: string | null
+          entries?: Json
+          id?: string
+          notes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       compliance_reports: {
         Row: {
           created_at: string
@@ -941,6 +974,54 @@ export type Database = {
           requires_signature?: boolean
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      court_form_jobs: {
+        Row: {
+          case_number: string | null
+          client_id: string
+          completed_file_path: string | null
+          county: string | null
+          court_name: string | null
+          created_at: string
+          fee: number | null
+          form_name: string
+          id: string
+          notes: string | null
+          status: string
+          updated_at: string
+          upl_disclaimer_accepted: boolean
+        }
+        Insert: {
+          case_number?: string | null
+          client_id: string
+          completed_file_path?: string | null
+          county?: string | null
+          court_name?: string | null
+          created_at?: string
+          fee?: number | null
+          form_name: string
+          id?: string
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          upl_disclaimer_accepted?: boolean
+        }
+        Update: {
+          case_number?: string | null
+          client_id?: string
+          completed_file_path?: string | null
+          county?: string | null
+          court_name?: string | null
+          created_at?: string
+          fee?: number | null
+          form_name?: string
+          id?: string
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          upl_disclaimer_accepted?: boolean
         }
         Relationships: []
       }
@@ -3137,6 +3218,54 @@ export type Database = {
           },
         ]
       }
+      permit_filings: {
+        Row: {
+          business_name: string | null
+          client_id: string
+          created_at: string
+          expiry_date: string | null
+          fee: number | null
+          filing_date: string | null
+          id: string
+          jurisdiction: string | null
+          notes: string | null
+          permit_number: string | null
+          permit_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          business_name?: string | null
+          client_id: string
+          created_at?: string
+          expiry_date?: string | null
+          fee?: number | null
+          filing_date?: string | null
+          id?: string
+          jurisdiction?: string | null
+          notes?: string | null
+          permit_number?: string | null
+          permit_type: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          business_name?: string | null
+          client_id?: string
+          created_at?: string
+          expiry_date?: string | null
+          fee?: number | null
+          filing_date?: string | null
+          id?: string
+          jurisdiction?: string | null
+          notes?: string | null
+          permit_number?: string | null
+          permit_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       platform_settings: {
         Row: {
           description: string | null
@@ -3273,6 +3402,143 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      print_orders: {
+        Row: {
+          client_id: string
+          created_at: string
+          design_file_path: string | null
+          id: string
+          notes: string | null
+          product_name: string
+          quantity: number
+          shipping_tracking: string | null
+          specifications: Json | null
+          status: string
+          total_price: number | null
+          unit_price: number | null
+          updated_at: string
+          vendor_id: string | null
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          design_file_path?: string | null
+          id?: string
+          notes?: string | null
+          product_name: string
+          quantity?: number
+          shipping_tracking?: string | null
+          specifications?: Json | null
+          status?: string
+          total_price?: number | null
+          unit_price?: number | null
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          design_file_path?: string | null
+          id?: string
+          notes?: string | null
+          product_name?: string
+          quantity?: number
+          shipping_tracking?: string | null
+          specifications?: Json | null
+          status?: string
+          total_price?: number | null
+          unit_price?: number | null
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "print_orders_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "print_vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      print_products: {
+        Row: {
+          base_price: number
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          name: string
+          options: Json | null
+          updated_at: string
+        }
+        Insert: {
+          base_price?: number
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name: string
+          options?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          base_price?: number
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name?: string
+          options?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      print_vendors: {
+        Row: {
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          specialties: string[] | null
+          turnaround_days: number | null
+          updated_at: string
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          specialties?: string[] | null
+          turnaround_days?: number | null
+          updated_at?: string
+        }
+        Update: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          specialties?: string[] | null
+          turnaround_days?: number | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       process_serving_cases: {
         Row: {
@@ -3688,6 +3954,105 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      real_estate_services: {
+        Row: {
+          client_id: string
+          created_at: string
+          details: Json | null
+          fee: number | null
+          id: string
+          notes: string | null
+          photos: string[] | null
+          property_address: string
+          scheduled_date: string | null
+          scheduled_time: string | null
+          service_subtype: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          details?: Json | null
+          fee?: number | null
+          id?: string
+          notes?: string | null
+          photos?: string[] | null
+          property_address: string
+          scheduled_date?: string | null
+          scheduled_time?: string | null
+          service_subtype?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          details?: Json | null
+          fee?: number | null
+          id?: string
+          notes?: string | null
+          photos?: string[] | null
+          property_address?: string
+          scheduled_date?: string | null
+          scheduled_time?: string | null
+          service_subtype?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      recorder_filings: {
+        Row: {
+          client_id: string
+          county: string | null
+          created_at: string
+          document_description: string
+          fee: number | null
+          file_path: string | null
+          filed_by: string | null
+          id: string
+          notes: string | null
+          recording_date: string | null
+          recording_number: string | null
+          recording_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          county?: string | null
+          created_at?: string
+          document_description: string
+          fee?: number | null
+          file_path?: string | null
+          filed_by?: string | null
+          id?: string
+          notes?: string | null
+          recording_date?: string | null
+          recording_number?: string | null
+          recording_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          county?: string | null
+          created_at?: string
+          document_description?: string
+          fee?: number | null
+          file_path?: string | null
+          filed_by?: string | null
+          id?: string
+          notes?: string | null
+          recording_date?: string | null
+          recording_number?: string | null
+          recording_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       recurring_expenses: {
         Row: {
@@ -4569,6 +4934,54 @@ export type Database = {
           subject_dob?: string | null
           subject_last_known_address?: string | null
           subject_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sos_filings: {
+        Row: {
+          client_id: string
+          confirmation_url: string | null
+          created_at: string
+          entity_name: string
+          fee: number | null
+          filing_date: string | null
+          filing_number: string | null
+          filing_type: string
+          id: string
+          notes: string | null
+          state: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          confirmation_url?: string | null
+          created_at?: string
+          entity_name: string
+          fee?: number | null
+          filing_date?: string | null
+          filing_number?: string | null
+          filing_type?: string
+          id?: string
+          notes?: string | null
+          state?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          confirmation_url?: string | null
+          created_at?: string
+          entity_name?: string
+          fee?: number | null
+          filing_date?: string | null
+          filing_number?: string | null
+          filing_type?: string
+          id?: string
+          notes?: string | null
+          state?: string
+          status?: string
           updated_at?: string
         }
         Relationships: []

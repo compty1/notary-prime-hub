@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug, TrendingUp, ShieldCheck, Webhook, FileEdit, Workflow, Globe, Video, Printer, UserCheck, Fingerprint, Scale, Crosshair, Heart, PenLine, Languages, Truck, Award } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug, TrendingUp, ShieldCheck, Webhook, FileEdit, Workflow, Globe, Video, Printer, UserCheck, Fingerprint, Scale, Crosshair, Heart, PenLine, Languages, Truck, Award, Home, FileCheck, CalendarCheck } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { AdminNotificationCenter } from "@/components/AdminNotificationCenter";
 import { Logo } from "@/components/Logo";
@@ -61,6 +61,18 @@ const sidebarGroups = [
       { title: "Courier", url: "/admin/courier", icon: Truck, adminOnly: true },
       { title: "Background Checks", url: "/admin/background-checks", icon: ShieldCheck, adminOnly: true },
       { title: "VA Tasks", url: "/admin/va-tasks", icon: ClipboardList, adminOnly: true },
+      { title: "Real Estate", url: "/admin/real-estate", icon: Home, adminOnly: true },
+    ],
+  },
+  {
+    label: "Filing & Legal",
+    items: [
+      { title: "Recorder Filings", url: "/admin/recorder-filings", icon: FileText, adminOnly: true },
+      { title: "SOS Filings", url: "/admin/sos-filings", icon: Building2, adminOnly: true },
+      { title: "Court Forms", url: "/admin/court-forms", icon: Scale, adminOnly: true },
+      { title: "Permit Filings", url: "/admin/permit-filings", icon: FileCheck, adminOnly: true },
+      { title: "Compliance Cal.", url: "/admin/compliance-calendars", icon: CalendarCheck, adminOnly: true },
+      { title: "Print Marketplace", url: "/admin/print-orders", icon: ShoppingBag, adminOnly: true },
     ],
   },
   {
