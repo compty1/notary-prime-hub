@@ -38,6 +38,17 @@ export const PAGE_REGISTRY: PageEntry[] = [
   { route: "/solutions/law-firms", component: "ForLawFirms", protection: "public", category: "Solutions" },
   { route: "/solutions/small-business", component: "ForSmallBusiness", protection: "public", category: "Solutions" },
   { route: "/solutions/individuals", component: "ForIndividuals", protection: "public", category: "Solutions" },
+  { route: "/print-shop", component: "PrintMarketplace", protection: "public", category: "Marketplace" },
+  { route: "/pricing-menu", component: "PricingMenu", protection: "public", category: "Marketing" },
+  { route: "/signer-rights", component: "SignerRights", protection: "public", category: "Content" },
+  { route: "/notary-certificates", component: "NotaryCertificates", protection: "public", category: "Content" },
+  { route: "/compliance", component: "Compliance", protection: "public", category: "Legal" },
+  { route: "/security", component: "Security", protection: "public", category: "Legal" },
+  { route: "/accessibility", component: "Accessibility", protection: "public", category: "Legal" },
+  { route: "/notaries", component: "NotaryDirectory", protection: "public", category: "Directory" },
+  { route: "/n/:slug", component: "NotaryPage", protection: "public", category: "Directory" },
+  { route: "/track/:token", component: "SessionTracker", protection: "public", category: "Tracking" },
+  { route: "/pricing", component: "SubscriptionPlans", protection: "public", category: "Billing" },
 
   // Auth-protected pages
   { route: "/portal", component: "ClientPortal", protection: "auth", category: "Client Portal" },
@@ -55,6 +66,12 @@ export const PAGE_REGISTRY: PageEntry[] = [
   { route: "/ai-extractors", component: "AIExtractors", protection: "auth", category: "AI Tools" },
   { route: "/ai-knowledge", component: "AIKnowledge", protection: "auth", category: "AI Tools" },
   { route: "/account-settings", component: "AccountSettings", protection: "auth", category: "Settings" },
+  { route: "/signature-generator", component: "SignatureGeneratorPage", protection: "auth", category: "Tools" },
+  { route: "/grants", component: "GrantDashboard", protection: "auth", category: "AI Tools" },
+  { route: "/resume-builder", component: "ResumeBuilder", protection: "auth", category: "AI Tools" },
+  { route: "/ai-tools", component: "AITools", protection: "auth", category: "AI Tools" },
+  { route: "/docudex", component: "DocuDex", protection: "auth", category: "AI Tools" },
+  { route: "/reschedule/:confirmationNumber", component: "RescheduleAppointment", protection: "auth", category: "Booking" },
 
   // Admin pages (requireAdmin — both admin + notary)
   { route: "/admin", component: "AdminOverview", protection: "admin", category: "Admin" },
