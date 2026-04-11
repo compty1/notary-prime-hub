@@ -628,25 +628,20 @@ export function DocuDexSidebar({
                     </Select>
                   </div>
 
-                  {/* Headers & Footers (PM-005) */}
+                  {/* Headers & Footers (PM-005) — Visual builder */}
                   <div>
-                    <label className="text-[10px] text-muted-foreground mb-1.5 block font-medium">Header</label>
-                    <Input
-                      className="h-7 text-xs"
-                      placeholder="Header HTML (use {{page}}, {{total}})"
-                      value={headerHtml}
-                      onChange={e => setHeaderHtml(e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[10px] text-muted-foreground mb-1.5 block font-medium">Footer</label>
-                    <Input
-                      className="h-7 text-xs"
-                      placeholder="Footer HTML (use {{page}}, {{total}})"
-                      value={footerHtml}
-                      onChange={e => setFooterHtml(e.target.value)}
-                    />
-                    <p className="text-[9px] text-muted-foreground mt-0.5">Use {"{{page}}"} and {"{{total}}"} for page numbers</p>
+                    <label className="text-[10px] text-muted-foreground mb-1.5 block font-medium">Header & Footer</label>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-[10px]">
+                        <span className="text-muted-foreground">Header:</span>
+                        <span className="flex-1 truncate text-foreground">{headerHtml ? "Configured" : "None"}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px]">
+                        <span className="text-muted-foreground">Footer:</span>
+                        <span className="flex-1 truncate text-foreground">{footerHtml ? "Configured" : "None"}</span>
+                      </div>
+                      <p className="text-[9px] text-muted-foreground">Use the Header & Footer button in the top bar to configure these with a visual editor.</p>
+                    </div>
                   </div>
 
                   {/* Word Count Goal (CE-010) */}
