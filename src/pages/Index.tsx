@@ -387,42 +387,41 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ===== Services Grid ===== */}
+      {/* ===== Notary Services ===== */}
       <section id="services" className="py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <p className="text-label font-bold uppercase tracking-widest text-muted-foreground mb-3">Our Services</p>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-4">Services We Handle</h2>
-            <p className="text-lg text-muted-foreground font-medium max-w-2xl mx-auto">Expert notarization for all your personal and business documents.</p>
-          </div>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-12"
+          >
+            Notary Services
+          </motion.h2>
 
           {/* Primary Services */}
-          <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-2 mb-12">
+          <div className="grid md:grid-cols-2 gap-6 mb-12">
             {primaryServices.map((s, i) => (
               <motion.div key={s.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
                 <Card className="group h-full rounded-[24px] border-border hover:border-primary/30 transition-all shadow-sm hover:shadow-card">
-                  <CardContent className="p-8">
-                    <div className="mb-4 flex items-center gap-3">
-                      <div className="flex h-[129px] w-[129px] items-center justify-center">
-                        <Icon3D src={s.icon3d} alt={s.title} className="h-[129px] w-[129px]" />
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 h-[80px] w-[80px] flex items-center justify-center">
+                        <Icon3D src={s.icon3d} alt={s.title} className="h-[72px] w-[72px]" />
                       </div>
-                      <Badge className="text-[10px] font-bold uppercase tracking-wider bg-muted text-muted-foreground border-border">{s.badge}</Badge>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="text-base font-bold text-foreground">{s.title}</h3>
+                          <Badge className="text-[9px] font-bold uppercase tracking-wider bg-muted text-muted-foreground border-border">{s.badge}</Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground font-medium leading-relaxed mb-3">{s.desc}</p>
+                        <Link to={s.cta}>
+                          <Button variant="dark" size="sm" className="font-bold rounded-full">
+                            {s.ctaLabel} <ArrowRight className="ml-2 h-3 w-3" />
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
-                    <h3 className="mb-3 text-xl font-bold text-foreground">{s.title}</h3>
-                    <p className="mb-5 text-sm text-muted-foreground font-medium leading-relaxed">{s.desc}</p>
-                    <ul className="mb-6 space-y-2">
-                      {s.features.map((f) => (
-                        <li key={f} className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
-                          <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500" />
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
-                    <Link to={s.cta}>
-                      <Button variant="dark" className="w-full font-bold rounded-2xl">
-                        {s.ctaLabel} <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -430,15 +429,17 @@ export default function Index() {
           </div>
 
           {/* Other Services Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:gap-6">
             {otherServices.map((service) => (
               <Link key={service.title} to={service.to}>
-                <div className="bg-card p-6 rounded-[24px] border border-border shadow-sm flex flex-col items-center text-center hover:border-primary/30 hover:-translate-y-0.5 transition-all cursor-pointer group">
-                  <div className="w-[110px] h-[110px] flex items-center justify-center mb-4">
-                    <Icon3D src={service.icon3d} alt={service.title} className="w-[92px] h-[92px]" />
+                <div className="bg-card p-5 rounded-[24px] border border-border shadow-sm flex items-start gap-4 hover:border-primary/30 hover:-translate-y-0.5 transition-all cursor-pointer group">
+                  <div className="w-[64px] h-[64px] flex-shrink-0 flex items-center justify-center">
+                    <Icon3D src={service.icon3d} alt={service.title} className="w-[56px] h-[56px]" />
                   </div>
-                  <h3 className="font-bold text-foreground text-sm">{service.title}</h3>
-                  <p className="text-xs text-muted-foreground font-medium mt-1">{service.desc}</p>
+                  <div>
+                    <h3 className="font-bold text-foreground text-sm">{service.title}</h3>
+                    <p className="text-xs text-muted-foreground font-medium mt-1">{service.desc}</p>
+                  </div>
                 </div>
               </Link>
             ))}
