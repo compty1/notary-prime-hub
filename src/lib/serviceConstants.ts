@@ -33,6 +33,15 @@ export const INTAKE_ONLY_SERVICES = new Set([
   "Email Support Handling", "Live Chat Support", "Website Content Updates",
   "UX Audit & Heuristic Review", "User Flow & Workflow Testing",
   "Usability Testing & Report", "UX Research & Persona Development",
+  // Court form packages
+  "Divorce Filing Package", "Custody/Visitation Package", "Eviction Filing Package",
+  "Name Change Package", "Guardianship Package", "Small Claims Filing",
+  "Expungement Package", "Adoption Filing Package", "Probate Filing Package",
+  "Civil Protection Order",
+  // Legal support
+  "Process Serving", "Skip Tracing", "Court Form Preparation", "Vital Records Request",
+  // Real estate support
+  "Property Photography", "Lockbox Coordination", "Open House Support", "Tenant Document Services",
 ]);
 
 export const SAAS_LINKS: Record<string, string> = {
