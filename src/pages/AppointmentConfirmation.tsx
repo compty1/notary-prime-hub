@@ -4,7 +4,9 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Calendar, Clock, MapPin, Monitor, Download, ArrowLeft, Shield, Upload, ChevronRight, FileText, Wifi, Video, User, CreditCard } from "lucide-react";
+import { CheckCircle, Calendar, Clock, MapPin, Monitor, Download, ArrowLeft, Shield, Upload, ChevronRight, FileText, Wifi, Video, User, CreditCard, HelpCircle } from "lucide-react";
+import { PreSigningChecklist } from "@/components/PreSigningChecklist";
+import { SignerFAQBot } from "@/components/SignerFAQBot";
 import TechCheck from "@/components/TechCheck";
 import PaymentForm from "@/components/PaymentForm";
 import { CalendarDownload } from "@/components/CalendarDownload";
@@ -286,6 +288,17 @@ export default function AppointmentConfirmation() {
             </Button>
           </Link>
         </div>
+
+        {/* GAP-0215: Pre-Signing Checklist integration */}
+        <Card className="mt-6 border-border/50 text-left">
+          <CardContent className="p-6">
+            <h3 className="text-sm font-bold mb-3 flex items-center gap-2"><Shield className="h-4 w-4 text-primary" /> Pre-Signing Checklist</h3>
+            <PreSigningChecklist />
+          </CardContent>
+        </Card>
+
+        {/* GAP-0213: Signer FAQ Bot integration */}
+        <SignerFAQBot />
 
         {/* ID 239: Portal access reminder for new users */}
         <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-4 text-left text-sm">
