@@ -100,10 +100,10 @@ const stateRonData: { state: string; status: "permanent" | "temporary" | "none";
 ];
 
 const useCases = [
-  { icon: MapPin, title: "Real Estate Closings", desc: "Close on your home from anywhere — sellers, buyers, and refinancing. Major title companies accept RON closings." },
-  { icon: FileText, title: "Estate Planning", desc: "Execute wills, trusts, and healthcare directives remotely. Especially valuable for elderly or hospitalized signers." },
-  { icon: Scale, title: "Legal Documents", desc: "Powers of attorney, affidavits, and court filings — notarized via secure video from your attorney's office or your home." },
-  { icon: Globe, title: "Out-of-State Transactions", desc: "Ohio RON is accepted nationwide. Perfect for multi-state business deals or when parties are in different locations." },
+  { icon3d: FEATURE_3D_ICON.realEstate, title: "Real Estate Closings", desc: "Close on your home from anywhere — sellers, buyers, and refinancing. Major title companies accept RON closings." },
+  { icon3d: FEATURE_3D_ICON.wills, title: "Estate Planning", desc: "Execute wills, trusts, and healthcare directives remotely. Especially valuable for elderly or hospitalized signers." },
+  { icon3d: FEATURE_3D_ICON.court, title: "Legal Documents", desc: "Powers of attorney, affidavits, and court filings — notarized via secure video from your attorney's office or your home." },
+  { icon3d: FEATURE_3D_ICON.apostille, title: "Out-of-State Transactions", desc: "Ohio RON is accepted nationwide. Perfect for multi-state business deals or when parties are in different locations." },
 ];
 
 const ronFaqs = [
@@ -155,22 +155,22 @@ export default function RonInfo() {
         <div className="container mx-auto max-w-4xl px-4">
           <div className="grid gap-6 md:grid-cols-3">
             <Card className="border-border/50 bg-primary/5">
-              <CardContent className="p-6 text-center">
-                <Shield className="mx-auto mb-3 h-8 w-8 text-primary" />
+              <CardContent className="flex flex-col items-center p-6 text-center">
+                <Icon3D src={FEATURE_3D_ICON.compliance} alt="Ohio Law" className="h-14 w-14 mb-3" />
                 <h3 className="mb-1 font-sans text-lg font-semibold">Ohio Law</h3>
                 <p className="text-sm text-muted-foreground">Authorized under ORC §147.65-.66</p>
               </CardContent>
             </Card>
             <Card className="border-border/50 bg-primary/5">
-              <CardContent className="p-6 text-center">
-                <Lock className="mx-auto mb-3 h-8 w-8 text-primary" />
+              <CardContent className="flex flex-col items-center p-6 text-center">
+                <Icon3D src={FEATURE_3D_ICON.security} alt="Multi-Factor Security" className="h-14 w-14 mb-3" />
                 <h3 className="mb-1 font-sans text-lg font-semibold">Multi-Factor Security</h3>
                 <p className="text-sm text-muted-foreground">ID scan + KBA + live video + recording</p>
               </CardContent>
             </Card>
             <Card className="border-border/50 bg-primary/5">
-              <CardContent className="p-6 text-center">
-                <Globe className="mx-auto mb-3 h-8 w-8 text-primary" />
+              <CardContent className="flex flex-col items-center p-6 text-center">
+                <Icon3D src={FEATURE_3D_ICON.apostille} alt="50-State Recognition" className="h-14 w-14 mb-3" />
                 <h3 className="mb-1 font-sans text-lg font-semibold">50-State Recognition</h3>
                 <p className="text-sm text-muted-foreground">Full Faith & Credit Clause</p>
               </CardContent>
@@ -249,9 +249,7 @@ export default function RonInfo() {
             {useCases.map((uc) => (
               <Card key={uc.title} className="border-border/50 transition-shadow hover:shadow-md">
                 <CardContent className="flex gap-4 p-6">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                    <uc.icon className="h-5 w-5 text-primary" />
-                  </div>
+                  <Icon3D src={uc.icon3d} alt={uc.title} className="h-12 w-12 flex-shrink-0" />
                   <div>
                     <h3 className="mb-1 font-sans font-semibold text-foreground">{uc.title}</h3>
                     <p className="text-sm text-muted-foreground">{uc.desc}</p>

@@ -22,10 +22,10 @@ import {
 } from "@/lib/serviceConstants";
 
 const aiTools = [
-  { icon: Wand2, title: "AI Tools Hub", description: "50+ professional AI tools — contracts, proposals, reports, analysis, compliance docs, and more.", link: "/ai-tools", cta: "Explore Tools" },
-  { icon: Mail, title: "AI Writing Tools", description: "Generate professional emails, social media posts, and documents in seconds with AI.", link: "/ai-writer", cta: "Start Writing" },
-  { icon: FileEdit, title: "Document Generator", description: "Build resumes, invoices, and contracts with beautiful templates and PDF export.", link: "/builder", cta: "Create Document" },
-  { icon: Scan, title: "Document Digitization", description: "AI-powered OCR to convert paper documents and scans into editable, searchable text.", link: "/digitize", cta: "Digitize Now" },
+  { icon3d: FEATURE_3D_ICON.aiTools, title: "AI Tools Hub", description: "50+ professional AI tools — contracts, proposals, reports, analysis, compliance docs, and more.", link: "/ai-tools", cta: "Explore Tools" },
+  { icon3d: FEATURE_3D_ICON.email, title: "AI Writing Tools", description: "Generate professional emails, social media posts, and documents in seconds with AI.", link: "/ai-writer", cta: "Start Writing" },
+  { icon3d: FEATURE_3D_ICON.certified, title: "Document Generator", description: "Build resumes, invoices, and contracts with beautiful templates and PDF export.", link: "/builder", cta: "Create Document" },
+  { icon3d: FEATURE_3D_ICON.upload, title: "Document Digitization", description: "AI-powered OCR to convert paper documents and scans into editable, searchable text.", link: "/digitize", cta: "Digitize Now" },
 ];
 
 type Service = {
@@ -185,9 +185,7 @@ export default function Services() {
               <motion.div key={tool.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
                 <Card className="group h-full rounded-[24px] border-2 border-border shadow-[4px_4px_0px_hsl(220,10%,85%)] hover:shadow-[6px_6px_0px_hsl(45,96%,50%)] transition-shadow">
                   <CardContent className="flex h-full flex-col items-center p-6 text-center">
-                    <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[hsl(45,96%,50%)]/10 group-hover:bg-[hsl(45,96%,50%)]/20 transition-colors">
-                      <tool.icon className="h-7 w-7 text-[hsl(45,96%,50%)]" />
-                    </div>
+                    <Icon3D src={tool.icon3d} alt={tool.title} className="h-14 w-14 mb-4" />
                     <h3 className="mb-2 font-bold text-foreground">{tool.title}</h3>
                     <p className="mb-4 flex-1 text-sm text-muted-foreground">{tool.description}</p>
                     <Link to={tool.link} className="w-full">

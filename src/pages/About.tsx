@@ -16,12 +16,12 @@ import { usePageMeta } from "@/hooks/usePageMeta";
 import { fadeUp, scaleReveal } from "@/lib/animations";
 
 const credentials = [
-  { icon: Award, title: "NNA Certified & Trained", desc: "National Notary Association certified notary signing agent with advanced training in loan document signing and compliance." },
-  { icon: Shield, title: "Ohio Commissioned", desc: "Commissioned notary public by the State of Ohio, authorized under Ohio Revised Code §147 with full RON authorization." },
-  { icon: Shield, title: "Surety Bonded & Insured", desc: "$25,000 surety bond and E&O insurance for your protection on every notarization." },
-  { icon: CheckCircle, title: "Background Checked", desc: "Successfully completed comprehensive background screening required for notary commission and NNA certification." },
-  { icon: Monitor, title: "RON Certified", desc: "Authorized to perform Remote Online Notarization (RON) under Ohio law, using MISMO-compliant platforms with full session recording." },
-  { icon: FileText, title: "Document Specialist", desc: "Trained in document preparation, digitization, OCR transcription, and secure document management for individuals and businesses." },
+  { icon3d: FEATURE_3D_ICON.seal, title: "NNA Certified & Trained", desc: "National Notary Association certified notary signing agent with advanced training in loan document signing and compliance." },
+  { icon3d: FEATURE_3D_ICON.compliance, title: "Ohio Commissioned", desc: "Commissioned notary public by the State of Ohio, authorized under Ohio Revised Code §147 with full RON authorization." },
+  { icon3d: FEATURE_3D_ICON.security, title: "Surety Bonded & Insured", desc: "$25,000 surety bond and E&O insurance for your protection on every notarization." },
+  { icon3d: FEATURE_3D_ICON.verified, title: "Background Checked", desc: "Successfully completed comprehensive background screening required for notary commission and NNA certification." },
+  { icon3d: FEATURE_3D_ICON.video, title: "RON Certified", desc: "Authorized to perform Remote Online Notarization (RON) under Ohio law, using MISMO-compliant platforms with full session recording." },
+  { icon3d: FEATURE_3D_ICON.certified, title: "Document Specialist", desc: "Trained in document preparation, digitization, OCR transcription, and secure document management for individuals and businesses." },
 ];
 
 const serviceAreas = [
@@ -179,10 +179,8 @@ export default function About() {
             {credentials.map((cred, i) => (
               <motion.div key={cred.title} variants={scaleReveal} custom={i}>
                 <Card className="h-full rounded-[24px] border-2 border-border shadow-[4px_4px_0px_hsl(220,10%,85%)] hover:shadow-[6px_6px_0px_hsl(45,96%,50%)] transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-[hsl(45,96%,50%)]/10">
-                      <cred.icon className="h-5 w-5 text-[hsl(45,96%,50%)]" />
-                    </div>
+                   <CardContent className="p-6">
+                    <Icon3D src={cred.icon3d} alt={cred.title} className="h-12 w-12 mb-3" />
                     <h3 className="mb-2 text-base font-black">{cred.title}</h3>
                     <p className="text-sm text-muted-foreground">{cred.desc}</p>
                   </CardContent>
