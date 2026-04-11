@@ -124,7 +124,7 @@ export default function AdminProcessFlows() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black text-foreground flex items-center gap-2">
-            <Workflow className="h-6 w-6 text-[hsl(45,96%,50%)]" /> Process Flows & Automation
+            <Workflow className="h-6 w-6 text-primary" /> Process Flows & Automation
           </h1>
           <p className="text-sm text-muted-foreground mt-1">All service flows, automated steps, and email templates in one view</p>
         </div>
@@ -135,7 +135,7 @@ export default function AdminProcessFlows() {
         {[
           { label: "Service Flows", value: SERVICE_FLOWS.length, color: "text-foreground" },
           { label: "Steps Implemented", value: `${implementedSteps}/${totalSteps}`, color: "text-emerald-600" },
-          { label: "Automated Steps", value: automatedSteps, color: "text-[hsl(45,96%,50%)]" },
+          { label: "Automated Steps", value: automatedSteps, color: "text-primary" },
           { label: "Email Templates", value: totalEmailTemplates, color: "text-amber-600" },
         ].map((stat) => (
           <Card key={stat.label} className="rounded-[24px] border-2 border-border shadow-md">
@@ -173,10 +173,10 @@ export default function AdminProcessFlows() {
 
       {/* Edit template dialog */}
       <Dialog open={!!editingTemplate} onOpenChange={() => setEditingTemplate(null)}>
-        <DialogContent className="sm:max-w-lg rounded-[24px] border-2 border-border shadow-[6px_6px_0px_hsl(220,10%,85%)]">
+        <DialogContent className="sm:max-w-lg rounded-[24px] border-2 border-border shadow-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 font-black">
-              <Mail className="h-5 w-5 text-[hsl(45,96%,50%)]" />
+              <Mail className="h-5 w-5 text-primary" />
               Edit Template: {editingTemplate?.key.replace("email_template_", "").replace(/_/g, " ")}
             </DialogTitle>
           </DialogHeader>

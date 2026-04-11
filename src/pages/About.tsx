@@ -68,7 +68,7 @@ export default function About() {
               <Logo size="xl" />
             </motion.div>
             <motion.div variants={fadeUp} custom={1}>
-              <Badge className="mb-3 bg-primary/10 text-[hsl(45,96%,40%)] border-[hsl(45,96%,50%)]/20 rounded-lg font-bold">
+              <Badge className="mb-3 bg-primary/10 text-primary border-primary/20 rounded-lg font-bold">
                 <Award className="mr-1 h-3 w-3" /> NNA Certified Notary Signing Agent
               </Badge>
               <h1 className="mb-3 text-4xl font-black text-foreground md:text-5xl">
@@ -198,7 +198,7 @@ export default function About() {
           <div className="grid gap-8 md:grid-cols-2">
             <div>
               <h2 className="mb-4 text-2xl font-black text-foreground flex items-center gap-2">
-                <MapPin className="h-6 w-6 text-[hsl(45,96%,50%)]" /> Service Area
+                <MapPin className="h-6 w-6 text-primary" /> Service Area
               </h2>
               <p className="mb-4 text-muted-foreground">
                 In-person notarization and mobile services available throughout central Ohio. 
@@ -215,17 +215,17 @@ export default function About() {
             </div>
             <div>
               <h2 className="mb-4 text-2xl font-black text-foreground flex items-center gap-2">
-                <Briefcase className="h-6 w-6 text-[hsl(45,96%,50%)]" /> Services Overview
+                <Briefcase className="h-6 w-6 text-primary" /> Services Overview
               </h2>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-[hsl(45,96%,50%)]" /> In-Person & Remote Online Notarization</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-[hsl(45,96%,50%)]" /> Document Digitization & OCR</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-[hsl(45,96%,50%)]" /> Apostille & Authentication</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-[hsl(45,96%,50%)]" /> I-9 Employment Verification</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-[hsl(45,96%,50%)]" /> Real Estate & Loan Signing</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-[hsl(45,96%,50%)]" /> Document Preparation & Templates</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-[hsl(45,96%,50%)]" /> Secure Cloud Document Storage</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-[hsl(45,96%,50%)]" /> Business & Volume Services</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> In-Person & Remote Online Notarization</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Document Digitization & OCR</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Apostille & Authentication</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> I-9 Employment Verification</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Real Estate & Loan Signing</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Document Preparation & Templates</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Secure Cloud Document Storage</li>
+                <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Business & Volume Services</li>
               </ul>
             </div>
           </div>
@@ -241,7 +241,7 @@ export default function About() {
               href="https://www.ohiosos.gov/businesses/notary-public/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[hsl(45,96%,50%)] font-bold hover:underline"
+              className="text-primary font-bold hover:underline"
             >
               Ohio Secretary of State Notary Lookup →
             </a>

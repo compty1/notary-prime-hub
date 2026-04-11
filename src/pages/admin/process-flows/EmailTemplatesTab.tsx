@@ -16,7 +16,7 @@ export default function EmailTemplatesTab({ globalTemplates, services, onEdit }:
       <h3 className="font-black text-sm text-foreground uppercase tracking-widest">Global Email Templates</h3>
       <div className="space-y-2">
         {Object.entries(globalTemplates).map(([key, value]) => (
-          <Card key={key} className="rounded-[20px] border-2 border-[hsl(220,10%,90%)] shadow-[3px_3px_0px_hsl(220,10%,85%)]">
+          <Card key={key} className="rounded-[20px] border-2 border-border shadow-md">
             <CardContent className="p-3 flex items-center justify-between">
               <div>
                 <p className="text-sm font-bold text-foreground">{key.replace("email_template_", "").replace(/_/g, " ")}</p>
@@ -36,7 +36,7 @@ export default function EmailTemplatesTab({ globalTemplates, services, onEdit }:
       <h3 className="font-black text-sm text-foreground uppercase tracking-widest mt-6">Per-Service Email Overrides</h3>
       <div className="space-y-2">
         {services.filter(s => s.email_templates && Object.keys(s.email_templates).length > 0).map(svc => (
-          <Card key={svc.id} className="rounded-[20px] border-2 border-[hsl(220,10%,90%)] shadow-[3px_3px_0px_hsl(220,10%,85%)]">
+          <Card key={svc.id} className="rounded-[20px] border-2 border-border shadow-md">
             <CardContent className="p-3">
               <p className="text-sm font-black text-foreground mb-2">{svc.name}</p>
               <div className="flex flex-wrap gap-1">
@@ -57,12 +57,12 @@ export default function EmailTemplatesTab({ globalTemplates, services, onEdit }:
       <h3 className="font-black text-sm text-foreground uppercase tracking-widest mt-6">Auth Email Templates</h3>
       <div className="flex flex-wrap gap-2">
         {AUTH_TEMPLATES.map(t => (
-          <Badge key={t} className="bg-[hsl(220,10%,95%)] text-muted-foreground rounded-lg font-bold">
+          <Badge key={t} className="bg-muted text-muted-foreground rounded-lg font-bold">
             <Mail className="h-3 w-3 mr-1" /> {t}
           </Badge>
         ))}
       </div>
-      <p className="text-xs text-muted-foreground">Auth templates are defined in <code className="bg-[hsl(220,10%,95%)] px-1 py-0.5 rounded text-[10px] font-bold">supabase/functions/_shared/email-templates/</code> and deployed via the auth-email-hook edge function.</p>
+      <p className="text-xs text-muted-foreground">Auth templates are defined in <code className="bg-muted px-1 py-0.5 rounded text-[10px] font-bold">supabase/functions/_shared/email-templates/</code> and deployed via the auth-email-hook edge function.</p>
     </div>
   );
 }

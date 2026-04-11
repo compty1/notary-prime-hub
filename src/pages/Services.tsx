@@ -177,7 +177,7 @@ export default function Services() {
       <section className="border-b-2 border-border bg-primary/5 py-12">
         <div className="container mx-auto px-4">
           <div className="mb-8 text-center">
-            <Badge className="mb-3 bg-primary/10 text-[hsl(45,96%,40%)] border-[hsl(45,96%,50%)]/20 rounded-lg font-bold"><Sparkles className="mr-1 h-3 w-3" /> AI-Powered</Badge>
+            <Badge className="mb-3 bg-primary/10 text-primary border-primary/20 rounded-lg font-bold"><Sparkles className="mr-1 h-3 w-3" /> AI-Powered</Badge>
             <h2 className="mb-2 text-2xl font-bold text-foreground md:text-3xl">Do It Yourself</h2>
             <p className="mx-auto max-w-lg text-muted-foreground">Every tool is enhanced with AI — smarter suggestions, auto-fill, and intelligent recommendations.</p>
           </div>
@@ -257,7 +257,7 @@ export default function Services() {
                           <CardContent className="flex h-full flex-col p-6">
                             <div className="mb-3 flex items-start justify-between">
                               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                                <IconComp className="h-5 w-5 text-[hsl(45,96%,50%)]" />
+                                <IconComp className="h-5 w-5 text-primary" />
                               </div>
                               <div className="flex items-center gap-1.5">
                                 {s.is_popular && (
