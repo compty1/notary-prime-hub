@@ -1,5 +1,5 @@
 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
   <rect width="64" height="64" rx="12" fill="hsl(222, 47%, 11%)"/>
   <text x="8" y="50" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="48" fill="white">N</text>
-  <circle cx="52" cy="48" r="5" fill="hsl(43, 74%, 49%)"/>
+  <circle cx="52" cy="48" r="5" fill="hsl(45, 86%, 48%)"/>
 </svg>
