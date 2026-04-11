@@ -325,6 +325,71 @@ export type Database = {
         }
         Relationships: []
       }
+      background_checks: {
+        Row: {
+          agency: string | null
+          check_type: string
+          client_id: string
+          created_at: string
+          fee: number | null
+          fingerprint_session_id: string | null
+          fingerprints_required: boolean
+          id: string
+          notes: string | null
+          purpose: string | null
+          result_date: string | null
+          result_file_path: string | null
+          result_status: string | null
+          status: string
+          subject_name: string
+          updated_at: string
+        }
+        Insert: {
+          agency?: string | null
+          check_type?: string
+          client_id: string
+          created_at?: string
+          fee?: number | null
+          fingerprint_session_id?: string | null
+          fingerprints_required?: boolean
+          id?: string
+          notes?: string | null
+          purpose?: string | null
+          result_date?: string | null
+          result_file_path?: string | null
+          result_status?: string | null
+          status?: string
+          subject_name: string
+          updated_at?: string
+        }
+        Update: {
+          agency?: string | null
+          check_type?: string
+          client_id?: string
+          created_at?: string
+          fee?: number | null
+          fingerprint_session_id?: string | null
+          fingerprints_required?: boolean
+          id?: string
+          notes?: string | null
+          purpose?: string | null
+          result_date?: string | null
+          result_file_path?: string | null
+          result_status?: string | null
+          status?: string
+          subject_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "background_checks_fingerprint_session_id_fkey"
+            columns: ["fingerprint_session_id"]
+            isOneToOne: false
+            referencedRelation: "fingerprint_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       booking_drafts: {
         Row: {
           created_at: string
@@ -822,6 +887,60 @@ export type Database = {
           provider?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      courier_jobs: {
+        Row: {
+          chain_of_custody_log: Json | null
+          client_id: string
+          created_at: string
+          delivery_confirmed_at: string | null
+          delivery_photo_path: string | null
+          distance_miles: number | null
+          dropoff_address: string
+          fee: number | null
+          id: string
+          notes: string | null
+          package_description: string | null
+          pickup_address: string
+          requires_signature: boolean
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          chain_of_custody_log?: Json | null
+          client_id: string
+          created_at?: string
+          delivery_confirmed_at?: string | null
+          delivery_photo_path?: string | null
+          distance_miles?: number | null
+          dropoff_address: string
+          fee?: number | null
+          id?: string
+          notes?: string | null
+          package_description?: string | null
+          pickup_address: string
+          requires_signature?: boolean
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          chain_of_custody_log?: Json | null
+          client_id?: string
+          created_at?: string
+          delivery_confirmed_at?: string | null
+          delivery_photo_path?: string | null
+          distance_miles?: number | null
+          dropoff_address?: string
+          fee?: number | null
+          id?: string
+          notes?: string | null
+          package_description?: string | null
+          pickup_address?: string
+          requires_signature?: boolean
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1683,6 +1802,62 @@ export type Database = {
           },
         ]
       }
+      fingerprint_sessions: {
+        Row: {
+          agency_destination: string | null
+          appointment_id: string | null
+          card_count: number
+          card_type: string
+          client_id: string
+          created_at: string
+          fee: number | null
+          id: string
+          notes: string | null
+          reason: string | null
+          session_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          agency_destination?: string | null
+          appointment_id?: string | null
+          card_count?: number
+          card_type?: string
+          client_id: string
+          created_at?: string
+          fee?: number | null
+          id?: string
+          notes?: string | null
+          reason?: string | null
+          session_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          agency_destination?: string | null
+          appointment_id?: string | null
+          card_count?: number
+          card_type?: string
+          client_id?: string
+          created_at?: string
+          fee?: number | null
+          id?: string
+          notes?: string | null
+          reason?: string | null
+          session_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fingerprint_sessions_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       form_library: {
         Row: {
           category: string
@@ -1843,6 +2018,72 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      identity_certificates: {
+        Row: {
+          certificate_number: string | null
+          certificate_type: string
+          client_id: string
+          created_at: string
+          created_by: string
+          expires_at: string | null
+          file_path: string | null
+          id: string
+          id_document_number: string | null
+          id_document_type: string | null
+          issued_at: string
+          issued_to_dob: string | null
+          issued_to_name: string
+          notes: string | null
+          revocation_reason: string | null
+          revoked_at: string | null
+          status: string
+          updated_at: string
+          verification_method: string
+        }
+        Insert: {
+          certificate_number?: string | null
+          certificate_type?: string
+          client_id: string
+          created_at?: string
+          created_by: string
+          expires_at?: string | null
+          file_path?: string | null
+          id?: string
+          id_document_number?: string | null
+          id_document_type?: string | null
+          issued_at?: string
+          issued_to_dob?: string | null
+          issued_to_name: string
+          notes?: string | null
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          status?: string
+          updated_at?: string
+          verification_method?: string
+        }
+        Update: {
+          certificate_number?: string | null
+          certificate_type?: string
+          client_id?: string
+          created_at?: string
+          created_by?: string
+          expires_at?: string | null
+          file_path?: string | null
+          id?: string
+          id_document_number?: string | null
+          id_document_type?: string | null
+          issued_at?: string
+          issued_to_dob?: string | null
+          issued_to_name?: string
+          notes?: string | null
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          status?: string
+          updated_at?: string
+          verification_method?: string
+        }
+        Relationships: []
       }
       journal_entries: {
         Row: {
@@ -3033,6 +3274,69 @@ export type Database = {
           },
         ]
       }
+      process_serving_cases: {
+        Row: {
+          affidavit_date: string | null
+          affidavit_filed: boolean
+          attempts: number
+          case_number: string | null
+          client_id: string
+          court_name: string | null
+          created_at: string
+          deadline: string | null
+          document_description: string | null
+          fee: number | null
+          id: string
+          max_attempts: number
+          notes: string | null
+          respondent_address: string | null
+          respondent_name: string
+          serve_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          affidavit_date?: string | null
+          affidavit_filed?: boolean
+          attempts?: number
+          case_number?: string | null
+          client_id: string
+          court_name?: string | null
+          created_at?: string
+          deadline?: string | null
+          document_description?: string | null
+          fee?: number | null
+          id?: string
+          max_attempts?: number
+          notes?: string | null
+          respondent_address?: string | null
+          respondent_name: string
+          serve_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          affidavit_date?: string | null
+          affidavit_filed?: boolean
+          attempts?: number
+          case_number?: string | null
+          client_id?: string
+          court_name?: string | null
+          created_at?: string
+          deadline?: string | null
+          document_description?: string | null
+          fee?: number | null
+          id?: string
+          max_attempts?: number
+          notes?: string | null
+          respondent_address?: string | null
+          respondent_name?: string
+          serve_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       professional_service_enrollments: {
         Row: {
           created_at: string
@@ -3718,6 +4022,54 @@ export type Database = {
           },
         ]
       }
+      scrivener_jobs: {
+        Row: {
+          client_id: string
+          completed_file_path: string | null
+          court_jurisdiction: string | null
+          created_at: string
+          fee: number | null
+          form_name: string | null
+          form_type: string
+          id: string
+          notes: string | null
+          page_count: number | null
+          status: string
+          updated_at: string
+          upl_acknowledgment: boolean
+        }
+        Insert: {
+          client_id: string
+          completed_file_path?: string | null
+          court_jurisdiction?: string | null
+          created_at?: string
+          fee?: number | null
+          form_name?: string | null
+          form_type: string
+          id?: string
+          notes?: string | null
+          page_count?: number | null
+          status?: string
+          updated_at?: string
+          upl_acknowledgment?: boolean
+        }
+        Update: {
+          client_id?: string
+          completed_file_path?: string | null
+          court_jurisdiction?: string | null
+          created_at?: string
+          fee?: number | null
+          form_name?: string | null
+          form_type?: string
+          id?: string
+          notes?: string | null
+          page_count?: number | null
+          status?: string
+          updated_at?: string
+          upl_acknowledgment?: boolean
+        }
+        Relationships: []
+      }
       service_add_ons: {
         Row: {
           created_at: string
@@ -4167,6 +4519,60 @@ export type Database = {
           },
         ]
       }
+      skip_trace_requests: {
+        Row: {
+          client_id: string
+          created_at: string
+          data_sources_used: string[] | null
+          fee: number | null
+          id: string
+          purpose: string | null
+          result_address: string | null
+          result_email: string | null
+          result_notes: string | null
+          result_phone: string | null
+          status: string
+          subject_dob: string | null
+          subject_last_known_address: string | null
+          subject_name: string
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          data_sources_used?: string[] | null
+          fee?: number | null
+          id?: string
+          purpose?: string | null
+          result_address?: string | null
+          result_email?: string | null
+          result_notes?: string | null
+          result_phone?: string | null
+          status?: string
+          subject_dob?: string | null
+          subject_last_known_address?: string | null
+          subject_name: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          data_sources_used?: string[] | null
+          fee?: number | null
+          id?: string
+          purpose?: string | null
+          result_address?: string | null
+          result_email?: string | null
+          result_notes?: string | null
+          result_phone?: string | null
+          status?: string
+          subject_dob?: string | null
+          subject_last_known_address?: string | null
+          subject_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -4283,6 +4689,66 @@ export type Database = {
           result?: string
           tool_id?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      translation_requests: {
+        Row: {
+          affidavit_path: string | null
+          certified: boolean
+          client_id: string
+          created_at: string
+          deadline: string | null
+          document_name: string
+          document_path: string | null
+          fee: number | null
+          id: string
+          notes: string | null
+          page_count: number | null
+          source_language: string
+          status: string
+          target_language: string
+          translator_credentials: string | null
+          translator_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          affidavit_path?: string | null
+          certified?: boolean
+          client_id: string
+          created_at?: string
+          deadline?: string | null
+          document_name: string
+          document_path?: string | null
+          fee?: number | null
+          id?: string
+          notes?: string | null
+          page_count?: number | null
+          source_language?: string
+          status?: string
+          target_language: string
+          translator_credentials?: string | null
+          translator_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          affidavit_path?: string | null
+          certified?: boolean
+          client_id?: string
+          created_at?: string
+          deadline?: string | null
+          document_name?: string
+          document_path?: string | null
+          fee?: number | null
+          id?: string
+          notes?: string | null
+          page_count?: number | null
+          source_language?: string
+          status?: string
+          target_language?: string
+          translator_credentials?: string | null
+          translator_name?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -4433,6 +4899,120 @@ export type Database = {
           stripe_subscription_id?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      virtual_assistant_tasks: {
+        Row: {
+          assigned_to: string | null
+          client_id: string
+          created_at: string
+          deadline: string | null
+          deliverable_path: string | null
+          description: string | null
+          hourly_rate: number | null
+          hours_actual: number | null
+          hours_estimated: number | null
+          id: string
+          notes: string | null
+          priority: string
+          status: string
+          task_type: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          client_id: string
+          created_at?: string
+          deadline?: string | null
+          deliverable_path?: string | null
+          description?: string | null
+          hourly_rate?: number | null
+          hours_actual?: number | null
+          hours_estimated?: number | null
+          id?: string
+          notes?: string | null
+          priority?: string
+          status?: string
+          task_type?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          client_id?: string
+          created_at?: string
+          deadline?: string | null
+          deliverable_path?: string | null
+          description?: string | null
+          hourly_rate?: number | null
+          hours_actual?: number | null
+          hours_estimated?: number | null
+          id?: string
+          notes?: string | null
+          priority?: string
+          status?: string
+          task_type?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      vital_records_requests: {
+        Row: {
+          agency: string | null
+          agency_fee: number | null
+          client_id: string
+          copies_requested: number
+          county: string | null
+          created_at: string
+          date_of_event: string | null
+          id: string
+          notes: string | null
+          person_name: string
+          record_type: string
+          service_fee: number | null
+          state: string
+          status: string
+          tracking_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          agency?: string | null
+          agency_fee?: number | null
+          client_id: string
+          copies_requested?: number
+          county?: string | null
+          created_at?: string
+          date_of_event?: string | null
+          id?: string
+          notes?: string | null
+          person_name: string
+          record_type?: string
+          service_fee?: number | null
+          state?: string
+          status?: string
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          agency?: string | null
+          agency_fee?: number | null
+          client_id?: string
+          copies_requested?: number
+          county?: string | null
+          created_at?: string
+          date_of_event?: string | null
+          id?: string
+          notes?: string | null
+          person_name?: string
+          record_type?: string
+          service_fee?: number | null
+          state?: string
+          status?: string
+          tracking_number?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
