@@ -32,6 +32,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { sanitizeHtml, stripHtml } from "@/lib/sanitize";
 import { logAuditEvent } from "@/lib/auditLog";
 import { AIContentPreview } from "@/components/AIContentPreview";
+import { DocuDexTemplateNameDialog } from "./docudex/DocuDexTemplateNameDialog";
+import { DocuDexHeaderFooterEditor } from "./docudex/DocuDexHeaderFooterEditor";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { safeGetItem, safeSetItem } from "@/lib/safeStorage";
@@ -114,7 +116,8 @@ export function DocuDexEditor({
   const [watermark, setWatermark] = useState("none");
   const [headerHtml, setHeaderHtml] = useState("");
   const [footerHtml, setFooterHtml] = useState(DEFAULT_FOOTER);
-  const [showHeaderFooterEditor, setShowHeaderFooterEditor] = useState(false);
+  const [showHeaderFooterEditorDialog, setShowHeaderFooterEditorDialog] = useState(false);
+  const [showTemplateNameDlg, setShowTemplateNameDlg] = useState(false);
   const [customTemplates, setCustomTemplates] = useState<CustomTemplate[]>(() => {
     try { return JSON.parse(safeGetItem("docudex_custom_templates") || "[]"); } catch { return []; }
   });
@@ -691,10 +694,12 @@ export function DocuDexEditor({
     announce(`Version "${label}" saved`);
   };
 
-  // Save as custom template (TP-002)
+
   const saveAsTemplate = () => {
-    const templateName = window.prompt("Template name:", title || "Custom Template");
-    if (!templateName) return;
+    setShowTemplateNameDlg(true);
+  };
+
+  const confirmSaveTemplate = (templateName: string) => {
     const newTemplate: CustomTemplate = {
       id: `custom-${Date.now()}`,
       label: templateName,
@@ -1598,6 +1603,23 @@ export function DocuDexEditor({
             </div>
           </div>
         )}
+
+        {/* Template Name Dialog (replaces window.prompt) */}
+        <DocuDexTemplateNameDialog
+          open={showTemplateNameDlg}
+          onOpenChange={setShowTemplateNameDlg}
+          defaultName={title || "Custom Template"}
+          onSave={confirmSaveTemplate}
+        />
+
+        {/* Header/Footer Editor Dialog (replaces raw HTML input) */}
+        <DocuDexHeaderFooterEditor
+          open={showHeaderFooterEditorDialog}
+          onOpenChange={setShowHeaderFooterEditorDialog}
+          headerHtml={headerHtml}
+          footerHtml={footerHtml}
+          onApply={(h, f) => { setHeaderHtml(h); setFooterHtml(f); }}
+        />
       </div>
     </TooltipProvider>
   );

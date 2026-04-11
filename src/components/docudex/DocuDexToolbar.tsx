@@ -10,10 +10,13 @@ import {
   Bold, Italic, Underline, Strikethrough, AlignLeft, AlignCenter, AlignRight, AlignJustify,
   List, ListOrdered, Heading1, Heading2, Heading3, Heading4,
   Link, Unlink, Subscript, Superscript, Quote, Minus,
-  Table, Undo2, Redo2, Eraser, Search,
-  Type, Highlighter, Image as ImageIcon,
+  Undo2, Redo2, Eraser, Search,
+  Type, Highlighter, Image as ImageIcon, SeparatorHorizontal,
+  Indent, Outdent, CheckSquare,
 } from "lucide-react";
 import { TEXT_COLORS, HIGHLIGHT_COLORS, FONT_SIZES, BRAND_FONTS } from "./constants";
+import { DocuDexTablePicker } from "./DocuDexTablePicker";
+import { DocuDexLinkDialog } from "./DocuDexLinkDialog";
 
 interface ToolbarProps {
   editor: Editor | null;
@@ -124,18 +127,11 @@ function ColorPicker({ colors, activeColor, onSelect, icon: Icon, title }: {
 }
 
 export function DocuDexToolbar({ editor, brandFont, onBrandFontChange, onImageUpload, onFindReplace }: ToolbarProps) {
-  const addLink = useCallback(() => {
-    if (!editor) return;
-    const url = window.prompt("Enter URL:", "https://");
-    if (url) {
-      editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
-    }
-  }, [editor]);
+  const [showLinkDialog, setShowLinkDialog] = useState(false);
 
-  const insertTable = useCallback(() => {
-    if (!editor) return;
-    (editor.chain().focus() as any).insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
-  }, [editor]);
+  const addLink = useCallback(() => {
+    setShowLinkDialog(true);
+  }, []);
 
   if (!editor) return null;
 
@@ -296,11 +292,12 @@ export function DocuDexToolbar({ editor, brandFont, onBrandFontChange, onImageUp
       <ToolBtn title="Insert Image" onClick={onImageUpload}>
         <ImageIcon className="h-3.5 w-3.5" />
       </ToolBtn>
-      <ToolBtn title="Insert Table" onClick={insertTable}>
-        <Table className="h-3.5 w-3.5" />
-      </ToolBtn>
+      <DocuDexTablePicker editor={editor} />
       <ToolBtn title="Horizontal Rule" onClick={() => editor.chain().focus().setHorizontalRule().run()}>
         <Minus className="h-3.5 w-3.5" />
+      </ToolBtn>
+      <ToolBtn title="Page Break" onClick={() => editor.chain().focus().setHorizontalRule().run()}>
+        <SeparatorHorizontal className="h-3.5 w-3.5" />
       </ToolBtn>
 
       <Separator />
@@ -312,6 +309,9 @@ export function DocuDexToolbar({ editor, brandFont, onBrandFontChange, onImageUp
       <ToolBtn title="Find & Replace (Ctrl+F)" onClick={onFindReplace}>
         <Search className="h-3.5 w-3.5" />
       </ToolBtn>
+
+      {/* Link Dialog */}
+      <DocuDexLinkDialog open={showLinkDialog} onOpenChange={setShowLinkDialog} editor={editor} />
     </div>
   );
 }
