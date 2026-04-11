@@ -694,12 +694,9 @@ export function DocuDexEditor({
     announce(`Version "${label}" saved`);
   };
 
-  // Save as custom template (TP-002) — replaced window.prompt with dialog
-  const [showTemplateNameDialog, setShowTemplateNameDialog] = useState(false);
-  const [showHeaderFooterEditor, setShowHeaderFooterEditorState] = useState(false);
 
   const saveAsTemplate = () => {
-    setShowTemplateNameDialog(true);
+    setShowTemplateNameDlg(true);
   };
 
   const confirmSaveTemplate = (templateName: string) => {
