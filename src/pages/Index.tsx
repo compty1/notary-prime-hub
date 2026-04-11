@@ -306,8 +306,8 @@ export default function Index() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.15 }}
             >
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-primary-foreground mb-6">About us</h2>
-              <p className="text-lg text-primary-foreground/80 font-medium leading-relaxed max-w-lg">
+              <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-6">About us</h2>
+              <p className="text-lg text-muted-foreground font-medium leading-relaxed max-w-lg">
                 We are a team of passionate creatives specializing in branding, content, and design. Our goal is to provide our clients with innovative ideas that translate to real, wonderful experiences.
               </p>
             </motion.div>
