@@ -59,6 +59,8 @@
         "@tiptap/extension-table-cell": "^3.22.2",
         "@tiptap/extension-table-header": "^3.22.2",
         "@tiptap/extension-table-row": "^3.22.2",
+        "@tiptap/extension-task-item": "^3.22.3",
+        "@tiptap/extension-task-list": "^3.22.3",
         "@tiptap/extension-text-align": "^3.20.4",
         "@tiptap/extension-text-style": "^3.22.2",
         "@tiptap/extension-underline": "^3.20.4",
@@ -500,6 +502,10 @@
     "@tiptap/extension-table-header": ["@tiptap/extension-table-header@3.22.3", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tiptap/extension-table-header/-/extension-table-header-3.22.3.tgz", { "peerDependencies": { "@tiptap/extension-table": "^3.22.3" } }, "sha512-5wQ5rne9ccdbzeqC1AEDaUzlWjnpQNgBctgSPKEv+Da88lRRcGX21H+b/8jhL7fr4/sznr45toKGUg8NmRhboQ=="],
 
     "@tiptap/extension-table-row": ["@tiptap/extension-table-row@3.22.3", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tiptap/extension-table-row/-/extension-table-row-3.22.3.tgz", { "peerDependencies": { "@tiptap/extension-table": "^3.22.3" } }, "sha512-dkoHnbOZgb2iQLXsp2FUu0KejAh3LOqDLMixYYU/0lnUwhqGG8kgu6+0YkCiUhedbfMFqVvemdKnRddpTQ4sqg=="],
+
+    "@tiptap/extension-task-item": ["@tiptap/extension-task-item@3.22.3", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tiptap/extension-task-item/-/extension-task-item-3.22.3.tgz", { "peerDependencies": { "@tiptap/extension-list": "^3.22.3" } }, "sha512-bUxP6fmlrF4sbpHnkm0nTKNVmtQXNnhrbWsUt0MCnvAd9y5Nq3ohpOzMOCL71AEHfmeV1kEkPbpdwKb1R7XDbg=="],
+
+    "@tiptap/extension-task-list": ["@tiptap/extension-task-list@3.22.3", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tiptap/extension-task-list/-/extension-task-list-3.22.3.tgz", { "peerDependencies": { "@tiptap/extension-list": "^3.22.3" } }, "sha512-ze/DNj7Uq/Xjo+t8UuumnvJcmGVrVvLar11nFxobgpij21ja6XiUNMZ+BywvFurWbh5NrHeSYV07vFOWWf5Cpg=="],
 
     "@tiptap/extension-text": ["@tiptap/extension-text@3.21.0", "", { "peerDependencies": { "@tiptap/core": "^3.21.0" } }, "sha512-Zx8QdB8a5iBuE4uO21c3BjmpBfaJEr2Jd1QFnsdgx11fm6P7dGgZaGko1FaINhfOPRGTN6O/kiF02cDMdOHa/w=="],
 
