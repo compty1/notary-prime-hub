@@ -25,7 +25,7 @@ import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
 import { fadeUp, blurIn, scaleReveal } from "@/lib/animations";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
-import heroIllustration from "@/assets/hero-3d-illustration.jpg";
+import Hero3DAnimation from "@/components/Hero3DAnimation";
 import aboutIllustration from "@/assets/about-3d-illustration.jpg";
 
 const primaryServices = [
