@@ -314,7 +314,7 @@ export default function Index() {
       </section>
 
       {/* ===== 4-Step Process ===== */}
-      <section id="how-it-works" className="py-20 bg-background">
+      <section id="how-it-works" className="section-padding bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <p className="text-label font-bold uppercase tracking-widest text-muted-foreground mb-3">How It Works</p>
@@ -334,7 +334,7 @@ export default function Index() {
                 transition={{ delay: idx * 0.1 }}
                 className="relative z-10 group"
               >
-                <div className="bg-card rounded-[24px] border border-border p-6 shadow-card hover:-translate-y-1 transition-all duration-300">
+                <div className="bg-card rounded-card border border-border p-6 shadow-card interactive-card">
                   <div className="w-[129px] h-[129px] rounded-xl flex items-center justify-center mb-5">
                     <Icon3D src={step.icon3d} alt={step.title} className="w-[110px] h-[110px]" />
                   </div>
@@ -348,7 +348,7 @@ export default function Index() {
       </section>
 
       {/* ===== Key Benefits ===== */}
-      <section id="benefits" className="py-20 bg-sidebar text-sidebar-foreground">
+      <section id="benefits" className="section-padding bg-sidebar text-sidebar-foreground">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <p className="text-label font-bold uppercase tracking-widest text-sidebar-foreground/50 mb-3">Why Notar</p>
@@ -369,7 +369,7 @@ export default function Index() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className="bg-sidebar-accent/50 backdrop-blur-sm p-8 rounded-[24px] border border-sidebar-border text-center hover:-translate-y-1 transition duration-300 group"
+                className="bg-sidebar-accent/50 backdrop-blur-sm p-8 rounded-card border border-sidebar-border text-center interactive-card group"
               >
                 <div className="w-20 h-20 flex items-center justify-center mx-auto mb-6">
                   <Icon3D src={benefit.icon3d} alt={benefit.title} className="w-20 h-20" />
@@ -383,7 +383,7 @@ export default function Index() {
       </section>
 
       {/* ===== Notary Services ===== */}
-      <section id="services" className="py-20 bg-background">
+      <section id="services" className="section-padding bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -398,7 +398,7 @@ export default function Index() {
           <div className="grid md:grid-cols-2 gap-6 mb-12">
             {primaryServices.map((s, i) => (
               <motion.div key={s.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
-                <Card className="group h-full rounded-[24px] border-border hover:border-primary/30 transition-all shadow-sm hover:shadow-card">
+                <Card className="group h-full rounded-card border-border interactive-card shadow-sm">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
                       <div className="flex-shrink-0 h-[80px] w-[80px] flex items-center justify-center">
@@ -427,7 +427,7 @@ export default function Index() {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:gap-6">
             {otherServices.map((service) => (
               <Link key={service.title} to={service.to}>
-                <div className="bg-card p-5 rounded-[24px] border border-border shadow-sm flex items-start gap-4 hover:border-primary/30 hover:-translate-y-0.5 transition-all cursor-pointer group">
+                <div className="bg-card p-5 rounded-card border border-border shadow-sm flex items-start gap-4 interactive-card cursor-pointer group">
                   <div className="w-[64px] h-[64px] flex-shrink-0 flex items-center justify-center">
                     <Icon3D src={service.icon3d} alt={service.title} className="w-[56px] h-[56px]" />
                   </div>
@@ -443,7 +443,7 @@ export default function Index() {
       </section>
 
       {/* ===== Admin Services ===== */}
-      <section className="py-20 bg-accent">
+      <section className="section-padding bg-accent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -468,7 +468,7 @@ export default function Index() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08 }}
               >
-                <div className="bg-card p-5 rounded-[24px] border border-border shadow-sm flex items-start gap-4 hover:border-primary/30 hover:-translate-y-0.5 transition-all">
+                <div className="bg-card p-5 rounded-card border border-border shadow-sm flex items-start gap-4 interactive-card">
                   <div className="w-[64px] h-[64px] flex-shrink-0 flex items-center justify-center">
                     <Icon3D src={service.icon3d} alt={service.title} className="w-[56px] h-[56px]" />
                   </div>
@@ -507,7 +507,7 @@ export default function Index() {
       </section>
 
       {/* ===== Testimonials ===== */}
-      <section className="py-20 bg-card">
+      <section className="section-padding bg-card">
         <div className="container mx-auto px-4">
           <div className="mx-auto mb-12 max-w-2xl text-center">
             <p className="text-label font-bold uppercase tracking-widest text-muted-foreground mb-3">Testimonials</p>
@@ -516,7 +516,7 @@ export default function Index() {
           <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-3">
             {testimonials.map((t, i) => (
               <motion.div key={t.name} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
-                <Card className="h-full rounded-[24px] border-border shadow-sm">
+                <Card className="h-full rounded-card border-border shadow-sm interactive-card">
                   <CardContent className="p-6">
                     <div className="mb-3 flex gap-0.5">
                       {Array.from({ length: t.rating }).map((_, j) => (
@@ -534,7 +534,7 @@ export default function Index() {
       </section>
 
       {/* ===== CTA Banner — GAP-0020: uses brand gradient ===== */}
-      <section className="bg-gradient-primary py-16">
+      <section className="bg-gradient-primary section-padding">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-primary-foreground mb-6">Ready to Notarize Your Document?</h2>
           <p className="text-primary-foreground/70 text-lg font-medium mb-8">Join thousands of users who have securely notarized their documents online.</p>
@@ -547,7 +547,7 @@ export default function Index() {
       </section>
 
       {/* ===== FAQ ===== */}
-      <section id="faq" className="border-t border-border bg-card py-20">
+      <section id="faq" className="border-t border-border bg-card section-padding">
         <div className="container mx-auto px-4">
           <div className="mx-auto mb-12 max-w-2xl text-center">
             <p className="text-label font-bold uppercase tracking-widest text-muted-foreground mb-3">FAQ</p>
@@ -556,7 +556,7 @@ export default function Index() {
           <div className="mx-auto max-w-2xl">
             <Accordion type="single" collapsible className="space-y-2">
               {faqs.map((faq, i) => (
-                <AccordionItem key={i} value={`faq-${i}`} className="rounded-[24px] border border-border bg-muted px-6">
+                <AccordionItem key={i} value={`faq-${i}`} className="rounded-card border border-border bg-muted px-6">
                   <AccordionTrigger className="text-left text-sm font-bold text-foreground">{faq.q}</AccordionTrigger>
                   <AccordionContent className="text-sm text-muted-foreground font-medium">{faq.a}</AccordionContent>
                 </AccordionItem>
@@ -567,14 +567,14 @@ export default function Index() {
       </section>
 
       {/* ===== Contact Form ===== */}
-      <section id="contact" className="py-20 bg-background">
+      <section id="contact" className="section-padding bg-background">
         <div className="container mx-auto px-4">
           <h2 className="mb-4 text-center text-3xl md:text-4xl font-bold tracking-tight text-foreground">Get in Touch</h2>
           <p className="mx-auto mb-12 max-w-xl text-center text-muted-foreground font-medium">
             Have a question or need notarization services? Fill out the form below and we'll respond within 24 hours — we typically respond within 2 hours during business hours.
           </p>
           <div className="mx-auto max-w-lg">
-            <Card className="rounded-[32px] border-border shadow-sm">
+            <Card className="rounded-card-lg border-border shadow-sm">
               <CardContent className="pt-6">
                 <form onSubmit={handleContactSubmit} className="space-y-4">
                   <div className="grid gap-4 sm:grid-cols-2">
@@ -645,25 +645,25 @@ export default function Index() {
         <div className="container mx-auto px-4">
           <h2 className="mb-8 text-center text-2xl font-bold tracking-tight text-foreground">Industry Insights</h2>
           <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-2">
-            <Card className="rounded-[24px] border-border shadow-sm">
+              <Card className="rounded-card border-border shadow-sm interactive-card">
               <CardContent className="p-6">
                 <h3 className="mb-2 text-base font-bold text-foreground">Why Remote Notarization is Growing 300% Year-Over-Year</h3>
                 <p className="text-sm text-muted-foreground font-medium">The adoption of RON has accelerated dramatically since 2020. Over 40 states now have RON legislation, and major GSEs (Fannie Mae, Freddie Mac) accept RON for mortgage transactions. Ohio was among the early adopters under ORC §147.65-.66.</p>
               </CardContent>
             </Card>
-            <Card className="rounded-[24px] border-border shadow-sm">
+            <Card className="rounded-card border-border shadow-sm interactive-card">
               <CardContent className="p-6">
                 <h3 className="mb-2 text-base font-bold text-foreground">Understanding Ohio's Electronic Notarization Standards</h3>
                 <p className="text-sm text-muted-foreground font-medium">Ohio's RON framework requires multi-factor identity verification including credential analysis and Knowledge-Based Authentication (KBA), plus full session recording stored for 10+ years. These MISMO-compliant standards exceed the security of traditional in-person notarization.</p>
               </CardContent>
             </Card>
-            <Card className="rounded-[24px] border-border shadow-sm">
+            <Card className="rounded-card border-border shadow-sm interactive-card">
               <CardContent className="p-6">
                 <h3 className="mb-2 text-base font-bold text-foreground">What Title Companies Should Know About RON Closings</h3>
                 <p className="text-sm text-muted-foreground font-medium">Title companies benefit from RON with faster closing timelines, reduced scheduling friction, and a complete audit trail. ALTA best practices now include RON as a standard closing option.</p>
               </CardContent>
             </Card>
-            <Card className="rounded-[24px] border-border shadow-sm">
+            <Card className="rounded-card border-border shadow-sm interactive-card">
               <CardContent className="p-6">
                 <h3 className="mb-2 text-base font-bold text-foreground">Common Notarization Mistakes and How to Avoid Them</h3>
                 <p className="text-sm text-muted-foreground font-medium">From incomplete certificates to improper identification, common errors can invalidate a notarization and delay important transactions. Working with an experienced, Ohio-commissioned notary ensures compliance with ORC §147.</p>
