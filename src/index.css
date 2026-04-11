@@ -191,7 +191,7 @@
   }
 
   .bg-gradient-hero {
-    background: linear-gradient(160deg, hsl(45 100% 97%) 0%, hsl(48 100% 93%) 50%, hsl(45 100% 97%) 100%);
+    background: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(48 100% 95%) 40%, hsl(48 91% 70%) 100%);
   }
 
   .dark .bg-gradient-hero {

@@ -22,10 +22,11 @@ import {
   FileSignature, Check
 } from "lucide-react";
 import WhatDoINeed from "@/components/WhatDoINeed";
-import Hero3DAnimation from "@/components/Hero3DAnimation";
 import { PageShell } from "@/components/PageShell";
 import { fadeUp, blurIn, scaleReveal } from "@/lib/animations";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
+import heroIllustration from "@/assets/hero-3d-illustration.jpg";
+import aboutIllustration from "@/assets/about-3d-illustration.jpg";
 
 const primaryServices = [
   {
@@ -231,74 +232,87 @@ export default function Index() {
     <PageShell>
       {/* ===== HERO ===== */}
       <section className="relative bg-gradient-hero overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div initial="hidden" animate="visible">
-              {/* RON Badge Pill */}
-              <motion.div variants={blurIn} custom={0} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted border border-border mb-6">
-                <span className="text-label font-bold uppercase tracking-widest text-muted-foreground">Ohio RON Authorized</span>
-                <ShieldCheck className="h-4 w-4 text-emerald-500" />
-              </motion.div>
-
               <motion.h1
                 variants={blurIn}
-                custom={1}
-                className="text-6xl md:text-7xl font-bold tracking-tighter leading-[1.1] text-foreground mb-6"
+                custom={0}
+                className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.08] text-foreground mb-6"
               >
-                Legal documents{" "}
-                <span className="relative inline-block">
-                  notarized
-                  <span className="absolute bottom-1 left-0 w-full h-3 bg-primary/30 -z-10 rounded-sm" />
-                </span>{" "}
-                in minutes.
+                Legal Online<br />
+                Notarization
               </motion.h1>
 
               <motion.p
                 variants={blurIn}
-                custom={2}
-                className="text-lg text-muted-foreground font-medium mb-8 max-w-lg leading-relaxed"
+                custom={1}
+                className="text-base md:text-lg text-muted-foreground font-medium mb-8 max-w-md leading-relaxed"
               >
-                Secure biometric verification, state-approved standards, and 24/7 availability. Trusted by thousands across Ohio.
+                We are a team of passionate certified notaries specializing in secure document authentication.
               </motion.p>
 
-              <motion.div variants={fadeUp} custom={3} className="flex flex-col sm:flex-row gap-4 items-start">
+              <motion.div variants={fadeUp} custom={2} className="flex flex-row gap-4 items-center">
                 <Link to="/book?type=ron">
                   <Button
                     size="lg"
                     variant="dark"
-                    className="rounded-2xl px-8 py-4 font-bold text-lg"
+                    className="rounded-full px-8 py-3 font-bold text-base"
                   >
-                    Start Notarization <ChevronRight className="ml-1 h-5 w-5" />
+                    Notarize Now
                   </Button>
                 </Link>
                 <Link to="/ron-info">
-                  <Button variant="ghost" size="lg" className="rounded-2xl px-8 py-4 font-bold text-lg text-muted-foreground hover:text-foreground">
-                    View Requirements
+                  <Button variant="outline" size="lg" className="rounded-full px-8 py-3 font-bold text-base border-foreground/20 text-foreground hover:bg-foreground/5">
+                    More Info
                   </Button>
                 </Link>
               </motion.div>
-
-              {/* Social proof */}
-              <motion.div variants={fadeUp} custom={4} className="mt-8 flex items-center gap-3">
-                <div className="flex -space-x-2">
-                  {[1,2,3].map(i => (
-                    <div key={i} className="w-8 h-8 rounded-full bg-muted border-2 border-background" />
-                  ))}
-                </div>
-                <p className="text-sm text-muted-foreground font-medium">
-                  <span className="font-bold text-foreground">2,400+</span> documents notarized
-                </p>
-              </motion.div>
             </motion.div>
 
-            {/* Hero 3D Animation */}
+            {/* Hero 3D Illustration */}
             <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7, delay: 0.3 }}
-              className="relative hidden lg:block min-h-[420px]"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="relative hidden lg:flex items-center justify-center"
             >
-              <Hero3DAnimation />
+              <img
+                src={heroIllustration}
+                alt="Notarization documents and security verification icons"
+                className="w-full max-w-md object-contain drop-shadow-xl"
+              />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== About Us ===== */}
+      <section className="py-20 bg-primary">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <img
+                src={aboutIllustration}
+                alt="3D illustration of document folders"
+                className="w-full max-w-sm mx-auto object-contain drop-shadow-2xl"
+              />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+            >
+              <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-primary-foreground mb-6">About us</h2>
+              <p className="text-lg text-primary-foreground/80 font-medium leading-relaxed max-w-lg">
+                We are a team of passionate creatives specializing in branding, content, and design. Our goal is to provide our clients with innovative ideas that translate to real, wonderful experiences.
+              </p>
             </motion.div>
           </div>
         </div>
@@ -373,42 +387,41 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ===== Services Grid ===== */}
+      {/* ===== Notary Services ===== */}
       <section id="services" className="py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <p className="text-label font-bold uppercase tracking-widest text-muted-foreground mb-3">Our Services</p>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-4">Services We Handle</h2>
-            <p className="text-lg text-muted-foreground font-medium max-w-2xl mx-auto">Expert notarization for all your personal and business documents.</p>
-          </div>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-12"
+          >
+            Notary Services
+          </motion.h2>
 
           {/* Primary Services */}
-          <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-2 mb-12">
+          <div className="grid md:grid-cols-2 gap-6 mb-12">
             {primaryServices.map((s, i) => (
               <motion.div key={s.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
                 <Card className="group h-full rounded-[24px] border-border hover:border-primary/30 transition-all shadow-sm hover:shadow-card">
-                  <CardContent className="p-8">
-                    <div className="mb-4 flex items-center gap-3">
-                      <div className="flex h-[129px] w-[129px] items-center justify-center">
-                        <Icon3D src={s.icon3d} alt={s.title} className="h-[129px] w-[129px]" />
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 h-[80px] w-[80px] flex items-center justify-center">
+                        <Icon3D src={s.icon3d} alt={s.title} className="h-[72px] w-[72px]" />
                       </div>
-                      <Badge className="text-[10px] font-bold uppercase tracking-wider bg-muted text-muted-foreground border-border">{s.badge}</Badge>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="text-base font-bold text-foreground">{s.title}</h3>
+                          <Badge className="text-[9px] font-bold uppercase tracking-wider bg-muted text-muted-foreground border-border">{s.badge}</Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground font-medium leading-relaxed mb-3">{s.desc}</p>
+                        <Link to={s.cta}>
+                          <Button variant="dark" size="sm" className="font-bold rounded-full">
+                            {s.ctaLabel} <ArrowRight className="ml-2 h-3 w-3" />
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
-                    <h3 className="mb-3 text-xl font-bold text-foreground">{s.title}</h3>
-                    <p className="mb-5 text-sm text-muted-foreground font-medium leading-relaxed">{s.desc}</p>
-                    <ul className="mb-6 space-y-2">
-                      {s.features.map((f) => (
-                        <li key={f} className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
-                          <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500" />
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
-                    <Link to={s.cta}>
-                      <Button variant="dark" className="w-full font-bold rounded-2xl">
-                        {s.ctaLabel} <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -416,17 +429,60 @@ export default function Index() {
           </div>
 
           {/* Other Services Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:gap-6">
             {otherServices.map((service) => (
               <Link key={service.title} to={service.to}>
-                <div className="bg-card p-6 rounded-[24px] border border-border shadow-sm flex flex-col items-center text-center hover:border-primary/30 hover:-translate-y-0.5 transition-all cursor-pointer group">
-                  <div className="w-[110px] h-[110px] flex items-center justify-center mb-4">
-                    <Icon3D src={service.icon3d} alt={service.title} className="w-[92px] h-[92px]" />
+                <div className="bg-card p-5 rounded-[24px] border border-border shadow-sm flex items-start gap-4 hover:border-primary/30 hover:-translate-y-0.5 transition-all cursor-pointer group">
+                  <div className="w-[64px] h-[64px] flex-shrink-0 flex items-center justify-center">
+                    <Icon3D src={service.icon3d} alt={service.title} className="w-[56px] h-[56px]" />
                   </div>
-                  <h3 className="font-bold text-foreground text-sm">{service.title}</h3>
-                  <p className="text-xs text-muted-foreground font-medium mt-1">{service.desc}</p>
+                  <div>
+                    <h3 className="font-bold text-foreground text-sm">{service.title}</h3>
+                    <p className="text-xs text-muted-foreground font-medium mt-1">{service.desc}</p>
+                  </div>
                 </div>
               </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== Admin Services ===== */}
+      <section className="py-20 bg-accent">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-12"
+          >
+            Admin<br />Services
+          </motion.h2>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {[
+              { icon3d: FEATURE_3D_ICON.email, title: "Email Management & Correspondence", desc: "Professional email management, drafting, and correspondence handling." },
+              { icon3d: FEATURE_3D_ICON.checklist, title: "Certified Document Prep", desc: "Bulk document preparation for government agencies, HR departments, and legal firms. Standardized formatting, quality control, and compliance verification." },
+              { icon3d: FEATURE_3D_ICON.newsletter, title: "Company/Organization Newsletters", desc: "Professional newsletter creation and distribution for businesses and organizations." },
+              { icon3d: FEATURE_3D_ICON.taskList, title: "Data Entry & Records Management", desc: "Accurate data entry, database management, and record keeping services." },
+            ].map((service, i) => (
+              <motion.div
+                key={service.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+              >
+                <div className="bg-card p-5 rounded-[24px] border border-border shadow-sm flex items-start gap-4 hover:border-primary/30 hover:-translate-y-0.5 transition-all">
+                  <div className="w-[64px] h-[64px] flex-shrink-0 flex items-center justify-center">
+                    <Icon3D src={service.icon3d} alt={service.title} className="w-[56px] h-[56px]" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-foreground text-sm mb-1">{service.title}</h3>
+                    <p className="text-xs text-muted-foreground font-medium leading-relaxed">{service.desc}</p>
+                  </div>
+                </div>
+              </motion.div>
             ))}
           </div>
         </div>
