@@ -255,7 +255,7 @@
   }
 }
 
-/* Scroll behavior */
+/* Scroll behavior — GAP-0025 */
 html {
   scroll-behavior: smooth;
 }
@@ -269,7 +269,7 @@ html {
   }
 }
 
-/* Focus indicators */
+/* Focus indicators — GAP-0012/0032 */
 :focus-visible {
   outline: 2px solid hsl(var(--primary));
   outline-offset: 2px;
