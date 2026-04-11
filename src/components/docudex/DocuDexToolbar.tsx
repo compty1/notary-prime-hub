@@ -10,10 +10,13 @@ import {
   Bold, Italic, Underline, Strikethrough, AlignLeft, AlignCenter, AlignRight, AlignJustify,
   List, ListOrdered, Heading1, Heading2, Heading3, Heading4,
   Link, Unlink, Subscript, Superscript, Quote, Minus,
-  Table, Undo2, Redo2, Eraser, Search,
-  Type, Highlighter, Image as ImageIcon,
+  Undo2, Redo2, Eraser, Search,
+  Type, Highlighter, Image as ImageIcon, SeparatorHorizontal,
+  Indent, Outdent, CheckSquare,
 } from "lucide-react";
 import { TEXT_COLORS, HIGHLIGHT_COLORS, FONT_SIZES, BRAND_FONTS } from "./constants";
+import { DocuDexTablePicker } from "./DocuDexTablePicker";
+import { DocuDexLinkDialog } from "./DocuDexLinkDialog";
 
 interface ToolbarProps {
   editor: Editor | null;
