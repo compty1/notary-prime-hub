@@ -82,6 +82,29 @@ export const SERVICE_PRICING: ServicePrice[] = [
   { name: "Enterprise Plan", category: "subscription", priceFrom: 199, priceUnit: "per month", description: "Unlimited sessions, API access, dedicated account manager" },
   { name: "Document Storage Vault", category: "subscription", priceFrom: 9.99, priceUnit: "per month", description: "Encrypted cloud storage with 10-year retention" },
   { name: "Virtual Mailroom", category: "subscription", priceFrom: 49, priceUnit: "per month", description: "Mail scanning, forwarding, and digital delivery" },
+
+  // Court Form Typing Packages
+  { name: "Divorce Filing Package", category: "court_forms", priceFrom: 150, priceTo: 350, priceUnit: "per package", description: "Ohio divorce complaint, separation agreement, and related filings" },
+  { name: "Custody/Visitation Package", category: "court_forms", priceFrom: 125, priceTo: 300, priceUnit: "per package", description: "Custody motion, parenting plan, and supporting documents" },
+  { name: "Eviction Filing Package", category: "court_forms", priceFrom: 75, priceTo: 175, priceUnit: "per package", description: "3-day notice, complaint, and summons for Ohio landlord-tenant" },
+  { name: "Name Change Package", category: "court_forms", priceFrom: 100, priceTo: 200, priceUnit: "per package", description: "Petition, notice, and order for legal name change" },
+  { name: "Guardianship Package", category: "court_forms", priceFrom: 175, priceTo: 400, priceUnit: "per package", description: "Application, bond, and letters of guardianship" },
+  { name: "Small Claims Filing", category: "court_forms", priceFrom: 50, priceTo: 100, priceUnit: "per filing", description: "Small claims complaint and summons preparation" },
+  { name: "Expungement Package", category: "court_forms", priceFrom: 100, priceTo: 250, priceUnit: "per package", description: "Ohio expungement/sealing application and supporting docs" },
+  { name: "Adoption Filing Package", category: "court_forms", priceFrom: 200, priceTo: 500, priceUnit: "per package", description: "Adoption petition, consent forms, and court filings" },
+  { name: "Probate Filing Package", category: "court_forms", priceFrom: 150, priceTo: 400, priceUnit: "per package", description: "Application, inventory, and final accounting for estate" },
+  { name: "Civil Protection Order", category: "court_forms", priceFrom: 75, priceTo: 150, priceUnit: "per filing", description: "Petition for civil protection/restraining order" },
+
+  // Real Estate Support Services
+  { name: "Property Photography", category: "real_estate_support", priceFrom: 100, priceTo: 250, priceUnit: "per session", description: "Professional property photography for listings or records" },
+  { name: "Lockbox Coordination", category: "real_estate_support", priceFrom: 25, priceTo: 50, priceUnit: "per service", description: "Key exchange and lockbox setup/retrieval for closings" },
+  { name: "Open House Support", category: "real_estate_support", priceFrom: 75, priceTo: 150, priceUnit: "per event", description: "On-site document management and notarization at open houses" },
+  { name: "Tenant Document Services", category: "real_estate_support", priceFrom: 35, priceTo: 75, priceUnit: "per package", description: "Lease agreements, move-in/out checklists, and tenant notices" },
+
+  // Additional Services
+  { name: "Interpreter Referral Service", category: "admin_support", priceFrom: 50, priceTo: 100, priceUnit: "per session", description: "Qualified interpreter coordination for notarial acts" },
+  { name: "Scanback Service", category: "document_services", priceFrom: 10, priceTo: 25, priceUnit: "per package", description: "Scan-back of signed documents to lender or originator" },
+  { name: "Document Printing & Prep", category: "document_services", priceFrom: 0.25, priceTo: 1, priceUnit: "per page", description: "Print, collate, and tab documents for signing sessions" },
 ];
 
 /** Service pricing category labels */
@@ -96,4 +119,6 @@ export const PRICING_CATEGORIES: Record<string, { label: string; icon: string }>
   admin_support: { label: "Admin & VA", icon: "💼" },
   print: { label: "Print & Supplies", icon: "🖨️" },
   subscription: { label: "Subscriptions", icon: "🔄" },
+  court_forms: { label: "Court Form Packages", icon: "📋" },
+  real_estate_support: { label: "Real Estate Support", icon: "🏠" },
 };
