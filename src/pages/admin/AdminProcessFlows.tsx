@@ -149,9 +149,9 @@ export default function AdminProcessFlows() {
 
       <Tabs defaultValue="flows" className="space-y-6">
         <TabsList className="bg-[hsl(220,10%,95%)] rounded-2xl p-1">
-          <TabsTrigger value="flows" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-[2px_2px_0px_hsl(220,10%,85%)] font-bold text-xs"><Workflow className="mr-1 h-4 w-4" /> Process Flows</TabsTrigger>
-          <TabsTrigger value="emails" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-[2px_2px_0px_hsl(220,10%,85%)] font-bold text-xs"><Mail className="mr-1 h-4 w-4" /> Email Templates</TabsTrigger>
-          <TabsTrigger value="automations" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-[2px_2px_0px_hsl(220,10%,85%)] font-bold text-xs"><Zap className="mr-1 h-4 w-4" /> Automations</TabsTrigger>
+          <TabsTrigger value="flows" className="rounded-xl data-[state=active]:bg-card data-[state=active]:shadow-sm font-bold text-xs"><Workflow className="mr-1 h-4 w-4" /> Process Flows</TabsTrigger>
+          <TabsTrigger value="emails" className="rounded-xl data-[state=active]:bg-card data-[state=active]:shadow-sm font-bold text-xs"><Mail className="mr-1 h-4 w-4" /> Email Templates</TabsTrigger>
+          <TabsTrigger value="automations" className="rounded-xl data-[state=active]:bg-card data-[state=active]:shadow-sm font-bold text-xs"><Zap className="mr-1 h-4 w-4" /> Automations</TabsTrigger>
         </TabsList>
 
         <TabsContent value="flows">

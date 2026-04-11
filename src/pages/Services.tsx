@@ -157,7 +157,7 @@ export default function Services() {
   return (
     <PageShell>
       {/* Hero — Block Shadow */}
-      <section className="relative overflow-hidden border-b-2 border-border bg-white py-16 md:py-20">
+      <section className="relative overflow-hidden border-b-2 border-border bg-card py-16 md:py-20">
         <div className="container relative mx-auto px-4 text-center">
           <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Everything you need</p>
           <h1 className="mb-4 text-4xl font-bold text-[hsl(220,26%,14%)] md:text-5xl">
@@ -213,11 +213,11 @@ export default function Services() {
 
         <Tabs value={activeCategory} onValueChange={(val) => { setActiveCategory(val); const params = new URLSearchParams(searchParams); if (val === "all") params.delete("category"); else params.set("category", val); setSearchParams(params, { replace: true }); }}>
           <TabsList className="mb-8 overflow-x-auto flex-nowrap h-auto gap-1 w-full justify-start sm:flex-wrap sm:justify-center scroll-smooth snap-x bg-[hsl(220,10%,95%)] rounded-2xl p-1">
-            <TabsTrigger value="all" className="snap-start rounded-xl font-bold text-xs data-[state=active]:bg-white data-[state=active]:shadow-[2px_2px_0px_hsl(220,10%,85%)]">All Services ({services.length})</TabsTrigger>
+            <TabsTrigger value="all" className="snap-start rounded-xl font-bold text-xs data-[state=active]:bg-card data-[state=active]:shadow-sm">All Services ({services.length})</TabsTrigger>
             {CATEGORY_ORDER.map(cat => {
               const count = services.filter(s => s.category === cat).length;
               return (
-                <TabsTrigger key={cat} value={cat} className="text-xs whitespace-nowrap snap-start rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-[2px_2px_0px_hsl(220,10%,85%)]">{CATEGORY_LABELS[cat]?.label || cat} ({count})</TabsTrigger>
+                <TabsTrigger key={cat} value={cat} className="text-xs whitespace-nowrap snap-start rounded-xl font-bold data-[state=active]:bg-card data-[state=active]:shadow-sm">{CATEGORY_LABELS[cat]?.label || cat} ({count})</TabsTrigger>
               );
             })}
           </TabsList>
@@ -299,7 +299,7 @@ export default function Services() {
       </div>
 
       {/* CTA — Block Shadow */}
-      <section className="border-t-2 border-border bg-white py-16">
+      <section className="border-t-2 border-border bg-card py-16">
         <div className="container mx-auto px-4 text-center">
           <h2 className="mb-4 text-2xl font-bold text-[hsl(220,26%,14%)]">Ready to Get Started?</h2>
           <p className="mb-6 text-muted-foreground">Book an appointment or contact us for a custom quote.</p>
