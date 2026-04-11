@@ -1,7 +1,7 @@
 export type PageEntry = {
   route: string;
   component: string;
-  protection: "public" | "auth" | "admin";
+  protection: "public" | "auth" | "admin" | "adminOnly";
   category: string;
 };
 
@@ -56,14 +56,13 @@ export const PAGE_REGISTRY: PageEntry[] = [
   { route: "/ai-knowledge", component: "AIKnowledge", protection: "auth", category: "AI Tools" },
   { route: "/account-settings", component: "AccountSettings", protection: "auth", category: "Settings" },
 
-  // Admin pages
+  // Admin pages (requireAdmin — both admin + notary)
   { route: "/admin", component: "AdminOverview", protection: "admin", category: "Admin" },
   { route: "/admin/appointments", component: "AdminAppointments", protection: "admin", category: "Admin" },
   { route: "/admin/clients", component: "AdminClients", protection: "admin", category: "Admin" },
   { route: "/admin/availability", component: "AdminAvailability", protection: "admin", category: "Admin" },
   { route: "/admin/documents", component: "AdminDocuments", protection: "admin", category: "Admin" },
   { route: "/admin/journal", component: "AdminJournal", protection: "admin", category: "Admin" },
-  { route: "/admin/revenue", component: "AdminRevenue", protection: "admin", category: "Admin" },
   { route: "/admin/templates", component: "AdminTemplates", protection: "admin", category: "Admin" },
   { route: "/admin/apostille", component: "AdminApostille", protection: "admin", category: "Admin" },
   { route: "/admin/chat", component: "AdminChat", protection: "admin", category: "Admin" },
@@ -71,18 +70,52 @@ export const PAGE_REGISTRY: PageEntry[] = [
   { route: "/admin/services", component: "AdminServices", protection: "admin", category: "Admin" },
   { route: "/admin/resources", component: "AdminResources", protection: "admin", category: "Admin" },
   { route: "/admin/ai-assistant", component: "AdminAIAssistant", protection: "admin", category: "Admin" },
-  { route: "/admin/audit-log", component: "AdminAuditLog", protection: "admin", category: "Admin" },
   { route: "/admin/team", component: "AdminTeam", protection: "admin", category: "Admin" },
   { route: "/admin/email-management", component: "AdminEmailManagement", protection: "admin", category: "Admin" },
   { route: "/admin/leads", component: "AdminLeadPortal", protection: "admin", category: "Admin" },
-  { route: "/admin/users", component: "AdminUsers", protection: "admin", category: "Admin" },
   { route: "/admin/service-requests", component: "AdminServiceRequests", protection: "admin", category: "Admin" },
   { route: "/admin/content-workspace", component: "AdminContentWorkspace", protection: "admin", category: "Admin" },
   { route: "/admin/task-queue", component: "AdminTaskQueue", protection: "admin", category: "Admin" },
-  { route: "/admin/crm", component: "AdminCRM", protection: "admin", category: "Admin" },
-  { route: "/admin/build-tracker", component: "AdminBuildTracker", protection: "admin", category: "Admin" },
-  { route: "/admin/settings", component: "AdminSettings", protection: "admin", category: "Admin" },
-  { route: "/admin/integrations", component: "AdminIntegrationTest", protection: "admin", category: "Admin" },
-  { route: "/admin/mailbox", component: "AdminMailbox", protection: "admin", category: "Admin" },
+  { route: "/admin/docudex-pro", component: "AdminDocuDexPro", protection: "admin", category: "Admin" },
+  { route: "/admin/process-flows", component: "AdminProcessFlows", protection: "admin", category: "Admin" },
   { route: "/admin/client-emails", component: "AdminClientEmails", protection: "admin", category: "Admin" },
+  { route: "/admin/mailbox", component: "AdminMailbox", protection: "admin", category: "Admin" },
+  { route: "/admin/performance", component: "AdminPerformance", protection: "admin", category: "Admin" },
+  { route: "/admin/compliance-report", component: "AdminComplianceReport", protection: "admin", category: "Admin" },
+  { route: "/admin/notary-pages", component: "AdminNotaryPages", protection: "admin", category: "Admin" },
+  { route: "/admin/professionals", component: "AdminProfessionals", protection: "admin", category: "Admin" },
+  { route: "/admin/automated-emails", component: "AdminAutomatedEmails", protection: "admin", category: "Admin" },
+  { route: "/admin/email-health", component: "AdminEmailHealth", protection: "admin", category: "Admin" },
+  { route: "/admin/ron-recordings", component: "AdminRonRecordings", protection: "admin", category: "Admin" },
+  { route: "/admin/loan-signing", component: "AdminLoanSigning", protection: "admin", category: "Admin" },
+  { route: "/admin/i9-verifications", component: "AdminI9Verifications", protection: "admin", category: "Admin" },
+  { route: "/admin/print-jobs", component: "AdminPrintJobs", protection: "admin", category: "Admin" },
+  { route: "/admin/fingerprinting", component: "AdminFingerprinting", protection: "admin", category: "Admin" },
+  { route: "/admin/process-serving", component: "AdminProcessServing", protection: "admin", category: "Admin" },
+  { route: "/admin/skip-tracing", component: "AdminSkipTracing", protection: "admin", category: "Admin" },
+  { route: "/admin/vital-records", component: "AdminVitalRecords", protection: "admin", category: "Admin" },
+  { route: "/admin/scrivener", component: "AdminScrivener", protection: "admin", category: "Admin" },
+  { route: "/admin/translations", component: "AdminTranslations", protection: "admin", category: "Admin" },
+  { route: "/admin/courier", component: "AdminCourier", protection: "admin", category: "Admin" },
+  { route: "/admin/va-tasks", component: "AdminVATasks", protection: "admin", category: "Admin" },
+  { route: "/admin/background-checks", component: "AdminBackgroundChecks", protection: "admin", category: "Admin" },
+  { route: "/admin/identity-certificates", component: "AdminIdentityCertificates", protection: "admin", category: "Admin" },
+  { route: "/admin/recorder-filings", component: "AdminRecorderFilings", protection: "admin", category: "Admin" },
+  { route: "/admin/sos-filings", component: "AdminSOSFilings", protection: "admin", category: "Admin" },
+  { route: "/admin/real-estate", component: "AdminRealEstate", protection: "admin", category: "Admin" },
+  { route: "/admin/print-orders", component: "AdminPrintOrders", protection: "admin", category: "Admin" },
+  { route: "/admin/court-forms", component: "AdminCourtForms", protection: "admin", category: "Admin" },
+  { route: "/admin/permit-filings", component: "AdminPermitFilings", protection: "admin", category: "Admin" },
+  { route: "/admin/compliance-calendars", component: "AdminComplianceCalendars", protection: "admin", category: "Admin" },
+
+  // Admin pages (adminOnly — admin role only, no notary)
+  { route: "/admin/revenue", component: "AdminRevenue", protection: "adminOnly", category: "Admin" },
+  { route: "/admin/users", component: "AdminUsers", protection: "adminOnly", category: "Admin" },
+  { route: "/admin/crm", component: "AdminCRM", protection: "adminOnly", category: "Admin" },
+  { route: "/admin/build-tracker", component: "AdminBuildTracker", protection: "adminOnly", category: "Admin" },
+  { route: "/admin/settings", component: "AdminSettings", protection: "adminOnly", category: "Admin" },
+  { route: "/admin/integrations", component: "AdminIntegrationTest", protection: "adminOnly", category: "Admin" },
+  { route: "/admin/audit-log", component: "AdminAuditLog", protection: "adminOnly", category: "Admin" },
+  { route: "/admin/webhooks", component: "AdminWebhooks", protection: "adminOnly", category: "Admin" },
+  { route: "/admin/finances", component: "AdminFinances", protection: "adminOnly", category: "Admin" },
 ];
