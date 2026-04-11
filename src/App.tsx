@@ -107,6 +107,8 @@ const AdminNotaryPages = lazyRetry(() => import("./pages/admin/AdminNotaryPages"
 const AdminProfessionals = lazyRetry(() => import("./pages/admin/AdminProfessionals"));
 const AdminComplianceReport = lazyRetry(() => import("./pages/admin/AdminComplianceReport"));
 const AdminAutomatedEmails = lazyRetry(() => import("./pages/admin/AdminAutomatedEmails"));
+const AdminFinances = lazyRetry(() => import("./pages/admin/AdminFinances"));
+const AdminEmailHealth = lazyRetry(() => import("./pages/admin/AdminEmailHealth"));
 const Maintenance = lazyRetry(() => import("./pages/Maintenance"));
 const ForNotaries = lazyRetry(() => import("./pages/solutions/ForNotaries"));
 const ForHospitals = lazyRetry(() => import("./pages/solutions/ForHospitals"));
@@ -127,7 +129,7 @@ const NotaryDirectory = lazyRetry(() => import("./pages/NotaryDirectory"));
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 2 * 60 * 1000, // #3709: Reduced from 5min to 2min for fresher data
+      staleTime: 5 * 60 * 1000, // ARCH-003: Restored to 5min; use per-query overrides for real-time data
       retry: 1,
       refetchOnWindowFocus: false,
     },
@@ -255,7 +257,7 @@ function AnimatedRoutes() {
         <Route path="task-queue" element={<ProtectedRoute adminOnly><SR msg="Task queue failed to load"><AdminTaskQueue /></SR></ProtectedRoute>} />
         <Route path="crm" element={<ProtectedRoute adminOnly><SR msg="CRM failed to load"><AdminCRM /></SR></ProtectedRoute>} />
         <Route path="build-tracker" element={<ProtectedRoute adminOnly><SR msg="Build tracker failed to load"><AdminBuildTracker /></SR></ProtectedRoute>} />
-        <Route path="docudex-pro" element={<SR msg="DocuDex Pro failed to load"><AdminDocuDexPro /></SR>} />
+        <Route path="docudex-pro" element={<ProtectedRoute adminOnly><SR msg="DocuDex Pro failed to load"><AdminDocuDexPro /></SR></ProtectedRoute>} />
         <Route path="process-flows" element={<ProtectedRoute adminOnly><SR msg="Process flows failed to load"><AdminProcessFlows /></SR></ProtectedRoute>} />
         <Route path="settings" element={<ProtectedRoute adminOnly><SR msg="Settings failed to load"><AdminSettings /></SR></ProtectedRoute>} />
         <Route path="integrations" element={<ProtectedRoute adminOnly><SR msg="Integration testing failed to load"><AdminIntegrationTest /></SR></ProtectedRoute>} />
@@ -267,6 +269,8 @@ function AnimatedRoutes() {
         <Route path="notary-pages" element={<ProtectedRoute adminOnly><SR msg="Notary pages failed to load"><AdminNotaryPages /></SR></ProtectedRoute>} />
         <Route path="professionals" element={<ProtectedRoute adminOnly><SR msg="Professionals failed to load"><AdminProfessionals /></SR></ProtectedRoute>} />
         <Route path="automated-emails" element={<ProtectedRoute adminOnly><SR msg="Automated emails failed to load"><AdminAutomatedEmails /></SR></ProtectedRoute>} />
+        <Route path="finances" element={<ProtectedRoute adminOnly><SR msg="Finances failed to load"><AdminFinances /></SR></ProtectedRoute>} />
+        <Route path="email-health" element={<ProtectedRoute adminOnly><SR msg="Email health failed to load"><AdminEmailHealth /></SR></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="*" element={<NotFound />} />

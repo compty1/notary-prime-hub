@@ -41,6 +41,53 @@ export type Database = {
         }
         Relationships: []
       }
+      amortized_expenses: {
+        Row: {
+          annual_amount: number
+          category_id: string | null
+          created_at: string
+          end_date: string
+          id: string
+          monthly_amount: number | null
+          name: string
+          notes: string | null
+          start_date: string
+          user_id: string
+        }
+        Insert: {
+          annual_amount: number
+          category_id?: string | null
+          created_at?: string
+          end_date: string
+          id?: string
+          monthly_amount?: number | null
+          name: string
+          notes?: string | null
+          start_date: string
+          user_id: string
+        }
+        Update: {
+          annual_amount?: number
+          category_id?: string | null
+          created_at?: string
+          end_date?: string
+          id?: string
+          monthly_amount?: number | null
+          name?: string
+          notes?: string | null
+          start_date?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "amortized_expenses_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "expense_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       apostille_requests: {
         Row: {
           client_id: string
@@ -1500,6 +1547,33 @@ export type Database = {
         }
         Relationships: []
       }
+      expense_categories: {
+        Row: {
+          category_name: string
+          created_at: string
+          id: string
+          irs_schedule_c_line: string | null
+          is_deductible: boolean
+          parent_category: string | null
+        }
+        Insert: {
+          category_name: string
+          created_at?: string
+          id?: string
+          irs_schedule_c_line?: string | null
+          is_deductible?: boolean
+          parent_category?: string | null
+        }
+        Update: {
+          category_name?: string
+          created_at?: string
+          id?: string
+          irs_schedule_c_line?: string | null
+          is_deductible?: boolean
+          parent_category?: string | null
+        }
+        Relationships: []
+      }
       fee_adjustments: {
         Row: {
           adjusted_by: string
@@ -1534,6 +1608,62 @@ export type Database = {
             columns: ["appointment_id"]
             isOneToOne: false
             referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      financial_transactions: {
+        Row: {
+          amount: number
+          category_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_tax_deductible: boolean | null
+          notes: string | null
+          receipt_url: string | null
+          transaction_date: string
+          type: string
+          updated_at: string
+          user_id: string
+          vendor: string | null
+        }
+        Insert: {
+          amount: number
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_tax_deductible?: boolean | null
+          notes?: string | null
+          receipt_url?: string | null
+          transaction_date?: string
+          type?: string
+          updated_at?: string
+          user_id: string
+          vendor?: string | null
+        }
+        Update: {
+          amount?: number
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_tax_deductible?: boolean | null
+          notes?: string | null
+          receipt_url?: string | null
+          transaction_date?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+          vendor?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_transactions_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "expense_categories"
             referencedColumns: ["id"]
           },
         ]
@@ -1891,6 +2021,59 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      mileage_logs: {
+        Row: {
+          appointment_id: string | null
+          created_at: string
+          destination: string
+          id: string
+          irs_rate: number
+          miles: number
+          notes: string | null
+          origin: string
+          purpose: string | null
+          total_deduction: number | null
+          trip_date: string
+          user_id: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          created_at?: string
+          destination: string
+          id?: string
+          irs_rate?: number
+          miles: number
+          notes?: string | null
+          origin: string
+          purpose?: string | null
+          total_deduction?: number | null
+          trip_date?: string
+          user_id: string
+        }
+        Update: {
+          appointment_id?: string | null
+          created_at?: string
+          destination?: string
+          id?: string
+          irs_rate?: number
+          miles?: number
+          notes?: string | null
+          origin?: string
+          purpose?: string | null
+          total_deduction?: number | null
+          trip_date?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mileage_logs_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -2917,6 +3100,59 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      recurring_expenses: {
+        Row: {
+          amount: number
+          category_id: string | null
+          created_at: string
+          frequency: string
+          id: string
+          is_active: boolean | null
+          name: string
+          next_due: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+          vendor: string | null
+        }
+        Insert: {
+          amount: number
+          category_id?: string | null
+          created_at?: string
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          next_due: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+          vendor?: string | null
+        }
+        Update: {
+          amount?: number
+          category_id?: string | null
+          created_at?: string
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          next_due?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+          vendor?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recurring_expenses_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "expense_categories"
             referencedColumns: ["id"]
           },
         ]
