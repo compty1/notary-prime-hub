@@ -67,6 +67,12 @@ const SessionTracker = lazyRetry(() => import("./pages/SessionTracker"));
 const RescheduleAppointment = lazyRetry(() => import("./pages/RescheduleAppointment"));
 const PrintMarketplace = lazyRetry(() => import("./pages/PrintMarketplace"));
 const PricingMenu = lazyRetry(() => import("./pages/PricingMenu"));
+const DesignStudio = lazyRetry(() => import("./pages/DesignStudio"));
+const BusinessCardDesigner = lazyRetry(() => import("./pages/design/BusinessCardDesigner"));
+const StickerDesigner = lazyRetry(() => import("./pages/design/StickerDesigner"));
+const NotebookConfigurator = lazyRetry(() => import("./pages/design/NotebookConfigurator"));
+const BookCoverDesigner = lazyRetry(() => import("./pages/design/BookCoverDesigner"));
+const VendorPortal = lazyRetry(() => import("./pages/VendorPortal"));
 
 // Admin pages
 const AdminDashboard = lazyRetry(() => import("./pages/admin/AdminDashboard"));
