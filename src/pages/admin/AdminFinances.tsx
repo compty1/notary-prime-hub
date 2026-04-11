@@ -15,8 +15,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { formatCurrency, formatDate } from "@/lib/dateUtils";
-import { DollarSign, TrendingUp, TrendingDown, Calculator, Plus, Car, FileText, BarChart3 } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { DollarSign, TrendingUp, TrendingDown, Calculator, Plus, Car, FileText, BarChart3, CalendarClock } from "lucide-react";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from "recharts";
 
 const CHART_COLORS = ["hsl(var(--primary))", "hsl(var(--destructive))", "hsl(var(--accent))", "hsl(var(--secondary))", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899"];
 
@@ -65,6 +65,15 @@ export default function AdminFinances() {
     },
   });
 
+  // Fetch amortized expenses
+  const { data: amortized = [] } = useQuery({
+    queryKey: ["amortized-expenses"],
+    queryFn: async () => {
+      const { data } = await supabase.from("amortized_expenses").select("*, expense_categories(category_name)").order("start_date", { ascending: false });
+      return data || [];
+    },
+  });
+
   // Fetch revenue (payments)
   const { data: payments = [] } = useQuery({
     queryKey: ["revenue-payments"],
@@ -98,7 +107,8 @@ export default function AdminFinances() {
   const totalRevenue = payments.reduce((s, p) => s + Number(p.amount || 0), 0);
   const totalExpenses = transactions.filter(t => t.type === "expense").reduce((s, t) => s + Number(t.amount || 0), 0);
   const totalMileageDeduction = mileageLogs.reduce((s, m) => s + Number(m.total_deduction || 0), 0);
-  const netProfit = totalRevenue - totalExpenses - totalMileageDeduction;
+  const totalAmortized = amortized.reduce((s, a) => s + Number(a.monthly_amount || (Number(a.annual_amount) / 12)), 0);
+  const netProfit = totalRevenue - totalExpenses - totalMileageDeduction - totalAmortized;
   const monthlyBurn = recurring.filter(r => r.is_active).reduce((s, r) => {
     const amt = Number(r.amount || 0);
     return s + (r.frequency === "yearly" ? amt / 12 : r.frequency === "quarterly" ? amt / 3 : r.frequency === "weekly" ? amt * 4.33 : amt);
@@ -151,7 +161,7 @@ export default function AdminFinances() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList><TabsTrigger value="overview">Overview</TabsTrigger><TabsTrigger value="expenses">Expenses</TabsTrigger><TabsTrigger value="recurring">Recurring</TabsTrigger><TabsTrigger value="mileage">Mileage</TabsTrigger><TabsTrigger value="tax">Tax Prep</TabsTrigger></TabsList>
+        <TabsList className="flex-wrap"><TabsTrigger value="overview">Overview</TabsTrigger><TabsTrigger value="pnl">P&L</TabsTrigger><TabsTrigger value="expenses">Expenses</TabsTrigger><TabsTrigger value="recurring">Recurring</TabsTrigger><TabsTrigger value="amortized">Amortized</TabsTrigger><TabsTrigger value="mileage">Mileage</TabsTrigger><TabsTrigger value="tax">Tax Prep</TabsTrigger></TabsList>
 
         <TabsContent value="overview" className="space-y-4">
           <div className="grid md:grid-cols-2 gap-4">
@@ -177,6 +187,26 @@ export default function AdminFinances() {
               ) : <p className="text-sm text-muted-foreground text-center py-8">No expense data yet</p>}
             </CardContent></Card>
           </div>
+        </TabsContent>
+
+        <TabsContent value="pnl">
+          <Card><CardHeader><CardTitle className="text-sm">Profit & Loss Statement</CardTitle></CardHeader><CardContent>
+            <Table><TableHeader><TableRow><TableHead>Line Item</TableHead><TableHead className="text-right">Amount</TableHead></TableRow></TableHeader>
+              <TableBody>
+                <TableRow className="font-bold bg-muted/30"><TableCell>Revenue</TableCell><TableCell className="text-right text-success">{formatCurrency(totalRevenue)}</TableCell></TableRow>
+                <TableRow><TableCell className="pl-6">Notarization Fees ({payments.length} sessions)</TableCell><TableCell className="text-right">{formatCurrency(totalRevenue)}</TableCell></TableRow>
+                <TableRow className="font-bold bg-muted/30"><TableCell>Cost of Services</TableCell><TableCell className="text-right text-destructive">({formatCurrency(totalExpenses)})</TableCell></TableRow>
+                {pieData.slice(0, 8).map((cat) => (
+                  <TableRow key={cat.name}><TableCell className="pl-6">{cat.name}</TableCell><TableCell className="text-right">({formatCurrency(cat.value)})</TableCell></TableRow>
+                ))}
+                <TableRow className="font-bold bg-muted/30"><TableCell>Other Deductions</TableCell><TableCell className="text-right text-destructive">({formatCurrency(totalMileageDeduction + totalAmortized)})</TableCell></TableRow>
+                <TableRow><TableCell className="pl-6">Mileage Deduction</TableCell><TableCell className="text-right">({formatCurrency(totalMileageDeduction)})</TableCell></TableRow>
+                <TableRow><TableCell className="pl-6">Amortized Expenses</TableCell><TableCell className="text-right">({formatCurrency(totalAmortized)})</TableCell></TableRow>
+                <TableRow className="font-bold text-lg border-t-2"><TableCell>Net Profit</TableCell><TableCell className={`text-right ${netProfit >= 0 ? "text-success" : "text-destructive"}`}>{formatCurrency(netProfit)}</TableCell></TableRow>
+                <TableRow><TableCell className="pl-6 text-muted-foreground">Profit Margin</TableCell><TableCell className="text-right text-muted-foreground">{totalRevenue > 0 ? `${((netProfit / totalRevenue) * 100).toFixed(1)}%` : "N/A"}</TableCell></TableRow>
+              </TableBody>
+            </Table>
+          </CardContent></Card>
         </TabsContent>
 
         <TabsContent value="expenses">
@@ -215,6 +245,30 @@ export default function AdminFinances() {
                 {recurring.length === 0 && <TableRow><TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-8">No recurring expenses</TableCell></TableRow>}
               </TableBody>
             </Table>
+          </CardContent></Card>
+        </TabsContent>
+
+        <TabsContent value="amortized">
+          <Card><CardContent className="pt-4">
+            <p className="text-sm text-muted-foreground mb-4">Track large expenses spread over time (e.g., notary bond, E&O insurance, commission renewals).</p>
+            <Table><TableHeader><TableRow><TableHead>Expense</TableHead><TableHead>Category</TableHead><TableHead>Period</TableHead><TableHead className="text-right">Annual</TableHead><TableHead className="text-right">Monthly</TableHead></TableRow></TableHeader>
+              <TableBody>
+                {amortized.map((a: any) => (
+                  <TableRow key={a.id}>
+                    <TableCell className="text-sm font-medium">{a.name}</TableCell>
+                    <TableCell><Badge variant="outline" className="text-xs">{a.expense_categories?.category_name || "—"}</Badge></TableCell>
+                    <TableCell className="text-sm">{formatDate(a.start_date)} – {formatDate(a.end_date)}</TableCell>
+                    <TableCell className="text-right">{formatCurrency(Number(a.annual_amount))}</TableCell>
+                    <TableCell className="text-right font-medium text-primary">{formatCurrency(Number(a.monthly_amount || (Number(a.annual_amount) / 12)))}</TableCell>
+                  </TableRow>
+                ))}
+                {amortized.length === 0 && <TableRow><TableCell colSpan={5} className="text-center text-sm text-muted-foreground py-8">No amortized expenses yet</TableCell></TableRow>}
+              </TableBody>
+            </Table>
+            <div className="mt-3 p-3 rounded-lg bg-muted/50 flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Total Monthly Amortization</span>
+              <span className="text-lg font-bold text-primary">{formatCurrency(totalAmortized)}</span>
+            </div>
           </CardContent></Card>
         </TabsContent>
 
