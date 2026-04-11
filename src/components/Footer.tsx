@@ -71,7 +71,7 @@ export function Footer({ phone = BRAND.defaultPhone, email = BRAND.defaultEmail,
 
         {/* UPL Disclaimer */}
         <div className="mt-8 border-t border-sidebar-border pt-6 text-center text-xs text-sidebar-foreground/40 max-w-2xl mx-auto" role="note" aria-label="Legal disclaimer">
-          <p>NotarDex is not a law firm. Our notaries are not attorneys and cannot provide legal advice, draft legal documents, or advise on the content of any document. (ORC §147.01)</p>
+          <p>Notar is not a law firm. Our notaries are not attorneys and cannot provide legal advice, draft legal documents, or advise on the content of any document. (ORC §147.01)</p>
         </div>
         <div className="mt-2 text-center text-xs text-sidebar-foreground/40 max-w-2xl mx-auto" role="note" aria-label="Insurance information">
           <p>$25,000 surety bond &amp; E&amp;O insurance maintained. All notaries are background-checked and Ohio-commissioned.</p>
