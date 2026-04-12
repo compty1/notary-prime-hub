@@ -155,6 +155,11 @@ const AdminEstatePlanning = lazyRetry(() => import("./pages/admin/AdminEstatePla
 const AdminNotaryTraining = lazyRetry(() => import("./pages/admin/AdminNotaryTraining"));
 const AdminContractorOnboarding = lazyRetry(() => import("./pages/admin/AdminContractorOnboarding"));
 const AdminReferralNetwork = lazyRetry(() => import("./pages/admin/AdminReferralNetwork"));
+const AdminImmigration = lazyRetry(() => import("./pages/admin/AdminImmigration"));
+const AdminTaxReferral = lazyRetry(() => import("./pages/admin/AdminTaxReferral"));
+const AdminInsurance = lazyRetry(() => import("./pages/admin/AdminInsurance"));
+const AdminMediation = lazyRetry(() => import("./pages/admin/AdminMediation"));
+const AdminPhotography = lazyRetry(() => import("./pages/admin/AdminPhotography"));
 const Maintenance = lazyRetry(() => import("./pages/Maintenance"));
 const ForNotaries = lazyRetry(() => import("./pages/solutions/ForNotaries"));
 const ForHospitals = lazyRetry(() => import("./pages/solutions/ForHospitals"));
@@ -364,6 +369,11 @@ function AnimatedRoutes() {
         <Route path="notary-training" element={<ProtectedRoute adminOnly><SR msg="Notary training failed to load"><AdminNotaryTraining /></SR></ProtectedRoute>} />
         <Route path="contractor-onboarding" element={<ProtectedRoute adminOnly><SR msg="Contractor onboarding failed to load"><AdminContractorOnboarding /></SR></ProtectedRoute>} />
         <Route path="referral-network" element={<ProtectedRoute adminOnly><SR msg="Referral network failed to load"><AdminReferralNetwork /></SR></ProtectedRoute>} />
+        <Route path="immigration" element={<ProtectedRoute adminOnly><SR msg="Immigration failed to load"><AdminImmigration /></SR></ProtectedRoute>} />
+        <Route path="tax-referral" element={<ProtectedRoute adminOnly><SR msg="Tax referral failed to load"><AdminTaxReferral /></SR></ProtectedRoute>} />
+        <Route path="insurance" element={<ProtectedRoute adminOnly><SR msg="Insurance failed to load"><AdminInsurance /></SR></ProtectedRoute>} />
+        <Route path="mediation" element={<ProtectedRoute adminOnly><SR msg="Mediation failed to load"><AdminMediation /></SR></ProtectedRoute>} />
+        <Route path="photography" element={<ProtectedRoute adminOnly><SR msg="Photography failed to load"><AdminPhotography /></SR></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="*" element={<NotFound />} />
