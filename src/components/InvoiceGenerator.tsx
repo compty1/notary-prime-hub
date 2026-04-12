@@ -84,7 +84,7 @@ Thank you for your business.
       const invoiceNumber = `INV-${Date.now().toString(36).toUpperCase()}`;
       const { error } = await supabase.from("service_requests").insert([{
         client_id: user.id,
-        service_type: "invoice",
+        service_name: "Invoice Generation",
         status: "completed",
         reference_number: invoiceNumber,
         notes: JSON.stringify({
