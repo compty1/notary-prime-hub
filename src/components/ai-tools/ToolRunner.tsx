@@ -246,6 +246,7 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
       if (!reader) throw new Error("No stream");
       const decoder = new TextDecoder();
       let buffer = "";
+      let fullResult = "";
 
       // If refining, start fresh with new result
       if (previousOutput) setResult("");
@@ -258,21 +259,25 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
         buffer = lines.pop() || "";
         for (const chunk of lines) {
           const text = parseSSEChunk(chunk);
-          if (text) setResult((prev) => prev + text);
+          if (text) {
+            fullResult += text;
+            setResult((prev) => prev + text);
+          }
         }
       }
       if (buffer.trim()) {
         const text = parseSSEChunk(buffer);
-        if (text) setResult((prev) => prev + text);
+        if (text) {
+          fullResult += text;
+          setResult((prev) => prev + text);
+        }
       }
       setIsRefining(false);
       setRefinementPrompt("");
 
-      // 4.5 Update the streaming placeholder with the final result
-      if (user) {
+      // Update the streaming placeholder with the final result
+      if (user && fullResult) {
         try {
-          // The edge function already inserted a row with result='[streaming]'.
-          // Update the most recent one with the actual output.
           const { data: recent } = await supabase
             .from("tool_generations")
             .select("id")
@@ -282,7 +287,7 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
             .limit(1);
           if (recent?.[0]) {
             await supabase.from("tool_generations")
-              .update({ result: result || "Generated successfully" } as any)
+              .update({ result: fullResult } as any)
               .eq("id", recent[0].id);
           }
           setUsageCount((prev) => (prev ?? 0) + 1);
