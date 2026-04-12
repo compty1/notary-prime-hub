@@ -6,19 +6,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar as CalendarIcon, Users, CheckCircle, Clock, DollarSign, Plus, BookMarked, FileText, AlertTriangle, Video, RefreshCw, ScrollText, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Calendar as CalendarIcon, Users, CheckCircle, Clock, DollarSign, Plus,
+  BookMarked, FileText, AlertTriangle, Video, RefreshCw, ScrollText,
+  ChevronLeft, ChevronRight, ShoppingCart, UserCheck, Star, Activity,
+  Bell, Send, Receipt,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { getEdgeFunctionHeaders } from "@/lib/edgeFunctionAuth";
 import GoogleCalendarWidget from "@/components/GoogleCalendarWidget";
-
 import { appointmentStatusColors as statusColors } from "@/lib/statusColors";
-
 import { formatDate, formatTime } from "@/lib/utils";
 
 const CHART_COLORS = ["hsl(224, 63%, 28%)", "hsl(168, 75%, 36%)", "hsl(42, 78%, 55%)", "hsl(0, 85%, 55%)", "hsl(261, 50%, 51%)", "hsl(190, 95%, 39%)", "hsl(30, 95%, 53%)", "hsl(140, 60%, 40%)"];
 
-// #3422: Time-of-day greeting
 function getGreeting(): string {
   const h = new Date().getHours();
   if (h < 12) return "Good morning";
@@ -58,6 +59,19 @@ export default function AdminOverview() {
   const [eoAlert, setEoAlert] = useState<string | null>(null);
   const [bondAlert, setBondAlert] = useState<string | null>(null);
 
+  // New KPI state
+  const [activeOrders, setActiveOrders] = useState(0);
+  const [pendingAssignments, setPendingAssignments] = useState(0);
+  const [avgSatisfaction, setAvgSatisfaction] = useState<number | null>(null);
+  const [contractorUtilization, setContractorUtilization] = useState<number | null>(null);
+  const [revenueToday, setRevenueToday] = useState(0);
+  const [revenueTodayTrend, setRevenueTodayTrend] = useState<number | null>(null);
+
+  // Alert panel state
+  const [overdueOrders, setOverdueOrders] = useState(0);
+  const [unassignedOrders, setUnassignedOrders] = useState(0);
+  const [lowAvailability, setLowAvailability] = useState(0);
+
   const fetchData = useCallback(async () => {
     setLoadError(null);
     const timeout = setTimeout(() => {
@@ -66,16 +80,35 @@ export default function AdminOverview() {
     }, 15000);
 
     try {
+      const today = new Date().toISOString().split("T")[0];
+      const lastWeekDay = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+
       const results = await Promise.allSettled([
         supabase.from("appointments").select("id", { count: "exact", head: true }),
         supabase.from("appointments").select("id", { count: "exact", head: true }).in("status", ["scheduled", "confirmed"]),
         supabase.from("appointments").select("id", { count: "exact", head: true }).eq("status", "completed"),
         supabase.from("profiles").select("id", { count: "exact", head: true }),
         supabase.from("appointments").select("id, client_id, scheduled_date, scheduled_time, status, service_type, notarization_type, confirmation_number").order("scheduled_date", { ascending: false }).limit(10),
-        supabase.from("payments").select("amount, status").eq("status", "paid"),
+        supabase.from("payments").select("amount, status, created_at, fees_charged").eq("status", "paid"),
         supabase.from("platform_settings").select("setting_key, setting_value"),
         supabase.from("profiles").select("user_id, full_name, email").limit(2000),
-        supabase.from("appointments").select("scheduled_date, status, notarization_type, client_id").order("scheduled_date", { ascending: true }).gte("scheduled_date", new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]).limit(1000),
+        supabase.from("appointments").select("scheduled_date, status, notarization_type, client_id, service_type, confirmation_number, scheduled_time").order("scheduled_date", { ascending: true }).gte("scheduled_date", new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]).limit(1000),
+        // New: active orders
+        supabase.from("orders").select("id", { count: "exact", head: true }).in("status", ["pending", "assigned", "in_progress", "under_review"]),
+        // New: pending assignments (unassigned orders)
+        supabase.from("orders").select("id", { count: "exact", head: true }).eq("status", "pending"),
+        // New: client satisfaction avg
+        supabase.from("client_feedback").select("rating"),
+        // New: contractor utilization
+        supabase.from("contractors").select("id, is_available"),
+        // New: contractor assignments active
+        supabase.from("contractor_assignments").select("id", { count: "exact", head: true }).in("status", ["assigned", "in_progress"]),
+        // New: revenue today
+        supabase.from("payments").select("amount").eq("status", "paid").gte("created_at", today + "T00:00:00"),
+        // New: revenue same day last week
+        supabase.from("payments").select("amount").eq("status", "paid").gte("created_at", lastWeekDay + "T00:00:00").lt("created_at", lastWeekDay + "T23:59:59"),
+        // Overdue orders
+        supabase.from("orders").select("id", { count: "exact", head: true }).in("status", ["pending", "assigned", "in_progress"]).lt("due_date", today),
       ]);
 
       clearTimeout(timeout);
@@ -96,11 +129,47 @@ export default function AdminOverview() {
       const profileData = getValue(7, "data") as ProfileRow[] | null;
       const allApptData = getValue(8, "data") as AllApptRow[] | null;
 
+      // New KPIs
+      setActiveOrders((getValue(9, "count") as number) || 0);
+      const pendingCount = (getValue(10, "count") as number) || 0;
+      setPendingAssignments(pendingCount);
+      setUnassignedOrders(pendingCount);
+
+      const feedbackData = getValue(11, "data") as { rating: number }[] | null;
+      if (feedbackData && feedbackData.length > 0) {
+        const avg = feedbackData.reduce((s, f) => s + f.rating, 0) / feedbackData.length;
+        setAvgSatisfaction(Math.round(avg * 10) / 10);
+      }
+
+      const contractorData = getValue(12, "data") as { id: string; is_available: boolean }[] | null;
+      const activeAssignments = (getValue(13, "count") as number) || 0;
+      if (contractorData && contractorData.length > 0) {
+        const busyCount = Math.min(activeAssignments, contractorData.length);
+        setContractorUtilization(Math.round((busyCount / contractorData.length) * 100));
+        const unavailable = contractorData.filter(c => !c.is_available).length;
+        setLowAvailability(unavailable);
+      }
+
+      const todayPayments = getValue(14, "data") as { amount: number }[] | null;
+      const todayRev = (todayPayments || []).reduce((s, p) => s + (Number(p.amount) || 0), 0);
+      setRevenueToday(todayRev);
+
+      const lastWeekPayments = getValue(15, "data") as { amount: number }[] | null;
+      const lastWeekRev = (lastWeekPayments || []).reduce((s, p) => s + (Number(p.amount) || 0), 0);
+      if (lastWeekRev > 0) {
+        setRevenueTodayTrend(Math.round(((todayRev - lastWeekRev) / lastWeekRev) * 100));
+      } else if (todayRev > 0) {
+        setRevenueTodayTrend(100);
+      } else {
+        setRevenueTodayTrend(null);
+      }
+
+      setOverdueOrders((getValue(16, "count") as number) || 0);
+
       // Fetch recent audit activity
       const { data: activityData } = await supabase.from("audit_log").select("id, action, entity_type, entity_id, created_at, user_id").order("created_at", { ascending: false }).limit(10);
       if (activityData) setRecentActivity(activityData);
 
-      // Build profiles map
       if (profileData) {
         const map: Record<string, string> = {};
         profileData.forEach((p) => { map[p.user_id] = p.full_name || p.email || p.user_id.slice(0, 8); });
@@ -144,7 +213,6 @@ export default function AdminOverview() {
 
   useEffect(() => {
     fetchData();
-    // Auto-refresh every 60 seconds, only when tab is visible (Bug 172)
     const interval = setInterval(() => {
       if (!document.hidden) fetchData();
     }, 60000);
@@ -153,14 +221,13 @@ export default function AdminOverview() {
 
   const getClientName = (clientId: string) => profiles[clientId] || "Unknown";
 
-  const today = new Date().toISOString().split("T")[0];
-  const todayCount = appointments.filter(a => a.scheduled_date === today && !["cancelled", "no_show"].includes(a.status)).length;
+  const todayStr = new Date().toISOString().split("T")[0];
+  const todayCount = appointments.filter(a => a.scheduled_date === todayStr && !["cancelled", "no_show"].includes(a.status)).length;
 
-  // Chart data: appointments per month
   const monthlyAppointments = useMemo(() => {
     const months: Record<string, number> = {};
     allAppointments.forEach(a => {
-      const month = a.scheduled_date?.slice(0, 7); // YYYY-MM
+      const month = a.scheduled_date?.slice(0, 7);
       if (month) months[month] = (months[month] || 0) + 1;
     });
     return Object.entries(months).slice(-6).map(([month, count]) => ({
@@ -169,7 +236,6 @@ export default function AdminOverview() {
     }));
   }, [allAppointments]);
 
-  // Chart data: revenue per month
   const monthlyRevenue = useMemo(() => {
     const months: Record<string, number> = {};
     journalEntries.forEach(j => {
@@ -182,22 +248,13 @@ export default function AdminOverview() {
     }));
   }, [journalEntries]);
 
-  // Chart data: status breakdown pie
   const statusBreakdown = useMemo(() => {
     const counts: Record<string, number> = {};
     allAppointments.forEach(a => { counts[a.status] = (counts[a.status] || 0) + 1; });
     return Object.entries(counts).map(([status, value]) => ({ name: status.replace(/_/g, " "), value }));
   }, [allAppointments]);
 
-  const statCards = [
-    { label: "Total Appointments", value: stats.total, icon: CalendarIcon, color: "text-info", link: "/admin/appointments" },
-    { label: "Upcoming", value: stats.upcoming, icon: Clock, color: "text-amber-600", link: "/admin/appointments?status=scheduled" },
-    { label: "Completed", value: stats.completed, icon: CheckCircle, color: "text-primary", link: "/admin/appointments?status=completed" },
-    { label: "Clients", value: stats.clients, icon: Users, color: "text-purple-600", link: "/admin/clients" },
-    { label: "Revenue", value: `$${stats.revenue.toFixed(2)}`, icon: DollarSign, color: "text-primary", link: "/admin/revenue" },
-  ];
-
-  // Live Calendar Widget — shows week view of appointments + Google Calendar events
+  // Live Calendar Widget
   const [calendarWeekStart, setCalendarWeekStart] = useState(() => {
     const d = new Date(); d.setDate(d.getDate() - d.getDay()); d.setHours(0,0,0,0); return d;
   });
@@ -215,7 +272,6 @@ export default function AdminOverview() {
     setCalendarWeekStart(prev => { const d = new Date(prev); d.setDate(d.getDate() + dir * 7); return d; });
   };
 
-  // Fetch Google Calendar events for the week (debounced — Bug 173)
   useEffect(() => {
     const timer = setTimeout(async () => {
       try {
@@ -224,12 +280,8 @@ export default function AdminOverview() {
         const res = await supabase.functions.invoke("google-calendar-sync", {
           body: { action: "list_events", timeMin, timeMax: end.toISOString() },
         });
-        if (res.data?.connected) {
-          setGcalConnected(true);
-          setGcalEvents(res.data.events || []);
-        } else {
-          setGcalConnected(false);
-        }
+        if (res.data?.connected) { setGcalConnected(true); setGcalEvents(res.data.events || []); }
+        else { setGcalConnected(false); }
       } catch { setGcalConnected(false); }
     }, 500);
     return () => clearTimeout(timer);
@@ -248,6 +300,8 @@ export default function AdminOverview() {
     });
   };
 
+  const hasAlerts = overdueOrders > 0 || unassignedOrders > 0 || lowAvailability > 0 || commissionAlert || eoAlert || bondAlert;
+
   if (loading) return <OverviewSkeleton />;
 
   if (loadError) return (
@@ -261,6 +315,17 @@ export default function AdminOverview() {
     </div>
   );
 
+  const extendedStatCards = [
+    { label: "Revenue Today", value: `$${revenueToday.toFixed(2)}`, icon: DollarSign, color: "text-primary", link: "/admin/revenue", trend: revenueTodayTrend },
+    { label: "Active Orders", value: activeOrders, icon: ShoppingCart, color: "text-blue-600", link: "/admin/orders" },
+    { label: "Upcoming", value: stats.upcoming, icon: Clock, color: "text-amber-600", link: "/admin/appointments?status=scheduled" },
+    { label: "Pending Assignments", value: pendingAssignments, icon: UserCheck, color: "text-orange-600", link: "/admin/orders?status=pending" },
+    { label: "Completed", value: stats.completed, icon: CheckCircle, color: "text-primary", link: "/admin/appointments?status=completed" },
+    { label: "Clients", value: stats.clients, icon: Users, color: "text-purple-600", link: "/admin/clients" },
+    { label: "Satisfaction", value: avgSatisfaction !== null ? `${avgSatisfaction}/5` : "—", icon: Star, color: "text-amber-500", link: "/admin/clients" },
+    { label: "Contractor Util.", value: contractorUtilization !== null ? `${contractorUtilization}%` : "—", icon: Activity, color: "text-primary", link: "/admin/contractors" },
+  ];
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
@@ -271,28 +336,51 @@ export default function AdminOverview() {
         <Button variant="ghost" size="sm" onClick={fetchData} className="rounded-xl"><RefreshCw className="mr-1 h-3 w-3" /> Refresh</Button>
       </div>
 
-      {(commissionAlert || eoAlert || bondAlert) && (
+      {/* ═══ ALERT PANEL ═══ */}
+      {hasAlerts && (
         <div className="mb-6 space-y-2">
+          {overdueOrders > 0 && (
+            <div className="flex items-center gap-2 rounded-lg border border-destructive bg-destructive/10 p-3 text-sm font-medium text-destructive">
+              <AlertTriangle className="h-4 w-4 flex-shrink-0" /> {overdueOrders} overdue order{overdueOrders > 1 ? "s" : ""} past due date
+              <Link to="/admin/orders" className="ml-auto"><Button size="sm" variant="outline" className="text-xs">View Orders</Button></Link>
+            </div>
+          )}
+          {unassignedOrders > 0 && (
+            <div className="flex items-center gap-2 rounded-lg border border-amber-500 bg-amber-50 dark:bg-amber-900/20 p-3 text-sm font-medium text-amber-800 dark:text-amber-300">
+              <Bell className="h-4 w-4 flex-shrink-0" /> {unassignedOrders} unassigned order{unassignedOrders > 1 ? "s" : ""} awaiting assignment
+              <Link to="/admin/orders?status=pending" className="ml-auto"><Button size="sm" variant="outline" className="text-xs">Assign</Button></Link>
+            </div>
+          )}
+          {lowAvailability > 0 && (
+            <div className="flex items-center gap-2 rounded-lg border border-amber-500 bg-amber-50 dark:bg-amber-900/20 p-3 text-sm font-medium text-amber-800 dark:text-amber-300">
+              <Users className="h-4 w-4 flex-shrink-0" /> {lowAvailability} contractor{lowAvailability > 1 ? "s" : ""} marked unavailable
+              <Link to="/admin/contractors" className="ml-auto"><Button size="sm" variant="outline" className="text-xs">Manage</Button></Link>
+            </div>
+          )}
           {commissionAlert && (
             <div className={`flex items-center gap-2 rounded-lg border p-3 text-sm font-medium ${commissionAlert.tone}`}>
               <AlertTriangle className="h-4 w-4 flex-shrink-0" /> {commissionAlert.text}
               <Link to="/admin/settings" className="ml-auto"><Button size="sm" variant="outline" className="text-xs">Update Settings</Button></Link>
             </div>
           )}
-           {eoAlert && (
-             <div className="flex items-center gap-2 rounded-lg border border-amber-500 bg-amber-50 dark:bg-amber-900/20 p-3 text-sm font-medium text-amber-800 dark:text-amber-300">
-               <AlertTriangle className="h-4 w-4 flex-shrink-0" /> {eoAlert}
-             </div>
-           )}
-           {bondAlert && (
-             <div className="flex items-center gap-2 rounded-lg border border-amber-500 bg-amber-50 dark:bg-amber-900/20 p-3 text-sm font-medium text-amber-800 dark:text-amber-300">
-               <AlertTriangle className="h-4 w-4 flex-shrink-0" /> {bondAlert}
-             </div>
-           )}
+          {eoAlert && (
+            <div className="flex items-center gap-2 rounded-lg border border-amber-500 bg-amber-50 dark:bg-amber-900/20 p-3 text-sm font-medium text-amber-800 dark:text-amber-300">
+              <AlertTriangle className="h-4 w-4 flex-shrink-0" /> {eoAlert}
+            </div>
+          )}
+          {bondAlert && (
+            <div className="flex items-center gap-2 rounded-lg border border-amber-500 bg-amber-50 dark:bg-amber-900/20 p-3 text-sm font-medium text-amber-800 dark:text-amber-300">
+              <AlertTriangle className="h-4 w-4 flex-shrink-0" /> {bondAlert}
+            </div>
+          )}
         </div>
       )}
 
+      {/* ═══ QUICK ACTIONS ═══ */}
       <div className="mb-6 flex flex-wrap gap-2">
+        <Link to="/admin/orders"><Button size="sm" variant="accent"><Plus className="mr-1 h-3 w-3" /> New Order</Button></Link>
+        <Link to="/admin/revenue"><Button size="sm" variant="outline"><Receipt className="mr-1 h-3 w-3" /> Generate Invoice</Button></Link>
+        <Link to="/admin/email-management"><Button size="sm" variant="outline"><Send className="mr-1 h-3 w-3" /> Send Notification</Button></Link>
         <Link to={`/admin/appointments`}><Button size="sm" variant="outline"><CalendarIcon className="mr-1 h-3 w-3" /> Today's Appointments {todayCount > 0 && `(${todayCount})`}</Button></Link>
         <Link to="/admin/journal"><Button size="sm" variant="outline"><BookMarked className="mr-1 h-3 w-3" /> New Journal Entry</Button></Link>
         <Link to="/admin/documents"><Button size="sm" variant="outline"><FileText className="mr-1 h-3 w-3" /> Review Documents</Button></Link>
@@ -353,15 +441,21 @@ export default function AdminOverview() {
         </Card>
       </div>
 
-      <div className="mb-8 grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
-        {statCards.map((s, i) => (
-          <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
+      {/* ═══ EXTENDED KPI GRID ═══ */}
+      <div className="mb-8 grid gap-4 grid-cols-2 sm:grid-cols-4 lg:grid-cols-8">
+        {extendedStatCards.map((s, i) => (
+          <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
             <Link to={s.link}>
               <Card className="rounded-[24px] border-border hover:shadow-md transition-all cursor-pointer bg-card">
-                <CardContent className="p-5">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted mb-3"><s.icon className={`h-5 w-5 ${s.color}`} /></div>
-                  <p className="text-4xl font-black text-foreground">{s.value}</p>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">{s.label}</p>
+                <CardContent className="p-4">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-muted mb-2"><s.icon className={`h-4 w-4 ${s.color}`} /></div>
+                  <p className="text-2xl font-black text-foreground">{s.value}</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-1">{s.label}</p>
+                  {"trend" in s && s.trend !== null && s.trend !== undefined && (
+                    <p className={`text-[10px] font-medium mt-0.5 ${s.trend >= 0 ? "text-primary" : "text-destructive"}`}>
+                      {s.trend >= 0 ? "↑" : "↓"} {Math.abs(s.trend)}% vs last week
+                    </p>
+                  )}
                 </CardContent>
               </Card>
             </Link>
@@ -458,7 +552,7 @@ export default function AdminOverview() {
 
       {/* Today's Schedule */}
       {(() => {
-        const todayAppts = allAppointments.filter(a => a.scheduled_date === today && !["cancelled", "no_show"].includes(a.status));
+        const todayAppts = allAppointments.filter(a => a.scheduled_date === todayStr && !["cancelled", "no_show"].includes(a.status));
         return todayAppts.length > 0 ? (
           <div className="mb-8">
             <h2 className="mb-4 text-lg font-black text-foreground flex items-center gap-2">
