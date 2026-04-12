@@ -189,6 +189,41 @@ export const SERVICE_PRICING: ServicePrice[] = [
 
   // Passport
   { name: "Passport Photo Service", category: "verification", priceFrom: 15, priceTo: 25, priceUnit: "flat", description: "US State Department compliant passport photos" },
+
+  // Legal & Document (additional from master catalog)
+  { name: "Court Filing Runner", category: "legal_support", priceFrom: 35, priceTo: 85, priceUnit: "per filing", description: "Same-day court document filing and retrieval" },
+  { name: "Legal Research", category: "legal_support", priceFrom: 75, priceTo: 175, priceUnit: "per project", description: "Case law research, statute analysis, and legal memoranda" },
+  { name: "Contract Review", category: "legal_support", priceFrom: 95, priceTo: 175, priceUnit: "per document", description: "Contract review for completeness and compliance (no legal advice)" },
+  { name: "Real Estate Doc Prep", category: "real_estate", priceFrom: 75, priceTo: 125, priceUnit: "per document", description: "Purchase agreements, deeds, and closing documents" },
+  { name: "Tenant Screening", category: "real_estate_support", priceFrom: 35, priceTo: 55, priceUnit: "per screening", description: "Credit, criminal, and eviction history checks" },
+  { name: "Lockbox Coordination", category: "real_estate_support", priceFrom: 35, priceTo: 50, priceUnit: "per service", description: "Key exchange and lockbox install/retrieval" },
+  { name: "Open House Staffing", category: "real_estate_support", priceFrom: 50, priceTo: 70, priceUnit: "per event", description: "On-site document management at open houses" },
+  { name: "Probate Filing Assist", category: "legal_support", priceFrom: 125, priceTo: 450, priceUnit: "per case", description: "Probate court filing assistance and document preparation" },
+
+  // Tech & Digital (additional)
+  { name: "Blog Post Writing", category: "tech_digital", priceFrom: 75, priceTo: 350, priceUnit: "per post", description: "SEO-optimized blog content creation" },
+  { name: "IT Help Desk", category: "tech_digital", priceFrom: 75, priceTo: 200, priceUnit: "per hour", description: "Remote IT support and troubleshooting" },
+  { name: "QA Testing", category: "tech_digital", priceFrom: 200, priceTo: 1500, priceUnit: "per project", description: "Manual and automated QA testing services" },
+  { name: "Workflow Integration", category: "tech_digital", priceFrom: 100, priceTo: 350, priceUnit: "per integration", description: "Connect apps and automate workflows (Zapier, Make, etc.)" },
+  { name: "Micro-SaaS Tool Development", category: "tech_digital", priceFrom: 500, priceTo: 8000, priceUnit: "flat", description: "Custom web tools, dashboards, and portals" },
+
+  // Sales & CX (additional)
+  { name: "Appointment Setting", category: "sales_cx", priceFrom: 25, priceTo: 75, priceUnit: "per appointment", description: "Qualified appointment setting for B2B sales" },
+  { name: "NPS Setup & Management", category: "sales_cx", priceFrom: 500, priceTo: 1000, priceUnit: "flat", description: "Net Promoter Score program setup and reporting" },
+
+  // Publishing (additional)
+  { name: "Newsletter/Magazine Production", category: "publishing", priceFrom: 250, priceTo: 1000, priceUnit: "per issue", description: "Newsletter or magazine layout, design, and printing" },
+
+  // Print (additional)
+  { name: "Custom Post-Its", category: "print", priceFrom: 45, priceTo: 150, priceUnit: "per order", description: "Branded custom sticky notes" },
+
+  // Native SaaS (additional)
+  { name: "Newsletter Builder", category: "native_tools", priceFrom: 19.99, priceTo: 49.99, priceUnit: "per month", description: "Drag-and-drop newsletter creation tool" },
+
+  // Document & Language (additional)
+  { name: "Doc Formatting", category: "document_services", priceFrom: 25, priceTo: 50, priceUnit: "per document", description: "Professional document formatting and cleanup" },
+  { name: "Apostille Coordination", category: "authentication", priceFrom: 45, priceTo: 75, priceUnit: "per document", description: "Ohio SOS apostille coordination and filing" },
+  { name: "Credential Evaluation Coordination", category: "translation", priceFrom: 75, priceTo: 150, priceUnit: "flat", description: "WES/ECE foreign credential evaluation coordination" },
 ];
 
 /** Service pricing category labels */
