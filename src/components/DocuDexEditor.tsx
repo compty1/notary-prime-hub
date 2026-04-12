@@ -1059,6 +1059,33 @@ export function DocuDexEditor({
             <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={handleImportFile}>
               <Upload className="h-3.5 w-3.5" /> <span className="hidden md:inline">Import</span>
             </Button>
+            <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 hidden lg:flex" onClick={() => setShowBulkExport(true)}>
+              Bulk
+            </Button>
+          </div>
+
+          {/* DocuDex enhancement buttons */}
+          <div className="flex items-center gap-0.5 shrink-0 hidden md:flex">
+            <Tooltip><TooltipTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => setShowMailMerge(true)} title="Mail Merge">
+                <MessageSquare className="h-3.5 w-3.5" />
+              </Button>
+            </TooltipTrigger><TooltipContent>Mail Merge</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => setShowFormFields(true)} title="Form Fields">
+                <FileText className="h-3.5 w-3.5" />
+              </Button>
+            </TooltipTrigger><TooltipContent>Form Fields</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => setShowCitations(true)} title="Citations">
+                <FileText className="h-3.5 w-3.5" />
+              </Button>
+            </TooltipTrigger><TooltipContent>Citations</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => setShowComments(!showComments)} title="Comments">
+                <MessageSquare className="h-3.5 w-3.5" />
+              </Button>
+            </TooltipTrigger><TooltipContent>Comments</TooltipContent></Tooltip>
           </div>
 
           <div className="flex-1" />
