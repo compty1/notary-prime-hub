@@ -227,6 +227,5 @@ export default function AdminOperations() {
           </TabsContent>
         </Tabs>
       </div>
-    </AdminDashboard>
   );
 }
