@@ -14,11 +14,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Plus, FileText, Sparkles, Loader2, Trash2, Edit, Search, Download, Eye, Briefcase, GraduationCap, User, Upload, Printer } from "lucide-react";
+import { Plus, FileText, Sparkles, Loader2, Trash2, Edit, Search, Download, Eye, Briefcase, GraduationCap, User, Upload, Printer, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { validateFile, ALLOWED_DOCUMENT_MIMES } from "@/lib/fileValidation";
+import { useFreeTierCheck } from "@/hooks/useFreeTierCheck";
 
 type Resume = {
   id: string;
