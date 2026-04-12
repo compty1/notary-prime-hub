@@ -16,18 +16,25 @@ export interface ServicePrice {
 
 export const SERVICE_PRICING: ServicePrice[] = [
   // Core Notarization
-  { name: "In-Person Notarization", category: "notarization", priceFrom: 5, priceUnit: "per seal", description: "Standard Ohio notarial act per ORC §147.08", compliance: "ORC §147.08 — $5 max per seal" },
-  { name: "Remote Online Notarization (RON)", category: "notarization", priceFrom: 25, priceUnit: "per session", description: "Audio-video notarization per ORC §147.60–147.66", compliance: "ORC §147.60–147.66", popular: true },
-  { name: "Mobile Notary Service", category: "notarization", priceFrom: 75, priceTo: 150, priceUnit: "per trip", description: "On-site notarization at your location", popular: true },
-  { name: "Loan Signing Agent", category: "notarization", priceFrom: 100, priceTo: 200, priceUnit: "per signing", description: "Complete loan document signing package" },
-  { name: "Hospital/Facility Notarization", category: "notarization", priceFrom: 100, priceTo: 175, priceUnit: "per visit", description: "Bedside notary services for medical facilities" },
-  { name: "Jail/Prison Notarization", category: "notarization", priceFrom: 125, priceTo: 200, priceUnit: "per visit", description: "Notarization at correctional facilities" },
-  { name: "Witness Services", category: "notarization", priceFrom: 10, priceUnit: "per witness", description: "Disinterested witness for document signing" },
-  { name: "After-Hours Notarization", category: "notarization", priceFrom: 25, priceTo: 50, priceUnit: "surcharge", description: "Weekend, evening, and holiday availability" },
-  { name: "Rush/Same-Day Service", category: "notarization", priceFrom: 35, priceTo: 75, priceUnit: "surcharge", description: "Priority same-day scheduling" },
+  { name: "In-Person Notarization", category: "notarization", priceFrom: 5, priceUnit: "per act", description: "Standard Ohio notarial act per ORC §147.08", compliance: "ORC §147.08 — $5 max per act", popular: true },
+  { name: "Remote Online Notarization (RON)", category: "notarization", priceFrom: 40, priceTo: 45, priceUnit: "all-in per session", description: "$30/act (ORC max) + $10 tech fee. Audio-video notarization per ORC §147.60–147.66", compliance: "ORC §147.60–147.66", popular: true },
+  { name: "Mobile Notary Service", category: "notarization", priceFrom: 30, priceTo: 60, priceUnit: "act + zone travel", description: "$5/act + zone-based travel fee. On-site at your location", popular: true },
+  { name: "Loan Signing — Standard", category: "notarization", priceFrom: 125, priceUnit: "flat package", description: "Standard refinance loan signing package (includes notarization)" },
+  { name: "Loan Signing — Purchase/Refi", category: "notarization", priceFrom: 150, priceUnit: "flat package", description: "Purchase or complex refinance loan signing package" },
+  { name: "Loan Signing — Reverse Mortgage", category: "notarization", priceFrom: 175, priceUnit: "flat package", description: "Reverse mortgage signing with extended appointment time" },
+  { name: "Hospital/Facility Notarization", category: "notarization", priceFrom: 50, priceTo: 100, priceUnit: "act + $20 surcharge + travel", description: "Bedside notary at hospitals, nursing homes, and assisted living" },
+  { name: "Jail/Prison Notarization", category: "notarization", priceFrom: 100, priceTo: 150, priceUnit: "act + $75 surcharge + travel", description: "Notarization at correctional facilities with security coordination" },
+  { name: "Witness Services", category: "notarization", priceFrom: 15, priceUnit: "per witness", description: "Disinterested witness for document signing" },
+  { name: "After-Hours (Evening)", category: "notarization", priceFrom: 35, priceUnit: "surcharge", description: "6 PM – 10 PM appointments" },
+  { name: "After-Hours (Emergency)", category: "notarization", priceFrom: 105, priceUnit: "surcharge", description: "10 PM – 9 AM emergency appointments (3× base)" },
+  { name: "Rush/Same-Day Service", category: "notarization", priceFrom: 25, priceUnit: "surcharge", description: "Priority same-day scheduling" },
+  { name: "Holiday Surcharge", category: "notarization", priceFrom: 50, priceUnit: "surcharge", description: "Major holiday appointments" },
+  { name: "Weekend Appointments", category: "notarization", priceFrom: 0, priceUnit: "no surcharge", description: "Free weekend availability — competitive advantage" },
+  { name: "Estate Plan Bundle", category: "notarization", priceFrom: 100, priceUnit: "flat bundle", description: "Will, POA, healthcare directive, and living will notarization bundle" },
+  { name: "POA Surcharge", category: "notarization", priceFrom: 25, priceUnit: "surcharge", description: "Additional compliance verification for Power of Attorney documents" },
 
   // Identity & Verification
-  { name: "I-9 Employment Verification", category: "verification", priceFrom: 25, priceTo: 50, priceUnit: "per form", description: "Authorized representative I-9 completion", popular: true },
+  { name: "I-9 Employment Verification", category: "verification", priceFrom: 45, priceUnit: "per form", description: "Authorized representative I-9 completion", popular: true },
   { name: "Identity Verification (KBA)", category: "verification", priceFrom: 15, priceUnit: "per check", description: "Knowledge-based authentication per RON requirements" },
   { name: "Background Check Coordination", category: "verification", priceFrom: 35, priceTo: 75, priceUnit: "per check", description: "FBI/BCI background check facilitation" },
   { name: "Fingerprinting Services", category: "verification", priceFrom: 25, priceTo: 45, priceUnit: "per card", description: "Ink and live scan fingerprinting" },
@@ -41,7 +48,7 @@ export const SERVICE_PRICING: ServicePrice[] = [
   { name: "Form Filling Assistance", category: "document_services", priceFrom: 15, priceTo: 35, priceUnit: "per form", description: "Accurate form completion without legal advice" },
 
   // Authentication & International
-  { name: "Apostille Facilitation", category: "authentication", priceFrom: 75, priceTo: 150, priceUnit: "per document", description: "Ohio Secretary of State apostille processing", popular: true },
+  { name: "Apostille Facilitation", category: "authentication", priceFrom: 175, priceUnit: "per document", description: "Ohio Secretary of State apostille processing (includes coordination & filing)", popular: true },
   { name: "Consular Legalization Prep", category: "authentication", priceFrom: 100, priceTo: 250, priceUnit: "per document", description: "Embassy/consulate document preparation" },
   { name: "Certified Translation", category: "authentication", priceFrom: 40, priceTo: 100, priceUnit: "per page", description: "ATA-certified translation for official use" },
 
