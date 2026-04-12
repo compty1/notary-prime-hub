@@ -110,11 +110,13 @@ const sidebarGroups = [
     ],
   },
   {
-    label: "Compliance & Journal",
+    label: "Compliance & Security",
     items: [
       { title: "Journal", url: "/admin/journal", icon: BookMarked, adminOnly: false },
       { title: "Compliance Report", url: "/admin/compliance-report", icon: ShieldCheck, adminOnly: true },
       { title: "Audit Log", url: "/admin/audit-log", icon: ScrollText, adminOnly: true },
+      { title: "Security Center", url: "/admin/security-center", icon: Shield, adminOnly: true },
+      { title: "Notary Compliance", url: "/admin/notary-compliance", icon: ShieldCheck, adminOnly: false },
     ],
   },
   {
