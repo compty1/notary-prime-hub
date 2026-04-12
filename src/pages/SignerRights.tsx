@@ -57,7 +57,7 @@ export default function SignerRights() {
             These rights are informed by Ohio Revised Code Chapter 147 and the National Notary Association's best practices.
             If you have questions about your rights as a signer, contact us at{" "}
             <a href="tel:6143006890" className="text-primary hover:underline">(614) 300-6890</a> or{" "}
-            <a href="mailto:contact@notardex.com" className="text-primary hover:underline">contact@notardex.com</a>.
+            <a href="mailto:contact@notar.com" className="text-primary hover:underline">contact@notar.com</a>.
           </p>
         </div>
       </div>

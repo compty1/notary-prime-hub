@@ -74,7 +74,7 @@ ${data.notes ? `Notes: ${data.notes}` : ""}
 
 Notar — Ohio Notary & Document Services
 Columbus, OH 43215 · (614) 300-6890
-contact@notardex.com
+contact@notar.com
 `.trim();
 }
 

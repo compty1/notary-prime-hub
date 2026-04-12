@@ -52,7 +52,7 @@ export function generateReceiptHTML(data: ReceiptData): string {
   <p class="amount">${formatCurrency(data.amount)}</p>
 </div>
 <div class="footer">
-  <p>Notar — Columbus, OH 43215 · (614) 300-6890 · contact@notardex.com</p>
+  <p>Notar — Columbus, OH 43215 · (614) 300-6890 · contact@notar.com</p>
   <p>Thank you for your business!</p>
 </div>
 </body></html>`;

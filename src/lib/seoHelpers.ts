@@ -2,7 +2,7 @@
  * SEO helpers — canonical URLs, JSON-LD structured data
  */
 
-const SITE_DOMAIN = "https://notardex.com";
+const SITE_DOMAIN = "https://notar.com";
 
 /** Set canonical URL for the current page */
 export function setCanonical(path: string) {
@@ -36,7 +36,7 @@ export const ORGANIZATION_JSONLD = {
   name: "Notar — Ohio Notary & Document Services",
   url: SITE_DOMAIN,
   telephone: "+16143006890",
-  email: "contact@notardex.com",
+  email: "contact@notar.com",
   address: {
     "@type": "PostalAddress",
     addressLocality: "Columbus",

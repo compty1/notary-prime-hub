@@ -142,8 +142,8 @@ export default function ComingSoon() {
           <a href="tel:6143006890" className="flex items-center gap-1.5 transition-colors hover:text-primary">
             <Phone className="h-3.5 w-3.5" /> (614) 300-6890
           </a>
-          <a href="mailto:contact@notardex.com" className="flex items-center gap-1.5 transition-colors hover:text-primary">
-            <Mail className="h-3.5 w-3.5" /> contact@notardex.com
+          <a href="mailto:contact@notar.com" className="flex items-center gap-1.5 transition-colors hover:text-primary">
+            <Mail className="h-3.5 w-3.5" /> contact@notar.com
           </a>
           <Link to="/terms" className="transition-colors hover:text-primary">Terms & Privacy</Link>
         </div>

@@ -31,7 +31,7 @@ const serviceAreas = [
 ];
 
 export default function About() {
-  const [contactInfo, setContactInfo] = useState({ phone: "(614) 300-6890", email: "contact@notardex.com" });
+  const [contactInfo, setContactInfo] = useState({ phone: "(614) 300-6890", email: "contact@notar.com" });
   const [commissionExp, setCommissionExp] = useState<string | null>(null);
   const [eoStatus, setEoStatus] = useState<string | null>(null);
   const [bondStatus, setBondStatus] = useState<string | null>(null);

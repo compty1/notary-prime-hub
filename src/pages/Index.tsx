@@ -146,7 +146,7 @@ export default function Index() {
   const { get } = useSettings(["notary_phone", "notary_email"]);
   const contactInfo = {
     phone: get("notary_phone", "(614) 300-6890"),
-    email: get("notary_email", "contact@notardex.com"),
+    email: get("notary_email", "contact@notar.com"),
   };
 
   const handleContactSubmit = async (e: React.FormEvent) => {
@@ -190,7 +190,7 @@ export default function Index() {
     "@type": "LocalBusiness",
     "name": "Notar — Ohio Notary Public",
     "description": "Professional notary services in Columbus, Ohio. In-person and Remote Online Notarization (RON).",
-    "url": "https://notardex.com",
+    "url": "https://notar.com",
     "telephone": contactInfo.phone,
     "email": contactInfo.email,
     "address": { "@type": "PostalAddress", "addressLocality": "Columbus", "addressRegion": "OH", "addressCountry": "US" },
