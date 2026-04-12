@@ -18,6 +18,8 @@ const TOOL_IDS = new Set([
   "ron-session-summary","notary-commission-checklist",
   // Resume & missing tools
   "resume-analyzer","executive-summary","proposal-template",
+  // Brand & Strategy
+  "brand-voice-guide","risk-assessment","competitive-analysis",
   // UX Consulting Tools
   "ux-heuristic-audit","ux-user-journey-map","ux-accessibility-audit",
   "ux-information-architecture","ux-design-system-audit","ux-usability-test-plan",
