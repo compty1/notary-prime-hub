@@ -210,6 +210,16 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err: any) {
+    // REM-025: Log failed webhook to DLQ for retry
+    try {
+      const supabaseForDlq = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+      await supabaseForDlq.from("webhook_events").insert({
+        source: "stripe",
+        event_type: "processing_error",
+        payload: { error: err.message },
+        status: "failed",
+      }).then(({ error: dlqErr }) => { if (dlqErr) console.warn("DLQ log error:", dlqErr.message); });
+    } catch (_) { /* best-effort DLQ logging */ }
     return new Response(
       JSON.stringify({ error: err.message }),
       { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
