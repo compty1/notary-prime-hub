@@ -155,6 +155,7 @@ export const SERVICE_REGISTRY: ServiceRegistryEntry[] = [
     requiresNotary: false,
     ronAvailable: false,
     idRequired: false,
+    estimatedDuration: 30,
   },
   // Authentication & International
   {
@@ -169,7 +170,7 @@ export const SERVICE_REGISTRY: ServiceRegistryEntry[] = [
     requiresNotary: false,
     ronAvailable: false,
     idRequired: false,
-    estimatedDuration: undefined, // varies
+    estimatedDuration: 120,
   },
   // Court Forms
   {
@@ -184,6 +185,7 @@ export const SERVICE_REGISTRY: ServiceRegistryEntry[] = [
     requiresNotary: false,
     ronAvailable: false,
     idRequired: false,
+    estimatedDuration: 45,
   },
   {
     id: "custody-package",
@@ -197,6 +199,7 @@ export const SERVICE_REGISTRY: ServiceRegistryEntry[] = [
     requiresNotary: false,
     ronAvailable: false,
     idRequired: false,
+    estimatedDuration: 45,
   },
   // Business Services
   {
@@ -211,6 +214,7 @@ export const SERVICE_REGISTRY: ServiceRegistryEntry[] = [
     requiresNotary: false,
     ronAvailable: false,
     idRequired: false,
+    estimatedDuration: 60,
   },
   // Subscription / SaaS
   {
@@ -225,6 +229,7 @@ export const SERVICE_REGISTRY: ServiceRegistryEntry[] = [
     requiresNotary: false,
     ronAvailable: false,
     idRequired: false,
+    estimatedDuration: 0,
   },
   // Estate Planning
   {
