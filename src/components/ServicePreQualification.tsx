@@ -16,12 +16,11 @@ interface ServicePreQualificationProps {
 
 export function ServicePreQualification({ serviceId, onPass, onFail }: ServicePreQualificationProps) {
   const flow = getServiceFlow(serviceId);
-  const questions = flow?.preQualification;
+  const questions = flow?.preQualification ?? [];
   const [answers, setAnswers] = useState<Record<number, boolean>>({});
+  const [passed, setPassed] = useState(false);
 
-  if (!questions || questions.length === 0) {
-    // No pre-qualification needed — pass through
-    onPass();
+  if (questions.length === 0 || passed) {
     return null;
   }
 
