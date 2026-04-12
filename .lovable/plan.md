@@ -1,82 +1,81 @@
 
 
-# Comprehensive Pricing Overhaul & Gap Analysis Plan
+# Comprehensive Gap Analysis & CSV Generation Plan
 
 ## Summary
-Update the platform's pricing engine, fee calculator, and service pricing catalog to match the Central Ohio Competitive Pricing Audit 2026 recommendations, then generate a CSV of all remaining gaps from both documents.
+Generate a detailed CSV file cataloging every unimplemented item from all 8 uploaded documents, cross-referenced against the current codebase. Then implement the highest-priority actionable fixes.
 
-## What Changes
+## What the CSV Will Contain
+A single file `/mnt/documents/notardex_master_implementation_gaps.csv` with columns:
+- **ID** (e.g., TOOLS-01, CRM-05, LEAD-12)
+- **Source Document** (which PDF/DOCX identified it)
+- **Category** (Tools, CRM, Lead Portal, Security, UX, Integration, Monetization)
+- **Item** (short title)
+- **Description** (specific details)
+- **Current Status** (Not Started / Partial / Stub / Bug)
+- **Priority** (Critical / High / Medium / Low)
+- **Expected Outcome**
+- **Implementation Details** (specific files, functions, approach)
 
-### 1. Pricing Engine Overhaul (`src/lib/pricingEngine.ts`)
-Update `DEFAULT_SETTINGS` and `PricingInput`/`PricingBreakdown` to reflect the audit's recommended model:
+## Key Gap Categories Identified (from document parsing)
 
-- **RON fees**: Change from $25 platform + $15 KBA to **$30/act** (ORC statutory max) + **$10 tech fee/session** = $40 total (or $45 bundled all-in)
-- **Zone-based travel** (from West Jefferson 43162):
-  - Zone 1 (0-15 mi): $25
-  - Zone 2 (15-30 mi): $40
-  - Zone 3 (30-45 mi): $55
-  - Zone 4 (45+ mi): $55 + $1.50/mi beyond 45
-- **New add-on surcharges**: Jail/prison ($75 + zone travel), hospital/nursing (+$20), government facility (+$20), POA surcharge ($25), holiday ($50), weekend ($0 — competitive advantage), wait time ($20/15-min), printing/doc set ($15), scanback ($15), courier ($25), I-9 verification ($45), estate bundle ($100 flat), extra signer ($5)
-- **Loan signing packages**: Standard $125, Purchase $150, Reverse Mortgage $175
-- **Cancellation/no-show policy fees**: <2hr cancel $40, 2-24hr cancel $25, no-show $50, loan no-show full charge, wait time $20/15min, rescheduling free with 4+ hrs notice
-- **Witness fee**: $15/witness (up from $10)
-- **Rush fee**: $25 (down from $35)
-- **Apostille**: $175 (up from $75)
+### Native Tools Audit (82+ items)
+- DocuDex FontSize extension not registered, table editing UI incomplete (80%)
+- Document Builder missing POA/Healthcare Directive templates (90%)
+- Invoice Generator: no Stripe link, no DB persistence (85%)
+- OCR Digitizer: no dedicated UI page (70%)
+- Grant Generator: no PDF export (90%)
+- Resume Builder: PDF parsing uses raw TextDecoder (90%)
+- AI Tools Hub: edge function allowlist mismatch for 2 tools, export .md only, '[streaming]' saved in DB
+- 10 missing tools: Ohio POA Generator, Healthcare Directive Builder, Session PDF Report, Client AI Chat portal tab, OCR Scanner Page, Apostille Status Tracker, KBA Integration, Video Conferencing Embed, Promo Code Manager, Bulk Invoice Generator
+- 6 missing admin tools: Dynamic Pricing Rules Editor, Promo Code Manager, Service Template Manager, Notary Stamp Upload, Session Recording Manager, Client Onboarding Analytics
+- Subscription/paywall not connected to Stripe recurring billing
 
-### 2. Service Pricing Catalog (`src/lib/servicePricing.ts`)
-Update ~15 existing service prices to match audit recommendations:
-- Mobile Notary: $45-$60 (Zone 1-2 total cost)
-- RON: $40-$45 all-in
-- Loan Signing: $125-$175
-- After-Hours: $35 (not $25-$50)
-- Rush: $25 (not $35-$75)
-- Witness: $15 (not $10)
-- I-9: $45 (not $25-$50)
-- Apostille: $175 (not $75-$150)
-- Hospital/Facility: $65-$100 (act + travel + $20 surcharge)
-- Jail/Prison: $100-$150 ($75 surcharge + zone travel)
-- Add new services: Estate Plan Bundle ($100 flat), Scanback ($15), Document Printing ($15/set), Courier Delivery ($25), Wait Time Fee ($20/15min), Cancellation Fee ($25-$40), No-Show Fee ($50)
+### CRM Audit (40+ items)
+- CRM Hub and Lead Portal are separate pages with overlapping functionality and inconsistent pipeline stages (5 vs 7)
+- No automated lead scoring engine
+- No automated follow-up sequences
+- No conversion attribution tracking
+- No lead-to-appointment pipeline connection
+- HubSpot sync lacks error recovery
+- fetch-leads is a stub with hardcoded data
 
-### 3. Fee Calculator Enhancement (`src/pages/FeeCalculator.tsx`)
-- Replace mileage-based travel with **zone selector** (Zone 1-4) with auto-detection from address
-- Add **facility type** selector: Standard, Hospital/Nursing, Jail/Prison, Government
-- Add **loan signing mode** toggle with package selection
-- Add **estate plan bundle** option
-- Display cancellation/no-show policy summary
-- Show competitive positioning badges ("Below Market", "Free Weekends")
+### Lead Portal Audit (47+ items)
+- extract-email-leads and hubspot-sync missing JWT auth (CRITICAL)
+- generate-lead-proposal uses deprecated getClaims (BUG)
+- AILeadChatbot has no lead capture logic
+- Enrichment overwrites notes instead of appending
+- No lead merge wizard for duplicates
+- No map view for leads
+- No multi-format import (vCard, Excel)
+- PortalLeadsTab is minimal (76 lines, 5 gaps)
 
-### 4. Pricing Menu Enhancement (`src/pages/PricingMenu.tsx`)
-- Add "Cancellation & No-Show Policy" section
-- Add "Payment Methods" section (cards, cash, Zelle, Venmo, CashApp, Apple/Google Pay)
-- Add "Service Area & Travel Zones" visual section
-- Add competitive positioning callouts from audit Section 8
+### Implementation Plan (SEC/PERF/UX items)
+- Items already done: RBAC, CSRF, rate limiting, audit log, accessibility basics, state machine, pricing engine
+- Items out of scope: Docker, CI/CD, Prometheus, k6, BullMQ, Redis
+- Remaining actionable: API versioning headers, CSP headers tightening, structured error logging
 
-### 5. Pricing Engine Tests (`src/test/pricingEngine.test.ts`)
-- Update tests to match new default values (RON $30+$10, witness $15, rush $25, zones)
-- Add tests for zone-based travel, facility surcharges, loan signing packages
+## Implementation Approach
 
-### 6. Brand Validation
-- Brand file (`src/lib/brand.ts`) already uses "Notar" consistently
-- Verify the teamLead name matches audit ("Shane LeCompte" in audit vs "Shane Goble" in brand.ts — will flag for user decision)
+### Step 1: Generate Master CSV
+Run a Python script that produces the comprehensive CSV with ~150 rows covering every gap from all 8 documents, with implementation specifics.
 
-### 7. Generate Comprehensive Gap CSV
-Python script producing `/mnt/documents/notar_implementation_gaps_v2.csv` covering:
-- All Implementation Plan items (GAP-P0 through GAP-P3) mapped against current codebase status
-- Items already implemented (RBAC, audit trail, input validation, migrations, health-check edge function, CSRF, rate limiting, error boundaries, accessibility basics)
-- Items out-of-scope for Lovable architecture (Docker, CI/CD GitHub Actions, Prometheus, k6, BullMQ, Redis, Pino logging)
-- Remaining actionable items with specific implementation steps
+### Step 2: Implement Top Priority Fixes (in same session)
+1. **Fix ai-tools edge function allowlist** — add missing tool IDs (proposal-template, executive-summary)
+2. **Fix AI Tools Hub streaming result** — update tool_generations after streaming completes in ToolRunner.tsx
+3. **Add Document Builder templates** — POA, Healthcare Directive, Promissory Note
+4. **Fix Invoice Generator** — add DB persistence to invoices table
+5. **Unify CRM/Lead pipeline stages** — standardize to 7 stages across both pages
 
-## Technical Details
-
-**Files modified:**
-- `src/lib/pricingEngine.ts` — new interfaces, zone logic, surcharges, loan packages
-- `src/lib/servicePricing.ts` — ~20 price adjustments + ~7 new service entries
-- `src/pages/FeeCalculator.tsx` — zone selector, facility type, loan mode, policy display
-- `src/pages/PricingMenu.tsx` — policy sections, payment methods, zone map
-- `src/test/pricingEngine.test.ts` — updated test suite
+### Technical Details
 
 **Files created:**
-- `/mnt/documents/notar_implementation_gaps_v2.csv` — comprehensive gap analysis
+- `/mnt/documents/notardex_master_implementation_gaps.csv` — ~150 rows
 
-**No database changes required** — all pricing is driven by the engine defaults + `platform_settings` table overrides.
+**Files modified (priority fixes):**
+- `supabase/functions/ai-tools/index.ts` — add missing TOOL_IDS
+- `src/components/ai-tools/ToolRunner.tsx` — save final result after streaming
+- `src/pages/DocumentBuilder.tsx` — add POA/Healthcare Directive templates
+- `src/components/InvoiceGenerator.tsx` — add DB save functionality
+- `src/pages/admin/AdminLeadPortal.tsx` — unify pipeline stages
 
