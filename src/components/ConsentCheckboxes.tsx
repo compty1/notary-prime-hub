@@ -24,11 +24,10 @@ export function ConsentCheckboxes({ consents, values, onChange }: ConsentCheckbo
     onChange(item.id, checked);
     if (user) {
       logConsent({
-        userId: user.id,
         consentType: item.id,
         granted: checked,
         version: item.version || "1.0",
-      });
+      }, user.id);
     }
   };
 
