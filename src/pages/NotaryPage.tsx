@@ -17,6 +17,9 @@ import { motion } from "framer-motion";
 import { BRAND } from "@/lib/brand";
 import { ensureHex } from "@/lib/colorUtils";
 import { sanitizeHtml } from "@/lib/sanitize";
+import { NotaryReviews } from "@/components/NotaryReviews";
+import { NotaryFAQ } from "@/components/NotaryFAQ";
+import { NotaryLeadCapture } from "@/components/NotaryLeadCapture";
 
 const PROFESSIONAL_TYPE_LABELS: Record<string, string> = {
   notary: "Commissioned Notary Public",
@@ -593,30 +596,17 @@ export default function NotaryPage() {
           </div>
         </section>
 
+        {/* ══════ REVIEWS ══════ */}
+        <section id="reviews" className="py-16">
+          <div className="mx-auto max-w-4xl px-4">
+            <NotaryReviews notaryUserId={page.user_id} />
+          </div>
+        </section>
+
         {/* ══════ FAQ ══════ */}
-        <section className="py-16">
+        <section className="bg-muted/30 py-16">
           <div className="mx-auto max-w-3xl px-4">
-            <h2 className="mb-8 text-center text-2xl font-bold">Frequently Asked Questions</h2>
-            <div className="space-y-4">
-              {[
-                { q: "What documents do I need to bring?", a: "Bring a valid, government-issued photo ID (driver's license, passport, or state ID). The document(s) you need notarized should be unsigned — you'll sign in the notary's presence." },
-                { q: "How much does notarization cost?", a: `Ohio law caps notary fees at $${get("base_fee_per_signature", "5")} per notarial act. RON sessions start at $${get("ron_base_service_fee", "25")}. Additional fees may apply for travel ($${get("travel_fee_minimum", "35")} minimum), after-hours service ($${get("after_hours_fee", "35")}), or document preparation.` },
-                { q: "Can I get documents notarized online?", a: "Yes! Remote Online Notarization (RON) is authorized in Ohio under ORC §147.65–.66. You'll connect via secure video, verify your identity through knowledge-based authentication, and complete the signing electronically." },
-                { q: "What types of documents can be notarized?", a: "Common documents include affidavits, powers of attorney, real estate documents, loan packages, medical directives, vehicle titles, and more." },
-                { q: "Do I need an appointment?", a: `Appointments are recommended to ensure availability. We're available ${get("business_hours", "Mon-Fri 9AM-6PM, Sat 10AM-2PM")}. Same-day bookings are often available through our online scheduling.` },
-                { q: "How long does a notarization take?", a: "Most notarizations take 10-15 minutes. Loan signings and complex packages may take 30-60 minutes." },
-                { q: "What area do you serve?", a: `We serve ${get("service_area", "Franklin County & Greater Columbus, OH")}. Mobile notary services are available within ${get("max_travel_miles", "30")} miles. Remote Online Notarization is available to anyone located in Ohio.` },
-              ].map((item, i) => (
-                <motion.div key={i} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: i * 0.05 }} viewport={{ once: true }}>
-                  <Card>
-                    <CardContent className="p-5">
-                      <h3 className="font-bold text-foreground">{item.q}</h3>
-                      <p className="mt-2 text-sm text-muted-foreground">{item.a}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
+            <NotaryFAQ notaryName={page.display_name} />
           </div>
         </section>
 
@@ -626,7 +616,7 @@ export default function NotaryPage() {
             <div className="h-8 w-1 rounded-full" style={{ backgroundColor: themeColor }} />
             Contact
           </h2>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-4 mb-8">
             {page.phone && (
               <a href={`tel:${page.phone}`} className="inline-flex items-center gap-2 rounded-lg border px-4 py-3 transition-colors hover:bg-muted">
                 <Phone className="h-4 w-4" style={{ color: themeColor }} />
@@ -648,45 +638,21 @@ export default function NotaryPage() {
             )}
           </div>
           {hasSocialLinks && (
-            <div className="mt-4 flex gap-3">
+            <div className="mb-8 flex gap-3">
               {socials.facebook && socials.facebook.trim() && <a href={socials.facebook} target="_blank" rel="noopener noreferrer" className="rounded-full border p-2 transition-colors hover:bg-muted" aria-label="Facebook"><Facebook className="h-5 w-5" /></a>}
               {socials.linkedin && socials.linkedin.trim() && <a href={socials.linkedin} target="_blank" rel="noopener noreferrer" className="rounded-full border p-2 transition-colors hover:bg-muted" aria-label="LinkedIn"><Linkedin className="h-5 w-5" /></a>}
               {socials.twitter && socials.twitter.trim() && <a href={socials.twitter} target="_blank" rel="noopener noreferrer" className="rounded-full border p-2 transition-colors hover:bg-muted" aria-label="Twitter"><Twitter className="h-5 w-5" /></a>}
             </div>
           )}
-        </section>
 
-        {/* ══════ CONTACT FORM ══════ */}
-        {page.email && (
-          <section className="bg-muted/30 py-16">
-            <div className="mx-auto max-w-lg px-4 text-center">
-              <h2 className="mb-2 text-2xl font-bold">Send a Message</h2>
-              <p className="mb-6 text-sm text-muted-foreground">Have a question? Reach out directly.</p>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const formData = new FormData(e.currentTarget);
-                  const subject = encodeURIComponent(String(formData.get("subject") || "Inquiry"));
-                  const body = encodeURIComponent(String(formData.get("message") || ""));
-                  window.location.href = `mailto:${page.email}?subject=${subject}&body=${body}`;
-                }}
-                className="space-y-3 text-left"
-              >
-                <div>
-                  <label className="text-sm font-medium" htmlFor="contact-subject">Subject</label>
-                  <input id="contact-subject" name="subject" required className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" placeholder="e.g. Notarization inquiry" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium" htmlFor="contact-message">Message</label>
-                  <textarea id="contact-message" name="message" required rows={3} className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm" placeholder="How can we help?" />
-                </div>
-                <Button type="submit" className="w-full gap-2 font-bold" style={{ backgroundColor: themeColor }}>
-                  <Mail className="h-4 w-4" /> Send Message
-                </Button>
-              </form>
-            </div>
-          </section>
-        )}
+          {/* Lead Capture Form */}
+          <NotaryLeadCapture
+            notarySlug={page.slug}
+            notaryName={page.display_name}
+            notaryUserId={page.user_id}
+            services={services.map((s: any) => s.name || s)}
+          />
+        </section>
 
         {/* ══════ BOTTOM CTA ══════ */}
         <section className="py-16" style={{ background: `linear-gradient(135deg, ${themeColor}15, ${accentColor}05)` }}>
