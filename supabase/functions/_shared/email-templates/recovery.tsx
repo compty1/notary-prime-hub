@@ -25,7 +25,7 @@ export const RecoveryEmail = ({
 }: RecoveryEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Reset your NotarDex password</Preview>
+    <Preview>Reset your Notar password</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={logoSection}>
@@ -33,7 +33,7 @@ export const RecoveryEmail = ({
         </Section>
         <Heading style={h1}>Reset your password</Heading>
         <Text style={text}>
-          We received a request to reset your NotarDex password. Click below to choose a new one.
+          We received a request to reset your Notar password. Click below to choose a new one.
         </Text>
         <Button style={button} href={confirmationUrl}>
           Reset Password

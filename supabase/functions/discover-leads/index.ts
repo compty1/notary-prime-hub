@@ -211,10 +211,17 @@ Return ONLY a JSON array. No markdown.`;
       let enriched = 0;
       for (const e of enrichments) {
         if (!e.id) continue;
-        const notes = `Outreach: ${e.outreach_tip || "N/A"} | Search: ${e.suggested_phone_search || ""} | Domain: ${e.suggested_email_domain || ""}`;
+        // REM-009: Append enrichment notes instead of overwriting
+        const { data: existing } = await serviceRoleClient
+          .from("leads")
+          .select("notes")
+          .eq("id", e.id)
+          .single();
+        const newNote = `[${new Date().toISOString()}] Outreach: ${e.outreach_tip || "N/A"} | Search: ${e.suggested_phone_search || ""} | Domain: ${e.suggested_email_domain || ""}`;
+        const combined = existing?.notes ? `${existing.notes}\n${newNote}` : newNote;
         const { error } = await serviceRoleClient
           .from("leads")
-          .update({ notes } as any)
+          .update({ notes: combined } as any)
           .eq("id", e.id);
         if (!error) enriched++;
       }

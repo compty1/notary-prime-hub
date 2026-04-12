@@ -25,7 +25,7 @@ export const MagicLinkEmail = ({
 }: MagicLinkEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your NotarDex login link</Preview>
+    <Preview>Your Notar login link</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={logoSection}>
@@ -33,10 +33,10 @@ export const MagicLinkEmail = ({
         </Section>
         <Heading style={h1}>Your login link</Heading>
         <Text style={text}>
-          Click below to log in to NotarDex. This link expires shortly.
+          Click below to log in to Notar. This link expires shortly.
         </Text>
         <Button style={button} href={confirmationUrl}>
-          Log In to NotarDex
+          Log In to Notar
         </Button>
         <Text style={footer}>
           If you didn't request this link, you can safely ignore this email.

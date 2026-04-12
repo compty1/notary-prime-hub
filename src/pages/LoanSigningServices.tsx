@@ -24,7 +24,7 @@ const capabilities = [
   { icon: Shield, title: "Certified NSA", desc: "NNA-certified Notary Signing Agent with background screening and E&O insurance coverage." },
   { icon: Monitor, title: "RON-Capable", desc: "Ohio-authorized Remote Online Notarization for closings anywhere, fully compliant with ORC §147.65-.66." },
   { icon: FileText, title: "All Document Types", desc: "Purchase, refinance, reverse mortgage, HELOC, seller packages, and loan modifications." },
-  { icon: Clock, title: "Flexible Scheduling", desc: "Appointments available Mon–Fri 9 AM – 7 PM, Sat 10 AM – 4 PM, with extended hours by arrangement." },
+  { icon: Clock, title: "Flexible Scheduling", desc: "Mon–Fri 9 AM – 7 PM ET | Sat 10 AM – 4 PM ET | Sun by appointment, with extended hours by arrangement." },
 ];
 
 const signingTypes = [
