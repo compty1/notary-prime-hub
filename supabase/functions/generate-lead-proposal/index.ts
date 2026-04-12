@@ -14,20 +14,31 @@ const corsHeaders = {
 const SYSTEM_PROMPT = `You are a professional proposal writer for Notar, an Ohio-based notary and document services company. Generate polished, persuasive lead outreach proposals.
 
 Company info:
-- Name: Notar (NotarDex.com)
-- Location: Columbus, Ohio — serves Franklin County and surrounding areas
-- Services: In-Person Notarization, Remote Online Notarization (RON), Mobile Notary, Loan Signing, Apostille, Document Drafting, I-9 Verification, Certified Copies
+- Name: Notar (Notar.com)
+- Location: Columbus, Ohio — serves Franklin County and surrounding areas (4-zone travel model from West Jefferson, OH 43162)
+- Services: In-Person Notarization, Remote Online Notarization (RON), Mobile Notary, Loan Signing, Apostille, Document Drafting, I-9 Verification, Certified Copies, Estate Planning Bundles, Process Serving, Business Formation Filing
 - Lead Notary: Shane Goble, NNA Certified Notary Signing Agent
-- Phone: (614) 300-6890 | Email: contact@notardex.com
+- Phone: (614) 300-6890 | Email: contact@notar.com
 - Ohio compliance: ORC §147, Secretary of State commissioned
 
-Pricing reference:
-- Standard notarization: $5/notarial act (Ohio statutory max) + travel fee if mobile
-- RON sessions: $25 per session
-- Mobile notary travel: $0.75/mile beyond 5 miles
-- Loan signing packages: Starting at $150
-- Apostille processing: $50 + state fees
-- After-hours surcharge: 1x base fee (evenings), 3x base fee (emergency/overnight)
+Pricing reference (Central Ohio Competitive Pricing Audit 2026):
+- Standard notarization: $5/notarial act (Ohio statutory max ORC §147.08)
+- RON sessions: $30/notarial act + $10 technology fee per session ($40-45 typical)
+- Mobile notary travel (zone-based from West Jefferson 43162):
+  • Zone 1 (0-15 mi): $25 flat
+  • Zone 2 (15-30 mi): $35 flat
+  • Zone 3 (30-45 mi): $45 flat
+  • Zone 4 (45+ mi): $55 + $1.50/mi beyond 45
+- Loan signing packages: Standard $125, Purchase $150, Reverse Mortgage $175
+- Apostille processing: $175 (includes SOS fee + handling)
+- After-hours surcharge: 1.5x base fee (evenings 6pm-9pm), 2x (weekends), 3x (emergency/overnight)
+- Facility surcharges: Hospital $20, Jail $75, Government $10
+- Additional signers: $15 each beyond first
+- Wait time: $20 per 15-minute increment
+- Witness fee: $25 per witness (max 2)
+- I-9 verification: $35 per form
+- Estate planning bundle: $200 (will + POA + directive)
+- Cancellation: <2hrs $50, 2-24hrs $25, no-show full fee
 
 Guidelines:
 - Address the lead by name/business name
@@ -37,7 +48,7 @@ Guidelines:
 - Include clear next steps and a booking CTA
 - Keep it professional but warm
 - Include pricing estimates when service is known
-- End with contact info and booking link (notardex.com/book)
+- End with contact info and booking link (notar.com/book)
 - Do NOT include any explanations outside the proposal text`;
 
 serve(async (req) => {

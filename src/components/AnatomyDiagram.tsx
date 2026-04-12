@@ -274,4 +274,63 @@ export const DOCUMENT_ANATOMY: Record<string, { image: string; callouts: { id: n
       { id: 5, label: "Journal Update", description: "Record the correction in your journal as a separate entry referencing the original journal entry number and date.", x: 50, y: 85 },
     ],
   },
+  loan_signing: {
+    image: "/images/documents/acknowledgment-certificate.jpg",
+    callouts: [
+      { id: 1, label: "Loan Package Overview", description: "A loan signing typically includes 50-150+ pages: the Note, Deed of Trust/Mortgage, Right to Cancel (Rescission), HUD-1/Closing Disclosure, and various federal/state disclosures.", x: 50, y: 5 },
+      { id: 2, label: "Promissory Note", description: "The borrower's promise to repay the loan. Contains loan amount, interest rate, payment schedule, and maturity date. Requires borrower signature — usually notarized.", x: 40, y: 20 },
+      { id: 3, label: "Deed of Trust / Mortgage", description: "Secures the property as collateral for the loan. Requires notarized signatures of all borrowers. Must be recorded with the county recorder.", x: 50, y: 35, orc: "ORC §5301.01" },
+      { id: 4, label: "Right to Cancel (Rescission)", description: "For refinances only — borrowers have 3 business days to cancel. TWO copies must be provided. Not applicable to purchase transactions.", x: 45, y: 50 },
+      { id: 5, label: "Closing Disclosure (CD)", description: "Replaces HUD-1 for most transactions. Shows final loan terms, closing costs, and cash to close. Borrower must receive 3 days before closing.", x: 50, y: 65 },
+      { id: 6, label: "Signing Agent Role", description: "The notary signing agent facilitates the signing but does NOT explain loan terms, give legal/financial advice, or negotiate on behalf of any party. Direct questions to the lender or title company.", x: 40, y: 80 },
+      { id: 7, label: "Notary Seal on Each Notarized Document", description: "Apply your seal to EACH document requiring notarization — typically the Note, Deed of Trust, and any affidavits. Ohio statutory fee: $5 per notarial act.", x: 70, y: 90, orc: "ORC §147.04" },
+    ],
+  },
+  i9_verification: {
+    image: "/images/documents/acknowledgment-certificate.jpg",
+    callouts: [
+      { id: 1, label: "Form I-9 Header", description: "Employment Eligibility Verification form required by USCIS for ALL employees hired in the United States. The employer must complete this within 3 business days of the employee's start date.", x: 50, y: 5 },
+      { id: 2, label: "Section 1 — Employee Information", description: "Completed BY THE EMPLOYEE on or before their first day of work. Includes name, address, date of birth, SSN (optional unless E-Verify employer), and citizenship/immigration status.", x: 50, y: 20 },
+      { id: 3, label: "List A / List B+C Documents", description: "Employee must present original documents: ONE List A document (e.g., US Passport) OR one List B (photo ID) + one List C (work authorization). Photocopies are NOT acceptable.", x: 40, y: 40 },
+      { id: 4, label: "Section 2 — Employer Review", description: "The AUTHORIZED REPRESENTATIVE (notary acting as agent) examines original documents in the employee's physical presence and records document details.", x: 50, y: 55 },
+      { id: 5, label: "Notary's Role as Authorized Representative", description: "The notary acts as an Authorized Representative of the employer — NOT as a notary public. You are verifying documents appear genuine and relate to the person. This is NOT a notarial act.", x: 45, y: 70 },
+      { id: 6, label: "Employer Signature", description: "Sign as the authorized representative with your name and the employer's business info. Include the date of examination and the employee's first day of employment.", x: 50, y: 85 },
+    ],
+  },
+  general_affidavit: {
+    image: "/images/documents/jurat-certificate.jpg",
+    callouts: [
+      { id: 1, label: "Venue (State & County)", description: "State of Ohio, County of _____ — identifies where the affiant swore the oath. Must match your physical location at the time of the act.", x: 50, y: 5, orc: "ORC §147.07" },
+      { id: 2, label: "Affidavit Title", description: "Clearly states this is an AFFIDAVIT — a written statement of facts made under oath. Common types: Affidavit of Identity, Affidavit of Heirship, Affidavit of Residence, General Affidavit.", x: 50, y: 15 },
+      { id: 3, label: "Affiant Identity", description: "Full legal name, address, and identification of the person making the sworn statement. Must match their government-issued photo ID.", x: 45, y: 30 },
+      { id: 4, label: "Sworn Statements", description: "Numbered paragraphs stating facts the affiant swears are true. Each statement should be a single, clear fact. The affiant is subject to perjury charges for false statements.", x: 50, y: 50 },
+      { id: 5, label: "Affiant Signature", description: "Signed in the notary's presence AFTER the oath is administered. The affiant must sign their full legal name as it appears in the document.", x: 40, y: 70 },
+      { id: 6, label: "Jurat Certificate", description: "This is a JURAT — you administered an oath. Use 'Sworn to and subscribed before me...' language. An Acknowledgment is incorrect for affidavits.", x: 50, y: 82, orc: "ORC §147.55" },
+      { id: 7, label: "Notary Seal & Signature", description: "Official Ohio notary seal with commission info. Affix clearly without overlapping text or signatures.", x: 70, y: 92, orc: "ORC §147.04" },
+    ],
+  },
+  deed_transfer: {
+    image: "/images/documents/corporate-acknowledgment.jpg",
+    callouts: [
+      { id: 1, label: "Deed Type", description: "Identifies the type of deed: General Warranty Deed (strongest protection), Limited Warranty Deed, Quitclaim Deed (no warranties), or Fiduciary Deed. Each carries different levels of title guarantee.", x: 50, y: 5 },
+      { id: 2, label: "Grantor (Seller)", description: "The person or entity transferring ownership. Must sign the deed in their legal name as it appears on the current title. All grantors must sign if jointly owned.", x: 40, y: 20, orc: "ORC §5301.01", link: "https://codes.ohio.gov/ohio-revised-code/section-5301.01" },
+      { id: 3, label: "Grantee (Buyer)", description: "The person or entity receiving ownership. Name and vesting (how they'll hold title) must be correctly stated: tenants in common, joint tenancy with survivorship, etc.", x: 55, y: 33 },
+      { id: 4, label: "Legal Description", description: "Precise legal description of the property — lot/block, metes and bounds, or plat reference. Must match county records exactly. A street address alone is insufficient.", x: 50, y: 48 },
+      { id: 5, label: "Consideration", description: "The purchase price or value exchanged. Ohio requires a conveyance fee based on the consideration amount (varies by county). Tax-exempt transfers must cite the applicable exemption.", x: 45, y: 60 },
+      { id: 6, label: "Acknowledgment Certificate", description: "Deeds require an ACKNOWLEDGMENT (not Jurat). The grantor acknowledges they signed voluntarily. Ohio requires notarization for recording with the county recorder.", x: 50, y: 75, orc: "ORC §147.55" },
+      { id: 7, label: "Notary Seal & Recording Info", description: "Official seal plus recording information. The deed must be recorded with the county recorder's office to be effective against third parties. Recording fee varies by county.", x: 50, y: 90, orc: "ORC §317.32" },
+    ],
+  },
+  ron_certificate: {
+    image: "/images/documents/acknowledgment-certificate.jpg",
+    callouts: [
+      { id: 1, label: "RON-Specific Venue", description: "For Remote Online Notarization, the venue is the NOTARY's physical location (county), NOT the signer's location. The signer may be anywhere in the world.", x: 50, y: 5, orc: "ORC §147.66", link: "https://codes.ohio.gov/ohio-revised-code/section-147.66" },
+      { id: 2, label: "RON Designation", description: "The certificate MUST indicate it was performed as a remote online notarization. Include: 'This notarial act was performed using communication technology (audio-video).'", x: 50, y: 20, orc: "ORC §147.65" },
+      { id: 3, label: "Identity Verification Method", description: "RON requires two forms of identity verification: (1) Credential analysis of government-issued ID, AND (2) Knowledge-based authentication (KBA) — max 2 attempts per ORC §147.66.", x: 50, y: 35, orc: "ORC §147.66" },
+      { id: 4, label: "Communication Technology", description: "Must identify the technology platform used for the audio-video session. Both parties must be able to see, hear, and communicate in real time throughout.", x: 50, y: 50 },
+      { id: 5, label: "Session Recording Reference", description: "Ohio requires the ENTIRE RON session to be recorded (audio and video). Recording must be retained for minimum 10 years per ORC §147.63. Reference the recording ID.", x: 50, y: 65, orc: "ORC §147.63" },
+      { id: 6, label: "Electronic Signature & Seal", description: "Notary applies electronic signature and electronic seal. The e-seal must contain the same information as a physical seal: name, 'Notary Public', 'State of Ohio', commission #, expiration.", x: 50, y: 80, orc: "ORC §147.04" },
+      { id: 7, label: "Tamper-Evident Technology", description: "The completed document must be secured with tamper-evident technology that renders any subsequent changes to the document evident.", x: 50, y: 92, orc: "ORC §147.64" },
+    ],
+  },
 };
