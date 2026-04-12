@@ -516,25 +516,53 @@ export default function NotaryCertificates() {
 
                   <div ref={printRef} className="certificate-content prose prose-sm dark:prose-invert max-w-none">
                     {/* Render markdown-like content as structured HTML */}
-                    {activeCert.content.split("\n").map((line, i) => {
-                      const trimmed = line.trim();
-                      if (!trimmed) return <br key={i} />;
-                      if (trimmed.startsWith("## ")) return <h2 key={i} className="mt-6 mb-3 text-lg font-bold text-foreground">{trimmed.slice(3)}</h2>;
-                      if (trimmed.startsWith("### ")) return <h3 key={i} className="mt-4 mb-2 text-base font-semibold text-foreground">{trimmed.slice(4)}</h3>;
-                      if (trimmed.startsWith("- **")) {
-                        const match = trimmed.match(/^- \*\*(.+?)\*\*:?\s*(.*)/);
-                        if (match) return <div key={i} className="flex gap-2 my-1 ml-4"><AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" /><p className="text-sm"><strong className="text-foreground">{match[1]}</strong>{match[2] ? `: ${match[2]}` : ""}</p></div>;
+                    {(() => {
+                      const lines = activeCert.content.split("\n");
+                      const elements: React.ReactNode[] = [];
+                      let i = 0;
+                      while (i < lines.length) {
+                        const trimmed = lines[i].trim();
+                        // Collect consecutive table rows
+                        if (trimmed.startsWith("|")) {
+                          const tableLines: string[] = [];
+                          while (i < lines.length && lines[i].trim().startsWith("|")) {
+                            tableLines.push(lines[i].trim());
+                            i++;
+                          }
+                          // Parse: first line = header, second = separator (skip), rest = body
+                          const parseRow = (row: string) => row.split("|").filter((_, idx, arr) => idx > 0 && idx < arr.length - 1).map(c => c.trim());
+                          const headerCells = parseRow(tableLines[0]);
+                          const bodyRows = tableLines.slice(2).map(parseRow); // skip separator row
+                          elements.push(
+                            <div key={`table-${i}`} className="my-4 overflow-x-auto rounded-lg border border-border">
+                              <table className="w-full text-sm">
+                                <thead><tr className="bg-muted/50">{headerCells.map((h, hi) => <th key={hi} className="px-3 py-2 text-left font-semibold text-foreground">{h}</th>)}</tr></thead>
+                                <tbody>{bodyRows.map((row, ri) => <tr key={ri} className="border-t border-border">{row.map((cell, ci) => <td key={ci} className="px-3 py-2 text-muted-foreground">{cell}</td>)}</tr>)}</tbody>
+                              </table>
+                            </div>
+                          );
+                          continue;
+                        }
+                        if (!trimmed) { elements.push(<br key={i} />); i++; continue; }
+                        if (trimmed.startsWith("## ")) { elements.push(<h2 key={i} className="mt-6 mb-3 text-lg font-bold text-foreground">{trimmed.slice(3)}</h2>); i++; continue; }
+                        if (trimmed.startsWith("### ")) { elements.push(<h3 key={i} className="mt-4 mb-2 text-base font-semibold text-foreground">{trimmed.slice(4)}</h3>); i++; continue; }
+                        if (trimmed.startsWith("- **")) {
+                          const match = trimmed.match(/^- \*\*(.+?)\*\*:?\s*(.*)/);
+                          if (match) { elements.push(<div key={i} className="flex gap-2 my-1 ml-4"><AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" /><p className="text-sm"><strong className="text-foreground">{match[1]}</strong>{match[2] ? `: ${match[2]}` : ""}</p></div>); i++; continue; }
+                        }
+                        if (trimmed.startsWith("- ")) { elements.push(<div key={i} className="flex gap-2 my-1 ml-4"><span className="text-primary mt-1">•</span><p className="text-sm text-foreground">{trimmed.slice(2)}</p></div>); i++; continue; }
+                        if (/^[1-6]\. /.test(trimmed)) {
+                          const num = trimmed.charAt(0);
+                          elements.push(<div key={i} className="flex gap-2 my-1 ml-4"><span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary flex-shrink-0">{num}</span><p className="text-sm text-foreground">{trimmed.slice(3)}</p></div>);
+                          i++; continue;
+                        }
+                        if (trimmed.startsWith("**") && trimmed.endsWith("**")) { elements.push(<p key={i} className="my-2 font-semibold text-foreground">{trimmed.slice(2, -2)}</p>); i++; continue; }
+                        if (trimmed.startsWith("*\"") || trimmed.startsWith("*\u201C")) { elements.push(<blockquote key={i} className="border-l-4 border-primary/30 pl-4 my-3 italic text-sm text-muted-foreground">{trimmed.replace(/^\*"?/g, "").replace(/"?\*$/g, "").replace(/[\u201C\u201D]/g, '"')}</blockquote>); i++; continue; }
+                        elements.push(<p key={i} className="my-2 text-sm text-foreground/90">{trimmed}</p>);
+                        i++;
                       }
-                      if (trimmed.startsWith("- ")) return <div key={i} className="flex gap-2 my-1 ml-4"><span className="text-primary mt-1">•</span><p className="text-sm text-foreground">{trimmed.slice(2)}</p></div>;
-                      if (trimmed.startsWith("1. ") || trimmed.startsWith("2. ") || trimmed.startsWith("3. ") || trimmed.startsWith("4. ") || trimmed.startsWith("5. ") || trimmed.startsWith("6. ")) {
-                        const num = trimmed.charAt(0);
-                        return <div key={i} className="flex gap-2 my-1 ml-4"><span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary flex-shrink-0">{num}</span><p className="text-sm text-foreground">{trimmed.slice(3)}</p></div>;
-                      }
-                      if (trimmed.startsWith("**") && trimmed.endsWith("**")) return <p key={i} className="my-2 font-semibold text-foreground">{trimmed.slice(2, -2)}</p>;
-                      if (trimmed.startsWith("*\"") || trimmed.startsWith("*\u201C")) return <blockquote key={i} className="border-l-4 border-primary/30 pl-4 my-3 italic text-sm text-muted-foreground">{trimmed.replace(/^\*"?/g, "").replace(/"?\*$/g, "").replace(/[\u201C\u201D]/g, '"')}</blockquote>;
-                      if (trimmed.startsWith("|")) return null; // Skip table markup — handled separately
-                      return <p key={i} className="my-2 text-sm text-foreground/90">{trimmed}</p>;
-                    })}
+                      return elements;
+                    })()}
                   </div>
                 </CardContent>
               </Card>
