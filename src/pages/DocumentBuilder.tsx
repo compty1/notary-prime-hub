@@ -242,8 +242,9 @@ export default function DocumentBuilder() {
                   <Button variant="outline" onClick={() => setShowPreview(false)}><ChevronLeft className="mr-1 h-4 w-4" /> Edit</Button>
                   <Button onClick={handlePrint} className=""><Printer className="mr-1 h-4 w-4" /> Print / Save PDF</Button>
                   {user && (
-                    <Button variant="outline" disabled={saving} onClick={async () => {
+                    <Button variant="outline" disabled={saving || !freeTier.canUse} onClick={async () => {
                       if (!user || !docType) return;
+                      if (!freeTier.canUse) { toast({ title: "Free tier limit reached", description: `${freeTier.limit} documents/month. Upgrade for unlimited.`, variant: "destructive" }); return; }
                       setSaving(true);
                       try {
                         const content = buildDocument();
@@ -257,6 +258,7 @@ export default function DocumentBuilder() {
                         });
                         if (insertError) throw insertError;
                         toast({ title: "Saved to My Documents", description: "You can find it in your Client Portal." });
+                        freeTier.recordUsage();
                       } catch (e: any) {
                         toast({ title: "Save failed", description: e.message, variant: "destructive" });
                       }
