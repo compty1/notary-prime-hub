@@ -338,6 +338,10 @@ export function DocuDexEditor({
         e.preventDefault();
         setIsFullscreen(prev => !prev);
       }
+      if ((e.ctrlKey || e.metaKey) && e.key === "/") {
+        e.preventDefault();
+        setShowKeyboardShortcuts(prev => !prev);
+      }
       if ((e.ctrlKey || e.metaKey) && e.key === "p") {
         e.preventDefault();
         setShowPrintPreview(true);
