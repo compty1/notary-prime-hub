@@ -105,6 +105,90 @@ export const SERVICE_PRICING: ServicePrice[] = [
   { name: "Interpreter Referral Service", category: "admin_support", priceFrom: 50, priceTo: 100, priceUnit: "per session", description: "Qualified interpreter coordination for notarial acts" },
   { name: "Scanback Service", category: "document_services", priceFrom: 10, priceTo: 25, priceUnit: "per package", description: "Scan-back of signed documents to lender or originator" },
   { name: "Document Printing & Prep", category: "document_services", priceFrom: 0.25, priceTo: 1, priceUnit: "per page", description: "Print, collate, and tab documents for signing sessions" },
+
+  // Compliance & Safety
+  { name: "OSHA Safety Doc Package", category: "compliance", priceFrom: 350, priceTo: 750, priceUnit: "flat", description: "Written safety programs, hazard communication, emergency action plans" },
+  { name: "ADA Website Accessibility Audit", category: "compliance", priceFrom: 250, priceTo: 1500, priceUnit: "flat", description: "WCAG 2.1/2.2 AA compliance audit with remediation recommendations" },
+  { name: "Compliance Calendar Setup", category: "compliance", priceFrom: 75, priceTo: 150, priceUnit: "flat", description: "Industry-specific compliance deadline tracking with automated reminders" },
+  { name: "Cannabis Document Preparation", category: "compliance", priceFrom: 500, priceTo: 2500, priceUnit: "flat", description: "Ohio DCC licensing applications, SOP manuals, compliance review" },
+  { name: "Construction Document Prep", category: "compliance", priceFrom: 200, priceTo: 500, priceUnit: "flat", description: "Bid packages, safety plans, subcontractor packets" },
+  { name: "Healthcare Document Prep", category: "compliance", priceFrom: 250, priceTo: 1500, priceUnit: "flat", description: "Credentialing packets, HIPAA documentation, policy manuals" },
+
+  // Financial Services
+  { name: "Bookkeeping Monthly", category: "financial", priceFrom: 200, priceTo: 1000, priceUnit: "per month", description: "Monthly bookkeeping including bank reconciliation and financial reports" },
+  { name: "Payroll Processing", category: "financial", priceFrom: 50, priceTo: 150, priceUnit: "per month", description: "Full-service payroll with auto tax filing" },
+  { name: "Financial Projections & Modeling", category: "financial", priceFrom: 250, priceTo: 1200, priceUnit: "flat", description: "Revenue forecasts, P&L, balance sheets, cash flow projections" },
+  { name: "AR/Collections Management", category: "financial", priceFrom: 150, priceTo: 400, priceUnit: "per month", description: "Invoice management, aging reports, collection letters" },
+  { name: "Business Plan Writing", category: "financial", priceFrom: 750, priceTo: 2500, priceUnit: "flat", description: "Full business plans with market analysis and pitch decks" },
+  { name: "Grant Writing & Proposals", category: "financial", priceFrom: 1500, priceTo: 5000, priceUnit: "flat", description: "Grant discovery, application writing, and post-award compliance" },
+
+  // Translation & Language
+  { name: "Standard Translation", category: "translation", priceFrom: 25, priceTo: 100, priceUnit: "per page", description: "General-purpose translation in 70+ languages" },
+  { name: "Certified Translation", category: "translation", priceFrom: 35, priceTo: 200, priceUnit: "per page", description: "ATA-certified translations for USCIS, courts, and government" },
+  { name: "Court-Certified Translation", category: "translation", priceFrom: 50, priceTo: 350, priceUnit: "per page", description: "Court-admissible translation with attestation" },
+  { name: "Interpreter Coordination", category: "translation", priceFrom: 35, priceTo: 65, priceUnit: "per session", description: "On-site, VRI, and phone interpreter booking in 20+ languages" },
+  { name: "Credential Evaluation Coordination", category: "translation", priceFrom: 75, priceTo: 150, priceUnit: "flat", description: "WES/ECE foreign credential evaluation coordination" },
+
+  // Tech & Digital
+  { name: "Website Design", category: "tech_digital", priceFrom: 1500, priceTo: 5000, priceUnit: "flat", description: "Custom website design from landing pages to full sites" },
+  { name: "E-Commerce Store Setup", category: "tech_digital", priceFrom: 2500, priceTo: 5000, priceUnit: "flat", description: "Shopify or WooCommerce store setup" },
+  { name: "UX Audit & Consulting", category: "tech_digital", priceFrom: 500, priceTo: 3000, priceUnit: "flat", description: "Heuristic evaluation, user flow analysis, and recommendations" },
+  { name: "SEO Monthly Management", category: "tech_digital", priceFrom: 300, priceTo: 750, priceUnit: "per month", description: "Local SEO, keyword tracking, and content strategy" },
+  { name: "Social Media Management", category: "tech_digital", priceFrom: 350, priceTo: 800, priceUnit: "per month", description: "Content creation, scheduling, and engagement" },
+  { name: "Google Business Profile Optimization", category: "tech_digital", priceFrom: 200, priceTo: 400, priceUnit: "flat", description: "GBP setup, optimization, and review management" },
+  { name: "Online Reputation Management", category: "tech_digital", priceFrom: 150, priceTo: 750, priceUnit: "per month", description: "Review monitoring and reputation strategy" },
+  { name: "AI Content Studio", category: "tech_digital", priceFrom: 500, priceTo: 1500, priceUnit: "per month", description: "AI-powered content production" },
+  { name: "Custom Chatbot Development", category: "tech_digital", priceFrom: 500, priceTo: 2000, priceUnit: "flat", description: "AI chatbot for lead capture and support" },
+  { name: "AI Workflow Automation", category: "tech_digital", priceFrom: 350, priceTo: 1000, priceUnit: "flat", description: "Automated business workflows using AI" },
+  { name: "CRM Setup & Configuration", category: "tech_digital", priceFrom: 500, priceTo: 1500, priceUnit: "flat", description: "HubSpot, Pipedrive, or Zoho CRM setup" },
+  { name: "Micro-SaaS Tool Development", category: "tech_digital", priceFrom: 500, priceTo: 8000, priceUnit: "flat", description: "Custom web tools, dashboards, and portals" },
+
+  // Sales & CX
+  { name: "Lead List Building", category: "sales_cx", priceFrom: 200, priceTo: 400, priceUnit: "flat", description: "Qualified B2B lead list research" },
+  { name: "LinkedIn Prospecting", category: "sales_cx", priceFrom: 350, priceTo: 1500, priceUnit: "per month", description: "LinkedIn outreach campaign management" },
+  { name: "Email Campaign Management", category: "sales_cx", priceFrom: 150, priceTo: 600, priceUnit: "flat", description: "Email campaign design and automation" },
+  { name: "Customer Journey Mapping", category: "sales_cx", priceFrom: 750, priceTo: 1500, priceUnit: "flat", description: "End-to-end journey maps with recommendations" },
+  { name: "Voice of Customer Program", category: "sales_cx", priceFrom: 1000, priceTo: 2500, priceUnit: "flat", description: "VoC program with surveys and NPS" },
+  { name: "Loyalty Program Design", category: "sales_cx", priceFrom: 500, priceTo: 1500, priceUnit: "flat", description: "Customer loyalty and retention program design" },
+
+  // Publishing
+  { name: "Book Publishing - Novel", category: "publishing", priceFrom: 500, priceTo: 2000, priceUnit: "flat", description: "Novel publishing with formatting and cover design" },
+  { name: "Coffee Table Book", category: "publishing", priceFrom: 1500, priceTo: 5000, priceUnit: "flat", description: "Premium hardcover photo or art book" },
+  { name: "Training Manual Production", category: "publishing", priceFrom: 350, priceTo: 1500, priceUnit: "flat", description: "Training manual design and printing" },
+
+  // Operations & HR
+  { name: "Employee Onboarding Packet", category: "operations_hr", priceFrom: 150, priceTo: 350, priceUnit: "flat", description: "Complete onboarding document package" },
+  { name: "Employee Handbook Creation", category: "operations_hr", priceFrom: 500, priceTo: 1200, priceUnit: "flat", description: "Comprehensive employee handbook" },
+  { name: "Productized SOP Development", category: "operations_hr", priceFrom: 500, priceTo: 1500, priceUnit: "flat", description: "Standard operating procedure creation" },
+  { name: "Fractional Operations Management", category: "operations_hr", priceFrom: 150, priceTo: 250, priceUnit: "per hour", description: "Part-time operations management" },
+
+  // Digital Legacy
+  { name: "Digital Estate Planning", category: "digital_legacy", priceFrom: 250, priceTo: 500, priceUnit: "flat", description: "Digital asset inventory and legacy planning" },
+  { name: "Cybersecurity Assessment", category: "digital_legacy", priceFrom: 500, priceTo: 1500, priceUnit: "flat", description: "Security audit with vulnerability assessment" },
+
+  // Creative
+  { name: "Brand Identity Kit", category: "creative", priceFrom: 400, priceTo: 3500, priceUnit: "flat", description: "Logo suite, colors, typography, and brand guidelines" },
+  { name: "Presentation Templates", category: "creative", priceFrom: 200, priceTo: 500, priceUnit: "flat", description: "Custom presentation templates with 10+ layouts" },
+  { name: "Packaging Design", category: "creative", priceFrom: 200, priceTo: 750, priceUnit: "flat", description: "Custom packaging design for boxes and labels" },
+
+  // Print (additional)
+  { name: "Metal/Wood Business Cards", category: "print", priceFrom: 250, priceTo: 500, priceUnit: "flat", description: "Premium metal or wood cards with engraving" },
+  { name: "Bumper Stickers", category: "print", priceFrom: 85, priceTo: 175, priceUnit: "flat", description: "Custom bumper stickers" },
+  { name: "Holographic Labels", category: "print", priceFrom: 95, priceTo: 200, priceUnit: "flat", description: "Holographic security labels" },
+  { name: "Corrugated Mailers", category: "print", priceFrom: 200, priceTo: 500, priceUnit: "flat", description: "Custom branded shipping boxes" },
+  { name: "Branded Tape", category: "print", priceFrom: 75, priceTo: 125, priceUnit: "flat", description: "Custom printed packing tape" },
+  { name: "Sandwich Cards", category: "print", priceFrom: 150, priceTo: 400, priceUnit: "flat", description: "Edge-painted layered business cards" },
+
+  // Native SaaS Tools
+  { name: "CPN Calculator", category: "native_tools", priceFrom: 0, priceUnit: "flat", description: "Free Cost Per Notarization calculator" },
+  { name: "Amortization Engine", category: "native_tools", priceFrom: 9.99, priceTo: 29.99, priceUnit: "per month", description: "Equipment depreciation calculator" },
+  { name: "Tax & Schedule C Suite", category: "native_tools", priceFrom: 14.99, priceTo: 39.99, priceUnit: "per month", description: "Self-employment tax tools" },
+  { name: "Expense Logger with OCR", category: "native_tools", priceFrom: 4.99, priceTo: 14.99, priceUnit: "per month", description: "Receipt scanning and expense tracking" },
+  { name: "Mileage Tracker", category: "native_tools", priceFrom: 4.99, priceTo: 9.99, priceUnit: "per month", description: "IRS-compliant mileage tracking" },
+  { name: "Revenue Tracker", category: "native_tools", priceFrom: 9.99, priceTo: 19.99, priceUnit: "per month", description: "Income ledger and tax summaries" },
+
+  // Passport
+  { name: "Passport Photo Service", category: "verification", priceFrom: 15, priceTo: 25, priceUnit: "flat", description: "US State Department compliant passport photos" },
 ];
 
 /** Service pricing category labels */
