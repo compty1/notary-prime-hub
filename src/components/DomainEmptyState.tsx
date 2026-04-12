@@ -3,7 +3,7 @@
  * Domain-specific empty states for admin panels.
  */
 import { EmptyState } from "@/components/EmptyState";
-import { Calendar, FileText, Users, DollarSign, Package, MessageSquare, ClipboardList } from "lucide-react";
+import { Calendar, FileText, Users, DollarSign, Package, MessageSquare, ClipboardList, Inbox } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 interface DomainEmptyStateConfig {

@@ -18,7 +18,7 @@ export async function getBookingPrefill(userId: string): Promise<PrefillData | n
   try {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("full_name, email, phone, address, city, state, zip_code")
+      .select("full_name, email, phone, address, city, state, zip")
       .eq("user_id", userId)
       .single();
 
@@ -31,7 +31,7 @@ export async function getBookingPrefill(userId: string): Promise<PrefillData | n
       address: profile.address || "",
       city: profile.city || "",
       state: profile.state || "",
-      zip: profile.zip_code || "",
+      zip: profile.zip || "",
     };
   } catch {
     return null;
