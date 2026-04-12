@@ -78,7 +78,7 @@ export default function TermsPrivacy() {
         <hr className="border-border" />
 
         {/* ====== PRIVACY POLICY ====== */}
-        <section>
+        <section id="privacy">
           <h2 className="mb-6 font-sans text-3xl font-bold text-foreground">Privacy Policy</h2>
           <div className="prose prose-sm text-muted-foreground space-y-4">
             <p><strong>Effective Date:</strong> January 1, 2026</p>

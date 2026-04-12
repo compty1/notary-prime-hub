@@ -40,8 +40,10 @@ export default function Accessibility() {
               <p className="text-muted-foreground leading-relaxed">
                 The Web Content Accessibility Guidelines (WCAG) defines requirements for designers
                 and developers to improve accessibility for people with disabilities. Notar
-                strives to conform to <strong>WCAG 2.1 Level AA</strong>.
+                strives to conform to <strong>WCAG 2.1 Level AA</strong>. View the full guidelines at{" "}
+                <a href="https://www.w3.org/TR/WCAG21/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">w3.org/TR/WCAG21</a>.
               </p>
+              <p className="text-xs text-muted-foreground"><strong>Last Accessibility Audit:</strong> March 15, 2026</p>
               <div className="space-y-3 mt-4">
                 {[
                   "Semantic HTML structure with proper heading hierarchy",
@@ -87,6 +89,17 @@ export default function Accessibility() {
                 controls for all session actions, and high-contrast mode for document review.
                 If you require additional accommodations during a notarization session, please contact
                 us in advance so we can arrange appropriate support.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/50">
+            <CardContent className="p-6 space-y-4">
+              <h2 className="text-xl font-semibold text-foreground">VPAT Availability</h2>
+              <p className="text-muted-foreground leading-relaxed">
+                A Voluntary Product Accessibility Template (VPAT) is available upon request.
+                Contact <a href="mailto:shane@notardex.com" className="text-primary hover:underline">shane@notardex.com</a> to
+                request a copy of our accessibility conformance report.
               </p>
             </CardContent>
           </Card>

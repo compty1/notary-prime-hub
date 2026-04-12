@@ -181,12 +181,18 @@ export default function Compliance() {
             href="https://www.ohiosos.gov/businesses/notary-public/"
             target="_blank"
             rel="noopener noreferrer"
+            title="Ohio SOS — if this page doesn't load, try searching directly at ohiosos.gov"
           >
             <Button variant="outline">
               <Award className="mr-2 h-4 w-4" /> Ohio SOS Notary Lookup
               <ExternalLink className="ml-2 h-3 w-3" />
             </Button>
           </a>
+          <p className="text-xs text-muted-foreground mt-2">
+            If the SOS lookup page is unavailable, visit{" "}
+            <a href="https://www.ohiosos.gov" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">ohiosos.gov</a>
+            {" "}and search for notary commissions directly.
+          </p>
         </div>
 
         {/* CTA */}

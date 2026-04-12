@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { FileText, Shield, Monitor, Scale, DollarSign, HelpCircle, Image, BookOpen, MapPin, Laptop } from "lucide-react";
+import { FileText, Shield, Monitor, Scale, DollarSign, HelpCircle, Image, BookOpen, MapPin, Laptop, Gavel, UserCheck } from "lucide-react";
 import { DOCUMENT_ANATOMY } from "@/components/AnatomyDiagram";
 import { ProcessGuide } from "@/components/ProcessGuide";
 import { useState } from "react";
@@ -33,11 +33,11 @@ const resources = [
     category: "Tool",
   },
   {
-    title: "What Documents Can Be Notarized?",
-    desc: "Discover which documents require notarization, the difference between acknowledgments and jurats, and what a notary cannot do.",
-    icon: FileText,
-    link: "/notary-guide",
-    category: "Guide",
+    title: "Notarial Certificates Guide",
+    desc: "Comprehensive Ohio reference for Acknowledgments, Jurats, Copy Certifications, Signature Witnessing, and RON modifications with sample formats.",
+    icon: Gavel,
+    link: "/notary-certificates",
+    category: "Reference",
   },
   {
     title: "ID Requirements for Notarization",
@@ -47,18 +47,25 @@ const resources = [
     category: "Reference",
   },
   {
-    title: "Notarial Certificates Guide",
-    desc: "Comprehensive Ohio reference for Acknowledgments, Jurats, Copy Certifications, Signature Witnessing, and RON modifications with sample formats.",
-    icon: Scale,
-    link: "/notary-certificates",
-    category: "Reference",
-  },
-  {
     title: "The Notarization Process Step by Step",
     desc: "From booking to e-seal — learn exactly what happens during an in-person or remote notarization appointment.",
     icon: HelpCircle,
     link: "/notary-guide-process",
     category: "Guide",
+  },
+  {
+    title: "Document Templates",
+    desc: "Free editable templates for common notary documents including affidavits, acknowledgments, powers of attorney, and more.",
+    icon: FileText,
+    link: "/templates",
+    category: "Tool",
+  },
+  {
+    title: "Signer Rights",
+    desc: "Know your rights during notarization — understand what a notary can and cannot do, and how you are protected under Ohio law.",
+    icon: UserCheck,
+    link: "/signer-rights",
+    category: "Education",
   },
 ];
 
@@ -119,6 +126,8 @@ const documentExamples = [
   { key: "signature_by_mark", title: "Signature by Mark", desc: "Special procedure when signer cannot write" },
   { key: "vehicle_title", title: "Vehicle Title", desc: "Ohio BMV title transfer with notarization" },
   { key: "self_proving_affidavit", title: "Self-Proving Affidavit", desc: "Attached to a Last Will & Testament" },
+  { key: "oath_affirmation", title: "Oath / Affirmation Certificate", desc: "Signer swears or affirms before notary under oath" },
+  { key: "certificate_correction", title: "Certificate of Correction", desc: "Corrective statement referencing original notarial act" },
 ];
 
 function DocumentExamplesSection() {

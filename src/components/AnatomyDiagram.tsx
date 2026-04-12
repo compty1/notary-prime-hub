@@ -255,7 +255,7 @@ export const DOCUMENT_ANATOMY: Record<string, { image: string; callouts: { id: n
     ],
   },
   oath_affirmation: {
-    image: new URL("@/assets/documents/jurat-certificate.jpg", import.meta.url).href,
+    image: new URL("@/assets/documents/oath-affirmation-certificate.jpg", import.meta.url).href,
     callouts: [
       { id: 1, label: "Verbal Act", description: "An oral oath/affirmation is a verbal notarial act — no document is signed. The notary witnesses the person making a solemn promise under penalty of perjury.", x: 50, y: 15, orc: "ORC §147.14", link: "https://codes.ohio.gov/ohio-revised-code/section-147.14" },
       { id: 2, label: "Identity Verification", description: "Even for verbal oaths, you MUST verify the person's identity with acceptable government-issued photo ID.", x: 50, y: 30, orc: "ORC §147.542" },
@@ -264,7 +264,7 @@ export const DOCUMENT_ANATOMY: Record<string, { image: string; callouts: { id: n
     ],
   },
   certificate_correction: {
-    image: new URL("@/assets/documents/acknowledgment-certificate.jpg", import.meta.url).href,
+    image: new URL("@/assets/documents/certificate-correction.jpg", import.meta.url).href,
     callouts: [
       { id: 1, label: "Original Certificate", description: "The original certificate that contains the error. NEVER tear up or replace a defective certificate — corrections must be made on the original.", x: 50, y: 20, orc: "ORC §147.54", link: "https://codes.ohio.gov/ohio-revised-code/section-147.54" },
       { id: 2, label: "Error Identification", description: "Draw a single line through the error so the original text remains readable. Never use white-out, correction tape, or scratch out text beyond legibility.", x: 50, y: 40 },
