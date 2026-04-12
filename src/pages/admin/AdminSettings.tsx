@@ -14,6 +14,7 @@ import {
   Shield, Upload, Eye, Mail, CheckCircle, XCircle, ArrowDownUp, Download,
   UploadCloud, ExternalLink, Server, Globe, Palette, Cookie, BarChart3,
   FileText, Lock, Bell, Smartphone, Share2, Type, Layout, Megaphone,
+  DollarSign,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
