@@ -3,7 +3,7 @@
  * Tracks: page_view -> form_start -> step_complete -> submit -> payment
  */
 import { useEffect, useRef } from "react";
-import { trackEvent, ANALYTICS_EVENTS } from "@/lib/analyticsEvents";
+import { trackAnalyticsEvent, ANALYTICS_EVENTS } from "@/lib/analyticsEvents";
 
 type FunnelStep = "view" | "start" | "step_1" | "step_2" | "step_3" | "submit" | "payment" | "confirmation";
 
@@ -34,7 +34,7 @@ export function startBookingFunnel(serviceType?: string): string {
     serviceType,
   };
   saveFunnelState(state);
-  trackEvent(ANALYTICS_EVENTS.BOOKING_STARTED, { sessionId, serviceType });
+  trackAnalyticsEvent(ANALYTICS_EVENTS.BOOKING_STEP_START, { sessionId, serviceType });
   return sessionId;
 }
 
@@ -48,7 +48,7 @@ export function trackFunnelStep(step: FunnelStep, metadata?: Record<string, any>
   state.steps.push({ step, timestamp: Date.now() });
   saveFunnelState(state);
 
-  trackEvent(`booking_funnel_${step}`, {
+  trackAnalyticsEvent(ANALYTICS_EVENTS.BOOKING_STEP_START, {
     sessionId: state.sessionId,
     serviceType: state.serviceType,
     stepNumber: state.steps.length,
@@ -61,7 +61,7 @@ export function completeFunnel(): void {
   if (!state) return;
 
   const totalMs = Date.now() - state.steps[0].timestamp;
-  trackEvent(ANALYTICS_EVENTS.BOOKING_COMPLETED, {
+  trackAnalyticsEvent(ANALYTICS_EVENTS.BOOKING_COMPLETED, {
     sessionId: state.sessionId,
     serviceType: state.serviceType,
     totalSteps: state.steps.length,

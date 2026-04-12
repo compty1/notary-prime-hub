@@ -46,7 +46,7 @@ export function DataIssuesPanel() {
       .from("documents")
       .select("id, file_name, appointment_id")
       .is("appointment_id", null)
-      .eq("status", "pending")
+      .eq("status", "uploaded")
       .limit(20);
     docs?.forEach(d => {
       found.push({

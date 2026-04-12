@@ -117,16 +117,6 @@ export function EvidencePackageBuilder({ appointmentId, confirmationNumber }: Ev
     setBuilding(false);
   };
 
-  const iconMap = {
-    appointment: Calendar,
-    journal: BookOpen,
-    document: FileText,
-    recording: Video,
-    payment: Shield,
-  };
-
-  const Calendar = Shield; // Reuse icon
-
   if (!loaded) {
     return (
       <Card>
