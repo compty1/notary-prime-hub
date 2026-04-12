@@ -170,6 +170,7 @@ export default function DocumentBuilder() {
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [showPreview, setShowPreview] = useState(false);
   const [saving, setSaving] = useState(false);
+  const freeTier = useFreeTierCheck("document_builder");
 
   const steps = docType ? getSteps(docType) : [];
   const progress = docType ? ((currentStep + 1) / (steps.length + 1)) * 100 : 0;
