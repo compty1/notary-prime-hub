@@ -164,7 +164,7 @@ const faqCategories = [
       },
       {
         q: "What are your hours of operation?",
-        a: "Our standard hours are Monday–Friday, 9 AM – 6 PM EST. We also offer evening and weekend appointments by request (after-hours surcharge may apply). RON sessions can be scheduled with greater flexibility.",
+        a: "Our standard hours are Monday–Friday, 9 AM – 7 PM ET, and Saturday 10 AM – 4 PM ET. We also offer Sunday by appointment and extended hours by request (after-hours surcharge may apply). RON sessions can be scheduled with greater flexibility.",
       },
       {
         q: "How long does a notarization appointment take?",
@@ -345,7 +345,7 @@ export default function HelpSupport() {
               <Mail className="h-4 w-4 text-primary" /> {BRAND.defaultEmail}
             </a>
             <span className="flex items-center gap-2 text-muted-foreground">
-              <Clock className="h-4 w-4" /> Mon–Fri 9 AM – 6 PM EST
+              <Clock className="h-4 w-4" /> Mon–Fri 9 AM – 7 PM ET
             </span>
             <span className="flex items-center gap-2 text-muted-foreground">
               <MapPin className="h-4 w-4" /> Columbus, OH & Nationwide (RON)
