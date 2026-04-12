@@ -255,7 +255,7 @@ export const DOCUMENT_ANATOMY: Record<string, { image: string; callouts: { id: n
     ],
   },
   oath_affirmation: {
-    image: new URL("@/assets/documents/jurat-certificate.jpg", import.meta.url).href,
+    image: new URL("@/assets/documents/oath-affirmation-certificate.jpg", import.meta.url).href,
     callouts: [
       { id: 1, label: "Verbal Act", description: "An oral oath/affirmation is a verbal notarial act — no document is signed. The notary witnesses the person making a solemn promise under penalty of perjury.", x: 50, y: 15, orc: "ORC §147.14", link: "https://codes.ohio.gov/ohio-revised-code/section-147.14" },
       { id: 2, label: "Identity Verification", description: "Even for verbal oaths, you MUST verify the person's identity with acceptable government-issued photo ID.", x: 50, y: 30, orc: "ORC §147.542" },
