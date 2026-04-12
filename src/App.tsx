@@ -170,6 +170,7 @@ const AdminRecordingArchive = lazyRetry(() => import("./pages/admin/AdminRecordi
 const ContractorRegistration = lazyRetry(() => import("./pages/ContractorRegistration"));
 const OrderTracking = lazyRetry(() => import("./pages/OrderTracking"));
 const AdminOperations = lazyRetry(() => import("./pages/admin/AdminOperations"));
+const AdminSecurityCenter = lazyRetry(() => import("./pages/admin/AdminSecurityCenter"));
 const NotaryGlossary = lazyRetry(() => import("./pages/NotaryGlossary"));
 const Maintenance = lazyRetry(() => import("./pages/Maintenance"));
 const ForNotaries = lazyRetry(() => import("./pages/solutions/ForNotaries"));
@@ -396,6 +397,7 @@ function AnimatedRoutes() {
         <Route path="system-health" element={<ProtectedRoute adminOnly><SR msg="System health failed to load"><AdminSystemHealth /></SR></ProtectedRoute>} />
         <Route path="recording-archive" element={<SR msg="Recording archive failed to load"><AdminRecordingArchive /></SR>} />
         <Route path="operations" element={<ProtectedRoute adminOnly><SR msg="Operations failed to load"><AdminOperations /></SR></ProtectedRoute>} />
+        <Route path="security-center" element={<ProtectedRoute adminOnly><SR msg="Security center failed to load"><AdminSecurityCenter /></SR></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="*" element={<NotFound />} />
