@@ -25,11 +25,11 @@ export default function AdminReferralNetwork() {
   usePageMeta({ title: "Referral Network — Admin", noIndex: true });
   const [search, setSearch] = useState("");
 
-  const { data: professionals = [], isLoading } = useQuery({
-    queryKey: ["referral-professionals"],
+  const { data: partners = [], isLoading } = useQuery({
+    queryKey: ["referral-partners"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("professionals")
+        .from("contractors")
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -50,8 +50,8 @@ export default function AdminReferralNetwork() {
     },
   });
 
-  const filtered = professionals.filter((p: any) =>
-    !search || p.display_name?.toLowerCase().includes(search.toLowerCase()) || p.specialty?.toLowerCase().includes(search.toLowerCase())
+  const filtered = partners.filter((p: any) =>
+    !search || p.display_name?.toLowerCase().includes(search.toLowerCase()) || (p.specializations || []).join(" ").toLowerCase().includes(search.toLowerCase())
   );
 
   const totalReferralRevenue = profitShares.reduce((s: number, t: any) => s + (t.gross_amount || 0), 0);
@@ -67,7 +67,7 @@ export default function AdminReferralNetwork() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Partners</p><p className="text-2xl font-bold">{professionals.length}</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Partners</p><p className="text-2xl font-bold">{partners.length}</p></CardContent></Card>
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Partner Types</p><p className="text-2xl font-bold text-primary">{PARTNER_TYPES.length}</p></CardContent></Card>
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Referral Revenue</p><p className="text-2xl font-bold text-green-600">${totalReferralRevenue.toLocaleString()}</p></CardContent></Card>
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Partner Payouts</p><p className="text-2xl font-bold">${totalPayouts.toLocaleString()}</p></CardContent></Card>
@@ -104,10 +104,10 @@ export default function AdminReferralNetwork() {
                   {filtered.map((p: any) => (
                     <TableRow key={p.id}>
                       <TableCell className="font-medium">{p.display_name}</TableCell>
-                      <TableCell className="text-sm">{p.specialty || "—"}</TableCell>
+                      <TableCell className="text-sm">{(p.specializations || []).join(", ") || "—"}</TableCell>
                       <TableCell>{p.commission_rate ? `${p.commission_rate}%` : "Default"}</TableCell>
-                      <TableCell>{p.referral_count || 0}</TableCell>
-                      <TableCell><Badge className={p.is_active ? "bg-green-100 text-green-800" : ""}>{p.is_active ? "Active" : "Inactive"}</Badge></TableCell>
+                      <TableCell>{p.total_jobs || 0}</TableCell>
+                      <TableCell><Badge className={p.is_available ? "bg-green-100 text-green-800" : ""}>{p.is_available ? "Active" : "Inactive"}</Badge></TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
