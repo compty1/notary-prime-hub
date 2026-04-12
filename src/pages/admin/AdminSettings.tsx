@@ -230,6 +230,8 @@ export default function AdminSettings() {
           <TabsTrigger value="operations" className="text-xs gap-1"><Settings className="h-3 w-3" /> Operations</TabsTrigger>
           <TabsTrigger value="integrations" className="text-xs gap-1"><Monitor className="h-3 w-3" /> Integrations</TabsTrigger>
           <TabsTrigger value="compliance" className="text-xs gap-1"><Shield className="h-3 w-3" /> Compliance</TabsTrigger>
+          <TabsTrigger value="pricing-tax" className="text-xs gap-1"><DollarSign className="h-3 w-3" /> Pricing & Tax</TabsTrigger>
+          <TabsTrigger value="legal" className="text-xs gap-1"><FileText className="h-3 w-3" /> Legal</TabsTrigger>
         </TabsList>
 
         {/* ═══ GENERAL ═══ */}
@@ -870,6 +872,100 @@ export default function AdminSettings() {
                   </div>
                   <Switch checked={isEnabled("global_banner_enabled")} onCheckedChange={() => toggleValue("global_banner_enabled")} />
                 </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* ═══ PRICING & TAX ═══ */}
+        <TabsContent value="pricing-tax" className="space-y-6">
+          <div className="grid gap-6 lg:grid-cols-2">
+            <Card className="border-border/50">
+              <CardHeader><CardTitle className="font-sans text-lg flex items-center gap-2"><DollarSign className="h-5 w-5 text-primary" /> Tax & Fees</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <div><Label>Ohio Sales Tax Rate (%)</Label><Input type="number" step="0.01" value={editValues.ohio_sales_tax_rate || "0"} onChange={e => updateValue("ohio_sales_tax_rate", e.target.value)} /><p className="text-xs text-muted-foreground mt-1">Professional services are generally exempt (0%)</p></div>
+                <div><Label>Platform Commission Rate (%)</Label><Input type="number" value={editValues.platform_commission_rate || "30"} onChange={e => updateValue("platform_commission_rate", e.target.value)} /></div>
+                <div><Label>Minimum Platform Fee ($)</Label><Input type="number" value={editValues.min_platform_fee || "5"} onChange={e => updateValue("min_platform_fee", e.target.value)} /></div>
+                <div><Label>Default Payment Terms</Label>
+                  <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={editValues.default_payment_terms || "net_30"} onChange={e => updateValue("default_payment_terms", e.target.value)}>
+                    <option value="due_on_receipt">Due on Receipt</option>
+                    <option value="net_15">Net 15</option>
+                    <option value="net_30">Net 30</option>
+                    <option value="net_45">Net 45</option>
+                  </select>
+                </div>
+                <div><Label>Refund Policy Window (days)</Label><Input type="number" value={editValues.refund_policy_window_days || "30"} onChange={e => updateValue("refund_policy_window_days", e.target.value)} /></div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/50">
+              <CardHeader><CardTitle className="font-sans text-lg flex items-center gap-2"><Settings className="h-5 w-5 text-primary" /> Pricing Controls</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                {[
+                  { key: "rush_pricing_enabled", label: "Rush Pricing", desc: "Enable speed-based pricing multipliers" },
+                  { key: "volume_discounts_enabled", label: "Volume Discounts", desc: "Enable quantity-based discount tiers" },
+                  { key: "loyalty_program_enabled", label: "Loyalty Program", desc: "Enable loyalty tier discounts for repeat clients" },
+                  { key: "promo_codes_enabled", label: "Promo Codes", desc: "Allow promotional discount codes" },
+                  { key: "geographic_surcharges_enabled", label: "Geographic Surcharges", desc: "Add travel zone surcharges" },
+                ].map(toggle => (
+                  <div key={toggle.key} className="flex items-center justify-between">
+                    <div><p className="text-sm font-medium">{toggle.label}</p><p className="text-xs text-muted-foreground">{toggle.desc}</p></div>
+                    <Switch checked={isEnabled(toggle.key)} onCheckedChange={() => toggleValue(toggle.key)} />
+                  </div>
+                ))}
+                <div className="pt-2 border-t">
+                  <Label>Order Number Prefix</Label><Input value={editValues.order_auto_number_prefix || "NTR"} onChange={e => updateValue("order_auto_number_prefix", e.target.value)} />
+                </div>
+                <div><Label>Invoice Number Prefix</Label><Input value={editValues.invoice_auto_number_prefix || "INV"} onChange={e => updateValue("invoice_auto_number_prefix", e.target.value)} /></div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/50">
+              <CardHeader><CardTitle className="font-sans text-lg flex items-center gap-2"><Settings className="h-5 w-5 text-primary" /> Contractor Controls</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                {[
+                  { key: "auto_assignment_enabled", label: "Auto-Assignment", desc: "Automatically assign orders to contractors" },
+                  { key: "contractor_self_registration_enabled", label: "Self-Registration", desc: "Allow contractors to register themselves" },
+                  { key: "client_review_moderation", label: "Review Moderation", desc: "Require admin approval for client reviews" },
+                ].map(toggle => (
+                  <div key={toggle.key} className="flex items-center justify-between">
+                    <div><p className="text-sm font-medium">{toggle.label}</p><p className="text-xs text-muted-foreground">{toggle.desc}</p></div>
+                    <Switch checked={isEnabled(toggle.key)} onCheckedChange={() => toggleValue(toggle.key)} />
+                  </div>
+                ))}
+                <div><Label>Acceptance Window (hours)</Label><Input type="number" value={editValues.contractor_acceptance_window_hours || "2"} onChange={e => updateValue("contractor_acceptance_window_hours", e.target.value)} /></div>
+                <div><Label>Default Payout Schedule</Label>
+                  <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={editValues.default_payout_schedule || "biweekly"} onChange={e => updateValue("default_payout_schedule", e.target.value)}>
+                    <option value="weekly">Weekly</option>
+                    <option value="biweekly">Biweekly</option>
+                    <option value="monthly">Monthly</option>
+                  </select>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* ═══ LEGAL ═══ */}
+        <TabsContent value="legal" className="space-y-6">
+          <div className="grid gap-6 lg:grid-cols-2">
+            <Card className="border-border/50">
+              <CardHeader><CardTitle className="font-sans text-lg flex items-center gap-2"><FileText className="h-5 w-5 text-primary" /> Refund Policy</CardTitle></CardHeader>
+              <CardContent><Textarea rows={6} value={editValues.refund_policy_text || ""} onChange={e => updateValue("refund_policy_text", e.target.value)} placeholder="Enter refund policy text..." /></CardContent>
+            </Card>
+            <Card className="border-border/50">
+              <CardHeader><CardTitle className="font-sans text-lg flex items-center gap-2"><FileText className="h-5 w-5 text-primary" /> Contractor Agreement</CardTitle></CardHeader>
+              <CardContent><Textarea rows={6} value={editValues.contractor_agreement_text || ""} onChange={e => updateValue("contractor_agreement_text", e.target.value)} placeholder="Enter contractor agreement template..." /></CardContent>
+            </Card>
+            <Card className="border-border/50">
+              <CardHeader><CardTitle className="font-sans text-lg flex items-center gap-2"><FileText className="h-5 w-5 text-primary" /> Service Disclaimer</CardTitle></CardHeader>
+              <CardContent><Textarea rows={4} value={editValues.service_disclaimer_text || ""} onChange={e => updateValue("service_disclaimer_text", e.target.value)} placeholder="Enter service disclaimer..." /></CardContent>
+            </Card>
+            <Card className="border-border/50">
+              <CardHeader><CardTitle className="font-sans text-lg flex items-center gap-2"><Shield className="h-5 w-5 text-primary" /> Data Retention Policy</CardTitle></CardHeader>
+              <CardContent>
+                <Textarea rows={4} value={editValues.data_retention_policy || ""} onChange={e => updateValue("data_retention_policy", e.target.value)} />
+                <p className="text-xs text-muted-foreground mt-2">Per ORC §147.63, RON recordings must be retained for 10 years.</p>
               </CardContent>
             </Card>
           </div>
