@@ -278,6 +278,22 @@ Deno.serve(async (req) => {
     });
   } catch (err: any) {
     console.error("SignNow webhook error:", err);
+
+    // INT-001: Log failed webhook to dead letter queue for retry
+    try {
+      const dlqSupabase = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+      );
+      await dlqSupabase.from("webhook_events").insert({
+        source: "signnow",
+        event_type: "processing_error",
+        payload: { error: err.message, stack: err.stack?.slice(0, 500) },
+        status: "failed",
+        processed_at: new Date().toISOString(),
+      }).then(({ error: dlqErr }) => { if (dlqErr) console.warn("DLQ insert error:", dlqErr.message); });
+    } catch (_) { /* best effort */ }
+
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: responseHeaders,
