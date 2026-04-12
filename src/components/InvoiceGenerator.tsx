@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Download, Plus, Trash2, FileText, Printer } from "lucide-react";
+import { Download, Plus, Trash2, FileText, Printer, Save } from "lucide-react";
 import InvoicePDFExport from "@/components/InvoicePDFExport";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 interface LineItem {
   description: string;
@@ -21,7 +24,10 @@ interface InvoiceGeneratorProps {
 }
 
 export function InvoiceGenerator({ clientName = "", clientEmail = "", appointmentId, onGenerate }: InvoiceGeneratorProps) {
+  const { user } = useAuth();
   const [items, setItems] = useState<LineItem[]>([{ description: "", quantity: 1, unitPrice: 0 }]);
+  const [taxRate, setTaxRate] = useState(0);
+  const [saving, setSaving] = useState(false);
   const [taxRate, setTaxRate] = useState(0);
 
   const subtotal = items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
@@ -72,6 +78,34 @@ Thank you for your business.
     onGenerate?.({ items, total, tax });
   };
 
+  const saveToDatabase = async () => {
+    if (!user || subtotal <= 0) return;
+    setSaving(true);
+    try {
+      const invoiceNumber = `INV-${Date.now().toString(36).toUpperCase()}`;
+      const { error } = await supabase.from("service_requests").insert({
+        client_id: user.id,
+        service_type: "invoice",
+        status: "completed",
+        reference_number: invoiceNumber,
+        notes: JSON.stringify({
+          invoice_number: invoiceNumber,
+          client_name: clientName,
+          client_email: clientEmail,
+          appointment_id: appointmentId,
+          items: items.map(i => ({ description: i.description || "Service", qty: i.quantity, rate: i.unitPrice })),
+          subtotal, tax, total, tax_rate: taxRate,
+          generated_at: new Date().toISOString(),
+        }),
+      });
+      if (error) throw error;
+      toast.success(`Invoice ${invoiceNumber} saved to your records.`);
+    } catch {
+      toast.error("Failed to save invoice. Please try again.");
+    }
+    setSaving(false);
+  };
+
   return (
     <Card className="border-border/50">
       <CardHeader>
@@ -102,7 +136,7 @@ Thank you for your business.
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button onClick={downloadInvoice} disabled={subtotal <= 0} className="flex-1">
             <Download className="mr-2 h-4 w-4" /> Download Text Invoice
           </Button>
@@ -116,6 +150,11 @@ Thank you for your business.
               taxRate: taxRate > 0 ? taxRate : undefined,
             }}
           />
+          {user && (
+            <Button onClick={saveToDatabase} disabled={subtotal <= 0 || saving} variant="outline">
+              <Save className="mr-2 h-4 w-4" /> {saving ? "Saving..." : "Save to Records"}
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>
