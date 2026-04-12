@@ -26,7 +26,7 @@ export async function generateDailyDigest(date?: string): Promise<DailyDigest> {
     supabase.from("leads").select("*", { count: "exact", head: true }).gte("created_at", `${targetDate}T00:00:00`).lt("created_at", `${targetDate}T23:59:59`),
     supabase.from("profiles").select("*", { count: "exact", head: true }).gte("created_at", `${targetDate}T00:00:00`).lt("created_at", `${targetDate}T23:59:59`),
     supabase.from("payments").select("amount").eq("status", "paid").gte("created_at", `${targetDate}T00:00:00`).lt("created_at", `${targetDate}T23:59:59`),
-    supabase.from("documents").select("*", { count: "exact", head: true }).eq("status", "pending"),
+    supabase.from("documents").select("*", { count: "exact", head: true }).eq("status", "pending_review"),
   ]);
 
   const revenue = (paymentsRes.data ?? []).reduce((sum, p) => sum + (p.amount || 0), 0);
