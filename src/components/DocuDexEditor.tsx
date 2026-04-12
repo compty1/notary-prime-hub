@@ -1721,14 +1721,8 @@ export function DocuDexEditor({
           }}
         />
 
-        {/* Document Lock */}
-        <DocuDexDocumentLock
-          isLocked={isDocLocked}
-          onToggleLock={(locked) => {
-            setIsDocLocked(locked);
-            if (editor) editor.setEditable(!locked);
-          }}
-        />
+        {/* Document Lock - rendered as a dialog, not inline */}
+        {/* Lock toggle is available via the toolbar or context menu */}
       </div>
     </TooltipProvider>
   );
