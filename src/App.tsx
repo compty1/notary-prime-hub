@@ -162,6 +162,10 @@ const AdminMediation = lazyRetry(() => import("./pages/admin/AdminMediation"));
 const AdminPhotography = lazyRetry(() => import("./pages/admin/AdminPhotography"));
 const AdminContractorRegistration = lazyRetry(() => import("./pages/admin/AdminContractorRegistration"));
 const AdminPowerOfAttorney = lazyRetry(() => import("./pages/admin/AdminPowerOfAttorney"));
+const AdminNotaryCompliance = lazyRetry(() => import("./pages/admin/AdminNotaryCompliance"));
+const AdminPromoCodeManager = lazyRetry(() => import("./pages/admin/AdminPromoCodeManager"));
+const AdminSystemHealth = lazyRetry(() => import("./pages/admin/AdminSystemHealth"));
+const TrackApostille = lazyRetry(() => import("./pages/TrackApostille"));
 const Maintenance = lazyRetry(() => import("./pages/Maintenance"));
 const ForNotaries = lazyRetry(() => import("./pages/solutions/ForNotaries"));
 const ForHospitals = lazyRetry(() => import("./pages/solutions/ForHospitals"));
@@ -241,6 +245,7 @@ function AnimatedRoutes() {
       <Route path="/notary-guide-process" element={<SR><NotaryProcessGuide /></SR>} />
       <Route path="/unsubscribe" element={<SR><Unsubscribe /></SR>} />
       <Route path="/maintenance" element={<SR><Maintenance /></SR>} />
+      <Route path="/track-apostille" element={<SR msg="Apostille tracker failed to load"><TrackApostille /></SR>} />
       <Route path="/solutions/notaries" element={<SR><ForNotaries /></SR>} />
       <Route path="/resources" element={<SR><Resources /></SR>} />
       <Route path="/help" element={<SR><HelpSupport /></SR>} />
