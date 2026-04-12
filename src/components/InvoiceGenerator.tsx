@@ -28,7 +28,6 @@ export function InvoiceGenerator({ clientName = "", clientEmail = "", appointmen
   const [items, setItems] = useState<LineItem[]>([{ description: "", quantity: 1, unitPrice: 0 }]);
   const [taxRate, setTaxRate] = useState(0);
   const [saving, setSaving] = useState(false);
-  const [taxRate, setTaxRate] = useState(0);
 
   const subtotal = items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
   const tax = subtotal * (taxRate / 100);
