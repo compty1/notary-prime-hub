@@ -278,6 +278,20 @@ export default function AdminLeadPortal() {
     setImportingEmail(false);
   };
 
+  // Lead scoring engine (CRM-03)
+  const computeLeadScore = useCallback((lead: any): number => {
+    let score = 0;
+    if (lead.email) score += 20;
+    if (lead.phone) score += 15;
+    if (lead.lead_type === "business") score += 10;
+    const highValueServices = ["Real Estate", "Loan Signing", "Estate Plan", "Business Formation", "Apostille"];
+    if (lead.service_needed && highValueServices.some(s => lead.service_needed.toLowerCase().includes(s.toLowerCase()))) score += 25;
+    if (lead.intent_score === "high") score += 20;
+    else if (lead.intent_score === "medium") score += 10;
+    if (lead.contacted_at) score += 10;
+    return Math.min(100, score);
+  }, []);
+
   const stats = {
     total: leads.length,
     new: leads.filter((l) => l.status === "new").length,
@@ -720,13 +734,28 @@ export default function AdminLeadPortal() {
 
               <Separator />
 
+              {/* Lead Score */}
+              <Separator />
+              <div>
+                <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-3 flex items-center gap-1.5"><Star className="h-3.5 w-3.5" /> Lead Score</h4>
+                <div className="flex items-center gap-3">
+                  <div className="text-3xl font-bold text-primary">{computeLeadScore(selectedLead)}</div>
+                  <div className="text-xs text-muted-foreground">/ 100</div>
+                  <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                    <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${computeLeadScore(selectedLead)}%` }} />
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
               {/* Actions */}
               <div className="flex flex-wrap gap-2">
                 <Button size="sm" variant="outline" onClick={() => { setSelectedLead(null); openEdit(selectedLead); }}>
                   <Pencil className="mr-1 h-3 w-3" /> Edit
                 </Button>
-                <Link to={`/admin/appointments?newLead=${selectedLead.name || selectedLead.business_name}`}>
-                  <Button size="sm" variant="outline"><Calendar className="mr-1 h-3 w-3" /> Schedule Appointment</Button>
+                <Link to={`/book?service=${encodeURIComponent(selectedLead.service_needed || "Notarization")}&name=${encodeURIComponent(selectedLead.name || "")}&email=${encodeURIComponent(selectedLead.email || "")}&phone=${encodeURIComponent(selectedLead.phone || "")}`}>
+                  <Button size="sm" variant="outline"><Calendar className="mr-1 h-3 w-3" /> Book Appointment</Button>
                 </Link>
                 <Link to={`/ai-writer?tab=proposal&leadId=${selectedLead.id}`}>
                   <Button size="sm" variant="outline"><Sparkles className="mr-1 h-3 w-3" /> Generate Proposal</Button>

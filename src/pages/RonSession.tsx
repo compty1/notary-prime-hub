@@ -87,6 +87,15 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
 
 export default function RonSession() {
   usePageMeta({ title: "RON Session", description: "Secure remote online notarization session — Ohio-compliant video conferencing with identity verification and e-seal.", noIndex: true });
+
+  // Compliance retention badge component
+  const RetentionBadge = () => (
+    <div className="flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-1.5 text-xs">
+      <Shield className="h-3.5 w-3.5 text-primary" />
+      <span className="font-semibold text-primary">10-Year Retention</span>
+      <span className="text-muted-foreground">(ORC §147.66)</span>
+    </div>
+  );
   const { user, isAdmin, isNotary } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
