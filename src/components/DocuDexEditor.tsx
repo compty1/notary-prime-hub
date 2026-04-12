@@ -148,6 +148,22 @@ export function DocuDexEditor({
   const [recommendations, setRecommendations] = useState<{ type: "suggestion" | "compliance" | "improvement"; title: string; description: string; insertHtml?: string }[]>([]);
   const [recommendLoading, setRecommendLoading] = useState(false);
 
+  // New component dialog states
+  const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
+  const [showMailMerge, setShowMailMerge] = useState(false);
+  const [showWatermarkDialog, setShowWatermarkDialog] = useState(false);
+  const [showFormFields, setShowFormFields] = useState(false);
+  const [showPageNumbering, setShowPageNumbering] = useState(false);
+  const [showCitations, setShowCitations] = useState(false);
+  const [showBulkExport, setShowBulkExport] = useState(false);
+  const [isDocLocked, setIsDocLocked] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [pageNumberConfig, setPageNumberConfig] = useState<PageNumberConfig>({
+    enabled: false, position: "bottom-center", format: "numeric",
+    startFrom: 1, showOnFirst: true, prefix: "", suffix: "",
+  });
+
   const canvasRef = useRef<HTMLDivElement>(null);
   const autoSaveTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const autoSavingRef = useRef(false);
