@@ -53,7 +53,7 @@ export default function AdminBusinessFormation() {
       const { data, error } = await supabase
         .from("service_requests")
         .select("*")
-        .in("service_type", FORMATION_TYPES.map(t => t.value))
+        .in("service_name", FORMATION_TYPES.map(t => t.value) as unknown as string[])
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
@@ -63,7 +63,9 @@ export default function AdminBusinessFormation() {
   const createOrder = useMutation({
     mutationFn: async (order: any) => {
       const { error } = await supabase.from("service_requests").insert({
-        ...order,
+        service_name: order.service_type,
+        notes: order.description,
+        priority: order.priority,
         status: "intake",
         client_id: order.client_id || "00000000-0000-0000-0000-000000000000",
       });
@@ -79,7 +81,7 @@ export default function AdminBusinessFormation() {
 
   const filtered = orders.filter((o: any) => {
     if (statusFilter !== "all" && o.status !== statusFilter) return false;
-    if (search && !o.description?.toLowerCase().includes(search.toLowerCase()) && !o.service_type?.toLowerCase().includes(search.toLowerCase())) return false;
+    if (search && !o.notes?.toLowerCase().includes(search.toLowerCase()) && !o.service_name?.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
 
@@ -140,8 +142,8 @@ export default function AdminBusinessFormation() {
             <TableBody>
               {filtered.map((o: any) => (
                 <TableRow key={o.id}>
-                  <TableCell className="font-medium">{FORMATION_TYPES.find(t => t.value === o.service_type)?.label || o.service_type}</TableCell>
-                  <TableCell className="max-w-xs truncate text-sm">{o.description || "—"}</TableCell>
+                  <TableCell className="font-medium">{FORMATION_TYPES.find(t => t.value === o.service_name)?.label || o.service_name}</TableCell>
+                  <TableCell className="max-w-xs truncate text-sm">{o.notes || "—"}</TableCell>
                   <TableCell><Badge className={statusColors[o.status] || ""}>{o.status?.replace(/_/g, " ")}</Badge></TableCell>
                   <TableCell><Badge variant="outline">{o.priority || "normal"}</Badge></TableCell>
                   <TableCell className="text-xs text-muted-foreground">{format(new Date(o.created_at), "MMM d, yyyy")}</TableCell>
