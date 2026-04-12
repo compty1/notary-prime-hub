@@ -1668,6 +1668,67 @@ export function DocuDexEditor({
           footerHtml={footerHtml}
           onApply={(h, f) => { setHeaderHtml(h); setFooterHtml(f); }}
         />
+
+        {/* Keyboard Shortcuts Dialog */}
+        <DocuDexKeyboardShortcuts open={showKeyboardShortcuts} onOpenChange={setShowKeyboardShortcuts} />
+
+        {/* Mail Merge Dialog */}
+        <DocuDexMailMerge open={showMailMerge} onOpenChange={setShowMailMerge} editor={editor} />
+
+        {/* Watermark Dialog */}
+        <DocuDexWatermark
+          open={showWatermarkDialog}
+          onOpenChange={setShowWatermarkDialog}
+          onApply={(config) => {
+            if (config) setWatermark(config.text);
+            else setWatermark("none");
+          }}
+        />
+
+        {/* Form Fields Dialog */}
+        <DocuDexFormFields open={showFormFields} onOpenChange={setShowFormFields} editor={editor} />
+
+        {/* Page Numbering Dialog */}
+        <DocuDexPageNumbering
+          open={showPageNumbering}
+          onOpenChange={setShowPageNumbering}
+          config={pageNumberConfig}
+          onApply={setPageNumberConfig}
+        />
+
+        {/* Citations Dialog */}
+        <DocuDexCitations open={showCitations} onOpenChange={setShowCitations} editor={editor} />
+
+        {/* Bulk Export Dialog */}
+        <DocuDexBulkExport
+          open={showBulkExport}
+          onOpenChange={setShowBulkExport}
+          documents={recentDocs}
+          onExport={async (docIds, format) => {
+            // Export each selected document
+            for (const id of docIds) {
+              const doc = recentDocs.find(d => d.id === id);
+              if (doc) {
+                const blob = new Blob([`Document: ${doc.title}`], { type: "text/plain" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `${doc.title}.${format}`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }
+            }
+          }}
+        />
+
+        {/* Document Lock */}
+        <DocuDexDocumentLock
+          isLocked={isDocLocked}
+          onToggleLock={(locked) => {
+            setIsDocLocked(locked);
+            if (editor) editor.setEditable(!locked);
+          }}
+        />
       </div>
     </TooltipProvider>
   );
