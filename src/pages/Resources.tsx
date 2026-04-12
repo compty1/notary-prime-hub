@@ -4,11 +4,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { FileText, Shield, Monitor, Scale, DollarSign, HelpCircle, Image, BookOpen, MapPin, Laptop, Gavel, UserCheck } from "lucide-react";
+import { FileText, Shield, Monitor, Scale, DollarSign, HelpCircle, Image, BookOpen, MapPin, Laptop, Gavel, UserCheck, Search, Globe, CheckCircle, ExternalLink } from "lucide-react";
 import { DOCUMENT_ANATOMY } from "@/components/AnatomyDiagram";
 import { ProcessGuide } from "@/components/ProcessGuide";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const resources = [
   {
@@ -66,6 +66,27 @@ const resources = [
     icon: UserCheck,
     link: "/signer-rights",
     category: "Education",
+  },
+  {
+    title: "RON Eligibility Checker",
+    desc: "Quickly check whether your document is eligible for Remote Online Notarization under Ohio law.",
+    icon: CheckCircle,
+    link: "/ron-eligibility",
+    category: "Tool",
+  },
+  {
+    title: "Find a Notary Near You",
+    desc: "Search our directory of Ohio-commissioned notaries by location, availability, and specialization.",
+    icon: Search,
+    link: "/notary-directory",
+    category: "Tool",
+  },
+  {
+    title: "Verify a Notary Seal",
+    desc: "Confirm the authenticity of a notarized document by verifying the notary's seal, commission number, and status.",
+    icon: Globe,
+    link: "/verify-seal",
+    category: "Tool",
   },
 ];
 
@@ -155,13 +176,19 @@ function DocumentExamplesSection() {
               onClick={() => setSelectedDoc(doc.key)}
             >
               <Card className="border-border/50 overflow-hidden transition-all hover:border-primary/30 hover:shadow-md">
-                <div className="aspect-[3/4] overflow-hidden bg-muted">
+                <div className="relative aspect-[3/4] overflow-hidden bg-muted">
                   <img
                     src={data.image}
                     alt={doc.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                     loading="lazy"
                   />
+                  {/* SAMPLE watermark overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <span className="text-destructive/20 font-bold text-2xl tracking-widest -rotate-45 select-none uppercase">
+                      SAMPLE
+                    </span>
+                  </div>
                 </div>
                 <CardContent className="p-3">
                   <p className="text-sm font-semibold text-foreground">{doc.title}</p>
@@ -178,6 +205,9 @@ function DocumentExamplesSection() {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{documentExamples.find(d => d.key === selectedDoc)?.title}</DialogTitle>
+            <DialogDescription>
+              Sample document anatomy with annotated callouts. This is not a legal document.
+            </DialogDescription>
           </DialogHeader>
           {anatomy && (
             <div className="space-y-4">
@@ -186,8 +216,16 @@ function DocumentExamplesSection() {
                 {anatomy.callouts.map(c => (
                   <div key={c.id} className="flex items-start gap-2 p-2 rounded bg-muted/50">
                     <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-bold">{c.id}</span>
-                    <div>
-                      <p className="text-sm font-medium">{c.label}</p>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-sm font-medium">{c.label}</p>
+                        {c.orc && <Badge variant="outline" className="text-[9px] font-mono">{c.orc}</Badge>}
+                        {c.link && (
+                          <a href={c.link} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline" onClick={e => e.stopPropagation()}>
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        )}
+                      </div>
                       <p className="text-xs text-muted-foreground">{c.description}</p>
                     </div>
                   </div>
