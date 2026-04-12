@@ -1345,9 +1345,15 @@ export default function RonSession() {
                   )}
                 </div>
 
-                {/* Status Ticker */}
+                {/* Status Ticker — REM-041: Recording indicator */}
                 <div className="px-6 py-3 bg-foreground text-background flex items-center justify-between">
                   <div className="flex items-center gap-6">
+                    {recordingConsent && sessionStatus === "in_session" && (
+                      <div className="flex items-center gap-2">
+                        <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.7)]" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-red-400">REC</span>
+                      </div>
+                    )}
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_6px_hsl(var(--primary))]" />
                       <span className="text-[10px] font-bold uppercase tracking-widest">Network Secure</span>
