@@ -1,0 +1,9 @@
+
+ALTER TABLE public.print_vendors
+  ADD COLUMN IF NOT EXISTS location TEXT,
+  ADD COLUMN IF NOT EXISTS partnership_tier TEXT DEFAULT 'white_label',
+  ADD COLUMN IF NOT EXISTS best_for TEXT,
+  ADD COLUMN IF NOT EXISTS quality_score NUMERIC(3,1) DEFAULT 4.5,
+  ADD COLUMN IF NOT EXISTS on_time_rate NUMERIC(5,2) DEFAULT 95.00,
+  ADD COLUMN IF NOT EXISTS established_year INTEGER,
+  ADD COLUMN IF NOT EXISTS contact_name TEXT;
