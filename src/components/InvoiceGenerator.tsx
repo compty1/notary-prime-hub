@@ -82,7 +82,7 @@ Thank you for your business.
     setSaving(true);
     try {
       const invoiceNumber = `INV-${Date.now().toString(36).toUpperCase()}`;
-      const { error } = await supabase.from("service_requests").insert({
+      const { error } = await supabase.from("service_requests").insert([{
         client_id: user.id,
         service_type: "invoice",
         status: "completed",
@@ -96,7 +96,7 @@ Thank you for your business.
           subtotal, tax, total, tax_rate: taxRate,
           generated_at: new Date().toISOString(),
         }),
-      });
+      }]);
       if (error) throw error;
       toast.success(`Invoice ${invoiceNumber} saved to your records.`);
     } catch {
