@@ -3,7 +3,7 @@
  * with proper notifications and audit logging.
  */
 import { supabase } from "@/integrations/supabase/client";
-import { logAuditEvent } from "@/lib/auditLogger";
+import { logAdminAction } from "@/lib/auditLogger";
 import { useToast } from "@/hooks/use-toast";
 
 export type AppointmentAction = "confirm" | "complete" | "cancel" | "reschedule" | "reassign" | "no_show";
@@ -59,7 +59,7 @@ export function useAppointmentActions() {
       if (error) throw error;
 
       // Audit log
-      await logAuditEvent({
+      await logAdminAction({
         action: `appointment_${action}`,
         entityType: "appointment",
         entityId: appointmentId,

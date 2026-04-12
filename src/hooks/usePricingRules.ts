@@ -4,8 +4,7 @@
  */
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { cacheManager } from "@/lib/cacheManager";
-
+import { cachedFetch, CACHE_KEYS } from "@/lib/cacheManager";
 export interface PricingRule {
   id: string;
   service_id: string;
