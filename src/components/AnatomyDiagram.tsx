@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ZoomIn, Printer, ExternalLink } from "lucide-react";
@@ -118,6 +118,7 @@ export function AnatomyDiagram({ imageSrc, title, callouts }: AnatomyDiagramProp
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{title} — Full Document Anatomy</DialogTitle>
+            <DialogDescription>Annotated diagram showing the key elements of this Ohio notarial document.</DialogDescription>
           </DialogHeader>
           <div className="relative">
             <img src={imageSrc} alt={title} className="w-full rounded" />
@@ -160,7 +161,7 @@ export function AnatomyDiagram({ imageSrc, title, callouts }: AnatomyDiagramProp
 /** Predefined anatomy callouts for each Ohio document type — COMPLETE with ORC references */
 export const DOCUMENT_ANATOMY: Record<string, { image: string; callouts: { id: number; label: string; description: string; x: number; y: number; orc?: string; link?: string }[] }> = {
   acknowledgment: {
-    image: new URL("@/assets/documents/acknowledgment-certificate.jpg", import.meta.url).href,
+    image: "/images/documents/acknowledgment-certificate.jpg",
     callouts: [
       { id: 1, label: "Venue (State & County)", description: "Identifies WHERE the notarial act physically took place — must match your actual location at the time of the act, not where the document was drafted or the signer lives.", x: 50, y: 8, orc: "ORC §147.07", link: "https://codes.ohio.gov/ohio-revised-code/section-147.07" },
       { id: 2, label: "Certificate Title", description: "Identifies this as an ACKNOWLEDGMENT — signer acknowledges they signed voluntarily and of their own free will. This is NOT an oath. The signer does not swear to the truthfulness of the contents.", x: 50, y: 18, orc: "ORC §147.55" },
@@ -172,7 +173,7 @@ export const DOCUMENT_ANATOMY: Record<string, { image: string; callouts: { id: n
     ],
   },
   jurat: {
-    image: new URL("@/assets/documents/jurat-certificate.jpg", import.meta.url).href,
+    image: "/images/documents/jurat-certificate.jpg",
     callouts: [
       { id: 1, label: "Venue (State & County)", description: "State of Ohio, County of _____ — where the oath was physically administered. For RON sessions, use the notary's location county per ORC §147.66.", x: 50, y: 8, orc: "ORC §147.07" },
       { id: 2, label: "Jurat Certificate Title", description: "Identifies this as a JURAT — the signer SWORE or AFFIRMED the truthfulness of the document contents under oath. Critical distinction: a Jurat requires an oath; an Acknowledgment does not.", x: 50, y: 18, orc: "ORC §147.55" },
@@ -184,7 +185,7 @@ export const DOCUMENT_ANATOMY: Record<string, { image: string; callouts: { id: n
     ],
   },
   copy_certification: {
-    image: new URL("@/assets/documents/copy-certification.jpg", import.meta.url).href,
+    image: "/images/documents/copy-certification.jpg",
     callouts: [
       { id: 1, label: "Venue", description: "State and county where the copy certification is being performed. Must match your physical location.", x: 50, y: 8, orc: "ORC §147.07" },
       { id: 2, label: "Certification Language", description: "Notary certifies the copy is 'true, exact, complete, and unaltered.' YOU must make the copy or supervise its making — you cannot certify a copy someone else made without your observation.", x: 40, y: 35, orc: "ORC §147.51", link: "https://codes.ohio.gov/ohio-revised-code/section-147.51" },
@@ -195,7 +196,7 @@ export const DOCUMENT_ANATOMY: Record<string, { image: string; callouts: { id: n
     ],
   },
   poa: {
-    image: new URL("@/assets/documents/poa-acknowledgment.jpg", import.meta.url).href,
+    image: "/images/documents/poa-acknowledgment.jpg",
     callouts: [
       { id: 1, label: "Document Title & Venue", description: "Power of Attorney designation with State of Ohio venue. Identifies the type of POA: General, Limited, Durable, or Healthcare.", x: 50, y: 5 },
       { id: 2, label: "Granting Clause", description: "Identifies the PRINCIPAL (person granting power) and the AGENT/attorney-in-fact (person receiving power). Lists specific powers being granted.", x: 40, y: 25 },
@@ -207,7 +208,7 @@ export const DOCUMENT_ANATOMY: Record<string, { image: string; callouts: { id: n
     ],
   },
   corporate: {
-    image: new URL("@/assets/documents/corporate-acknowledgment.jpg", import.meta.url).href,
+    image: "/images/documents/corporate-acknowledgment.jpg",
     callouts: [
       { id: 1, label: "Venue", description: "State and county of notarization — where the corporate officer physically appeared before you.", x: 50, y: 8, orc: "ORC §147.07" },
       { id: 2, label: "Officer Name & Personal ID", description: "You verify the PERSON's identity, not the corporation's. The signer must present their personal government-issued photo ID.", x: 40, y: 30 },
@@ -219,7 +220,7 @@ export const DOCUMENT_ANATOMY: Record<string, { image: string; callouts: { id: n
     ],
   },
   signature_by_mark: {
-    image: new URL("@/assets/documents/signature-by-mark.jpg", import.meta.url).href,
+    image: "/images/documents/signature-by-mark.jpg",
     callouts: [
       { id: 1, label: "Certificate Title", description: "Identifies this as a Signature by Mark procedure — used when the signer cannot write their full signature due to illiteracy, physical disability, or other limitation.", x: 50, y: 5, orc: "ORC §147.542", link: "https://codes.ohio.gov/ohio-revised-code/section-147.542" },
       { id: 2, label: "The Mark (X)", description: "The signer's 'X' or other mark — placed where a signature would normally go. This mark IS the signer's legal signature for the purposes of this document.", x: 55, y: 30 },
@@ -231,7 +232,7 @@ export const DOCUMENT_ANATOMY: Record<string, { image: string; callouts: { id: n
     ],
   },
   vehicle_title: {
-    image: new URL("@/assets/documents/vehicle-title-notarization.jpg", import.meta.url).href,
+    image: "/images/documents/vehicle-title-notarization.jpg",
     callouts: [
       { id: 1, label: "Ohio BMV Header", description: "Official Ohio Bureau of Motor Vehicles Certificate of Title format. This is a controlled government form — any alterations, white-out, or damage may render it VOID.", x: 50, y: 5 },
       { id: 2, label: "Buyer Information", description: "MUST be completely filled in BEFORE notarization. An 'Open Title' (blank buyer name/address) is a FELONY under ORC §4505.06. Never notarize with blank buyer fields.", x: 50, y: 25, orc: "ORC §4505.06", link: "https://codes.ohio.gov/ohio-revised-code/section-4505.06" },
@@ -243,7 +244,7 @@ export const DOCUMENT_ANATOMY: Record<string, { image: string; callouts: { id: n
     ],
   },
   self_proving_affidavit: {
-    image: new URL("@/assets/documents/self-proving-affidavit.jpg", import.meta.url).href,
+    image: "/images/documents/self-proving-affidavit.jpg",
     callouts: [
       { id: 1, label: "Venue", description: "State and county where the affidavit is executed. All parties (testator, witnesses, notary) must be physically present at this location.", x: 20, y: 5, orc: "ORC §147.07" },
       { id: 2, label: "Affidavit Title", description: "Self-Proving Affidavit attached to a Last Will & Testament. This affidavit allows the will to be admitted to probate without requiring witness testimony in court.", x: 50, y: 10, orc: "ORC §2107.24", link: "https://codes.ohio.gov/ohio-revised-code/section-2107.24" },
@@ -255,7 +256,7 @@ export const DOCUMENT_ANATOMY: Record<string, { image: string; callouts: { id: n
     ],
   },
   oath_affirmation: {
-    image: new URL("@/assets/documents/oath-affirmation-certificate.jpg", import.meta.url).href,
+    image: "/images/documents/oath-affirmation-certificate.jpg",
     callouts: [
       { id: 1, label: "Verbal Act", description: "An oral oath/affirmation is a verbal notarial act — no document is signed. The notary witnesses the person making a solemn promise under penalty of perjury.", x: 50, y: 15, orc: "ORC §147.14", link: "https://codes.ohio.gov/ohio-revised-code/section-147.14" },
       { id: 2, label: "Identity Verification", description: "Even for verbal oaths, you MUST verify the person's identity with acceptable government-issued photo ID.", x: 50, y: 30, orc: "ORC §147.542" },
@@ -264,7 +265,7 @@ export const DOCUMENT_ANATOMY: Record<string, { image: string; callouts: { id: n
     ],
   },
   certificate_correction: {
-    image: new URL("@/assets/documents/certificate-correction.jpg", import.meta.url).href,
+    image: "/images/documents/certificate-correction.jpg",
     callouts: [
       { id: 1, label: "Original Certificate", description: "The original certificate that contains the error. NEVER tear up or replace a defective certificate — corrections must be made on the original.", x: 50, y: 20, orc: "ORC §147.54", link: "https://codes.ohio.gov/ohio-revised-code/section-147.54" },
       { id: 2, label: "Error Identification", description: "Draw a single line through the error so the original text remains readable. Never use white-out, correction tape, or scratch out text beyond legibility.", x: 50, y: 40 },

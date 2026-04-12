@@ -519,3 +519,29 @@ button:active, a[role="button"]:active {
     border-bottom: 2px solid CanvasText !important;
   }
 }
+
+/* Print-friendly styles for Resources & Process Guides */
+@media print {
+  nav, footer, .navbar, .back-to-top, .cookie-consent, .mobile-fab,
+  [data-print-hide], .breadcrumbs-nav {
+    display: none !important;
+  }
+  body {
+    font-size: 12pt;
+    color: #000 !important;
+    background: #fff !important;
+  }
+  .container {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 9pt;
+    color: #666;
+  }
+  a[href^="#"]::after,
+  a[href^="javascript"]::after {
+    content: "";
+  }
+}
