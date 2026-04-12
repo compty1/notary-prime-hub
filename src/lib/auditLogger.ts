@@ -17,13 +17,13 @@ interface AuditEntry {
 export async function logAdminAction(entry: AuditEntry): Promise<void> {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    await supabase.from("audit_log").insert({
+    await supabase.from("audit_log").insert([{
       action: entry.action,
       entity_type: entry.entityType,
       entity_id: entry.entityId || null,
-      details: entry.details || null,
+      details: (entry.details || null) as any,
       user_id: user?.id || null,
-    });
+    }]);
   } catch (err) {
     console.error("Audit log failed:", err);
     // Never throw from audit logging
