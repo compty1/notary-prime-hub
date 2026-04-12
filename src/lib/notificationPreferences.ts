@@ -1,6 +1,7 @@
 /**
  * User notification preferences management.
  * Category G items (email/SMS preferences)
+ * Stores preferences in platform_settings keyed by user ID.
  */
 
 import { supabase } from "@/integrations/supabase/client";
@@ -25,18 +26,22 @@ const DEFAULTS: NotificationPreferences = {
   sms_status_updates: false,
 };
 
-/** Load notification preferences from profile metadata */
+/** Load notification preferences from platform_settings */
 export async function getNotificationPreferences(userId: string): Promise<NotificationPreferences> {
   const { data } = await supabase
-    .from("profiles")
-    .select("notification_preferences")
-    .eq("user_id", userId)
+    .from("platform_settings")
+    .select("setting_value")
+    .eq("setting_key", `notification_prefs_${userId}`)
     .maybeSingle();
 
-  if (!data?.notification_preferences) return { ...DEFAULTS };
-  
-  const stored = typeof data.notification_preferences === "object" ? data.notification_preferences : {};
-  return { ...DEFAULTS, ...stored } as NotificationPreferences;
+  if (!data?.setting_value) return { ...DEFAULTS };
+
+  try {
+    const stored = JSON.parse(data.setting_value);
+    return { ...DEFAULTS, ...stored };
+  } catch {
+    return { ...DEFAULTS };
+  }
 }
 
 /** Save notification preferences */
@@ -46,11 +51,11 @@ export async function saveNotificationPreferences(
 ): Promise<void> {
   const current = await getNotificationPreferences(userId);
   const merged = { ...current, ...prefs };
-  
-  await supabase
-    .from("profiles")
-    .update({ notification_preferences: merged as any })
-    .eq("user_id", userId);
+
+  await supabase.from("platform_settings").upsert(
+    { setting_key: `notification_prefs_${userId}`, setting_value: JSON.stringify(merged) },
+    { onConflict: "setting_key" }
+  );
 }
 
 /** Check if a specific notification type is enabled for a user */

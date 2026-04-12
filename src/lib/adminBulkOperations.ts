@@ -94,7 +94,7 @@ export async function bulkArchiveCompletedAppointments(
   const { data } = await supabase
     .from("appointments")
     .update({ status: "archived" as any })
-    .in("status", ["completed", "notarized"])
+    .in("status", ["completed"] as any)
     .lt("scheduled_date", cutoff.split("T")[0])
     .select("id");
 
