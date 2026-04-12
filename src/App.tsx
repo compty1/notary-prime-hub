@@ -383,6 +383,9 @@ function AnimatedRoutes() {
         <Route path="photography" element={<ProtectedRoute adminOnly><SR msg="Photography failed to load"><AdminPhotography /></SR></ProtectedRoute>} />
         <Route path="contractor-registration" element={<ProtectedRoute adminOnly><SR msg="Contractor registration failed to load"><AdminContractorRegistration /></SR></ProtectedRoute>} />
         <Route path="power-of-attorney" element={<ProtectedRoute adminOnly><SR msg="Power of Attorney failed to load"><AdminPowerOfAttorney /></SR></ProtectedRoute>} />
+        <Route path="notary-compliance" element={<SR msg="Compliance dashboard failed to load"><AdminNotaryCompliance /></SR>} />
+        <Route path="promo-codes" element={<ProtectedRoute adminOnly><SR msg="Promo codes failed to load"><AdminPromoCodeManager /></SR></ProtectedRoute>} />
+        <Route path="system-health" element={<ProtectedRoute adminOnly><SR msg="System health failed to load"><AdminSystemHealth /></SR></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="*" element={<NotFound />} />

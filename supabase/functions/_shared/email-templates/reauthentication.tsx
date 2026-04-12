@@ -20,7 +20,7 @@ interface ReauthenticationEmailProps {
 export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your NotarDex verification code</Preview>
+    <Preview>Your Notar verification code</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={logoSection}>
