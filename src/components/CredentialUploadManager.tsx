@@ -20,8 +20,8 @@ export function CredentialUploadManager() {
 
   useEffect(() => {
     if (!user) return;
-    supabase.from("platform_credentials").select("*").eq("user_id", user.id).order("created_at", { ascending: false })
-      .then(({ data }) => { setCredentials(data || []); setLoading(false); });
+    (supabase.from("platform_credentials" as any).select("*") as any).eq("user_id", user.id).order("created_at", { ascending: false })
+      .then(({ data }: any) => { setCredentials(data || []); setLoading(false); });
   }, [user]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,7 +32,7 @@ export function CredentialUploadManager() {
     const { error: uploadErr } = await supabase.storage.from("documents").upload(path, file);
     if (uploadErr) { toast.error("Upload failed"); setUploading(false); return; }
 
-    const { error } = await supabase.from("platform_credentials").insert({
+    const { error } = await (supabase.from("platform_credentials" as any) as any).insert({
       user_id: user.id,
       credential_type: credType,
       file_path: path,
@@ -41,7 +41,7 @@ export function CredentialUploadManager() {
     });
     if (error) { toast.error(error.message); } else {
       toast.success("Credential uploaded for review");
-      const { data } = await supabase.from("platform_credentials").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
+      const { data } = await (supabase.from("platform_credentials" as any).select("*") as any).eq("user_id", user.id).order("created_at", { ascending: false });
       setCredentials(data || []);
     }
     setUploading(false);
