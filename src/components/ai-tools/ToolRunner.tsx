@@ -246,6 +246,7 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
       if (!reader) throw new Error("No stream");
       const decoder = new TextDecoder();
       let buffer = "";
+      let fullResult = "";
 
       // If refining, start fresh with new result
       if (previousOutput) setResult("");
@@ -258,25 +259,37 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
         buffer = lines.pop() || "";
         for (const chunk of lines) {
           const text = parseSSEChunk(chunk);
-          if (text) setResult((prev) => prev + text);
+          if (text) {
+            fullResult += text;
+            setResult((prev) => prev + text);
+          }
         }
       }
       if (buffer.trim()) {
         const text = parseSSEChunk(buffer);
-        if (text) setResult((prev) => prev + text);
+        if (text) {
+          fullResult += text;
+          setResult((prev) => prev + text);
+        }
       }
       setIsRefining(false);
       setRefinementPrompt("");
 
-      // 4.5 Auto-save generation result as draft
-      if (user) {
+      // Update the streaming placeholder with the final result
+      if (user && fullResult) {
         try {
-          await supabase.from("tool_generations").insert({
-            user_id: user.id,
-            tool_id: tool.id,
-            input: fieldValues as any,
-            output: "", // output populated by edge function; this logs usage
-          } as any);
+          const { data: recent } = await supabase
+            .from("tool_generations")
+            .select("id")
+            .eq("user_id", user.id)
+            .eq("tool_id", tool.id)
+            .order("created_at", { ascending: false })
+            .limit(1);
+          if (recent?.[0]) {
+            await supabase.from("tool_generations")
+              .update({ result: fullResult } as any)
+              .eq("id", recent[0].id);
+          }
           setUsageCount((prev) => (prev ?? 0) + 1);
         } catch (e) { console.error("Auto-save generation error:", e); }
       }
