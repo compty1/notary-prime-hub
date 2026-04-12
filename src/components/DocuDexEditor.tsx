@@ -1391,6 +1391,17 @@ export function DocuDexEditor({
             )}
           </div>
 
+          {/* ─── INLINE COMMENTS PANEL ─── */}
+          {showComments && (
+            <DocuDexInlineComments
+              comments={comments}
+              currentPage={activePageIdx}
+              onAddComment={(c) => setComments(prev => [...prev, { ...c, id: crypto.randomUUID(), timestamp: new Date().toISOString() }])}
+              onResolveComment={(id) => setComments(prev => prev.map(c => c.id === id ? { ...c, resolved: true } : c))}
+              onDeleteComment={(id) => setComments(prev => prev.filter(c => c.id !== id))}
+            />
+          )}
+
           {/* ─── AI CHAT PANEL ─── */}
           {showAiChat && (
             <div className={cn("shrink-0 border-l border-border bg-card flex flex-col", isMobile ? "w-full absolute inset-0 z-30" : "w-80")}>
