@@ -89,3 +89,100 @@ export function validateFormData(
 
   return errors;
 }
+
+/** Booking form validation rules (FORM-001) */
+export const BOOKING_VALIDATION_RULES = {
+  serviceType: [{ required: true, message: "Please select a service type." }],
+  date: [
+    { required: true, message: "Please select a date." },
+    { validator: isValidDate, message: "Please enter a valid date (YYYY-MM-DD)." },
+  ],
+  time: [
+    { required: true, message: "Please select a time slot." },
+    { validator: isValidTime, message: "Please enter a valid time." },
+  ],
+  guestName: [
+    { required: true, message: "Full name is required." },
+    { validator: isValidName, message: "Name contains invalid characters." },
+  ],
+  guestEmail: [
+    { required: true, message: "Email address is required." },
+    { validator: isValidEmail, message: "Please enter a valid email address." },
+  ],
+  guestPassword: [
+    { required: true, message: "Password is required." },
+    { validator: (v: string) => v.length >= 8, message: "Password must be at least 8 characters." },
+    { validator: (v: string) => /[A-Z]/.test(v) && /[a-z]/.test(v) && /[0-9]/.test(v) && /[^A-Za-z0-9]/.test(v), message: "Password must contain uppercase, lowercase, number, and special character." },
+  ],
+};
+
+/** Service request form validation rules (FORM-002) */
+export const SERVICE_REQUEST_VALIDATION_RULES = {
+  serviceType: [{ required: true, message: "Please select a service." }],
+  description: [{ required: true, message: "Please describe your request." }],
+  clientName: [
+    { required: true, message: "Name is required." },
+    { validator: isValidName, message: "Name contains invalid characters." },
+  ],
+  email: [
+    { required: true, message: "Email is required." },
+    { validator: isValidEmail, message: "Please enter a valid email." },
+  ],
+};
+
+/** Contact form validation rules (FORM-003) */
+export const CONTACT_VALIDATION_RULES = {
+  name: [
+    { required: true, message: "Your name is required." },
+    { validator: isValidName, message: "Name contains invalid characters." },
+  ],
+  email: [
+    { required: true, message: "Email address is required." },
+    { validator: isValidEmail, message: "Please enter a valid email address." },
+  ],
+  message: [
+    { required: true, message: "Please enter a message." },
+    { validator: (v: string) => v.trim().length >= 10, message: "Message must be at least 10 characters." },
+  ],
+};
+
+/** Sign-up form validation (FORM-004) */
+export const SIGNUP_VALIDATION_RULES = {
+  fullName: [
+    { required: true, message: "Full name is required." },
+    { validator: isValidName, message: "Name contains invalid characters." },
+  ],
+  email: [
+    { required: true, message: "Email address is required." },
+    { validator: isValidEmail, message: "Please enter a valid email address." },
+  ],
+  password: [
+    { required: true, message: "Password is required." },
+    { validator: (v: string) => v.length >= 8, message: "Password must be at least 8 characters." },
+    { validator: (v: string) => /[A-Z]/.test(v) && /[a-z]/.test(v) && /[0-9]/.test(v) && /[^A-Za-z0-9]/.test(v), message: "Must contain uppercase, lowercase, number, and special character." },
+  ],
+};
+
+/** Profile update validation (FORM-005) */
+export const PROFILE_VALIDATION_RULES = {
+  full_name: [
+    { required: true, message: "Full name is required." },
+    { validator: isValidName, message: "Name contains invalid characters." },
+  ],
+  email: [
+    { validator: isValidEmail, message: "Please enter a valid email address." },
+  ],
+  phone: [
+    { validator: isValidPhone, message: "Please enter a valid US phone number." },
+  ],
+};
+
+/** Validate a zip code (5-digit US format) */
+export function isValidZipCode(zip: string): boolean {
+  return /^\d{5}(-\d{4})?$/.test(zip.trim());
+}
+
+/** Validate an address has minimum content */
+export function isValidAddress(address: string): boolean {
+  return address.trim().length >= 5;
+}

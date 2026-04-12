@@ -66,6 +66,7 @@ const sidebarGroups = [
       { title: "VA Tasks", url: "/admin/va-tasks", icon: ClipboardList, adminOnly: true },
       { title: "Real Estate", url: "/admin/real-estate", icon: Home, adminOnly: true },
       { title: "Contractor Onboarding", url: "/admin/contractor-onboarding", icon: UserPlus, adminOnly: true },
+      { title: "Contractor Registration", url: "/admin/contractor-registration", icon: UserCheck, adminOnly: true },
     ],
   },
   {
@@ -78,6 +79,7 @@ const sidebarGroups = [
       { title: "Compliance Cal.", url: "/admin/compliance-calendars", icon: CalendarCheck, adminOnly: true },
       { title: "Business Formation", url: "/admin/business-formation", icon: Building2, adminOnly: true },
       { title: "Estate Planning", url: "/admin/estate-planning", icon: ScrollText, adminOnly: true },
+      { title: "Power of Attorney", url: "/admin/power-of-attorney", icon: Scale, adminOnly: true },
       { title: "Print Marketplace", url: "/admin/print-orders", icon: ShoppingBag, adminOnly: true },
       { title: "Vendors", url: "/admin/vendors", icon: Building2, adminOnly: true },
       { title: "Print Pricing", url: "/admin/print-pricing", icon: DollarSign, adminOnly: true },
