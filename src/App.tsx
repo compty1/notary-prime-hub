@@ -169,6 +169,8 @@ const TrackApostille = lazyRetry(() => import("./pages/TrackApostille"));
 const AdminRecordingArchive = lazyRetry(() => import("./pages/admin/AdminRecordingArchive"));
 const ContractorRegistration = lazyRetry(() => import("./pages/ContractorRegistration"));
 const OrderTracking = lazyRetry(() => import("./pages/OrderTracking"));
+const AdminOperations = lazyRetry(() => import("./pages/admin/AdminOperations"));
+const NotaryGlossary = lazyRetry(() => import("./pages/NotaryGlossary"));
 const Maintenance = lazyRetry(() => import("./pages/Maintenance"));
 const ForNotaries = lazyRetry(() => import("./pages/solutions/ForNotaries"));
 const ForHospitals = lazyRetry(() => import("./pages/solutions/ForHospitals"));
