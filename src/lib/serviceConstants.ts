@@ -40,8 +40,19 @@ export const INTAKE_ONLY_SERVICES = new Set([
   "Civil Protection Order",
   // Legal support
   "Process Serving", "Skip Tracing", "Court Form Preparation", "Vital Records Request",
+  "Court Filing Runner", "Legal Research", "Contract Review", "Probate Filing Assist",
   // Real estate support
   "Property Photography", "Lockbox Coordination", "Open House Support", "Tenant Document Services",
+  "Real Estate Doc Prep", "Tenant Screening", "Lockbox Install", "Open House Staffing",
+  // Tech & digital
+  "Blog Post Writing", "IT Help Desk", "QA Testing", "Workflow Integration",
+  "Micro-SaaS Tool Development",
+  // Sales & CX
+  "Appointment Setting", "NPS Setup & Management",
+  // Publishing
+  "Newsletter/Magazine Production",
+  // Authentication
+  "Apostille Coordination",
 ]);
 
 export const SAAS_LINKS: Record<string, string> = {
