@@ -36,7 +36,11 @@ export default function TrackApostille() {
   return (
     <PageShell>
       <div className="container mx-auto max-w-2xl px-4 py-12">
-        <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Track Apostille" }]} />
+        <nav className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+          <a href="/" className="hover:text-primary">Home</a>
+          <span>/</span>
+          <span>Track Apostille</span>
+        </nav>
         <h1 className="mt-4 font-heading text-3xl font-bold">Track Your Apostille</h1>
         <p className="mb-6 text-muted-foreground">Enter your tracking number or request ID to check status.</p>
 

@@ -22,7 +22,7 @@ export default function AdminSystemHealth() {
     // 1. Edge function health
     const t0 = Date.now();
     try {
-      const r = await callEdgeFunction("health-check");
+      const r = await callEdgeFunction("health-check", {});
       results.push({ name: "Edge Functions", status: r ? "ok" : "error", latencyMs: Date.now() - t0, detail: "health-check responded" });
     } catch {
       results.push({ name: "Edge Functions", status: "error", latencyMs: Date.now() - t0, detail: "health-check failed" });
