@@ -4,7 +4,7 @@
  */
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { HelpCircle } from "lucide-react";
-import { getFaqJsonLd } from "@/lib/seoHelpers";
+import { faqJsonLd } from "@/lib/seoHelpers";
 import { useEffect } from "react";
 
 export interface FAQ {
@@ -59,7 +59,7 @@ export function NotaryFAQ({ faqs, notaryName }: NotaryFAQProps) {
   useEffect(() => {
     const script = document.createElement("script");
     script.type = "application/ld+json";
-    script.textContent = JSON.stringify(getFaqJsonLd(displayFaqs));
+    script.textContent = JSON.stringify(faqJsonLd(displayFaqs.map(f => ({ q: f.question, a: f.answer }))));
     script.id = "notary-faq-jsonld";
     const existing = document.getElementById("notary-faq-jsonld");
     if (existing) existing.remove();
