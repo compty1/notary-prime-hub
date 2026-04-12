@@ -116,8 +116,61 @@ export default function PricingMenu() {
           </div>
         </Tabs>
 
+        {/* Travel Zones */}
+        <div className="mt-10 mb-6">
+          <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">📍 Service Area & Travel Zones</h2>
+          <p className="text-sm text-muted-foreground mb-4">Zone-based travel from West Jefferson, OH 43162. Travel under 5 miles is free.</p>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {[
+              { zone: 1, range: "0–15 mi", fee: "$25", areas: "West Jefferson, Plain City, London" },
+              { zone: 2, range: "15–30 mi", fee: "$40", areas: "Columbus, Hilliard, Dublin, Grove City" },
+              { zone: 3, range: "30–45 mi", fee: "$55", areas: "Delaware, Marysville, Circleville" },
+              { zone: 4, range: "45+ mi", fee: "$55 + $1.50/mi", areas: "Dayton, Springfield, Zanesville" },
+            ].map(z => (
+              <Card key={z.zone} className="border-primary/10">
+                <CardContent className="pt-4 pb-3">
+                  <p className="font-semibold text-sm">Zone {z.zone}</p>
+                  <p className="text-xs text-muted-foreground">{z.range}</p>
+                  <p className="font-bold text-primary text-sm mt-1">{z.fee}</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">{z.areas}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Cancellation & Payment Policies */}
+        <div className="grid gap-6 sm:grid-cols-2 mt-6 mb-10">
+          <Card>
+            <CardContent className="pt-5 space-y-2">
+              <h3 className="font-semibold text-sm">🛡️ Cancellation & No-Show Policy</h3>
+              <ul className="text-xs text-muted-foreground space-y-1">
+                <li>• Less than 2 hours notice: <strong>$40 fee</strong></li>
+                <li>• 2–24 hours notice: <strong>$25 fee</strong></li>
+                <li>• No-show: <strong>$50 fee</strong> (loan signing = full charge)</li>
+                <li>• Wait time: <strong>$20 per 15 min</strong> after grace period</li>
+                <li>• Reschedule: <strong>Free</strong> with 4+ hours notice</li>
+                <li>• Weekends: <strong>No surcharge</strong> — competitive advantage</li>
+              </ul>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-5 space-y-2">
+              <h3 className="font-semibold text-sm">💳 Accepted Payment Methods</h3>
+              <ul className="text-xs text-muted-foreground space-y-1">
+                <li>• Credit & Debit Cards (Visa, MC, Amex, Discover)</li>
+                <li>• Venmo, Zelle, CashApp</li>
+                <li>• Apple Pay & Google Pay</li>
+                <li>• Cash (in-person appointments only)</li>
+                <li>• Invoice / Net-30 (business accounts)</li>
+              </ul>
+              <p className="text-[10px] text-muted-foreground italic mt-2">25% deposit due at booking. Balance due at appointment.</p>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* CTA */}
-        <div className="mt-12 text-center p-8 rounded-2xl bg-primary/5 border border-primary/20">
+        <div className="mt-6 text-center p-8 rounded-2xl bg-primary/5 border border-primary/20">
           <h2 className="text-xl font-bold mb-2">Need a Custom Quote?</h2>
           <p className="text-muted-foreground text-sm mb-4">
             Volume discounts available for businesses. Contact us for custom pricing.
