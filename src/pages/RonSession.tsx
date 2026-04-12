@@ -27,6 +27,7 @@ import { RonRecordingPanel } from "@/components/RonRecordingPanel";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { SignNowStatusPanel } from "@/components/SignNowStatusPanel";
 import SignPreviewWizard from "@/components/SignPreviewWizard";
+import { SignerIDVerificationLog } from "@/components/SignerIDVerificationLog";
 
 const oathScripts = {
   acknowledgment: "The signer personally appeared before me and acknowledged that they signed this document voluntarily for the purposes stated therein. (No verbal oath required for acknowledgments per ORC §147.55)",
@@ -1738,6 +1739,16 @@ export default function RonSession() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* REM-075: Signer ID Verification Log */}
+            <SignerIDVerificationLog
+              kbaAttempts={kbaAttempts}
+              kbaCompleted={kbaCompleted}
+              idType={idType}
+              idVerified={idVerified}
+              recordingConsent={recordingConsent}
+              esignConsent={esignConsent}
+            />
           </div>
 
           {/* Sidebar tools */}
