@@ -1,5 +1,6 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { formatDate } from "@/lib/utils";
+import { RevenueByServiceChart } from "@/components/RevenueByServiceChart";
 import { RevenueForecast } from "@/components/RevenueForecast";
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -386,6 +387,11 @@ export default function AdminRevenue() {
           </div>
         );
       })()}
+
+      {/* REM-076: Revenue by Service Pie Chart */}
+      <div className="mb-6">
+        <RevenueByServiceChart entries={filtered} />
+      </div>
 
       <Tabs defaultValue="payments" className="space-y-4">
         <TabsList>
