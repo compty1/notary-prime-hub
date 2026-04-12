@@ -41,7 +41,7 @@ export default function OrderTracking() {
   return (
     <PageShell>
       <div className="container mx-auto max-w-2xl py-12 px-4">
-        <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Track Order" }]} />
+        <Breadcrumbs />
         <h1 className="font-heading text-3xl font-bold mb-2">Track Your Order</h1>
         <p className="text-muted-foreground mb-8">Enter your order number to see real-time status updates.</p>
 
