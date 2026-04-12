@@ -33,6 +33,8 @@ const TOOL_IDS = new Set([
   "fin-vendor-comparison","fin-collections-playbook","fin-financial-health-check",
   "fin-grant-budget","fin-subscription-analyzer","fin-roi-calculator",
   "fin-payroll-planning","fin-break-even-analysis","fin-quarterly-report",
+  // Ohio Notary Specialized Tools
+  "ohio-poa-generator","healthcare-directive-builder","session-pdf-report",
 ]);
 
 Deno.serve(async (req) => {

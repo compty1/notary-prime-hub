@@ -51,8 +51,11 @@ export const fallbackServiceTypes = [
   "Power of Attorney",
   "Affidavits & Sworn Statements",
   "Estate Planning Documents",
+  "Estate Plan Bundle",
   "Business Documents",
   "I-9 Employment Verification",
+  "Healthcare Directive",
+  "Loan Signing Package",
   "Other",
 ];
 

@@ -212,6 +212,22 @@ export default function GrantDashboard() {
                     <p className="text-xs text-muted-foreground">Updated {new Date(grant.updated_at).toLocaleDateString()}</p>
                   </div>
                   <div className="flex gap-1.5 ml-4">
+                    <Button size="sm" variant="ghost" onClick={() => {
+                      // PDF export via print
+                      const printWindow = window.open("", "_blank");
+                      if (!printWindow) return;
+                      const grantContent = typeof grant.content === "string" ? grant.content : JSON.stringify(grant.content);
+                      printWindow.document.write(`
+                        <html><head><title>${grant.title}</title>
+                        <style>body{font-family:system-ui,sans-serif;max-width:800px;margin:0 auto;padding:40px;line-height:1.6}
+                        h1{font-size:24px;margin-bottom:8px}h2{font-size:18px;margin-top:24px}
+                        table{border-collapse:collapse;width:100%;margin:1em 0}th,td{border:1px solid #ccc;padding:8px}
+                        @media print{body{padding:20px}}</style></head>
+                        <body><h1>${grant.title}</h1><p style="color:#666">Type: ${grant.grant_type} | Status: ${grant.status}</p><hr/>${grantContent}</body></html>
+                      `);
+                      printWindow.document.close();
+                      printWindow.print();
+                    }}><Download className="h-4 w-4" /></Button>
                     <Button size="sm" variant="ghost" onClick={() => openEditor(grant)}><Edit className="h-4 w-4" /></Button>
                     <Button size="sm" variant="ghost" onClick={() => deleteGrant(grant.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                   </div>

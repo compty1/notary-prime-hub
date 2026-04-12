@@ -314,12 +314,35 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
     toast({ title: "Copied to clipboard" });
   };
 
+  const [downloadFormat, setDownloadFormat] = useState<"md" | "txt" | "html">("md");
+
   const handleDownload = () => {
-    const blob = new Blob([result], { type: "text/markdown" });
+    let content = result;
+    let mimeType = "text/markdown";
+    let ext = "md";
+
+    if (downloadFormat === "txt") {
+      // Strip markdown formatting for plain text
+      content = result.replace(/[#*_~`>]/g, "").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+      mimeType = "text/plain";
+      ext = "txt";
+    } else if (downloadFormat === "html") {
+      // Basic markdown-to-HTML conversion
+      content = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${tool.title}</title>
+<style>body{font-family:system-ui,sans-serif;max-width:800px;margin:0 auto;padding:40px;line-height:1.6}
+table{border-collapse:collapse;width:100%;margin:1em 0}th,td{border:1px solid #ccc;padding:8px;text-align:left}
+th{background:#f5f5f5}h1,h2,h3{margin-top:1.5em}blockquote{border-left:4px solid #ccc;margin:1em 0;padding:0.5em 1em;background:#f9f9f9}
+code{background:#f5f5f5;padding:2px 6px;border-radius:3px}</style></head>
+<body>${resultRef.current?.innerHTML || result}</body></html>`;
+      mimeType = "text/html";
+      ext = "html";
+    }
+
+    const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${tool.id}-${Date.now()}.md`;
+    a.download = `${tool.id}-${Date.now()}.${ext}`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -535,6 +558,14 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
                   <Button size="sm" variant="outline" onClick={handleCopy} className="h-7 px-2">
                     <Copy className="h-3 w-3" />
                   </Button>
+                  <Select value={downloadFormat} onValueChange={(v) => setDownloadFormat(v as "md" | "txt" | "html")}>
+                    <SelectTrigger className="h-7 w-[70px] text-[10px]"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="md">.md</SelectItem>
+                      <SelectItem value="txt">.txt</SelectItem>
+                      <SelectItem value="html">.html</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <Button size="sm" variant="outline" onClick={handleDownload} className="h-7 px-2">
                     <Download className="h-3 w-3" />
                   </Button>

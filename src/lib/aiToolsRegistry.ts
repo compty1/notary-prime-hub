@@ -3018,6 +3018,69 @@ Be specific, include plenty of examples, and make the guide immediately actionab
     systemPrompt: `You are a business report writer. Generate a professional quarterly report including: executive summary, financial performance (revenue, expenses, profit, YoY comparison), operational metrics, client/customer highlights, team updates, challenges and risks, next quarter goals, and appendix with data tables. Use professional tone and clear formatting. Output in markdown.`,
     maxTokens: 6000,
   },
+  // ═══════════════════════════════════════
+  // OHIO NOTARY SPECIALIZED TOOLS
+  // ═══════════════════════════════════════
+  {
+    id: "ohio-poa-generator",
+    title: "Ohio POA Generator",
+    category: "Compliance & Legal",
+    description: "Generate Ohio-compliant Power of Attorney documents with proper ORC §1337.12 references.",
+    icon: Scale,
+    fields: [
+      { name: "poaType", label: "POA Type", type: "select", required: true, options: [
+        { value: "general", label: "General Power of Attorney" },
+        { value: "durable", label: "Durable Power of Attorney" },
+        { value: "limited", label: "Limited / Special POA" },
+        { value: "healthcare", label: "Healthcare POA (ORC §1337.12)" },
+        { value: "financial", label: "Financial POA" },
+        { value: "real_estate", label: "Real Estate POA" },
+      ]},
+      { name: "principalName", label: "Principal (Grantor) Name", type: "text", placeholder: "Full legal name", required: true },
+      { name: "agentName", label: "Agent (Attorney-in-Fact) Name", type: "text", placeholder: "Full legal name", required: true },
+      { name: "powers", label: "Specific Powers Granted", type: "textarea", placeholder: "Describe specific powers being granted..." },
+      { name: "restrictions", label: "Restrictions / Limitations", type: "textarea", placeholder: "Any limitations on the agent's authority..." },
+      { name: "effectiveDate", label: "Effective Date / Conditions", type: "text", placeholder: "Immediately, or upon incapacity, etc." },
+    ],
+    systemPrompt: `You are an Ohio legal document specialist. Generate a Power of Attorney document compliant with Ohio Revised Code. Include: proper legal header, recitals, grant of authority section, specific powers enumeration, agent duties and obligations, revocation provisions, durability clause (if applicable), execution requirements (notarization per ORC §147), witness requirements, and Ohio-specific statutory references (ORC §1337.12 for healthcare, ORC §1337.09 for general). Include proper notary jurat/acknowledgment block. Format professionally in markdown. Add disclaimer that this is a template and should be reviewed by an attorney.`,
+    maxTokens: 6000,
+  },
+  {
+    id: "healthcare-directive-builder",
+    title: "Healthcare Directive Builder",
+    category: "Compliance & Legal",
+    description: "Create Ohio-compliant advance healthcare directives per ORC §1337.12.",
+    icon: Heart,
+    fields: [
+      { name: "declarantName", label: "Declarant Name", type: "text", placeholder: "Full legal name", required: true },
+      { name: "healthcareAgent", label: "Healthcare Agent Name", type: "text", placeholder: "Primary healthcare agent", required: true },
+      { name: "alternateAgent", label: "Alternate Agent Name", type: "text", placeholder: "Backup agent (optional)" },
+      { name: "preferences", label: "Healthcare Preferences", type: "textarea", placeholder: "Life-sustaining treatment preferences, organ donation, pain management..." },
+      { name: "mentalHealthProvisions", label: "Mental Health Provisions", type: "textarea", placeholder: "Any specific mental health treatment preferences..." },
+    ],
+    systemPrompt: `You are an Ohio healthcare law specialist. Generate an advance healthcare directive compliant with Ohio Revised Code §1337.11-§1337.17 (Modified Uniform Rights of the Terminally Ill Act). Include: declaration of intent, designation of healthcare attorney-in-fact, alternate agent designation, scope of authority, life-sustaining treatment preferences, nutrition/hydration directives, organ donation preferences, mental health treatment provisions, revocation clause, witness requirements (2 witnesses per ORC §1337.12), notary acknowledgment block, and HIPAA authorization. Output in professional markdown with proper legal formatting.`,
+    maxTokens: 6000,
+  },
+  {
+    id: "session-pdf-report",
+    title: "Session PDF Report Generator",
+    category: "Documents & Generation",
+    description: "Generate a post-notarization session summary report for record-keeping.",
+    icon: FileText,
+    fields: [
+      { name: "sessionId", label: "Session ID / Confirmation #", type: "text", placeholder: "NTR-20260101-XXXXXX", required: true },
+      { name: "signerName", label: "Signer Name", type: "text", placeholder: "Full legal name", required: true },
+      { name: "documentType", label: "Document Type", type: "text", placeholder: "e.g., Power of Attorney, Affidavit", required: true },
+      { name: "notarizationType", label: "Notarization Type", type: "select", required: true, options: [
+        { value: "ron", label: "Remote Online (RON)" },
+        { value: "in_person", label: "In-Person" },
+        { value: "mobile", label: "Mobile Notarization" },
+      ]},
+      { name: "additionalNotes", label: "Session Notes", type: "textarea", placeholder: "Any additional observations, issues, or notes..." },
+    ],
+    systemPrompt: `You are generating a formal post-notarization session report. Include: session summary header with date/time/ID, signer information, document details, notarization type and method, identity verification method used (KBA/ID scan for RON per ORC §147.63), oath/affirmation administered, recording consent status (for RON per Ohio two-party consent), compliance checklist (journal entry made, seal applied, certificate attached), any session notes or observations, retention policy statement (10-year per ORC §147.66), and notary certification block. Format as a professional report in markdown.`,
+    maxTokens: 4000,
+  },
 ];
 
 export const TOOL_CATEGORIES: ToolCategory[] = [

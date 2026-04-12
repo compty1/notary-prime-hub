@@ -18,7 +18,28 @@ export const securityHeaders = {
   "X-Frame-Options": "DENY",
   "X-XSS-Protection": "1; mode=block",
   "Referrer-Policy": "strict-origin-when-cross-origin",
+  "X-API-Version": "1.0",
 };
+
+/** Structured JSON logging helper (item 650) */
+export function structuredLog(
+  level: "info" | "warn" | "error",
+  functionName: string,
+  message: string,
+  extra?: Record<string, unknown>
+) {
+  const entry = {
+    timestamp: new Date().toISOString(),
+    level,
+    function: functionName,
+    message,
+    correlation_id: crypto.randomUUID(),
+    ...extra,
+  };
+  if (level === "error") console.error(JSON.stringify(entry));
+  else if (level === "warn") console.warn(JSON.stringify(entry));
+  else console.log(JSON.stringify(entry));
+}
 
 /** Build CORS headers with origin allowlist (item 644) */
 export function corsHeaders(req: Request): Record<string, string> {
