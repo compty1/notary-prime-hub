@@ -323,13 +323,13 @@ function AnimatedRoutes() {
         <Route path="client-emails" element={<SR msg="Client emails failed to load"><AdminClientEmails /></SR>} />
         <Route path="mailbox" element={<SR msg="Mailbox failed to load"><AdminMailbox /></SR>} />
         <Route path="webhooks" element={<ProtectedRoute adminOnly><SR msg="Webhooks failed to load"><AdminWebhooks /></SR></ProtectedRoute>} />
-        <Route path="performance" element={<SR msg="Performance failed to load"><AdminPerformance /></SR>} />
-        <Route path="compliance-report" element={<SR msg="Compliance report failed to load"><AdminComplianceReport /></SR>} />
-        <Route path="notary-pages" element={<SR msg="Notary pages failed to load"><AdminNotaryPages /></SR>} />
-        <Route path="professionals" element={<SR msg="Professionals failed to load"><AdminProfessionals /></SR>} />
-        <Route path="automated-emails" element={<SR msg="Automated emails failed to load"><AdminAutomatedEmails /></SR>} />
+        <Route path="performance" element={<ProtectedRoute adminOnly><SR msg="Performance failed to load"><AdminPerformance /></SR></ProtectedRoute>} />
+        <Route path="compliance-report" element={<ProtectedRoute adminOnly><SR msg="Compliance report failed to load"><AdminComplianceReport /></SR></ProtectedRoute>} />
+        <Route path="notary-pages" element={<ProtectedRoute adminOnly><SR msg="Notary pages failed to load"><AdminNotaryPages /></SR></ProtectedRoute>} />
+        <Route path="professionals" element={<ProtectedRoute adminOnly><SR msg="Professionals failed to load"><AdminProfessionals /></SR></ProtectedRoute>} />
+        <Route path="automated-emails" element={<ProtectedRoute adminOnly><SR msg="Automated emails failed to load"><AdminAutomatedEmails /></SR></ProtectedRoute>} />
         <Route path="finances" element={<ProtectedRoute adminOnly><SR msg="Finances failed to load"><AdminFinances /></SR></ProtectedRoute>} />
-        <Route path="email-health" element={<SR msg="Email health failed to load"><AdminEmailHealth /></SR>} />
+        <Route path="email-health" element={<ProtectedRoute adminOnly><SR msg="Email health failed to load"><AdminEmailHealth /></SR></ProtectedRoute>} />
         <Route path="ron-recordings" element={<SR msg="RON recordings failed to load"><AdminRonRecordings /></SR>} />
         <Route path="loan-signing" element={<SR msg="Loan signing failed to load"><AdminLoanSigning /></SR>} />
         <Route path="i9-verifications" element={<SR msg="I-9 verifications failed to load"><AdminI9Verifications /></SR>} />
