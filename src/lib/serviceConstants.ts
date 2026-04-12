@@ -99,7 +99,7 @@ export const NOTARIAL_ACT_MAP: Record<string, string> = {
 
 export const CATEGORY_LABELS: Record<string, { label: string; description: string }> = {
   notarization: { label: "Core Notarization", description: "RON, in-person, witness, and certified copy services" },
-  verification: { label: "Identity & Verification", description: "ID checks, I-9 verification, employment onboarding" },
+  verification: { label: "Identity & Verification", description: "ID checks, I-9 verification, passport photos, employment onboarding" },
   document_services: { label: "Document Services", description: "Preparation, PDF processing, scanning, and formatting" },
   authentication: { label: "Authentication & International", description: "Apostille, consular legalization, and translation services" },
   business: { label: "Business & Volume", description: "Bulk packages, subscriptions, API access, and partner programs" },
@@ -118,12 +118,24 @@ export const CATEGORY_LABELS: Record<string, { label: string; description: strin
   legal_support: { label: "Legal Support", description: "Process serving, skip tracing, and vital records" },
   print: { label: "Print & Supplies", description: "Business cards, stamps, embossers, and branded materials" },
   subscription: { label: "Subscriptions", description: "Monthly plans for RON sessions, storage, and mailroom" },
+  compliance: { label: "Compliance & Safety", description: "OSHA, ADA, cannabis, construction, and healthcare compliance" },
+  financial: { label: "Financial Services", description: "Bookkeeping, payroll, projections, grants, and business plans" },
+  translation: { label: "Translation & Language", description: "Standard, certified, and court-certified translation services" },
+  creative: { label: "Creative & Design", description: "Brand identity, presentation templates, and packaging design" },
+  tech_digital: { label: "Tech & Digital", description: "Website design, SEO, social media, AI automation, and CRM setup" },
+  sales_cx: { label: "Sales & Customer Experience", description: "Lead generation, prospecting, journey mapping, and loyalty programs" },
+  publishing: { label: "Publishing", description: "Book publishing, coffee table books, and training manuals" },
+  operations_hr: { label: "Operations & HR", description: "Onboarding, handbooks, SOPs, DMS setup, and fractional ops" },
+  digital_legacy: { label: "Digital Legacy", description: "Digital estate planning, asset inventory, and cybersecurity" },
+  native_tools: { label: "Native SaaS Tools", description: "Financial calculators, trackers, and productivity tools" },
 };
 
 export const CATEGORY_ORDER = [
   "notarization", "verification", "document_services", "authentication",
-  "business", "recurring", "consulting", "business_services",
+  "translation", "business", "recurring", "consulting", "business_services",
   "admin_support", "content_creation", "research", "customer_service",
   "technical_support", "ux_testing", "court_forms", "real_estate",
-  "real_estate_support", "legal_support", "print", "subscription",
+  "real_estate_support", "legal_support", "compliance", "financial",
+  "creative", "tech_digital", "sales_cx", "publishing",
+  "operations_hr", "digital_legacy", "print", "subscription", "native_tools",
 ];
