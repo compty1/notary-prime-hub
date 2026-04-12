@@ -351,6 +351,7 @@ function AnimatedRoutes() {
         <Route path="orders" element={<ProtectedRoute adminOnly><SR msg="Orders failed to load"><AdminOrders /></SR></ProtectedRoute>} />
         <Route path="analytics" element={<ProtectedRoute adminOnly><SR msg="Analytics failed to load"><AdminAnalytics /></SR></ProtectedRoute>} />
         <Route path="contractors" element={<ProtectedRoute adminOnly><SR msg="Contractors failed to load"><AdminContractors /></SR></ProtectedRoute>} />
+        <Route path="print-inventory" element={<ProtectedRoute adminOnly><SR msg="Print inventory failed to load"><AdminPrintInventory /></SR></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="*" element={<NotFound />} />
