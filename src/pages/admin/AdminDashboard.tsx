@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug, TrendingUp, ShieldCheck, Webhook, FileEdit, Workflow, Globe, Video, Printer, UserCheck, Fingerprint, Scale, Crosshair, Heart, PenLine, Languages, Truck, Award, Home, FileCheck, CalendarCheck, BarChart3, Palette } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug, TrendingUp, ShieldCheck, Webhook, FileEdit, Workflow, Globe, Video, Printer, UserCheck, Fingerprint, Scale, Crosshair, Heart, PenLine, Languages, Truck, Award, Home, FileCheck, CalendarCheck, BarChart3, Palette, Camera, Calculator } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { AdminNotificationCenter } from "@/components/AdminNotificationCenter";
 import { Logo } from "@/components/Logo";
@@ -99,6 +99,11 @@ const sidebarGroups = [
       { title: "UX Consulting", url: "/admin/ux-consulting", icon: Palette, adminOnly: true },
       { title: "Referral Network", url: "/admin/referral-network", icon: Handshake, adminOnly: true },
       { title: "Notary Training", url: "/admin/notary-training", icon: GraduationCap, adminOnly: true },
+      { title: "Immigration Support", url: "/admin/immigration", icon: Globe, adminOnly: true },
+      { title: "Tax Referral", url: "/admin/tax-referral", icon: Calculator, adminOnly: true },
+      { title: "Insurance", url: "/admin/insurance", icon: Shield, adminOnly: true },
+      { title: "Mediation & ADR", url: "/admin/mediation", icon: Scale, adminOnly: true },
+      { title: "Photography", url: "/admin/photography", icon: Camera, adminOnly: true },
     ],
   },
   {
