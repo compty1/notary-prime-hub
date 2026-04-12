@@ -100,7 +100,11 @@ export function DocuDexEditor({
   const [showPreview, setShowPreview] = useState(false);
   const [previewContent, setPreviewContent] = useState("");
   const [isRegenerating, setIsRegenerating] = useState(false);
-  const [zoom, setZoom] = useState(isMobile ? 60 : 100);
+  const [zoom, setZoom] = useState(() => {
+    const saved = safeGetItem("docudex_zoom");
+    if (saved) { const n = parseInt(saved, 10); if (n >= 30 && n <= 200) return n; }
+    return isMobile ? 60 : 100;
+  });
   const [showFindReplace, setShowFindReplace] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   const [lastSaved, setLastSaved] = useState<string | null>(null);
@@ -133,7 +137,11 @@ export function DocuDexEditor({
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const autoSaveTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const autoSavingRef = useRef(false);
   const announcerRef = useRef<HTMLDivElement>(null);
+
+  // Persist zoom level
+  useEffect(() => { safeSetItem("docudex_zoom", String(zoom)); }, [zoom]);
 
   const currentPageSize = PAGE_SIZES.find(s => s.value === pageSize) || PAGE_SIZES[0];
   const fontFamily = BRAND_FONTS.find(f => f.value === brandFont)?.family || "sans-serif";
@@ -316,7 +324,8 @@ export function DocuDexEditor({
   // Auto-save every 30 seconds (CE-006) — 5.6 Fix DocuDex auto-save reliability
   useEffect(() => {
     autoSaveTimer.current = setInterval(async () => {
-      if (isDirty && onSave && user) {
+      if (isDirty && onSave && user && !autoSavingRef.current) {
+        autoSavingRef.current = true;
         saveSnapshot("Auto-save");
         try {
           await onSave(title, pages);
@@ -326,6 +335,8 @@ export function DocuDexEditor({
         } catch (err) {
           console.error("Auto-save failed:", err);
           toast({ title: "Auto-save failed", description: "Could not save your document. Please save manually.", variant: "destructive" });
+        } finally {
+          autoSavingRef.current = false;
         }
       }
     }, 30000);

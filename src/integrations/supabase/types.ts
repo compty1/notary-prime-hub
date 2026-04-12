@@ -5992,6 +5992,154 @@ export type Database = {
         }
         Relationships: []
       }
+      ux_audit_reports: {
+        Row: {
+          analyzed_url: string | null
+          created_at: string
+          findings: Json | null
+          id: string
+          overall_score: number | null
+          project_id: string | null
+          recommendations: Json | null
+          report_data: Json | null
+          requested_by: string
+          status: string
+        }
+        Insert: {
+          analyzed_url?: string | null
+          created_at?: string
+          findings?: Json | null
+          id?: string
+          overall_score?: number | null
+          project_id?: string | null
+          recommendations?: Json | null
+          report_data?: Json | null
+          requested_by: string
+          status?: string
+        }
+        Update: {
+          analyzed_url?: string | null
+          created_at?: string
+          findings?: Json | null
+          id?: string
+          overall_score?: number | null
+          project_id?: string | null
+          recommendations?: Json | null
+          report_data?: Json | null
+          requested_by?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ux_audit_reports_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ux_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ux_deliverables: {
+        Row: {
+          created_at: string
+          deliverable_type: string
+          file_path: string | null
+          id: string
+          project_id: string
+          review_notes: string | null
+          status: string
+          title: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          deliverable_type?: string
+          file_path?: string | null
+          id?: string
+          project_id: string
+          review_notes?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          created_at?: string
+          deliverable_type?: string
+          file_path?: string | null
+          id?: string
+          project_id?: string
+          review_notes?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ux_deliverables_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ux_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ux_projects: {
+        Row: {
+          assigned_to: string | null
+          budget: number | null
+          client_id: string
+          created_at: string
+          deliverable_format: string | null
+          end_date: string | null
+          id: string
+          notes: string | null
+          package_tier: string | null
+          scope_description: string | null
+          service_type: string
+          start_date: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          budget?: number | null
+          client_id: string
+          created_at?: string
+          deliverable_format?: string | null
+          end_date?: string | null
+          id?: string
+          notes?: string | null
+          package_tier?: string | null
+          scope_description?: string | null
+          service_type?: string
+          start_date?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          budget?: number | null
+          client_id?: string
+          created_at?: string
+          deliverable_format?: string | null
+          end_date?: string | null
+          id?: string
+          notes?: string | null
+          package_tier?: string | null
+          scope_description?: string | null
+          service_type?: string
+          start_date?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       vendors: {
         Row: {
           capabilities: Json | null
