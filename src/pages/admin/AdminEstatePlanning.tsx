@@ -42,7 +42,7 @@ export default function AdminEstatePlanning() {
       const { data, error } = await supabase
         .from("service_requests")
         .select("*")
-        .in("service_type", DOC_TYPES.map(d => d.value))
+        .in("service_name", DOC_TYPES.map(d => d.value) as unknown as string[])
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
@@ -52,7 +52,8 @@ export default function AdminEstatePlanning() {
   const createRequest = useMutation({
     mutationFn: async (req: any) => {
       const { error } = await supabase.from("service_requests").insert({
-        ...req,
+        service_name: req.service_type,
+        notes: req.description,
         status: "intake",
         client_id: req.client_id || "00000000-0000-0000-0000-000000000000",
       });
@@ -67,7 +68,7 @@ export default function AdminEstatePlanning() {
   });
 
   const filtered = requests.filter((r: any) =>
-    !search || r.description?.toLowerCase().includes(search.toLowerCase()) || r.service_type?.toLowerCase().includes(search.toLowerCase())
+    !search || r.notes?.toLowerCase().includes(search.toLowerCase()) || r.service_name?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -111,8 +112,8 @@ export default function AdminEstatePlanning() {
             <TableBody>
               {filtered.map((r: any) => (
                 <TableRow key={r.id}>
-                  <TableCell className="font-medium">{DOC_TYPES.find(d => d.value === r.service_type)?.label || r.service_type}</TableCell>
-                  <TableCell className="max-w-xs truncate text-sm">{r.description || "—"}</TableCell>
+                  <TableCell className="font-medium">{DOC_TYPES.find(d => d.value === r.service_name)?.label || r.service_name}</TableCell>
+                  <TableCell className="max-w-xs truncate text-sm">{r.notes || "—"}</TableCell>
                   <TableCell><Badge>{r.status?.replace(/_/g, " ")}</Badge></TableCell>
                   <TableCell className="text-xs text-muted-foreground">{format(new Date(r.created_at), "MMM d, yyyy")}</TableCell>
                 </TableRow>
