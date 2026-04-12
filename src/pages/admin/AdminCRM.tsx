@@ -22,9 +22,11 @@ import {
 } from "lucide-react";
 
 const PIPELINE_STAGES = [
-  { key: "discovery", label: "Discovery", color: "bg-info" },
+  { key: "new", label: "New", color: "bg-muted" },
+  { key: "contacted", label: "Contacted", color: "bg-info" },
+  { key: "discovery", label: "Discovery", color: "bg-primary/60" },
   { key: "proposal", label: "Proposal", color: "bg-warning" },
-  { key: "negotiation", label: "Negotiation", color: "bg-accent-warm" },
+  { key: "negotiation", label: "Negotiation", color: "bg-accent" },
   { key: "closed-won", label: "Closed Won", color: "bg-success" },
   { key: "closed-lost", label: "Closed Lost", color: "bg-destructive" },
 ];
