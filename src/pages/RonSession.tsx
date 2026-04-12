@@ -1747,7 +1747,7 @@ export default function RonSession() {
               idType={idType}
               idVerified={idVerified}
               recordingConsent={recordingConsent}
-              esignConsent={esignConsent}
+              esignConsent={esignConsented}
             />
           </div>
 
