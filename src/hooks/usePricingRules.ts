@@ -25,34 +25,29 @@ export function usePricingRules() {
 
   useEffect(() => {
     const load = async () => {
-      // Try cache first
-      const cached = cacheManager.get<PricingRule[]>(CACHE_KEY);
-      if (cached) {
-        setRules(cached);
-        setLoading(false);
-        return;
-      }
+      try {
+        const data = await cachedFetch<PricingRule[]>(CACHE_KEYS.PRICING_RULES, async () => {
+          const { data } = await supabase
+            .from("pricing_rules")
+            .select("*")
+            .eq("is_active", true)
+            .order("service_name");
 
-      const { data } = await supabase
-        .from("pricing_rules")
-        .select("*")
-        .eq("is_active", true)
-        .order("service_name");
-
-      if (data) {
-        const mapped = data.map((r: any) => ({
-          id: r.id,
-          service_id: r.service_id ?? "",
-          service_name: r.service_name ?? "",
-          base_price: r.base_price ?? 0,
-          per_signer_fee: r.per_signer_fee ?? 0,
-          travel_fee: r.travel_fee ?? 0,
-          rush_fee: r.rush_fee ?? 0,
-          after_hours_fee: r.after_hours_fee ?? 0,
-          is_active: r.is_active ?? true,
-        }));
-        setRules(mapped);
-        cacheManager.set(CACHE_KEY, mapped, 120_000); // 2 min cache
+          return (data ?? []).map((r: any) => ({
+            id: r.id,
+            service_id: r.service_id ?? "",
+            service_name: r.service_name ?? "",
+            base_price: r.base_price ?? 0,
+            per_signer_fee: r.per_signer_fee ?? 0,
+            travel_fee: r.travel_fee ?? 0,
+            rush_fee: r.rush_fee ?? 0,
+            after_hours_fee: r.after_hours_fee ?? 0,
+            is_active: r.is_active ?? true,
+          }));
+        }, 120_000);
+        setRules(data);
+      } catch {
+        // fallback: no cached data
       }
       setLoading(false);
     };
