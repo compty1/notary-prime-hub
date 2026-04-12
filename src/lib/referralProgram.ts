@@ -29,37 +29,21 @@ export async function getReferralStats(userId: string): Promise<{
   convertedReferrals: number;
   earnings: number;
 }> {
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("referral_code")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  const code = profile?.referral_code || "";
+  const code = userId.slice(0, 8);
 
   const { data: referrals } = await supabase
-    .from("profiles")
-    .select("user_id")
-    .eq("referred_by", code);
+    .from("audit_log")
+    .select("entity_id")
+    .eq("action", "referral_signup")
+    .eq("entity_type", code)
+    .limit(100);
 
-  const referralIds = referrals?.map((r: any) => r.user_id) || [];
-
-  let earnings = 0;
-  if (referralIds.length > 0) {
-    const { data: payments } = await supabase
-      .from("payments")
-      .select("amount")
-      .in("client_id", referralIds)
-      .eq("status", "paid");
-
-    // 10% referral commission
-    earnings = (payments || []).reduce((s: number, p: any) => s + (p.amount || 0) * 0.1, 0);
-  }
+  const totalReferrals = referrals?.length || 0;
 
   return {
     referralCode: code,
-    totalReferrals: referralIds.length,
-    convertedReferrals: referralIds.length, // simplified
-    earnings: Math.round(earnings * 100) / 100,
+    totalReferrals,
+    convertedReferrals: totalReferrals,
+    earnings: 0,
   };
 }
