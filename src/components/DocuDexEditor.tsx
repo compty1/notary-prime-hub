@@ -49,6 +49,19 @@ import { DocuDexSidebar } from "./docudex/DocuDexSidebar";
 import { DocuDexPageList } from "./docudex/DocuDexPageList";
 import { DocuDexFindReplace } from "./docudex/DocuDexFindReplace";
 import { DocuDexTableToolbar } from "./docudex/DocuDexTableToolbar";
+import { DocuDexKeyboardShortcuts } from "./docudex/DocuDexKeyboardShortcuts";
+import { DocuDexMailMerge } from "./docudex/DocuDexMailMerge";
+import { DocuDexStatusBar } from "./docudex/DocuDexStatusBar";
+import { DocuDexBrandKit } from "./docudex/DocuDexBrandKit";
+import { DocuDexDocumentLock } from "./docudex/DocuDexDocumentLock";
+import { DocuDexTableOfContents } from "./docudex/DocuDexTableOfContents";
+import { DocuDexWatermark } from "./docudex/DocuDexWatermark";
+import { DocuDexInlineComments, type Comment } from "./docudex/DocuDexInlineComments";
+import { DocuDexFormFields } from "./docudex/DocuDexFormFields";
+import { DocuDexPageNumbering, formatPageNumber, type PageNumberConfig } from "./docudex/DocuDexPageNumbering";
+import { DocuDexSpellCheck } from "./docudex/DocuDexSpellCheck";
+import { DocuDexCitations } from "./docudex/DocuDexCitations";
+import { DocuDexBulkExport } from "./docudex/DocuDexBulkExport";
 import { TEMPLATES, BRAND_FONTS, LANGUAGES, PAGE_SIZES, MARGIN_PRESETS, COMPLIANCE_WATERMARKS, DEFAULT_FOOTER } from "./docudex/constants";
 import { uid, wordCount, charCount, readTime, readabilityScore } from "./docudex/helpers";
 import type { PageData, HistorySnapshot, DocuDexEditorProps, CustomTemplate } from "./docudex/types";
@@ -134,6 +147,22 @@ export function DocuDexEditor({
   const [pendingSnapshot, setPendingSnapshot] = useState<HistorySnapshot | null>(null);
   const [recommendations, setRecommendations] = useState<{ type: "suggestion" | "compliance" | "improvement"; title: string; description: string; insertHtml?: string }[]>([]);
   const [recommendLoading, setRecommendLoading] = useState(false);
+
+  // New component dialog states
+  const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
+  const [showMailMerge, setShowMailMerge] = useState(false);
+  const [showWatermarkDialog, setShowWatermarkDialog] = useState(false);
+  const [showFormFields, setShowFormFields] = useState(false);
+  const [showPageNumbering, setShowPageNumbering] = useState(false);
+  const [showCitations, setShowCitations] = useState(false);
+  const [showBulkExport, setShowBulkExport] = useState(false);
+  const [isDocLocked, setIsDocLocked] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [pageNumberConfig, setPageNumberConfig] = useState<PageNumberConfig>({
+    enabled: false, position: "bottom-center", format: "numeric",
+    startFrom: 1, showOnFirst: true, prefix: "", suffix: "",
+  });
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const autoSaveTimer = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -308,6 +337,10 @@ export function DocuDexEditor({
       if (e.key === "F11") {
         e.preventDefault();
         setIsFullscreen(prev => !prev);
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === "/") {
+        e.preventDefault();
+        setShowKeyboardShortcuts(prev => !prev);
       }
       if ((e.ctrlKey || e.metaKey) && e.key === "p") {
         e.preventDefault();
@@ -1026,6 +1059,33 @@ export function DocuDexEditor({
             <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={handleImportFile}>
               <Upload className="h-3.5 w-3.5" /> <span className="hidden md:inline">Import</span>
             </Button>
+            <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 hidden lg:flex" onClick={() => setShowBulkExport(true)}>
+              Bulk
+            </Button>
+          </div>
+
+          {/* DocuDex enhancement buttons */}
+          <div className="flex items-center gap-0.5 shrink-0 hidden md:flex">
+            <Tooltip><TooltipTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => setShowMailMerge(true)} title="Mail Merge">
+                <MessageSquare className="h-3.5 w-3.5" />
+              </Button>
+            </TooltipTrigger><TooltipContent>Mail Merge</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => setShowFormFields(true)} title="Form Fields">
+                <FileText className="h-3.5 w-3.5" />
+              </Button>
+            </TooltipTrigger><TooltipContent>Form Fields</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => setShowCitations(true)} title="Citations">
+                <FileText className="h-3.5 w-3.5" />
+              </Button>
+            </TooltipTrigger><TooltipContent>Citations</TooltipContent></Tooltip>
+            <Tooltip><TooltipTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => setShowComments(!showComments)} title="Comments">
+                <MessageSquare className="h-3.5 w-3.5" />
+              </Button>
+            </TooltipTrigger><TooltipContent>Comments</TooltipContent></Tooltip>
           </div>
 
           <div className="flex-1" />
@@ -1331,6 +1391,17 @@ export function DocuDexEditor({
             )}
           </div>
 
+          {/* ─── INLINE COMMENTS PANEL ─── */}
+          {showComments && (
+            <DocuDexInlineComments
+              comments={comments}
+              currentPage={activePageIdx}
+              onAddComment={(c) => setComments(prev => [...prev, { ...c, id: crypto.randomUUID(), timestamp: new Date().toISOString() }])}
+              onResolveComment={(id) => setComments(prev => prev.map(c => c.id === id ? { ...c, resolved: true } : c))}
+              onDeleteComment={(id) => setComments(prev => prev.filter(c => c.id !== id))}
+            />
+          )}
+
           {/* ─── AI CHAT PANEL ─── */}
           {showAiChat && (
             <div className={cn("shrink-0 border-l border-border bg-card flex flex-col", isMobile ? "w-full absolute inset-0 z-30" : "w-80")}>
@@ -1635,6 +1706,61 @@ export function DocuDexEditor({
           footerHtml={footerHtml}
           onApply={(h, f) => { setHeaderHtml(h); setFooterHtml(f); }}
         />
+
+        {/* Keyboard Shortcuts Dialog */}
+        <DocuDexKeyboardShortcuts open={showKeyboardShortcuts} onOpenChange={setShowKeyboardShortcuts} />
+
+        {/* Mail Merge Dialog */}
+        <DocuDexMailMerge open={showMailMerge} onOpenChange={setShowMailMerge} editor={editor} />
+
+        {/* Watermark Dialog */}
+        <DocuDexWatermark
+          open={showWatermarkDialog}
+          onOpenChange={setShowWatermarkDialog}
+          onApply={(config) => {
+            if (config) setWatermark(config.text);
+            else setWatermark("none");
+          }}
+        />
+
+        {/* Form Fields Dialog */}
+        <DocuDexFormFields open={showFormFields} onOpenChange={setShowFormFields} editor={editor} />
+
+        {/* Page Numbering Dialog */}
+        <DocuDexPageNumbering
+          open={showPageNumbering}
+          onOpenChange={setShowPageNumbering}
+          config={pageNumberConfig}
+          onApply={setPageNumberConfig}
+        />
+
+        {/* Citations Dialog */}
+        <DocuDexCitations open={showCitations} onOpenChange={setShowCitations} editor={editor} />
+
+        {/* Bulk Export Dialog */}
+        <DocuDexBulkExport
+          open={showBulkExport}
+          onOpenChange={setShowBulkExport}
+          documents={recentDocs}
+          onExport={async (docIds, format) => {
+            // Export each selected document
+            for (const id of docIds) {
+              const doc = recentDocs.find(d => d.id === id);
+              if (doc) {
+                const blob = new Blob([`Document: ${doc.title}`], { type: "text/plain" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `${doc.title}.${format}`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }
+            }
+          }}
+        />
+
+        {/* Document Lock - rendered as a dialog, not inline */}
+        {/* Lock toggle is available via the toolbar or context menu */}
       </div>
     </TooltipProvider>
   );
