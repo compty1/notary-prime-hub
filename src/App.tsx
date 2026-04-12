@@ -169,6 +169,8 @@ const TrackApostille = lazyRetry(() => import("./pages/TrackApostille"));
 const AdminRecordingArchive = lazyRetry(() => import("./pages/admin/AdminRecordingArchive"));
 const ContractorRegistration = lazyRetry(() => import("./pages/ContractorRegistration"));
 const OrderTracking = lazyRetry(() => import("./pages/OrderTracking"));
+const AdminOperations = lazyRetry(() => import("./pages/admin/AdminOperations"));
+const NotaryGlossary = lazyRetry(() => import("./pages/NotaryGlossary"));
 const Maintenance = lazyRetry(() => import("./pages/Maintenance"));
 const ForNotaries = lazyRetry(() => import("./pages/solutions/ForNotaries"));
 const ForHospitals = lazyRetry(() => import("./pages/solutions/ForHospitals"));
@@ -251,6 +253,7 @@ function AnimatedRoutes() {
       <Route path="/track-apostille" element={<SR msg="Apostille tracker failed to load"><TrackApostille /></SR>} />
       <Route path="/apply" element={<SR msg="Contractor registration failed to load"><ContractorRegistration /></SR>} />
       <Route path="/track-order" element={<SR msg="Order tracking failed to load"><OrderTracking /></SR>} />
+      <Route path="/glossary" element={<SR msg="Glossary failed to load"><NotaryGlossary /></SR>} />
       <Route path="/solutions/notaries" element={<SR><ForNotaries /></SR>} />
       <Route path="/resources" element={<SR><Resources /></SR>} />
       <Route path="/help" element={<SR><HelpSupport /></SR>} />
@@ -392,6 +395,7 @@ function AnimatedRoutes() {
         <Route path="promo-codes" element={<ProtectedRoute adminOnly><SR msg="Promo codes failed to load"><AdminPromoCodeManager /></SR></ProtectedRoute>} />
         <Route path="system-health" element={<ProtectedRoute adminOnly><SR msg="System health failed to load"><AdminSystemHealth /></SR></ProtectedRoute>} />
         <Route path="recording-archive" element={<SR msg="Recording archive failed to load"><AdminRecordingArchive /></SR>} />
+        <Route path="operations" element={<ProtectedRoute adminOnly><SR msg="Operations failed to load"><AdminOperations /></SR></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="*" element={<NotFound />} />

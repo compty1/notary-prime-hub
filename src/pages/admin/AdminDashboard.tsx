@@ -17,6 +17,7 @@ const sidebarGroups = [
     label: "Operations",
     items: [
       { title: "Overview", url: "/admin", icon: LayoutDashboard, adminOnly: false },
+      { title: "Operations", url: "/admin/operations", icon: ClipboardList, adminOnly: true },
       { title: "Appointments", url: "/admin/appointments", icon: Calendar, adminOnly: false },
       { title: "Orders", url: "/admin/orders", icon: Package, adminOnly: true },
       { title: "Availability", url: "/admin/availability", icon: Clock, adminOnly: true },
