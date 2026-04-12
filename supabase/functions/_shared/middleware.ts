@@ -4,21 +4,24 @@
  */
 
 const ALLOWED_ORIGINS = [
-  "https://notardex.com",
-  "https://www.notardex.com",
+  "https://notar.com",
+  "https://www.notar.com",
   "https://notary-prime-hub.lovable.app",
   "https://id-preview--b6d1b88a-ed8c-42c3-98a9-3a2517fa9990.lovable.app",
   "http://localhost:5173",
   "http://localhost:8080",
 ];
 
-/** Standard security headers for all edge function responses (items 501, 644) */
+/** Standard security headers for all edge function responses (items 501, 644, REM-055) */
 export const securityHeaders = {
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
   "X-XSS-Protection": "1; mode=block",
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "X-API-Version": "1.0",
+  "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co https://*.stripe.com; frame-ancestors 'self'",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
 };
 
 /** Structured JSON logging helper (item 650) */
