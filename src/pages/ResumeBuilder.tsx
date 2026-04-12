@@ -85,6 +85,7 @@ export default function ResumeBuilder() {
   const [analysisResult, setAnalysisResult] = useState("");
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const freeTier = useFreeTierCheck("resume_builder");
 
   const fetchData = useCallback(async () => {
     if (!user) return;

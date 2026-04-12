@@ -12,11 +12,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { ChevronLeft, ChevronRight, FileText, Printer, AlertTriangle, Save, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileText, Printer, AlertTriangle, Save, Loader2, Lock } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { motion } from "framer-motion";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
+import { useFreeTierCheck } from "@/hooks/useFreeTierCheck";
 
 type DocType = "affidavit" | "travel_consent" | "bill_of_sale" | "identity_statement" | "general_agreement" | "power_of_attorney" | "healthcare_directive" | "promissory_note";
 
