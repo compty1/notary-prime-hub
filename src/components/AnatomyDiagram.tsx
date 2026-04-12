@@ -264,7 +264,7 @@ export const DOCUMENT_ANATOMY: Record<string, { image: string; callouts: { id: n
     ],
   },
   certificate_correction: {
-    image: new URL("@/assets/documents/acknowledgment-certificate.jpg", import.meta.url).href,
+    image: new URL("@/assets/documents/certificate-correction.jpg", import.meta.url).href,
     callouts: [
       { id: 1, label: "Original Certificate", description: "The original certificate that contains the error. NEVER tear up or replace a defective certificate — corrections must be made on the original.", x: 50, y: 20, orc: "ORC §147.54", link: "https://codes.ohio.gov/ohio-revised-code/section-147.54" },
       { id: 2, label: "Error Identification", description: "Draw a single line through the error so the original text remains readable. Never use white-out, correction tape, or scratch out text beyond legibility.", x: 50, y: 40 },
