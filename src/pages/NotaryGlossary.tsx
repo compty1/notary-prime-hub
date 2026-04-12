@@ -6,8 +6,8 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search } from "lucide-react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 
 const GLOSSARY: { term: string; definition: string; orc?: string }[] = [
   { term: "Acknowledgment", definition: "A notarial act where the signer personally appears before a notary and acknowledges that they voluntarily signed the document.", orc: "ORC §147.53" },
