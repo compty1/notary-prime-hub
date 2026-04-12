@@ -160,6 +160,8 @@ const AdminTaxReferral = lazyRetry(() => import("./pages/admin/AdminTaxReferral"
 const AdminInsurance = lazyRetry(() => import("./pages/admin/AdminInsurance"));
 const AdminMediation = lazyRetry(() => import("./pages/admin/AdminMediation"));
 const AdminPhotography = lazyRetry(() => import("./pages/admin/AdminPhotography"));
+const AdminContractorRegistration = lazyRetry(() => import("./pages/admin/AdminContractorRegistration"));
+const AdminPowerOfAttorney = lazyRetry(() => import("./pages/admin/AdminPowerOfAttorney"));
 const Maintenance = lazyRetry(() => import("./pages/Maintenance"));
 const ForNotaries = lazyRetry(() => import("./pages/solutions/ForNotaries"));
 const ForHospitals = lazyRetry(() => import("./pages/solutions/ForHospitals"));
@@ -374,6 +376,8 @@ function AnimatedRoutes() {
         <Route path="insurance" element={<ProtectedRoute adminOnly><SR msg="Insurance failed to load"><AdminInsurance /></SR></ProtectedRoute>} />
         <Route path="mediation" element={<ProtectedRoute adminOnly><SR msg="Mediation failed to load"><AdminMediation /></SR></ProtectedRoute>} />
         <Route path="photography" element={<ProtectedRoute adminOnly><SR msg="Photography failed to load"><AdminPhotography /></SR></ProtectedRoute>} />
+        <Route path="contractor-registration" element={<ProtectedRoute adminOnly><SR msg="Contractor registration failed to load"><AdminContractorRegistration /></SR></ProtectedRoute>} />
+        <Route path="power-of-attorney" element={<ProtectedRoute adminOnly><SR msg="Power of Attorney failed to load"><AdminPowerOfAttorney /></SR></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="*" element={<NotFound />} />
