@@ -923,6 +923,114 @@ export type Database = {
         }
         Relationships: []
       }
+      contractor_assignments: {
+        Row: {
+          accepted_at: string | null
+          completed_at: string | null
+          contractor_id: string
+          created_at: string
+          id: string
+          order_id: string
+          payout_amount: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          completed_at?: string | null
+          contractor_id: string
+          created_at?: string
+          id?: string
+          order_id: string
+          payout_amount?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          completed_at?: string | null
+          contractor_id?: string
+          created_at?: string
+          id?: string
+          order_id?: string
+          payout_amount?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contractor_assignments_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contractor_assignments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contractors: {
+        Row: {
+          bio: string | null
+          certifications: Json | null
+          commission_rate: number | null
+          created_at: string
+          display_name: string
+          email: string | null
+          hourly_rate: number | null
+          id: string
+          is_available: boolean
+          phone: string | null
+          rating: number | null
+          specializations: string[] | null
+          stripe_connect_id: string | null
+          total_jobs: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bio?: string | null
+          certifications?: Json | null
+          commission_rate?: number | null
+          created_at?: string
+          display_name: string
+          email?: string | null
+          hourly_rate?: number | null
+          id?: string
+          is_available?: boolean
+          phone?: string | null
+          rating?: number | null
+          specializations?: string[] | null
+          stripe_connect_id?: string | null
+          total_jobs?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bio?: string | null
+          certifications?: Json | null
+          commission_rate?: number | null
+          created_at?: string
+          display_name?: string
+          email?: string | null
+          hourly_rate?: number | null
+          id?: string
+          is_available?: boolean
+          phone?: string | null
+          rating?: number | null
+          specializations?: string[] | null
+          stripe_connect_id?: string | null
+          total_jobs?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       courier_jobs: {
         Row: {
           chain_of_custody_log: Json | null
@@ -3337,6 +3445,145 @@ export type Database = {
           status?: string
           subject?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          line_total: number
+          order_id: string
+          quantity: number
+          service_name: string
+          specs: Json | null
+          tier: string | null
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          line_total?: number
+          order_id: string
+          quantity?: number
+          service_name: string
+          specs?: Json | null
+          tier?: string | null
+          unit_price?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          line_total?: number
+          order_id?: string
+          quantity?: number
+          service_name?: string
+          specs?: Json | null
+          tier?: string | null
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_notes: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          id: string
+          is_internal: boolean
+          order_id: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+          order_id: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+          order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_notes_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          assigned_contractor_id: string | null
+          client_id: string
+          created_at: string
+          discount: number
+          due_date: string | null
+          id: string
+          notes: string | null
+          order_number: string
+          priority: Database["public"]["Enums"]["order_priority"]
+          service_category: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          stripe_invoice_id: string | null
+          stripe_payment_intent_id: string | null
+          subtotal: number
+          tax: number
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          assigned_contractor_id?: string | null
+          client_id: string
+          created_at?: string
+          discount?: number
+          due_date?: string | null
+          id?: string
+          notes?: string | null
+          order_number?: string
+          priority?: Database["public"]["Enums"]["order_priority"]
+          service_category?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          stripe_invoice_id?: string | null
+          stripe_payment_intent_id?: string | null
+          subtotal?: number
+          tax?: number
+          total?: number
+          updated_at?: string
+        }
+        Update: {
+          assigned_contractor_id?: string | null
+          client_id?: string
+          created_at?: string
+          discount?: number
+          due_date?: string | null
+          id?: string
+          notes?: string | null
+          order_number?: string
+          priority?: Database["public"]["Enums"]["order_priority"]
+          service_category?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          stripe_invoice_id?: string | null
+          stripe_payment_intent_id?: string | null
+          subtotal?: number
+          tax?: number
+          total?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -6383,6 +6630,15 @@ export type Database = {
         | "notarized"
         | "rejected"
       notarization_type: "in_person" | "ron"
+      order_priority: "standard" | "priority" | "rush" | "emergency"
+      order_status:
+        | "pending"
+        | "assigned"
+        | "in_progress"
+        | "under_review"
+        | "delivered"
+        | "completed"
+        | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -6529,6 +6785,16 @@ export const Constants = {
         "rejected",
       ],
       notarization_type: ["in_person", "ron"],
+      order_priority: ["standard", "priority", "rush", "emergency"],
+      order_status: [
+        "pending",
+        "assigned",
+        "in_progress",
+        "under_review",
+        "delivered",
+        "completed",
+        "cancelled",
+      ],
     },
   },
 } as const
