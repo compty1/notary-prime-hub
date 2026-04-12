@@ -32,7 +32,7 @@ export function AppointmentConflictDetector({ date, time, durationMinutes = 60, 
           .from("appointments")
           .select("id, scheduled_time, service_type")
           .eq("scheduled_date", date)
-          .in("status", ["pending", "confirmed"]);
+          .in("status", ["scheduled", "confirmed"] as any);
 
         if (excludeId) query = query.neq("id", excludeId);
 

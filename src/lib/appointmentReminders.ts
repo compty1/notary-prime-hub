@@ -24,7 +24,7 @@ export async function getUpcomingReminders(): Promise<{
   const { data: appointments } = await supabase
     .from("appointments")
     .select("id, client_id, scheduled_date, scheduled_time, service_type")
-    .in("status", ["pending", "confirmed"])
+    .in("status", ["scheduled", "confirmed"] as any)
     .gte("scheduled_date", format(now, "yyyy-MM-dd"))
     .lte("scheduled_date", format(cutoff, "yyyy-MM-dd"));
 

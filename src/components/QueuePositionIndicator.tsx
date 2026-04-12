@@ -18,7 +18,7 @@ export function QueuePositionIndicator({ appointmentId, scheduledDate }: QueuePo
         .from("appointments")
         .select("id, scheduled_time")
         .eq("scheduled_date", scheduledDate)
-        .in("status", ["pending", "confirmed"])
+        .in("status", ["scheduled", "confirmed"] as any)
         .order("scheduled_time", { ascending: true });
 
       if (!data) return;
