@@ -65,6 +65,7 @@ const sidebarGroups = [
       { title: "Background Checks", url: "/admin/background-checks", icon: ShieldCheck, adminOnly: true },
       { title: "VA Tasks", url: "/admin/va-tasks", icon: ClipboardList, adminOnly: true },
       { title: "Real Estate", url: "/admin/real-estate", icon: Home, adminOnly: true },
+      { title: "Contractor Onboarding", url: "/admin/contractor-onboarding", icon: UserPlus, adminOnly: true },
     ],
   },
   {
@@ -75,6 +76,8 @@ const sidebarGroups = [
       { title: "Court Forms", url: "/admin/court-forms", icon: Scale, adminOnly: true },
       { title: "Permit Filings", url: "/admin/permit-filings", icon: FileCheck, adminOnly: true },
       { title: "Compliance Cal.", url: "/admin/compliance-calendars", icon: CalendarCheck, adminOnly: true },
+      { title: "Business Formation", url: "/admin/business-formation", icon: Building2, adminOnly: true },
+      { title: "Estate Planning", url: "/admin/estate-planning", icon: ScrollText, adminOnly: true },
       { title: "Print Marketplace", url: "/admin/print-orders", icon: ShoppingBag, adminOnly: true },
       { title: "Vendors", url: "/admin/vendors", icon: Building2, adminOnly: true },
       { title: "Print Pricing", url: "/admin/print-pricing", icon: DollarSign, adminOnly: true },
@@ -94,6 +97,8 @@ const sidebarGroups = [
       { title: "Services Catalog", url: "/admin/services", icon: ShoppingBag, adminOnly: true },
       { title: "Pricing Engine", url: "/admin/pricing", icon: DollarSign, adminOnly: true },
       { title: "UX Consulting", url: "/admin/ux-consulting", icon: Palette, adminOnly: true },
+      { title: "Referral Network", url: "/admin/referral-network", icon: Handshake, adminOnly: true },
+      { title: "Notary Training", url: "/admin/notary-training", icon: GraduationCap, adminOnly: true },
     ],
   },
   {
