@@ -24,7 +24,7 @@ const capabilities = [
   { icon: Shield, title: "Certified NSA", desc: "NNA-certified Notary Signing Agent with background screening and E&O insurance coverage." },
   { icon: Monitor, title: "RON-Capable", desc: "Ohio-authorized Remote Online Notarization for closings anywhere, fully compliant with ORC §147.65-.66." },
   { icon: FileText, title: "All Document Types", desc: "Purchase, refinance, reverse mortgage, HELOC, seller packages, and loan modifications." },
-  { icon: Clock, title: "Flexible Scheduling", desc: "Appointments available Mon–Wed 10 AM – 7 PM, with extended hours by arrangement." },
+  { icon: Clock, title: "Flexible Scheduling", desc: "Appointments available Mon–Fri 9 AM – 7 PM, Sat 10 AM – 4 PM, with extended hours by arrangement." },
 ];
 
 const signingTypes = [
@@ -156,8 +156,9 @@ export default function LoanSigningServices() {
                     <Clock className="h-5 w-5 text-primary mt-0.5" />
                     <div>
                       <p className="font-medium">Office Hours</p>
-                      <p className="text-sm text-muted-foreground">Monday, Tuesday, Wednesday: 10:00 AM – 7:00 PM</p>
-                      <p className="text-sm text-muted-foreground">Extended hours available by arrangement</p>
+                      <p className="text-sm text-muted-foreground">Monday – Friday: 9:00 AM – 7:00 PM ET</p>
+                      <p className="text-sm text-muted-foreground">Saturday: 10:00 AM – 4:00 PM ET</p>
+                      <p className="text-sm text-muted-foreground">Sunday: By appointment only</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">

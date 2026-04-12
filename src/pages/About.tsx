@@ -242,9 +242,15 @@ export default function About() {
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary font-bold hover:underline"
+              title="Ohio Secretary of State — if this page doesn't load, try searching directly at ohiosos.gov"
             >
               Ohio Secretary of State Notary Lookup →
             </a>
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            If the SOS lookup page is unavailable, visit{" "}
+            <a href="https://www.ohiosos.gov" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">ohiosos.gov</a>
+            {" "}and search for our notary commission directly.
           </p>
         </div>
       </section>
