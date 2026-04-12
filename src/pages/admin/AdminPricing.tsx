@@ -19,13 +19,14 @@ interface PricingRule {
   id: string;
   rule_type: string;
   name: string;
-  description: string | null;
-  value: number | null;
-  conditions: Record<string, unknown>;
-  promo_code: string | null;
-  start_date: string | null;
-  end_date: string | null;
+  adjustment_type: string | null;
+  adjustment_value: number | null;
+  conditions: Record<string, unknown> | null;
+  promo_code?: string | null;
+  start_date?: string | null;
+  end_date?: string | null;
   is_active: boolean;
+  priority: number;
 }
 
 export default function AdminPricing() {
@@ -87,7 +88,7 @@ export default function AdminPricing() {
 
   const addPromotion = async () => {
     const { data } = await supabase.from("pricing_rules").insert({
-      rule_type: "promotion", name: "New Promotion", value: 10, is_active: false,
+      rule_type: "promotion", name: "New Promotion", adjustment_type: "percentage", adjustment_value: 10, is_active: false,
     }).select().single();
     if (data) setRules(prev => [...prev, data as any]);
   };
@@ -98,7 +99,8 @@ export default function AdminPricing() {
   };
 
   const updateRule = async (id: string, updates: Partial<PricingRule>) => {
-    await supabase.from("pricing_rules").update(updates).eq("id", id);
+    const { conditions, promo_code, start_date, end_date, ...safeUpdates } = updates;
+    await supabase.from("pricing_rules").update(safeUpdates as any).eq("id", id);
     setRules(prev => prev.map(r => r.id === id ? { ...r, ...updates } : r));
   };
 
@@ -282,10 +284,8 @@ export default function AdminPricing() {
                           <Button variant="ghost" size="icon" onClick={() => deleteRule(rule.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                         </div>
                         <div className="grid grid-cols-2 gap-2">
-                          <div><Label className="text-xs">Discount %</Label><Input type="number" value={rule.value || 0} onChange={e => updateRule(rule.id, { value: parseFloat(e.target.value) })} /></div>
-                          <div><Label className="text-xs">Promo Code</Label><Input value={rule.promo_code || ""} onChange={e => updateRule(rule.id, { promo_code: e.target.value })} placeholder="SAVE10" /></div>
-                          <div><Label className="text-xs">Start Date</Label><Input type="date" value={rule.start_date || ""} onChange={e => updateRule(rule.id, { start_date: e.target.value })} /></div>
-                          <div><Label className="text-xs">End Date</Label><Input type="date" value={rule.end_date || ""} onChange={e => updateRule(rule.id, { end_date: e.target.value })} /></div>
+                          <div><Label className="text-xs">Discount %</Label><Input type="number" value={rule.adjustment_value || 0} onChange={e => updateRule(rule.id, { adjustment_value: parseFloat(e.target.value) })} /></div>
+                          <div><Label className="text-xs">Type</Label><Input value={rule.adjustment_type || "percentage"} readOnly className="bg-muted" /></div>
                         </div>
                         <div className="flex items-center gap-2">
                           <Switch checked={rule.is_active} onCheckedChange={v => updateRule(rule.id, { is_active: v })} />
