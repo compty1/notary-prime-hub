@@ -30,7 +30,7 @@ export const EmailChangeEmail = ({
 }: EmailChangeEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Confirm your email change for NotarDex</Preview>
+    <Preview>Confirm your email change for Notar</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={logoSection}>
@@ -38,7 +38,7 @@ export const EmailChangeEmail = ({
         </Section>
         <Heading style={h1}>Confirm email change</Heading>
         <Text style={text}>
-          You requested to change your NotarDex email from{' '}
+          You requested to change your Notar email from{' '}
           <Link href={`mailto:${email}`} style={link}>{email}</Link>{' '}
           to{' '}
           <Link href={`mailto:${newEmail}`} style={link}>{newEmail}</Link>.

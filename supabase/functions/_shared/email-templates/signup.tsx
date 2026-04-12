@@ -30,13 +30,13 @@ export const SignupEmail = ({
 }: SignupEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Confirm your email for NotarDex</Preview>
+    <Preview>Confirm your email for Notar</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={logoSection}>
           <Text style={logoText}>Notar<span style={logoDex}>Dex</span></Text>
         </Section>
-        <Heading style={h1}>Welcome to NotarDex!</Heading>
+        <Heading style={h1}>Welcome to Notar!</Heading>
         <Text style={text}>
           Thanks for signing up. Please confirm your email address (
           <Link href={`mailto:${recipient}`} style={link}>{recipient}</Link>

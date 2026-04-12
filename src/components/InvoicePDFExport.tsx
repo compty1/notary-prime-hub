@@ -75,7 +75,7 @@ export default function InvoicePDFExport({ invoiceData }: InvoicePDFExportProps)
   ${invoiceData.notes ? `<div class="notes"><strong>Notes:</strong> ${invoiceData.notes}</div>` : ""}
   <div class="footer">
     <p>Notar — Ohio Notary & Document Services</p>
-    <p>Franklin County, Columbus, OH · (614) 300-6890 · contact@notardex.com</p>
+    <p>Franklin County, Columbus, OH · (614) 300-6890 · contact@notar.com</p>
   </div>
 </body></html>`);
     win.document.close();

@@ -130,7 +130,7 @@ export default function EmailTemplateDesigner({ settings, onSave }: EmailTemplat
         </div>
         <div style="background:${c.footer_bg};padding:16px ${p};text-align:center;font-size:12px;color:${c.footer_text};">
           <p style="margin:0;">Notar — Ohio Notary & Document Services</p>
-          <p style="margin:4px 0 0;">(614) 300-6890 • contact@notardex.com</p>
+          <p style="margin:4px 0 0;">(614) 300-6890 • contact@notar.com</p>
         </div>
       </div>
     `;

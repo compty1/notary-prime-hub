@@ -3,10 +3,10 @@
  * Items 451-475: structured data for LocalBusiness, FAQ, Breadcrumb, Service, Review, WebSite.
  */
 
-const DOMAIN = "https://notardex.com";
+const DOMAIN = "https://notar.com";
 const BUSINESS_NAME = "Notar — Ohio Notary Public";
 const PHONE = "(614) 300-6890";
-const EMAIL = "contact@notardex.com";
+const EMAIL = "contact@notar.com";
 
 export interface BreadcrumbItem {
   name: string;

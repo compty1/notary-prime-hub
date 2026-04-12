@@ -12,10 +12,11 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Plus, FileText, Sparkles, Loader2, Trash2, Edit, Download, Search, Filter } from "lucide-react";
+import { Plus, FileText, Sparkles, Loader2, Trash2, Edit, Download, Search, Filter, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { RichTextEditor } from "@/components/RichTextEditor";
+import { useFreeTierCheck } from "@/hooks/useFreeTierCheck";
 
 type Grant = {
   id: string;
@@ -51,6 +52,7 @@ export default function GrantDashboard() {
   const [generating, setGenerating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [aiPrompt, setAiPrompt] = useState("");
+  const freeTier = useFreeTierCheck("grant_dashboard");
 
   const fetchGrants = useCallback(async () => {
     if (!user) return;
@@ -90,6 +92,7 @@ export default function GrantDashboard() {
 
   const saveGrant = async () => {
     if (!user || !title.trim()) { toast.error("Title is required"); return; }
+    if (!freeTier.canUse && !editingGrant) { toast.error(`Free tier limit reached (${freeTier.limit}/month). Upgrade to continue.`); return; }
     setSaving(true);
     const payload = {
       user_id: user.id,
@@ -108,6 +111,7 @@ export default function GrantDashboard() {
         if (error) throw error;
       }
       toast.success(editingGrant ? "Grant updated" : "Grant created");
+      if (!editingGrant) freeTier.recordUsage();
       setEditorOpen(false);
       fetchGrants();
     } catch (err: any) {

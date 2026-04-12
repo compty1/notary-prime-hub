@@ -177,7 +177,7 @@ export default function LoanSigningServices() {
                         <a href="tel:6143006890" className="hover:text-primary">(614) 300-6890</a>
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        <a href="mailto:contact@notardex.com" className="hover:text-primary">contact@notardex.com</a>
+                        <a href="mailto:contact@notar.com" className="hover:text-primary">contact@notar.com</a>
                       </p>
                     </div>
                   </div>

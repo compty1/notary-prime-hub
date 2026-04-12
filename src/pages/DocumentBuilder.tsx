@@ -12,11 +12,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { ChevronLeft, ChevronRight, FileText, Printer, AlertTriangle, Save, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileText, Printer, AlertTriangle, Save, Loader2, Lock } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { motion } from "framer-motion";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
+import { useFreeTierCheck } from "@/hooks/useFreeTierCheck";
 
 type DocType = "affidavit" | "travel_consent" | "bill_of_sale" | "identity_statement" | "general_agreement" | "power_of_attorney" | "healthcare_directive" | "promissory_note";
 
@@ -169,6 +170,7 @@ export default function DocumentBuilder() {
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [showPreview, setShowPreview] = useState(false);
   const [saving, setSaving] = useState(false);
+  const freeTier = useFreeTierCheck("document_builder");
 
   const steps = docType ? getSteps(docType) : [];
   const progress = docType ? ((currentStep + 1) / (steps.length + 1)) * 100 : 0;
@@ -240,8 +242,9 @@ export default function DocumentBuilder() {
                   <Button variant="outline" onClick={() => setShowPreview(false)}><ChevronLeft className="mr-1 h-4 w-4" /> Edit</Button>
                   <Button onClick={handlePrint} className=""><Printer className="mr-1 h-4 w-4" /> Print / Save PDF</Button>
                   {user && (
-                    <Button variant="outline" disabled={saving} onClick={async () => {
+                    <Button variant="outline" disabled={saving || !freeTier.canUse} onClick={async () => {
                       if (!user || !docType) return;
+                      if (!freeTier.canUse) { toast({ title: "Free tier limit reached", description: `${freeTier.limit} documents/month. Upgrade for unlimited.`, variant: "destructive" }); return; }
                       setSaving(true);
                       try {
                         const content = buildDocument();
@@ -255,6 +258,7 @@ export default function DocumentBuilder() {
                         });
                         if (insertError) throw insertError;
                         toast({ title: "Saved to My Documents", description: "You can find it in your Client Portal." });
+                        freeTier.recordUsage();
                       } catch (e: any) {
                         toast({ title: "Save failed", description: e.message, variant: "destructive" });
                       }
