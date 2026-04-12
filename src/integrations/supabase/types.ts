@@ -1213,6 +1213,42 @@ export type Database = {
         }
         Relationships: []
       }
+      data_deletion_requests: {
+        Row: {
+          completed_at: string | null
+          id: string
+          notes: string | null
+          reason: string | null
+          requested_at: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          id?: string
+          notes?: string | null
+          reason?: string | null
+          requested_at?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          id?: string
+          notes?: string | null
+          reason?: string | null
+          requested_at?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       deals: {
         Row: {
           assigned_to: string | null
@@ -2742,6 +2778,42 @@ export type Database = {
           status?: string
           updated_at?: string
           zip?: string | null
+        }
+        Relationships: []
+      }
+      legal_holds: {
+        Row: {
+          entity_id: string
+          entity_type: string
+          id: string
+          notes: string | null
+          placed_at: string
+          placed_by: string
+          reason: string
+          released_at: string | null
+          released_by: string | null
+        }
+        Insert: {
+          entity_id: string
+          entity_type: string
+          id?: string
+          notes?: string | null
+          placed_at?: string
+          placed_by: string
+          reason: string
+          released_at?: string | null
+          released_by?: string | null
+        }
+        Update: {
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          notes?: string | null
+          placed_at?: string
+          placed_by?: string
+          reason?: string
+          released_at?: string | null
+          released_by?: string | null
         }
         Relationships: []
       }
