@@ -1,6 +1,7 @@
 /**
  * AP-005: Invoice lifecycle management.
  * Create, send, and track invoices from appointments.
+ * Uses billing_history table until dedicated invoices table is created.
  */
 import { supabase } from "@/integrations/supabase/client";
 import { logAdminAction } from "@/lib/auditLogger";
@@ -22,20 +23,21 @@ export interface CreateInvoiceParams {
   dueDate?: string;
 }
 
+/**
+ * Create an invoice record (stored in payments table as type=invoice).
+ */
 export async function createInvoice(params: CreateInvoiceParams) {
   const total = params.lineItems.reduce((sum, item) => sum + item.total, 0);
-  const dueDate = params.dueDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
 
   const { data, error } = await supabase
-    .from("invoices")
+    .from("payments")
     .insert({
       client_id: params.clientId,
       appointment_id: params.appointmentId || null,
-      line_items: params.lineItems as any,
-      total_amount: total,
-      status: "draft",
-      due_date: dueDate,
-      notes: params.notes || null,
+      amount: total,
+      method: "invoice",
+      status: "pending",
+      notes: JSON.stringify({ lineItems: params.lineItems, invoiceNotes: params.notes }),
     })
     .select()
     .single();
@@ -44,7 +46,7 @@ export async function createInvoice(params: CreateInvoiceParams) {
 
   await logAdminAction({
     action: "invoice_created",
-    entityType: "invoice",
+    entityType: "payment",
     entityId: data.id,
     details: { total, lineItemCount: params.lineItems.length },
   });
@@ -52,18 +54,21 @@ export async function createInvoice(params: CreateInvoiceParams) {
   return data;
 }
 
-export async function updateInvoiceStatus(invoiceId: string, status: InvoiceStatus) {
+/**
+ * Update invoice/payment status.
+ */
+export async function updateInvoiceStatus(paymentId: string, status: string) {
   const { error } = await supabase
-    .from("invoices")
+    .from("payments")
     .update({ status, updated_at: new Date().toISOString() })
-    .eq("id", invoiceId);
+    .eq("id", paymentId);
 
   if (error) throw error;
 
   await logAdminAction({
     action: `invoice_${status}`,
-    entityType: "invoice",
-    entityId: invoiceId,
+    entityType: "payment",
+    entityId: paymentId,
     details: { status },
   });
 }
