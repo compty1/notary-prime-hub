@@ -834,6 +834,13 @@ export default function RonSession() {
       });
     } catch (e) { console.error("Follow-up sequence error:", e); }
 
+    // REM-029: Trigger post-session automated workflow
+    try {
+      await supabase.functions.invoke("post-session-workflow", {
+        body: { appointmentId, notaryUserId: user.id },
+      });
+    } catch (e) { console.error("Post-session workflow error:", e); }
+
     setCompleting(false);
     toast({ title: "Session finalized", description: "Appointment completed, journal entry & e-seal created, documents marked as notarized. Completion email sent to client." });
     navigate("/admin/appointments");
