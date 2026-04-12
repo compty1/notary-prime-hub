@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Search, RefreshCw, AlertTriangle, CheckCircle, Clock, Filter } from "lucide-react";
-import AdminDashboard from "./AdminDashboard";
+
 
 const STATUS_COLORS: Record<string, string> = {
   scheduled: "bg-blue-500/10 text-blue-700",
@@ -86,7 +86,6 @@ export default function AdminOperations() {
   const issueCount = (webhookIssues || []).length + (serviceRequests || []).filter(r => r.priority === "urgent").length;
 
   return (
-    <AdminDashboard>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>

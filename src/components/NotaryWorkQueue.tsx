@@ -102,7 +102,7 @@ export function NotaryWorkQueue() {
               <Button
                 size="sm"
                 onClick={() => updateStatus.mutate({ id: job.id, status: "in_progress", note: noteMap[job.id] })}
-                disabled={job.status === "in_progress"}
+                disabled={job.status === "in_session"}
               >
                 <CheckCircle className="h-3.5 w-3.5 mr-1" /> Accept
               </Button>
