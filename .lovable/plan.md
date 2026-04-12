@@ -1,97 +1,145 @@
 
 
-# Comprehensive Gap Analysis & CSV Generation Plan (Up to 1000 Items)
+# Implement All Remaining Gaps from Master CSV & Implementation Plan
 
 ## Summary
-Generate an exhaustive CSV cataloging every remaining gap, bug, and incomplete implementation found through deep codebase analysis and cross-referencing with all 8 previously uploaded documents. Special focus on: Document Anatomy (incomplete descriptions, placeholder images instead of real photographed examples), Resources page gaps, and all items not yet addressed from prior document analysis.
+Cross-referencing the 109-item CSV and the Comprehensive Implementation Plan PDF against the current codebase reveals that **many P0 items are already done** (RBAC, migrations, input validation, CSRF, rate limiting, audit trail, health-check, error boundaries). Infrastructure items (Docker, CI/CD, Prometheus, k6, BullMQ/Redis) are out of scope for Lovable. This plan implements the **~40 actionable remaining items** grouped into batches.
 
-## Key Findings
+## Already Done (skip these)
+- TOOLS-01/02: AI Tools allowlist + streaming fix — already fixed
+- TOOLS-03: FontSize registered in DocuDexEditor (line 22 imports it)
+- TOOLS-05: InvoiceGenerator has DB save (already added)
+- LEAD-01/02: extract-email-leads and hubspot-sync already have JWT auth
+- LEAD-03: generate-lead-proposal already updated with current auth pattern
+- LEAD-04: AILeadChatbot already has lead capture form (lines 21-80)
+- CRM-02: AdminLeadPortal uses 7 stages, AdminCRM uses 7 LEAD_STAGES (line 32)
+- COMP-02: AdminJournal already has JSON export (line 220+)
+- SEC-01 through SEC-05: Already have RBAC, rate limiting, CSRF, session timeout, input validation
+- OOS-01 through OOS-05: Docker, CI/CD, Prometheus, k6, BullMQ — out of scope
 
-### Document Anatomy & Resources (CRITICAL)
-- **All 10 document images** in `/public/images/documents/` are placeholder `.jpg` files — they need to be replaced with actual photographed examples of notarized Ohio documents (with PII redacted and SAMPLE watermark)
-- **AnatomyDiagram callout positions** use static x/y percentages that don't align with actual document layouts since images are placeholders
-- **Resources page** lists 11 resource cards but some link to pages with incomplete content (e.g., `/notary-guide-process` route, `/templates` route)
-- **AdminResources page** (1464 lines) has a full Form Vault but the anatomy keys don't always align with `DOCUMENT_ANATOMY` entries
-- Missing document types in anatomy: Loan Signing Closing Package, I-9 Employment Verification, Affidavit (general), Deed/Real Estate Transfer
+## Batch 1: Critical Bug Fixes & Edge Functions
 
-### Pricing Prompt Mismatch (BUG)
-- `generate-lead-proposal/index.ts` lines 25-29 still reference old pricing ($25 RON, $0.75/mile, $150 loan signing, $50 apostille) — must be updated to match new audit pricing ($40-45 RON, zone-based travel, $125+ loan signing, $175 apostille)
+### 1. Fix fetch-leads stub data (CRM-08)
+**File:** `supabase/functions/fetch-leads/index.ts`
+- Replace hardcoded Ohio county recorder data with actual database query from `leads` table
+- Add Google Places API integration stub (requires API key) that fetches real business data
+- Return leads from DB when source=all, only attempt external API when source=google_places
 
-### Lead & CRM Gaps
-- **AILeadChatbot**: No lead capture — never collects name/email/phone or inserts into `leads` table
-- **fetch-leads**: Still uses hardcoded sample data (5 Ohio county recorders) — no real API integration
-- **PortalLeadsTab**: Only shows service_requests, not actual leads — 76 lines with no lead detail view
-- No lead scoring engine, no automated follow-up sequences, no lead merge wizard
-- No map view for leads, no multi-format import (vCard/Excel)
+### 2. Fix lead enrichment note overwrite (LEAD-05)
+**File:** `src/pages/admin/AdminLeadPortal.tsx`
+- Find the enrichment update logic and change from overwriting `notes` to appending with timestamp
 
-### Native Tools Gaps
-- **InvoiceGenerator**: No DB persistence — generates text/PDF only, no `invoices` table save
-- **SubscriptionManager**: Reads `payments` table but no Stripe recurring billing connection
-- **GrantDashboard**: No PDF export for generated grants
-- **ResumeBuilder**: PDF parsing may use raw TextDecoder for non-PDF files
-- **DocuDex**: Table editing toolbar exists but merge/split cells may not fully work
-- AI Tools Hub: export only supports `.md` format, not `.docx` or `.pdf`
+### 3. CRM pipeline stages unification (CRM-01)
+**File:** `src/pages/admin/AdminCRM.tsx`
+- Update `PIPELINE_STAGES` from 5 stages to 7 to match AdminLeadPortal's pipeline
+- Add "new" and "contacted" stages before "discovery"
 
-### Missing Service Tools (from document analysis)
-- Ohio POA Generator (dedicated wizard, not just template)
-- Healthcare Directive Builder (ORC §1337.12 compliant wizard)
-- Session PDF Report Generator (post-notarization summary)
-- Apostille Status Tracker (client-facing tracking page)
-- Promo Code Manager (admin tool for discount codes)
-- Bulk Invoice Generator (batch invoicing for business clients)
-- Dynamic Pricing Rules Editor (admin override for pricing engine)
-- Notary Stamp Upload Manager (admin credential management)
-- Session Recording Manager (RON recording archive)
-- Client Onboarding Analytics (admin dashboard)
+## Batch 2: Native Tool Enhancements
 
-### Security & Edge Function Gaps
-- No API versioning headers on edge functions
-- CSP headers could be tightened (currently broad `*` CORS)
-- Several edge functions lack structured error logging
-- `brand.ts` email domain mismatch: `contact@notardex.com` vs brand name "Notar"
+### 4. DocuDex table toolbar wiring (TOOLS-04)
+**File:** `src/components/docudex/DocuDexTableToolbar.tsx`
+- Verify and wire insert/delete row/column commands to the editor instance
 
-### UX & Service Flow Gaps
-- No booking-to-payment flow completion (booking doesn't trigger payment)
-- No post-session automated workflow trigger from UI
-- No client satisfaction survey after appointment
-- Cancellation/no-show policy display not linked to booking flow
-- No service area map visualization on public pages
-- Missing "What to Bring" checklist per service type on booking confirmation
+### 5. Grant Dashboard PDF export (TOOLS-08)
+**File:** `src/pages/GrantDashboard.tsx`
+- Add PDF export using `html2canvas` + `jsPDF` or `window.print()` for grant proposals
 
-## What the CSV Will Contain
-`/mnt/documents/notardex_comprehensive_gaps_v3.csv` with columns:
-- **ID** (GAP-001 through GAP-xxx)
-- **Category** (Document Anatomy, Resources, Pricing, CRM, Lead Portal, Native Tools, Admin Tools, Security, UX, Service Flows, Edge Functions, Brand, Compliance)
-- **Item** (short title)
-- **Description** (detailed gap description)
-- **Current Status** (Not Started / Partial / Stub / Bug / Placeholder)
-- **Priority** (P0-Critical / P1-High / P2-Medium / P3-Low)
-- **Source Document** (which audit doc identified it, or "Codebase Analysis")
-- **Expected Outcome** (what the fix delivers)
-- **Implementation Details** (specific files, functions, approach)
-- **Estimated Effort** (Small/Medium/Large)
+### 6. Resume Builder PDF parsing fix (TOOLS-09)
+**File:** `src/pages/ResumeBuilder.tsx`
+- Replace raw `TextDecoder` PDF parsing with call to `ai-extract-document` edge function
 
-## Implementation Approach
+### 7. AI Tools export format selector (TOOLS-10)
+**File:** `src/components/ai-tools/ToolRunner.tsx`
+- Add format selector (Markdown, Plain Text, HTML) to the download function
+- Current download is `.md` only — add `.txt` and `.html` options
 
-### Step 1: Generate Master CSV
-Python script producing the comprehensive CSV with all identified gaps (targeting 200-400 high-quality rows covering every category).
+### 8. Add missing AI tool registry entries (TOOLS-11, 12, 13)
+**File:** `src/lib/aiToolsRegistry.ts` + `supabase/functions/ai-tools/index.ts`
+- Add Ohio POA Generator, Healthcare Directive Builder, Session PDF Report tools
+- Add corresponding IDs to edge function TOOL_IDS set
 
-### Step 2: Implement Top Priority Fixes (same session)
-1. **Update generate-lead-proposal pricing prompt** — align with audit pricing
-2. **Add lead capture to AILeadChatbot** — collect name/email/phone, insert into leads table
-3. **Add DB persistence to InvoiceGenerator** — save to invoices or service_requests table
-4. **Add 4 missing document anatomy types** — Loan Signing, I-9, General Affidavit, Deed Transfer
-5. **Fix brand email consistency** — align `contact@notardex.com` or update to match brand
+## Batch 3: Service Flow Completions
 
-### Technical Details
+### 9. Estate Plan Bundle in booking (SVC-05)
+**File:** `src/pages/BookAppointment.tsx` or `src/pages/booking/bookingConstants.ts`
+- Add "Estate Plan Bundle" as a bookable service type with its $200 price
 
-**Files created:**
-- `/mnt/documents/notardex_comprehensive_gaps_v3.csv`
+### 10. Business Formation wizard enhancement (SVC-10)
+**File:** `src/pages/admin/AdminBusinessFormation.tsx`
+- Add step-by-step wizard flow for LLC, Corporation, DBA formation types
 
-**Files modified (priority fixes):**
-- `supabase/functions/generate-lead-proposal/index.ts` — update pricing prompt
-- `src/components/AILeadChatbot.tsx` — add lead capture form
-- `src/components/InvoiceGenerator.tsx` — add DB save
-- `src/components/AnatomyDiagram.tsx` — add missing document types
-- `src/lib/brand.ts` — email consistency fix
+### 11. I-9 verification guided flow (SVC-03)
+**File:** `src/pages/admin/AdminI9Verifications.tsx`
+- Add step-by-step verification wizard with document checklist per List A/B/C
+
+## Batch 4: CRM & Lead Enhancements
+
+### 12. Lead-to-appointment pipeline (CRM-06)
+**File:** `src/pages/admin/AdminLeadPortal.tsx`
+- Add "Book Appointment" button in lead detail sheet that pre-fills booking form with lead data
+
+### 13. Lead scoring engine (CRM-03)
+**File:** `src/pages/admin/AdminLeadPortal.tsx`
+- Add auto-scoring function based on: has email (+20), has phone (+15), business type (+10), service_needed matches high-value service (+25), recent activity (+10)
+
+### 14. Deal pipeline Kanban (CRM-09)
+**File:** `src/pages/admin/AdminCRM.tsx`
+- Add Kanban board tab for deals using drag-and-drop pipeline visualization
+
+## Batch 5: Security & Middleware
+
+### 15. API versioning header (SEC-01)
+**File:** `supabase/functions/_shared/middleware.ts`
+- Add `X-API-Version: 1.0` header to the shared cors/response helpers
+
+### 16. Structured error logging (SEC-03)
+**File:** `supabase/functions/_shared/middleware.ts`
+- Add `structuredLog()` helper that outputs JSON with timestamp, level, function_name, correlation_id
+
+## Batch 6: Brand & UX
+
+### 17. Email templates branding (BRAND-04)
+**Files:** `supabase/functions/_shared/email-templates/*.tsx`
+- Verify all 6 email templates use "Notar" branding, correct colors, and `contact@notar.com`
+
+### 18. Compliance retention badge in RON session (COMP-01)
+**File:** `src/pages/RonSession.tsx`
+- Add visible badge showing "10-Year Retention (ORC §147.66)" on session page
+
+### 19. Compliance dashboard for notary role (COMP-03)
+**File:** Create `src/pages/admin/AdminNotaryCompliance.tsx` or enhance existing
+- Show commission status, journal entry count, recent sessions, compliance checklist
+
+## Batch 7: Monetization
+
+### 20. Free tier limit enforcement (MON-01)
+**Files:** `src/pages/GrantDashboard.tsx`, `src/pages/ResumeBuilder.tsx`, `src/pages/DocumentBuilder.tsx`
+- Add usage limit checks (matching AI Tools Hub pattern) before generation
+
+### 21. Annual billing option (MON-04)
+**File:** `src/pages/SubscriptionPlans.tsx`
+- Add annual billing toggle with 20% discount display
+
+## Technical Details
+
+**Files modified (~25 files):**
+- `supabase/functions/fetch-leads/index.ts` — real DB query
+- `supabase/functions/_shared/middleware.ts` — API version header + structured logging
+- `supabase/functions/ai-tools/index.ts` — add 3 tool IDs
+- `src/lib/aiToolsRegistry.ts` — add 3 tools
+- `src/pages/admin/AdminCRM.tsx` — unify pipeline, add Kanban
+- `src/pages/admin/AdminLeadPortal.tsx` — lead scoring, booking link, note append
+- `src/components/ai-tools/ToolRunner.tsx` — export format selector
+- `src/pages/GrantDashboard.tsx` — PDF export + free tier check
+- `src/pages/ResumeBuilder.tsx` — PDF parsing fix + free tier check
+- `src/pages/RonSession.tsx` — retention badge
+- `src/pages/BookAppointment.tsx` — estate plan bundle
+- `src/pages/SubscriptionPlans.tsx` — annual billing
+- `src/pages/admin/AdminI9Verifications.tsx` — guided wizard
+- `src/pages/admin/AdminBusinessFormation.tsx` — wizard steps
+- Email templates (6 files) — brand verification
+
+**No database migrations needed** — all changes use existing tables.
+
+**CSV artifact:** Updated CSV will be generated at `/mnt/documents/notardex_final_implementation_status.csv` showing all items with their resolved status.
 
