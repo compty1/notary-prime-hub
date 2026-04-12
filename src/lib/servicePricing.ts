@@ -110,8 +110,13 @@ export const SERVICE_PRICING: ServicePrice[] = [
 
   // Additional Services
   { name: "Interpreter Referral Service", category: "admin_support", priceFrom: 50, priceTo: 100, priceUnit: "per session", description: "Qualified interpreter coordination for notarial acts" },
-  { name: "Scanback Service", category: "document_services", priceFrom: 10, priceTo: 25, priceUnit: "per package", description: "Scan-back of signed documents to lender or originator" },
-  { name: "Document Printing & Prep", category: "document_services", priceFrom: 0.25, priceTo: 1, priceUnit: "per page", description: "Print, collate, and tab documents for signing sessions" },
+  { name: "Scanback Service", category: "document_services", priceFrom: 15, priceUnit: "per package", description: "Scan-back of signed documents to lender or originator" },
+  { name: "Document Printing & Prep", category: "document_services", priceFrom: 15, priceUnit: "per set", description: "Print, collate, and tab documents for signing sessions" },
+  { name: "Courier Document Delivery", category: "admin_support", priceFrom: 25, priceUnit: "per delivery", description: "Same-day local document courier service" },
+  { name: "Wait Time Fee", category: "notarization", priceFrom: 20, priceUnit: "per 15-min increment", description: "Charged after 15-minute grace period at appointment" },
+  { name: "Cancellation Fee (< 2 hrs)", category: "notarization", priceFrom: 40, priceUnit: "flat", description: "Cancellation with less than 2 hours notice" },
+  { name: "Cancellation Fee (2-24 hrs)", category: "notarization", priceFrom: 25, priceUnit: "flat", description: "Cancellation with 2-24 hours notice" },
+  { name: "No-Show Fee", category: "notarization", priceFrom: 50, priceUnit: "flat", description: "No-show fee for missed appointments (loan = full charge)" },
 
   // Compliance & Safety
   { name: "OSHA Safety Doc Package", category: "compliance", priceFrom: 350, priceTo: 750, priceUnit: "flat", description: "Written safety programs, hazard communication, emergency action plans" },
