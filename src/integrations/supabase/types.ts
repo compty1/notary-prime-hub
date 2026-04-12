@@ -4159,37 +4159,58 @@ export type Database = {
       }
       print_vendors: {
         Row: {
+          best_for: string | null
           contact_email: string | null
+          contact_name: string | null
           contact_phone: string | null
           created_at: string
+          established_year: number | null
           id: string
           is_active: boolean
+          location: string | null
           name: string
           notes: string | null
+          on_time_rate: number | null
+          partnership_tier: string | null
+          quality_score: number | null
           specialties: string[] | null
           turnaround_days: number | null
           updated_at: string
         }
         Insert: {
+          best_for?: string | null
           contact_email?: string | null
+          contact_name?: string | null
           contact_phone?: string | null
           created_at?: string
+          established_year?: number | null
           id?: string
           is_active?: boolean
+          location?: string | null
           name: string
           notes?: string | null
+          on_time_rate?: number | null
+          partnership_tier?: string | null
+          quality_score?: number | null
           specialties?: string[] | null
           turnaround_days?: number | null
           updated_at?: string
         }
         Update: {
+          best_for?: string | null
           contact_email?: string | null
+          contact_name?: string | null
           contact_phone?: string | null
           created_at?: string
+          established_year?: number | null
           id?: string
           is_active?: boolean
+          location?: string | null
           name?: string
           notes?: string | null
+          on_time_rate?: number | null
+          partnership_tier?: string | null
+          quality_score?: number | null
           specialties?: string[] | null
           turnaround_days?: number | null
           updated_at?: string
