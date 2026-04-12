@@ -100,6 +100,19 @@ export default function SubscriptionPlans() {
   const navTo = useNavigate();
   const { toast } = useToast();
   const [selectedPlan, setSelectedPlan] = useState<typeof plans[0] | null>(null);
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
+
+  const getPrice = (plan: typeof plans[0]) => {
+    if (plan.price === "Custom") return plan.price;
+    const monthlyNum = parseInt(plan.price.replace("$", ""));
+    if (billingCycle === "annual") return `$${Math.round(monthlyNum * 0.8)}`;
+    return plan.price;
+  };
+
+  const getPeriod = (plan: typeof plans[0]) => {
+    if (!plan.period) return "";
+    return billingCycle === "annual" ? "/mo (billed annually)" : "/mo";
+  };
 
   const handleSubscribe = async (plan: typeof plans[0]) => {
     if (plan.price === "Custom") { navTo("/#contact"); return; }
@@ -176,6 +189,16 @@ export default function SubscriptionPlans() {
             </Badge>
             <h2 className="font-sans text-2xl font-bold mb-2">Subscription Plans for Teams</h2>
             <p className="text-muted-foreground">Scalable notarization and document services for teams of every size.</p>
+            <div className="mt-4 inline-flex items-center gap-2 rounded-full border bg-background p-1">
+              <button
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${billingCycle === "monthly" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                onClick={() => setBillingCycle("monthly")}
+              >Monthly</button>
+              <button
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${billingCycle === "annual" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                onClick={() => setBillingCycle("annual")}
+              >Annual <Badge variant="secondary" className="ml-1 text-[10px]">Save 20%</Badge></button>
+            </div>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
             {plans.map((plan, i) => (
@@ -194,8 +217,11 @@ export default function SubscriptionPlans() {
                       <h3 className="font-sans text-lg font-bold">{plan.name}</h3>
                     </div>
                     <div className="mb-4">
-                      <span className="font-sans text-3xl font-bold">{plan.price}</span>
-                      <span className="text-muted-foreground">{plan.period}</span>
+                      <span className="font-sans text-3xl font-bold">{getPrice(plan)}</span>
+                      <span className="text-muted-foreground">{getPeriod(plan)}</span>
+                      {billingCycle === "annual" && plan.price !== "Custom" && (
+                        <div className="text-xs text-muted-foreground line-through">{plan.price}/mo</div>
+                      )}
                     </div>
                     <p className="mb-6 text-sm text-muted-foreground">{plan.description}</p>
                     <ul className="mb-6 flex-1 space-y-2">

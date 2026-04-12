@@ -1512,8 +1512,9 @@ export default function RonSession() {
 
         {/* Ohio RON Compliance Banner */}
         {appointment?.notarization_type === "ron" && (
-          <div className="mb-4">
+          <div className="mb-4 flex flex-wrap items-center gap-3">
             <ComplianceBanner variant="ron" compact />
+            <RetentionBadge />
           </div>
         )}
 
