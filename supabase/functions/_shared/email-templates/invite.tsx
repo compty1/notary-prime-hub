@@ -28,7 +28,7 @@ export const InviteEmail = ({
 }: InviteEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>You've been invited to join NotarDex</Preview>
+    <Preview>You've been invited to join Notar</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={logoSection}>
@@ -37,7 +37,7 @@ export const InviteEmail = ({
         <Heading style={h1}>You're invited!</Heading>
         <Text style={text}>
           You've been invited to join{' '}
-          <Link href={siteUrl} style={link}><strong>NotarDex</strong></Link>
+          <Link href={siteUrl} style={link}><strong>Notar</strong></Link>
           — Ohio's trusted notary platform. Click below to accept and create your account.
         </Text>
         <Button style={button} href={confirmationUrl}>
