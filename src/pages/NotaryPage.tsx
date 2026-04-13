@@ -123,7 +123,7 @@ export default function NotaryPage() {
       description: page.seo_description || page.tagline,
       telephone: page.phone,
       email: page.email,
-      url: `https://notardex.com/n/${page.slug}`,
+      url: `https://notar.com/n/${page.slug}`,
       areaServed: {
         "@type": "State",
         name: page.credentials?.commissioned_state || "Ohio",
