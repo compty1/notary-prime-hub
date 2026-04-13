@@ -24,9 +24,9 @@ interface Notification {
 
 const typeIcons: Record<string, React.ReactNode> = {
   appointment: <Calendar className="h-4 w-4 text-primary" />,
-  document: <FileText className="h-4 w-4 text-blue-500" />,
+  document: <FileText className="h-4 w-4 text-accent-foreground" />,
   system: <Info className="h-4 w-4 text-muted-foreground" />,
-  payment: <AlertCircle className="h-4 w-4 text-green-500" />,
+  payment: <AlertCircle className="h-4 w-4 text-primary" />,
 };
 
 export function PortalNotificationCenter() {
