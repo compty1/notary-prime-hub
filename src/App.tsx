@@ -168,6 +168,11 @@ const AdminPromoCodeManager = lazyRetry(() => import("./pages/admin/AdminPromoCo
 const AdminSystemHealth = lazyRetry(() => import("./pages/admin/AdminSystemHealth"));
 const TrackApostille = lazyRetry(() => import("./pages/TrackApostille"));
 const AdminRecordingArchive = lazyRetry(() => import("./pages/admin/AdminRecordingArchive"));
+const AdminRonDashboard = lazyRetry(() => import("./pages/admin/AdminRonDashboard"));
+const AdminOathAdministration = lazyRetry(() => import("./pages/admin/AdminOathAdministration"));
+const AdminCertifiedCopies = lazyRetry(() => import("./pages/admin/AdminCertifiedCopies"));
+const AdminTravelZones = lazyRetry(() => import("./pages/admin/AdminTravelZones"));
+const AdminWitnesses = lazyRetry(() => import("./pages/admin/AdminWitnesses"));
 const ContractorRegistration = lazyRetry(() => import("./pages/ContractorRegistration"));
 const OrderTracking = lazyRetry(() => import("./pages/OrderTracking"));
 const AdminOperations = lazyRetry(() => import("./pages/admin/AdminOperations"));
