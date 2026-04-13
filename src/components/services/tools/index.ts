@@ -20,3 +20,7 @@ export { BackgroundCheckTools } from "./BackgroundCheckTools";
 export { MediationTools } from "./MediationTools";
 export { PhotographyTools } from "./PhotographyTools";
 export { CourierTools } from "./CourierTools";
+export { DocumentAnatomyTools } from "./DocumentAnatomyTools";
+export { ImmigrationAdvancedTools } from "./ImmigrationAdvancedTools";
+export { ContentAdvancedTools } from "./ContentAdvancedTools";
+export { FingerprintingAdvancedTools } from "./FingerprintingAdvancedTools";
