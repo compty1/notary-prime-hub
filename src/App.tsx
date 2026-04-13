@@ -405,6 +405,11 @@ function AnimatedRoutes() {
         <Route path="recording-archive" element={<SR msg="Recording archive failed to load"><AdminRecordingArchive /></SR>} />
         <Route path="operations" element={<ProtectedRoute adminOnly><SR msg="Operations failed to load"><AdminOperations /></SR></ProtectedRoute>} />
         <Route path="security-center" element={<ProtectedRoute adminOnly><SR msg="Security center failed to load"><AdminSecurityCenter /></SR></ProtectedRoute>} />
+        <Route path="ron-dashboard" element={<ProtectedRoute adminOnly><SR msg="RON dashboard failed to load"><AdminRonDashboard /></SR></ProtectedRoute>} />
+        <Route path="oath-administration" element={<ProtectedRoute adminOnly><SR msg="Oath administration failed to load"><AdminOathAdministration /></SR></ProtectedRoute>} />
+        <Route path="certified-copies" element={<ProtectedRoute adminOnly><SR msg="Certified copies failed to load"><AdminCertifiedCopies /></SR></ProtectedRoute>} />
+        <Route path="travel-zones" element={<ProtectedRoute adminOnly><SR msg="Travel zones failed to load"><AdminTravelZones /></SR></ProtectedRoute>} />
+        <Route path="witnesses" element={<ProtectedRoute adminOnly><SR msg="Witnesses failed to load"><AdminWitnesses /></SR></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="*" element={<NotFound />} />
