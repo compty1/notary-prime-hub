@@ -741,6 +741,20 @@ export default function ClientPortal() {
             <PortalEmailsTab />
           )}
 
+          {activeSection === "credentials" && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-black text-foreground">Credential Vault</h2>
+              <CredentialVault />
+            </div>
+          )}
+
+          {activeSection === "todos" && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-black text-foreground">To-Do List</h2>
+              <TodoPanel />
+            </div>
+          )}
+
             </div>
           </main>
         </SidebarInset>
