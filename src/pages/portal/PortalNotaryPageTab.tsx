@@ -123,7 +123,24 @@ export default function PortalNotaryPageTab() {
         supabase.from("professional_service_enrollments").select("*").eq("professional_user_id", user.id),
         supabase.from("profit_share_transactions").select("id, gross_amount, platform_fee, professional_share, status, created_at").eq("professional_user_id", user.id).order("created_at", { ascending: false }).limit(50),
       ]);
-      if (pageRes.data) { setPage(pageRes.data); setHasPage(true); }
+      if (pageRes.data) {
+        setPage(pageRes.data);
+        setHasPage(true);
+        // Resolve photo URLs for preview
+        const [pUrl, cUrl, lUrl] = await Promise.all([
+          resolveUrl(pageRes.data.profile_photo_path),
+          resolveUrl(pageRes.data.cover_photo_path),
+          resolveUrl(pageRes.data.logo_path),
+        ]);
+        setResolvedProfileUrl(pUrl);
+        setResolvedCoverUrl(cUrl);
+        setResolvedLogoUrl(lUrl);
+        const gallery = Array.isArray(pageRes.data.gallery_photos) ? pageRes.data.gallery_photos : [];
+        if (gallery.length > 0) {
+          const urls = await Promise.all(gallery.map((p: string) => resolveUrl(p)));
+          setResolvedGalleryUrls(urls.filter((u): u is string => !!u));
+        }
+      }
       if (svcRes.data) setPlatformServices(svcRes.data as PlatformService[]);
       if (enrollRes.data) setEnrollments(enrollRes.data);
       if (profitRes.data) {
