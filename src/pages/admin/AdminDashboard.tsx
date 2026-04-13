@@ -7,10 +7,12 @@ import {
 } from "@/components/ui/sidebar";
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug, TrendingUp, ShieldCheck, Webhook, FileEdit, Workflow, Globe, Video, Printer, UserCheck, Fingerprint, Scale, Crosshair, Heart, PenLine, Languages, Truck, Award, Home, FileCheck, CalendarCheck, BarChart3, Palette, Camera, Calculator, KeyRound, CheckSquare, Wrench, Receipt, FolderOpen, Code, Navigation, Bell, Hammer, Zap, Activity, HeartPulse, Timer } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug, TrendingUp, ShieldCheck, Webhook, FileEdit, Workflow, Globe, Video, Printer, UserCheck, Fingerprint, Scale, Crosshair, Heart, PenLine, Languages, Truck, Award, Home, FileCheck, CalendarCheck, BarChart3, Palette, Camera, Calculator, KeyRound, CheckSquare, Wrench, Receipt, FolderOpen, Code, Navigation, Bell, Hammer, Zap, Activity, HeartPulse, Timer, RotateCcw } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { AdminNotificationCenter } from "@/components/AdminNotificationCenter";
 import { Logo } from "@/components/Logo";
+import { useAdminMenuOrder } from "@/hooks/useAdminMenuOrder";
+import { useState, useRef } from "react";
 
 const sidebarGroups = [
   {
@@ -157,6 +159,8 @@ function AdminSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const { signOut, isAdmin } = useAuth();
+  const { applyOrder, onDragStart, onDragEnter, onDragEnd, resetOrder } = useAdminMenuOrder();
+  const [dragOverIdx, setDragOverIdx] = useState<{ group: string; index: number } | null>(null);
 
   return (
     <Sidebar collapsible="icon" className="border-r-0 bg-sidebar">
@@ -169,6 +173,7 @@ function AdminSidebar() {
         {sidebarGroups.map((group) => {
           const visibleItems = group.items.filter((item) => !item.adminOnly || isAdmin);
           if (visibleItems.length === 0) return null;
+          const orderedItems = applyOrder(group.label, visibleItems);
           return (
             <SidebarGroup key={group.label}>
               <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-3">
@@ -176,8 +181,41 @@ function AdminSidebar() {
               </SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {visibleItems.map((item) => (
-                    <SidebarMenuItem key={item.title}>
+                  {orderedItems.map((item, idx) => (
+                    <SidebarMenuItem
+                      key={item.title}
+                      draggable
+                      onDragStart={(e) => {
+                        e.dataTransfer.effectAllowed = "move";
+                        onDragStart(group.label, idx);
+                      }}
+                      onDragEnter={(e) => {
+                        e.preventDefault();
+                        onDragEnter(group.label, idx);
+                        setDragOverIdx({ group: group.label, index: idx });
+                      }}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = "move";
+                      }}
+                      onDragLeave={() => {
+                        setDragOverIdx(null);
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        setDragOverIdx(null);
+                        onDragEnd(group.label, orderedItems);
+                      }}
+                      onDragEnd={() => {
+                        setDragOverIdx(null);
+                        onDragEnd(group.label, orderedItems);
+                      }}
+                      className={`transition-all ${
+                        dragOverIdx?.group === group.label && dragOverIdx?.index === idx
+                          ? "border-t-2 border-primary"
+                          : ""
+                      }`}
+                    >
                       <SidebarMenuButton asChild>
                         <NavLink to={item.url} end={item.url === "/admin"}
                           className="text-muted-foreground hover:text-white hover:bg-white/5 rounded-xl transition-all"
@@ -195,6 +233,17 @@ function AdminSidebar() {
         })}
 
         <div className="mt-auto p-4 border-t border-white/10">
+          {!collapsed && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={resetOrder}
+              className="w-full justify-start text-muted-foreground hover:text-white hover:bg-white/5 rounded-xl mb-2"
+              title="Reset menu order to default"
+            >
+              <RotateCcw className="mr-2 h-4 w-4" />Reset Menu Order
+            </Button>
+          )}
           <Link to="/portal" className="mb-2 block">
             <Button variant="ghost" size="sm" className="w-full justify-start text-muted-foreground hover:text-white hover:bg-white/5 rounded-xl">
               <Eye className="mr-2 h-4 w-4" />{!collapsed && "Client View"}
