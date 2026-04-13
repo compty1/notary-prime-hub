@@ -95,6 +95,7 @@ const sidebarGroups = [
     items: [
       { title: "Live Chat", url: "/admin/chat", icon: MessageSquare, adminOnly: true },
       { title: "Email Management", url: "/admin/email-management", icon: Mail, adminOnly: true },
+      { title: "Messaging Hub", url: "/admin/messaging-hub", icon: Bell, adminOnly: true },
     ],
   },
   {
