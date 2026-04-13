@@ -22,7 +22,7 @@ const BUSINESS_SERVICES = [
 export default function BusinessContractsServices() {
   return (
     <PageErrorBoundary pageName="Business Contracts">
-      <PageShell title="Business Contracts" description="Professional business document notarization services">
+      <PageShell>
         <div className="container mx-auto px-4 py-8 max-w-5xl">
           <Badge className="mb-3 bg-primary/20 text-primary border-primary/30">
             <Briefcase className="h-3 w-3 mr-1" /> Business Contracts

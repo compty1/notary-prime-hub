@@ -24,7 +24,7 @@ const ESTATE_SERVICES = [
 export default function EstatePlanningServices() {
   return (
     <PageErrorBoundary pageName="Estate Planning">
-      <PageShell title="Estate Planning Services" description="Comprehensive estate planning document preparation and notarization">
+      <PageShell>
         <div className="container mx-auto px-4 py-8 max-w-5xl">
           {/* Hero */}
           <div className="mb-8">

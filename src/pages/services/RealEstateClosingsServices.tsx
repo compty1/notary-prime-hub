@@ -31,7 +31,7 @@ const COVERAGE = ["Franklin", "Delaware", "Madison", "Pickaway", "Union", "Fayet
 export default function RealEstateClosingsServices() {
   return (
     <PageErrorBoundary pageName="Real Estate Closings">
-      <PageShell title="Real Estate Closings" description="Professional mobile closing and loan signing services">
+      <PageShell>
         <div className="container mx-auto px-4 py-8 max-w-5xl">
           <Badge className="mb-3 bg-primary/20 text-primary border-primary/30">
             <Home className="h-3 w-3 mr-1" /> Real Estate Closings
