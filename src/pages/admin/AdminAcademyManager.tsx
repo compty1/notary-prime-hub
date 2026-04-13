@@ -343,13 +343,8 @@ function CertificatesTab({ courseId }: { courseId: string }) {
   const { data: certs = [], isLoading } = useQuery({
     queryKey: ["admin-certs", courseId],
     queryFn: async () => {
-      const { data } = await supabase.from("academy_certificates").select("*, profiles!academy_certificates_user_id_fkey(full_name, email)").eq("course_id", courseId).order("issued_at", { ascending: false });
-      // Fallback: if FK join fails, fetch without it
-      if (!data) {
-        const { data: d2 } = await supabase.from("academy_certificates").select("*").eq("course_id", courseId).order("issued_at", { ascending: false });
-        return d2 || [];
-      }
-      return data;
+      const { data } = await supabase.from("academy_certificates").select("*").eq("course_id", courseId).order("issued_at", { ascending: false });
+      return data || [];
     },
   });
 
