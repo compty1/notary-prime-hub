@@ -225,6 +225,32 @@ const CourtFormPreparation = lazyRetry(() => import("./pages/services/CourtFormP
 const ProcessServingService = lazyRetry(() => import("./pages/services/ProcessServingService"));
 const CourierService = lazyRetry(() => import("./pages/services/CourierService"));
 
+// Sprint 2: New service intake pages
+const StandardTranslation = lazyRetry(() => import("./pages/services/StandardTranslation"));
+const CertifiedTranslation = lazyRetry(() => import("./pages/services/CertifiedTranslation"));
+const CourtCertifiedTranslation = lazyRetry(() => import("./pages/services/CourtCertifiedTranslation"));
+const CredentialEvaluation = lazyRetry(() => import("./pages/services/CredentialEvaluation"));
+const BusinessSubscriptions = lazyRetry(() => import("./pages/services/BusinessSubscriptions"));
+const ApiIntegration = lazyRetry(() => import("./pages/services/ApiIntegration"));
+const WhiteLabelPartner = lazyRetry(() => import("./pages/services/WhiteLabelPartner"));
+const TemplateLibrary = lazyRetry(() => import("./pages/services/TemplateLibrary"));
+const RonOnboardingConsulting = lazyRetry(() => import("./pages/services/RonOnboardingConsulting"));
+const WorkflowAudit = lazyRetry(() => import("./pages/services/WorkflowAudit"));
+const EmailManagement = lazyRetry(() => import("./pages/services/EmailManagement"));
+const CertifiedDocPrepAgencies = lazyRetry(() => import("./pages/services/CertifiedDocPrepAgencies"));
+const RegisteredAgent = lazyRetry(() => import("./pages/services/RegisteredAgent"));
+const DataEntry = lazyRetry(() => import("./pages/services/DataEntry"));
+const TravelArrangements = lazyRetry(() => import("./pages/services/TravelArrangements"));
+const BlogWriting = lazyRetry(() => import("./pages/services/BlogWriting"));
+const SocialMediaContent = lazyRetry(() => import("./pages/services/SocialMediaContent"));
+const NewsletterDesign = lazyRetry(() => import("./pages/services/NewsletterDesign"));
+const MarketResearch = lazyRetry(() => import("./pages/services/MarketResearch"));
+const LeadGeneration = lazyRetry(() => import("./pages/services/LeadGeneration"));
+const EmailSupport = lazyRetry(() => import("./pages/services/EmailSupport"));
+const LiveChatSupport = lazyRetry(() => import("./pages/services/LiveChatSupport"));
+const WebsiteContentUpdates = lazyRetry(() => import("./pages/services/WebsiteContentUpdates"));
+const UxAudit = lazyRetry(() => import("./pages/services/UxAudit"));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
