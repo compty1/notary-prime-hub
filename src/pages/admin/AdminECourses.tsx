@@ -188,6 +188,12 @@ export default function AdminECourses() {
             )}
           </CardContent></Card>
         </TabsContent>
+
+        <TabsContent value="academy">
+          <Suspense fallback={<div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin" /></div>}>
+            <AdminAcademyManager />
+          </Suspense>
+        </TabsContent>
       </Tabs>
 
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
