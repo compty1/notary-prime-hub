@@ -194,6 +194,25 @@ const Security = lazyRetry(() => import("./pages/Security"));
 const Accessibility = lazyRetry(() => import("./pages/Accessibility"));
 const NotaryPage = lazyRetry(() => import("./pages/NotaryPage"));
 const NotaryDirectory = lazyRetry(() => import("./pages/NotaryDirectory"));
+const ClericalDocPrep = lazyRetry(() => import("./pages/services/ClericalDocPrep"));
+const DocumentCleanup = lazyRetry(() => import("./pages/services/DocumentCleanup"));
+const FormFilling = lazyRetry(() => import("./pages/services/FormFilling"));
+const PdfServices = lazyRetry(() => import("./pages/services/PdfServices"));
+const DocumentScanning = lazyRetry(() => import("./pages/services/DocumentScanning"));
+const DocumentTranslation = lazyRetry(() => import("./pages/services/DocumentTranslation"));
+const ApostilleCoordination = lazyRetry(() => import("./pages/services/ApostilleCoordination"));
+const ConsularLegalization = lazyRetry(() => import("./pages/services/ConsularLegalization"));
+const KycVerification = lazyRetry(() => import("./pages/services/KycVerification"));
+const BackgroundCheckService = lazyRetry(() => import("./pages/services/BackgroundCheck"));
+const PassportPhoto = lazyRetry(() => import("./pages/services/PassportPhoto"));
+const FingerprintingService = lazyRetry(() => import("./pages/services/Fingerprinting"));
+const InterpreterServices = lazyRetry(() => import("./pages/services/InterpreterServices"));
+const DocumentPrinting = lazyRetry(() => import("./pages/services/DocumentPrinting"));
+const EstatePlanningService = lazyRetry(() => import("./pages/services/EstatePlanningService"));
+const BusinessFormationService = lazyRetry(() => import("./pages/services/BusinessFormationService"));
+const CourtFormPreparation = lazyRetry(() => import("./pages/services/CourtFormPreparation"));
+const ProcessServingService = lazyRetry(() => import("./pages/services/ProcessServingService"));
+const CourierService = lazyRetry(() => import("./pages/services/CourierService"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
