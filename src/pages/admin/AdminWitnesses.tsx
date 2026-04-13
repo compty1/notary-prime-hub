@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Users, RefreshCw, AlertTriangle, CheckCircle } from "lucide-react";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { format } from "date-fns";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 export default function AdminWitnesses() {
   usePageMeta({ title: "Witness Services", noIndex: true });
@@ -30,7 +31,8 @@ export default function AdminWitnesses() {
   };
 
   return (
-    <div className="space-y-6">
+    <DashboardEnhancer category="witnesses">
+      <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -94,5 +96,6 @@ export default function AdminWitnesses() {
         </CardContent>
       </Card>
     </div>
+    </DashboardEnhancer>
   );
 }

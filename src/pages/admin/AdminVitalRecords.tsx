@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollText, Plus, Search, Loader2 } from "lucide-react";
 import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 const statusColors: Record<string, string> = { intake: "bg-yellow-100 text-yellow-800", submitted: "bg-blue-100 text-blue-800", processing: "bg-purple-100 text-purple-800", received: "bg-emerald-100 text-emerald-800", delivered: "bg-gray-100 text-gray-800" };
 const recordTypes = ["birth_certificate", "death_certificate", "marriage_certificate", "divorce_decree", "adoption_record"];
@@ -48,7 +49,8 @@ export default function AdminVitalRecords() {
   };
 
   return (
-    <div className="space-y-6">
+    <DashboardEnhancer category="vital-records">
+      <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div><h1 className="text-2xl font-black tracking-tight">Vital Records</h1><p className="text-sm text-muted-foreground">Birth, death, marriage & divorce record requests</p></div>
         <Button onClick={() => setCreateOpen(true)} className="gap-2 rounded-xl"><Plus className="h-4 w-4" /> New Request</Button>
@@ -88,5 +90,6 @@ export default function AdminVitalRecords() {
         <DialogFooter><Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button><Button onClick={handleCreate} disabled={saving}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Create</Button></DialogFooter>
       </DialogContent></Dialog>
     </div>
+    </DashboardEnhancer>
   );
 }

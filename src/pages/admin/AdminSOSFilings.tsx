@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState } from "react";
 import { format } from "date-fns";
 import { Building2 } from "lucide-react";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 export default function AdminSOSFilings() {
   usePageMeta({ title: "SOS Filings", noIndex: true });
@@ -24,7 +25,8 @@ export default function AdminSOSFilings() {
   });
 
   return (
-    <div className="space-y-6">
+    <DashboardEnhancer category="sos-filings">
+      <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Building2 className="h-6 w-6 text-primary" />
         <div>
@@ -68,5 +70,6 @@ export default function AdminSOSFilings() {
         </div>
       )}
     </div>
+    </DashboardEnhancer>
   );
 }

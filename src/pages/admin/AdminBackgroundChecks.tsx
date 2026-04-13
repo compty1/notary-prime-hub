@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ShieldCheck, Plus, Search, Loader2, Fingerprint } from "lucide-react";
 import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 const statusColors: Record<string, string> = { pending: "bg-yellow-100 text-yellow-800", submitted: "bg-blue-100 text-blue-800", processing: "bg-purple-100 text-purple-800", completed: "bg-emerald-100 text-emerald-800", rejected: "bg-red-100 text-red-800" };
 
@@ -48,7 +49,8 @@ export default function AdminBackgroundChecks() {
   };
 
   return (
-    <div className="space-y-6">
+    <DashboardEnhancer category="background-check">
+      <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div><h1 className="text-2xl font-black tracking-tight">Background Checks</h1><p className="text-sm text-muted-foreground">BCI/FBI background check processing</p></div>
         <Button onClick={() => setCreateOpen(true)} className="gap-2 rounded-xl"><Plus className="h-4 w-4" /> New Check</Button>
@@ -86,5 +88,6 @@ export default function AdminBackgroundChecks() {
         <DialogFooter><Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button><Button onClick={handleCreate} disabled={saving}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Create</Button></DialogFooter>
       </DialogContent></Dialog>
     </div>
+    </DashboardEnhancer>
   );
 }

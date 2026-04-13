@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { PenLine, Plus, Search, Loader2, AlertTriangle } from "lucide-react";
 import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 const statusColors: Record<string, string> = { pending: "bg-yellow-100 text-yellow-800", typing: "bg-blue-100 text-blue-800", review: "bg-purple-100 text-purple-800", completed: "bg-emerald-100 text-emerald-800" };
 
@@ -48,7 +49,8 @@ export default function AdminScrivener() {
   };
 
   return (
-    <div className="space-y-6">
+    <DashboardEnhancer category="scrivener">
+      <div className="space-y-6">
       <Card className="border-amber-200 bg-amber-50 dark:bg-amber-950/20"><CardContent className="flex items-center gap-3 py-3">
         <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0" />
         <p className="text-sm text-amber-800 dark:text-amber-200"><strong>UPL Compliance:</strong> This service provides document typing ONLY. No legal advice, form selection guidance, or content recommendations are permitted.</p>
@@ -93,5 +95,6 @@ export default function AdminScrivener() {
         <DialogFooter><Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button><Button onClick={handleCreate} disabled={saving || !form.upl_acknowledgment}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Create</Button></DialogFooter>
       </DialogContent></Dialog>
     </div>
+    </DashboardEnhancer>
   );
 }

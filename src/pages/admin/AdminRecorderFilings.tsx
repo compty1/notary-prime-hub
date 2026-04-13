@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState } from "react";
 import { format } from "date-fns";
 import { FileText } from "lucide-react";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 const statusColors: Record<string, string> = { pending: "secondary", submitted: "default", recorded: "default", rejected: "destructive" };
 
@@ -26,7 +27,8 @@ export default function AdminRecorderFilings() {
   });
 
   return (
-    <div className="space-y-6">
+    <DashboardEnhancer category="recorder-filings">
+      <div className="space-y-6">
       <div className="flex items-center gap-3">
         <FileText className="h-6 w-6 text-primary" />
         <div>
@@ -72,5 +74,6 @@ export default function AdminRecorderFilings() {
         </div>
       )}
     </div>
+    </DashboardEnhancer>
   );
 }

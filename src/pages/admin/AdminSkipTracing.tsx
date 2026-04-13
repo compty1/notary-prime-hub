@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Crosshair, Plus, Search, Loader2, MapPin, Phone, Mail } from "lucide-react";
 import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 const statusColors: Record<string, string> = { pending: "bg-yellow-100 text-yellow-800", searching: "bg-blue-100 text-blue-800", found: "bg-emerald-100 text-emerald-800", not_found: "bg-red-100 text-red-800" };
 
@@ -47,7 +48,8 @@ export default function AdminSkipTracing() {
   };
 
   return (
-    <div className="space-y-6">
+    <DashboardEnhancer category="skip-tracing">
+      <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div><h1 className="text-2xl font-black tracking-tight">Skip Tracing</h1><p className="text-sm text-muted-foreground">Locate individuals for legal service of process</p></div>
         <Button onClick={() => setCreateOpen(true)} className="gap-2 rounded-xl"><Plus className="h-4 w-4" /> New Request</Button>
@@ -85,5 +87,6 @@ export default function AdminSkipTracing() {
         <DialogFooter><Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button><Button onClick={handleCreate} disabled={saving}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Create</Button></DialogFooter>
       </DialogContent></Dialog>
     </div>
+    </DashboardEnhancer>
   );
 }

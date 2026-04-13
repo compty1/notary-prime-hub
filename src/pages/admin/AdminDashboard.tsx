@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug, TrendingUp, ShieldCheck, Webhook, FileEdit, Workflow, Globe, Video, Printer, UserCheck, Fingerprint, Scale, Crosshair, Heart, PenLine, Languages, Truck, Award, Home, FileCheck, CalendarCheck, BarChart3, Palette, Camera, Calculator, KeyRound, CheckSquare } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug, TrendingUp, ShieldCheck, Webhook, FileEdit, Workflow, Globe, Video, Printer, UserCheck, Fingerprint, Scale, Crosshair, Heart, PenLine, Languages, Truck, Award, Home, FileCheck, CalendarCheck, BarChart3, Palette, Camera, Calculator, KeyRound, CheckSquare, Wrench } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { AdminNotificationCenter } from "@/components/AdminNotificationCenter";
 import { Logo } from "@/components/Logo";
@@ -85,6 +85,8 @@ const sidebarGroups = [
       { title: "Vendors", url: "/admin/vendors", icon: Building2, adminOnly: true },
       { title: "Vendor Products", url: "/admin/vendor-products", icon: Package, adminOnly: true },
       { title: "Print Pricing", url: "/admin/print-pricing", icon: DollarSign, adminOnly: true },
+      { title: "Equipment", url: "/admin/equipment", icon: Wrench, adminOnly: true },
+      { title: "E-Courses", url: "/admin/e-courses", icon: GraduationCap, adminOnly: true },
     ],
   },
   {

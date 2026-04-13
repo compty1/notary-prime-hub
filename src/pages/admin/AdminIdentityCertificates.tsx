@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Award, Plus, Search, Loader2, ShieldCheck } from "lucide-react";
 import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 const statusColors: Record<string, string> = { active: "bg-emerald-100 text-emerald-800", expired: "bg-yellow-100 text-yellow-800", revoked: "bg-red-100 text-red-800", pending: "bg-blue-100 text-blue-800" };
 
@@ -42,7 +43,8 @@ export default function AdminIdentityCertificates() {
   };
 
   return (
-    <div className="space-y-6">
+    <DashboardEnhancer category="identity-certificates">
+      <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div><h1 className="text-2xl font-black tracking-tight">Identity Certificates</h1><p className="text-sm text-muted-foreground">Certificate generation, registry & verification</p></div>
         <Button onClick={() => setCreateOpen(true)} className="gap-2 rounded-xl"><Plus className="h-4 w-4" /> Issue Certificate</Button>
@@ -73,5 +75,6 @@ export default function AdminIdentityCertificates() {
         <DialogFooter><Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button><Button onClick={handleCreate} disabled={saving}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Issue</Button></DialogFooter>
       </DialogContent></Dialog>
     </div>
+    </DashboardEnhancer>
   );
 }

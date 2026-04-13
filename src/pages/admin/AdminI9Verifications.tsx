@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { UserCheck, Plus, Search, Loader2, Building2, FileText, Calendar } from "lucide-react";
 import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 import { formatDate } from "@/lib/utils";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800",
@@ -102,7 +103,8 @@ export default function AdminI9Verifications() {
   const [selectedDocs, setSelectedDocs] = useState<{ listA: string[]; listB: string[]; listC: string[] }>({ listA: [], listB: [], listC: [] });
 
   return (
-    <div className="space-y-6">
+    <DashboardEnhancer category="i9-verification">
+      <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black tracking-tight">I-9 Verifications</h1>
@@ -283,5 +285,6 @@ export default function AdminI9Verifications() {
         </DialogContent>
       </Dialog>
     </div>
+    </DashboardEnhancer>
   );
 }

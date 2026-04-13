@@ -16,6 +16,7 @@ import { Package, Plus, Loader2, Truck, FileText, Pencil, ExternalLink, Globe, P
 import { motion } from "framer-motion";
 
 import { apostilleStatusColors as statusColors } from "@/lib/statusColors";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 const statusFlow = ["intake", "payment_received", "submitted_to_sos", "processing", "shipped", "delivered"];
 
@@ -201,7 +202,8 @@ export default function AdminApostille() {
   };
 
   return (
-    <div>
+    <DashboardEnhancer category="apostille">
+      <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="font-sans text-2xl font-bold">Apostille Workflow</h1>
@@ -432,5 +434,6 @@ export default function AdminApostille() {
         </DialogContent>
       </Dialog>
     </div>
+    </DashboardEnhancer>
   );
 }
