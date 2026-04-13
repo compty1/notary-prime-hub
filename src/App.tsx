@@ -78,6 +78,12 @@ const SignageDesigner = lazyRetry(() => import("./pages/design/SignageDesigner")
 const PromoDesigner = lazyRetry(() => import("./pages/design/PromoDesigner"));
 const VendorPortal = lazyRetry(() => import("./pages/VendorPortal"));
 
+// Shop pages
+const ShopLanding = lazyRetry(() => import("./pages/shop/ShopLanding"));
+const ShopPackageDetail = lazyRetry(() => import("./pages/shop/ShopPackageDetail"));
+const ShopAddons = lazyRetry(() => import("./pages/shop/ShopAddons"));
+const ShopCart = lazyRetry(() => import("./pages/shop/ShopCart"));
+
 // Admin pages
 const AdminDashboard = lazyRetry(() => import("./pages/admin/AdminDashboard"));
 const AdminOverview = lazyRetry(() => import("./pages/admin/AdminOverview"));
