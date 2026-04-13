@@ -78,6 +78,12 @@ const SignageDesigner = lazyRetry(() => import("./pages/design/SignageDesigner")
 const PromoDesigner = lazyRetry(() => import("./pages/design/PromoDesigner"));
 const VendorPortal = lazyRetry(() => import("./pages/VendorPortal"));
 
+// Shop pages
+const ShopLanding = lazyRetry(() => import("./pages/shop/ShopLanding"));
+const ShopPackageDetail = lazyRetry(() => import("./pages/shop/ShopPackageDetail"));
+const ShopAddons = lazyRetry(() => import("./pages/shop/ShopAddons"));
+const ShopCart = lazyRetry(() => import("./pages/shop/ShopCart"));
+
 // Admin pages
 const AdminDashboard = lazyRetry(() => import("./pages/admin/AdminDashboard"));
 const AdminOverview = lazyRetry(() => import("./pages/admin/AdminOverview"));
@@ -338,6 +344,10 @@ function AnimatedRoutes() {
       <Route path="/ai-tools" element={<ProtectedRoute><SR msg="AI Tools failed to load"><AITools /></SR></ProtectedRoute>} />
       <Route path="/docudex" element={<ProtectedRoute><SR msg="DocuDex failed to load"><DocuDex /></SR></ProtectedRoute>} />
       <Route path="/print-shop" element={<SR msg="Print shop failed to load"><PrintMarketplace /></SR>} />
+      <Route path="/shop" element={<SR msg="Shop failed to load"><ShopLanding /></SR>} />
+      <Route path="/shop/add-ons" element={<SR msg="Add-ons failed to load"><ShopAddons /></SR>} />
+      <Route path="/shop/cart" element={<SR msg="Cart failed to load"><ShopCart /></SR>} />
+      <Route path="/shop/:tier" element={<SR msg="Package detail failed to load"><ShopPackageDetail /></SR>} />
       <Route path="/pricing-menu" element={<SR msg="Pricing menu failed to load"><PricingMenu /></SR>} />
       <Route path="/design-studio" element={<ProtectedRoute><SR msg="Design studio failed to load"><DesignStudio /></SR></ProtectedRoute>} />
       <Route path="/design/business-cards" element={<ProtectedRoute><SR><BusinessCardDesigner /></SR></ProtectedRoute>} />
