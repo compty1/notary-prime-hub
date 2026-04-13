@@ -5965,6 +5965,162 @@ export type Database = {
           },
         ]
       }
+      shop_addons: {
+        Row: {
+          category: string
+          compatible_tiers: string[] | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          price: number
+          sku: string | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          compatible_tiers?: string[] | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price?: number
+          sku?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          compatible_tiers?: string[] | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price?: number
+          sku?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      shop_cart_items: {
+        Row: {
+          created_at: string
+          id: string
+          item_id: string
+          item_type: string
+          quantity: number
+          user_id: string
+          variation: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_id: string
+          item_type: string
+          quantity?: number
+          user_id: string
+          variation?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_id?: string
+          item_type?: string
+          quantity?: number
+          user_id?: string
+          variation?: string | null
+        }
+        Relationships: []
+      }
+      shop_orders: {
+        Row: {
+          created_at: string
+          id: string
+          items: Json
+          notes: string | null
+          status: string
+          stripe_session_id: string | null
+          total: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          items?: Json
+          notes?: string | null
+          status?: string
+          stripe_session_id?: string | null
+          total?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          items?: Json
+          notes?: string | null
+          status?: string
+          stripe_session_id?: string | null
+          total?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      shop_packages: {
+        Row: {
+          badge: string | null
+          complete_price: number | null
+          created_at: string
+          digital_price: number | null
+          features: Json | null
+          id: string
+          is_active: boolean | null
+          persona_match: string | null
+          physical_price: number | null
+          slug: string
+          sort_order: number | null
+          tagline: string | null
+          tier_name: string
+          updated_at: string
+        }
+        Insert: {
+          badge?: string | null
+          complete_price?: number | null
+          created_at?: string
+          digital_price?: number | null
+          features?: Json | null
+          id?: string
+          is_active?: boolean | null
+          persona_match?: string | null
+          physical_price?: number | null
+          slug: string
+          sort_order?: number | null
+          tagline?: string | null
+          tier_name: string
+          updated_at?: string
+        }
+        Update: {
+          badge?: string | null
+          complete_price?: number | null
+          created_at?: string
+          digital_price?: number | null
+          features?: Json | null
+          id?: string
+          is_active?: boolean | null
+          persona_match?: string | null
+          physical_price?: number | null
+          slug?: string
+          sort_order?: number | null
+          tagline?: string | null
+          tier_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       signnow_documents: {
         Row: {
           appointment_id: string | null
