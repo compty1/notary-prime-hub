@@ -89,9 +89,24 @@ export default function PortalNotaryPageTab() {
   const [uploadingProfile, setUploadingProfile] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [uploadingGallery, setUploadingGallery] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const profileInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+
+  // Resolved signed URLs for previews
+  const [resolvedProfileUrl, setResolvedProfileUrl] = useState<string | null>(null);
+  const [resolvedCoverUrl, setResolvedCoverUrl] = useState<string | null>(null);
+  const [resolvedLogoUrl, setResolvedLogoUrl] = useState<string | null>(null);
+  const [resolvedGalleryUrls, setResolvedGalleryUrls] = useState<string[]>([]);
+
+  const resolveUrl = async (path: string | null): Promise<string | null> => {
+    if (!path) return null;
+    if (path.startsWith("http")) return path;
+    const { data } = await supabase.storage.from("documents").createSignedUrl(path, 3600);
+    return data?.signedUrl || null;
+  };
 
   // Platform services for enrollment
   const [platformServices, setPlatformServices] = useState<PlatformService[]>([]);
@@ -108,7 +123,24 @@ export default function PortalNotaryPageTab() {
         supabase.from("professional_service_enrollments").select("*").eq("professional_user_id", user.id),
         supabase.from("profit_share_transactions").select("id, gross_amount, platform_fee, professional_share, status, created_at").eq("professional_user_id", user.id).order("created_at", { ascending: false }).limit(50),
       ]);
-      if (pageRes.data) { setPage(pageRes.data); setHasPage(true); }
+      if (pageRes.data) {
+        setPage(pageRes.data);
+        setHasPage(true);
+        // Resolve photo URLs for preview
+        const [pUrl, cUrl, lUrl] = await Promise.all([
+          resolveUrl(pageRes.data.profile_photo_path),
+          resolveUrl(pageRes.data.cover_photo_path),
+          resolveUrl(pageRes.data.logo_path),
+        ]);
+        setResolvedProfileUrl(pUrl);
+        setResolvedCoverUrl(cUrl);
+        setResolvedLogoUrl(lUrl);
+        const gallery = Array.isArray(pageRes.data.gallery_photos) ? pageRes.data.gallery_photos : [];
+        if (gallery.length > 0) {
+          const urls = await Promise.all(gallery.map((p: string) => resolveUrl(p)));
+          setResolvedGalleryUrls(urls.filter((u): u is string => !!u));
+        }
+      }
       if (svcRes.data) setPlatformServices(svcRes.data as PlatformService[]);
       if (enrollRes.data) setEnrollments(enrollRes.data);
       if (profitRes.data) {
@@ -127,10 +159,10 @@ export default function PortalNotaryPageTab() {
 
   const updateField = (field: string, value: any) => setPage((prev: any) => ({ ...prev, [field]: value }));
 
-  const handlePhotoUpload = async (file: File, type: "profile" | "cover") => {
+  const handlePhotoUpload = async (file: File, type: "profile" | "cover" | "logo") => {
     if (!user || !page) return;
     if (!ALLOWED_IMAGE_MIMES.has(file.type)) { toast({ title: "Invalid file type. Only JPG, PNG, WebP allowed.", variant: "destructive" }); return; }
-    const setter = type === "profile" ? setUploadingProfile : setUploadingCover;
+    const setter = type === "profile" ? setUploadingProfile : type === "cover" ? setUploadingCover : setUploadingLogo;
     setter(true);
     const ext = file.name.split(".").pop();
     const path = `notary-pages/${page.id}/${type}.${ext}`;
@@ -140,11 +172,15 @@ export default function PortalNotaryPageTab() {
       setter(false);
       return;
     }
-    // S002/DI002: Store storage path (not signed URL) — resolved at display time
-    const field = type === "profile" ? "profile_photo_path" : "cover_photo_path";
-    updateField(field, path);
+    const fieldMap: Record<string, string> = { profile: "profile_photo_path", cover: "cover_photo_path", logo: "logo_path" };
+    updateField(fieldMap[type], path);
+    // Resolve the new URL for preview
+    const signedUrl = await resolveUrl(path);
+    if (type === "profile") setResolvedProfileUrl(signedUrl);
+    else if (type === "cover") setResolvedCoverUrl(signedUrl);
+    else setResolvedLogoUrl(signedUrl);
     setter(false);
-    toast({ title: `${type === "profile" ? "Profile" : "Cover"} photo uploaded` });
+    toast({ title: `${type === "profile" ? "Profile photo" : type === "cover" ? "Cover photo" : "Logo"} uploaded` });
   };
 
   const handleGalleryUpload = async (file: File) => {
@@ -159,6 +195,9 @@ export default function PortalNotaryPageTab() {
     if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); setUploadingGallery(false); return; }
     // S002/DI002: Store path, not signed URL
     updateField("gallery_photos", [...gallery, path]);
+    // Resolve and add to preview URLs
+    const signedUrl = await resolveUrl(path);
+    if (signedUrl) setResolvedGalleryUrls(prev => [...prev, signedUrl]);
     setUploadingGallery(false);
     toast({ title: "Gallery photo added" });
   };
@@ -166,6 +205,7 @@ export default function PortalNotaryPageTab() {
   const removeGalleryPhoto = (index: number) => {
     const gallery: string[] = Array.isArray(page.gallery_photos) ? page.gallery_photos : [];
     updateField("gallery_photos", gallery.filter((_, i) => i !== index));
+    setResolvedGalleryUrls(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSave = async () => {
@@ -181,6 +221,7 @@ export default function PortalNotaryPageTab() {
       website_url: page.website_url,
       profile_photo_path: page.profile_photo_path,
       cover_photo_path: page.cover_photo_path,
+      logo_path: page.logo_path,
       signing_platform_url: page.signing_platform_url,
       use_platform_booking: page.use_platform_booking,
       external_booking_url: page.external_booking_url,
@@ -289,6 +330,7 @@ export default function PortalNotaryPageTab() {
         theme_color: page.theme_color, accent_color: page.accent_color,
         font_family: page.font_family, nav_services: page.nav_services,
         gallery_photos: page.gallery_photos, professional_type: page.professional_type,
+        logo_path: page.logo_path,
       } as any).eq("id", page.id);
       if (!error) setLastAutoSave(new Date());
     }, 30000);
@@ -585,17 +627,45 @@ export default function PortalNotaryPageTab() {
         </CardContent>
       </Card>
 
-      {/* Photos */}
+      {/* Photos & Logo */}
       <Card>
-        <CardHeader><CardTitle className="flex items-center gap-2"><ImageIcon className="h-4 w-4" /> Photos</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="flex items-center gap-2"><ImageIcon className="h-4 w-4" /> Photos & Logo</CardTitle></CardHeader>
         <CardContent className="space-y-4">
+          {/* Logo Upload */}
+          <div>
+            <Label>Business Logo</Label>
+            <p className="text-[10px] text-muted-foreground mb-1">Upload your business logo. Displayed in the header of your public page. PNG/SVG recommended, transparent background preferred.</p>
+            <div className="mt-1 flex items-center gap-3">
+              {resolvedLogoUrl || page.logo_path ? (
+                <img src={resolvedLogoUrl || page.logo_path} alt="Logo" className="h-16 w-auto max-w-[120px] rounded-lg object-contain border p-1" />
+              ) : (
+                <div className="flex h-16 w-24 items-center justify-center rounded-lg border-2 border-dashed bg-muted text-xs text-muted-foreground">No logo</div>
+              )}
+              <div className="flex flex-col gap-1">
+                <input ref={logoInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml" className="hidden"
+                  onChange={e => e.target.files?.[0] && handlePhotoUpload(e.target.files[0], "logo")} />
+                <Button variant="outline" size="sm" onClick={() => logoInputRef.current?.click()} disabled={uploadingLogo}>
+                  {uploadingLogo ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Upload className="h-3 w-3 mr-1" />}
+                  {page.logo_path ? "Replace Logo" : "Upload Logo"}
+                </Button>
+                {page.logo_path && (
+                  <Button variant="ghost" size="sm" className="text-destructive text-xs h-7" onClick={() => { updateField("logo_path", null); setResolvedLogoUrl(null); }}>
+                    <Trash2 className="h-3 w-3 mr-1" /> Remove
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <Label>Profile Photo</Label>
               <p className="text-[10px] text-muted-foreground mb-1">Square image, min 200×200px. JPG/PNG/WebP.</p>
               <div className="mt-1 flex items-center gap-3">
-                {page.profile_photo_path ? (
-                  <img src={page.profile_photo_path} alt="Profile" className="h-16 w-16 rounded-full object-cover border" />
+                {resolvedProfileUrl || page.profile_photo_path ? (
+                  <img src={resolvedProfileUrl || page.profile_photo_path} alt="Profile" className="h-16 w-16 rounded-full object-cover border" />
                 ) : (
                   <div className="flex h-16 w-16 items-center justify-center rounded-full border bg-muted text-xl font-bold text-muted-foreground">
                     {page.display_name?.charAt(0)?.toUpperCase() || "N"}
@@ -609,7 +679,7 @@ export default function PortalNotaryPageTab() {
                     {page.profile_photo_path ? "Replace" : "Upload"}
                   </Button>
                   {page.profile_photo_path && (
-                    <Button variant="ghost" size="sm" className="text-destructive text-xs h-7" onClick={() => updateField("profile_photo_path", null)}>
+                    <Button variant="ghost" size="sm" className="text-destructive text-xs h-7" onClick={() => { updateField("profile_photo_path", null); setResolvedProfileUrl(null); }}>
                       <Trash2 className="h-3 w-3 mr-1" /> Remove
                     </Button>
                   )}
@@ -620,8 +690,8 @@ export default function PortalNotaryPageTab() {
               <Label>Cover Photo</Label>
               <p className="text-[10px] text-muted-foreground mb-1">Recommended 1200×400px landscape. JPG/PNG/WebP.</p>
               <div className="mt-1">
-                {page.cover_photo_path ? (
-                  <img src={page.cover_photo_path} alt="Cover" className="h-24 w-full rounded-lg object-cover border" />
+                {resolvedCoverUrl || page.cover_photo_path ? (
+                  <img src={resolvedCoverUrl || page.cover_photo_path} alt="Cover" className="h-24 w-full rounded-lg object-cover border" />
                 ) : (
                   <div className="flex h-24 items-center justify-center rounded-lg border bg-muted text-sm text-muted-foreground">No cover photo</div>
                 )}
@@ -633,7 +703,7 @@ export default function PortalNotaryPageTab() {
                     {page.cover_photo_path ? "Replace Cover" : "Upload Cover"}
                   </Button>
                   {page.cover_photo_path && (
-                    <Button variant="ghost" size="sm" className="text-destructive text-xs h-7" onClick={() => updateField("cover_photo_path", null)}>
+                    <Button variant="ghost" size="sm" className="text-destructive text-xs h-7" onClick={() => { updateField("cover_photo_path", null); setResolvedCoverUrl(null); }}>
                       <Trash2 className="h-3 w-3 mr-1" /> Remove
                     </Button>
                   )}
@@ -647,7 +717,7 @@ export default function PortalNotaryPageTab() {
           <div>
             <Label className="flex items-center gap-2 mb-2">Gallery Photos <Badge variant="secondary">{(Array.isArray(page.gallery_photos) ? page.gallery_photos : []).length}/6</Badge></Label>
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-              {(Array.isArray(page.gallery_photos) ? page.gallery_photos : []).map((url: string, i: number) => (
+              {resolvedGalleryUrls.map((url: string, i: number) => (
                 <div key={i} className="group relative aspect-square rounded-lg border overflow-hidden">
                   <img src={url} alt={`Gallery ${i + 1}`} className="h-full w-full object-cover" />
                   <button onClick={() => removeGalleryPhoto(i)}

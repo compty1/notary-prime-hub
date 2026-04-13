@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { SERVICE_REGISTRY } from "@/lib/serviceRegistry";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { useSettings } from "@/hooks/useSettings";
 import { PageShell } from "@/components/PageShell";
@@ -58,6 +59,7 @@ interface NotaryPageData {
   bio: string;
   profile_photo_path: string | null;
   cover_photo_path: string | null;
+  logo_path: string | null;
   phone: string;
   email: string;
   website_url: string;
@@ -104,6 +106,7 @@ export default function NotaryPage() {
   const [notFound, setNotFound] = useState(false);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
   const [coverPhotoUrl, setCoverPhotoUrl] = useState<string | null>(null);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [galleryUrls, setGalleryUrls] = useState<string[]>([]);
   const [isOwner, setIsOwner] = useState(false);
   const [serviceLinks, setServiceLinks] = useState<ServiceLink[]>([]);
@@ -120,7 +123,7 @@ export default function NotaryPage() {
       description: page.seo_description || page.tagline,
       telephone: page.phone,
       email: page.email,
-      url: `https://notardex.com/n/${page.slug}`,
+      url: `https://notar.com/n/${page.slug}`,
       areaServed: {
         "@type": "State",
         name: page.credentials?.commissioned_state || "Ohio",
@@ -156,12 +159,14 @@ export default function NotaryPage() {
       if (currentUser && currentUser.id === pageData.user_id) setIsOwner(true);
 
       // Resolve photos in parallel
-      const [profileUrl, coverUrl] = await Promise.all([
+      const [profileUrl, coverUrl, resolvedLogoUrl] = await Promise.all([
         resolveStorageUrl(pageData.profile_photo_path),
         resolveStorageUrl(pageData.cover_photo_path),
+        resolveStorageUrl(pageData.logo_path),
       ]);
       setProfilePhotoUrl(profileUrl);
       setCoverPhotoUrl(coverUrl);
+      setLogoUrl(resolvedLogoUrl);
 
       const gallery = Array.isArray(pageData.gallery_photos) ? pageData.gallery_photos : [];
       if (gallery.length > 0) {
@@ -219,8 +224,19 @@ export default function NotaryPage() {
   const refParam = page.slug;
   const hasSocialLinks = Object.values(socials).some(v => v && String(v).trim().length > 0);
 
-  // Build service link map for quick lookup
-  const svcLinkMap = new Map(serviceLinks.map(s => [s.name.toLowerCase(), s]));
+  // Build service link map — combine DB services + registry for maximum match rate
+  const svcLinkMap = new Map<string, ServiceLink & { registryPath?: string }>();
+  serviceLinks.forEach(s => svcLinkMap.set(s.name.toLowerCase(), s));
+  // Also add registry entries for name-based lookup so services without exact DB matches still link
+  SERVICE_REGISTRY.forEach(r => {
+    const key = r.name.toLowerCase();
+    if (!svcLinkMap.has(key)) {
+      svcLinkMap.set(key, { id: r.id, name: r.name, short_description: null, category: r.category, price_from: null, pricing_model: "flat", registryPath: r.path });
+    } else {
+      const existing = svcLinkMap.get(key)!;
+      (existing as any).registryPath = r.path;
+    }
+  });
 
   let bookingUrl: string | null = null;
   let bookingLabel = "Book Appointment";
@@ -259,6 +275,9 @@ export default function NotaryPage() {
         {/* Sticky Nav */}
         <nav className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" aria-label="Professional page navigation">
           <div className="mx-auto max-w-6xl flex items-center gap-1 overflow-x-auto px-4 py-2">
+            {logoUrl && (
+              <img src={logoUrl} alt={`${page.display_name} logo`} className="h-8 w-auto max-w-[100px] object-contain mr-2 shrink-0" />
+            )}
             <button onClick={() => scrollToSection("about")} className="whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-muted">About</button>
             {services.length > 0 && (
               <button onClick={() => scrollToSection("services")} className="whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-muted">Services</button>
@@ -451,7 +470,7 @@ export default function NotaryPage() {
                       viewport={{ once: true }}
                     >
                       {matched ? (
-                        <Link to={`/services/${matched.id}`} className="block no-underline">
+                        <Link to={(matched as any).registryPath || `/services/${matched.id}`} className="block no-underline">
                           {cardContent}
                         </Link>
                       ) : (
@@ -693,9 +712,12 @@ export default function NotaryPage() {
         <div className="border-t bg-muted/20 no-print">
           <div className="mx-auto max-w-6xl px-4 py-8">
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-              <div className="text-center sm:text-left">
-                <p className="text-sm font-semibold text-foreground">{page.display_name}</p>
-                <p className="text-xs text-muted-foreground">{professionalLabel} — {creds.commissioned_state || "Ohio"}</p>
+              <div className="flex items-center gap-3 text-center sm:text-left">
+                {logoUrl && <img src={logoUrl} alt={`${page.display_name} logo`} className="h-10 w-auto max-w-[80px] object-contain" />}
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{page.display_name}</p>
+                  <p className="text-xs text-muted-foreground">{professionalLabel} — {creds.commissioned_state || "Ohio"}</p>
+                </div>
               </div>
               <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
                 {page.phone && (
