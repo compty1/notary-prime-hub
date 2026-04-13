@@ -6861,13 +6861,89 @@ export type Database = {
         }
         Relationships: []
       }
+      vendor_products: {
+        Row: {
+          base_cost: number | null
+          created_at: string
+          description: string | null
+          enriched_at: string | null
+          enrichment_data: Json | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          margin_percent: number | null
+          min_order_qty: number | null
+          product_name: string
+          product_type: string
+          retail_price: number | null
+          sku: string | null
+          specs: Json | null
+          tags: string[] | null
+          turnaround_days: number | null
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          base_cost?: number | null
+          created_at?: string
+          description?: string | null
+          enriched_at?: string | null
+          enrichment_data?: Json | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          margin_percent?: number | null
+          min_order_qty?: number | null
+          product_name: string
+          product_type?: string
+          retail_price?: number | null
+          sku?: string | null
+          specs?: Json | null
+          tags?: string[] | null
+          turnaround_days?: number | null
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          base_cost?: number | null
+          created_at?: string
+          description?: string | null
+          enriched_at?: string | null
+          enrichment_data?: Json | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          margin_percent?: number | null
+          min_order_qty?: number | null
+          product_name?: string
+          product_type?: string
+          retail_price?: number | null
+          sku?: string | null
+          specs?: Json | null
+          tags?: string[] | null
+          turnaround_days?: number | null
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_products_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vendors: {
         Row: {
+          auto_enrich_enabled: boolean | null
           capabilities: Json | null
           contact_email: string | null
           contact_name: string | null
           contact_phone: string | null
           created_at: string
+          enrichment_api_url: string | null
           id: string
           is_active: boolean
           location: string | null
@@ -6884,11 +6960,13 @@ export type Database = {
           wholesale_pricing: Json | null
         }
         Insert: {
+          auto_enrich_enabled?: boolean | null
           capabilities?: Json | null
           contact_email?: string | null
           contact_name?: string | null
           contact_phone?: string | null
           created_at?: string
+          enrichment_api_url?: string | null
           id?: string
           is_active?: boolean
           location?: string | null
@@ -6905,11 +6983,13 @@ export type Database = {
           wholesale_pricing?: Json | null
         }
         Update: {
+          auto_enrich_enabled?: boolean | null
           capabilities?: Json | null
           contact_email?: string | null
           contact_name?: string | null
           contact_phone?: string | null
           created_at?: string
+          enrichment_api_url?: string | null
           id?: string
           is_active?: boolean
           location?: string | null

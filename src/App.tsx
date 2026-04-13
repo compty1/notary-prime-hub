@@ -155,6 +155,7 @@ const AdminCourtForms = lazyRetry(() => import("./pages/admin/AdminCourtForms"))
 const AdminPermitFilings = lazyRetry(() => import("./pages/admin/AdminPermitFilings"));
 const AdminComplianceCalendars = lazyRetry(() => import("./pages/admin/AdminComplianceCalendars"));
 const AdminVendors = lazyRetry(() => import("./pages/admin/AdminVendors"));
+const AdminVendorProducts = lazyRetry(() => import("./pages/admin/AdminVendorProducts"));
 const AdminPrintPricing = lazyRetry(() => import("./pages/admin/AdminPrintPricing"));
 const AdminPricing = lazyRetry(() => import("./pages/admin/AdminPricing"));
 const AdminOrders = lazyRetry(() => import("./pages/admin/AdminOrders"));
@@ -490,6 +491,7 @@ function AnimatedRoutes() {
         <Route path="permit-filings" element={<SR msg="Permit filings failed to load"><AdminPermitFilings /></SR>} />
         <Route path="compliance-calendars" element={<SR msg="Compliance calendars failed to load"><AdminComplianceCalendars /></SR>} />
         <Route path="vendors" element={<SR msg="Vendors failed to load"><AdminVendors /></SR>} />
+        <Route path="vendor-products" element={<SR msg="Vendor products failed to load"><AdminVendorProducts /></SR>} />
         <Route path="print-pricing" element={<SR msg="Print pricing failed to load"><AdminPrintPricing /></SR>} />
         <Route path="pricing" element={<ProtectedRoute adminOnly><SR msg="Pricing engine failed to load"><AdminPricing /></SR></ProtectedRoute>} />
         <Route path="orders" element={<ProtectedRoute adminOnly><SR msg="Orders failed to load"><AdminOrders /></SR></ProtectedRoute>} />
