@@ -85,6 +85,8 @@ const sidebarGroups = [
       { title: "Vendors", url: "/admin/vendors", icon: Building2, adminOnly: true },
       { title: "Vendor Products", url: "/admin/vendor-products", icon: Package, adminOnly: true },
       { title: "Print Pricing", url: "/admin/print-pricing", icon: DollarSign, adminOnly: true },
+      { title: "Equipment", url: "/admin/equipment", icon: Wrench, adminOnly: true },
+      { title: "E-Courses", url: "/admin/e-courses", icon: GraduationCap, adminOnly: true },
     ],
   },
   {
