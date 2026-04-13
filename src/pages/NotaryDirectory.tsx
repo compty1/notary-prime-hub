@@ -222,7 +222,22 @@ export default function NotaryDirectory() {
                           <div className="mt-3 flex flex-wrap gap-1">
                             {creds.nna_certified && <Badge variant="secondary" className="text-xs gap-1"><Award className="h-3 w-3" /> NNA</Badge>}
                             {creds.ron_certified && <Badge variant="secondary" className="text-xs gap-1"><Shield className="h-3 w-3" /> RON</Badge>}
+                            <CommissionBadge expirationDate={creds.commission_expiration} />
                           </div>
+
+                          {/* Top services */}
+                          {pro.services_offered && Array.isArray(pro.services_offered) && pro.services_offered.length > 0 && (
+                            <div className="mt-2 flex flex-wrap gap-1">
+                              {pro.services_offered.slice(0, 3).map((svc: any, j: number) => (
+                                <Badge key={j} variant="outline" className="text-xs">
+                                  {typeof svc === "string" ? svc : svc.name}
+                                </Badge>
+                              ))}
+                              {pro.services_offered.length > 3 && (
+                                <Badge variant="outline" className="text-xs">+{pro.services_offered.length - 3}</Badge>
+                              )}
+                            </div>
+                          )}
 
                           {areas.length > 0 && (
                             <div className="mt-3 flex flex-wrap gap-1">
