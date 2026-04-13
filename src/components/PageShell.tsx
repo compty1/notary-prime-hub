@@ -8,6 +8,7 @@ import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { MobileFAB } from "@/components/MobileFAB";
 import { AILeadChatbot } from "@/components/AILeadChatbot";
 import LegalGlossaryProvider from "@/components/LegalGlossaryProvider";
+import { PrintStylesheet } from "@/components/PrintStylesheet";
 import { useSettings } from "@/hooks/useSettings";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -56,6 +57,7 @@ export function PageShell({ children, hideNav = false, hideFooter = false }: Pag
       {/* SessionTimeoutWarning is used in RON sessions, not here */}
       {cookieConsentEnabled && <CookieConsent />}
       <OfflineIndicator />
+      <PrintStylesheet />
     </div>
   );
 }
