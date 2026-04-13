@@ -914,6 +914,36 @@ export type Database = {
         }
         Relationships: []
       }
+      client_timeline_events: {
+        Row: {
+          client_id: string
+          created_at: string | null
+          description: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          title: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string | null
+          description?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          title: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string | null
+          description?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          title?: string
+        }
+        Relationships: []
+      }
       compliance_calendars: {
         Row: {
           calendar_name: string
@@ -3024,6 +3054,45 @@ export type Database = {
         }
         Relationships: []
       }
+      growth_resources: {
+        Row: {
+          category: string
+          content_html: string | null
+          created_at: string | null
+          id: string
+          resource_type: string
+          slug: string
+          target_audience: string
+          title: string
+          updated_at: string | null
+          view_count: number | null
+        }
+        Insert: {
+          category?: string
+          content_html?: string | null
+          created_at?: string | null
+          id?: string
+          resource_type?: string
+          slug: string
+          target_audience?: string
+          title: string
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Update: {
+          category?: string
+          content_html?: string | null
+          created_at?: string | null
+          id?: string
+          resource_type?: string
+          slug?: string
+          target_audience?: string
+          title?: string
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Relationships: []
+      }
       i9_verifications: {
         Row: {
           appointment_id: string | null
@@ -4677,6 +4746,39 @@ export type Database = {
           permit_type?: string
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      platform_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string | null
+          entity_id: string | null
+          entity_type: string | null
+          event_type: string
+          id: string
+          payload: Json | null
+          processed: boolean | null
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          event_type: string
+          id?: string
+          payload?: Json | null
+          processed?: boolean | null
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          event_type?: string
+          id?: string
+          payload?: Json | null
+          processed?: boolean | null
         }
         Relationships: []
       }
