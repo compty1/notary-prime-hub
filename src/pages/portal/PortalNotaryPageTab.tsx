@@ -159,10 +159,10 @@ export default function PortalNotaryPageTab() {
 
   const updateField = (field: string, value: any) => setPage((prev: any) => ({ ...prev, [field]: value }));
 
-  const handlePhotoUpload = async (file: File, type: "profile" | "cover") => {
+  const handlePhotoUpload = async (file: File, type: "profile" | "cover" | "logo") => {
     if (!user || !page) return;
     if (!ALLOWED_IMAGE_MIMES.has(file.type)) { toast({ title: "Invalid file type. Only JPG, PNG, WebP allowed.", variant: "destructive" }); return; }
-    const setter = type === "profile" ? setUploadingProfile : setUploadingCover;
+    const setter = type === "profile" ? setUploadingProfile : type === "cover" ? setUploadingCover : setUploadingLogo;
     setter(true);
     const ext = file.name.split(".").pop();
     const path = `notary-pages/${page.id}/${type}.${ext}`;
@@ -172,11 +172,15 @@ export default function PortalNotaryPageTab() {
       setter(false);
       return;
     }
-    // S002/DI002: Store storage path (not signed URL) — resolved at display time
-    const field = type === "profile" ? "profile_photo_path" : "cover_photo_path";
-    updateField(field, path);
+    const fieldMap: Record<string, string> = { profile: "profile_photo_path", cover: "cover_photo_path", logo: "logo_path" };
+    updateField(fieldMap[type], path);
+    // Resolve the new URL for preview
+    const signedUrl = await resolveUrl(path);
+    if (type === "profile") setResolvedProfileUrl(signedUrl);
+    else if (type === "cover") setResolvedCoverUrl(signedUrl);
+    else setResolvedLogoUrl(signedUrl);
     setter(false);
-    toast({ title: `${type === "profile" ? "Profile" : "Cover"} photo uploaded` });
+    toast({ title: `${type === "profile" ? "Profile photo" : type === "cover" ? "Cover photo" : "Logo"} uploaded` });
   };
 
   const handleGalleryUpload = async (file: File) => {
@@ -191,6 +195,9 @@ export default function PortalNotaryPageTab() {
     if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); setUploadingGallery(false); return; }
     // S002/DI002: Store path, not signed URL
     updateField("gallery_photos", [...gallery, path]);
+    // Resolve and add to preview URLs
+    const signedUrl = await resolveUrl(path);
+    if (signedUrl) setResolvedGalleryUrls(prev => [...prev, signedUrl]);
     setUploadingGallery(false);
     toast({ title: "Gallery photo added" });
   };
@@ -198,6 +205,7 @@ export default function PortalNotaryPageTab() {
   const removeGalleryPhoto = (index: number) => {
     const gallery: string[] = Array.isArray(page.gallery_photos) ? page.gallery_photos : [];
     updateField("gallery_photos", gallery.filter((_, i) => i !== index));
+    setResolvedGalleryUrls(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSave = async () => {
@@ -213,6 +221,7 @@ export default function PortalNotaryPageTab() {
       website_url: page.website_url,
       profile_photo_path: page.profile_photo_path,
       cover_photo_path: page.cover_photo_path,
+      logo_path: page.logo_path,
       signing_platform_url: page.signing_platform_url,
       use_platform_booking: page.use_platform_booking,
       external_booking_url: page.external_booking_url,
