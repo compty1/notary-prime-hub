@@ -68,11 +68,9 @@ export default function AcademyCourseDetail() {
   });
 
   const { data: lessonProgress = [] } = useQuery({
-    queryKey: ["lesson-progress", course?.id, user?.id],
-    enabled: !!course?.id && !!user?.id,
+    queryKey: ["lesson-progress", course?.id, user?.id, modules.length],
+    enabled: !!course?.id && !!user?.id && modules.length > 0,
     queryFn: async () => {
-      const moduleIds = modules.map((m: any) => m.id);
-      if (moduleIds.length === 0) return [];
       const allLessonIds = modules.flatMap((m: any) => m.academy_lessons.map((l: any) => l.id));
       if (allLessonIds.length === 0) return [];
       const { data } = await supabase
