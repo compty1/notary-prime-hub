@@ -626,17 +626,45 @@ export default function PortalNotaryPageTab() {
         </CardContent>
       </Card>
 
-      {/* Photos */}
+      {/* Photos & Logo */}
       <Card>
-        <CardHeader><CardTitle className="flex items-center gap-2"><ImageIcon className="h-4 w-4" /> Photos</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="flex items-center gap-2"><ImageIcon className="h-4 w-4" /> Photos & Logo</CardTitle></CardHeader>
         <CardContent className="space-y-4">
+          {/* Logo Upload */}
+          <div>
+            <Label>Business Logo</Label>
+            <p className="text-[10px] text-muted-foreground mb-1">Upload your business logo. Displayed in the header of your public page. PNG/SVG recommended, transparent background preferred.</p>
+            <div className="mt-1 flex items-center gap-3">
+              {resolvedLogoUrl || page.logo_path ? (
+                <img src={resolvedLogoUrl || page.logo_path} alt="Logo" className="h-16 w-auto max-w-[120px] rounded-lg object-contain border p-1" />
+              ) : (
+                <div className="flex h-16 w-24 items-center justify-center rounded-lg border-2 border-dashed bg-muted text-xs text-muted-foreground">No logo</div>
+              )}
+              <div className="flex flex-col gap-1">
+                <input ref={logoInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml" className="hidden"
+                  onChange={e => e.target.files?.[0] && handlePhotoUpload(e.target.files[0], "logo")} />
+                <Button variant="outline" size="sm" onClick={() => logoInputRef.current?.click()} disabled={uploadingLogo}>
+                  {uploadingLogo ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Upload className="h-3 w-3 mr-1" />}
+                  {page.logo_path ? "Replace Logo" : "Upload Logo"}
+                </Button>
+                {page.logo_path && (
+                  <Button variant="ghost" size="sm" className="text-destructive text-xs h-7" onClick={() => { updateField("logo_path", null); setResolvedLogoUrl(null); }}>
+                    <Trash2 className="h-3 w-3 mr-1" /> Remove
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <Label>Profile Photo</Label>
               <p className="text-[10px] text-muted-foreground mb-1">Square image, min 200×200px. JPG/PNG/WebP.</p>
               <div className="mt-1 flex items-center gap-3">
-                {page.profile_photo_path ? (
-                  <img src={page.profile_photo_path} alt="Profile" className="h-16 w-16 rounded-full object-cover border" />
+                {resolvedProfileUrl || page.profile_photo_path ? (
+                  <img src={resolvedProfileUrl || page.profile_photo_path} alt="Profile" className="h-16 w-16 rounded-full object-cover border" />
                 ) : (
                   <div className="flex h-16 w-16 items-center justify-center rounded-full border bg-muted text-xl font-bold text-muted-foreground">
                     {page.display_name?.charAt(0)?.toUpperCase() || "N"}
@@ -650,7 +678,7 @@ export default function PortalNotaryPageTab() {
                     {page.profile_photo_path ? "Replace" : "Upload"}
                   </Button>
                   {page.profile_photo_path && (
-                    <Button variant="ghost" size="sm" className="text-destructive text-xs h-7" onClick={() => updateField("profile_photo_path", null)}>
+                    <Button variant="ghost" size="sm" className="text-destructive text-xs h-7" onClick={() => { updateField("profile_photo_path", null); setResolvedProfileUrl(null); }}>
                       <Trash2 className="h-3 w-3 mr-1" /> Remove
                     </Button>
                   )}
@@ -661,8 +689,8 @@ export default function PortalNotaryPageTab() {
               <Label>Cover Photo</Label>
               <p className="text-[10px] text-muted-foreground mb-1">Recommended 1200×400px landscape. JPG/PNG/WebP.</p>
               <div className="mt-1">
-                {page.cover_photo_path ? (
-                  <img src={page.cover_photo_path} alt="Cover" className="h-24 w-full rounded-lg object-cover border" />
+                {resolvedCoverUrl || page.cover_photo_path ? (
+                  <img src={resolvedCoverUrl || page.cover_photo_path} alt="Cover" className="h-24 w-full rounded-lg object-cover border" />
                 ) : (
                   <div className="flex h-24 items-center justify-center rounded-lg border bg-muted text-sm text-muted-foreground">No cover photo</div>
                 )}
@@ -674,7 +702,7 @@ export default function PortalNotaryPageTab() {
                     {page.cover_photo_path ? "Replace Cover" : "Upload Cover"}
                   </Button>
                   {page.cover_photo_path && (
-                    <Button variant="ghost" size="sm" className="text-destructive text-xs h-7" onClick={() => updateField("cover_photo_path", null)}>
+                    <Button variant="ghost" size="sm" className="text-destructive text-xs h-7" onClick={() => { updateField("cover_photo_path", null); setResolvedCoverUrl(null); }}>
                       <Trash2 className="h-3 w-3 mr-1" /> Remove
                     </Button>
                   )}
@@ -688,7 +716,7 @@ export default function PortalNotaryPageTab() {
           <div>
             <Label className="flex items-center gap-2 mb-2">Gallery Photos <Badge variant="secondary">{(Array.isArray(page.gallery_photos) ? page.gallery_photos : []).length}/6</Badge></Label>
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-              {(Array.isArray(page.gallery_photos) ? page.gallery_photos : []).map((url: string, i: number) => (
+              {resolvedGalleryUrls.map((url: string, i: number) => (
                 <div key={i} className="group relative aspect-square rounded-lg border overflow-hidden">
                   <img src={url} alt={`Gallery ${i + 1}`} className="h-full w-full object-cover" />
                   <button onClick={() => removeGalleryPhoto(i)}
