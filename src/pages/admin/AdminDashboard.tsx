@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug, TrendingUp, ShieldCheck, Webhook, FileEdit, Workflow, Globe, Video, Printer, UserCheck, Fingerprint, Scale, Crosshair, Heart, PenLine, Languages, Truck, Award, Home, FileCheck, CalendarCheck, BarChart3, Palette, Camera, Calculator } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug, TrendingUp, ShieldCheck, Webhook, FileEdit, Workflow, Globe, Video, Printer, UserCheck, Fingerprint, Scale, Crosshair, Heart, PenLine, Languages, Truck, Award, Home, FileCheck, CalendarCheck, BarChart3, Palette, Camera, Calculator, KeyRound, CheckSquare } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { AdminNotificationCenter } from "@/components/AdminNotificationCenter";
 import { Logo } from "@/components/Logo";
@@ -130,6 +130,8 @@ const sidebarGroups = [
       { title: "Notary Pages", url: "/admin/notary-pages", icon: Globe, adminOnly: true },
       { title: "Professionals", url: "/admin/professionals", icon: Users, adminOnly: true },
       { title: "Build Tracker", url: "/admin/build-tracker", icon: Bug, adminOnly: true },
+      { title: "Credential Vault", url: "/admin/credentials", icon: KeyRound, adminOnly: false },
+      { title: "To-Do List", url: "/admin/todos", icon: CheckSquare, adminOnly: false },
       { title: "Resources", url: "/admin/resources", icon: BookOpen, adminOnly: false },
       { title: "Settings", url: "/admin/settings", icon: Settings, adminOnly: true },
     ],

@@ -41,6 +41,8 @@ import { ReferralPortal } from "@/components/ReferralPortal";
 import PortalAIToolsTab from "./portal/PortalAIToolsTab";
 import PortalNotaryPageTab from "./portal/PortalNotaryPageTab";
 import PortalEmailsTab from "./portal/PortalEmailsTab";
+import CredentialVault from "@/components/CredentialVault";
+import TodoPanel from "@/components/TodoPanel";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 const pipelineSteps = [
   { key: "uploaded", label: "Intake", icon: Upload },
@@ -739,6 +741,20 @@ export default function ClientPortal() {
 
           {activeSection === "my-emails" && (
             <PortalEmailsTab />
+          )}
+
+          {activeSection === "credentials" && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-black text-foreground">Credential Vault</h2>
+              <CredentialVault />
+            </div>
+          )}
+
+          {activeSection === "todos" && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-black text-foreground">To-Do List</h2>
+              <TodoPanel />
+            </div>
           )}
 
             </div>

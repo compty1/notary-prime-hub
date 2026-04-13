@@ -6521,6 +6521,48 @@ export type Database = {
         }
         Relationships: []
       }
+      user_credentials: {
+        Row: {
+          created_at: string
+          email: string | null
+          encrypted_password: string | null
+          id: string
+          notes: string | null
+          service_logo_url: string | null
+          service_name: string
+          service_url: string | null
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          encrypted_password?: string | null
+          id?: string
+          notes?: string | null
+          service_logo_url?: string | null
+          service_name: string
+          service_url?: string | null
+          updated_at?: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          encrypted_password?: string | null
+          id?: string
+          notes?: string | null
+          service_logo_url?: string | null
+          service_name?: string
+          service_url?: string | null
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
       user_favorites: {
         Row: {
           created_at: string
@@ -6636,6 +6678,36 @@ export type Database = {
           status?: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_todos: {
+        Row: {
+          created_at: string
+          id: string
+          is_completed: boolean
+          sort_order: number
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          sort_order?: number
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          sort_order?: number
+          title?: string
           updated_at?: string
           user_id?: string
         }
