@@ -1,5 +1,5 @@
 /**
- * Sprint 9+: Category Tool Panels barrel export — expanded with all service-specific tools
+ * Category Tool Panels barrel export — all service-specific tools
  */
 export { TranslationTools } from "./TranslationTools";
 export { LegalTools } from "./LegalTools";
@@ -27,3 +27,19 @@ export { FingerprintingAdvancedTools } from "./FingerprintingAdvancedTools";
 export { OutreachEmailGenerator } from "./OutreachEmailGenerator";
 export { RealEstateAdvancedTools } from "./RealEstateAdvancedTools";
 export { ProcessServingAdvancedTools } from "./ProcessServingAdvancedTools";
+export { ApostilleAdvancedTools } from "./ApostilleAdvancedTools";
+export { MediationAdvancedTools } from "./MediationAdvancedTools";
+export { InsuranceAdvancedTools } from "./InsuranceAdvancedTools";
+export { EstatePlanningAdvancedTools } from "./EstatePlanningAdvancedTools";
+export { CourierAdvancedTools } from "./CourierAdvancedTools";
+export { LoanSigningAdvancedTools } from "./LoanSigningAdvancedTools";
+export { BackgroundCheckAdvancedTools } from "./BackgroundCheckAdvancedTools";
+export { ScrivenerTools } from "./ScrivenerTools";
+export { SkipTracingTools } from "./SkipTracingTools";
+export { TaxReferralTools } from "./TaxReferralTools";
+export { VATasksTools } from "./VATasksTools";
+export { VitalRecordsTools } from "./VitalRecordsTools";
+export { IdentityCertificateTools } from "./IdentityCertificateTools";
+export { I9VerificationTools } from "./I9VerificationTools";
+export { PowerOfAttorneyTools } from "./PowerOfAttorneyTools";
+export { OathAdministrationTools } from "./OathAdministrationTools";

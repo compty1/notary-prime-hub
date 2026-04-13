@@ -1,6 +1,6 @@
 /**
- * Sprint 10+: Dashboard enhancement wrapper — adds AI workspace tab + category tools
- * to any existing admin service dashboard. Expanded to cover ALL service categories.
+ * Dashboard enhancement wrapper — adds AI workspace tab + category tools
+ * to any existing admin service dashboard. Covers ALL service categories.
  */
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,6 +24,15 @@ import { BackgroundCheckTools } from "@/components/services/tools/BackgroundChec
 import { MediationTools } from "@/components/services/tools/MediationTools";
 import { PhotographyTools } from "@/components/services/tools/PhotographyTools";
 import { CourierTools } from "@/components/services/tools/CourierTools";
+import { ScrivenerTools } from "@/components/services/tools/ScrivenerTools";
+import { SkipTracingTools } from "@/components/services/tools/SkipTracingTools";
+import { TaxReferralTools } from "@/components/services/tools/TaxReferralTools";
+import { VATasksTools } from "@/components/services/tools/VATasksTools";
+import { VitalRecordsTools } from "@/components/services/tools/VitalRecordsTools";
+import { IdentityCertificateTools } from "@/components/services/tools/IdentityCertificateTools";
+import { I9VerificationTools } from "@/components/services/tools/I9VerificationTools";
+import { PowerOfAttorneyTools } from "@/components/services/tools/PowerOfAttorneyTools";
+import { OathAdministrationTools } from "@/components/services/tools/OathAdministrationTools";
 import type { ServiceAICategory } from "@/lib/serviceAIConfigs";
 import { Sparkles, Wrench, LayoutList } from "lucide-react";
 
@@ -62,21 +71,21 @@ const TOOL_COMPONENTS: Partial<Record<ExtendedCategory, React.ComponentType>> = 
   mediation: MediationTools,
   photography: PhotographyTools,
   courier: CourierTools,
-  // These share relevant tool panels:
-  oath: NotaryTools,
+  // Dedicated tool panels:
+  oath: OathAdministrationTools,
   training: NotaryTools,
-  "vital-records": NotaryTools,
-  scrivener: LegalTools,
-  "skip-tracing": ProcessServingTools,
-  "tax-referral": BusinessTools,
-  "va-tasks": BusinessTools,
+  "vital-records": VitalRecordsTools,
+  scrivener: ScrivenerTools,
+  "skip-tracing": SkipTracingTools,
+  "tax-referral": TaxReferralTools,
+  "va-tasks": VATasksTools,
   "permit-filings": LegalTools,
   "recorder-filings": LegalTools,
   "sos-filings": BusinessTools,
-  "identity-certificates": NotaryTools,
+  "identity-certificates": IdentityCertificateTools,
   "certified-copies": NotaryTools,
-  "i9-verification": ImmigrationTools,
-  "power-of-attorney": EstatePlanningTools,
+  "i9-verification": I9VerificationTools,
+  "power-of-attorney": PowerOfAttorneyTools,
   witnesses: NotaryTools,
 };
 
