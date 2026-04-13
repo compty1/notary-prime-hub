@@ -24,3 +24,6 @@ export { DocumentAnatomyTools } from "./DocumentAnatomyTools";
 export { ImmigrationAdvancedTools } from "./ImmigrationAdvancedTools";
 export { ContentAdvancedTools } from "./ContentAdvancedTools";
 export { FingerprintingAdvancedTools } from "./FingerprintingAdvancedTools";
+export { OutreachEmailGenerator } from "./OutreachEmailGenerator";
+export { RealEstateAdvancedTools } from "./RealEstateAdvancedTools";
+export { ProcessServingAdvancedTools } from "./ProcessServingAdvancedTools";
