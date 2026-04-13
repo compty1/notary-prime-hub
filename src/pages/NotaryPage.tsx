@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { SERVICE_REGISTRY } from "@/lib/serviceRegistry";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { useSettings } from "@/hooks/useSettings";
 import { PageShell } from "@/components/PageShell";
@@ -223,8 +224,19 @@ export default function NotaryPage() {
   const refParam = page.slug;
   const hasSocialLinks = Object.values(socials).some(v => v && String(v).trim().length > 0);
 
-  // Build service link map for quick lookup
-  const svcLinkMap = new Map(serviceLinks.map(s => [s.name.toLowerCase(), s]));
+  // Build service link map — combine DB services + registry for maximum match rate
+  const svcLinkMap = new Map<string, ServiceLink & { registryPath?: string }>();
+  serviceLinks.forEach(s => svcLinkMap.set(s.name.toLowerCase(), s));
+  // Also add registry entries for name-based lookup so services without exact DB matches still link
+  SERVICE_REGISTRY.forEach(r => {
+    const key = r.name.toLowerCase();
+    if (!svcLinkMap.has(key)) {
+      svcLinkMap.set(key, { id: r.id, name: r.name, short_description: null, category: r.category, price_from: null, pricing_model: "flat", registryPath: r.path });
+    } else {
+      const existing = svcLinkMap.get(key)!;
+      (existing as any).registryPath = r.path;
+    }
+  });
 
   let bookingUrl: string | null = null;
   let bookingLabel = "Book Appointment";
