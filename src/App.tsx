@@ -84,6 +84,11 @@ const ShopPackageDetail = lazyRetry(() => import("./pages/shop/ShopPackageDetail
 const ShopAddons = lazyRetry(() => import("./pages/shop/ShopAddons"));
 const ShopCart = lazyRetry(() => import("./pages/shop/ShopCart"));
 
+// Service module pages
+const EstatePlanningServices = lazyRetry(() => import("./pages/services/EstatePlanningServices"));
+const BusinessContractsServices = lazyRetry(() => import("./pages/services/BusinessContractsServices"));
+const RealEstateClosingsServices = lazyRetry(() => import("./pages/services/RealEstateClosingsServices"));
+
 // Admin pages
 const AdminDashboard = lazyRetry(() => import("./pages/admin/AdminDashboard"));
 const AdminOverview = lazyRetry(() => import("./pages/admin/AdminOverview"));
@@ -348,6 +353,9 @@ function AnimatedRoutes() {
       <Route path="/shop/add-ons" element={<SR msg="Add-ons failed to load"><ShopAddons /></SR>} />
       <Route path="/shop/cart" element={<SR msg="Cart failed to load"><ShopCart /></SR>} />
       <Route path="/shop/:tier" element={<SR msg="Package detail failed to load"><ShopPackageDetail /></SR>} />
+      <Route path="/services/estate-planning" element={<SR msg="Estate planning failed to load"><EstatePlanningServices /></SR>} />
+      <Route path="/services/business-contracts" element={<SR msg="Business contracts failed to load"><BusinessContractsServices /></SR>} />
+      <Route path="/services/real-estate-closings" element={<SR msg="Real estate closings failed to load"><RealEstateClosingsServices /></SR>} />
       <Route path="/pricing-menu" element={<SR msg="Pricing menu failed to load"><PricingMenu /></SR>} />
       <Route path="/design-studio" element={<ProtectedRoute><SR msg="Design studio failed to load"><DesignStudio /></SR></ProtectedRoute>} />
       <Route path="/design/business-cards" element={<ProtectedRoute><SR><BusinessCardDesigner /></SR></ProtectedRoute>} />
