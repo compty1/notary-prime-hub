@@ -348,6 +348,7 @@ function AnimatedRoutes() {
         <Route path="performance" element={<ProtectedRoute adminOnly><SR msg="Performance failed to load"><AdminPerformance /></SR></ProtectedRoute>} />
         <Route path="compliance-report" element={<ProtectedRoute adminOnly><SR msg="Compliance report failed to load"><AdminComplianceReport /></SR></ProtectedRoute>} />
         <Route path="notary-pages" element={<ProtectedRoute adminOnly><SR msg="Notary pages failed to load"><AdminNotaryPages /></SR></ProtectedRoute>} />
+        <Route path="notary-approval" element={<ProtectedRoute adminOnly><SR msg="Notary approval failed to load"><AdminNotaryApproval /></SR></ProtectedRoute>} />
         <Route path="professionals" element={<ProtectedRoute adminOnly><SR msg="Professionals failed to load"><AdminProfessionals /></SR></ProtectedRoute>} />
         <Route path="automated-emails" element={<ProtectedRoute adminOnly><SR msg="Automated emails failed to load"><AdminAutomatedEmails /></SR></ProtectedRoute>} />
         <Route path="finances" element={<ProtectedRoute adminOnly><SR msg="Finances failed to load"><AdminFinances /></SR></ProtectedRoute>} />
