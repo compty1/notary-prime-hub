@@ -102,6 +102,7 @@ const sidebarGroups = [
     label: "Finance",
     items: [
       { title: "Revenue", url: "/admin/revenue", icon: DollarSign, adminOnly: true },
+      { title: "Accounting", url: "/admin/accounting", icon: Receipt, adminOnly: true },
       { title: "Services Catalog", url: "/admin/services", icon: ShoppingBag, adminOnly: true },
       { title: "Pricing Engine", url: "/admin/pricing", icon: DollarSign, adminOnly: true },
       { title: "UX Consulting", url: "/admin/ux-consulting", icon: Palette, adminOnly: true },
