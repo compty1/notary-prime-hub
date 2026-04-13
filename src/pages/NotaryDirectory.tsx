@@ -89,11 +89,11 @@ export default function NotaryDirectory() {
       p.display_name.toLowerCase().includes(search.toLowerCase()) ||
       (p.service_areas || []).some((a: string) => a.toLowerCase().includes(search.toLowerCase()));
     const matchesType = selectedType === "all" || p.professional_type === selectedType;
-    return matchesSearch && matchesType;
+    const matchesRon = !ronFilter || (p.credentials?.ron_certified === true);
+    return matchesSearch && matchesType && matchesRon;
   }).sort((a, b) => {
     if (sortBy === "name") return a.display_name.localeCompare(b.display_name);
     if (sortBy === "areas") return (b.service_areas?.length || 0) - (a.service_areas?.length || 0);
-    // default: featured first
     return (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0);
   });
 
