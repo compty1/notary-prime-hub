@@ -194,6 +194,25 @@ const Security = lazyRetry(() => import("./pages/Security"));
 const Accessibility = lazyRetry(() => import("./pages/Accessibility"));
 const NotaryPage = lazyRetry(() => import("./pages/NotaryPage"));
 const NotaryDirectory = lazyRetry(() => import("./pages/NotaryDirectory"));
+const ClericalDocPrep = lazyRetry(() => import("./pages/services/ClericalDocPrep"));
+const DocumentCleanup = lazyRetry(() => import("./pages/services/DocumentCleanup"));
+const FormFilling = lazyRetry(() => import("./pages/services/FormFilling"));
+const PdfServices = lazyRetry(() => import("./pages/services/PdfServices"));
+const DocumentScanning = lazyRetry(() => import("./pages/services/DocumentScanning"));
+const DocumentTranslation = lazyRetry(() => import("./pages/services/DocumentTranslation"));
+const ApostilleCoordination = lazyRetry(() => import("./pages/services/ApostilleCoordination"));
+const ConsularLegalization = lazyRetry(() => import("./pages/services/ConsularLegalization"));
+const KycVerification = lazyRetry(() => import("./pages/services/KycVerification"));
+const BackgroundCheckService = lazyRetry(() => import("./pages/services/BackgroundCheck"));
+const PassportPhoto = lazyRetry(() => import("./pages/services/PassportPhoto"));
+const FingerprintingService = lazyRetry(() => import("./pages/services/Fingerprinting"));
+const InterpreterServices = lazyRetry(() => import("./pages/services/InterpreterServices"));
+const DocumentPrinting = lazyRetry(() => import("./pages/services/DocumentPrinting"));
+const EstatePlanningService = lazyRetry(() => import("./pages/services/EstatePlanningService"));
+const BusinessFormationService = lazyRetry(() => import("./pages/services/BusinessFormationService"));
+const CourtFormPreparation = lazyRetry(() => import("./pages/services/CourtFormPreparation"));
+const ProcessServingService = lazyRetry(() => import("./pages/services/ProcessServingService"));
+const CourierService = lazyRetry(() => import("./pages/services/CourierService"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -260,6 +279,26 @@ function AnimatedRoutes() {
       <Route path="/track-apostille" element={<SR msg="Apostille tracker failed to load"><TrackApostille /></SR>} />
       <Route path="/apply" element={<SR msg="Contractor registration failed to load"><ContractorRegistration /></SR>} />
       <Route path="/track-order" element={<SR msg="Order tracking failed to load"><OrderTracking /></SR>} />
+      {/* Sprint 3-5: Service intake routes */}
+      <Route path="/services/clerical-document-preparation" element={<SR><ClericalDocPrep /></SR>} />
+      <Route path="/services/document-cleanup" element={<SR><DocumentCleanup /></SR>} />
+      <Route path="/services/form-filling" element={<SR><FormFilling /></SR>} />
+      <Route path="/services/pdf-services" element={<SR><PdfServices /></SR>} />
+      <Route path="/services/document-scanning" element={<SR><DocumentScanning /></SR>} />
+      <Route path="/services/document-translation" element={<SR><DocumentTranslation /></SR>} />
+      <Route path="/services/apostille-coordination" element={<SR><ApostilleCoordination /></SR>} />
+      <Route path="/services/consular-legalization" element={<SR><ConsularLegalization /></SR>} />
+      <Route path="/services/kyc-verification" element={<SR><KycVerification /></SR>} />
+      <Route path="/services/background-check" element={<SR><BackgroundCheckService /></SR>} />
+      <Route path="/services/passport-photo" element={<SR><PassportPhoto /></SR>} />
+      <Route path="/services/fingerprinting" element={<SR><FingerprintingService /></SR>} />
+      <Route path="/services/interpreter" element={<SR><InterpreterServices /></SR>} />
+      <Route path="/services/document-printing" element={<SR><DocumentPrinting /></SR>} />
+      <Route path="/services/estate-planning" element={<SR><EstatePlanningService /></SR>} />
+      <Route path="/services/business-formation" element={<SR><BusinessFormationService /></SR>} />
+      <Route path="/services/court-form-preparation" element={<SR><CourtFormPreparation /></SR>} />
+      <Route path="/services/process-serving" element={<SR><ProcessServingService /></SR>} />
+      <Route path="/services/courier-service" element={<SR><CourierService /></SR>} />
       <Route path="/glossary" element={<SR msg="Glossary failed to load"><NotaryGlossary /></SR>} />
       <Route path="/solutions/notaries" element={<SR><ForNotaries /></SR>} />
       <Route path="/resources" element={<SR><Resources /></SR>} />
