@@ -12,6 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollText, Plus, Search, Loader2 } from "lucide-react";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
+import { StagePipeline } from "@/components/services/StagePipeline";
 import { format } from "date-fns";
 
 const DOC_TYPES = [
@@ -72,6 +74,7 @@ export default function AdminEstatePlanning() {
   );
 
   return (
+    <DashboardEnhancer category="legal">
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -114,7 +117,7 @@ export default function AdminEstatePlanning() {
                 <TableRow key={r.id}>
                   <TableCell className="font-medium">{DOC_TYPES.find(d => d.value === r.service_name)?.label || r.service_name}</TableCell>
                   <TableCell className="max-w-xs truncate text-sm">{r.notes || "—"}</TableCell>
-                  <TableCell><Badge>{r.status?.replace(/_/g, " ")}</Badge></TableCell>
+                  <TableCell><StagePipeline stages={STATUSES as unknown as string[]} currentStage={r.status || "intake"} /></TableCell>
                   <TableCell className="text-xs text-muted-foreground">{format(new Date(r.created_at), "MMM d, yyyy")}</TableCell>
                 </TableRow>
               ))}
@@ -130,6 +133,7 @@ export default function AdminEstatePlanning() {
         </DialogContent>
       </Dialog>
     </div>
+    </DashboardEnhancer>
   );
 }
 
