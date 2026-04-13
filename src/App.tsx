@@ -494,6 +494,8 @@ function AnimatedRoutes() {
         <Route path="compliance-calendars" element={<SR msg="Compliance calendars failed to load"><AdminComplianceCalendars /></SR>} />
         <Route path="vendors" element={<SR msg="Vendors failed to load"><AdminVendors /></SR>} />
         <Route path="vendor-products" element={<SR msg="Vendor products failed to load"><AdminVendorProducts /></SR>} />
+        <Route path="equipment" element={<SR msg="Equipment failed to load"><AdminEquipment /></SR>} />
+        <Route path="e-courses" element={<SR msg="E-Courses failed to load"><AdminECourses /></SR>} />
         <Route path="print-pricing" element={<SR msg="Print pricing failed to load"><AdminPrintPricing /></SR>} />
         <Route path="pricing" element={<ProtectedRoute adminOnly><SR msg="Pricing engine failed to load"><AdminPricing /></SR></ProtectedRoute>} />
         <Route path="orders" element={<ProtectedRoute adminOnly><SR msg="Orders failed to load"><AdminOrders /></SR></ProtectedRoute>} />
