@@ -242,7 +242,7 @@ export function AIServiceWorkspace({ category, initialContent, onSave, className
                   </Badge>
                 )}
                 <Button variant="ghost" size="sm" onClick={handleCopy} disabled={!output} className="h-7 px-2">
-                  {copied ? <CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copied ? <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> : <Copy className="h-3.5 w-3.5" />}
                 </Button>
                 <Button variant="ghost" size="sm" onClick={handleDownload} disabled={!output} className="h-7 px-2">
                   <Download className="h-3.5 w-3.5" />
