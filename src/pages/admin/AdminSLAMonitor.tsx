@@ -43,8 +43,8 @@ export default function AdminSLAMonitor() {
   // Calculate SLA metrics per service type
   const slaMetrics = Object.entries(SLA_TARGETS).map(([service, target]) => {
     const serviceAppts = appointments.filter((a: any) => a.service_type === service);
-    const serviceOrders = orders.filter((o: any) => o.service_type === service);
-    const allItems = [...serviceAppts, ...serviceOrders];
+    const allItems = [...serviceAppts] as any[];
+    const allItemsCombined = allItems;
 
     if (allItems.length === 0) return { service, ...target, total: 0, met: 0, breached: 0, pending: 0, compliance: 100 };
 
