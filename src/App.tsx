@@ -171,6 +171,11 @@ const AdminPlatformHealth = lazyRetry(() => import("./pages/admin/AdminPlatformH
 const AdminReportsCenter = lazyRetry(() => import("./pages/admin/AdminReportsCenter"));
 const AdminSLAMonitor = lazyRetry(() => import("./pages/admin/AdminSLAMonitor"));
 const AdminPrintPricing = lazyRetry(() => import("./pages/admin/AdminPrintPricing"));
+const AcademyLanding = lazyRetry(() => import("./pages/AcademyLanding"));
+const AcademyCourseDetail = lazyRetry(() => import("./pages/AcademyCourseDetail"));
+const AcademyLessonViewer = lazyRetry(() => import("./pages/AcademyLessonViewer"));
+const AcademyQuiz = lazyRetry(() => import("./pages/AcademyQuiz"));
+const AcademyCertificate = lazyRetry(() => import("./pages/AcademyCertificate"));
 const AdminPricing = lazyRetry(() => import("./pages/admin/AdminPricing"));
 const AdminOrders = lazyRetry(() => import("./pages/admin/AdminOrders"));
 const AdminAnalytics = lazyRetry(() => import("./pages/admin/AdminAnalytics"));
@@ -435,6 +440,11 @@ function AnimatedRoutes() {
       <Route path="/design/signage" element={<ProtectedRoute><SR><SignageDesigner /></SR></ProtectedRoute>} />
       <Route path="/design/promo" element={<ProtectedRoute><SR><PromoDesigner /></SR></ProtectedRoute>} />
       <Route path="/vendor-portal" element={<ProtectedRoute><SR msg="Vendor portal failed to load"><VendorPortal /></SR></ProtectedRoute>} />
+      <Route path="/academy" element={<SR msg="Academy failed to load"><AcademyLanding /></SR>} />
+      <Route path="/academy/course/:slug" element={<SR msg="Course failed to load"><AcademyCourseDetail /></SR>} />
+      <Route path="/academy/lesson/:id" element={<ProtectedRoute><SR msg="Lesson failed to load"><AcademyLessonViewer /></SR></ProtectedRoute>} />
+      <Route path="/academy/quiz/:id" element={<ProtectedRoute><SR msg="Quiz failed to load"><AcademyQuiz /></SR></ProtectedRoute>} />
+      <Route path="/academy/certificate/:id" element={<ProtectedRoute><SR msg="Certificate failed to load"><AcademyCertificate /></SR></ProtectedRoute>} />
       <Route path="/track/:token" element={<SR msg="Session tracker failed to load"><SessionTracker /></SR>} />
       <Route path="/reschedule/:confirmationNumber" element={<SR msg="Reschedule failed to load"><RescheduleAppointment /></SR>} />
       <Route path="/account-settings" element={<ProtectedRoute><SR msg="Account settings failed to load"><AccountSettings /></SR></ProtectedRoute>} />
