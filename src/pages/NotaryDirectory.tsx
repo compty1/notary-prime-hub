@@ -8,9 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, MapPin, Award, Shield, Star, Search, Calendar, User, ChevronLeft, ChevronRight, ArrowUpDown } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Loader2, MapPin, Award, Shield, Star, Search, Calendar, User, ChevronLeft, ChevronRight, ArrowUpDown, Monitor } from "lucide-react";
 import { motion } from "framer-motion";
 import { ensureHex } from "@/lib/colorUtils";
+import { CommissionBadge } from "@/components/CommissionBadge";
 
 const PROFESSIONAL_TYPES: Record<string, string> = {
   notary: "Notary Public",
@@ -146,6 +148,18 @@ export default function NotaryDirectory() {
               <SelectItem value="areas">Most Areas</SelectItem>
             </SelectContent>
           </Select>
+          <label className="flex items-center gap-2 whitespace-nowrap text-sm cursor-pointer">
+            <Checkbox
+              checked={ronFilter}
+              onCheckedChange={(v) => {
+                setRonFilter(!!v);
+                setCurrentPage(1);
+                if (v) searchParams.set("ron", "true"); else searchParams.delete("ron");
+                setSearchParams(searchParams, { replace: true });
+              }}
+            />
+            <Monitor className="h-3 w-3" /> RON Available
+          </label>
         </div>
 
         {loading ? (
