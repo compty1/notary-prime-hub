@@ -68,7 +68,7 @@ export function SmartSuggestionEngine({ className }: { className?: string }) {
         .from("documents")
         .select("id, status")
         .eq("uploaded_by", user.id)
-        .in("status", ["pending", "review"])
+        .in("status", ["uploaded", "pending_review"])
         .limit(5);
 
       if (docs && docs.length > 0) {

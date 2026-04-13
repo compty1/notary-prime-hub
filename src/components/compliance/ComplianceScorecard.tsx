@@ -24,16 +24,16 @@ export function ComplianceScorecard({ className }: { className?: string }) {
     queryKey: ["compliance-scorecard", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data: creds } = await supabase
-        .from("platform_credentials")
+      const { data: creds } = await (supabase
+        .from("platform_credentials" as any)
         .select("*")
-        .eq("user_id", user!.id);
+        .eq("user_id", user!.id) as any);
 
       const items: CredentialItem[] = [];
       const now = new Date();
 
       const checkCred = (label: string, type: string) => {
-        const cred = (creds ?? []).find((c: any) => c.credential_type === type);
+        const cred = ((creds as any[]) ?? []).find((c: any) => c.credential_type === type);
         if (!cred) {
           items.push({ label, status: "missing" });
         } else if (cred.expiration_date) {
