@@ -3,7 +3,7 @@ import { Logo } from "@/components/Logo";
 import {
   LayoutDashboard, FileText, Shield, Clock, FolderOpen, Sparkles, Bell, Package,
   Bot, PenTool, FileEdit, GraduationCap, Stamp, MessageSquare, Mail,
-  DollarSign, Star, ShoppingBag, UserPlus, Settings, LogOut, CheckCircle
+  DollarSign, Star, ShoppingBag, UserPlus, Settings, LogOut, CheckCircle, KeyRound, CheckSquare
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
@@ -63,6 +63,8 @@ const sidebarGroups = [
       { key: "services", label: "Available Services", icon: ShoppingBag },
       { key: "referral", label: "Refer a Friend", icon: UserPlus },
       { key: "my-page", label: "My Notary Page", icon: CheckCircle },
+      { key: "credentials", label: "Credential Vault", icon: KeyRound },
+      { key: "todos", label: "To-Do List", icon: CheckSquare },
     ],
   },
 ];
