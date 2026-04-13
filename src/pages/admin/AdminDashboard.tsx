@@ -25,6 +25,7 @@ const sidebarGroups = [
       { title: "Process Flows", url: "/admin/process-flows", icon: Workflow, adminOnly: true },
       { title: "Analytics", url: "/admin/analytics", icon: TrendingUp, adminOnly: true },
       { title: "Contractors", url: "/admin/contractors", icon: Users, adminOnly: true },
+      { title: "Dispatch", url: "/admin/dispatch", icon: Navigation, adminOnly: true },
       { title: "Performance", url: "/admin/performance", icon: TrendingUp, adminOnly: true },
     ],
   },
