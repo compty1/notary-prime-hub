@@ -117,6 +117,7 @@ export default function AdminECourses() {
         <TabsList>
           <TabsTrigger value="courses">Courses</TabsTrigger>
           <TabsTrigger value="enrollments">Enrollments</TabsTrigger>
+          <TabsTrigger value="academy" className="gap-1"><Layers className="h-3.5 w-3.5" />Academy Builder</TabsTrigger>
         </TabsList>
 
         <TabsContent value="courses" className="space-y-4">
