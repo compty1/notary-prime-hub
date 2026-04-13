@@ -336,6 +336,31 @@ function AnimatedRoutes() {
       <Route path="/services/court-form-preparation" element={<SR><CourtFormPreparation /></SR>} />
       <Route path="/services/process-serving" element={<SR><ProcessServingService /></SR>} />
       <Route path="/services/courier-service" element={<SR><CourierService /></SR>} />
+      {/* Sprint 2: New service intake routes */}
+      <Route path="/services/standard-translation" element={<SR><StandardTranslation /></SR>} />
+      <Route path="/services/certified-translation" element={<SR><CertifiedTranslation /></SR>} />
+      <Route path="/services/court-certified-translation" element={<SR><CourtCertifiedTranslation /></SR>} />
+      <Route path="/services/credential-evaluation" element={<SR><CredentialEvaluation /></SR>} />
+      <Route path="/services/business-subscriptions" element={<SR><BusinessSubscriptions /></SR>} />
+      <Route path="/services/api-integration" element={<SR><ApiIntegration /></SR>} />
+      <Route path="/services/white-label-partner" element={<SR><WhiteLabelPartner /></SR>} />
+      <Route path="/services/template-library" element={<SR><TemplateLibrary /></SR>} />
+      <Route path="/services/ron-onboarding-consulting" element={<SR><RonOnboardingConsulting /></SR>} />
+      <Route path="/services/workflow-audit" element={<SR><WorkflowAudit /></SR>} />
+      <Route path="/services/email-management" element={<SR><EmailManagement /></SR>} />
+      <Route path="/services/certified-doc-prep-agencies" element={<SR><CertifiedDocPrepAgencies /></SR>} />
+      <Route path="/services/registered-agent" element={<SR><RegisteredAgent /></SR>} />
+      <Route path="/services/data-entry" element={<SR><DataEntry /></SR>} />
+      <Route path="/services/travel-arrangements" element={<SR><TravelArrangements /></SR>} />
+      <Route path="/services/blog-writing" element={<SR><BlogWriting /></SR>} />
+      <Route path="/services/social-media-content" element={<SR><SocialMediaContent /></SR>} />
+      <Route path="/services/newsletter-design" element={<SR><NewsletterDesign /></SR>} />
+      <Route path="/services/market-research" element={<SR><MarketResearch /></SR>} />
+      <Route path="/services/lead-generation" element={<SR><LeadGeneration /></SR>} />
+      <Route path="/services/email-support" element={<SR><EmailSupport /></SR>} />
+      <Route path="/services/live-chat-support" element={<SR><LiveChatSupport /></SR>} />
+      <Route path="/services/website-content-updates" element={<SR><WebsiteContentUpdates /></SR>} />
+      <Route path="/services/ux-audit" element={<SR><UxAudit /></SR>} />
       <Route path="/glossary" element={<SR msg="Glossary failed to load"><NotaryGlossary /></SR>} />
       <Route path="/solutions/notaries" element={<SR><ForNotaries /></SR>} />
       <Route path="/resources" element={<SR><Resources /></SR>} />
