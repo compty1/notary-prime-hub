@@ -89,9 +89,24 @@ export default function PortalNotaryPageTab() {
   const [uploadingProfile, setUploadingProfile] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [uploadingGallery, setUploadingGallery] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const profileInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+
+  // Resolved signed URLs for previews
+  const [resolvedProfileUrl, setResolvedProfileUrl] = useState<string | null>(null);
+  const [resolvedCoverUrl, setResolvedCoverUrl] = useState<string | null>(null);
+  const [resolvedLogoUrl, setResolvedLogoUrl] = useState<string | null>(null);
+  const [resolvedGalleryUrls, setResolvedGalleryUrls] = useState<string[]>([]);
+
+  const resolveUrl = async (path: string | null): Promise<string | null> => {
+    if (!path) return null;
+    if (path.startsWith("http")) return path;
+    const { data } = await supabase.storage.from("documents").createSignedUrl(path, 3600);
+    return data?.signedUrl || null;
+  };
 
   // Platform services for enrollment
   const [platformServices, setPlatformServices] = useState<PlatformService[]>([]);
