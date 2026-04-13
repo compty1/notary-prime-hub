@@ -501,17 +501,28 @@ export default function NotaryPage() {
                 <div className="h-8 w-1 rounded-full" style={{ backgroundColor: themeColor }} />
                 Service Areas
               </h2>
-              <div className="flex flex-wrap gap-2">
-                {areas.map((area: string, i: number) => (
-                  <Badge key={i} variant="secondary" className="gap-1 text-sm px-3 py-1.5"><MapPin className="h-3 w-3" /> {area}</Badge>
-                ))}
-              </div>
-              {creds.ron_certified && (
-                <p className="mt-4 text-sm text-muted-foreground flex items-center gap-2">
-                  <Monitor className="h-4 w-4" style={{ color: themeColor }} />
-                  Also available for <strong>Remote Online Notarization</strong> — serve clients anywhere in Ohio via secure video.
-                </p>
-              )}
+              <ServiceAreaMap
+                areas={areas}
+                isRonCertified={!!creds.ron_certified}
+                isMobileNotary={professionalType === "mobile_notary"}
+                themeColor={themeColor}
+              />
+            </div>
+          </section>
+        )}
+
+        {/* ══════ EMBEDDED BOOKING ══════ */}
+        {(page.use_platform_booking || page.external_booking_url) && (
+          <section id="book" className="py-16">
+            <div className="mx-auto max-w-lg px-4">
+              <EmbeddableBookingWidget
+                notarySlug={page.slug}
+                notaryName={page.display_name}
+                services={services.map((s: any) => s.name || s)}
+                themeColor={themeColor}
+                usePlatformBooking={page.use_platform_booking}
+                externalBookingUrl={page.external_booking_url}
+              />
             </div>
           </section>
         )}
