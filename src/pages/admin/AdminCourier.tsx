@@ -50,6 +50,7 @@ export default function AdminCourier() {
   };
 
   return (
+    <DashboardEnhancer category="default">
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div><h1 className="text-2xl font-black tracking-tight">Courier Jobs</h1><p className="text-sm text-muted-foreground">Document delivery with chain of custody tracking</p></div>
@@ -89,5 +90,6 @@ export default function AdminCourier() {
         <DialogFooter><Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button><Button onClick={handleCreate} disabled={saving}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Create</Button></DialogFooter>
       </DialogContent></Dialog>
     </div>
+    </DashboardEnhancer>
   );
 }
