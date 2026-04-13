@@ -595,6 +595,66 @@ export type Database = {
         }
         Relationships: []
       }
+      certified_copies: {
+        Row: {
+          appointment_id: string | null
+          certification_text: string | null
+          client_id: string
+          copy_count: number
+          created_at: string
+          fee_per_copy: number
+          id: string
+          notes: string | null
+          original_document_id: string | null
+          status: string
+          total_fee: number
+          updated_at: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          certification_text?: string | null
+          client_id: string
+          copy_count?: number
+          created_at?: string
+          fee_per_copy?: number
+          id?: string
+          notes?: string | null
+          original_document_id?: string | null
+          status?: string
+          total_fee?: number
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string | null
+          certification_text?: string | null
+          client_id?: string
+          copy_count?: number
+          created_at?: string
+          fee_per_copy?: number
+          id?: string
+          notes?: string | null
+          original_document_id?: string | null
+          status?: string
+          total_fee?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certified_copies_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "certified_copies_original_document_id_fkey"
+            columns: ["original_document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_messages: {
         Row: {
           attachment_url: string | null
@@ -1070,6 +1130,54 @@ export type Database = {
         }
         Relationships: []
       }
+      country_requirements: {
+        Row: {
+          apostille_accepted: boolean
+          consulate_info: string | null
+          country_code: string
+          country_name: string
+          created_at: string
+          estimated_days: number | null
+          fee_range_max: number | null
+          fee_range_min: number | null
+          id: string
+          legalization_required: boolean
+          processing_notes: string | null
+          required_documents: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          apostille_accepted?: boolean
+          consulate_info?: string | null
+          country_code: string
+          country_name: string
+          created_at?: string
+          estimated_days?: number | null
+          fee_range_max?: number | null
+          fee_range_min?: number | null
+          id?: string
+          legalization_required?: boolean
+          processing_notes?: string | null
+          required_documents?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          apostille_accepted?: boolean
+          consulate_info?: string | null
+          country_code?: string
+          country_name?: string
+          created_at?: string
+          estimated_days?: number | null
+          fee_range_max?: number | null
+          fee_range_min?: number | null
+          id?: string
+          legalization_required?: boolean
+          processing_notes?: string | null
+          required_documents?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       courier_jobs: {
         Row: {
           chain_of_custody_log: Json | null
@@ -1249,6 +1357,39 @@ export type Database = {
           created_by?: string | null
           id?: string
           subject?: string | null
+        }
+        Relationships: []
+      }
+      cross_sell_rules: {
+        Row: {
+          created_at: string
+          display_message: string | null
+          id: string
+          is_active: boolean
+          recommended_service_type: string
+          relevance_score: number
+          trigger_service_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_message?: string | null
+          id?: string
+          is_active?: boolean
+          recommended_service_type: string
+          relevance_score?: number
+          trigger_service_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_message?: string | null
+          id?: string
+          is_active?: boolean
+          recommended_service_type?: string
+          relevance_score?: number
+          trigger_service_type?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -2610,6 +2751,62 @@ export type Database = {
         }
         Relationships: []
       }
+      interpreter_sessions: {
+        Row: {
+          appointment_id: string | null
+          client_id: string
+          created_at: string
+          duration_minutes: number | null
+          fee: number | null
+          id: string
+          interpreter_name: string | null
+          language_from: string
+          language_to: string
+          notes: string | null
+          session_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          client_id: string
+          created_at?: string
+          duration_minutes?: number | null
+          fee?: number | null
+          id?: string
+          interpreter_name?: string | null
+          language_from?: string
+          language_to: string
+          notes?: string | null
+          session_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string | null
+          client_id?: string
+          created_at?: string
+          duration_minutes?: number | null
+          fee?: number | null
+          id?: string
+          interpreter_name?: string | null
+          language_from?: string
+          language_to?: string
+          notes?: string | null
+          session_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interpreter_sessions_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       journal_entries: {
         Row: {
           appointment_id: string | null
@@ -3580,6 +3777,62 @@ export type Database = {
         }
         Relationships: []
       }
+      oath_records: {
+        Row: {
+          administered_at: string | null
+          administered_by: string | null
+          appointment_id: string | null
+          client_id: string
+          created_at: string
+          document_description: string | null
+          id: string
+          journal_entry_id: string | null
+          notes: string | null
+          oath_type: string
+          status: string
+          statutory_text: string | null
+          updated_at: string
+        }
+        Insert: {
+          administered_at?: string | null
+          administered_by?: string | null
+          appointment_id?: string | null
+          client_id: string
+          created_at?: string
+          document_description?: string | null
+          id?: string
+          journal_entry_id?: string | null
+          notes?: string | null
+          oath_type?: string
+          status?: string
+          statutory_text?: string | null
+          updated_at?: string
+        }
+        Update: {
+          administered_at?: string | null
+          administered_by?: string | null
+          appointment_id?: string | null
+          client_id?: string
+          created_at?: string
+          document_description?: string | null
+          id?: string
+          journal_entry_id?: string | null
+          notes?: string | null
+          oath_type?: string
+          status?: string
+          statutory_text?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oath_records_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
           created_at: string
@@ -3793,6 +4046,48 @@ export type Database = {
           secret?: string
           updated_at?: string
           url?: string
+        }
+        Relationships: []
+      }
+      passport_photo_jobs: {
+        Row: {
+          client_id: string
+          country_standard: string
+          created_at: string
+          digital_delivery: boolean
+          fee: number
+          id: string
+          notes: string | null
+          photo_count: number
+          print_delivery: boolean
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          country_standard?: string
+          created_at?: string
+          digital_delivery?: boolean
+          fee?: number
+          id?: string
+          notes?: string | null
+          photo_count?: number
+          print_delivery?: boolean
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          country_standard?: string
+          created_at?: string
+          digital_delivery?: boolean
+          fee?: number
+          id?: string
+          notes?: string | null
+          photo_count?: number
+          print_delivery?: boolean
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -6001,6 +6296,42 @@ export type Database = {
           translator_credentials?: string | null
           translator_name?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      travel_zones: {
+        Row: {
+          created_at: string
+          description: string | null
+          fee: number
+          id: string
+          is_active: boolean
+          max_miles: number | null
+          min_miles: number
+          updated_at: string
+          zone_name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          fee?: number
+          id?: string
+          is_active?: boolean
+          max_miles?: number | null
+          min_miles?: number
+          updated_at?: string
+          zone_name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          fee?: number
+          id?: string
+          is_active?: boolean
+          max_miles?: number | null
+          min_miles?: number
+          updated_at?: string
+          zone_name?: string
         }
         Relationships: []
       }
