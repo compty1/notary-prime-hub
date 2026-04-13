@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -47,6 +48,7 @@ export default function AdminProcessServing() {
   };
 
   return (
+    <DashboardEnhancer category="legal">
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div><h1 className="text-2xl font-black tracking-tight">Process Serving</h1><p className="text-sm text-muted-foreground">Case management, attempt tracking & affidavit generation</p></div>
@@ -93,5 +95,6 @@ export default function AdminProcessServing() {
         <DialogFooter><Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button><Button onClick={handleCreate} disabled={saving}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Create</Button></DialogFooter>
       </DialogContent></Dialog>
     </div>
+    </DashboardEnhancer>
   );
 }
