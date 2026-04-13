@@ -116,6 +116,7 @@ const Unsubscribe = lazyRetry(() => import("./pages/Unsubscribe"));
 const AdminWebhooks = lazyRetry(() => import("./pages/admin/AdminWebhooks"));
 const AdminPerformance = lazyRetry(() => import("./pages/admin/AdminPerformance"));
 const AdminNotaryPages = lazyRetry(() => import("./pages/admin/AdminNotaryPages"));
+const AdminNotaryApproval = lazyRetry(() => import("./pages/admin/AdminNotaryApproval"));
 const AdminProfessionals = lazyRetry(() => import("./pages/admin/AdminProfessionals"));
 const AdminComplianceReport = lazyRetry(() => import("./pages/admin/AdminComplianceReport"));
 const AdminAutomatedEmails = lazyRetry(() => import("./pages/admin/AdminAutomatedEmails"));
