@@ -712,9 +712,12 @@ export default function NotaryPage() {
         <div className="border-t bg-muted/20 no-print">
           <div className="mx-auto max-w-6xl px-4 py-8">
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-              <div className="text-center sm:text-left">
-                <p className="text-sm font-semibold text-foreground">{page.display_name}</p>
-                <p className="text-xs text-muted-foreground">{professionalLabel} — {creds.commissioned_state || "Ohio"}</p>
+              <div className="flex items-center gap-3 text-center sm:text-left">
+                {logoUrl && <img src={logoUrl} alt={`${page.display_name} logo`} className="h-10 w-auto max-w-[80px] object-contain" />}
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{page.display_name}</p>
+                  <p className="text-xs text-muted-foreground">{professionalLabel} — {creds.commissioned_state || "Ohio"}</p>
+                </div>
               </div>
               <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
                 {page.phone && (
