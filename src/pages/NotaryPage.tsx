@@ -263,6 +263,9 @@ export default function NotaryPage() {
         {/* Sticky Nav */}
         <nav className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" aria-label="Professional page navigation">
           <div className="mx-auto max-w-6xl flex items-center gap-1 overflow-x-auto px-4 py-2">
+            {logoUrl && (
+              <img src={logoUrl} alt={`${page.display_name} logo`} className="h-8 w-auto max-w-[100px] object-contain mr-2 shrink-0" />
+            )}
             <button onClick={() => scrollToSection("about")} className="whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-muted">About</button>
             {services.length > 0 && (
               <button onClick={() => scrollToSection("services")} className="whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-muted">Services</button>
