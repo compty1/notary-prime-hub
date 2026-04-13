@@ -25,7 +25,7 @@ export default function AdminSLAMonitor() {
     queryKey: ["sla-appointments"],
     queryFn: async () => {
       const { data } = await supabase.from("appointments").select("id, service_type, status, created_at, scheduled_date, scheduled_time, updated_at")
-        .in("status", ["scheduled", "confirmed", "in_progress", "completed", "notarized"])
+        .in("status", ["scheduled", "confirmed", "in_session", "completed"])
         .order("created_at", { ascending: false }).limit(200);
       return data || [];
     },
@@ -34,9 +34,9 @@ export default function AdminSLAMonitor() {
   const { data: orders = [] } = useQuery({
     queryKey: ["sla-orders"],
     queryFn: async () => {
-      const { data } = await supabase.from("orders").select("id, service_type, status, created_at, updated_at")
+      const { data } = await supabase.from("orders").select("id, status, created_at, updated_at")
         .order("created_at", { ascending: false }).limit(200);
-      return data || [];
+      return (data || []) as any[];
     },
   });
 
