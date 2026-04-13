@@ -301,6 +301,8 @@ export type Database = {
           entity_type: string | null
           id: string
           ip_address: string | null
+          new_value_json: Json | null
+          old_value_json: Json | null
           user_id: string | null
         }
         Insert: {
@@ -311,6 +313,8 @@ export type Database = {
           entity_type?: string | null
           id?: string
           ip_address?: string | null
+          new_value_json?: Json | null
+          old_value_json?: Json | null
           user_id?: string | null
         }
         Update: {
@@ -321,6 +325,8 @@ export type Database = {
           entity_type?: string | null
           id?: string
           ip_address?: string | null
+          new_value_json?: Json | null
+          old_value_json?: Json | null
           user_id?: string | null
         }
         Relationships: []
@@ -836,6 +842,39 @@ export type Database = {
           name?: string
           rules?: Json
           updated_at?: string
+        }
+        Relationships: []
+      }
+      consent_logs: {
+        Row: {
+          consent_type: string
+          granted_at: string
+          id: string
+          ip_address: string | null
+          revoked_at: string | null
+          user_agent: string | null
+          user_id: string
+          version: string | null
+        }
+        Insert: {
+          consent_type: string
+          granted_at?: string
+          id?: string
+          ip_address?: string | null
+          revoked_at?: string | null
+          user_agent?: string | null
+          user_id: string
+          version?: string | null
+        }
+        Update: {
+          consent_type?: string
+          granted_at?: string
+          id?: string
+          ip_address?: string | null
+          revoked_at?: string | null
+          user_agent?: string | null
+          user_id?: string
+          version?: string | null
         }
         Relationships: []
       }
@@ -3293,6 +3332,7 @@ export type Database = {
       notary_pages: {
         Row: {
           accent_color: string | null
+          background_check_date: string | null
           bio: string | null
           cover_photo_path: string | null
           created_at: string
@@ -3300,12 +3340,16 @@ export type Database = {
           custom_css: string | null
           display_name: string
           email: string | null
+          eo_expiration: string | null
           external_booking_url: string | null
           font_family: string | null
           gallery_photos: Json | null
+          hours_json: Json | null
           id: string
           is_featured: boolean | null
           is_published: boolean | null
+          languages: Json | null
+          lsa_certifications: Json | null
           nav_services: Json | null
           phone: string | null
           professional_type: string | null
@@ -3319,6 +3363,7 @@ export type Database = {
           signing_platform_url: string | null
           slug: string
           social_links: Json | null
+          status: string
           tagline: string | null
           theme_color: string | null
           title: string | null
@@ -3326,9 +3371,11 @@ export type Database = {
           use_platform_booking: boolean | null
           user_id: string
           website_url: string | null
+          years_experience: number | null
         }
         Insert: {
           accent_color?: string | null
+          background_check_date?: string | null
           bio?: string | null
           cover_photo_path?: string | null
           created_at?: string
@@ -3336,12 +3383,16 @@ export type Database = {
           custom_css?: string | null
           display_name?: string
           email?: string | null
+          eo_expiration?: string | null
           external_booking_url?: string | null
           font_family?: string | null
           gallery_photos?: Json | null
+          hours_json?: Json | null
           id?: string
           is_featured?: boolean | null
           is_published?: boolean | null
+          languages?: Json | null
+          lsa_certifications?: Json | null
           nav_services?: Json | null
           phone?: string | null
           professional_type?: string | null
@@ -3355,6 +3406,7 @@ export type Database = {
           signing_platform_url?: string | null
           slug: string
           social_links?: Json | null
+          status?: string
           tagline?: string | null
           theme_color?: string | null
           title?: string | null
@@ -3362,9 +3414,11 @@ export type Database = {
           use_platform_booking?: boolean | null
           user_id: string
           website_url?: string | null
+          years_experience?: number | null
         }
         Update: {
           accent_color?: string | null
+          background_check_date?: string | null
           bio?: string | null
           cover_photo_path?: string | null
           created_at?: string
@@ -3372,12 +3426,16 @@ export type Database = {
           custom_css?: string | null
           display_name?: string
           email?: string | null
+          eo_expiration?: string | null
           external_booking_url?: string | null
           font_family?: string | null
           gallery_photos?: Json | null
+          hours_json?: Json | null
           id?: string
           is_featured?: boolean | null
           is_published?: boolean | null
+          languages?: Json | null
+          lsa_certifications?: Json | null
           nav_services?: Json | null
           phone?: string | null
           professional_type?: string | null
@@ -3391,6 +3449,7 @@ export type Database = {
           signing_platform_url?: string | null
           slug?: string
           social_links?: Json | null
+          status?: string
           tagline?: string | null
           theme_color?: string | null
           title?: string | null
@@ -3398,6 +3457,7 @@ export type Database = {
           use_platform_booking?: boolean | null
           user_id?: string
           website_url?: string | null
+          years_experience?: number | null
         }
         Relationships: []
       }
@@ -3879,11 +3939,14 @@ export type Database = {
           adjustment_value: number
           conditions: Json
           created_at: string
+          deprecated_at: string | null
+          effective_date: string | null
           id: string
           is_active: boolean | null
           name: string
           priority: number | null
           rule_type: string
+          tier: string | null
           updated_at: string
         }
         Insert: {
@@ -3891,11 +3954,14 @@ export type Database = {
           adjustment_value?: number
           conditions?: Json
           created_at?: string
+          deprecated_at?: string | null
+          effective_date?: string | null
           id?: string
           is_active?: boolean | null
           name: string
           priority?: number | null
           rule_type?: string
+          tier?: string | null
           updated_at?: string
         }
         Update: {
@@ -3903,11 +3969,14 @@ export type Database = {
           adjustment_value?: number
           conditions?: Json
           created_at?: string
+          deprecated_at?: string | null
+          effective_date?: string | null
           id?: string
           is_active?: boolean | null
           name?: string
           priority?: number | null
           rule_type?: string
+          tier?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -4929,6 +4998,8 @@ export type Database = {
           comment: string | null
           created_at: string
           id: string
+          is_verified: boolean
+          notary_id: string | null
           rating: number
         }
         Insert: {
@@ -4937,6 +5008,8 @@ export type Database = {
           comment?: string | null
           created_at?: string
           id?: string
+          is_verified?: boolean
+          notary_id?: string | null
           rating: number
         }
         Update: {
@@ -4945,6 +5018,8 @@ export type Database = {
           comment?: string | null
           created_at?: string
           id?: string
+          is_verified?: boolean
+          notary_id?: string | null
           rating?: number
         }
         Relationships: [
@@ -5473,6 +5548,7 @@ export type Database = {
       services: {
         Row: {
           avg_rating: number | null
+          base_price: number | null
           cancellation_hours: number | null
           category: string
           created_at: string
@@ -5485,17 +5561,22 @@ export type Database = {
           icon: string | null
           id: string
           is_active: boolean
+          is_mobile: boolean
           is_popular: boolean
+          is_ron: boolean
           name: string
           price_from: number | null
           price_to: number | null
           pricing_model: string
           short_description: string | null
+          slug: string | null
+          sort_order: number | null
           updated_at: string
           video_url: string | null
         }
         Insert: {
           avg_rating?: number | null
+          base_price?: number | null
           cancellation_hours?: number | null
           category?: string
           created_at?: string
@@ -5508,17 +5589,22 @@ export type Database = {
           icon?: string | null
           id?: string
           is_active?: boolean
+          is_mobile?: boolean
           is_popular?: boolean
+          is_ron?: boolean
           name: string
           price_from?: number | null
           price_to?: number | null
           pricing_model?: string
           short_description?: string | null
+          slug?: string | null
+          sort_order?: number | null
           updated_at?: string
           video_url?: string | null
         }
         Update: {
           avg_rating?: number | null
+          base_price?: number | null
           cancellation_hours?: number | null
           category?: string
           created_at?: string
@@ -5531,12 +5617,16 @@ export type Database = {
           icon?: string | null
           id?: string
           is_active?: boolean
+          is_mobile?: boolean
           is_popular?: boolean
+          is_ron?: boolean
           name?: string
           price_from?: number | null
           price_to?: number | null
           pricing_model?: string
           short_description?: string | null
+          slug?: string | null
+          sort_order?: number | null
           updated_at?: string
           video_url?: string | null
         }
