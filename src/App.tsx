@@ -168,6 +168,11 @@ const AdminPromoCodeManager = lazyRetry(() => import("./pages/admin/AdminPromoCo
 const AdminSystemHealth = lazyRetry(() => import("./pages/admin/AdminSystemHealth"));
 const TrackApostille = lazyRetry(() => import("./pages/TrackApostille"));
 const AdminRecordingArchive = lazyRetry(() => import("./pages/admin/AdminRecordingArchive"));
+const AdminRonDashboard = lazyRetry(() => import("./pages/admin/AdminRonDashboard"));
+const AdminOathAdministration = lazyRetry(() => import("./pages/admin/AdminOathAdministration"));
+const AdminCertifiedCopies = lazyRetry(() => import("./pages/admin/AdminCertifiedCopies"));
+const AdminTravelZones = lazyRetry(() => import("./pages/admin/AdminTravelZones"));
+const AdminWitnesses = lazyRetry(() => import("./pages/admin/AdminWitnesses"));
 const ContractorRegistration = lazyRetry(() => import("./pages/ContractorRegistration"));
 const OrderTracking = lazyRetry(() => import("./pages/OrderTracking"));
 const AdminOperations = lazyRetry(() => import("./pages/admin/AdminOperations"));
@@ -400,6 +405,11 @@ function AnimatedRoutes() {
         <Route path="recording-archive" element={<SR msg="Recording archive failed to load"><AdminRecordingArchive /></SR>} />
         <Route path="operations" element={<ProtectedRoute adminOnly><SR msg="Operations failed to load"><AdminOperations /></SR></ProtectedRoute>} />
         <Route path="security-center" element={<ProtectedRoute adminOnly><SR msg="Security center failed to load"><AdminSecurityCenter /></SR></ProtectedRoute>} />
+        <Route path="ron-dashboard" element={<ProtectedRoute adminOnly><SR msg="RON dashboard failed to load"><AdminRonDashboard /></SR></ProtectedRoute>} />
+        <Route path="oath-administration" element={<ProtectedRoute adminOnly><SR msg="Oath administration failed to load"><AdminOathAdministration /></SR></ProtectedRoute>} />
+        <Route path="certified-copies" element={<ProtectedRoute adminOnly><SR msg="Certified copies failed to load"><AdminCertifiedCopies /></SR></ProtectedRoute>} />
+        <Route path="travel-zones" element={<ProtectedRoute adminOnly><SR msg="Travel zones failed to load"><AdminTravelZones /></SR></ProtectedRoute>} />
+        <Route path="witnesses" element={<ProtectedRoute adminOnly><SR msg="Witnesses failed to load"><AdminWitnesses /></SR></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="*" element={<NotFound />} />
