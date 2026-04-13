@@ -330,6 +330,7 @@ export default function PortalNotaryPageTab() {
         theme_color: page.theme_color, accent_color: page.accent_color,
         font_family: page.font_family, nav_services: page.nav_services,
         gallery_photos: page.gallery_photos, professional_type: page.professional_type,
+        logo_path: page.logo_path,
       } as any).eq("id", page.id);
       if (!error) setLastAutoSave(new Date());
     }, 30000);

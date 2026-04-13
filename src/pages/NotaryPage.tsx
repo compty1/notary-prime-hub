@@ -58,6 +58,7 @@ interface NotaryPageData {
   bio: string;
   profile_photo_path: string | null;
   cover_photo_path: string | null;
+  logo_path: string | null;
   phone: string;
   email: string;
   website_url: string;
