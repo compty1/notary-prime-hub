@@ -14,7 +14,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { GraduationCap, Plus, Search, Edit, Trash2, Loader2, Users, BookOpen, DollarSign, Star } from "lucide-react";
+import { GraduationCap, Plus, Search, Edit, Trash2, Loader2, Users, BookOpen, DollarSign, Star, Layers } from "lucide-react";
+
+const AdminAcademyManager = lazy(() => import("./AdminAcademyManager"));
 import { format } from "date-fns";
 
 const CATEGORIES = ["notary_fundamentals", "ron_certification", "loan_signing", "ohio_compliance", "business_skills", "technology", "legal_basics", "general"];
