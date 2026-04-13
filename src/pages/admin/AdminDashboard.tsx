@@ -27,6 +27,8 @@ const sidebarGroups = [
       { title: "Contractors", url: "/admin/contractors", icon: Users, adminOnly: true },
       { title: "Dispatch", url: "/admin/dispatch", icon: Navigation, adminOnly: true },
       { title: "Performance", url: "/admin/performance", icon: TrendingUp, adminOnly: true },
+      { title: "Reports", url: "/admin/reports", icon: BarChart3, adminOnly: true },
+      { title: "SLA Monitor", url: "/admin/sla-monitor", icon: Timer, adminOnly: true },
     ],
   },
   {
