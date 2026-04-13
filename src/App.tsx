@@ -164,6 +164,10 @@ const AdminEmbeddableWidgets = lazyRetry(() => import("./pages/admin/AdminEmbedd
 const AdminDispatch = lazyRetry(() => import("./pages/admin/AdminDispatch"));
 const AdminMessagingHub = lazyRetry(() => import("./pages/admin/AdminMessagingHub"));
 const AdminMicroTools = lazyRetry(() => import("./pages/admin/AdminMicroTools"));
+const AdminEventBus = lazyRetry(() => import("./pages/admin/AdminEventBus"));
+const AdminBusinessGrowth = lazyRetry(() => import("./pages/admin/AdminBusinessGrowth"));
+const AdminClientTimeline = lazyRetry(() => import("./pages/admin/AdminClientTimeline"));
+const AdminPlatformHealth = lazyRetry(() => import("./pages/admin/AdminPlatformHealth"));
 const AdminPrintPricing = lazyRetry(() => import("./pages/admin/AdminPrintPricing"));
 const AdminPricing = lazyRetry(() => import("./pages/admin/AdminPricing"));
 const AdminOrders = lazyRetry(() => import("./pages/admin/AdminOrders"));
@@ -535,6 +539,10 @@ function AnimatedRoutes() {
         <Route path="security-center" element={<ProtectedRoute adminOnly><SR msg="Security center failed to load"><AdminSecurityCenter /></SR></ProtectedRoute>} />
         <Route path="credentials" element={<SR msg="Credentials failed to load"><AdminCredentials /></SR>} />
         <Route path="todos" element={<SR msg="Todos failed to load"><AdminTodos /></SR>} />
+        <Route path="event-bus" element={<ProtectedRoute adminOnly><SR msg="Event bus failed to load"><AdminEventBus /></SR></ProtectedRoute>} />
+        <Route path="business-growth" element={<ProtectedRoute adminOnly><SR msg="Business growth failed to load"><AdminBusinessGrowth /></SR></ProtectedRoute>} />
+        <Route path="client-timeline" element={<ProtectedRoute adminOnly><SR msg="Client timeline failed to load"><AdminClientTimeline /></SR></ProtectedRoute>} />
+        <Route path="platform-health" element={<ProtectedRoute adminOnly><SR msg="Platform health failed to load"><AdminPlatformHealth /></SR></ProtectedRoute>} />
         <Route path="ron-dashboard" element={<ProtectedRoute adminOnly><SR msg="RON dashboard failed to load"><AdminRonDashboard /></SR></ProtectedRoute>} />
         <Route path="oath-administration" element={<ProtectedRoute adminOnly><SR msg="Oath administration failed to load"><AdminOathAdministration /></SR></ProtectedRoute>} />
         <Route path="certified-copies" element={<ProtectedRoute adminOnly><SR msg="Certified copies failed to load"><AdminCertifiedCopies /></SR></ProtectedRoute>} />

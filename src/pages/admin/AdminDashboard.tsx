@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug, TrendingUp, ShieldCheck, Webhook, FileEdit, Workflow, Globe, Video, Printer, UserCheck, Fingerprint, Scale, Crosshair, Heart, PenLine, Languages, Truck, Award, Home, FileCheck, CalendarCheck, BarChart3, Palette, Camera, Calculator, KeyRound, CheckSquare, Wrench, Receipt, FolderOpen, Code, Navigation, Bell, Hammer } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug, TrendingUp, ShieldCheck, Webhook, FileEdit, Workflow, Globe, Video, Printer, UserCheck, Fingerprint, Scale, Crosshair, Heart, PenLine, Languages, Truck, Award, Home, FileCheck, CalendarCheck, BarChart3, Palette, Camera, Calculator, KeyRound, CheckSquare, Wrench, Receipt, FolderOpen, Code, Navigation, Bell, Hammer, Zap, Activity, HeartPulse } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { AdminNotificationCenter } from "@/components/AdminNotificationCenter";
 import { Logo } from "@/components/Logo";
@@ -141,6 +141,10 @@ const sidebarGroups = [
       { title: "Build Tracker", url: "/admin/build-tracker", icon: Bug, adminOnly: true },
       { title: "Credential Vault", url: "/admin/credentials", icon: KeyRound, adminOnly: false },
       { title: "To-Do List", url: "/admin/todos", icon: CheckSquare, adminOnly: false },
+      { title: "Event Bus", url: "/admin/event-bus", icon: Zap, adminOnly: true },
+      { title: "Business Growth", url: "/admin/business-growth", icon: TrendingUp, adminOnly: true },
+      { title: "Client Timeline", url: "/admin/client-timeline", icon: Activity, adminOnly: true },
+      { title: "Platform Health", url: "/admin/platform-health", icon: HeartPulse, adminOnly: true },
       { title: "Resources", url: "/admin/resources", icon: BookOpen, adminOnly: false },
       { title: "Settings", url: "/admin/settings", icon: Settings, adminOnly: true },
     ],
