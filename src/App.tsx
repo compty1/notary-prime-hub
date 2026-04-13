@@ -225,6 +225,32 @@ const CourtFormPreparation = lazyRetry(() => import("./pages/services/CourtFormP
 const ProcessServingService = lazyRetry(() => import("./pages/services/ProcessServingService"));
 const CourierService = lazyRetry(() => import("./pages/services/CourierService"));
 
+// Sprint 2: New service intake pages
+const StandardTranslation = lazyRetry(() => import("./pages/services/StandardTranslation"));
+const CertifiedTranslation = lazyRetry(() => import("./pages/services/CertifiedTranslation"));
+const CourtCertifiedTranslation = lazyRetry(() => import("./pages/services/CourtCertifiedTranslation"));
+const CredentialEvaluation = lazyRetry(() => import("./pages/services/CredentialEvaluation"));
+const BusinessSubscriptions = lazyRetry(() => import("./pages/services/BusinessSubscriptions"));
+const ApiIntegration = lazyRetry(() => import("./pages/services/ApiIntegration"));
+const WhiteLabelPartner = lazyRetry(() => import("./pages/services/WhiteLabelPartner"));
+const TemplateLibrary = lazyRetry(() => import("./pages/services/TemplateLibrary"));
+const RonOnboardingConsulting = lazyRetry(() => import("./pages/services/RonOnboardingConsulting"));
+const WorkflowAudit = lazyRetry(() => import("./pages/services/WorkflowAudit"));
+const EmailManagement = lazyRetry(() => import("./pages/services/EmailManagement"));
+const CertifiedDocPrepAgencies = lazyRetry(() => import("./pages/services/CertifiedDocPrepAgencies"));
+const RegisteredAgent = lazyRetry(() => import("./pages/services/RegisteredAgent"));
+const DataEntry = lazyRetry(() => import("./pages/services/DataEntry"));
+const TravelArrangements = lazyRetry(() => import("./pages/services/TravelArrangements"));
+const BlogWriting = lazyRetry(() => import("./pages/services/BlogWriting"));
+const SocialMediaContent = lazyRetry(() => import("./pages/services/SocialMediaContent"));
+const NewsletterDesign = lazyRetry(() => import("./pages/services/NewsletterDesign"));
+const MarketResearch = lazyRetry(() => import("./pages/services/MarketResearch"));
+const LeadGeneration = lazyRetry(() => import("./pages/services/LeadGeneration"));
+const EmailSupport = lazyRetry(() => import("./pages/services/EmailSupport"));
+const LiveChatSupport = lazyRetry(() => import("./pages/services/LiveChatSupport"));
+const WebsiteContentUpdates = lazyRetry(() => import("./pages/services/WebsiteContentUpdates"));
+const UxAudit = lazyRetry(() => import("./pages/services/UxAudit"));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -310,6 +336,31 @@ function AnimatedRoutes() {
       <Route path="/services/court-form-preparation" element={<SR><CourtFormPreparation /></SR>} />
       <Route path="/services/process-serving" element={<SR><ProcessServingService /></SR>} />
       <Route path="/services/courier-service" element={<SR><CourierService /></SR>} />
+      {/* Sprint 2: New service intake routes */}
+      <Route path="/services/standard-translation" element={<SR><StandardTranslation /></SR>} />
+      <Route path="/services/certified-translation" element={<SR><CertifiedTranslation /></SR>} />
+      <Route path="/services/court-certified-translation" element={<SR><CourtCertifiedTranslation /></SR>} />
+      <Route path="/services/credential-evaluation" element={<SR><CredentialEvaluation /></SR>} />
+      <Route path="/services/business-subscriptions" element={<SR><BusinessSubscriptions /></SR>} />
+      <Route path="/services/api-integration" element={<SR><ApiIntegration /></SR>} />
+      <Route path="/services/white-label-partner" element={<SR><WhiteLabelPartner /></SR>} />
+      <Route path="/services/template-library" element={<SR><TemplateLibrary /></SR>} />
+      <Route path="/services/ron-onboarding-consulting" element={<SR><RonOnboardingConsulting /></SR>} />
+      <Route path="/services/workflow-audit" element={<SR><WorkflowAudit /></SR>} />
+      <Route path="/services/email-management" element={<SR><EmailManagement /></SR>} />
+      <Route path="/services/certified-doc-prep-agencies" element={<SR><CertifiedDocPrepAgencies /></SR>} />
+      <Route path="/services/registered-agent" element={<SR><RegisteredAgent /></SR>} />
+      <Route path="/services/data-entry" element={<SR><DataEntry /></SR>} />
+      <Route path="/services/travel-arrangements" element={<SR><TravelArrangements /></SR>} />
+      <Route path="/services/blog-writing" element={<SR><BlogWriting /></SR>} />
+      <Route path="/services/social-media-content" element={<SR><SocialMediaContent /></SR>} />
+      <Route path="/services/newsletter-design" element={<SR><NewsletterDesign /></SR>} />
+      <Route path="/services/market-research" element={<SR><MarketResearch /></SR>} />
+      <Route path="/services/lead-generation" element={<SR><LeadGeneration /></SR>} />
+      <Route path="/services/email-support" element={<SR><EmailSupport /></SR>} />
+      <Route path="/services/live-chat-support" element={<SR><LiveChatSupport /></SR>} />
+      <Route path="/services/website-content-updates" element={<SR><WebsiteContentUpdates /></SR>} />
+      <Route path="/services/ux-audit" element={<SR><UxAudit /></SR>} />
       <Route path="/glossary" element={<SR msg="Glossary failed to load"><NotaryGlossary /></SR>} />
       <Route path="/solutions/notaries" element={<SR><ForNotaries /></SR>} />
       <Route path="/resources" element={<SR><Resources /></SR>} />
