@@ -83,6 +83,7 @@ const sidebarGroups = [
       { title: "Power of Attorney", url: "/admin/power-of-attorney", icon: Scale, adminOnly: true },
       { title: "Print Marketplace", url: "/admin/print-orders", icon: ShoppingBag, adminOnly: true },
       { title: "Vendors", url: "/admin/vendors", icon: Building2, adminOnly: true },
+      { title: "Vendor Products", url: "/admin/vendor-products", icon: Package, adminOnly: true },
       { title: "Print Pricing", url: "/admin/print-pricing", icon: DollarSign, adminOnly: true },
     ],
   },
