@@ -43,10 +43,10 @@ function getServiceAction(s: Service): { url: string; label: string } {
   if (SUBSCRIPTION_SERVICES.has(s.name)) return { url: "/subscribe", label: "View Plans" };
   if (s.name === "White-Label Partner Programs") return { url: "/join", label: "Apply" };
   const isNotary = NOTARY_CATEGORIES.has(s.category);
-  return {
-    url: `/book?service=${encodeURIComponent(s.name)}${!isNotary ? "&type=in_person" : ""}`,
-    label: isNotary ? "Notarize Now" : "Book Now",
-  };
+  if (isNotary) {
+    return { url: `/book?service=${encodeURIComponent(s.name)}`, label: "Notarize Now" };
+  }
+  return { url: `/request?service=${encodeURIComponent(s.name)}`, label: "Request Service" };
 }
 
 function formatPrice(s: Service) {

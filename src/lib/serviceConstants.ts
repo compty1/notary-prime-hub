@@ -53,6 +53,8 @@ export const INTAKE_ONLY_SERVICES = new Set([
   "Newsletter/Magazine Production",
   // Authentication
   "Apostille Coordination",
+  // Business & consulting
+  "Business Formation", "RON Onboarding Consulting", "Workflow Audit & Automation", "Credential Evaluation",
 ]);
 
 export const SAAS_LINKS: Record<string, string> = {
