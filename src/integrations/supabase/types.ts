@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_equipment: {
+        Row: {
+          assigned_to: string | null
+          condition: string
+          created_at: string
+          equipment_name: string
+          equipment_type: string
+          id: string
+          is_active: boolean | null
+          last_maintenance_date: string | null
+          maintenance_notes: string | null
+          next_maintenance_date: string | null
+          purchase_date: string | null
+          purchase_price: number | null
+          serial_number: string | null
+          updated_at: string
+          vendor: string | null
+          warranty_expiry: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          condition?: string
+          created_at?: string
+          equipment_name: string
+          equipment_type?: string
+          id?: string
+          is_active?: boolean | null
+          last_maintenance_date?: string | null
+          maintenance_notes?: string | null
+          next_maintenance_date?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          serial_number?: string | null
+          updated_at?: string
+          vendor?: string | null
+          warranty_expiry?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          condition?: string
+          created_at?: string
+          equipment_name?: string
+          equipment_type?: string
+          id?: string
+          is_active?: boolean | null
+          last_maintenance_date?: string | null
+          maintenance_notes?: string | null
+          next_maintenance_date?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          serial_number?: string | null
+          updated_at?: string
+          vendor?: string | null
+          warranty_expiry?: string | null
+        }
+        Relationships: []
+      }
       admin_saved_filters: {
         Row: {
           created_at: string
@@ -2009,6 +2066,107 @@ export type Database = {
           },
         ]
       }
+      e_course_enrollments: {
+        Row: {
+          certificate_issued: boolean | null
+          completed_at: string | null
+          course_id: string
+          created_at: string
+          id: string
+          progress_percent: number | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          certificate_issued?: boolean | null
+          completed_at?: string | null
+          course_id: string
+          created_at?: string
+          id?: string
+          progress_percent?: number | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          certificate_issued?: boolean | null
+          completed_at?: string | null
+          course_id?: string
+          created_at?: string
+          id?: string
+          progress_percent?: number | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "e_course_enrollments_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "e_courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      e_courses: {
+        Row: {
+          avg_rating: number | null
+          category: string
+          content: Json | null
+          created_at: string
+          description: string | null
+          duration_minutes: number | null
+          enrollment_count: number | null
+          id: string
+          instructor_name: string | null
+          is_free: boolean | null
+          is_published: boolean | null
+          price: number | null
+          slug: string | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          avg_rating?: number | null
+          category?: string
+          content?: Json | null
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          enrollment_count?: number | null
+          id?: string
+          instructor_name?: string | null
+          is_free?: boolean | null
+          is_published?: boolean | null
+          price?: number | null
+          slug?: string | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          avg_rating?: number | null
+          category?: string
+          content?: Json | null
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          enrollment_count?: number | null
+          id?: string
+          instructor_name?: string | null
+          is_free?: boolean | null
+          is_published?: boolean | null
+          price?: number | null
+          slug?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       e_seal_verifications: {
         Row: {
           appointment_id: string | null
@@ -3546,6 +3704,7 @@ export type Database = {
           is_featured: boolean | null
           is_published: boolean | null
           languages: Json | null
+          logo_path: string | null
           lsa_certifications: Json | null
           nav_services: Json | null
           phone: string | null
@@ -3589,6 +3748,7 @@ export type Database = {
           is_featured?: boolean | null
           is_published?: boolean | null
           languages?: Json | null
+          logo_path?: string | null
           lsa_certifications?: Json | null
           nav_services?: Json | null
           phone?: string | null
@@ -3632,6 +3792,7 @@ export type Database = {
           is_featured?: boolean | null
           is_published?: boolean | null
           languages?: Json | null
+          logo_path?: string | null
           lsa_certifications?: Json | null
           nav_services?: Json | null
           phone?: string | null
