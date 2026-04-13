@@ -54,7 +54,7 @@ export default function AdminSLAMonitor() {
       const now = new Date();
       const hoursElapsed = differenceInHours(now, created);
 
-      if (item.status === "completed" || item.status === "notarized" || item.status === "fulfilled") {
+      if (item.status === "completed" || item.status === "fulfilled") {
         const resolved = parseISO(item.updated_at);
         const resolutionHours = differenceInHours(resolved, created);
         if (resolutionHours <= target.target_hours) met++; else breached++;
