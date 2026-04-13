@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Globe, FileText, Languages, Search, Plus, ClipboardList } from "lucide-react";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 
@@ -39,6 +40,7 @@ export default function AdminImmigration() {
   );
 
   return (
+    <DashboardEnhancer category="immigration">
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -120,5 +122,6 @@ export default function AdminImmigration() {
         </TabsContent>
       </Tabs>
     </div>
+    </DashboardEnhancer>
   );
 }

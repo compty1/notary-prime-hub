@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { Home } from "lucide-react";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 const subtypeLabels: Record<string, string> = {
   photography: "Photography", lockbox: "Lockbox", open_house: "Open House",
@@ -51,6 +52,7 @@ export default function AdminRealEstate() {
   );
 
   return (
+    <DashboardEnhancer category="real-estate">
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Home className="h-6 w-6 text-primary" />
@@ -74,5 +76,6 @@ export default function AdminRealEstate() {
         </Tabs>
       )}
     </div>
+    </DashboardEnhancer>
   );
 }

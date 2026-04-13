@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Building2, Plus, Search, Loader2, Eye, FileText, CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
@@ -116,6 +117,7 @@ export default function AdminBusinessFormation() {
   };
 
   return (
+    <DashboardEnhancer category="business">
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -185,6 +187,7 @@ export default function AdminBusinessFormation() {
         </DialogContent>
       </Dialog>
     </div>
+    </DashboardEnhancer>
   );
 }
 

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { format } from "date-fns";
 import { Scale, ShieldAlert } from "lucide-react";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 export default function AdminCourtForms() {
   usePageMeta({ title: "Court Form Typing", noIndex: true });
@@ -20,6 +21,7 @@ export default function AdminCourtForms() {
   });
 
   return (
+    <DashboardEnhancer category="court-forms">
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Scale className="h-6 w-6 text-primary" />
@@ -66,5 +68,6 @@ export default function AdminCourtForms() {
         </div>
       )}
     </div>
+    </DashboardEnhancer>
   );
 }
