@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ClipboardList, Plus, Search, Loader2, Clock, DollarSign } from "lucide-react";
 import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 const statusColors: Record<string, string> = { pending: "bg-yellow-100 text-yellow-800", in_progress: "bg-blue-100 text-blue-800", review: "bg-purple-100 text-purple-800", completed: "bg-emerald-100 text-emerald-800", cancelled: "bg-red-100 text-red-800" };
 const taskTypes = ["general", "data_entry", "research", "scheduling", "correspondence", "filing", "bookkeeping"];
@@ -51,7 +52,8 @@ export default function AdminVATasks() {
   const totalRevenue = tasks.filter(t => t.status === "completed").reduce((acc, t) => acc + ((t.hours_actual || t.hours_estimated || 0) * (t.hourly_rate || 35)), 0);
 
   return (
-    <div className="space-y-6">
+    <DashboardEnhancer category="va-tasks">
+      <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div><h1 className="text-2xl font-black tracking-tight">Virtual Assistant Tasks</h1><p className="text-sm text-muted-foreground">Task management, time tracking & billing</p></div>
         <div className="flex items-center gap-3">
@@ -92,5 +94,6 @@ export default function AdminVATasks() {
         <DialogFooter><Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button><Button onClick={handleCreate} disabled={saving}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Create</Button></DialogFooter>
       </DialogContent></Dialog>
     </div>
+    </DashboardEnhancer>
   );
 }

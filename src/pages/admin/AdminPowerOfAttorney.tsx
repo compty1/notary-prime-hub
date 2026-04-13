@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { FileText, Search, Plus, Shield, Scale, Clock, CheckCircle2 } from "lucide-react";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 const POA_TYPES = [
   "General Power of Attorney",
@@ -55,7 +56,8 @@ export default function AdminPowerOfAttorney() {
   );
 
   return (
-    <div className="space-y-6">
+    <DashboardEnhancer category="power-of-attorney">
+      <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -133,5 +135,6 @@ export default function AdminPowerOfAttorney() {
         </DialogContent>
       </Dialog>
     </div>
+    </DashboardEnhancer>
   );
 }

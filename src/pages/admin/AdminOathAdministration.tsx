@@ -20,6 +20,7 @@ import { usePageMeta } from "@/hooks/usePageMeta";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 const STATUTORY_TEMPLATES = {
   oath: "Do you solemnly swear that the statements you are about to make are the truth, the whole truth, and nothing but the truth, so help you God?",
@@ -76,7 +77,8 @@ export default function AdminOathAdministration() {
   });
 
   return (
-    <div className="space-y-6">
+    <DashboardEnhancer category="oath">
+      <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -180,5 +182,6 @@ export default function AdminOathAdministration() {
         </CardContent>
       </Card>
     </div>
+    </DashboardEnhancer>
   );
 }

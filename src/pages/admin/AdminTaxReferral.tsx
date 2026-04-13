@@ -9,6 +9,7 @@ import { Calculator, UserPlus, Search, Phone, Mail, MapPin } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 interface CPA {
   id: string;
@@ -36,7 +37,8 @@ export default function AdminTaxReferral() {
   const filtered = cpas.filter(c => !search || `${c.name} ${c.firm} ${c.specializations.join(" ")}`.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className="space-y-6">
+    <DashboardEnhancer category="tax-referral">
+      <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2"><Calculator className="h-6 w-6 text-primary" /> Tax Preparation Referral Network</h1>
@@ -107,5 +109,6 @@ export default function AdminTaxReferral() {
         </DialogContent>
       </Dialog>
     </div>
+    </DashboardEnhancer>
   );
 }

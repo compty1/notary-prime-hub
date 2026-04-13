@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { FileSignature, Plus, Search, Package, Truck, Building2, Loader2, Clock, DollarSign } from "lucide-react";
 import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 const packageStatuses = ["pending", "scheduled", "signing", "scanback_pending", "scanback_shipped", "completed", "cancelled"];
 const statusColors: Record<string, string> = {
@@ -80,7 +81,8 @@ export default function AdminLoanSigning() {
   const getScanbacksForPackage = (pkgId: string) => scanbacks.filter(s => s.package_id === pkgId);
 
   return (
-    <div className="space-y-6">
+    <DashboardEnhancer category="loan-signing">
+      <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black tracking-tight">Loan Signing Packages</h1>
@@ -221,5 +223,6 @@ export default function AdminLoanSigning() {
         </DialogContent>
       </Dialog>
     </div>
+    </DashboardEnhancer>
   );
 }

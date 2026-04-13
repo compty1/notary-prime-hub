@@ -18,6 +18,7 @@ import { usePageMeta } from "@/hooks/usePageMeta";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 const FEE_PER_COPY = 5.00; // ORC §147.08
 
@@ -71,7 +72,8 @@ export default function AdminCertifiedCopies() {
   const totalCopies = copies.reduce((sum: number, c: any) => sum + (c.copy_count || 0), 0);
 
   return (
-    <div className="space-y-6">
+    <DashboardEnhancer category="certified-copies">
+      <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -165,5 +167,6 @@ export default function AdminCertifiedCopies() {
         </CardContent>
       </Card>
     </div>
+    </DashboardEnhancer>
   );
 }

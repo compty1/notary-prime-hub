@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { FileCheck } from "lucide-react";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 export default function AdminPermitFilings() {
   usePageMeta({ title: "Permit Filings", noIndex: true });
@@ -19,7 +20,8 @@ export default function AdminPermitFilings() {
   });
 
   return (
-    <div className="space-y-6">
+    <DashboardEnhancer category="permit-filings">
+      <div className="space-y-6">
       <div className="flex items-center gap-3">
         <FileCheck className="h-6 w-6 text-primary" />
         <div>
@@ -55,5 +57,6 @@ export default function AdminPermitFilings() {
         </div>
       )}
     </div>
+    </DashboardEnhancer>
   );
 }

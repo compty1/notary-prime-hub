@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Scale, Search, Calendar, FileText, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 export default function AdminMediation() {
   usePageMeta({ title: "Mediation & ADR | Admin", noIndex: true });
@@ -31,7 +32,8 @@ export default function AdminMediation() {
   );
 
   return (
-    <div className="space-y-6">
+    <DashboardEnhancer category="mediation">
+      <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2"><Scale className="h-6 w-6 text-primary" /> Mediation & ADR</h1>
         <p className="text-sm text-muted-foreground mt-1">Alternative dispute resolution scheduling and document support</p>
@@ -87,5 +89,6 @@ export default function AdminMediation() {
         </CardContent>
       </Card>
     </div>
+    </DashboardEnhancer>
   );
 }

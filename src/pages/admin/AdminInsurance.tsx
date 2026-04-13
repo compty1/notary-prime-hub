@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Shield, Search, ExternalLink, DollarSign } from "lucide-react";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 const INSURANCE_TYPES = [
   { type: "E&O Insurance", description: "Errors & Omissions for notaries", avgCost: "$150-300/yr" },
@@ -26,7 +27,8 @@ export default function AdminInsurance() {
   const [search, setSearch] = useState("");
 
   return (
-    <div className="space-y-6">
+    <DashboardEnhancer category="insurance">
+      <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2"><Shield className="h-6 w-6 text-primary" /> Insurance Marketplace</h1>
         <p className="text-sm text-muted-foreground mt-1">E&O, business insurance, and notary bond provider directory</p>
@@ -76,5 +78,6 @@ export default function AdminInsurance() {
         </CardContent>
       </Card>
     </div>
+    </DashboardEnhancer>
   );
 }

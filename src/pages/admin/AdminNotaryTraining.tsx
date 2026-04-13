@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GraduationCap, Search, Loader2, BookOpen, Award, Clock } from "lucide-react";
 import { format } from "date-fns";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 const COURSE_CATEGORIES = [
   { value: "initial_commission", label: "Initial Commission Training" },
@@ -45,7 +46,8 @@ export default function AdminNotaryTraining() {
   const totalCredits = courses.reduce((sum: number, c: any) => sum + (c.credits || 0), 0);
 
   return (
-    <div className="space-y-6">
+    <DashboardEnhancer category="training">
+      <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -124,5 +126,6 @@ export default function AdminNotaryTraining() {
         </TabsContent>
       </Tabs>
     </div>
+    </DashboardEnhancer>
   );
 }

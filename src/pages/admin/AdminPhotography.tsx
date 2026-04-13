@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Camera, Search, Calendar, MapPin, Image } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 const PHOTO_SERVICES = [
   { name: "Professional Headshots", price: "$99", duration: "30 min" },
@@ -33,7 +34,8 @@ export default function AdminPhotography() {
   });
 
   return (
-    <div className="space-y-6">
+    <DashboardEnhancer category="photography">
+      <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2"><Camera className="h-6 w-6 text-primary" /> Photography & Headshots</h1>
         <p className="text-sm text-muted-foreground mt-1">Professional photography services for documents, headshots, and corporate needs</p>
@@ -84,5 +86,6 @@ export default function AdminPhotography() {
         </CardContent>
       </Card>
     </div>
+    </DashboardEnhancer>
   );
 }
