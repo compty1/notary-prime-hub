@@ -56,6 +56,7 @@ export default function NotaryDirectory() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedType, setSelectedType] = useState(typeFilter || "all");
+  const [ronFilter, setRonFilter] = useState(searchParams.get("ron") === "true");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<"featured" | "name" | "areas">("featured");
 
@@ -63,7 +64,7 @@ export default function NotaryDirectory() {
     (async () => {
       const { data } = await supabase
         .from("notary_pages")
-        .select("id, slug, display_name, title, tagline, profile_photo_path, theme_color, service_areas, credentials, is_featured, professional_type")
+        .select("id, slug, display_name, title, tagline, profile_photo_path, theme_color, service_areas, credentials, is_featured, professional_type, services_offered, status")
         .eq("is_published", true)
         .order("is_featured", { ascending: false });
       setProfessionals((data as ProfessionalSummary[]) || []);
