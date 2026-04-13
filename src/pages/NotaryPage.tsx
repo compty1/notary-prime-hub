@@ -267,6 +267,9 @@ export default function NotaryPage() {
             {areas.length > 0 && (
               <button onClick={() => scrollToSection("areas")} className="whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-muted">Areas</button>
             )}
+            {(page.use_platform_booking || page.external_booking_url) && (
+              <button onClick={() => scrollToSection("book")} className="whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-muted">Book</button>
+            )}
             {(creds.commission_number || creds.commission_expiration) && (
               <button onClick={() => scrollToSection("credentials")} className="whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-muted">Credentials</button>
             )}

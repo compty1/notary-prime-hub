@@ -33,6 +33,8 @@ interface ProfessionalSummary {
   credentials: Record<string, any>;
   is_featured: boolean;
   professional_type: string;
+  services_offered: any[];
+  status: string;
 }
 
 const PAGE_SIZE = 12;
