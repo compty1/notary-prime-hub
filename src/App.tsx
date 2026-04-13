@@ -158,6 +158,12 @@ const AdminVendors = lazyRetry(() => import("./pages/admin/AdminVendors"));
 const AdminVendorProducts = lazyRetry(() => import("./pages/admin/AdminVendorProducts"));
 const AdminEquipment = lazyRetry(() => import("./pages/admin/AdminEquipment"));
 const AdminECourses = lazyRetry(() => import("./pages/admin/AdminECourses"));
+const AdminAccounting = lazyRetry(() => import("./pages/admin/AdminAccounting"));
+const AdminDocCollaboration = lazyRetry(() => import("./pages/admin/AdminDocCollaboration"));
+const AdminEmbeddableWidgets = lazyRetry(() => import("./pages/admin/AdminEmbeddableWidgets"));
+const AdminDispatch = lazyRetry(() => import("./pages/admin/AdminDispatch"));
+const AdminMessagingHub = lazyRetry(() => import("./pages/admin/AdminMessagingHub"));
+const AdminMicroTools = lazyRetry(() => import("./pages/admin/AdminMicroTools"));
 const AdminPrintPricing = lazyRetry(() => import("./pages/admin/AdminPrintPricing"));
 const AdminPricing = lazyRetry(() => import("./pages/admin/AdminPricing"));
 const AdminOrders = lazyRetry(() => import("./pages/admin/AdminOrders"));
@@ -501,6 +507,12 @@ function AnimatedRoutes() {
         <Route path="orders" element={<ProtectedRoute adminOnly><SR msg="Orders failed to load"><AdminOrders /></SR></ProtectedRoute>} />
         <Route path="analytics" element={<ProtectedRoute adminOnly><SR msg="Analytics failed to load"><AdminAnalytics /></SR></ProtectedRoute>} />
         <Route path="contractors" element={<ProtectedRoute adminOnly><SR msg="Contractors failed to load"><AdminContractors /></SR></ProtectedRoute>} />
+        <Route path="accounting" element={<ProtectedRoute adminOnly><SR msg="Accounting failed to load"><AdminAccounting /></SR></ProtectedRoute>} />
+        <Route path="doc-collaboration" element={<ProtectedRoute adminOnly><SR msg="Doc collaboration failed to load"><AdminDocCollaboration /></SR></ProtectedRoute>} />
+        <Route path="embeddable-widgets" element={<ProtectedRoute adminOnly><SR msg="Widgets failed to load"><AdminEmbeddableWidgets /></SR></ProtectedRoute>} />
+        <Route path="dispatch" element={<ProtectedRoute adminOnly><SR msg="Dispatch failed to load"><AdminDispatch /></SR></ProtectedRoute>} />
+        <Route path="messaging-hub" element={<ProtectedRoute adminOnly><SR msg="Messaging hub failed to load"><AdminMessagingHub /></SR></ProtectedRoute>} />
+        <Route path="micro-tools" element={<ProtectedRoute adminOnly><SR msg="Micro-tools failed to load"><AdminMicroTools /></SR></ProtectedRoute>} />
         <Route path="print-inventory" element={<ProtectedRoute adminOnly><SR msg="Print inventory failed to load"><AdminPrintInventory /></SR></ProtectedRoute>} />
         <Route path="ux-consulting" element={<ProtectedRoute adminOnly><SR msg="UX consulting failed to load"><AdminUXConsulting /></SR></ProtectedRoute>} />
         <Route path="business-formation" element={<ProtectedRoute adminOnly><SR msg="Business formation failed to load"><AdminBusinessFormation /></SR></ProtectedRoute>} />

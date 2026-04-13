@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug, TrendingUp, ShieldCheck, Webhook, FileEdit, Workflow, Globe, Video, Printer, UserCheck, Fingerprint, Scale, Crosshair, Heart, PenLine, Languages, Truck, Award, Home, FileCheck, CalendarCheck, BarChart3, Palette, Camera, Calculator, KeyRound, CheckSquare, Wrench } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug, TrendingUp, ShieldCheck, Webhook, FileEdit, Workflow, Globe, Video, Printer, UserCheck, Fingerprint, Scale, Crosshair, Heart, PenLine, Languages, Truck, Award, Home, FileCheck, CalendarCheck, BarChart3, Palette, Camera, Calculator, KeyRound, CheckSquare, Wrench, Receipt, FolderOpen, Code, Navigation, Bell, Hammer } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { AdminNotificationCenter } from "@/components/AdminNotificationCenter";
 import { Logo } from "@/components/Logo";
@@ -25,6 +25,7 @@ const sidebarGroups = [
       { title: "Process Flows", url: "/admin/process-flows", icon: Workflow, adminOnly: true },
       { title: "Analytics", url: "/admin/analytics", icon: TrendingUp, adminOnly: true },
       { title: "Contractors", url: "/admin/contractors", icon: Users, adminOnly: true },
+      { title: "Dispatch", url: "/admin/dispatch", icon: Navigation, adminOnly: true },
       { title: "Performance", url: "/admin/performance", icon: TrendingUp, adminOnly: true },
     ],
   },
@@ -94,12 +95,14 @@ const sidebarGroups = [
     items: [
       { title: "Live Chat", url: "/admin/chat", icon: MessageSquare, adminOnly: true },
       { title: "Email Management", url: "/admin/email-management", icon: Mail, adminOnly: true },
+      { title: "Messaging Hub", url: "/admin/messaging-hub", icon: Bell, adminOnly: true },
     ],
   },
   {
     label: "Finance",
     items: [
       { title: "Revenue", url: "/admin/revenue", icon: DollarSign, adminOnly: true },
+      { title: "Accounting", url: "/admin/accounting", icon: Receipt, adminOnly: true },
       { title: "Services Catalog", url: "/admin/services", icon: ShoppingBag, adminOnly: true },
       { title: "Pricing Engine", url: "/admin/pricing", icon: DollarSign, adminOnly: true },
       { title: "UX Consulting", url: "/admin/ux-consulting", icon: Palette, adminOnly: true },
@@ -126,6 +129,9 @@ const sidebarGroups = [
     label: "System",
     items: [
       { title: "AI Assistant", url: "/admin/ai-assistant", icon: Bot, adminOnly: false },
+      { title: "Doc Collaboration", url: "/admin/doc-collaboration", icon: FolderOpen, adminOnly: true },
+      { title: "Embeddable Widgets", url: "/admin/embeddable-widgets", icon: Code, adminOnly: true },
+      { title: "Micro-Tools", url: "/admin/micro-tools", icon: Hammer, adminOnly: false },
       { title: "Team & Invites", url: "/admin/team", icon: UserPlus, adminOnly: true },
       { title: "Webhooks", url: "/admin/webhooks", icon: Webhook, adminOnly: true },
       { title: "Integration Testing", url: "/admin/integrations", icon: Plug, adminOnly: true },

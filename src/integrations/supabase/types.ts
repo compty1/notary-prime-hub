@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      accounting_transactions: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          description: string
+          id: string
+          notes: string | null
+          receipt_path: string | null
+          tax_deductible: boolean | null
+          transaction_date: string
+          transaction_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category?: string
+          created_at?: string
+          description: string
+          id?: string
+          notes?: string | null
+          receipt_path?: string | null
+          tax_deductible?: boolean | null
+          transaction_date?: string
+          transaction_type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          notes?: string | null
+          receipt_path?: string | null
+          tax_deductible?: boolean | null
+          transaction_date?: string
+          transaction_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       admin_equipment: {
         Row: {
           assigned_to: string | null
@@ -1187,6 +1232,71 @@ export type Database = {
         }
         Relationships: []
       }
+      conversation_messages: {
+        Row: {
+          body: string
+          conversation_id: string
+          created_at: string
+          id: string
+          read_at: string | null
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          conversation_type: string
+          created_at: string
+          id: string
+          is_archived: boolean | null
+          started_by: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          conversation_type?: string
+          created_at?: string
+          id?: string
+          is_archived?: boolean | null
+          started_by: string
+          subject?: string
+          updated_at?: string
+        }
+        Update: {
+          conversation_type?: string
+          created_at?: string
+          id?: string
+          is_archived?: boolean | null
+          started_by?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       country_requirements: {
         Row: {
           apostille_accepted: boolean
@@ -1590,6 +1700,139 @@ export type Database = {
           version?: number
         }
         Relationships: []
+      }
+      dispatch_assignments: {
+        Row: {
+          appointment_id: string | null
+          assigned_to: string
+          created_at: string
+          dispatch_status: string
+          dispatched_at: string | null
+          eta_minutes: number | null
+          id: string
+          location_lat: number | null
+          location_lng: number | null
+          notes: string | null
+          order_id: string | null
+          priority: string
+          updated_at: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          assigned_to: string
+          created_at?: string
+          dispatch_status?: string
+          dispatched_at?: string | null
+          eta_minutes?: number | null
+          id?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          notes?: string | null
+          order_id?: string | null
+          priority?: string
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string | null
+          assigned_to?: string
+          created_at?: string
+          dispatch_status?: string
+          dispatched_at?: string | null
+          eta_minutes?: number | null
+          id?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          notes?: string | null
+          order_id?: string | null
+          priority?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispatch_assignments_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dispatch_assignments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doc_collaboration_participants: {
+        Row: {
+          id: string
+          joined_at: string
+          permission: string
+          room_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          permission?: string
+          room_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          permission?: string
+          room_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doc_collaboration_participants_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "doc_collaboration_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doc_collaboration_rooms: {
+        Row: {
+          created_at: string
+          created_by: string
+          document_id: string | null
+          id: string
+          is_active: boolean | null
+          room_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          document_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          room_name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          document_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          room_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doc_collaboration_rooms_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       docudex_comments: {
         Row: {
@@ -3317,6 +3560,45 @@ export type Database = {
           },
         ]
       }
+      mileage_entries: {
+        Row: {
+          created_at: string
+          deduction_amount: number | null
+          end_address: string
+          id: string
+          miles: number
+          purpose: string | null
+          rate_per_mile: number
+          start_address: string
+          trip_date: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          deduction_amount?: number | null
+          end_address: string
+          id?: string
+          miles: number
+          purpose?: string | null
+          rate_per_mile?: number
+          start_address: string
+          trip_date?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          deduction_amount?: number | null
+          end_address?: string
+          id?: string
+          miles?: number
+          purpose?: string | null
+          rate_per_mile?: number
+          start_address?: string
+          trip_date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       mileage_logs: {
         Row: {
           appointment_id: string | null
@@ -3935,6 +4217,42 @@ export type Database = {
           status?: string
           subject?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      notification_templates: {
+        Row: {
+          body_template: string
+          channel: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          subject: string | null
+          template_name: string
+          updated_at: string
+          variables: string[] | null
+        }
+        Insert: {
+          body_template: string
+          channel?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          subject?: string | null
+          template_name: string
+          updated_at?: string
+          variables?: string[] | null
+        }
+        Update: {
+          body_template?: string
+          channel?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          subject?: string | null
+          template_name?: string
+          updated_at?: string
+          variables?: string[] | null
         }
         Relationships: []
       }
@@ -6386,6 +6704,39 @@ export type Database = {
           subject_last_known_address?: string | null
           subject_name?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      sla_timers: {
+        Row: {
+          breached: boolean | null
+          created_at: string
+          deadline_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          met_at: string | null
+          sla_type: string
+        }
+        Insert: {
+          breached?: boolean | null
+          created_at?: string
+          deadline_at: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          met_at?: string | null
+          sla_type: string
+        }
+        Update: {
+          breached?: boolean | null
+          created_at?: string
+          deadline_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          met_at?: string | null
+          sla_type?: string
         }
         Relationships: []
       }
