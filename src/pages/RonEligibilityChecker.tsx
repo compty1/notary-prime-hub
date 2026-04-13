@@ -1,397 +1,399 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { DarkModeToggle } from "@/components/DarkModeToggle";
-import { motion } from "framer-motion";
-import { ChevronLeft, CheckCircle, AlertTriangle, XCircle, Monitor, Shield, ChevronRight, ArrowRight, Globe, FileText, Scale, Briefcase } from "lucide-react";
-import { Logo } from "@/components/Logo";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle, AlertTriangle, XCircle, Shield, ChevronRight, ArrowRight, Globe, FileText, Briefcase, Scale, Sparkles, Loader2, RotateCcw, BookOpen } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
+import { useRonAdvisor } from "@/hooks/useRonAdvisor";
+import { US_STATES, DOCUMENT_CATEGORIES, NOTARIAL_ACT_TYPES, RECIPIENT_TYPES } from "@/lib/ronStateData";
+import type { AdvisorInput, SimpleInput, RiskLevel } from "@/lib/ronLegalityEngine";
 
-const allStates = [
-  "Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia",
-  "Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland",
-  "Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey",
-  "New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina",
-  "South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming",
-  "District of Columbia"
-];
-
-const ronLawStates = new Set([
-  "Ohio","Virginia","Texas","Florida","Nevada","Montana","Michigan","Minnesota","Tennessee","Indiana",
-  "Nebraska","North Dakota","Iowa","Idaho","Oklahoma","Kentucky","Utah","Arizona","Colorado","Wyoming",
-  "Maryland","Vermont","Alaska","Hawaii","New York","Pennsylvania","Wisconsin","Arkansas","Kansas",
-  "New Hampshire","New Mexico","North Carolina","South Dakota","Washington","West Virginia","Georgia",
-  "Illinois","Missouri","Oregon","Connecticut","Louisiana","Maine","Alabama","South Carolina"
-]);
-
-const documentTypes = [
-  { value: "real_estate", label: "Real Estate Documents (Deeds, Mortgages, Refinancing)" },
-  { value: "poa", label: "Power of Attorney" },
-  { value: "will_trust", label: "Will, Trust, or Estate Planning" },
-  { value: "affidavit", label: "Affidavit or Sworn Statement" },
-  { value: "business_contract", label: "Business Contract or Agreement" },
-  { value: "court_filing", label: "Court Filing or Legal Pleading" },
-  { value: "i9_employment", label: "I-9 Employment Verification" },
-  { value: "vehicle_title", label: "Vehicle Title Transfer" },
-  { value: "medical_directive", label: "Healthcare Directive or Medical POA" },
-  { value: "other", label: "Other Document" },
-];
-
-const entityTypes = [
-  { value: "county_recorder", label: "County Recorder / Register of Deeds" },
-  { value: "bank_lender", label: "Bank, Lender, or Title Company" },
-  { value: "court", label: "Court or Legal Filing Office" },
-  { value: "government", label: "Government Agency (State/Federal)" },
-  { value: "employer", label: "Employer or HR Department" },
-  { value: "private_party", label: "Private Party or Individual" },
-  { value: "insurance", label: "Insurance Company" },
-  { value: "foreign_entity", label: "Foreign Government / International Entity" },
-  { value: "other", label: "Other / Not Sure" },
-];
-
-const purposes = [
-  { value: "real_estate_closing", label: "Real Estate Closing / Refinance" },
-  { value: "estate_planning", label: "Estate Planning" },
-  { value: "legal_filing", label: "Legal Filing or Court Proceeding" },
-  { value: "personal_use", label: "Personal Use" },
-  { value: "business_transaction", label: "Business Transaction" },
-  { value: "employment", label: "Employment / HR Requirement" },
-  { value: "immigration", label: "Immigration or International Use" },
-  { value: "financial", label: "Financial / Banking Requirement" },
-];
-
-type ResultLevel = "green" | "yellow" | "red";
-
-interface EligibilityResult {
-  level: ResultLevel;
-  title: string;
-  explanation: string;
-  details: string[];
-  recommendation: string;
+interface Props {
+  mode?: "public" | "dashboard";
 }
 
-function getEligibility(state: string, docType: string, entity: string, purpose: string): EligibilityResult {
-  // Foreign entity / immigration — generally requires apostille or consular legalization
-  if (entity === "foreign_entity" || purpose === "immigration") {
-    return {
-      level: "yellow",
-      title: "RON May Be Accepted — Additional Steps Likely Required",
-      explanation: "Documents intended for international use may require an Apostille or consular legalization in addition to notarization. RON itself is valid, but the receiving country may have specific requirements.",
-      details: [
-        "Ohio RON is legally valid for the notarization step",
-        "An Apostille from the Ohio Secretary of State may be needed",
-        "Some countries require consular legalization instead of or in addition to an Apostille",
-        "Contact the receiving entity or embassy to confirm requirements"
-      ],
-      recommendation: "We offer Apostille facilitation services. Contact us to discuss your specific international document needs."
-    };
-  }
+export default function RonEligibilityChecker({ mode = "public" }: Props) {
+  usePageMeta({
+    title: "RON Legality & Acceptance Advisor",
+    description: "Check if your document is eligible for Remote Online Notarization. Get instant legal analysis with Ohio RON law citations."
+  });
 
-  // I-9 — cannot be done via RON per federal requirements
-  if (docType === "i9_employment") {
-    return {
-      level: "red",
-      title: "I-9 Verification Requires In-Person Physical Inspection",
-      explanation: "Federal I-9 employment verification requires physical inspection of original documents. While the employer section can use an authorized representative, the actual document inspection must be done in person per USCIS guidelines.",
-      details: [
-        "USCIS requires physical examination of original identity and work authorization documents",
-        "A notary can serve as the authorized representative for the employer",
-        "The inspection must occur in person — RON is not accepted for I-9 purposes",
-        "Virtual I-9 inspection under DHS flexibilities ended in 2023"
-      ],
-      recommendation: "Book an in-person appointment for I-9 verification. We offer mobile notary services for convenience."
-    };
-  }
+  const { result, explanation, loadingExplanation, analyzeQuick, analyze, getExplanation, reset } = useRonAdvisor();
 
-  // Vehicle title — state-specific, many BMVs still want wet ink
-  if (docType === "vehicle_title") {
-    return {
-      level: "yellow",
-      title: "RON May Be Accepted — Check with Your State BMV/DMV",
-      explanation: "Vehicle title transfers often have state-specific requirements. While the notarization itself is valid via RON, some state DMV/BMV offices may still prefer or require wet-ink signatures on title documents.",
-      details: [
-        "Ohio BMV accepts RON for Ohio title transfers",
-        "Other states' DMVs may have different policies",
-        `${state} DMV should be contacted to confirm RON acceptance for title transfers`,
-        "Full Faith & Credit Clause supports acceptance, but practical implementation varies"
-      ],
-      recommendation: "We recommend calling your local DMV to confirm before proceeding with RON for a title transfer."
-    };
-  }
+  // Form state
+  const [signerState, setSignerState] = useState("");
+  const [docUseState, setDocUseState] = useState("");
+  const [docCategory, setDocCategory] = useState("");
+  const [docSubtype, setDocSubtype] = useState("");
+  const [notarialAct, setNotarialAct] = useState("");
 
-  // Court filings — some courts are slow to adopt
-  if (docType === "court_filing" || entity === "court") {
-    return {
-      level: "yellow",
-      title: "RON Is Likely Accepted — Verify with the Specific Court",
-      explanation: "Most courts accept RON notarizations, but some individual courts or judges may have specific preferences. The notarization itself is legally valid, but filing acceptance can vary.",
-      details: [
-        "RON notarizations carry the same legal weight as in-person under Ohio law (ORC §147.65-.66)",
-        "Federal courts generally accept RON",
-        "State courts in RON-law states widely accept RON",
-        "Individual court clerks may have specific submission requirements"
-      ],
-      recommendation: "Contact the specific court clerk's office to confirm they accept electronically notarized documents before your session."
-    };
-  }
+  // Dashboard-only fields
+  const [recipientType, setRecipientType] = useState("");
+  const [signerCountry, setSignerCountry] = useState<"us" | "non_us">("us");
+  const [isRecordable, setIsRecordable] = useState(false);
+  const [requiresApostille, setRequiresApostille] = useState(false);
+  const [extraNotes, setExtraNotes] = useState("");
 
-  // County recorder — varies by county
-  if (entity === "county_recorder") {
-    const hasRonLaw = ronLawStates.has(state);
-    if (hasRonLaw) {
-      return {
-        level: "green",
-        title: "RON Is Widely Accepted for Recording",
-        explanation: `${state} has enacted RON legislation, and county recorders in RON-law states generally accept RON notarizations for recording real estate documents.`,
-        details: [
-          `${state} has its own RON legislation recognizing remote notarization`,
-          "Major title companies (First American, Fidelity, Old Republic) accept RON closings",
-          "Fannie Mae and Freddie Mac accept RON for mortgage documents",
-          "The notarization includes tamper-evident technology and a full audio/video recording"
-        ],
-        recommendation: "You're in great shape for RON! Book a session and we'll handle the rest."
-      };
-    } else {
-      return {
-        level: "yellow",
-        title: "RON Should Be Accepted — Confirm with County Recorder",
-        explanation: `${state} does not have its own RON law, but Ohio RON notarizations are protected under the U.S. Constitution's Full Faith and Credit Clause (Article IV, Section 1). Most county recorders accept them.`,
-        details: [
-          "Ohio RON is legally valid and must be given full faith and credit by all states",
-          `${state} recorders may not be as familiar with RON — call ahead to confirm`,
-          "Provide the recorder with a copy of the session recording certificate if requested",
-          "Consider having the title company coordinate with the recorder"
-        ],
-        recommendation: "We recommend calling the county recorder's office before your RON session to ensure smooth recording."
-      };
-    }
-  }
+  const isDashboard = mode === "dashboard";
 
-  // Bank/lender — generally excellent acceptance
-  if (entity === "bank_lender") {
-    return {
-      level: "green",
-      title: "RON Is Widely Accepted by Banks and Lenders",
-      explanation: "The vast majority of banks, lenders, and title companies now accept RON notarizations. GSEs (Fannie Mae, Freddie Mac) and FHA all accept RON for mortgage transactions.",
-      details: [
-        "Fannie Mae, Freddie Mac, and FHA accept RON",
-        "Most major lenders (Wells Fargo, Chase, Bank of America, etc.) accept RON closings",
-        "Title insurance underwriters support RON transactions",
-        "RON provides enhanced security vs. traditional notarization (recording + KBA + ID verification)"
-      ],
-      recommendation: "RON is an excellent choice for your banking/lending transaction. Book a session to get started."
-    };
-  }
+  const subtypes = useMemo(() => {
+    const cat = DOCUMENT_CATEGORIES.find(c => c.value === docCategory);
+    return cat?.subtypes || [];
+  }, [docCategory]);
 
-  // Wills and trusts — need witness considerations
-  if (docType === "will_trust") {
-    return {
-      level: "yellow",
-      title: "RON Is Valid — Witness Requirements Apply",
-      explanation: "Ohio allows RON for wills and trusts, but Ohio law requires 2 disinterested witnesses for a valid will. These witnesses can participate remotely in the RON session.",
-      details: [
-        "Ohio RON is authorized for estate planning documents under ORC §147.65-.66",
-        "Wills require 2 disinterested witnesses (not beneficiaries) — they can join the video call",
-        "Self-proving affidavits can be notarized via RON",
-        "Consult your estate planning attorney about specific requirements for your situation"
-      ],
-      recommendation: "We can accommodate witnesses in your RON session. Book an appointment and let us know about witness requirements."
-    };
-  }
-
-  // Default — most cases are green in RON-law states
-  const hasRonLaw = ronLawStates.has(state);
-  if (hasRonLaw) {
-    return {
-      level: "green",
-      title: "RON Is Widely Accepted for This Use Case",
-      explanation: `${state} has enacted RON legislation, making RON notarizations fully recognized. Your document type and receiving entity are commonly handled via RON without issues.`,
-      details: [
-        `${state} recognizes RON under its own state law`,
-        "Ohio RON notarizations carry the same legal weight as in-person",
-        "Full audio/video recording provides enhanced security and auditability",
-        "Multi-factor identity verification (credential analysis + KBA) ensures signer authenticity"
-      ],
-      recommendation: "You're all set for RON! Schedule a session at your convenience."
-    };
-  }
-
-  return {
-    level: "green",
-    title: "RON Should Be Accepted — Full Faith & Credit Applies",
-    explanation: `While ${state} may not have its own RON law, Ohio RON notarizations are protected under the U.S. Constitution's Full Faith and Credit Clause. The notarization is legally valid nationwide.`,
-    details: [
-      "The Full Faith and Credit Clause (Article IV, Section 1) requires all states to recognize Ohio RON",
-      "Ohio RON is performed under ORC §147.65-.66 with full compliance",
-      "The receiving entity should accept the notarization, though some may be less familiar with RON",
-      "If the entity questions acceptance, we can provide legal authority references"
-    ],
-    recommendation: "RON is a strong choice. If you want extra certainty, verify with the receiving entity before your session."
-  };
-}
-
-export default function RonEligibilityChecker() {
-  usePageMeta({ title: "RON Eligibility Checker", description: "Check if your document is eligible for Remote Online Notarization (RON) in Ohio. Instant eligibility assessment." });
-  const [state, setState] = useState("");
-  const [docType, setDocType] = useState("");
-  const [entity, setEntity] = useState("");
-  const [purpose, setPurpose] = useState("");
-  const [result, setResult] = useState<EligibilityResult | null>(null);
-
-  const canCheck = state && docType && entity && purpose;
+  const canCheck = isDashboard
+    ? signerState && docUseState && docCategory && docSubtype && notarialAct && recipientType
+    : signerState && docUseState && docCategory && docSubtype && notarialAct;
 
   const handleCheck = () => {
     if (!canCheck) return;
-    setResult(getEligibility(state, docType, entity, purpose));
+
+    if (isDashboard) {
+      const input: AdvisorInput = {
+        notary_state: "Ohio",
+        signer_state: signerState,
+        document_use_state: docUseState,
+        document_category: docCategory,
+        document_subtype: docSubtype,
+        notarial_act_type: notarialAct,
+        signer_location_country: signerCountry,
+        is_recordable_in_land_records: isRecordable,
+        requires_apostille: requiresApostille,
+        intended_recipient_type: recipientType,
+        extra_notes: extraNotes || undefined,
+      };
+      const r = analyze(input);
+      getExplanation(input, r);
+    } else {
+      const input: SimpleInput = {
+        signer_state: signerState,
+        document_use_state: docUseState,
+        document_category: docCategory,
+        document_subtype: docSubtype,
+        notarial_act_type: notarialAct,
+      };
+      const r = analyzeQuick(input);
+      getExplanation(input, r);
+    }
   };
 
   const handleReset = () => {
-    setState("");
-    setDocType("");
-    setEntity("");
-    setPurpose("");
-    setResult(null);
+    setSignerState("");
+    setDocUseState("");
+    setDocCategory("");
+    setDocSubtype("");
+    setNotarialAct("");
+    setRecipientType("");
+    setSignerCountry("us");
+    setIsRecordable(false);
+    setRequiresApostille(false);
+    setExtraNotes("");
+    reset();
   };
 
-  const levelConfig = {
-    green: { icon: CheckCircle, color: "text-primary", bg: "bg-primary/5 border-primary/20", badge: "bg-primary/10 text-primary" },
-    yellow: { icon: AlertTriangle, color: "text-amber-600", bg: "bg-amber-50 border-amber-200", badge: "bg-amber-100 text-amber-800" },
-    red: { icon: XCircle, color: "text-red-600", bg: "bg-red-50 border-red-200", badge: "bg-red-100 text-red-800" },
+  const levelConfig: Record<RiskLevel, { icon: typeof CheckCircle; color: string; bg: string; badge: string; badgeLabel: string }> = {
+    low: { icon: CheckCircle, color: "text-primary", bg: "bg-primary/5 border-primary/20", badge: "bg-primary/10 text-primary", badgeLabel: "Widely Accepted" },
+    medium: { icon: AlertTriangle, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800", badge: "bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300", badgeLabel: "Verify First" },
+    high: { icon: XCircle, color: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800", badge: "bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300", badgeLabel: "Challenges Expected" },
   };
 
   return (
     <PageShell>
-
       <section className="bg-gradient-hero py-12 md:py-16">
         <div className="container mx-auto px-4 text-center">
           <Breadcrumbs />
           <Badge className="mb-4 border-primary/20 bg-primary/10 text-primary">
-            <Monitor className="mr-1 h-3 w-3" /> RON Eligibility Tool
+            <Scale className="mr-1 h-3 w-3" /> RON Legality Advisor
           </Badge>
           <h1 className="mb-3 font-sans text-3xl font-bold text-foreground md:text-4xl">
             Will Remote Notarization Work for You?
           </h1>
           <p className="mx-auto max-w-2xl text-muted-foreground">
-            Answer four questions to find out if your document can be notarized remotely. Based on Ohio RON law (ORC §147.65-.66), 
-            Full Faith & Credit Clause, and known entity-specific requirements.
+            {isDashboard
+              ? "Full legal analysis with 10-field assessment, statutory citations, and AI-powered explanations for your clients."
+              : "Answer a few questions to find out if your document can be notarized remotely. Based on Ohio RON law (ORC §147.60-.66) and 50-state acceptance data."
+            }
           </p>
         </div>
       </section>
 
       <div className="container mx-auto max-w-3xl px-4 py-10">
-        {!result ? (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <Card className="border-border/50">
-              <CardContent className="p-6 space-y-6">
-                <div>
-                  <Label className="text-base font-semibold">1. Which state will this document be used in?</Label>
-                  <p className="text-sm text-muted-foreground mb-2">Where the receiving entity is located or where the document will be filed.</p>
-                  <Select value={state} onValueChange={setState}>
-                    <SelectTrigger><SelectValue placeholder="Select a state" /></SelectTrigger>
-                    <SelectContent>
-                      {allStates.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="text-base font-semibold">2. What type of document needs notarization?</Label>
-                  <Select value={docType} onValueChange={setDocType}>
-                    <SelectTrigger><SelectValue placeholder="Select document type" /></SelectTrigger>
-                    <SelectContent>
-                      {documentTypes.map(d => <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="text-base font-semibold">3. Who is the receiving entity?</Label>
-                  <p className="text-sm text-muted-foreground mb-2">The organization or party that will receive the notarized document.</p>
-                  <Select value={entity} onValueChange={setEntity}>
-                    <SelectTrigger><SelectValue placeholder="Select receiving entity" /></SelectTrigger>
-                    <SelectContent>
-                      {entityTypes.map(e => <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="text-base font-semibold">4. What is the purpose?</Label>
-                  <Select value={purpose} onValueChange={setPurpose}>
-                    <SelectTrigger><SelectValue placeholder="Select purpose" /></SelectTrigger>
-                    <SelectContent>
-                      {purposes.map(p => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <Button
-                  onClick={handleCheck}
-                  disabled={!canCheck}
-                  className="w-full "
-                  size="lg"
-                >
-                  <Shield className="mr-2 h-4 w-4" /> Check Eligibility
-                </Button>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ) : (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-            {/* Result */}
-            <Card className={`border ${levelConfig[result.level].bg}`}>
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  {(() => { const Icon = levelConfig[result.level].icon; return <Icon className={`h-8 w-8 flex-shrink-0 mt-1 ${levelConfig[result.level].color}`} />; })()}
+        <AnimatePresence mode="wait">
+          {!result ? (
+            <motion.div key="form" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+              <Card className="border-border/50">
+                <CardContent className="p-6 space-y-5">
+                  {/* Signer State */}
                   <div>
-                    <Badge className={`mb-2 ${levelConfig[result.level].badge}`}>
-                      {result.level === "green" ? "Widely Accepted" : result.level === "yellow" ? "Verify First" : "In-Person Recommended"}
-                    </Badge>
-                    <h2 className="font-sans text-xl font-bold mb-2">{result.title}</h2>
-                    <p className="text-muted-foreground mb-4">{result.explanation}</p>
-                    <ul className="space-y-2 mb-4">
-                      {result.details.map((d, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm">
-                          <CheckCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
-                          <span>{d}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <div className="rounded-lg bg-background/80 p-3 border border-border/50">
-                      <p className="text-sm font-medium">Our Recommendation:</p>
-                      <p className="text-sm text-muted-foreground">{result.recommendation}</p>
+                    <Label className="text-base font-semibold">1. Where is the signer located?</Label>
+                    <p className="text-sm text-muted-foreground mb-2">The state where the person signing is physically present.</p>
+                    <Select value={signerState} onValueChange={setSignerState}>
+                      <SelectTrigger><SelectValue placeholder="Select signer's state" /></SelectTrigger>
+                      <SelectContent>
+                        {US_STATES.map(s => <SelectItem key={s.name} value={s.name}>{s.name}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Document Use State */}
+                  <div>
+                    <Label className="text-base font-semibold">2. Where will this document be used?</Label>
+                    <p className="text-sm text-muted-foreground mb-2">The state where the document will be filed, recorded, or presented.</p>
+                    <Select value={docUseState} onValueChange={setDocUseState}>
+                      <SelectTrigger><SelectValue placeholder="Select document use state" /></SelectTrigger>
+                      <SelectContent>
+                        {US_STATES.map(s => <SelectItem key={s.name} value={s.name}>{s.name}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Document Category → Subtype (cascading) */}
+                  <div>
+                    <Label className="text-base font-semibold">3. What type of document?</Label>
+                    <div className="grid gap-2 mt-2 sm:grid-cols-2">
+                      <Select value={docCategory} onValueChange={(v) => { setDocCategory(v); setDocSubtype(""); }}>
+                        <SelectTrigger><SelectValue placeholder="Category" /></SelectTrigger>
+                        <SelectContent>
+                          {DOCUMENT_CATEGORIES.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                      <Select value={docSubtype} onValueChange={setDocSubtype} disabled={!docCategory}>
+                        <SelectTrigger><SelectValue placeholder="Specific document" /></SelectTrigger>
+                        <SelectContent>
+                          {subtypes.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
 
-            {/* Actions */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link to="/book" className="flex-1">
-                <Button className="w-full " size="lg">
-                  {result.level === "red" ? "Book In-Person Appointment" : "Book RON Session"} <ChevronRight className="ml-1 h-4 w-4" />
+                  {/* Notarial Act */}
+                  <div>
+                    <Label className="text-base font-semibold">{isDashboard ? "4" : "4"}. What notarial act is needed?</Label>
+                    <Select value={notarialAct} onValueChange={setNotarialAct}>
+                      <SelectTrigger><SelectValue placeholder="Select notarial act" /></SelectTrigger>
+                      <SelectContent>
+                        {NOTARIAL_ACT_TYPES.map(a => <SelectItem key={a.value} value={a.value}>{a.label}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Dashboard-only fields */}
+                  {isDashboard && (
+                    <>
+                      <div>
+                        <Label className="text-base font-semibold">5. Who is the receiving entity?</Label>
+                        <Select value={recipientType} onValueChange={setRecipientType}>
+                          <SelectTrigger><SelectValue placeholder="Select recipient" /></SelectTrigger>
+                          <SelectContent>
+                            {RECIPIENT_TYPES.map(r => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <Label className="text-base font-semibold">6. Signer location</Label>
+                        <Select value={signerCountry} onValueChange={(v) => setSignerCountry(v as "us" | "non_us")}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="us">United States</SelectItem>
+                            <SelectItem value="non_us">Outside the United States</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="flex items-center justify-between rounded-lg border border-border/50 p-3">
+                        <div>
+                          <Label className="font-semibold">Recordable in land records?</Label>
+                          <p className="text-xs text-muted-foreground">Will this be filed at a county recorder's office?</p>
+                        </div>
+                        <Switch checked={isRecordable} onCheckedChange={setIsRecordable} />
+                      </div>
+
+                      <div className="flex items-center justify-between rounded-lg border border-border/50 p-3">
+                        <div>
+                          <Label className="font-semibold">Requires Apostille?</Label>
+                          <p className="text-xs text-muted-foreground">For international use requiring legalization</p>
+                        </div>
+                        <Switch checked={requiresApostille} onCheckedChange={setRequiresApostille} />
+                      </div>
+
+                      <div>
+                        <Label className="text-base font-semibold">Additional notes (optional)</Label>
+                        <Textarea
+                          value={extraNotes}
+                          onChange={(e) => setExtraNotes(e.target.value)}
+                          placeholder="Any special circumstances..."
+                          className="mt-1"
+                          maxLength={500}
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  <Button onClick={handleCheck} disabled={!canCheck} className="w-full" size="lg">
+                    <Shield className="mr-2 h-4 w-4" /> Analyze Eligibility
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ) : (
+            <motion.div key="result" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-6">
+              {/* Main Result Card */}
+              {(() => {
+                const cfg = levelConfig[result.risk_level];
+                const Icon = cfg.icon;
+                return (
+                  <Card className={`border ${cfg.bg}`}>
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-4">
+                        <Icon className={`h-8 w-8 flex-shrink-0 mt-1 ${cfg.color}`} />
+                        <div className="flex-1">
+                          <Badge className={`mb-2 ${cfg.badge}`}>{cfg.badgeLabel}</Badge>
+                          <h2 className="font-sans text-xl font-bold mb-2 text-foreground">{result.headline}</h2>
+
+                          {/* Ohio Analysis */}
+                          <div className="mb-4">
+                            <h3 className="text-sm font-semibold text-foreground flex items-center gap-1 mb-1">
+                              <BookOpen className="h-3.5 w-3.5" /> Ohio RON Analysis
+                            </h3>
+                            <ul className="space-y-1">
+                              {result.notary_state_analysis.notes.map((n, i) => (
+                                <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                                  <CheckCircle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-primary" />
+                                  <span>{n}</span>
+                                </li>
+                              ))}
+                            </ul>
+                            {result.notary_state_analysis.statutory_citation && (
+                              <p className="text-xs text-muted-foreground mt-1 italic">Citation: {result.notary_state_analysis.statutory_citation}</p>
+                            )}
+                          </div>
+
+                          {/* Receiving State Analysis */}
+                          <div className="mb-4">
+                            <h3 className="text-sm font-semibold text-foreground flex items-center gap-1 mb-1">
+                              <Globe className="h-3.5 w-3.5" /> {result.receiving_state_analysis.state_name} Acceptance
+                            </h3>
+                            <div className="flex items-center gap-2 mb-1">
+                              <Badge variant="outline" className="text-xs">
+                                RON {result.receiving_state_analysis.ron_authorized ? "Authorized" : "Not Authorized"}
+                              </Badge>
+                              <Badge variant="outline" className="text-xs capitalize">
+                                {result.receiving_state_analysis.acceptance_rating} acceptance
+                              </Badge>
+                            </div>
+                            <ul className="space-y-1">
+                              {result.receiving_state_analysis.notes.map((n, i) => (
+                                <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                                  <ArrowRight className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-muted-foreground" />
+                                  <span>{n}</span>
+                                </li>
+                              ))}
+                            </ul>
+                            {result.receiving_state_analysis.statutory_citation && (
+                              <p className="text-xs text-muted-foreground mt-1 italic">Citation: {result.receiving_state_analysis.statutory_citation}</p>
+                            )}
+                          </div>
+
+                          {/* Risk Factors */}
+                          {result.risk_reasons.length > 0 && result.risk_reasons[0] !== "No significant risk factors identified" && (
+                            <div className="mb-4">
+                              <h3 className="text-sm font-semibold text-foreground mb-1">Risk Factors</h3>
+                              <ul className="space-y-1">
+                                {result.risk_reasons.map((r, i) => (
+                                  <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                                    <AlertTriangle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-amber-500" />
+                                    <span>{r}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                          {/* Recommended Actions */}
+                          <div className="rounded-lg bg-background/80 p-3 border border-border/50">
+                            <p className="text-sm font-semibold mb-1">Recommended Next Steps:</p>
+                            <ul className="space-y-1">
+                              {result.recommended_actions.map((a, i) => (
+                                <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
+                                  <ChevronRight className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-primary" />
+                                  <span>{a}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })()}
+
+              {/* AI Explanation */}
+              <Card className="border-border/50">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-primary" /> AI-Powered Explanation
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {loadingExplanation ? (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
+                      <Loader2 className="h-4 w-4 animate-spin" /> Generating plain-language explanation...
+                    </div>
+                  ) : explanation ? (
+                    <div className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed">{explanation}</div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">AI explanation was not available. The analysis above is based on current Ohio RON law and is still fully accurate.</p>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Citations */}
+              {result.citations.length > 0 && (
+                <Card className="border-border/50">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Scale className="h-4 w-4 text-primary" /> Legal Citations
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-1">
+                      {result.citations.map((c, i) => (
+                        <li key={i} className="text-xs text-muted-foreground font-mono">{c}</li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Actions */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link to="/book" className="flex-1">
+                  <Button className="w-full" size="lg">
+                    {result.status === "not_eligible" ? "Book In-Person Appointment" : "Book RON Session"} <ChevronRight className="ml-1 h-4 w-4" />
+                  </Button>
+                </Link>
+                <Button variant="outline" onClick={handleReset} size="lg">
+                  <RotateCcw className="mr-2 h-4 w-4" /> Check Another
                 </Button>
-              </Link>
-              <Button variant="outline" onClick={handleReset} size="lg">Check Another</Button>
-            </div>
+              </div>
 
-            {/* Disclaimer */}
-            <p className="text-xs text-muted-foreground text-center">
-              This tool provides general guidance based on current laws and common practices. It is not legal advice. 
-              Always verify with the specific receiving entity for your situation. Laws and policies change — 
-              last updated March 2026.
-            </p>
-          </motion.div>
-        )}
+              {/* Disclaimer */}
+              <p className="text-xs text-muted-foreground text-center">{result.disclaimer}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* Cross-sell */}
+        {/* Cross-sell cards */}
         <div className="mt-12 grid gap-4 sm:grid-cols-3">
           <Card className="border-border/50 hover:shadow-md transition-shadow">
             <CardContent className="p-5 text-center">
@@ -419,7 +421,6 @@ export default function RonEligibilityChecker() {
           </Card>
         </div>
       </div>
-
     </PageShell>
   );
 }
