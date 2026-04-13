@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -14,7 +14,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { GraduationCap, Plus, Search, Edit, Trash2, Loader2, Users, BookOpen, DollarSign, Star } from "lucide-react";
+import { GraduationCap, Plus, Search, Edit, Trash2, Loader2, Users, BookOpen, DollarSign, Star, Layers } from "lucide-react";
+
+const AdminAcademyManager = lazy(() => import("./AdminAcademyManager"));
 import { format } from "date-fns";
 
 const CATEGORIES = ["notary_fundamentals", "ron_certification", "loan_signing", "ohio_compliance", "business_skills", "technology", "legal_basics", "general"];
@@ -115,6 +117,7 @@ export default function AdminECourses() {
         <TabsList>
           <TabsTrigger value="courses">Courses</TabsTrigger>
           <TabsTrigger value="enrollments">Enrollments</TabsTrigger>
+          <TabsTrigger value="academy" className="gap-1"><Layers className="h-3.5 w-3.5" />Academy Builder</TabsTrigger>
         </TabsList>
 
         <TabsContent value="courses" className="space-y-4">
@@ -184,6 +187,12 @@ export default function AdminECourses() {
               </Table>
             )}
           </CardContent></Card>
+        </TabsContent>
+
+        <TabsContent value="academy">
+          <Suspense fallback={<div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin" /></div>}>
+            <AdminAcademyManager />
+          </Suspense>
         </TabsContent>
       </Tabs>
 
