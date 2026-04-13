@@ -279,6 +279,26 @@ function AnimatedRoutes() {
       <Route path="/track-apostille" element={<SR msg="Apostille tracker failed to load"><TrackApostille /></SR>} />
       <Route path="/apply" element={<SR msg="Contractor registration failed to load"><ContractorRegistration /></SR>} />
       <Route path="/track-order" element={<SR msg="Order tracking failed to load"><OrderTracking /></SR>} />
+      {/* Sprint 3-5: Service intake routes */}
+      <Route path="/services/clerical-document-preparation" element={<SR><ClericalDocPrep /></SR>} />
+      <Route path="/services/document-cleanup" element={<SR><DocumentCleanup /></SR>} />
+      <Route path="/services/form-filling" element={<SR><FormFilling /></SR>} />
+      <Route path="/services/pdf-services" element={<SR><PdfServices /></SR>} />
+      <Route path="/services/document-scanning" element={<SR><DocumentScanning /></SR>} />
+      <Route path="/services/document-translation" element={<SR><DocumentTranslation /></SR>} />
+      <Route path="/services/apostille-coordination" element={<SR><ApostilleCoordination /></SR>} />
+      <Route path="/services/consular-legalization" element={<SR><ConsularLegalization /></SR>} />
+      <Route path="/services/kyc-verification" element={<SR><KycVerification /></SR>} />
+      <Route path="/services/background-check" element={<SR><BackgroundCheckService /></SR>} />
+      <Route path="/services/passport-photo" element={<SR><PassportPhoto /></SR>} />
+      <Route path="/services/fingerprinting" element={<SR><FingerprintingService /></SR>} />
+      <Route path="/services/interpreter" element={<SR><InterpreterServices /></SR>} />
+      <Route path="/services/document-printing" element={<SR><DocumentPrinting /></SR>} />
+      <Route path="/services/estate-planning" element={<SR><EstatePlanningService /></SR>} />
+      <Route path="/services/business-formation" element={<SR><BusinessFormationService /></SR>} />
+      <Route path="/services/court-form-preparation" element={<SR><CourtFormPreparation /></SR>} />
+      <Route path="/services/process-serving" element={<SR><ProcessServingService /></SR>} />
+      <Route path="/services/courier-service" element={<SR><CourierService /></SR>} />
       <Route path="/glossary" element={<SR msg="Glossary failed to load"><NotaryGlossary /></SR>} />
       <Route path="/solutions/notaries" element={<SR><ForNotaries /></SR>} />
       <Route path="/resources" element={<SR><Resources /></SR>} />
