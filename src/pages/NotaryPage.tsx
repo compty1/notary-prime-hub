@@ -20,6 +20,10 @@ import { sanitizeHtml } from "@/lib/sanitize";
 import { NotaryReviews } from "@/components/NotaryReviews";
 import { NotaryFAQ } from "@/components/NotaryFAQ";
 import { NotaryLeadCapture } from "@/components/NotaryLeadCapture";
+import { CommissionBadge } from "@/components/CommissionBadge";
+import { EmbeddableBookingWidget } from "@/components/EmbeddableBookingWidget";
+import { ServiceAreaMap } from "@/components/ServiceAreaMap";
+import { NotaryPageQRShare } from "@/components/NotaryPageQRShare";
 
 const PROFESSIONAL_TYPE_LABELS: Record<string, string> = {
   notary: "Commissioned Notary Public",
@@ -339,14 +343,11 @@ export default function NotaryPage() {
               <li className="text-foreground font-medium">{page.display_name}</li>
             </ol>
           </nav>
-          <div className="flex items-center gap-2">
+           <div className="flex items-center gap-2">
             {isOwner && (
               <Link to="/portal?tab=notary-page"><Button variant="outline" size="sm" className="gap-1 text-xs"><Pencil className="h-3 w-3" /> Edit Page</Button></Link>
             )}
-            <Button variant="ghost" size="sm" className="gap-1 text-xs" onClick={() => {
-              if (navigator.share) { navigator.share({ title: page.display_name, text: page.tagline || `Professional services by ${page.display_name}`, url: window.location.href }); }
-              else { navigator.clipboard.writeText(window.location.href); }
-            }} aria-label="Share this page"><Share2 className="h-3 w-3" /> Share</Button>
+            <NotaryPageQRShare slug={page.slug} displayName={page.display_name} themeColor={themeColor} />
           </div>
         </div>
 
