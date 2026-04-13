@@ -14,6 +14,253 @@ export type Database = {
   }
   public: {
     Tables: {
+      academy_certificates: {
+        Row: {
+          certificate_data: Json | null
+          certificate_number: string | null
+          course_id: string
+          id: string
+          issued_at: string
+          user_id: string
+        }
+        Insert: {
+          certificate_data?: Json | null
+          certificate_number?: string | null
+          course_id: string
+          id?: string
+          issued_at?: string
+          user_id: string
+        }
+        Update: {
+          certificate_data?: Json | null
+          certificate_number?: string | null
+          course_id?: string
+          id?: string
+          issued_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academy_certificates_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "e_courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      academy_lesson_progress: {
+        Row: {
+          completed_at: string
+          id: string
+          lesson_id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          lesson_id: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          lesson_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academy_lesson_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "academy_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      academy_lessons: {
+        Row: {
+          content_html: string | null
+          content_type: string
+          created_at: string
+          duration_minutes: number | null
+          id: string
+          is_published: boolean | null
+          module_id: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content_html?: string | null
+          content_type?: string
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          is_published?: boolean | null
+          module_id: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content_html?: string | null
+          content_type?: string
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          is_published?: boolean | null
+          module_id?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academy_lessons_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "academy_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      academy_modules: {
+        Row: {
+          course_id: string
+          created_at: string
+          description: string | null
+          duration_minutes: number | null
+          id: string
+          is_published: boolean | null
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_published?: boolean | null
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_published?: boolean | null
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academy_modules_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "e_courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      academy_quiz_attempts: {
+        Row: {
+          answers: Json
+          created_at: string
+          id: string
+          passed: boolean
+          quiz_id: string
+          score: number
+          user_id: string
+        }
+        Insert: {
+          answers?: Json
+          created_at?: string
+          id?: string
+          passed?: boolean
+          quiz_id: string
+          score?: number
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          created_at?: string
+          id?: string
+          passed?: boolean
+          quiz_id?: string
+          score?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academy_quiz_attempts_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "academy_quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      academy_quizzes: {
+        Row: {
+          course_id: string
+          created_at: string
+          id: string
+          module_id: string | null
+          passing_score: number
+          questions: Json
+          quiz_type: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          id?: string
+          module_id?: string | null
+          passing_score?: number
+          questions?: Json
+          quiz_type?: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          id?: string
+          module_id?: string | null
+          passing_score?: number
+          questions?: Json
+          quiz_type?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academy_quizzes_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "e_courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "academy_quizzes_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "academy_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       accounting_transactions: {
         Row: {
           amount: number
@@ -2387,7 +2634,9 @@ export type Database = {
         Row: {
           avg_rating: number | null
           category: string
+          certificate_title: string | null
           content: Json | null
+          course_code: string | null
           created_at: string
           description: string | null
           duration_minutes: number | null
@@ -2396,16 +2645,21 @@ export type Database = {
           instructor_name: string | null
           is_free: boolean | null
           is_published: boolean | null
+          prerequisite_course_ids: string[] | null
           price: number | null
           slug: string | null
           thumbnail_url: string | null
+          tier: number | null
           title: string
+          total_hours: number | null
           updated_at: string
         }
         Insert: {
           avg_rating?: number | null
           category?: string
+          certificate_title?: string | null
           content?: Json | null
+          course_code?: string | null
           created_at?: string
           description?: string | null
           duration_minutes?: number | null
@@ -2414,16 +2668,21 @@ export type Database = {
           instructor_name?: string | null
           is_free?: boolean | null
           is_published?: boolean | null
+          prerequisite_course_ids?: string[] | null
           price?: number | null
           slug?: string | null
           thumbnail_url?: string | null
+          tier?: number | null
           title: string
+          total_hours?: number | null
           updated_at?: string
         }
         Update: {
           avg_rating?: number | null
           category?: string
+          certificate_title?: string | null
           content?: Json | null
+          course_code?: string | null
           created_at?: string
           description?: string | null
           duration_minutes?: number | null
@@ -2432,10 +2691,13 @@ export type Database = {
           instructor_name?: string | null
           is_free?: boolean | null
           is_published?: boolean | null
+          prerequisite_course_ids?: string[] | null
           price?: number | null
           slug?: string | null
           thumbnail_url?: string | null
+          tier?: number | null
           title?: string
+          total_hours?: number | null
           updated_at?: string
         }
         Relationships: []
