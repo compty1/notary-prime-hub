@@ -164,6 +164,10 @@ const AdminEmbeddableWidgets = lazyRetry(() => import("./pages/admin/AdminEmbedd
 const AdminDispatch = lazyRetry(() => import("./pages/admin/AdminDispatch"));
 const AdminMessagingHub = lazyRetry(() => import("./pages/admin/AdminMessagingHub"));
 const AdminMicroTools = lazyRetry(() => import("./pages/admin/AdminMicroTools"));
+const AdminEventBus = lazyRetry(() => import("./pages/admin/AdminEventBus"));
+const AdminBusinessGrowth = lazyRetry(() => import("./pages/admin/AdminBusinessGrowth"));
+const AdminClientTimeline = lazyRetry(() => import("./pages/admin/AdminClientTimeline"));
+const AdminPlatformHealth = lazyRetry(() => import("./pages/admin/AdminPlatformHealth"));
 const AdminPrintPricing = lazyRetry(() => import("./pages/admin/AdminPrintPricing"));
 const AdminPricing = lazyRetry(() => import("./pages/admin/AdminPricing"));
 const AdminOrders = lazyRetry(() => import("./pages/admin/AdminOrders"));
