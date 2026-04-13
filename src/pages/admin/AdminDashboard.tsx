@@ -129,6 +129,9 @@ const sidebarGroups = [
     label: "System",
     items: [
       { title: "AI Assistant", url: "/admin/ai-assistant", icon: Bot, adminOnly: false },
+      { title: "Doc Collaboration", url: "/admin/doc-collaboration", icon: FolderOpen, adminOnly: true },
+      { title: "Embeddable Widgets", url: "/admin/embeddable-widgets", icon: Code, adminOnly: true },
+      { title: "Micro-Tools", url: "/admin/micro-tools", icon: Hammer, adminOnly: false },
       { title: "Team & Invites", url: "/admin/team", icon: UserPlus, adminOnly: true },
       { title: "Webhooks", url: "/admin/webhooks", icon: Webhook, adminOnly: true },
       { title: "Integration Testing", url: "/admin/integrations", icon: Plug, adminOnly: true },
