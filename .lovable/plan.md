@@ -1,188 +1,207 @@
 
 
-# Comprehensive Enhancement Plan — All Uploaded Documents
+# Master Enhancement Plan — Consolidated & Expanded
 
-This plan layers enhancements from all 5 uploaded documents over the existing build. Nothing is removed. The theme is preserved.
-
----
-
-## Document Summary
-
-1. **ServiceFlow-2.pdf** — Full-stack audit (security, architecture, frontend, testing, infra, docs) with prioritized gap analysis and remediation plans
-2. **services.pdf** — Complete service catalog screenshots showing ~60+ services across categories (Identity, Document, Authentication, Translation, Business, Admin, Content, Research, Customer Service, Technical Support, UX) with pricing and CTAs
-3. **Shop Integration Blueprint** — 3-layer notary package shop system (/shop with 4 tiers: Starter $79, Professional $179, Business Builder $349, Authority $699), dashboard widgets, content-embedded touchpoints, add-on marketplace (16 SKUs), cart/checkout
-4. **Service Package System (XLSX)** — Package tier data, SKU details, and pricing matrix
-5. **Module Expansion Mockups** — UI mockups for Estate Planning, Business Contracts, Real Estate Closings, Dynamic Booking System, Client Portal, and Content Library modules
+This plan preserves ALL existing sprints (1-21) from all prior plan versions and adds new items. Nothing is removed.
 
 ---
 
-## Sprint 1: Notary Shop System (Shop Blueprint — Highest Revenue Impact)
+## Unbuilt Items from Prior Plans (Must Complete First)
 
-### 1A. Database Tables
-- `shop_packages` (id, tier_name, slug, tagline, physical_price, digital_price, complete_price, badge, persona_match, features JSONB, sort_order)
-- `shop_addons` (id, name, category, price, description, compatible_tiers TEXT[], is_active)
-- `shop_cart_items` (id, user_id, item_type, item_id, variation, quantity, created_at)
-- `shop_orders` (id, user_id, items JSONB, total, status, stripe_session_id, created_at)
-- Seed 4 package tiers + 16 add-ons from the blueprint
+These were approved but never implemented:
 
-### 1B. Shop Pages (New Routes)
-- `/shop` — Landing with hero, persona quick-filter bar, 4-tier comparison cards, trust signals, social proof
-- `/shop/packages` — Full tier comparison grid
-- `/shop/[tier]` — Individual package page (variation toggle: Physical/Digital/Complete, deliverables checklist, accordion, upsell comparison, add-on selector, price breakdown)
-- `/shop/add-ons` — 16-item grid with category filter tabs (Supplies, Digital Tools, Branding, Marketing)
-- `/shop/cart` — Cart page with item management
-- `/shop/checkout` — Stripe checkout integration
-
-### 1C. Dashboard Contextual Widgets (Layer 2)
-- `ShopRecommendationWidget.tsx` — Smart cards in notary dashboard triggered by account status (e.g., "No journal set up" → Journal add-on)
-- `PackageStatusWidget.tsx` — Active package display with reorder capability
-
-### 1D. Content-Embedded Touchpoints (Layer 3)
-- `ProductCalloutCard.tsx` — Reusable component for embedding product recommendations in resource/guide pages
-- Wire into existing resource pages contextually
+| Item | Status |
+|------|--------|
+| Credential Vault (`user_credentials` table + `CredentialVault.tsx`) | Not started |
+| Todo System (`user_todos` table + `TodoPanel.tsx`) | Not started |
+| AI Service Workspace (edge function + workspace + hook + configs) | Not started |
+| Category Tool Panels (6 files: Translation, Legal, Content, Business, Immigration, Research) | Not started |
+| Admin Equipment Tab (`admin_equipment` table + `AdminEquipment.tsx`) | Not started |
+| Vendor Products & Auto-Enrich (`vendor_products` table + edge functions) | Not started |
+| E-Courses System (4 tables + admin/portal pages) | Not started |
+| Accounting & Tax Center (`accounting_transactions` + `mileage_entries`) | Not started |
+| Document Collaboration (4 tables + workspace) | Not started |
+| Embeddable Widgets (BookNow, Availability, etc.) | Not started |
+| Dispatch & Routing Engine | Not started |
+| Notification & Messaging Hub | Not started |
+| Micro-Tools (SignatureGenerator, StampPreview, FeeCalc, etc.) | Not started |
+| Notary logo upload + transition fix | Not started |
+| Event Bus (`platform_events`) | Not started |
+| Per-service admin dashboard enhancements (~30 pages) | Not started |
 
 ---
 
-## Sprint 2: Expanded Service Catalog (services.pdf — ~30 New/Enhanced Services)
+## Bug Fix: Service Catalog CTA Routing
 
-### New Service Categories & Intake Pages
-These services appear in the catalog but lack dedicated intake pages:
+**Problem:** In `Services.tsx`, the `getServiceAction()` function falls through to `"/book"` with label `"Book Now"` for any service NOT in `INTAKE_ONLY_SERVICES`, `SAAS_LINKS`, or `SUBSCRIPTION_SERVICES`. This incorrectly routes non-notary services (e.g., "Business Formation", "RON Onboarding Consulting") to the notary booking scheduler.
 
-**Translation & Language (4 new):**
-- `/services/standard-translation`, `/services/certified-translation`, `/services/court-certified-translation`, `/services/credential-evaluation`
-
-**Business & Volume (3 new):**
-- `/services/business-subscriptions`, `/services/api-integration`, `/services/white-label-partner`
-
-**Recurring & Value-Add (3 new):**
-- `/services/virtual-mailroom`, `/services/template-library`, `/services/document-storage-vault` (enhance existing)
-
-**Consulting & Training (2 new):**
-- `/services/ron-onboarding-consulting`, `/services/workflow-audit`
-
-**Business Services (3 new):**
-- `/services/email-management`, `/services/certified-doc-prep-agencies`, `/services/registered-agent`
-
-**Administrative Support (2 new):**
-- `/services/data-entry`, `/services/travel-arrangements`
-
-**Content Creation (3 new):**
-- `/services/blog-writing`, `/services/social-media-content`, `/services/newsletter-design`
-
-**Research (2 new):**
-- `/services/market-research`, `/services/lead-generation`
-
-**Customer Service (2 new):**
-- `/services/email-support`, `/services/live-chat-support`
-
-**Technical Support (1 new):**
-- `/services/website-content-updates`
-
-**UX Services (1+ new):**
-- `/services/ux-audit`
-
-Each uses the existing `ServiceIntakeForm` scaffold and registers in `services` table + `service_registry.ts`.
+**Fix:**
+- Update `getServiceAction()` to check the service `category` against `NOTARY_CATEGORIES` FIRST
+- Non-notary services that aren't in any special set should route to `/request?service=...` with label "Request Service" or "Get Started"
+- Add missing services to `INTAKE_ONLY_SERVICES` set: "Business Formation", "RON Onboarding Consulting", "Workflow Audit & Automation", "Credential Evaluation"
+- Also update `serviceFlowConfig.ts` entries: `i9-verification` should NOT use `intakeRoute: "book"` — it should use `"request"` since it's not a notary service
 
 ---
 
-## Sprint 3: Module Expansion (Mockups PDF)
+## New Sprint 22: Business Expansion Hub for Notaries & Professionals
 
-### 3A. Estate Planning Services Page Enhancement
-- Enhance `/services/estate-planning` with the mockup layout: POA, Living Wills, Healthcare Directives, Trust Certifications as numbered service items with ORC references
-- Service time estimate display, pricing from $25/notarization
+### Content & Guides
+Create a `BusinessExpansionHub.tsx` page at `/portal/business-growth` (also linked from admin) with:
 
-### 3B. Business Contracts Module
-- New/enhanced `/services/business-contracts` page matching mockup: Articles of Incorporation, Operating Agreements, Partnership Agreements, Commercial Leases, Vendor Contracts, Corporate Resolutions
-- Starting at $25/notarization, 20-40 min estimate
+**For Notaries:**
+- Guide: "How to Get Business Clients as a Notary" — real strategies (title company outreach, real estate agent networking, hospital/nursing home partnerships, law firm relationships, signing services, Google Business Profile optimization)
+- Guide: "Common Obstacles & What Worked" — curated from real practitioner experiences (Reddit, NNA forums): dealing with low-ball offers, competing with mobile apps, handling after-hours requests, marketing on a budget
+- Template: Cold email generator — select target (title company, law firm, real estate agent, hospital, insurance company) and service offering, AI generates personalized outreach email
+- Template: Follow-up email sequences
+- Template: Service introduction letter
+- Checklist: "Launch Your Notary Business in 30 Days"
 
-### 3C. Real Estate Closings Module
-- Enhanced `/services/real-estate-closings` with 4-step process flow (Title Company Contact → Document Review → Mobile Closing → Return & Confirm)
-- Service list: Mortgage Closings, Deed Transfers, Refinance Signings, Title Affidavits, Seller Packages, HELOC Signings
-- Starting at $150/signing, 7-County Central Ohio coverage
+**For Professionals (non-notary):**
+- Guide: "Building a Client Base for Document Services" — LinkedIn outreach, referral systems, local business partnerships, online directories
+- Guide: "Pricing Your Services Competitively"
+- Template: Service proposal generator — select services from catalog, AI builds professional proposal
+- Template: Client onboarding packet generator
+- Common obstacles: finding first clients, scope creep, managing remote clients
 
-### 3D. Dynamic Booking System Enhancement
-- Enhance booking calendar with week/day/month view matching mockup
-- Zone-based travel integration, buffer management, real-time availability
-- Smart duration logic per service type
+**For Admin:**
+- Combined view of all growth resources
+- Analytics on which guides/templates are most used
 
-### 3E. Client Portal Enhancement
-- Document tracking with stage progress bars
-- Payment history timeline
-- Compliance dashboard for client-facing view
+### Database
+- `growth_resources` table (id, title, slug, category, content_html, resource_type enum('guide','template','checklist','tool'), target_audience enum('notary','professional','both'), created_at)
 
-### 3F. Content Library Module
-- `/resources` hub with FAQs, ORC references, educational blog, guides
-- Wire shop touchpoints (Layer 3) into content pages
-
----
-
-## Sprint 4: Audit Remediation (ServiceFlow-2.pdf — Priority Items Only)
-
-The audit document is a generic full-stack audit. Many items (RBAC, RLS, secrets management, CSP headers) are **already implemented** in the current build. This sprint addresses gaps that are actually applicable:
-
-### 4A. Frontend Enhancements
-- Add `ErrorBoundary` wrappers to major route sections (FE-009)
-- Add skeleton/loading states to data-heavy pages (FE-008)
-- Enhance form validation with inline error messages on all intake forms (FE-007)
-- Accessibility pass: ensure ARIA labels on interactive elements, keyboard navigation on shop pages (FE-003)
-
-### 4B. API & Edge Function Hardening
-- Add Zod input validation to any edge functions missing it (SEC-003 — most already have it)
-- Verify rate limiting on sensitive endpoints (SEC-002 — already implemented on most)
-- Add health check edge function for monitoring (INFRA-005)
-
-### 4C. Documentation
-- Add inline JSDoc comments to scaffold components and hooks
-- Add README section for service scaffold usage pattern
+### AI Edge Function Enhancement
+- Add `mode: "outreach_email"` to `service-ai-copilot` — generates industry-specific outreach emails based on selected services and target audience
 
 ---
 
-## Sprint 5: Cross-Wiring & Integration Polish
+## New Sprint 23: Enhanced Document Anatomy System
 
-### 5A. Service Registry Update
-- Add all new services from Sprint 2 to `serviceRegistry.ts` (~25 new entries)
-- Update `ServicesMenu` navigation to include new categories
+### Expanded Callout Data
+Update `DOCUMENT_ANATOMY` in `AnatomyDiagram.tsx` to include MORE granular callouts for each document type. Every single element should be explained:
+- Add callouts for: margin requirements, paper size, ink color requirements, stapling/binding rules, page numbering, recording stamps area, clerk filing stamps area, notary journal cross-reference notation
+- Add new document types: `deed_transfer`, `affidavit_general`, `living_will`, `healthcare_directive`, `trust_certification`, `commercial_lease`, `articles_of_incorporation`
 
-### 5B. Cross-Sell Rules Expansion
-- Seed ~20 additional cross-sell rules for new services (e.g., Translation → Apostille, Business Formation → Registered Agent)
+### Per-Document Tool Modules
+For each document anatomy entry, add contextual tools accessible from the resource page:
 
-### 5C. Pricing Rules Seeding
-- Add `pricing_rules` rows for all new services with correct fee ranges from the catalog
+| Document | Tools |
+|----------|-------|
+| Acknowledgment | Certificate wording generator, venue auto-fill, signer capacity checker |
+| Jurat | Oath script generator, sworn vs affirmed selector, oath administration checklist |
+| Copy Certification | Vital records prohibition checker, page count calculator, certification statement builder |
+| POA | POA type selector (durable/springing/healthcare/limited), witness requirement checker, principal capacity assessment guide |
+| Corporate | Authority verification checklist, entity name format validator, representative capacity wording helper |
+| Signature by Mark | Two-witness procedure guide, mark procedure script, accessibility considerations |
+| Vehicle Title | Open title felony warning, odometer disclosure checker, HB 315 dealer exemption checker |
+| Self-Proving Affidavit | Will execution checklist, witness qualification checker, simultaneous presence guide |
 
-### 5D. Shop ↔ Service Integration
-- Wire shop package purchases to unlock service tiers/discounts
-- "Authority" tier purchasers get priority scheduling flag on appointments
-
----
-
-## Database Migrations Summary
-
-| Migration | Changes |
-|-----------|---------|
-| 1 | `shop_packages`, `shop_addons`, `shop_cart_items`, `shop_orders` tables with RLS |
-| 2 | Seed 4 package tiers, 16 add-ons from blueprint |
-| 3 | Insert ~25 new service rows into `services` table |
-| 4 | Seed corresponding `pricing_rules` and `cross_sell_rules` |
-
----
-
-## New Files Summary (~45 new components/pages)
-
-- **Shop system:** ~10 pages/components (ShopLanding, PackagePage, AddOnMarketplace, Cart, Checkout, TierComparisonGrid, ProductCalloutCard, ShopRecommendationWidget, PackageStatusWidget, AddOnCard)
-- **Service intake pages:** ~25 new pages using ServiceIntakeForm scaffold
-- **Module enhancements:** ~5 enhanced pages (EstateePlanning, BusinessContracts, RealEstateClosings, BookingCalendar, ClientPortal)
-- **Infrastructure:** ErrorBoundary wrappers, skeleton states, health check function
-- **Service registry:** Updated with ~25 new entries
+### UI Enhancements to Resources
+- Add "Interactive Tools" section below each document example in the gallery
+- Add "Practice Quiz" per document type — 5 multiple-choice questions testing knowledge of that document's requirements
+- Add "Common Mistakes" panel per document — real-world errors notaries make with that document type
+- Add "Related ORC Sections" expandable panel with links to full statute text
+- Add print-friendly "Quick Reference Card" per document — single-page summary of all requirements
 
 ---
 
-## Implementation Order
+## New Sprint 24: Additional Service Dashboard Native Tools
 
-1. **Shop system first** (highest revenue impact, new capability)
-2. **Service catalog expansion** (uses existing scaffold, fast to build)
-3. **Module expansions** (enhance existing pages per mockups)
-4. **Audit remediation** (polish and hardening)
-5. **Cross-wiring** (final integration pass)
+Beyond the Sprint 10 per-service enhancements, add these specialized tools:
 
-No existing services, components, or routes are removed. All work layers on top of the current build.
+### Per-Service Specialized Builds
+
+**Fingerprinting Dashboard:**
+- FD-258 card field mapper (visual card layout with fillable fields)
+- Ink quality checklist
+- Rejection reason tracker (common FBI/BCI rejection reasons)
+- Equipment maintenance log (linked to Equipment tab)
+
+**Immigration Dashboard:**
+- Country-specific document matrix (what's needed per country)
+- USCIS processing time widget (current wait times)
+- Consular appointment scheduler helper
+- Document translation coordination panel (link to Translation dashboard)
+
+**Real Estate Dashboard:**
+- Signing package document counter with page-by-page tracker
+- Closing cost breakdown calculator
+- Title company contact directory
+- E-recording status tracker
+
+**Content Services Dashboard:**
+- Editorial calendar with drag-drop scheduling
+- Content brief generator (AI fills SEO keywords, audience, tone)
+- Plagiarism/originality indicator
+- Social media preview cards (how post looks on each platform)
+
+**Court Forms Dashboard:**
+- County-specific form finder
+- Filing fee lookup by county and case type
+- Deadline calculator (filing windows, response times)
+- Required attachments checklist per form type
+
+**Process Serving Dashboard:**
+- Attempt log with GPS coordinates
+- Affidavit of service auto-generator
+- Skip trace integration panel
+- Substituted service rules reference per county
+
+---
+
+## Implementation Order (Complete Sequence)
+
+1. **Bug fix:** Service catalog CTA routing (Services.tsx + serviceConstants.ts + serviceFlowConfig.ts)
+2. **Sprint 6:** Credential Vault (DB + component + wiring)
+3. **Sprint 7:** Todo System (DB + component + wiring)
+4. **Sprint 8:** AI Service Layer (edge function + configs + hook + workspace)
+5. **Sprint 9:** Category Tool Panels (6 files)
+6. **Sprint 10:** Per-service admin dashboard enhancements (batch by category)
+7. **Sprint 11:** Vendor Products & Auto-Enrich
+8. **Sprint 12:** Admin Equipment Tab
+9. **Sprint 13:** Notary logo upload + page transition fix
+10. **Sprint 14:** E-Courses system
+11. **Sprint 15:** Accounting & Tax Center
+12. **Sprint 16:** Document Collaboration
+13. **Sprint 17:** Embeddable Widgets + Verification Badge
+14. **Sprint 18:** Dispatch & Routing Engine
+15. **Sprint 19:** Notification & Messaging Hub
+16. **Sprint 20:** Micro-Tools
+17. **Sprint 21:** Event Bus
+18. **Sprint 22:** Business Expansion Hub (guides, templates, outreach tools)
+19. **Sprint 23:** Enhanced Document Anatomy + per-document tools + quizzes
+20. **Sprint 24:** Additional service dashboard native tools
+
+---
+
+## Database Migrations (16 total)
+
+| # | Tables / Changes |
+|---|-----------------|
+| 1 | Shop tables (4) |
+| 2 | Shop seed data |
+| 3 | New service rows (~25) |
+| 4 | Pricing/cross-sell rules |
+| 5 | `user_credentials` |
+| 6 | `user_todos` |
+| 7 | `service_requests` + 3 columns, `service_job_files` |
+| 8 | `vendors` + 2 columns, `vendor_products` |
+| 9 | `admin_equipment` |
+| 10 | `notary_pages.logo_path` |
+| 11 | E-course tables (4) |
+| 12 | `accounting_transactions`, `mileage_entries` |
+| 13 | Document collaboration tables (4) |
+| 14 | `dispatch_assignments`, `sla_timers` |
+| 15 | `notification_templates`, `conversations`, `conversation_messages` |
+| 16 | `platform_events`, `growth_resources` |
+
+## New Files (~120+)
+
+All prior file lists remain. Additional new files:
+- `BusinessExpansionHub.tsx`, `OutreachEmailGenerator.tsx`, `GrowthGuideViewer.tsx`
+- 7+ document-specific tool components (OathScriptGenerator, CertWordingGenerator, POATypeSelector, etc.)
+- `DocumentQuiz.tsx`, `CommonMistakesPanel.tsx`, `QuickReferenceCard.tsx`
+- Enhanced service dashboard sub-components for Fingerprinting, Immigration, Real Estate, Content, Court Forms, Process Serving
+
+Nothing from any prior plan version is removed.
 
