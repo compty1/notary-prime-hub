@@ -76,5 +76,6 @@ export default function AdminRealEstate() {
         </Tabs>
       )}
     </div>
+    </DashboardEnhancer>
   );
 }
