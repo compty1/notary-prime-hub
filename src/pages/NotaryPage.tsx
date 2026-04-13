@@ -470,7 +470,7 @@ export default function NotaryPage() {
                       viewport={{ once: true }}
                     >
                       {matched ? (
-                        <Link to={`/services/${matched.id}`} className="block no-underline">
+                        <Link to={(matched as any).registryPath || `/services/${matched.id}`} className="block no-underline">
                           {cardContent}
                         </Link>
                       ) : (
