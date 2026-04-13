@@ -84,6 +84,11 @@ const ShopPackageDetail = lazyRetry(() => import("./pages/shop/ShopPackageDetail
 const ShopAddons = lazyRetry(() => import("./pages/shop/ShopAddons"));
 const ShopCart = lazyRetry(() => import("./pages/shop/ShopCart"));
 
+// Service module pages
+const EstatePlanningServices = lazyRetry(() => import("./pages/services/EstatePlanningServices"));
+const BusinessContractsServices = lazyRetry(() => import("./pages/services/BusinessContractsServices"));
+const RealEstateClosingsServices = lazyRetry(() => import("./pages/services/RealEstateClosingsServices"));
+
 // Admin pages
 const AdminDashboard = lazyRetry(() => import("./pages/admin/AdminDashboard"));
 const AdminOverview = lazyRetry(() => import("./pages/admin/AdminOverview"));
