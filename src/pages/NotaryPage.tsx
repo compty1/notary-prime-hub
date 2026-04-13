@@ -20,6 +20,10 @@ import { sanitizeHtml } from "@/lib/sanitize";
 import { NotaryReviews } from "@/components/NotaryReviews";
 import { NotaryFAQ } from "@/components/NotaryFAQ";
 import { NotaryLeadCapture } from "@/components/NotaryLeadCapture";
+import { CommissionBadge } from "@/components/CommissionBadge";
+import { EmbeddableBookingWidget } from "@/components/EmbeddableBookingWidget";
+import { ServiceAreaMap } from "@/components/ServiceAreaMap";
+import { NotaryPageQRShare } from "@/components/NotaryPageQRShare";
 
 const PROFESSIONAL_TYPE_LABELS: Record<string, string> = {
   notary: "Commissioned Notary Public",
@@ -263,6 +267,9 @@ export default function NotaryPage() {
             {areas.length > 0 && (
               <button onClick={() => scrollToSection("areas")} className="whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-muted">Areas</button>
             )}
+            {(page.use_platform_booking || page.external_booking_url) && (
+              <button onClick={() => scrollToSection("book")} className="whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-muted">Book</button>
+            )}
             {(creds.commission_number || creds.commission_expiration) && (
               <button onClick={() => scrollToSection("credentials")} className="whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-muted">Credentials</button>
             )}
@@ -309,6 +316,7 @@ export default function NotaryPage() {
                   {creds.eo_insured && <Badge variant="outline" className="gap-1"><CheckCircle className="h-3 w-3" /> E&O Insured</Badge>}
                   {creds.bonded && <Badge variant="outline" className="gap-1"><CheckCircle className="h-3 w-3" /> Bonded</Badge>}
                   {page.is_featured && <Badge className="gap-1 bg-amber-500 text-white"><Star className="h-3 w-3" /> Featured</Badge>}
+                  <CommissionBadge expirationDate={creds.commission_expiration} />
                 </div>
                 {creds.commissioned_state?.toLowerCase().includes("ohio") && (
                   <div className="mt-2">
@@ -339,14 +347,11 @@ export default function NotaryPage() {
               <li className="text-foreground font-medium">{page.display_name}</li>
             </ol>
           </nav>
-          <div className="flex items-center gap-2">
+           <div className="flex items-center gap-2">
             {isOwner && (
               <Link to="/portal?tab=notary-page"><Button variant="outline" size="sm" className="gap-1 text-xs"><Pencil className="h-3 w-3" /> Edit Page</Button></Link>
             )}
-            <Button variant="ghost" size="sm" className="gap-1 text-xs" onClick={() => {
-              if (navigator.share) { navigator.share({ title: page.display_name, text: page.tagline || `Professional services by ${page.display_name}`, url: window.location.href }); }
-              else { navigator.clipboard.writeText(window.location.href); }
-            }} aria-label="Share this page"><Share2 className="h-3 w-3" /> Share</Button>
+            <NotaryPageQRShare slug={page.slug} displayName={page.display_name} themeColor={themeColor} />
           </div>
         </div>
 
@@ -499,17 +504,28 @@ export default function NotaryPage() {
                 <div className="h-8 w-1 rounded-full" style={{ backgroundColor: themeColor }} />
                 Service Areas
               </h2>
-              <div className="flex flex-wrap gap-2">
-                {areas.map((area: string, i: number) => (
-                  <Badge key={i} variant="secondary" className="gap-1 text-sm px-3 py-1.5"><MapPin className="h-3 w-3" /> {area}</Badge>
-                ))}
-              </div>
-              {creds.ron_certified && (
-                <p className="mt-4 text-sm text-muted-foreground flex items-center gap-2">
-                  <Monitor className="h-4 w-4" style={{ color: themeColor }} />
-                  Also available for <strong>Remote Online Notarization</strong> — serve clients anywhere in Ohio via secure video.
-                </p>
-              )}
+              <ServiceAreaMap
+                areas={areas}
+                isRonCertified={!!creds.ron_certified}
+                isMobileNotary={professionalType === "mobile_notary"}
+                themeColor={themeColor}
+              />
+            </div>
+          </section>
+        )}
+
+        {/* ══════ EMBEDDED BOOKING ══════ */}
+        {(page.use_platform_booking || page.external_booking_url) && (
+          <section id="book" className="py-16">
+            <div className="mx-auto max-w-lg px-4">
+              <EmbeddableBookingWidget
+                notarySlug={page.slug}
+                notaryName={page.display_name}
+                services={services.map((s: any) => s.name || s)}
+                themeColor={themeColor}
+                usePlatformBooking={page.use_platform_booking}
+                externalBookingUrl={page.external_booking_url}
+              />
             </div>
           </section>
         )}

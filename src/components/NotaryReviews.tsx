@@ -32,33 +32,57 @@ export function NotaryReviews({ notaryUserId, limit = 6 }: NotaryReviewsProps) {
 
     async function fetchReviews() {
       try {
-        // Get appointments for this notary, then their feedback
-        const { data: appointments } = await supabase
-          .from("appointments")
-          .select("id")
-          .eq("notary_id", notaryUserId);
+        // Fetch from both reviews table AND client_feedback (legacy)
+        const [reviewsResult, feedbackResult] = await Promise.all([
+          // New reviews table (DM-005)
+          supabase
+            .from("reviews")
+            .select("id, rating, comment, created_at, is_verified")
+            .eq("notary_id", notaryUserId)
+            .order("created_at", { ascending: false })
+            .limit(limit),
+          // Legacy: client_feedback via appointments
+          (async () => {
+            const { data: appointments } = await supabase
+              .from("appointments")
+              .select("id")
+              .eq("notary_id", notaryUserId);
+            if (!appointments?.length) return { data: [] };
+            return supabase
+              .from("client_feedback")
+              .select("id, rating, comment, created_at, client_id")
+              .in("appointment_id", appointments.map(a => a.id))
+              .order("created_at", { ascending: false })
+              .limit(limit);
+          })(),
+        ]);
 
-        if (!appointments?.length) { setLoading(false); return; }
+        const allReviews: Review[] = [];
+        const seen = new Set<string>();
 
-        const appointmentIds = appointments.map(a => a.id);
+        // Add from reviews table first
+        for (const r of reviewsResult.data || []) {
+          if (!seen.has(r.id)) {
+            seen.add(r.id);
+            allReviews.push({ id: r.id, rating: r.rating, comment: r.comment, created_at: r.created_at });
+          }
+        }
 
-        const { data: feedback } = await supabase
-          .from("client_feedback")
-          .select("id, rating, comment, created_at, client_id")
-          .in("appointment_id", appointmentIds)
-          .order("created_at", { ascending: false })
-          .limit(limit);
+        // Add from legacy feedback
+        for (const f of feedbackResult.data || []) {
+          if (!seen.has(f.id)) {
+            seen.add(f.id);
+            allReviews.push({ id: f.id, rating: f.rating, comment: f.comment, created_at: f.created_at });
+          }
+        }
 
-        if (feedback?.length) {
-          const mapped: Review[] = feedback.map(f => ({
-            id: f.id,
-            rating: f.rating,
-            comment: f.comment,
-            created_at: f.created_at,
-            client_name: undefined, // PII-safe: don't expose names publicly
-          }));
-          setReviews(mapped);
-          setAvgRating(mapped.reduce((sum, r) => sum + r.rating, 0) / mapped.length);
+        // Sort by date and limit
+        allReviews.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        const finalReviews = allReviews.slice(0, limit);
+
+        if (finalReviews.length) {
+          setReviews(finalReviews);
+          setAvgRating(finalReviews.reduce((sum, r) => sum + r.rating, 0) / finalReviews.length);
         }
       } catch (err) {
         console.error("Failed to load reviews:", err);

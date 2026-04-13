@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
@@ -15,6 +15,7 @@ const AUTH_TIMEOUT_MS = 15000;
 
 const ProtectedRoute = ({ children, requireAdmin = false, adminOnly = false }: ProtectedRouteProps) => {
   const { user, isAdmin, isNotary, loading } = useAuth();
+  const location = useLocation();
   const [timedOut, setTimedOut] = useState(false);
 
   useEffect(() => {
@@ -22,6 +23,9 @@ const ProtectedRoute = ({ children, requireAdmin = false, adminOnly = false }: P
     const timer = setTimeout(() => setTimedOut(true), AUTH_TIMEOUT_MS);
     return () => clearTimeout(timer);
   }, [loading]);
+
+  // RT-005: Build login redirect with returnUrl
+  const loginRedirect = `/login?returnUrl=${encodeURIComponent(location.pathname + location.search)}`;
 
   if (loading && !timedOut) {
     return (
@@ -33,10 +37,10 @@ const ProtectedRoute = ({ children, requireAdmin = false, adminOnly = false }: P
   }
 
   if (timedOut && !user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={loginRedirect} replace />;
   }
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to={loginRedirect} replace />;
 
   // Email verification reminder (non-blocking)
   const emailConfirmed = user.email_confirmed_at || user.confirmed_at;

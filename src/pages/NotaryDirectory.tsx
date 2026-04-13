@@ -8,9 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, MapPin, Award, Shield, Star, Search, Calendar, User, ChevronLeft, ChevronRight, ArrowUpDown } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Loader2, MapPin, Award, Shield, Star, Search, Calendar, User, ChevronLeft, ChevronRight, ArrowUpDown, Monitor } from "lucide-react";
 import { motion } from "framer-motion";
 import { ensureHex } from "@/lib/colorUtils";
+import { CommissionBadge } from "@/components/CommissionBadge";
 
 const PROFESSIONAL_TYPES: Record<string, string> = {
   notary: "Notary Public",
@@ -33,6 +35,8 @@ interface ProfessionalSummary {
   credentials: Record<string, any>;
   is_featured: boolean;
   professional_type: string;
+  services_offered: any[];
+  status: string;
 }
 
 const PAGE_SIZE = 12;
@@ -54,6 +58,7 @@ export default function NotaryDirectory() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedType, setSelectedType] = useState(typeFilter || "all");
+  const [ronFilter, setRonFilter] = useState(searchParams.get("ron") === "true");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<"featured" | "name" | "areas">("featured");
 
@@ -61,7 +66,7 @@ export default function NotaryDirectory() {
     (async () => {
       const { data } = await supabase
         .from("notary_pages")
-        .select("id, slug, display_name, title, tagline, profile_photo_path, theme_color, service_areas, credentials, is_featured, professional_type")
+        .select("id, slug, display_name, title, tagline, profile_photo_path, theme_color, service_areas, credentials, is_featured, professional_type, services_offered, status")
         .eq("is_published", true)
         .order("is_featured", { ascending: false });
       setProfessionals((data as ProfessionalSummary[]) || []);
@@ -86,11 +91,11 @@ export default function NotaryDirectory() {
       p.display_name.toLowerCase().includes(search.toLowerCase()) ||
       (p.service_areas || []).some((a: string) => a.toLowerCase().includes(search.toLowerCase()));
     const matchesType = selectedType === "all" || p.professional_type === selectedType;
-    return matchesSearch && matchesType;
+    const matchesRon = !ronFilter || (p.credentials?.ron_certified === true);
+    return matchesSearch && matchesType && matchesRon;
   }).sort((a, b) => {
     if (sortBy === "name") return a.display_name.localeCompare(b.display_name);
     if (sortBy === "areas") return (b.service_areas?.length || 0) - (a.service_areas?.length || 0);
-    // default: featured first
     return (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0);
   });
 
@@ -143,6 +148,18 @@ export default function NotaryDirectory() {
               <SelectItem value="areas">Most Areas</SelectItem>
             </SelectContent>
           </Select>
+          <label className="flex items-center gap-2 whitespace-nowrap text-sm cursor-pointer">
+            <Checkbox
+              checked={ronFilter}
+              onCheckedChange={(v) => {
+                setRonFilter(!!v);
+                setCurrentPage(1);
+                if (v) searchParams.set("ron", "true"); else searchParams.delete("ron");
+                setSearchParams(searchParams, { replace: true });
+              }}
+            />
+            <Monitor className="h-3 w-3" /> RON Available
+          </label>
         </div>
 
         {loading ? (
@@ -205,7 +222,22 @@ export default function NotaryDirectory() {
                           <div className="mt-3 flex flex-wrap gap-1">
                             {creds.nna_certified && <Badge variant="secondary" className="text-xs gap-1"><Award className="h-3 w-3" /> NNA</Badge>}
                             {creds.ron_certified && <Badge variant="secondary" className="text-xs gap-1"><Shield className="h-3 w-3" /> RON</Badge>}
+                            <CommissionBadge expirationDate={creds.commission_expiration} />
                           </div>
+
+                          {/* Top services */}
+                          {pro.services_offered && Array.isArray(pro.services_offered) && pro.services_offered.length > 0 && (
+                            <div className="mt-2 flex flex-wrap gap-1">
+                              {pro.services_offered.slice(0, 3).map((svc: any, j: number) => (
+                                <Badge key={j} variant="outline" className="text-xs">
+                                  {typeof svc === "string" ? svc : svc.name}
+                                </Badge>
+                              ))}
+                              {pro.services_offered.length > 3 && (
+                                <Badge variant="outline" className="text-xs">+{pro.services_offered.length - 3}</Badge>
+                              )}
+                            </div>
+                          )}
 
                           {areas.length > 0 && (
                             <div className="mt-3 flex flex-wrap gap-1">
