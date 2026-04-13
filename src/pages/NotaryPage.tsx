@@ -105,6 +105,7 @@ export default function NotaryPage() {
   const [notFound, setNotFound] = useState(false);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
   const [coverPhotoUrl, setCoverPhotoUrl] = useState<string | null>(null);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [galleryUrls, setGalleryUrls] = useState<string[]>([]);
   const [isOwner, setIsOwner] = useState(false);
   const [serviceLinks, setServiceLinks] = useState<ServiceLink[]>([]);
@@ -157,12 +158,14 @@ export default function NotaryPage() {
       if (currentUser && currentUser.id === pageData.user_id) setIsOwner(true);
 
       // Resolve photos in parallel
-      const [profileUrl, coverUrl] = await Promise.all([
+      const [profileUrl, coverUrl, resolvedLogoUrl] = await Promise.all([
         resolveStorageUrl(pageData.profile_photo_path),
         resolveStorageUrl(pageData.cover_photo_path),
+        resolveStorageUrl(pageData.logo_path),
       ]);
       setProfilePhotoUrl(profileUrl);
       setCoverPhotoUrl(coverUrl);
+      setLogoUrl(resolvedLogoUrl);
 
       const gallery = Array.isArray(pageData.gallery_photos) ? pageData.gallery_photos : [];
       if (gallery.length > 0) {
