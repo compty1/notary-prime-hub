@@ -9,8 +9,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { lazy, Suspense, ReactNode } from "react";
 import ScrollToTop from "@/components/ScrollToTop";
 import { CommandPalette } from "@/components/CommandPalette";
-import { CookieConsent } from "@/components/CookieConsent";
-import { OfflineIndicator } from "@/components/OfflineIndicator";
+// CookieConsent and OfflineIndicator are rendered by PageShell — not duplicated here
 
 // Eager load critical pages
 import ComingSoon from "./pages/ComingSoon";
@@ -426,7 +425,7 @@ function AnimatedRoutes() {
       <Route path="/shop/add-ons" element={<SR msg="Add-ons failed to load"><ShopAddons /></SR>} />
       <Route path="/shop/cart" element={<SR msg="Cart failed to load"><ShopCart /></SR>} />
       <Route path="/shop/:tier" element={<SR msg="Package detail failed to load"><ShopPackageDetail /></SR>} />
-      <Route path="/services/estate-planning" element={<SR msg="Estate planning failed to load"><EstatePlanningServices /></SR>} />
+      {/* Duplicate /services/estate-planning removed — defined at line 356 */}
       <Route path="/services/business-contracts" element={<SR msg="Business contracts failed to load"><BusinessContractsServices /></SR>} />
       <Route path="/services/real-estate-closings" element={<SR msg="Real estate closings failed to load"><RealEstateClosingsServices /></SR>} />
       <Route path="/pricing-menu" element={<SR msg="Pricing menu failed to load"><PricingMenu /></SR>} />
@@ -585,8 +584,6 @@ const App = () => (
           <ScrollToTop />
           <AuthenticatedCommandPalette />
           <AnimatedRoutes />
-          <CookieConsent />
-          <OfflineIndicator />
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>

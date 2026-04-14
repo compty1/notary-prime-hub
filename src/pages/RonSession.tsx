@@ -1588,7 +1588,7 @@ export default function RonSession() {
                         <span className="text-sm font-semibold text-muted-foreground">Use SignNow API</span>
                       </div>
                       <p className="text-[11px] text-muted-foreground">Automated document upload & invite</p>
-                      <Badge variant="secondary" className="absolute top-2 right-2 text-[10px]">Coming Soon</Badge>
+                      <Badge variant="secondary" className="absolute top-2 right-2 text-[10px]">Beta</Badge>
                     </button>
                   </div>
                 )}

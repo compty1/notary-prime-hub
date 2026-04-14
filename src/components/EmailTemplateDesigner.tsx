@@ -125,7 +125,7 @@ export default function EmailTemplateDesigner({ settings, onSave }: EmailTemplat
         <div style="padding:${p};color:${c.body_text};font-size:14px;line-height:1.6;">
           ${templateContent}
           <div style="text-align:center;margin-top:24px;">
-            <a href="#" style="display:inline-block;background:${c.accent_color};color:#fff;padding:12px 32px;border-radius:${r};text-decoration:none;font-weight:600;">View Details</a>
+            <a href="{{action_url}}" style="display:inline-block;background:${c.accent_color};color:#fff;padding:12px 32px;border-radius:${r};text-decoration:none;font-weight:600;">View Details</a>
           </div>
         </div>
         <div style="background:${c.footer_bg};padding:16px ${p};text-align:center;font-size:12px;color:${c.footer_text};">

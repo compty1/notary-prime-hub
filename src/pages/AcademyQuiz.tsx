@@ -56,7 +56,8 @@ export default function AcademyQuiz() {
   const canAttempt = pastAttempts.length < maxAttempts && !pastAttempts.some((a: any) => a.passed);
 
   // 48hr lockout for final exams
-  const lastFail = isFinal ? pastAttempts.find((a: any) => !a.passed) : null;
+  // pastAttempts is sorted DESC by created_at — first element is the most recent attempt
+  const lastFail = isFinal ? pastAttempts.find((a: any) => !a.passed) : null; // already correct since sorted DESC
   const lockoutUntil = lastFail ? new Date(new Date(lastFail.created_at).getTime() + 48 * 60 * 60 * 1000) : null;
   const isLockedOut = lockoutUntil && lockoutUntil > new Date() && !pastAttempts.some((a: any) => a.passed);
 

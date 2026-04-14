@@ -18,9 +18,11 @@ interface PageShellProps {
   children: ReactNode;
   hideNav?: boolean;
   hideFooter?: boolean;
+  /** Suppress global overlays (chatbot, FAB, BackToTop) for standalone pages like /n/:slug */
+  isStandalonePage?: boolean;
 }
 
-export function PageShell({ children, hideNav = false, hideFooter = false }: PageShellProps) {
+export function PageShell({ children, hideNav = false, hideFooter = false, isStandalonePage = false }: PageShellProps) {
   const { pathname } = useLocation();
   const isInternalRoute = pathname.startsWith("/admin") || pathname.startsWith("/portal");
   const { get, isEnabled } = useSettings();
@@ -51,10 +53,9 @@ export function PageShell({ children, hideNav = false, hideFooter = false }: Pag
         </motion.main>
       </AnimatePresence>
       {!hideFooter && <Footer phone={phone} email={email} copyrightText={copyrightText} />}
-      <BackToTop />
-      <MobileFAB />
-      {!isInternalRoute && <AILeadChatbot />}
-      {/* SessionTimeoutWarning is used in RON sessions, not here */}
+      {!isStandalonePage && <BackToTop />}
+      {!isStandalonePage && <MobileFAB />}
+      {!isInternalRoute && !isStandalonePage && <AILeadChatbot />}
       {cookieConsentEnabled && <CookieConsent />}
       <OfflineIndicator />
       <PrintStylesheet />
