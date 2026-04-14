@@ -67,6 +67,7 @@ export default function DocumentTranslation() {
         serviceDescription="Professional document translation with optional certified translator certification."
         fields={FIELDS}
         estimatedPrice="From $30.00/page"
+        pricingConfig={{ serviceId: "document-translation", fieldMapping: { documentCount: "page_count", isRush: "rush" } }}
         packages={PACKAGES}
         addOns={ADDONS}
         faq={FAQ}

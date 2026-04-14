@@ -70,6 +70,7 @@ export default function ConsularLegalization() {
         serviceDescription="Prepare your documents for consular legalization. We handle the coordination — you provide the documents."
         fields={FIELDS}
         estimatedPrice="From $75.00"
+        pricingConfig={{ serviceId: "consular-legalization", fieldMapping: { documentCount: "document_count", isRush: "rush" } }}
         packages={PACKAGES}
         addOns={ADDONS}
         faq={FAQ}
