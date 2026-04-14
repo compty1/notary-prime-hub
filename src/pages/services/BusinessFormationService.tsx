@@ -60,7 +60,7 @@ export default function BusinessFormationService() {
   usePageMeta({ title: "Business Formation" });
   return (
     <div className="container max-w-5xl py-8">
-      <UPLGuard serviceType="business-formation" />
+      <UPLGuard serviceName="Business Formation"><div /></UPLGuard>
       <ServiceIntakeForm
         serviceSlug="business-formation"
         serviceTitle="Ohio Business Formation"

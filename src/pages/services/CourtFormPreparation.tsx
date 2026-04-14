@@ -55,7 +55,7 @@ export default function CourtFormPreparation() {
   usePageMeta({ title: "Court Form Preparation" });
   return (
     <div className="container max-w-5xl py-8">
-      <UPLGuard serviceType="court-forms" />
+      <UPLGuard serviceName="Court Form Preparation"><div /></UPLGuard>
       <ServiceIntakeForm
         serviceSlug="court-form-preparation"
         serviceTitle="Court Form Preparation"
