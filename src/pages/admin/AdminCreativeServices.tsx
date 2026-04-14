@@ -12,7 +12,7 @@ export default function AdminCreativeServices() {
           label: "Service",
           render: (row) => {
             const data = row.intake_data as Record<string, any> | null;
-            return data?.service_type || row.service_type || "—";
+            return data?.service_type || row.service_name || "—";
           },
         },
       ]}
