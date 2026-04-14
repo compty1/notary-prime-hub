@@ -306,6 +306,7 @@ export default function AdminNotaryPages() {
         use_platform_booking: editPage.use_platform_booking,
         external_booking_url: editPage.external_booking_url, social_links: editPage.social_links,
         profile_photo_path: editPage.profile_photo_path, cover_photo_path: editPage.cover_photo_path,
+        logo_path: (editPage as any).logo_path || null,
         gallery_photos: editPage.gallery_photos, nav_services: editPage.nav_services,
         seo_title: editPage.seo_title, seo_description: editPage.seo_description,
         is_published: editPage.is_published, is_featured: editPage.is_featured,
