@@ -840,6 +840,41 @@ export default function AdminNotaryPages() {
 
             {/* TAB: Branding */}
             <TabsContent value="branding" className="space-y-4 mt-4">
+              {/* Business Logo Upload */}
+              <div>
+                <Label className="flex items-center gap-1"><ImageIcon className="h-3 w-3" /> Business Logo</Label>
+                <p className="text-[10px] text-muted-foreground mb-2">Upload your business/operations logo. Displayed in the header of your public page. PNG/SVG recommended, transparent background preferred.</p>
+                <div className="flex items-center gap-3">
+                  {(editPage as any).logo_path ? (
+                    <img
+                      src={(editPage as any).logo_path?.startsWith("http") ? (editPage as any).logo_path : undefined}
+                      alt="Business Logo"
+                      className="h-16 w-auto max-w-[140px] rounded-lg object-contain border p-1 bg-background"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                    />
+                  ) : (
+                    <div className="flex h-16 w-28 items-center justify-center rounded-lg border-2 border-dashed bg-muted text-xs text-muted-foreground">No logo</div>
+                  )}
+                  <div className="flex flex-col gap-1">
+                    <input ref={logoInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml" className="hidden"
+                      onChange={e => e.target.files?.[0] && handlePhotoUpload(e.target.files[0], "logo")} />
+                    <Button variant="outline" size="sm" onClick={() => logoInputRef.current?.click()} disabled={uploadingLogo || !editPage.id}>
+                      {uploadingLogo ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Upload className="h-3 w-3 mr-1" />}
+                      {(editPage as any).logo_path ? "Replace Logo" : "Upload Logo"}
+                    </Button>
+                    {(editPage as any).logo_path && (
+                      <Button variant="ghost" size="sm" className="text-destructive text-xs h-7" onClick={() => updateField("logo_path", null)}>
+                        <Trash2 className="h-3 w-3 mr-1" /> Remove
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                {!editPage.id && <p className="text-[10px] text-amber-600 mt-1">Save the page first to enable logo upload.</p>}
+              </div>
+
+              <Separator />
+
+              {/* Colors & Font */}
               <div className="grid gap-4 sm:grid-cols-3">
                 <div>
                   <Label>Primary Color</Label>
@@ -868,11 +903,17 @@ export default function AdminNotaryPages() {
               {/* Live preview swatch */}
               <div className="rounded-xl border p-4" style={{ background: `linear-gradient(135deg, ${ensureHex(editPage.theme_color)}22, ${ensureHex(editPage.accent_color, "#1e40af")}08)` }}>
                 <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 rounded-full border-2" style={{ borderColor: ensureHex(editPage.theme_color), background: `${ensureHex(editPage.theme_color)}15` }}>
-                    <div className="flex h-full w-full items-center justify-center text-lg font-bold" style={{ color: ensureHex(editPage.theme_color), fontFamily: editPage.font_family || "Inter" }}>
-                      {editPage.display_name?.charAt(0)?.toUpperCase() || "?"}
+                  {(editPage as any).logo_path ? (
+                    <div className="h-12 w-auto max-w-[80px] flex items-center">
+                      <img src={(editPage as any).logo_path} alt="Logo preview" className="max-h-12 w-auto object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                     </div>
-                  </div>
+                  ) : (
+                    <div className="h-12 w-12 rounded-full border-2" style={{ borderColor: ensureHex(editPage.theme_color), background: `${ensureHex(editPage.theme_color)}15` }}>
+                      <div className="flex h-full w-full items-center justify-center text-lg font-bold" style={{ color: ensureHex(editPage.theme_color), fontFamily: editPage.font_family || "Inter" }}>
+                        {editPage.display_name?.charAt(0)?.toUpperCase() || "?"}
+                      </div>
+                    </div>
+                  )}
                   <div style={{ fontFamily: editPage.font_family || "Inter" }}>
                     <p className="font-bold">{editPage.display_name || "Name"}</p>
                     <p className="text-sm" style={{ color: ensureHex(editPage.theme_color) }}>{editPage.title || "Title"}</p>
