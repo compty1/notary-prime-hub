@@ -21,6 +21,7 @@ import { ServiceFAQ, FAQItem } from "./ServiceFAQ";
 import { ServiceChecklist, ChecklistItem } from "./ServiceChecklist";
 import { ServiceTimeline, TimelineStep } from "./ServiceTimeline";
 import { CrossSellPanel } from "./CrossSellPanel";
+import { PricingQuotePanel } from "./PricingQuotePanel";
 
 export interface IntakeField {
   name: string;
