@@ -24,9 +24,9 @@ const PACKAGES = [
 ];
 
 const ADDONS = [
-  { id: "notarize", name: "Add Notarization", price: "$25", description: "Notarize the completed form" },
-  { id: "copies", name: "Certified Copies", price: "$5/copy", description: "Extra certified copies for filing" },
-  { id: "rush", name: "Rush (Same-Day)", price: "$20", description: "Same-day completion" },
+  { id: "notarize", label: "Add Notarization", price: "$25", description: "Notarize the completed form" },
+  { id: "copies", label: "Certified Copies", price: "$5/copy", description: "Extra certified copies for filing" },
+  { id: "rush", label: "Rush (Same-Day)", price: "$20", description: "Same-day completion" },
 ];
 
 const FAQ = [

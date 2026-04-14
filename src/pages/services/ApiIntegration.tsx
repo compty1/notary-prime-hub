@@ -29,11 +29,11 @@ const FAQ = [
 
 const TIMELINE = {
   steps: [
-    { title: "Application Review", description: "We review your use case and technical requirements" },
-    { title: "API Key Provisioning", description: "Receive your API keys and sandbox access" },
-    { title: "Integration Development", description: "Build your integration with our documentation and support" },
-    { title: "Testing & Certification", description: "Test in sandbox and get certified for production" },
-    { title: "Go Live", description: "Launch your integration with production API access" },
+    { step: 1, label: "Application Review", description: "We review your use case and technical requirements" },
+    { step: 2, label: "API Key Provisioning", description: "Receive your API keys and sandbox access" },
+    { step: 3, label: "Integration Development", description: "Build your integration with our documentation and support" },
+    { step: 4, label: "Testing & Certification", description: "Test in sandbox and get certified for production" },
+    { step: 5, label: "Go Live", description: "Launch your integration with production API access" },
   ],
   turnaround: "1-2 weeks setup",
 };

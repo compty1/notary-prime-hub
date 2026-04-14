@@ -34,9 +34,9 @@ const PACKAGES = [
 ];
 
 const ADDONS = [
-  { id: "notarize", name: "Notarization", price: "$25", description: "Notarize the translation certificate" },
-  { id: "apostille", name: "Apostille", price: "$50", description: "State apostille for international use" },
-  { id: "extra-copy", name: "Extra Certified Copy", price: "$15", description: "Additional certified copy of the translation" },
+  { id: "notarize", label: "Notarization", price: "$25", description: "Notarize the translation certificate" },
+  { id: "apostille", label: "Apostille", price: "$50", description: "State apostille for international use" },
+  { id: "extra-copy", label: "Extra Certified Copy", price: "$15", description: "Additional certified copy of the translation" },
 ];
 
 const FAQ = [
@@ -48,11 +48,11 @@ const FAQ = [
 
 const TIMELINE = {
   steps: [
-    { title: "Document Upload", description: "Submit your documents for translation" },
-    { title: "Translator Assignment", description: "Matched with a qualified translator for your language pair" },
-    { title: "Translation", description: "Professional translation with quality checks" },
-    { title: "Review & Certification", description: "Proofreading and certificate of accuracy preparation" },
-    { title: "Delivery", description: "Digital delivery with optional hard copy mailing" },
+    { step: 1, label: "Document Upload", description: "Submit your documents for translation" },
+    { step: 2, label: "Translator Assignment", description: "Matched with a qualified translator for your language pair" },
+    { step: 3, label: "Translation", description: "Professional translation with quality checks" },
+    { step: 4, label: "Review & Certification", description: "Proofreading and certificate of accuracy preparation" },
+    { step: 5, label: "Delivery", description: "Digital delivery with optional hard copy mailing" },
   ],
   turnaround: "3-7 business days",
 };

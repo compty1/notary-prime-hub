@@ -21,9 +21,9 @@ const PACKAGES = [
 ];
 
 const ADDONS = [
-  { id: "video", name: "Video Content", price: "$50/video", description: "Short-form video for Reels/TikTok" },
-  { id: "ads", name: "Ad Creative", price: "$75/set", description: "5 ad variations for paid campaigns" },
-  { id: "strategy", name: "Strategy Session", price: "$150", description: "1-hour social media strategy consultation" },
+  { id: "video", label: "Video Content", price: "$50/video", description: "Short-form video for Reels/TikTok" },
+  { id: "ads", label: "Ad Creative", price: "$75/set", description: "5 ad variations for paid campaigns" },
+  { id: "strategy", label: "Strategy Session", price: "$150", description: "1-hour social media strategy consultation" },
 ];
 
 const FAQ = [

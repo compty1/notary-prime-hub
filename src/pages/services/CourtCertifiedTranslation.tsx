@@ -19,9 +19,9 @@ const PACKAGES = [
 ];
 
 const ADDONS = [
-  { id: "notarize", name: "Notarized Translation", price: "$25", description: "Add notarization to the translator's affidavit" },
-  { id: "extra-copies", name: "Extra Certified Copies", price: "$10/set", description: "Additional copies for filing" },
-  { id: "apostille", name: "Apostille", price: "$50", description: "State apostille for international use" },
+  { id: "notarize", label: "Notarized Translation", price: "$25", description: "Add notarization to the translator's affidavit" },
+  { id: "extra-copies", label: "Extra Certified Copies", price: "$10/set", description: "Additional copies for filing" },
+  { id: "apostille", label: "Apostille", price: "$50", description: "State apostille for international use" },
 ];
 
 const FAQ = [
@@ -32,10 +32,10 @@ const FAQ = [
 ];
 
 const CHECKLIST = [
-  { id: "original", label: "Original document or clear scan/photo", required: true },
-  { id: "court-info", label: "Court name and case number", required: true },
-  { id: "deadline", label: "Court filing deadline", required: true },
-  { id: "format", label: "Any specific formatting requirements from the court" },
+  { label: "Original document or clear scan/photo", required: true },
+  { label: "Court name and case number", required: true },
+  { label: "Court filing deadline", required: true },
+  { label: "Any specific formatting requirements from the court" },
 ];
 
 export default function CourtCertifiedTranslation() {

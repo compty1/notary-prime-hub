@@ -24,9 +24,9 @@ const PACKAGES = [
 ];
 
 const ADDONS = [
-  { id: "phone-verify", name: "Phone Verification", price: "$0.15/lead", description: "Verify phone numbers are active" },
-  { id: "email-verify", name: "Email Verification", price: "$0.05/lead", description: "Verify email deliverability" },
-  { id: "linkedin", name: "LinkedIn Profile Match", price: "$0.25/lead", description: "Match leads to LinkedIn profiles" },
+  { id: "phone-verify", label: "Phone Verification", price: "$0.15/lead", description: "Verify phone numbers are active" },
+  { id: "email-verify", label: "Email Verification", price: "$0.05/lead", description: "Verify email deliverability" },
+  { id: "linkedin", label: "LinkedIn Profile Match", price: "$0.25/lead", description: "Match leads to LinkedIn profiles" },
 ];
 
 const FAQ = [

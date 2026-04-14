@@ -29,9 +29,9 @@ const PACKAGES = [
 ];
 
 const ADDONS = [
-  { id: "translation", name: "Certified Translation", price: "$45/page", description: "Translate documents before legalization" },
-  { id: "apostille", name: "Apostille First", price: "$50", description: "Obtain apostille before consular legalization" },
-  { id: "extra-copies", name: "Extra Certified Copies", price: "$10/copy", description: "Additional legalized copies" },
+  { id: "translation", label: "Certified Translation", price: "$45/page", description: "Translate documents before legalization" },
+  { id: "apostille", label: "Apostille First", price: "$50", description: "Obtain apostille before consular legalization" },
+  { id: "extra-copies", label: "Extra Certified Copies", price: "$10/copy", description: "Additional legalized copies" },
 ];
 
 const FAQ = [
@@ -42,20 +42,20 @@ const FAQ = [
 ];
 
 const CHECKLIST = [
-  { id: "original", label: "Original document (or certified copy)", required: true },
-  { id: "apostille", label: "Apostille (if already obtained)" },
-  { id: "translation", label: "Certified translation (if applicable)" },
-  { id: "passport", label: "Copy of passport or ID", required: true },
-  { id: "consulate-form", label: "Consulate-specific forms (if known)" },
+  { label: "Original document (or certified copy)", required: true },
+  { label: "Apostille (if already obtained)" },
+  { label: "Certified translation (if applicable)" },
+  { label: "Copy of passport or ID", required: true },
+  { label: "Consulate-specific forms (if known)" },
 ];
 
 const TIMELINE = {
   steps: [
-    { title: "Document Review", description: "We verify your documents meet consulate requirements" },
-    { title: "Apostille (if needed)", description: "Obtain state apostille before consular submission" },
-    { title: "Consulate Submission", description: "Documents submitted to the destination country's consulate" },
-    { title: "Processing", description: "Consulate processes and authenticates documents" },
-    { title: "Return Delivery", description: "Legalized documents shipped back to you" },
+    { step: 1, label: "Document Review", description: "We verify your documents meet consulate requirements" },
+    { step: 2, label: "Apostille (if needed)", description: "Obtain state apostille before consular submission" },
+    { step: 3, label: "Consulate Submission", description: "Documents submitted to the destination country's consulate" },
+    { step: 4, label: "Processing", description: "Consulate processes and authenticates documents" },
+    { step: 5, label: "Return Delivery", description: "Legalized documents shipped back to you" },
   ],
   turnaround: "2-4 weeks standard",
 };

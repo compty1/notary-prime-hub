@@ -30,11 +30,11 @@ const FAQ = [
 
 const TIMELINE = {
   steps: [
-    { title: "Kickoff Call", description: "Discuss goals, target audience, and focus areas" },
-    { title: "Data Collection", description: "Access setup, analytics review, and user flow mapping" },
-    { title: "Expert Analysis", description: "Systematic evaluation against UX best practices" },
-    { title: "Report Preparation", description: "Compile findings with annotated visuals and recommendations" },
-    { title: "Presentation & Roadmap", description: "Walk through findings and prioritized implementation plan" },
+    { step: 1, label: "Kickoff Call", description: "Discuss goals, target audience, and focus areas" },
+    { step: 2, label: "Data Collection", description: "Access setup, analytics review, and user flow mapping" },
+    { step: 3, label: "Expert Analysis", description: "Systematic evaluation against UX best practices" },
+    { step: 4, label: "Report Preparation", description: "Compile findings with annotated visuals and recommendations" },
+    { step: 5, label: "Presentation & Roadmap", description: "Walk through findings and prioritized implementation plan" },
   ],
   turnaround: "1-3 weeks",
 };

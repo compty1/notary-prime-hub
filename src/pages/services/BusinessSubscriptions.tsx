@@ -31,10 +31,10 @@ const FAQ = [
 
 const TIMELINE = {
   steps: [
-    { title: "Plan Selection", description: "Choose the subscription tier that fits your volume" },
-    { title: "Account Setup", description: "We configure your business account and team access" },
-    { title: "Onboarding Call", description: "30-minute call to set up workflows and preferences" },
-    { title: "Go Live", description: "Start scheduling and using services immediately" },
+    { step: 1, label: "Plan Selection", description: "Choose the subscription tier that fits your volume" },
+    { step: 2, label: "Account Setup", description: "We configure your business account and team access" },
+    { step: 3, label: "Onboarding Call", description: "30-minute call to set up workflows and preferences" },
+    { step: 4, label: "Go Live", description: "Start scheduling and using services immediately" },
   ],
   turnaround: "Same-day activation",
 };

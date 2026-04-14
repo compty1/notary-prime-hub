@@ -26,9 +26,9 @@ const PACKAGES = [
 ];
 
 const ADDONS = [
-  { id: "rush", name: "Rush Processing", price: "$75", description: "3-day turnaround instead of 10-15 days" },
-  { id: "translation", name: "Document Translation", price: "$45/page", description: "Certified translation of credentials" },
-  { id: "extra-copy", name: "Extra Report Copy", price: "$25", description: "Additional sealed copy for another institution" },
+  { id: "rush", label: "Rush Processing", price: "$75", description: "3-day turnaround instead of 10-15 days" },
+  { id: "translation", label: "Document Translation", price: "$45/page", description: "Certified translation of credentials" },
+  { id: "extra-copy", label: "Extra Report Copy", price: "$25", description: "Additional sealed copy for another institution" },
 ];
 
 const FAQ = [
@@ -39,20 +39,20 @@ const FAQ = [
 ];
 
 const CHECKLIST = [
-  { id: "diploma", label: "Diploma or degree certificate (scan or original)", required: true },
-  { id: "transcripts", label: "Official transcripts with grades", required: true },
-  { id: "translation", label: "Certified English translation (if not in English)", required: true },
-  { id: "id", label: "Government-issued photo ID" },
-  { id: "purpose-doc", label: "Letter from requesting institution (if applicable)" },
+  { label: "Diploma or degree certificate (scan or original)", required: true },
+  { label: "Official transcripts with grades", required: true },
+  { label: "Certified English translation (if not in English)", required: true },
+  { label: "Government-issued photo ID" },
+  { label: "Letter from requesting institution (if applicable)" },
 ];
 
 const TIMELINE = {
   steps: [
-    { title: "Document Submission", description: "Upload credentials and supporting documents" },
-    { title: "Verification", description: "We verify institution accreditation and authenticity" },
-    { title: "Analysis", description: "Credentials evaluated against US standards" },
-    { title: "Report Preparation", description: "Official evaluation report drafted" },
-    { title: "Delivery", description: "Sealed report mailed and digital copy provided" },
+    { step: 1, label: "Document Submission", description: "Upload credentials and supporting documents" },
+    { step: 2, label: "Verification", description: "We verify institution accreditation and authenticity" },
+    { step: 3, label: "Analysis", description: "Credentials evaluated against US standards" },
+    { step: 4, label: "Report Preparation", description: "Official evaluation report drafted" },
+    { step: 5, label: "Delivery", description: "Sealed report mailed and digital copy provided" },
   ],
   turnaround: "10-15 business days",
 };

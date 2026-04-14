@@ -24,9 +24,9 @@ const PACKAGES = [
 ];
 
 const ADDONS = [
-  { id: "certification", name: "Add Certification", price: "$25", description: "Translator certificate of accuracy" },
-  { id: "notarize", name: "Add Notarization", price: "$25", description: "Notarize the translation certificate" },
-  { id: "layout", name: "Layout Matching", price: "$15/page", description: "Match original document layout exactly" },
+  { id: "certification", label: "Add Certification", price: "$25", description: "Translator certificate of accuracy" },
+  { id: "notarize", label: "Add Notarization", price: "$25", description: "Notarize the translation certificate" },
+  { id: "layout", label: "Layout Matching", price: "$15/page", description: "Match original document layout exactly" },
 ];
 
 const FAQ = [

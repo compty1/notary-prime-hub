@@ -32,11 +32,11 @@ const FAQ = [
 
 const TIMELINE = {
   steps: [
-    { title: "Application", description: "Submit your partnership application for review" },
-    { title: "Discovery Call", description: "Discuss your business model, volume, and customization needs" },
-    { title: "Brand Setup", description: "Configure your white-label branding and portal" },
-    { title: "Integration", description: "Set up API access and workflow integration" },
-    { title: "Launch", description: "Go live with your branded notarization service" },
+    { step: 1, label: "Application", description: "Submit your partnership application for review" },
+    { step: 2, label: "Discovery Call", description: "Discuss your business model, volume, and customization needs" },
+    { step: 3, label: "Brand Setup", description: "Configure your white-label branding and portal" },
+    { step: 4, label: "Integration", description: "Set up API access and workflow integration" },
+    { step: 5, label: "Launch", description: "Go live with your branded notarization service" },
   ],
   turnaround: "1-6 weeks depending on plan",
 };

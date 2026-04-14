@@ -22,9 +22,9 @@ const PACKAGES = [
 ];
 
 const ADDONS = [
-  { id: "ocr", name: "OCR Text Recognition", price: "$0.15/page", description: "Make scanned text searchable and copyable" },
-  { id: "organize", name: "File Organization", price: "$25/project", description: "Custom folder structure and naming conventions" },
-  { id: "shred", name: "Secure Shredding", price: "$15/box", description: "NAID-certified shredding of originals after scanning" },
+  { id: "ocr", label: "OCR Text Recognition", price: "$0.15/page", description: "Make scanned text searchable and copyable" },
+  { id: "organize", label: "File Organization", price: "$25/project", description: "Custom folder structure and naming conventions" },
+  { id: "shred", label: "Secure Shredding", price: "$15/box", description: "NAID-certified shredding of originals after scanning" },
 ];
 
 const FAQ = [

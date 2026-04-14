@@ -27,9 +27,9 @@ const PACKAGES = [
 ];
 
 const ADDONS = [
-  { id: "seo-audit", name: "SEO Keyword Research", price: "$35", description: "Deep keyword analysis for your niche" },
-  { id: "social-snippets", name: "Social Media Snippets", price: "$15/post", description: "3 social posts to promote each blog" },
-  { id: "featured-image", name: "Custom Featured Image", price: "$25", description: "Branded graphic designed for the post" },
+  { id: "seo-audit", label: "SEO Keyword Research", price: "$35", description: "Deep keyword analysis for your niche" },
+  { id: "social-snippets", label: "Social Media Snippets", price: "$15/post", description: "3 social posts to promote each blog" },
+  { id: "featured-image", label: "Custom Featured Image", price: "$25", description: "Branded graphic designed for the post" },
 ];
 
 const FAQ = [
@@ -41,11 +41,11 @@ const FAQ = [
 
 const TIMELINE = {
   steps: [
-    { title: "Brief & Research", description: "We gather your topic, audience, and keyword targets" },
-    { title: "Outline Approval", description: "Review and approve the post outline before writing" },
-    { title: "Draft Delivery", description: "Receive the first draft for review" },
-    { title: "Revisions", description: "Submit feedback for final revisions" },
-    { title: "Publication-Ready", description: "Final post delivered with SEO tags and images" },
+    { step: 1, label: "Brief & Research", description: "We gather your topic, audience, and keyword targets" },
+    { step: 2, label: "Outline Approval", description: "Review and approve the post outline before writing" },
+    { step: 3, label: "Draft Delivery", description: "Receive the first draft for review" },
+    { step: 4, label: "Revisions", description: "Submit feedback for final revisions" },
+    { step: 5, label: "Publication-Ready", description: "Final post delivered with SEO tags and images" },
   ],
   turnaround: "5 business days",
 };

@@ -24,10 +24,10 @@ const FIELDS: IntakeField[] = [
 ];
 
 const ADDONS = [
-  { id: "binding-spiral", name: "Spiral Binding", price: "$5/set", description: "Professional spiral binding" },
-  { id: "lamination", name: "Lamination", price: "$3/page", description: "Protective lamination for important pages" },
-  { id: "tabs", name: "Tab Dividers", price: "$2/set", description: "Labeled tab dividers between sections" },
-  { id: "covers", name: "Card Stock Covers", price: "$3/set", description: "Heavy card stock front and back covers" },
+  { id: "binding-spiral", label: "Spiral Binding", price: "$5/set", description: "Professional spiral binding" },
+  { id: "lamination", label: "Lamination", price: "$3/page", description: "Protective lamination for important pages" },
+  { id: "tabs", label: "Tab Dividers", price: "$2/set", description: "Labeled tab dividers between sections" },
+  { id: "covers", label: "Card Stock Covers", price: "$3/set", description: "Heavy card stock front and back covers" },
 ];
 
 const FAQ = [

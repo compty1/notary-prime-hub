@@ -33,10 +33,10 @@ const FAQ = [
 ];
 
 const CHECKLIST = [
-  { id: "info", label: "Client/signer information sheet completed", required: true },
-  { id: "templates", label: "Sample or template documents (if applicable)" },
-  { id: "instructions", label: "Specific formatting instructions or requirements" },
-  { id: "deadline", label: "Filing deadline or due date noted" },
+  { label: "Client/signer information sheet completed", required: true },
+  { label: "Sample or template documents (if applicable)" },
+  { label: "Specific formatting instructions or requirements" },
+  { label: "Filing deadline or due date noted" },
 ];
 
 export default function CertifiedDocPrepAgencies() {

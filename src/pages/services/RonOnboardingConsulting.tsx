@@ -32,11 +32,11 @@ const FAQ = [
 
 const TIMELINE = {
   steps: [
-    { title: "Initial Assessment", description: "Review your current status and goals" },
-    { title: "Requirements Roadmap", description: "Create your personalized RON certification plan" },
-    { title: "Application Support", description: "Guide you through the state application process" },
-    { title: "Technology Setup", description: "Help configure your RON platform and tools" },
-    { title: "First Session Mentoring", description: "Walk through your first RON session together" },
+    { step: 1, label: "Initial Assessment", description: "Review your current status and goals" },
+    { step: 2, label: "Requirements Roadmap", description: "Create your personalized RON certification plan" },
+    { step: 3, label: "Application Support", description: "Guide you through the state application process" },
+    { step: 4, label: "Technology Setup", description: "Help configure your RON platform and tools" },
+    { step: 5, label: "First Session Mentoring", description: "Walk through your first RON session together" },
   ],
   turnaround: "2-4 weeks to full certification",
 };
