@@ -1,6 +1,3 @@
-/**
- * Sprint 3: Passport Photo Service
- */
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
 
@@ -20,6 +17,19 @@ const FIELDS: IntakeField[] = [
   { name: "notes", label: "Special Requirements", type: "textarea", placeholder: "e.g., specific background color..." },
 ];
 
+const PACKAGES = [
+  { id: "digital", name: "Digital Only", price: "$15", description: "Digital passport photo", features: ["Compliant digital photo", "Multiple country formats", "Instant delivery", "1 retake included"] },
+  { id: "standard", name: "Print + Digital", price: "$25", description: "2 printed photos + digital", features: ["2 printed photos", "Digital copy included", "Professional lighting", "Compliance guaranteed"], recommended: true },
+  { id: "premium", name: "Premium Package", price: "$45", description: "6 prints + digital + visa photos", features: ["6 printed photos", "Digital copies", "Multiple country sizes", "Visa photo included", "Same-day service", "Unlimited retakes"] },
+];
+
+const FAQ = [
+  { q: "Are your photos guaranteed to be accepted?", a: "Yes, we guarantee compliance with the specified country's requirements. If rejected, we'll retake for free." },
+  { q: "How long does it take?", a: "Photos are taken and printed in about 10-15 minutes during your visit." },
+  { q: "Do I need an appointment?", a: "Walk-ins are welcome, but appointments are recommended for the fastest service." },
+  { q: "What should I wear?", a: "Wear everyday clothing. Avoid uniforms, hats, and head coverings (unless for religious purposes). White or off-white tops are discouraged for white-background photos." },
+];
+
 export default function PassportPhoto() {
   usePageMeta({ title: "Passport Photo Service" });
   return (
@@ -30,6 +40,8 @@ export default function PassportPhoto() {
         serviceDescription="Compliant passport and visa photos meeting international standards."
         fields={FIELDS}
         estimatedPrice="From $15.00"
+        packages={PACKAGES}
+        faq={FAQ}
       />
     </div>
   );

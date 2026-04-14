@@ -17,6 +17,19 @@ const FIELDS: IntakeField[] = [
   { name: "scope", label: "Chat Scope", type: "textarea", required: true, placeholder: "What topics should agents handle?" },
 ];
 
+const PACKAGES = [
+  { id: "basic", name: "Basic", price: "$299/mo", description: "Business hours coverage", features: ["9-5 EST coverage", "Up to 50 chats/month", "Pre-built responses", "Monthly reporting"] },
+  { id: "professional", name: "Professional", price: "$699/mo", description: "Extended hours", features: ["8am-10pm EST", "Up to 200 chats/month", "Custom scripts", "CRM integration", "Weekly reporting", "Lead capture"], recommended: true },
+  { id: "enterprise", name: "Enterprise", price: "$1,499/mo", description: "24/7 coverage", features: ["24/7 coverage", "Unlimited chats", "Multi-language support", "Custom integrations", "Real-time dashboard", "Dedicated team", "Escalation protocols"] },
+];
+
+const FAQ = [
+  { q: "How do agents learn about my business?", a: "We conduct a comprehensive onboarding including business overview, FAQs, product/service details, and common customer scenarios." },
+  { q: "Can agents process orders or bookings?", a: "Yes, Professional and Enterprise plans include integration with your booking/ordering systems." },
+  { q: "What chat platforms do you support?", a: "We support Intercom, Drift, LiveChat, Zendesk, and custom chat widgets." },
+  { q: "How quickly do agents respond?", a: "Average first response time is under 30 seconds during coverage hours." },
+];
+
 export default function LiveChatSupport() {
   usePageMeta({ title: "Live Chat Support" });
   return (
@@ -26,7 +39,9 @@ export default function LiveChatSupport() {
         serviceTitle="Live Chat Support"
         serviceDescription="Real-time live chat support agents for your website, trained on your business processes."
         fields={FIELDS}
-        estimatedPrice="From $699.00/month"
+        estimatedPrice="From $299/month"
+        packages={PACKAGES}
+        faq={FAQ}
       />
     </div>
   );

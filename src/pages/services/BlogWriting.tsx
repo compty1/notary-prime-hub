@@ -20,6 +20,36 @@ const FIELDS: IntakeField[] = [
   { name: "notes", label: "Additional Instructions", type: "textarea" },
 ];
 
+const PACKAGES = [
+  { id: "single", name: "Single Post", price: "$75", description: "One SEO-optimized blog post", features: ["Up to 1,000 words", "1 revision round", "SEO meta tags", "Stock image sourcing"] },
+  { id: "monthly", name: "Monthly Bundle", price: "$249/mo", description: "4 posts per month", features: ["4 posts/month", "Up to 1,500 words each", "2 revision rounds", "Content calendar", "SEO keyword research"], recommended: true },
+  { id: "premium", name: "Content Strategy", price: "$599/mo", description: "8 posts + strategy", features: ["8 posts/month", "Deep-dive articles", "Unlimited revisions", "Content strategy call", "Analytics reporting", "Social media snippets"] },
+];
+
+const ADDONS = [
+  { id: "seo-audit", label: "SEO Keyword Research", price: "$35", description: "Deep keyword analysis for your niche" },
+  { id: "social-snippets", label: "Social Media Snippets", price: "$15/post", description: "3 social posts to promote each blog" },
+  { id: "featured-image", label: "Custom Featured Image", price: "$25", description: "Branded graphic designed for the post" },
+];
+
+const FAQ = [
+  { q: "What industries do you write for?", a: "We specialize in legal services, notary, real estate, and small business content but can write for any industry." },
+  { q: "How many revisions are included?", a: "Single posts include 1 revision round. Monthly bundles include 2 rounds. Premium plans have unlimited revisions." },
+  { q: "Do you provide SEO optimization?", a: "Yes, all posts include meta titles, descriptions, header optimization, and internal linking suggestions." },
+  { q: "What's the typical turnaround?", a: "Standard turnaround is 5 business days. Rush delivery (2-3 days) is available for an additional fee." },
+];
+
+const TIMELINE = {
+  steps: [
+    { step: 1, label: "Brief & Research", description: "We gather your topic, audience, and keyword targets" },
+    { step: 2, label: "Outline Approval", description: "Review and approve the post outline before writing" },
+    { step: 3, label: "Draft Delivery", description: "Receive the first draft for review" },
+    { step: 4, label: "Revisions", description: "Submit feedback for final revisions" },
+    { step: 5, label: "Publication-Ready", description: "Final post delivered with SEO tags and images" },
+  ],
+  turnaround: "5 business days",
+};
+
 export default function BlogWriting() {
   usePageMeta({ title: "Blog Post Writing" });
   return (
@@ -30,6 +60,10 @@ export default function BlogWriting() {
         serviceDescription="SEO-optimized blog content for your notary or business website, written by professional content writers."
         fields={FIELDS}
         estimatedPrice="From $75.00/post"
+        packages={PACKAGES}
+        addOns={ADDONS}
+        faq={FAQ}
+        timeline={TIMELINE}
       />
     </div>
   );

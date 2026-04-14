@@ -17,6 +17,25 @@ const FIELDS: IntakeField[] = [
   { name: "notes", label: "Additional Criteria", type: "textarea" },
 ];
 
+const PACKAGES = [
+  { id: "starter", name: "Starter", price: "$49", description: "50 verified leads", features: ["50 leads", "Name + email", "Industry targeting", "CSV delivery", "1 revision"] },
+  { id: "professional", name: "Professional", price: "$149", description: "200 verified leads", features: ["200 leads", "Full contact info", "Company data", "Phone verification", "CRM-ready format", "2 revisions"], recommended: true },
+  { id: "enterprise", name: "Enterprise", price: "$399", description: "500+ leads + enrichment", features: ["500+ leads", "Full enrichment", "Social profiles", "Decision-maker targeting", "Custom filters", "Direct CRM import", "Monthly refresh"] },
+];
+
+const ADDONS = [
+  { id: "phone-verify", label: "Phone Verification", price: "$0.15/lead", description: "Verify phone numbers are active" },
+  { id: "email-verify", label: "Email Verification", price: "$0.05/lead", description: "Verify email deliverability" },
+  { id: "linkedin", label: "LinkedIn Profile Match", price: "$0.25/lead", description: "Match leads to LinkedIn profiles" },
+];
+
+const FAQ = [
+  { q: "How are leads sourced?", a: "We use multiple data sources including business registries, professional directories, and public records to build targeted lead lists." },
+  { q: "What's the accuracy rate?", a: "Our Professional tier achieves 95%+ email deliverability and 90%+ phone accuracy through multi-step verification." },
+  { q: "Can you target specific industries?", a: "Yes, we can target by industry, job title, company size, geography, and many other criteria." },
+  { q: "Do you offer ongoing lead generation?", a: "Yes, Enterprise plans include monthly list refreshes with new leads matching your criteria." },
+];
+
 export default function LeadGeneration() {
   usePageMeta({ title: "Lead Generation" });
   return (
@@ -27,6 +46,9 @@ export default function LeadGeneration() {
         serviceDescription="Targeted prospect research and lead list building for your business development needs."
         fields={FIELDS}
         estimatedPrice="From $0.50/lead"
+        packages={PACKAGES}
+        addOns={ADDONS}
+        faq={FAQ}
       />
     </div>
   );

@@ -14,6 +14,19 @@ const FIELDS: IntakeField[] = [
   { name: "notes", label: "Special Requirements", type: "textarea" },
 ];
 
+const PACKAGES = [
+  { id: "basic", name: "Booking Only", price: "$75", description: "Flight + hotel booking", features: ["Flight booking", "Hotel reservation", "Confirmation docs", "Basic itinerary"] },
+  { id: "full", name: "Full Planning", price: "$199", description: "Complete trip planning", features: ["Flight + hotel", "Car rental", "Day-by-day itinerary", "Restaurant recommendations", "Activity bookings", "Travel documents checklist"], recommended: true },
+  { id: "concierge", name: "Concierge", price: "$499", description: "VIP travel service", features: ["Everything in Full Planning", "24/7 trip support", "Real-time itinerary changes", "Airport transfers", "Special requests handling", "Emergency assistance"] },
+];
+
+const FAQ = [
+  { q: "Do you book flights directly?", a: "We research and recommend the best options, then book on your behalf through trusted travel partners." },
+  { q: "Can you help with travel documents?", a: "Yes, we provide checklists for passports, visas, and travel-related notarization needs." },
+  { q: "Is there a cancellation policy?", a: "Our planning fee is non-refundable. Flight/hotel cancellation policies depend on the providers' terms." },
+  { q: "Do you handle group travel?", a: "Yes, we handle corporate and group travel with special group rates and coordinated logistics." },
+];
+
 export default function TravelArrangements() {
   usePageMeta({ title: "Travel Arrangements" });
   return (
@@ -23,7 +36,9 @@ export default function TravelArrangements() {
         serviceTitle="Travel Arrangements"
         serviceDescription="Full-service travel planning and booking for business and personal trips."
         fields={FIELDS}
-        estimatedPrice="From $75.00/booking"
+        estimatedPrice="From $75/booking"
+        packages={PACKAGES}
+        faq={FAQ}
       />
     </div>
   );

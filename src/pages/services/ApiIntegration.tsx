@@ -14,6 +14,30 @@ const FIELDS: IntakeField[] = [
   { name: "notes", label: "Additional Notes", type: "textarea" },
 ];
 
+const PACKAGES = [
+  { id: "starter", name: "Starter", price: "$99/mo", description: "Up to 100 API calls/month, basic endpoints", features: ["Notarization status API", "Document upload", "Email support"] },
+  { id: "business", name: "Business", price: "$499/mo", description: "Up to 5,000 calls/month, full API access", features: ["All endpoints", "Webhook notifications", "Priority support", "Sandbox environment"], recommended: true },
+  { id: "enterprise", name: "Enterprise", price: "Custom", description: "Unlimited calls, dedicated infrastructure", features: ["Custom endpoints", "SLA guarantee", "Dedicated account manager", "On-premise option"] },
+];
+
+const FAQ = [
+  { q: "What API formats do you support?", a: "Our REST API supports JSON request/response format with OAuth 2.0 authentication." },
+  { q: "Is there a sandbox environment?", a: "Yes, Business and Enterprise plans include a full sandbox environment for testing." },
+  { q: "What's the typical integration timeline?", a: "Most integrations are completed within 1-2 weeks with our documentation and support." },
+  { q: "Do you support webhooks?", a: "Yes, we support webhooks for real-time status updates on notarization sessions and document processing." },
+];
+
+const TIMELINE = {
+  steps: [
+    { step: 1, label: "Application Review", description: "We review your use case and technical requirements" },
+    { step: 2, label: "API Key Provisioning", description: "Receive your API keys and sandbox access" },
+    { step: 3, label: "Integration Development", description: "Build your integration with our documentation and support" },
+    { step: 4, label: "Testing & Certification", description: "Test in sandbox and get certified for production" },
+    { step: 5, label: "Go Live", description: "Launch your integration with production API access" },
+  ],
+  turnaround: "1-2 weeks setup",
+};
+
 export default function ApiIntegration() {
   usePageMeta({ title: "API Integration" });
   return (
@@ -23,7 +47,10 @@ export default function ApiIntegration() {
         serviceTitle="API Integration"
         serviceDescription="Integrate notarization and document services directly into your application via our REST API."
         fields={FIELDS}
-        estimatedPrice="Custom pricing"
+        estimatedPrice="From $99/month"
+        packages={PACKAGES}
+        faq={FAQ}
+        timeline={TIMELINE}
       />
     </div>
   );

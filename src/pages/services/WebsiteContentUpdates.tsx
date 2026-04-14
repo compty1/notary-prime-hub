@@ -22,6 +22,19 @@ const FIELDS: IntakeField[] = [
   { name: "deadline", label: "Deadline", type: "date" },
 ];
 
+const PACKAGES = [
+  { id: "single", name: "Single Update", price: "$50", description: "One content change", features: ["1 page update", "Text or image swap", "Same-day turnaround", "1 revision"] },
+  { id: "bundle", name: "Update Bundle", price: "$149", description: "5 content updates", features: ["5 page updates", "Mixed update types", "24-hour turnaround", "2 revisions per update"], recommended: true },
+  { id: "monthly", name: "Monthly Retainer", price: "$299/mo", description: "Ongoing content management", features: ["Up to 20 updates/month", "All update types", "Priority turnaround", "Unlimited revisions", "SEO optimization", "Monthly site health check"] },
+];
+
+const FAQ = [
+  { q: "What CMS platforms do you support?", a: "We work with WordPress, Squarespace, Wix, Shopify, Webflow, and most custom-built websites." },
+  { q: "How quickly can updates be made?", a: "Single updates are typically completed same-day. Complex layout changes may take 2-3 business days." },
+  { q: "Do you need my login credentials?", a: "We use secure credential sharing. For WordPress sites, we can use a temporary admin account." },
+  { q: "Can you optimize content for SEO?", a: "Yes, our Monthly Retainer includes SEO optimization for all content updates." },
+];
+
 export default function WebsiteContentUpdates() {
   usePageMeta({ title: "Website Content Updates" });
   return (
@@ -31,7 +44,9 @@ export default function WebsiteContentUpdates() {
         serviceTitle="Website Content Updates"
         serviceDescription="Professional website content management — text updates, image swaps, new pages, and layout modifications."
         fields={FIELDS}
-        estimatedPrice="From $50.00/update"
+        estimatedPrice="From $50/update"
+        packages={PACKAGES}
+        faq={FAQ}
       />
     </div>
   );
