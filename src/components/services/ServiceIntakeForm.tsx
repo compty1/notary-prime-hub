@@ -33,6 +33,13 @@ export interface IntakeField {
   description?: string;
 }
 
+export interface PricingConfig {
+  serviceId: string;
+  notarizationType?: "in_person" | "ron";
+  /** Maps form field names to pricing params: signerCount, documentCount, isRush, isAfterHours, isMobile, travelZone */
+  fieldMapping?: Record<string, string>;
+}
+
 interface ServiceIntakeFormProps {
   serviceSlug: string;
   serviceTitle: string;
@@ -45,6 +52,7 @@ interface ServiceIntakeFormProps {
   faq?: FAQItem[];
   checklist?: ChecklistItem[];
   timeline?: { steps: TimelineStep[]; turnaround?: string };
+  pricingConfig?: PricingConfig;
   onSuccess?: (data: any) => void;
   children?: React.ReactNode;
 }
