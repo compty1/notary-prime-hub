@@ -209,6 +209,10 @@ const AdminOperations = lazyRetry(() => import("./pages/admin/AdminOperations"))
 const AdminSecurityCenter = lazyRetry(() => import("./pages/admin/AdminSecurityCenter"));
 const AdminCredentials = lazyRetry(() => import("./pages/admin/AdminCredentials"));
 const AdminTodos = lazyRetry(() => import("./pages/admin/AdminTodos"));
+const AdminFinancialServices = lazyRetry(() => import("./pages/admin/AdminFinancialServices"));
+const AdminCreativeServices = lazyRetry(() => import("./pages/admin/AdminCreativeServices"));
+const AdminSalesCX = lazyRetry(() => import("./pages/admin/AdminSalesCX"));
+const AdminContentCreation = lazyRetry(() => import("./pages/admin/AdminContentCreation"));
 const NotaryGlossary = lazyRetry(() => import("./pages/NotaryGlossary"));
 const Maintenance = lazyRetry(() => import("./pages/Maintenance"));
 const ForNotaries = lazyRetry(() => import("./pages/solutions/ForNotaries"));
