@@ -16,11 +16,15 @@ Disallow: /admin/
 Disallow: /portal/
 Disallow: /login
 Disallow: /signup
+Disallow: /reset-password
 Disallow: /forgot-password
 Disallow: /verify-identity
+Disallow: /verify-id
 Disallow: /ron-session
 Disallow: /session-tracker
 Disallow: /account-settings
 Disallow: /mobile-upload
+Disallow: /maintenance
+Disallow: /coming-soon
 
-Sitemap: https://notardex.com/sitemap.xml
+Sitemap: https://notary-prime-hub.lovable.app/sitemap.xml
