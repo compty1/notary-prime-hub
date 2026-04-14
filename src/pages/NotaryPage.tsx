@@ -271,7 +271,7 @@ export default function NotaryPage() {
       {fontFamily !== "Inter" && (
         <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontFamily)}:wght@400;500;600;700;800;900&display=swap`} />
       )}
-      <PageShell hideNav>
+      <PageShell hideNav hideFooter isStandalonePage>
         {/* Sticky Nav */}
         <nav className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" aria-label="Professional page navigation">
           <div className="mx-auto max-w-6xl flex items-center gap-1 overflow-x-auto px-4 py-2">
@@ -312,7 +312,7 @@ export default function NotaryPage() {
         <section className="relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${themeColor}22, ${accentColor}08)` }}>
           {coverPhotoUrl && (
             <div className="absolute inset-0 opacity-20">
-              <img src={coverPhotoUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
+              <img src={coverPhotoUrl} alt={`${page.display_name} cover photo`} className="h-full w-full object-cover" loading="lazy" />
             </div>
           )}
           <div className="relative mx-auto max-w-6xl px-4 py-16 sm:py-24">
@@ -733,9 +733,9 @@ export default function NotaryPage() {
                 {get("copyright_text", `© ${new Date().getFullYear()} ${get("site_name", BRAND.name)}. All rights reserved.`)}
               </p>
               <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                <Link to="/terms-privacy" className="hover:text-foreground">Terms & Privacy</Link>
+                <Link to="/terms#privacy" className="hover:text-foreground">Terms & Privacy</Link>
                 <Link to="/accessibility" className="hover:text-foreground">Accessibility</Link>
-                <span>Powered by <Link to="/" className="font-semibold hover:underline">{get("site_name", BRAND.name)}</Link></span>
+                <span>Powered by <a href="/" target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline">{get("site_name", BRAND.name)}</a></span>
               </div>
             </div>
           </div>

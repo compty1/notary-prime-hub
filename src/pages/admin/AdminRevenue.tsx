@@ -63,6 +63,33 @@ export default function AdminRevenue() {
   const [recordForm, setRecordForm] = useState({ client_id: "", amount: "", method: "cash", notes: "" });
   const [recordingPayment, setRecordingPayment] = useState(false);
 
+  // Refund dialog
+  const [refundDialogOpen, setRefundDialogOpen] = useState(false);
+  const [refundTarget, setRefundTarget] = useState<any>(null);
+  const [refundReason, setRefundReason] = useState("Requested by customer");
+  const [processingRefund, setProcessingRefund] = useState(false);
+
+  const handleRefund = async () => {
+    if (!refundTarget || !refundReason.trim()) return;
+    setProcessingRefund(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("process-refund", {
+        body: { payment_id: refundTarget.id, reason: refundReason },
+      });
+      if (error) throw error;
+      toast({ title: "Refund processed", description: data?.stripe_refund_id ? `Stripe refund: ${data.stripe_refund_id}` : "Manual refund recorded" });
+      logAuditEvent("payment_refunded", { entityType: "payments", entityId: refundTarget.id, details: { reason: refundReason } });
+      setPayments(prev => prev.map(pay => pay.id === refundTarget.id ? { ...pay, status: "refunded" } : pay));
+      setRefundDialogOpen(false);
+      setRefundTarget(null);
+      setRefundReason("Requested by customer");
+    } catch (e: any) {
+      toast({ title: "Refund failed", description: e.message, variant: "destructive" });
+    } finally {
+      setProcessingRefund(false);
+    }
+  };
+
   // Pagination
   const PAYMENTS_PER_PAGE = 25;
   const [paymentPage, setPaymentPage] = useState(1);
@@ -541,20 +568,9 @@ export default function AdminRevenue() {
                                 </Button>
                               )}
                               {p.status === "paid" && (
-                                <Button size="sm" variant="outline" className="text-xs text-destructive" onClick={async () => {
-                                  const reason = window.prompt("Refund reason:", "Requested by customer");
-                                  if (!reason) return;
-                                  try {
-                                    const { data, error } = await supabase.functions.invoke("process-refund", {
-                                      body: { payment_id: p.id, reason },
-                                    });
-                                    if (error) throw error;
-                                    toast({ title: "Refund processed", description: data?.stripe_refund_id ? `Stripe refund: ${data.stripe_refund_id}` : "Manual refund recorded" });
-                                    logAuditEvent("payment_refunded", { entityType: "payments", entityId: p.id, details: { reason } });
-                                    setPayments(prev => prev.map(pay => pay.id === p.id ? { ...pay, status: "refunded" } : pay));
-                                  } catch (e: any) {
-                                    toast({ title: "Refund failed", description: e.message, variant: "destructive" });
-                                  }
+                                <Button size="sm" variant="outline" className="text-xs text-destructive" onClick={() => {
+                                  setRefundTarget(p);
+                                  setRefundDialogOpen(true);
                                 }}>
                                   Refund
                                 </Button>
@@ -722,6 +738,31 @@ export default function AdminRevenue() {
             <Button onClick={recordPayment} disabled={recordingPayment}>
               {recordingPayment ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Plus className="mr-1 h-4 w-4" />}
               Record Payment
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Refund Dialog */}
+      <Dialog open={refundDialogOpen} onOpenChange={setRefundDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Process Refund</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Refunding <strong>${refundTarget?.amount}</strong> for payment {refundTarget?.id?.slice(0, 8)}…
+            </p>
+            <div>
+              <Label>Reason</Label>
+              <Textarea value={refundReason} onChange={(e) => setRefundReason(e.target.value)} placeholder="Enter refund reason..." />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRefundDialogOpen(false)}>Cancel</Button>
+            <Button variant="destructive" onClick={handleRefund} disabled={processingRefund || !refundReason.trim()}>
+              {processingRefund ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}
+              Confirm Refund
             </Button>
           </DialogFooter>
         </DialogContent>

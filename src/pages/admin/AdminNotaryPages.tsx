@@ -460,7 +460,7 @@ export default function AdminNotaryPages() {
                    <TableCell>
                      <div className="flex items-center gap-2">
                        {p.profile_photo_path?.startsWith("http") ? (
-                         <img src={p.profile_photo_path} alt="" className="h-8 w-8 rounded-full object-cover border" />
+                         <img src={p.profile_photo_path} alt={`${p.display_name || "Notary"} profile`} className="h-8 w-8 rounded-full object-cover border" />
                        ) : (
                          <div className="flex h-8 w-8 items-center justify-center rounded-full border bg-muted text-xs font-bold">
                            {p.display_name?.charAt(0)?.toUpperCase() || "?"}

@@ -166,7 +166,7 @@ export default function AcademyLanding() {
           {isLoading ? (
             <div className="flex justify-center py-12"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>
           ) : courses.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-muted-foreground">Courses coming soon.</CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-muted-foreground">No courses found. Please check back later or contact support.</CardContent></Card>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {courses.map((c: any) => <CourseCard key={c.id} course={c} userId={user?.id} />)}
