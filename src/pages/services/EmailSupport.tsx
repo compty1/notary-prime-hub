@@ -17,6 +17,29 @@ const FIELDS: IntakeField[] = [
   { name: "notes", label: "Additional Notes", type: "textarea" },
 ];
 
+const PACKAGES = [
+  { id: "starter", name: "Starter", price: "$499.00/mo", description: "Up to 50 emails/month", features: ["50 emails/month", "24-hour response time", "Branded responses", "Monthly summary report"] },
+  { id: "growth", name: "Growth", price: "$899.00/mo", description: "Up to 200 emails/month", features: ["200 emails/month", "4-hour response time", "Branded responses", "Template library", "Weekly reports", "Escalation protocols"], popular: true },
+  { id: "enterprise", name: "Enterprise", price: "$1,499.00/mo", description: "Unlimited volume", features: ["Unlimited emails", "1-hour response time", "Dedicated agent(s)", "CRM integration", "Daily reports", "Priority escalation"] },
+];
+
+const FAQ = [
+  { q: "How do you learn our products/services?", a: "We conduct a thorough onboarding process including product training, FAQ review, and a trial period where we shadow your existing support flow. Most teams are fully ramped within 1 week." },
+  { q: "Can you integrate with our existing tools?", a: "Yes — we work with popular helpdesks (Zendesk, Freshdesk, HelpScout), shared inboxes (Gmail, Outlook), and CRMs (HubSpot, Salesforce)." },
+  { q: "What about sensitive customer data?", a: "All agents sign NDAs and follow data handling protocols. We comply with applicable data protection requirements." },
+  { q: "Can we monitor the responses?", a: "Absolutely. You have full visibility into all responses. We also provide regular reports on volume, response times, and customer satisfaction." },
+];
+
+const TIMELINE = {
+  steps: [
+    { step: 1, label: "Onboarding", description: "Product training and process documentation" },
+    { step: 2, label: "Template Setup", description: "Create response templates and escalation rules" },
+    { step: 3, label: "Trial Period", description: "Supervised handling with your approval" },
+    { step: 4, label: "Go Live", description: "Full autonomous email handling begins" },
+  ],
+  turnaround: "Setup in 3–5 days, then ongoing",
+};
+
 export default function EmailSupport() {
   usePageMeta({ title: "Email Support" });
   return (
@@ -26,7 +49,10 @@ export default function EmailSupport() {
         serviceTitle="Email Support Handling"
         serviceDescription="Professional email customer support managed on your behalf with branded responses."
         fields={FIELDS}
-        estimatedPrice="From $499.00/month"
+        estimatedPrice="From $499.00/mo"
+        packages={PACKAGES}
+        faq={FAQ}
+        timeline={TIMELINE}
       />
     </div>
   );
