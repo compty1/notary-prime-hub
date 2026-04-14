@@ -24,10 +24,10 @@ const PACKAGES = [
 ];
 
 const FAQ = [
-  { question: "What are Ohio's RON requirements?", answer: "Ohio requires a traditional notary commission, completion of an approved RON course, passing an exam, and registration with an approved technology provider per ORC §147.66." },
-  { question: "How long does RON setup take?", answer: "From start to first RON session, expect 2-4 weeks for application processing plus 1-2 weeks for technology setup." },
-  { question: "Do I need special equipment?", answer: "You'll need a computer with webcam, stable internet, digital certificate, and an approved RON platform subscription." },
-  { question: "Can you help with other states?", answer: "While we specialize in Ohio, we can provide guidance for any state that has adopted RON legislation." },
+  { q: "What are Ohio's RON requirements?", a: "Ohio requires a traditional notary commission, completion of an approved RON course, passing an exam, and registration with an approved technology provider per ORC §147.66." },
+  { q: "How long does RON setup take?", a: "From start to first RON session, expect 2-4 weeks for application processing plus 1-2 weeks for technology setup." },
+  { q: "Do I need special equipment?", a: "You'll need a computer with webcam, stable internet, digital certificate, and an approved RON platform subscription." },
+  { q: "Can you help with other states?", a: "While we specialize in Ohio, we can provide guidance for any state that has adopted RON legislation." },
 ];
 
 const TIMELINE = {

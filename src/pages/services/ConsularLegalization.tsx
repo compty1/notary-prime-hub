@@ -35,10 +35,10 @@ const ADDONS = [
 ];
 
 const FAQ = [
-  { question: "What's the difference between apostille and consular legalization?", answer: "Apostille is for Hague Convention countries. Consular legalization is for non-Hague countries and requires authentication by the destination country's consulate." },
-  { question: "Do I need a translation?", answer: "Many consulates require certified translations. We offer this as an add-on service." },
-  { question: "How long does the process take?", answer: "Standard processing is 2-4 weeks. Expedited (1-2 weeks) and rush (3-5 days) options are available." },
-  { question: "Which consulates do you work with?", answer: "We work with consulates across the US, including Chicago, New York, Los Angeles, Houston, and Washington DC." },
+  { q: "What's the difference between apostille and consular legalization?", a: "Apostille is for Hague Convention countries. Consular legalization is for non-Hague countries and requires authentication by the destination country's consulate." },
+  { q: "Do I need a translation?", a: "Many consulates require certified translations. We offer this as an add-on service." },
+  { q: "How long does the process take?", a: "Standard processing is 2-4 weeks. Expedited (1-2 weeks) and rush (3-5 days) options are available." },
+  { q: "Which consulates do you work with?", a: "We work with consulates across the US, including Chicago, New York, Los Angeles, Houston, and Washington DC." },
 ];
 
 const CHECKLIST = [

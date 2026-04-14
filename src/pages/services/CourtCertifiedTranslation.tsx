@@ -25,10 +25,10 @@ const ADDONS = [
 ];
 
 const FAQ = [
-  { question: "What makes a translation 'court-certified'?", answer: "It includes a sworn affidavit from the translator attesting to accuracy, formatted per court requirements." },
-  { question: "Will Ohio courts accept your translations?", answer: "Yes, our translations meet Ohio Rules of Evidence requirements and are accepted by all Ohio courts." },
-  { question: "Can you translate from any language?", answer: "We support 50+ languages including Spanish, Mandarin, Arabic, French, Portuguese, Korean, Japanese, and more." },
-  { question: "What if I have a tight court deadline?", answer: "Our rush service provides 24-hour turnaround. Contact us directly for same-day emergencies." },
+  { q: "What makes a translation 'court-certified'?", a: "It includes a sworn affidavit from the translator attesting to accuracy, formatted per court requirements." },
+  { q: "Will Ohio courts accept your translations?", a: "Yes, our translations meet Ohio Rules of Evidence requirements and are accepted by all Ohio courts." },
+  { q: "Can you translate from any language?", a: "We support 50+ languages including Spanish, Mandarin, Arabic, French, Portuguese, Korean, Japanese, and more." },
+  { q: "What if I have a tight court deadline?", a: "Our rush service provides 24-hour turnaround. Contact us directly for same-day emergencies." },
 ];
 
 const CHECKLIST = [

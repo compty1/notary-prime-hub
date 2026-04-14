@@ -23,10 +23,10 @@ const PACKAGES = [
 ];
 
 const FAQ = [
-  { question: "Can I change plans mid-cycle?", answer: "Yes, you can upgrade at any time. Downgrades take effect at the next billing cycle." },
-  { question: "What happens if I exceed my plan limits?", answer: "Additional notarizations are billed at a discounted per-use rate. You'll receive alerts at 80% and 100% usage." },
-  { question: "Is there a contract commitment?", answer: "Monthly plans have no commitment. Annual plans offer a 15% discount with a 12-month term." },
-  { question: "Can multiple team members use one subscription?", answer: "Yes, Professional and Enterprise plans support unlimited team members with role-based access." },
+  { q: "Can I change plans mid-cycle?", a: "Yes, you can upgrade at any time. Downgrades take effect at the next billing cycle." },
+  { q: "What happens if I exceed my plan limits?", a: "Additional notarizations are billed at a discounted per-use rate. You'll receive alerts at 80% and 100% usage." },
+  { q: "Is there a contract commitment?", a: "Monthly plans have no commitment. Annual plans offer a 15% discount with a 12-month term." },
+  { q: "Can multiple team members use one subscription?", a: "Yes, Professional and Enterprise plans support unlimited team members with role-based access." },
 ];
 
 const TIMELINE = {

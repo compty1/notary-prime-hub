@@ -27,10 +27,10 @@ const PACKAGES = [
 ];
 
 const FAQ = [
-  { question: "How is my data protected?", answer: "All data is encrypted in transit and at rest. We follow SOC 2 standards and delete verification data after 30 days unless retention is required." },
-  { question: "How quickly do I get results?", answer: "Identity verification results are typically available within 1 hour. Full KYC takes 1-2 business days." },
-  { question: "What ID types do you accept?", answer: "We accept driver's licenses, passports, state IDs, and military IDs from the US and 200+ countries." },
-  { question: "Can this be used for notarization compliance?", answer: "Yes, our KYC verification meets Ohio RON identity proofing requirements under ORC §147.66." },
+  { q: "How is my data protected?", a: "All data is encrypted in transit and at rest. We follow SOC 2 standards and delete verification data after 30 days unless retention is required." },
+  { q: "How quickly do I get results?", a: "Identity verification results are typically available within 1 hour. Full KYC takes 1-2 business days." },
+  { q: "What ID types do you accept?", a: "We accept driver's licenses, passports, state IDs, and military IDs from the US and 200+ countries." },
+  { q: "Can this be used for notarization compliance?", a: "Yes, our KYC verification meets Ohio RON identity proofing requirements under ORC §147.66." },
 ];
 
 export default function KycVerification() {

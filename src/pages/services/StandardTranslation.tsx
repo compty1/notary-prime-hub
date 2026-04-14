@@ -30,10 +30,10 @@ const ADDONS = [
 ];
 
 const FAQ = [
-  { question: "What's the difference between standard and certified translation?", answer: "Standard translation is for personal use. Certified includes a signed accuracy certificate required for legal/official submissions." },
-  { question: "How do you calculate page count?", answer: "We count 250 words as one standard page. Partially filled pages count as full pages." },
-  { question: "What languages do you support?", answer: "We support 100+ languages including Spanish, French, Mandarin, Arabic, Portuguese, German, Japanese, Korean, and more." },
-  { question: "Can I request a specific translator?", answer: "Yes, for ongoing projects you can request the same translator for consistency." },
+  { q: "What's the difference between standard and certified translation?", a: "Standard translation is for personal use. Certified includes a signed accuracy certificate required for legal/official submissions." },
+  { q: "How do you calculate page count?", a: "We count 250 words as one standard page. Partially filled pages count as full pages." },
+  { q: "What languages do you support?", a: "We support 100+ languages including Spanish, French, Mandarin, Arabic, Portuguese, German, Japanese, Korean, and more." },
+  { q: "Can I request a specific translator?", a: "Yes, for ongoing projects you can request the same translator for consistency." },
 ];
 
 export default function StandardTranslation() {

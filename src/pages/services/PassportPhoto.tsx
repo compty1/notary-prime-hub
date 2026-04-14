@@ -24,10 +24,10 @@ const PACKAGES = [
 ];
 
 const FAQ = [
-  { question: "Are your photos guaranteed to be accepted?", answer: "Yes, we guarantee compliance with the specified country's requirements. If rejected, we'll retake for free." },
-  { question: "How long does it take?", answer: "Photos are taken and printed in about 10-15 minutes during your visit." },
-  { question: "Do I need an appointment?", answer: "Walk-ins are welcome, but appointments are recommended for the fastest service." },
-  { question: "What should I wear?", answer: "Wear everyday clothing. Avoid uniforms, hats, and head coverings (unless for religious purposes). White or off-white tops are discouraged for white-background photos." },
+  { q: "Are your photos guaranteed to be accepted?", a: "Yes, we guarantee compliance with the specified country's requirements. If rejected, we'll retake for free." },
+  { q: "How long does it take?", a: "Photos are taken and printed in about 10-15 minutes during your visit." },
+  { q: "Do I need an appointment?", a: "Walk-ins are welcome, but appointments are recommended for the fastest service." },
+  { q: "What should I wear?", a: "Wear everyday clothing. Avoid uniforms, hats, and head coverings (unless for religious purposes). White or off-white tops are discouraged for white-background photos." },
 ];
 
 export default function PassportPhoto() {

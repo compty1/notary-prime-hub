@@ -31,10 +31,10 @@ const ADDONS = [
 ];
 
 const FAQ = [
-  { question: "What's the $10 prep fee?", answer: "The prep fee covers file review, print optimization, and quality setup. It applies once per order regardless of page count." },
-  { question: "Can you print on legal-size paper?", answer: "Yes, we support Letter (8.5x11), Legal (8.5x14), and Tabloid (11x17) paper sizes." },
-  { question: "Do you offer same-day printing?", answer: "Yes, orders placed before 2 PM EST are available for same-day pickup or shipping." },
-  { question: "What file formats do you accept?", answer: "We accept PDF, DOCX, XLSX, PPTX, and most common image formats." },
+  { q: "What's the $10 prep fee?", a: "The prep fee covers file review, print optimization, and quality setup. It applies once per order regardless of page count." },
+  { q: "Can you print on legal-size paper?", a: "Yes, we support Letter (8.5x11), Legal (8.5x14), and Tabloid (11x17) paper sizes." },
+  { q: "Do you offer same-day printing?", a: "Yes, orders placed before 2 PM EST are available for same-day pickup or shipping." },
+  { q: "What file formats do you accept?", a: "We accept PDF, DOCX, XLSX, PPTX, and most common image formats." },
 ];
 
 export default function DocumentPrinting() {

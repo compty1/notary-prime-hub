@@ -27,10 +27,10 @@ const ADDONS = [
 ];
 
 const FAQ = [
-  { question: "Do you post directly to our accounts?", answer: "Yes, with your authorization we schedule and publish directly. You can also approve posts before they go live." },
-  { question: "Can you match our brand voice?", answer: "Yes, we create a brand voice guide during onboarding and tailor all content to match your style." },
-  { question: "Do you handle comments and messages?", answer: "Community management (responding to comments/messages) is included in the Premium plan." },
-  { question: "What industries do you specialize in?", answer: "We specialize in notary, legal services, real estate, and professional services content." },
+  { q: "Do you post directly to our accounts?", a: "Yes, with your authorization we schedule and publish directly. You can also approve posts before they go live." },
+  { q: "Can you match our brand voice?", a: "Yes, we create a brand voice guide during onboarding and tailor all content to match your style." },
+  { q: "Do you handle comments and messages?", a: "Community management (responding to comments/messages) is included in the Premium plan." },
+  { q: "What industries do you specialize in?", a: "We specialize in notary, legal services, real estate, and professional services content." },
 ];
 
 export default function SocialMediaContent() {

@@ -22,10 +22,10 @@ const PACKAGES = [
 ];
 
 const FAQ = [
-  { question: "How long does an audit take?", answer: "Heuristic reviews take 3-5 business days. Comprehensive audits take 2-3 weeks. CRO packages run 4-6 weeks." },
-  { question: "What deliverables do I receive?", answer: "A detailed PDF report with annotated screenshots, prioritized recommendations, and an implementation roadmap." },
-  { question: "Do you implement the changes?", answer: "We provide recommendations and can partner with your development team. Implementation support is available as an add-on." },
-  { question: "Do you test on mobile?", answer: "Yes, all audits include mobile responsiveness evaluation across common device sizes." },
+  { q: "How long does an audit take?", a: "Heuristic reviews take 3-5 business days. Comprehensive audits take 2-3 weeks. CRO packages run 4-6 weeks." },
+  { q: "What deliverables do I receive?", a: "A detailed PDF report with annotated screenshots, prioritized recommendations, and an implementation roadmap." },
+  { q: "Do you implement the changes?", a: "We provide recommendations and can partner with your development team. Implementation support is available as an add-on." },
+  { q: "Do you test on mobile?", a: "Yes, all audits include mobile responsiveness evaluation across common device sizes." },
 ];
 
 const TIMELINE = {

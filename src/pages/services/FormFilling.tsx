@@ -30,10 +30,10 @@ const ADDONS = [
 ];
 
 const FAQ = [
-  { question: "Is this legal advice?", answer: "No. Form filling is a clerical service. We enter information you provide into forms — we do not advise on what information to provide." },
-  { question: "What if I don't have the blank form?", answer: "We maintain a library of common government and court forms. Just tell us the form name/number." },
-  { question: "Can you fill out court forms?", answer: "Yes, we can fill out court forms based on information you provide. We do not provide legal advice or representation." },
-  { question: "How do I provide my information?", answer: "You can upload a completed draft, fill out our intake questionnaire, or provide handwritten notes." },
+  { q: "Is this legal advice?", a: "No. Form filling is a clerical service. We enter information you provide into forms — we do not advise on what information to provide." },
+  { q: "What if I don't have the blank form?", a: "We maintain a library of common government and court forms. Just tell us the form name/number." },
+  { q: "Can you fill out court forms?", a: "Yes, we can fill out court forms based on information you provide. We do not provide legal advice or representation." },
+  { q: "How do I provide my information?", a: "You can upload a completed draft, fill out our intake questionnaire, or provide handwritten notes." },
 ];
 
 export default function FormFilling() {

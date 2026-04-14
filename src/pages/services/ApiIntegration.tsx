@@ -21,10 +21,10 @@ const PACKAGES = [
 ];
 
 const FAQ = [
-  { question: "What API formats do you support?", answer: "Our REST API supports JSON request/response format with OAuth 2.0 authentication." },
-  { question: "Is there a sandbox environment?", answer: "Yes, Business and Enterprise plans include a full sandbox environment for testing." },
-  { question: "What's the typical integration timeline?", answer: "Most integrations are completed within 1-2 weeks with our documentation and support." },
-  { question: "Do you support webhooks?", answer: "Yes, we support webhooks for real-time status updates on notarization sessions and document processing." },
+  { q: "What API formats do you support?", a: "Our REST API supports JSON request/response format with OAuth 2.0 authentication." },
+  { q: "Is there a sandbox environment?", a: "Yes, Business and Enterprise plans include a full sandbox environment for testing." },
+  { q: "What's the typical integration timeline?", a: "Most integrations are completed within 1-2 weeks with our documentation and support." },
+  { q: "Do you support webhooks?", a: "Yes, we support webhooks for real-time status updates on notarization sessions and document processing." },
 ];
 
 const TIMELINE = {

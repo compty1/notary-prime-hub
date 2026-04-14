@@ -29,10 +29,10 @@ const PACKAGES = [
 ];
 
 const FAQ = [
-  { question: "What CMS platforms do you support?", answer: "We work with WordPress, Squarespace, Wix, Shopify, Webflow, and most custom-built websites." },
-  { question: "How quickly can updates be made?", answer: "Single updates are typically completed same-day. Complex layout changes may take 2-3 business days." },
-  { question: "Do you need my login credentials?", answer: "We use secure credential sharing. For WordPress sites, we can use a temporary admin account." },
-  { question: "Can you optimize content for SEO?", answer: "Yes, our Monthly Retainer includes SEO optimization for all content updates." },
+  { q: "What CMS platforms do you support?", a: "We work with WordPress, Squarespace, Wix, Shopify, Webflow, and most custom-built websites." },
+  { q: "How quickly can updates be made?", a: "Single updates are typically completed same-day. Complex layout changes may take 2-3 business days." },
+  { q: "Do you need my login credentials?", a: "We use secure credential sharing. For WordPress sites, we can use a temporary admin account." },
+  { q: "Can you optimize content for SEO?", a: "Yes, our Monthly Retainer includes SEO optimization for all content updates." },
 ];
 
 export default function WebsiteContentUpdates() {

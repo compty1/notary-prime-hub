@@ -28,10 +28,10 @@ const ADDONS = [
 ];
 
 const FAQ = [
-  { question: "What's the difference between scan resolutions?", answer: "300 DPI is good for general documents. 600 DPI is ideal for detailed documents with fine print. 1200 DPI is for archival preservation." },
-  { question: "What is OCR?", answer: "Optical Character Recognition converts scanned images into searchable, copyable text within the PDF." },
-  { question: "Can you scan bound books?", answer: "Yes, we have flatbed and overhead scanners for bound materials without damaging the binding." },
-  { question: "How are files delivered?", answer: "Files are delivered via secure cloud link. USB drive or external hard drive delivery is available for large projects." },
+  { q: "What's the difference between scan resolutions?", a: "300 DPI is good for general documents. 600 DPI is ideal for detailed documents with fine print. 1200 DPI is for archival preservation." },
+  { q: "What is OCR?", a: "Optical Character Recognition converts scanned images into searchable, copyable text within the PDF." },
+  { q: "Can you scan bound books?", a: "Yes, we have flatbed and overhead scanners for bound materials without damaging the binding." },
+  { q: "How are files delivered?", a: "Files are delivered via secure cloud link. USB drive or external hard drive delivery is available for large projects." },
 ];
 
 export default function DocumentScanning() {

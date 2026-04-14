@@ -26,10 +26,10 @@ const PACKAGES = [
 ];
 
 const FAQ = [
-  { question: "What is clerical document preparation?", answer: "We prepare documents based on information you provide. This is a clerical service and does not constitute legal advice." },
-  { question: "What document formats do you support?", answer: "We deliver in PDF, DOCX, and fillable PDF formats. Custom formats available on Enterprise plans." },
-  { question: "Can you prepare court filings?", answer: "We can prepare clerical court forms based on your instructions. We do not provide legal advice or representation." },
-  { question: "Do you maintain confidentiality?", answer: "Yes, all documents are handled under strict NDA and our privacy policy. Enterprise clients receive a custom confidentiality agreement." },
+  { q: "What is clerical document preparation?", a: "We prepare documents based on information you provide. This is a clerical service and does not constitute legal advice." },
+  { q: "What document formats do you support?", a: "We deliver in PDF, DOCX, and fillable PDF formats. Custom formats available on Enterprise plans." },
+  { q: "Can you prepare court filings?", a: "We can prepare clerical court forms based on your instructions. We do not provide legal advice or representation." },
+  { q: "Do you maintain confidentiality?", a: "Yes, all documents are handled under strict NDA and our privacy policy. Enterprise clients receive a custom confidentiality agreement." },
 ];
 
 const CHECKLIST = [

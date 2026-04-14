@@ -33,10 +33,10 @@ const ADDONS = [
 ];
 
 const FAQ = [
-  { question: "What industries do you write for?", answer: "We specialize in legal services, notary, real estate, and small business content but can write for any industry." },
-  { question: "How many revisions are included?", answer: "Single posts include 1 revision round. Monthly bundles include 2 rounds. Premium plans have unlimited revisions." },
-  { question: "Do you provide SEO optimization?", answer: "Yes, all posts include meta titles, descriptions, header optimization, and internal linking suggestions." },
-  { question: "What's the typical turnaround?", answer: "Standard turnaround is 5 business days. Rush delivery (2-3 days) is available for an additional fee." },
+  { q: "What industries do you write for?", a: "We specialize in legal services, notary, real estate, and small business content but can write for any industry." },
+  { q: "How many revisions are included?", a: "Single posts include 1 revision round. Monthly bundles include 2 rounds. Premium plans have unlimited revisions." },
+  { q: "Do you provide SEO optimization?", a: "Yes, all posts include meta titles, descriptions, header optimization, and internal linking suggestions." },
+  { q: "What's the typical turnaround?", a: "Standard turnaround is 5 business days. Rush delivery (2-3 days) is available for an additional fee." },
 ];
 
 const TIMELINE = {

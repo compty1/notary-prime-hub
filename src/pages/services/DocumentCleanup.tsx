@@ -23,9 +23,9 @@ const PACKAGES = [
 ];
 
 const FAQ = [
-  { question: "What counts as 'document cleanup'?", answer: "Fixing formatting inconsistencies, standardizing fonts, correcting spacing, removing artifacts, and ensuring professional presentation." },
-  { question: "Can you convert between formats?", answer: "Yes — we handle PDF to Word, Word to PDF, Excel to PDF, and many other conversions while preserving formatting." },
-  { question: "Do you work with scanned documents?", answer: "Yes, we can apply OCR to scanned documents and reformat the extracted text into professional layouts." },
+  { q: "What counts as 'document cleanup'?", a: "Fixing formatting inconsistencies, standardizing fonts, correcting spacing, removing artifacts, and ensuring professional presentation." },
+  { q: "Can you convert between formats?", a: "Yes — we handle PDF to Word, Word to PDF, Excel to PDF, and many other conversions while preserving formatting." },
+  { q: "Do you work with scanned documents?", a: "Yes, we can apply OCR to scanned documents and reformat the extracted text into professional layouts." },
 ];
 
 export default function DocumentCleanup() {

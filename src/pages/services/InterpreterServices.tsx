@@ -29,10 +29,10 @@ const PACKAGES = [
 ];
 
 const FAQ = [
-  { question: "Are your interpreters certified?", answer: "Yes, our interpreters hold professional certifications. Court and medical interpreters have specialized credentials." },
-  { question: "How far in advance should I book?", answer: "We recommend 48 hours notice for common languages. Rare languages may require 1-2 weeks." },
-  { question: "Can interpreters assist during notarization?", answer: "Yes, we frequently provide interpreters for notarization sessions to ensure signers understand the documents." },
-  { question: "What languages do you cover?", answer: "We cover 50+ languages including Spanish, Mandarin, Arabic, French, Portuguese, Korean, Somali, and ASL." },
+  { q: "Are your interpreters certified?", a: "Yes, our interpreters hold professional certifications. Court and medical interpreters have specialized credentials." },
+  { q: "How far in advance should I book?", a: "We recommend 48 hours notice for common languages. Rare languages may require 1-2 weeks." },
+  { q: "Can interpreters assist during notarization?", a: "Yes, we frequently provide interpreters for notarization sessions to ensure signers understand the documents." },
+  { q: "What languages do you cover?", a: "We cover 50+ languages including Spanish, Mandarin, Arabic, French, Portuguese, Korean, Somali, and ASL." },
 ];
 
 export default function InterpreterServices() {

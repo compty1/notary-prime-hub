@@ -30,9 +30,9 @@ const ADDONS = [
 ];
 
 const FAQ = [
-  { question: "What is clerical document preparation?", answer: "We type, format, and organize documents based on information you provide. We do not offer legal advice." },
-  { question: "Can I provide handwritten notes?", answer: "Yes, we can transcribe handwritten notes into professional typed documents." },
-  { question: "What formats do you deliver?", answer: "Standard delivery is PDF. We also provide DOCX and fillable PDF on request." },
+  { q: "What is clerical document preparation?", a: "We type, format, and organize documents based on information you provide. We do not offer legal advice." },
+  { q: "Can I provide handwritten notes?", a: "Yes, we can transcribe handwritten notes into professional typed documents." },
+  { q: "What formats do you deliver?", a: "Standard delivery is PDF. We also provide DOCX and fillable PDF on request." },
 ];
 
 export default function ClericalDocPrep() {

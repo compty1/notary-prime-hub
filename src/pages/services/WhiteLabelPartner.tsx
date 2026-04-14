@@ -24,10 +24,10 @@ const PACKAGES = [
 ];
 
 const FAQ = [
-  { question: "What services can be white-labeled?", answer: "RON notarization, document preparation, apostille, translation, and all document services can be offered under your brand." },
-  { question: "How does branding work?", answer: "We apply your logo, colors, and domain to the client-facing experience. Communications go out under your brand." },
-  { question: "What's the revenue model?", answer: "You set your own pricing. We charge wholesale rates with volume discounts. Enterprise plans offer revenue share options." },
-  { question: "How long does setup take?", answer: "Starter plans are live in 48 hours. Professional setup takes 1-2 weeks. Enterprise customization takes 4-6 weeks." },
+  { q: "What services can be white-labeled?", a: "RON notarization, document preparation, apostille, translation, and all document services can be offered under your brand." },
+  { q: "How does branding work?", a: "We apply your logo, colors, and domain to the client-facing experience. Communications go out under your brand." },
+  { q: "What's the revenue model?", a: "You set your own pricing. We charge wholesale rates with volume discounts. Enterprise plans offer revenue share options." },
+  { q: "How long does setup take?", a: "Starter plans are live in 48 hours. Professional setup takes 1-2 weeks. Enterprise customization takes 4-6 weeks." },
 ];
 
 const TIMELINE = {

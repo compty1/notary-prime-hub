@@ -24,10 +24,10 @@ const PACKAGES = [
 ];
 
 const FAQ = [
-  { question: "What file formats can you convert?", answer: "We convert between PDF, Word, Excel, PowerPoint, images (JPG/PNG), and HTML." },
-  { question: "Is there a file size limit?", answer: "Single files up to 500MB. For larger files, contact us for custom handling." },
-  { question: "Do you maintain document formatting?", answer: "Yes, our conversion tools preserve formatting, fonts, images, and layout as closely as possible." },
-  { question: "Can you add OCR to scanned PDFs?", answer: "Yes, our OCR service converts scanned document images into searchable, editable text within the PDF." },
+  { q: "What file formats can you convert?", a: "We convert between PDF, Word, Excel, PowerPoint, images (JPG/PNG), and HTML." },
+  { q: "Is there a file size limit?", a: "Single files up to 500MB. For larger files, contact us for custom handling." },
+  { q: "Do you maintain document formatting?", a: "Yes, our conversion tools preserve formatting, fonts, images, and layout as closely as possible." },
+  { q: "Can you add OCR to scanned PDFs?", a: "Yes, our OCR service converts scanned document images into searchable, editable text within the PDF." },
 ];
 
 export default function PdfServices() {

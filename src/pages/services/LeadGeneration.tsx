@@ -30,10 +30,10 @@ const ADDONS = [
 ];
 
 const FAQ = [
-  { question: "How are leads sourced?", answer: "We use multiple data sources including business registries, professional directories, and public records to build targeted lead lists." },
-  { question: "What's the accuracy rate?", answer: "Our Professional tier achieves 95%+ email deliverability and 90%+ phone accuracy through multi-step verification." },
-  { question: "Can you target specific industries?", answer: "Yes, we can target by industry, job title, company size, geography, and many other criteria." },
-  { question: "Do you offer ongoing lead generation?", answer: "Yes, Enterprise plans include monthly list refreshes with new leads matching your criteria." },
+  { q: "How are leads sourced?", a: "We use multiple data sources including business registries, professional directories, and public records to build targeted lead lists." },
+  { q: "What's the accuracy rate?", a: "Our Professional tier achieves 95%+ email deliverability and 90%+ phone accuracy through multi-step verification." },
+  { q: "Can you target specific industries?", a: "Yes, we can target by industry, job title, company size, geography, and many other criteria." },
+  { q: "Do you offer ongoing lead generation?", a: "Yes, Enterprise plans include monthly list refreshes with new leads matching your criteria." },
 ];
 
 export default function LeadGeneration() {

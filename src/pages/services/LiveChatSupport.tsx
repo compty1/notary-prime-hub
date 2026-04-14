@@ -24,10 +24,10 @@ const PACKAGES = [
 ];
 
 const FAQ = [
-  { question: "How do agents learn about my business?", answer: "We conduct a comprehensive onboarding including business overview, FAQs, product/service details, and common customer scenarios." },
-  { question: "Can agents process orders or bookings?", answer: "Yes, Professional and Enterprise plans include integration with your booking/ordering systems." },
-  { question: "What chat platforms do you support?", answer: "We support Intercom, Drift, LiveChat, Zendesk, and custom chat widgets." },
-  { question: "How quickly do agents respond?", answer: "Average first response time is under 30 seconds during coverage hours." },
+  { q: "How do agents learn about my business?", a: "We conduct a comprehensive onboarding including business overview, FAQs, product/service details, and common customer scenarios." },
+  { q: "Can agents process orders or bookings?", a: "Yes, Professional and Enterprise plans include integration with your booking/ordering systems." },
+  { q: "What chat platforms do you support?", a: "We support Intercom, Drift, LiveChat, Zendesk, and custom chat widgets." },
+  { q: "How quickly do agents respond?", a: "Average first response time is under 30 seconds during coverage hours." },
 ];
 
 export default function LiveChatSupport() {

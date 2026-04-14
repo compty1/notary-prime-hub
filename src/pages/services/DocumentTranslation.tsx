@@ -40,10 +40,10 @@ const ADDONS = [
 ];
 
 const FAQ = [
-  { question: "What's the difference between standard and certified translation?", answer: "Certified translations include a signed certificate of accuracy from the translator, required for legal, immigration, and academic purposes." },
-  { question: "Do you support rare languages?", answer: "Yes, we have access to translators for 100+ languages. Contact us for availability on rare language pairs." },
-  { question: "Can translations be notarized?", answer: "Yes, we offer notarization of translation certificates as an add-on service." },
-  { question: "Will USCIS accept your translations?", answer: "Yes, our certified translations meet USCIS requirements for immigration petitions." },
+  { q: "What's the difference between standard and certified translation?", a: "Certified translations include a signed certificate of accuracy from the translator, required for legal, immigration, and academic purposes." },
+  { q: "Do you support rare languages?", a: "Yes, we have access to translators for 100+ languages. Contact us for availability on rare language pairs." },
+  { q: "Can translations be notarized?", a: "Yes, we offer notarization of translation certificates as an add-on service." },
+  { q: "Will USCIS accept your translations?", a: "Yes, our certified translations meet USCIS requirements for immigration petitions." },
 ];
 
 const TIMELINE = {

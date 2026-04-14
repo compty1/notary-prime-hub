@@ -32,10 +32,10 @@ const ADDONS = [
 ];
 
 const FAQ = [
-  { question: "Is this evaluation NACES-recognized?", answer: "We coordinate with NACES and AICE member agencies to ensure your evaluation is widely accepted." },
-  { question: "What documents do I need?", answer: "You'll need your diploma/degree certificate, official transcripts, and certified translations if not in English." },
-  { question: "How long does evaluation take?", answer: "Standard processing is 10-15 business days. Rush processing (3 days) is available for an additional fee." },
-  { question: "Will USCIS accept this evaluation?", answer: "Yes, our Expert Opinion evaluations are formatted specifically for USCIS immigration petitions." },
+  { q: "Is this evaluation NACES-recognized?", a: "We coordinate with NACES and AICE member agencies to ensure your evaluation is widely accepted." },
+  { q: "What documents do I need?", a: "You'll need your diploma/degree certificate, official transcripts, and certified translations if not in English." },
+  { q: "How long does evaluation take?", a: "Standard processing is 10-15 business days. Rush processing (3 days) is available for an additional fee." },
+  { q: "Will USCIS accept this evaluation?", a: "Yes, our Expert Opinion evaluations are formatted specifically for USCIS immigration petitions." },
 ];
 
 const CHECKLIST = [

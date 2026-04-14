@@ -25,10 +25,10 @@ const PACKAGES = [
 ];
 
 const FAQ = [
-  { question: "How do you access my email?", answer: "We use secure delegated access (Google Workspace, Outlook) — your password is never shared." },
-  { question: "Can you draft responses in my voice?", answer: "Yes, we study your communication style and create a tone guide during onboarding to match your voice." },
-  { question: "What about confidential emails?", answer: "We follow strict confidentiality protocols. You can tag emails or senders as off-limits during setup." },
-  { question: "How quickly will emails be handled?", answer: "Professional plan: within 2 hours during business hours. Executive plan: within 30 minutes 24/7." },
+  { q: "How do you access my email?", a: "We use secure delegated access (Google Workspace, Outlook) — your password is never shared." },
+  { q: "Can you draft responses in my voice?", a: "Yes, we study your communication style and create a tone guide during onboarding to match your voice." },
+  { q: "What about confidential emails?", a: "We follow strict confidentiality protocols. You can tag emails or senders as off-limits during setup." },
+  { q: "How quickly will emails be handled?", a: "Professional plan: within 2 hours during business hours. Executive plan: within 30 minutes 24/7." },
 ];
 
 export default function EmailManagement() {

@@ -21,10 +21,10 @@ const PACKAGES = [
 ];
 
 const FAQ = [
-  { question: "Do you book flights directly?", answer: "We research and recommend the best options, then book on your behalf through trusted travel partners." },
-  { question: "Can you help with travel documents?", answer: "Yes, we provide checklists for passports, visas, and travel-related notarization needs." },
-  { question: "Is there a cancellation policy?", answer: "Our planning fee is non-refundable. Flight/hotel cancellation policies depend on the providers' terms." },
-  { question: "Do you handle group travel?", answer: "Yes, we handle corporate and group travel with special group rates and coordinated logistics." },
+  { q: "Do you book flights directly?", a: "We research and recommend the best options, then book on your behalf through trusted travel partners." },
+  { q: "Can you help with travel documents?", a: "Yes, we provide checklists for passports, visas, and travel-related notarization needs." },
+  { q: "Is there a cancellation policy?", a: "Our planning fee is non-refundable. Flight/hotel cancellation policies depend on the providers' terms." },
+  { q: "Do you handle group travel?", a: "Yes, we handle corporate and group travel with special group rates and coordinated logistics." },
 ];
 
 export default function TravelArrangements() {

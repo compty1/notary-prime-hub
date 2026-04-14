@@ -24,10 +24,10 @@ const PACKAGES = [
 ];
 
 const FAQ = [
-  { question: "Are templates legally reviewed?", answer: "Templates are professionally drafted and reviewed for common use cases. They are not a substitute for legal advice specific to your situation." },
-  { question: "Can I customize the templates?", answer: "Yes, DOCX templates are fully editable. PDF templates include fillable fields. Customization services are also available." },
-  { question: "Are templates state-specific?", answer: "Many templates are drafted for Ohio compliance. We note state-specific requirements where applicable." },
-  { question: "How often are templates updated?", answer: "Templates are reviewed annually and updated when laws or regulations change. Category Pack and Full Library subscribers receive update notifications." },
+  { q: "Are templates legally reviewed?", a: "Templates are professionally drafted and reviewed for common use cases. They are not a substitute for legal advice specific to your situation." },
+  { q: "Can I customize the templates?", a: "Yes, DOCX templates are fully editable. PDF templates include fillable fields. Customization services are also available." },
+  { q: "Are templates state-specific?", a: "Many templates are drafted for Ohio compliance. We note state-specific requirements where applicable." },
+  { q: "How often are templates updated?", a: "Templates are reviewed annually and updated when laws or regulations change. Category Pack and Full Library subscribers receive update notifications." },
 ];
 
 export default function TemplateLibrary() {

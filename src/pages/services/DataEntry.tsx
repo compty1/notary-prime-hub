@@ -27,10 +27,10 @@ const PACKAGES = [
 ];
 
 const FAQ = [
-  { question: "What types of data can you process?", answer: "We handle handwritten forms, printed documents, PDFs, spreadsheets, database records, and scanned images." },
-  { question: "How do you ensure data accuracy?", answer: "We use multi-tier QA processes. Critical accuracy projects use double-entry verification where two operators independently enter data." },
-  { question: "Is my data secure?", answer: "Yes, all data is handled under NDA with encrypted transmission and secure deletion after project completion." },
-  { question: "What output formats do you support?", answer: "We deliver in Excel, CSV, JSON, SQL, or directly into your database/CRM system." },
+  { q: "What types of data can you process?", a: "We handle handwritten forms, printed documents, PDFs, spreadsheets, database records, and scanned images." },
+  { q: "How do you ensure data accuracy?", a: "We use multi-tier QA processes. Critical accuracy projects use double-entry verification where two operators independently enter data." },
+  { q: "Is my data secure?", a: "Yes, all data is handled under NDA with encrypted transmission and secure deletion after project completion." },
+  { q: "What output formats do you support?", a: "We deliver in Excel, CSV, JSON, SQL, or directly into your database/CRM system." },
 ];
 
 export default function DataEntry() {
