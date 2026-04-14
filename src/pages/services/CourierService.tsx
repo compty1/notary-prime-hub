@@ -51,6 +51,7 @@ export default function CourierService() {
         serviceDescription="Secure, same-day document courier service with chain of custody tracking. Court filing available."
         fields={FIELDS}
         estimatedPrice="From $35.00"
+        pricingConfig={{ serviceId: "courier", fieldMapping: { isRush: "rush" } }}
         packages={PACKAGES}
         addOns={ADD_ONS}
         faq={FAQ}

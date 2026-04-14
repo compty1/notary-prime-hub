@@ -65,6 +65,7 @@ export default function BackgroundCheck() {
         serviceDescription="FCRA-compliant background checks for employment, tenant screening, and personal use."
         fields={FIELDS}
         estimatedPrice="From $35.00"
+        pricingConfig={{ serviceId: "background-check", fieldMapping: { isRush: "rush" } }}
         packages={PACKAGES}
         addOns={ADD_ONS}
         faq={FAQ}
