@@ -554,6 +554,10 @@ function AnimatedRoutes() {
         <Route path="security-center" element={<ProtectedRoute adminOnly><SR msg="Security center failed to load"><AdminSecurityCenter /></SR></ProtectedRoute>} />
         <Route path="credentials" element={<SR msg="Credentials failed to load"><AdminCredentials /></SR>} />
         <Route path="todos" element={<SR msg="Todos failed to load"><AdminTodos /></SR>} />
+        <Route path="financial-services" element={<ProtectedRoute adminOnly><SR msg="Financial services failed to load"><AdminFinancialServices /></SR></ProtectedRoute>} />
+        <Route path="creative-services" element={<ProtectedRoute adminOnly><SR msg="Creative services failed to load"><AdminCreativeServices /></SR></ProtectedRoute>} />
+        <Route path="sales-cx" element={<ProtectedRoute adminOnly><SR msg="Sales CX failed to load"><AdminSalesCX /></SR></ProtectedRoute>} />
+        <Route path="content-creation" element={<ProtectedRoute adminOnly><SR msg="Content creation failed to load"><AdminContentCreation /></SR></ProtectedRoute>} />
         <Route path="event-bus" element={<ProtectedRoute adminOnly><SR msg="Event bus failed to load"><AdminEventBus /></SR></ProtectedRoute>} />
         <Route path="business-growth" element={<ProtectedRoute adminOnly><SR msg="Business growth failed to load"><AdminBusinessGrowth /></SR></ProtectedRoute>} />
         <Route path="client-timeline" element={<ProtectedRoute adminOnly><SR msg="Client timeline failed to load"><AdminClientTimeline /></SR></ProtectedRoute>} />
