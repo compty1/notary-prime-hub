@@ -49,6 +49,7 @@ interface NotaryPage {
   social_links: Record<string, any>;
   profile_photo_path: string | null;
   cover_photo_path: string | null;
+  logo_path: string | null;
   gallery_photos: string[];
   nav_services: string[];
   seo_title: string;
@@ -115,9 +116,11 @@ export default function AdminNotaryPages() {
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [uploadingProfile, setUploadingProfile] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingGallery, setUploadingGallery] = useState(false);
   const profileInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
@@ -178,21 +181,22 @@ export default function AdminNotaryPages() {
   const updateField = (field: string, value: any) => setEditPage(prev => ({ ...prev, [field]: value }));
 
   // Photo upload handler
-  const handlePhotoUpload = async (file: File, type: "profile" | "cover") => {
+  const handlePhotoUpload = async (file: File, type: "profile" | "cover" | "logo") => {
     if (!editPage.id) { toast({ title: "Save the page first before uploading photos", variant: "destructive" }); return; }
-    if (!ALLOWED_IMAGE_MIMES.has(file.type)) { toast({ title: "Invalid file type. Only JPG, PNG, WebP allowed.", variant: "destructive" }); return; }
-    const setter = type === "profile" ? setUploadingProfile : setUploadingCover;
+    const allowedMimes = type === "logo"
+      ? new Set([...ALLOWED_IMAGE_MIMES, "image/svg+xml"])
+      : ALLOWED_IMAGE_MIMES;
+    if (!allowedMimes.has(file.type)) { toast({ title: `Invalid file type. ${type === "logo" ? "JPG, PNG, WebP, SVG" : "JPG, PNG, WebP"} allowed.`, variant: "destructive" }); return; }
+    const setter = type === "profile" ? setUploadingProfile : type === "cover" ? setUploadingCover : setUploadingLogo;
     setter(true);
     const ext = file.name.split(".").pop();
     const path = `notary-pages/${editPage.id}/${type}.${ext}`;
     const { error } = await supabase.storage.from("documents").upload(path, file, { upsert: true });
     if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); setter(false); return; }
-    const { data: signedData } = await supabase.storage.from("documents").createSignedUrl(path, 3600);
-    if (signedData?.signedUrl) {
-      updateField(type === "profile" ? "profile_photo_path" : "cover_photo_path", path);
-    }
+    const fieldMap: Record<string, string> = { profile: "profile_photo_path", cover: "cover_photo_path", logo: "logo_path" };
+    updateField(fieldMap[type], path);
     setter(false);
-    toast({ title: `${type === "profile" ? "Profile" : "Cover"} photo uploaded` });
+    toast({ title: `${type === "profile" ? "Profile photo" : type === "cover" ? "Cover photo" : "Business logo"} uploaded` });
   };
 
   const handleGalleryUpload = async (file: File) => {
@@ -302,6 +306,7 @@ export default function AdminNotaryPages() {
         use_platform_booking: editPage.use_platform_booking,
         external_booking_url: editPage.external_booking_url, social_links: editPage.social_links,
         profile_photo_path: editPage.profile_photo_path, cover_photo_path: editPage.cover_photo_path,
+        logo_path: (editPage as any).logo_path || null,
         gallery_photos: editPage.gallery_photos, nav_services: editPage.nav_services,
         seo_title: editPage.seo_title, seo_description: editPage.seo_description,
         is_published: editPage.is_published, is_featured: editPage.is_featured,
@@ -835,6 +840,41 @@ export default function AdminNotaryPages() {
 
             {/* TAB: Branding */}
             <TabsContent value="branding" className="space-y-4 mt-4">
+              {/* Business Logo Upload */}
+              <div>
+                <Label className="flex items-center gap-1"><ImageIcon className="h-3 w-3" /> Business Logo</Label>
+                <p className="text-[10px] text-muted-foreground mb-2">Upload your business/operations logo. Displayed in the header of your public page. PNG/SVG recommended, transparent background preferred.</p>
+                <div className="flex items-center gap-3">
+                  {(editPage as any).logo_path ? (
+                    <img
+                      src={(editPage as any).logo_path?.startsWith("http") ? (editPage as any).logo_path : undefined}
+                      alt="Business Logo"
+                      className="h-16 w-auto max-w-[140px] rounded-lg object-contain border p-1 bg-background"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                    />
+                  ) : (
+                    <div className="flex h-16 w-28 items-center justify-center rounded-lg border-2 border-dashed bg-muted text-xs text-muted-foreground">No logo</div>
+                  )}
+                  <div className="flex flex-col gap-1">
+                    <input ref={logoInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml" className="hidden"
+                      onChange={e => e.target.files?.[0] && handlePhotoUpload(e.target.files[0], "logo")} />
+                    <Button variant="outline" size="sm" onClick={() => logoInputRef.current?.click()} disabled={uploadingLogo || !editPage.id}>
+                      {uploadingLogo ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Upload className="h-3 w-3 mr-1" />}
+                      {(editPage as any).logo_path ? "Replace Logo" : "Upload Logo"}
+                    </Button>
+                    {(editPage as any).logo_path && (
+                      <Button variant="ghost" size="sm" className="text-destructive text-xs h-7" onClick={() => updateField("logo_path", null)}>
+                        <Trash2 className="h-3 w-3 mr-1" /> Remove
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                {!editPage.id && <p className="text-[10px] text-amber-600 mt-1">Save the page first to enable logo upload.</p>}
+              </div>
+
+              <Separator />
+
+              {/* Colors & Font */}
               <div className="grid gap-4 sm:grid-cols-3">
                 <div>
                   <Label>Primary Color</Label>
@@ -863,11 +903,17 @@ export default function AdminNotaryPages() {
               {/* Live preview swatch */}
               <div className="rounded-xl border p-4" style={{ background: `linear-gradient(135deg, ${ensureHex(editPage.theme_color)}22, ${ensureHex(editPage.accent_color, "#1e40af")}08)` }}>
                 <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 rounded-full border-2" style={{ borderColor: ensureHex(editPage.theme_color), background: `${ensureHex(editPage.theme_color)}15` }}>
-                    <div className="flex h-full w-full items-center justify-center text-lg font-bold" style={{ color: ensureHex(editPage.theme_color), fontFamily: editPage.font_family || "Inter" }}>
-                      {editPage.display_name?.charAt(0)?.toUpperCase() || "?"}
+                  {(editPage as any).logo_path ? (
+                    <div className="h-12 w-auto max-w-[80px] flex items-center">
+                      <img src={(editPage as any).logo_path} alt="Logo preview" className="max-h-12 w-auto object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                     </div>
-                  </div>
+                  ) : (
+                    <div className="h-12 w-12 rounded-full border-2" style={{ borderColor: ensureHex(editPage.theme_color), background: `${ensureHex(editPage.theme_color)}15` }}>
+                      <div className="flex h-full w-full items-center justify-center text-lg font-bold" style={{ color: ensureHex(editPage.theme_color), fontFamily: editPage.font_family || "Inter" }}>
+                        {editPage.display_name?.charAt(0)?.toUpperCase() || "?"}
+                      </div>
+                    </div>
+                  )}
                   <div style={{ fontFamily: editPage.font_family || "Inter" }}>
                     <p className="font-bold">{editPage.display_name || "Name"}</p>
                     <p className="text-sm" style={{ color: ensureHex(editPage.theme_color) }}>{editPage.title || "Title"}</p>
