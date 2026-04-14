@@ -70,6 +70,7 @@ export default function Fingerprinting() {
         serviceDescription="FBI-certified fingerprinting for employment, licensing, immigration, and background checks. FD-258, Ohio BCI, and live scan available."
         fields={FIELDS}
         estimatedPrice="From $25.00"
+        pricingConfig={{ serviceId: "fingerprinting", fieldMapping: { signerCount: "num_applicants" } }}
         packages={PACKAGES}
         addOns={ADD_ONS}
         faq={FAQ}

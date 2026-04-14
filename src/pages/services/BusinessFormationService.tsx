@@ -67,6 +67,7 @@ export default function BusinessFormationService() {
         serviceDescription="LLC, Corporation, DBA, and Non-Profit formation with Ohio Secretary of State."
         fields={FIELDS}
         estimatedPrice="From $149.00"
+        pricingConfig={{ serviceId: "business-formation", fieldMapping: { isRush: "rush" } }}
         packages={PACKAGES}
         addOns={ADD_ONS}
         faq={FAQ}

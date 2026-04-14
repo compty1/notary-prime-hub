@@ -62,6 +62,7 @@ export default function CertifiedTranslation() {
         serviceDescription="Professional certified and court-certified translations accepted by USCIS, courts, and government agencies. 50+ languages."
         fields={FIELDS}
         estimatedPrice="From $30.00/page"
+        pricingConfig={{ serviceId: "certified-translation", fieldMapping: { documentCount: "page_count", isRush: "rush" } }}
         packages={PACKAGES}
         addOns={ADD_ONS}
         faq={FAQ}

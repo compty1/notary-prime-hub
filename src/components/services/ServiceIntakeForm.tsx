@@ -21,6 +21,7 @@ import { ServiceFAQ, FAQItem } from "./ServiceFAQ";
 import { ServiceChecklist, ChecklistItem } from "./ServiceChecklist";
 import { ServiceTimeline, TimelineStep } from "./ServiceTimeline";
 import { CrossSellPanel } from "./CrossSellPanel";
+import { PricingQuotePanel } from "./PricingQuotePanel";
 
 export interface IntakeField {
   name: string;
@@ -30,6 +31,13 @@ export interface IntakeField {
   placeholder?: string;
   options?: { value: string; label: string }[];
   description?: string;
+}
+
+export interface PricingConfig {
+  serviceId: string;
+  notarizationType?: "in_person" | "ron";
+  /** Maps form field names to pricing params: signerCount, documentCount, isRush, isAfterHours, isMobile, travelZone */
+  fieldMapping?: Record<string, string>;
 }
 
 interface ServiceIntakeFormProps {
@@ -44,13 +52,14 @@ interface ServiceIntakeFormProps {
   faq?: FAQItem[];
   checklist?: ChecklistItem[];
   timeline?: { steps: TimelineStep[]; turnaround?: string };
+  pricingConfig?: PricingConfig;
   onSuccess?: (data: any) => void;
   children?: React.ReactNode;
 }
 
 export function ServiceIntakeForm({
   serviceSlug, serviceTitle, serviceDescription, fields, estimatedPrice,
-  consentItems, packages, addOns, faq, checklist, timeline, onSuccess, children,
+  consentItems, packages, addOns, faq, checklist, timeline, pricingConfig, onSuccess, children,
 }: ServiceIntakeFormProps) {
   const { user } = useAuth();
   const { submitRequest } = useServiceRequest(serviceSlug);
@@ -256,7 +265,18 @@ export function ServiceIntakeForm({
 
       {/* Sidebar */}
       <div className="space-y-4">
-        {estimatedPrice && (
+        {pricingConfig ? (
+          <PricingQuotePanel
+            serviceId={pricingConfig.serviceId}
+            signerCount={pricingConfig.fieldMapping?.signerCount ? Number(formData[pricingConfig.fieldMapping.signerCount]) || 1 : 1}
+            documentCount={pricingConfig.fieldMapping?.documentCount ? Number(formData[pricingConfig.fieldMapping.documentCount]) || 1 : 1}
+            isRush={pricingConfig.fieldMapping?.isRush ? !!formData[pricingConfig.fieldMapping.isRush] : false}
+            isAfterHours={pricingConfig.fieldMapping?.isAfterHours ? !!formData[pricingConfig.fieldMapping.isAfterHours] : false}
+            isMobile={pricingConfig.fieldMapping?.isMobile ? !!formData[pricingConfig.fieldMapping.isMobile] : false}
+            travelZone={pricingConfig.fieldMapping?.travelZone ? Number(formData[pricingConfig.fieldMapping.travelZone]) || undefined : undefined}
+            notarizationType={pricingConfig.notarizationType}
+          />
+        ) : estimatedPrice ? (
           <Card>
             <CardContent className="pt-6">
               <p className="text-sm text-muted-foreground mb-1">Estimated Price</p>
@@ -264,7 +284,7 @@ export function ServiceIntakeForm({
               <p className="text-xs text-muted-foreground mt-1">Final price may vary based on complexity</p>
             </CardContent>
           </Card>
-        )}
+        ) : null}
 
         {timeline && <ServiceTimeline steps={timeline.steps} turnaround={timeline.turnaround} />}
         {checklist && checklist.length > 0 && <ServiceChecklist items={checklist} />}

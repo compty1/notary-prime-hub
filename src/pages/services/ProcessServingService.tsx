@@ -67,6 +67,7 @@ export default function ProcessServingService() {
         serviceDescription="Professional process serving with proof of service documentation. Licensed servers covering all 88 Ohio counties."
         fields={FIELDS}
         estimatedPrice="From $65.00"
+        pricingConfig={{ serviceId: "process-serving", fieldMapping: { isRush: "rush" } }}
         packages={PACKAGES}
         addOns={ADD_ONS}
         faq={FAQ}

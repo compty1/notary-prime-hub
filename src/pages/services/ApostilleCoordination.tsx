@@ -67,6 +67,7 @@ export default function ApostilleCoordination() {
         serviceDescription="Ohio Secretary of State apostille processing for international document authentication. Hague Convention compliant."
         fields={FIELDS}
         estimatedPrice="From $85.00"
+        pricingConfig={{ serviceId: "apostille", fieldMapping: { documentCount: "document_count", isRush: "rush" } }}
         packages={PACKAGES}
         addOns={ADD_ONS}
         faq={FAQ}
