@@ -123,7 +123,12 @@ export default function AdminEmailHealth() {
                     <TableCell><Badge variant="outline" className="text-xs">{e.template_name}</Badge></TableCell>
                     <TableCell className="text-xs text-destructive max-w-[200px] truncate">{e.error_message || "Unknown error"}</TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="sm" onClick={() => toast.info("Re-enqueue via email queue not yet implemented")}><RefreshCw className="h-3 w-3" /></Button>
+                      <Button variant="ghost" size="sm" onClick={async () => {
+                        try {
+                          await supabase.rpc("enqueue_email", { queue_name: "email_queue", payload: { template: e.template_name, to: e.recipient_email, retry: true } });
+                          toast.success("Re-enqueued for retry");
+                        } catch { toast.error("Failed to re-enqueue"); }
+                      }}><RefreshCw className="h-3 w-3" /></Button>
                     </TableCell>
                   </TableRow>
                 ))}
