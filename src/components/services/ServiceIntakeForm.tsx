@@ -59,7 +59,7 @@ interface ServiceIntakeFormProps {
 
 export function ServiceIntakeForm({
   serviceSlug, serviceTitle, serviceDescription, fields, estimatedPrice,
-  consentItems, packages, addOns, faq, checklist, timeline, onSuccess, children,
+  consentItems, packages, addOns, faq, checklist, timeline, pricingConfig, onSuccess, children,
 }: ServiceIntakeFormProps) {
   const { user } = useAuth();
   const { submitRequest } = useServiceRequest(serviceSlug);
