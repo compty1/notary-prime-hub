@@ -49,6 +49,7 @@ interface NotaryPage {
   social_links: Record<string, any>;
   profile_photo_path: string | null;
   cover_photo_path: string | null;
+  logo_path: string | null;
   gallery_photos: string[];
   nav_services: string[];
   seo_title: string;
@@ -115,9 +116,11 @@ export default function AdminNotaryPages() {
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [uploadingProfile, setUploadingProfile] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingGallery, setUploadingGallery] = useState(false);
   const profileInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
@@ -178,21 +181,22 @@ export default function AdminNotaryPages() {
   const updateField = (field: string, value: any) => setEditPage(prev => ({ ...prev, [field]: value }));
 
   // Photo upload handler
-  const handlePhotoUpload = async (file: File, type: "profile" | "cover") => {
+  const handlePhotoUpload = async (file: File, type: "profile" | "cover" | "logo") => {
     if (!editPage.id) { toast({ title: "Save the page first before uploading photos", variant: "destructive" }); return; }
-    if (!ALLOWED_IMAGE_MIMES.has(file.type)) { toast({ title: "Invalid file type. Only JPG, PNG, WebP allowed.", variant: "destructive" }); return; }
-    const setter = type === "profile" ? setUploadingProfile : setUploadingCover;
+    const allowedMimes = type === "logo"
+      ? new Set([...ALLOWED_IMAGE_MIMES, "image/svg+xml"])
+      : ALLOWED_IMAGE_MIMES;
+    if (!allowedMimes.has(file.type)) { toast({ title: `Invalid file type. ${type === "logo" ? "JPG, PNG, WebP, SVG" : "JPG, PNG, WebP"} allowed.`, variant: "destructive" }); return; }
+    const setter = type === "profile" ? setUploadingProfile : type === "cover" ? setUploadingCover : setUploadingLogo;
     setter(true);
     const ext = file.name.split(".").pop();
     const path = `notary-pages/${editPage.id}/${type}.${ext}`;
     const { error } = await supabase.storage.from("documents").upload(path, file, { upsert: true });
     if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); setter(false); return; }
-    const { data: signedData } = await supabase.storage.from("documents").createSignedUrl(path, 3600);
-    if (signedData?.signedUrl) {
-      updateField(type === "profile" ? "profile_photo_path" : "cover_photo_path", path);
-    }
+    const fieldMap: Record<string, string> = { profile: "profile_photo_path", cover: "cover_photo_path", logo: "logo_path" };
+    updateField(fieldMap[type], path);
     setter(false);
-    toast({ title: `${type === "profile" ? "Profile" : "Cover"} photo uploaded` });
+    toast({ title: `${type === "profile" ? "Profile photo" : type === "cover" ? "Cover photo" : "Business logo"} uploaded` });
   };
 
   const handleGalleryUpload = async (file: File) => {
