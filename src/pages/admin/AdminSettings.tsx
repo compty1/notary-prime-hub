@@ -445,11 +445,11 @@ export default function AdminSettings() {
               <CardContent className="space-y-4">
                 <div>
                   <Label>Privacy Policy URL (external)</Label>
-                  <Input value={editValues.privacy_policy_url || ""} onChange={(e) => updateValue("privacy_policy_url", e.target.value)} placeholder="/terms-privacy or https://..." />
+                  <Input value={editValues.privacy_policy_url || ""} onChange={(e) => updateValue("privacy_policy_url", e.target.value)} placeholder="/terms#privacy or https://..." />
                 </div>
                 <div>
                   <Label>Terms of Service URL</Label>
-                  <Input value={editValues.terms_url || ""} onChange={(e) => updateValue("terms_url", e.target.value)} placeholder="/terms-privacy" />
+                  <Input value={editValues.terms_url || ""} onChange={(e) => updateValue("terms_url", e.target.value)} placeholder="/terms" />
                 </div>
                 <div>
                   <Label>Footer Disclaimer Text</Label>
