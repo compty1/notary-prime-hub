@@ -1,6 +1,3 @@
-/**
- * Sprint 3: Interpreter Services
- */
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
 
@@ -25,6 +22,19 @@ const FIELDS: IntakeField[] = [
   { name: "context", label: "Context/Purpose", type: "textarea", required: true, placeholder: "e.g., Notarization session, legal meeting..." },
 ];
 
+const PACKAGES = [
+  { id: "basic", name: "Phone/Video", price: "$50/hr", description: "Remote interpretation", features: ["Phone or video call", "Real-time interpretation", "Common languages", "1-hour minimum"] },
+  { id: "professional", name: "In-Person", price: "$75/hr", description: "On-site interpretation", features: ["In-person attendance", "Professional attire", "All languages", "Travel within service area", "2-hour minimum"], recommended: true },
+  { id: "specialized", name: "Specialized", price: "$100/hr", description: "Legal/medical interpretation", features: ["Court-certified interpreters", "Medical terminology", "Legal proceedings", "Oath administration", "Written summary available"] },
+];
+
+const FAQ = [
+  { question: "Are your interpreters certified?", answer: "Yes, our interpreters hold professional certifications. Court and medical interpreters have specialized credentials." },
+  { question: "How far in advance should I book?", answer: "We recommend 48 hours notice for common languages. Rare languages may require 1-2 weeks." },
+  { question: "Can interpreters assist during notarization?", answer: "Yes, we frequently provide interpreters for notarization sessions to ensure signers understand the documents." },
+  { question: "What languages do you cover?", answer: "We cover 50+ languages including Spanish, Mandarin, Arabic, French, Portuguese, Korean, Somali, and ASL." },
+];
+
 export default function InterpreterServices() {
   usePageMeta({ title: "Interpreter Services" });
   return (
@@ -35,6 +45,8 @@ export default function InterpreterServices() {
         serviceDescription="Professional interpretation services for notarizations, legal meetings, and more."
         fields={FIELDS}
         estimatedPrice="From $50.00/hour"
+        packages={PACKAGES}
+        faq={FAQ}
       />
     </div>
   );

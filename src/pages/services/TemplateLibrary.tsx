@@ -17,6 +17,19 @@ const FIELDS: IntakeField[] = [
   ]},
 ];
 
+const PACKAGES = [
+  { id: "single", name: "Single Template", price: "$9.99", description: "One template download", features: ["1 template", "Fillable PDF", "Instructions included", "Lifetime access"] },
+  { id: "category", name: "Category Pack", price: "$39.99", description: "All templates in one category", features: ["All category templates", "PDF + DOCX formats", "Update notifications", "Lifetime access"], recommended: true },
+  { id: "unlimited", name: "Full Library", price: "$99.99", description: "Access to entire library", features: ["All categories", "All formats", "New templates added", "Priority requests", "Customization guide", "1-year access"] },
+];
+
+const FAQ = [
+  { question: "Are templates legally reviewed?", answer: "Templates are professionally drafted and reviewed for common use cases. They are not a substitute for legal advice specific to your situation." },
+  { question: "Can I customize the templates?", answer: "Yes, DOCX templates are fully editable. PDF templates include fillable fields. Customization services are also available." },
+  { question: "Are templates state-specific?", answer: "Many templates are drafted for Ohio compliance. We note state-specific requirements where applicable." },
+  { question: "How often are templates updated?", answer: "Templates are reviewed annually and updated when laws or regulations change. Category Pack and Full Library subscribers receive update notifications." },
+];
+
 export default function TemplateLibrary() {
   usePageMeta({ title: "Template Library" });
   return (
@@ -27,6 +40,8 @@ export default function TemplateLibrary() {
         serviceDescription="Access our curated library of professionally drafted document templates for legal, business, and personal use."
         fields={FIELDS}
         estimatedPrice="From $9.99/template"
+        packages={PACKAGES}
+        faq={FAQ}
       />
     </div>
   );

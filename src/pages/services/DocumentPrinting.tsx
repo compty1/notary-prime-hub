@@ -1,6 +1,3 @@
-/**
- * Sprint 3: Document Printing intake
- */
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
 
@@ -26,6 +23,20 @@ const FIELDS: IntakeField[] = [
   { name: "notes", label: "Special Instructions", type: "textarea" },
 ];
 
+const ADDONS = [
+  { id: "binding-spiral", name: "Spiral Binding", price: "$5/set", description: "Professional spiral binding" },
+  { id: "lamination", name: "Lamination", price: "$3/page", description: "Protective lamination for important pages" },
+  { id: "tabs", name: "Tab Dividers", price: "$2/set", description: "Labeled tab dividers between sections" },
+  { id: "covers", name: "Card Stock Covers", price: "$3/set", description: "Heavy card stock front and back covers" },
+];
+
+const FAQ = [
+  { question: "What's the $10 prep fee?", answer: "The prep fee covers file review, print optimization, and quality setup. It applies once per order regardless of page count." },
+  { question: "Can you print on legal-size paper?", answer: "Yes, we support Letter (8.5x11), Legal (8.5x14), and Tabloid (11x17) paper sizes." },
+  { question: "Do you offer same-day printing?", answer: "Yes, orders placed before 2 PM EST are available for same-day pickup or shipping." },
+  { question: "What file formats do you accept?", answer: "We accept PDF, DOCX, XLSX, PPTX, and most common image formats." },
+];
+
 export default function DocumentPrinting() {
   usePageMeta({ title: "Document Printing & Prep" });
   return (
@@ -36,6 +47,8 @@ export default function DocumentPrinting() {
         serviceDescription="Professional printing with prep fee ($10) + per-page rates. Collation and binding available."
         fields={FIELDS}
         estimatedPrice="$10 prep + per-page"
+        addOns={ADDONS}
+        faq={FAQ}
       />
     </div>
   );

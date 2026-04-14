@@ -1,6 +1,3 @@
-/**
- * Sprint 3: KYC/ID Verification
- */
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
 
@@ -23,6 +20,19 @@ const FIELDS: IntakeField[] = [
   { name: "files", label: "Upload ID (front & back)", type: "file" },
 ];
 
+const PACKAGES = [
+  { id: "identity", name: "ID Verification", price: "$25", description: "Basic identity check", features: ["Government ID verification", "Facial match check", "Same-day results", "Digital report"] },
+  { id: "full", name: "Full KYC", price: "$75", description: "Comprehensive verification", features: ["ID + address verification", "Background screening", "Sanctions list check", "Detailed compliance report"], recommended: true },
+  { id: "business", name: "Business KYC", price: "$150", description: "Entity verification", features: ["Business registration check", "Beneficial ownership", "Officer verification", "Good standing confirmation", "Full compliance package"] },
+];
+
+const FAQ = [
+  { question: "How is my data protected?", answer: "All data is encrypted in transit and at rest. We follow SOC 2 standards and delete verification data after 30 days unless retention is required." },
+  { question: "How quickly do I get results?", answer: "Identity verification results are typically available within 1 hour. Full KYC takes 1-2 business days." },
+  { question: "What ID types do you accept?", answer: "We accept driver's licenses, passports, state IDs, and military IDs from the US and 200+ countries." },
+  { question: "Can this be used for notarization compliance?", answer: "Yes, our KYC verification meets Ohio RON identity proofing requirements under ORC §147.66." },
+];
+
 export default function KycVerification() {
   usePageMeta({ title: "KYC/ID Verification" });
   return (
@@ -33,6 +43,8 @@ export default function KycVerification() {
         serviceDescription="Professional identity and know-your-customer verification services."
         fields={FIELDS}
         estimatedPrice="From $25.00"
+        packages={PACKAGES}
+        faq={FAQ}
         consentItems={[
           { id: "consent_id", label: "I consent to having my identity documents verified for this service.", required: true },
           { id: "consent_data", label: "I understand my data will be handled per the privacy policy.", required: true },

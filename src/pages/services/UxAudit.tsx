@@ -15,6 +15,30 @@ const FIELDS: IntakeField[] = [
   { name: "notes", label: "Additional Context", type: "textarea" },
 ];
 
+const PACKAGES = [
+  { id: "heuristic", name: "Heuristic Review", price: "$499", description: "Expert evaluation", features: ["10-point heuristic analysis", "Annotated screenshots", "Priority issue list", "PDF report", "1 follow-up call"] },
+  { id: "comprehensive", name: "Comprehensive", price: "$1,299", description: "Full UX audit", features: ["Heuristic review", "User flow analysis", "Accessibility check (WCAG 2.1)", "Competitive benchmarking", "Detailed recommendations", "Priority roadmap", "2 follow-up calls"], recommended: true },
+  { id: "cro", name: "CRO Package", price: "$1,999", description: "Conversion optimization", features: ["Full UX audit", "Conversion funnel analysis", "A/B test recommendations", "Wireframe mockups", "Implementation guidance", "90-day support", "Monthly check-ins"] },
+];
+
+const FAQ = [
+  { question: "How long does an audit take?", answer: "Heuristic reviews take 3-5 business days. Comprehensive audits take 2-3 weeks. CRO packages run 4-6 weeks." },
+  { question: "What deliverables do I receive?", answer: "A detailed PDF report with annotated screenshots, prioritized recommendations, and an implementation roadmap." },
+  { question: "Do you implement the changes?", answer: "We provide recommendations and can partner with your development team. Implementation support is available as an add-on." },
+  { question: "Do you test on mobile?", answer: "Yes, all audits include mobile responsiveness evaluation across common device sizes." },
+];
+
+const TIMELINE = {
+  steps: [
+    { title: "Kickoff Call", description: "Discuss goals, target audience, and focus areas" },
+    { title: "Data Collection", description: "Access setup, analytics review, and user flow mapping" },
+    { title: "Expert Analysis", description: "Systematic evaluation against UX best practices" },
+    { title: "Report Preparation", description: "Compile findings with annotated visuals and recommendations" },
+    { title: "Presentation & Roadmap", description: "Walk through findings and prioritized implementation plan" },
+  ],
+  turnaround: "1-3 weeks",
+};
+
 export default function UxAudit() {
   usePageMeta({ title: "UX Audit & Heuristic Review" });
   return (
@@ -24,7 +48,10 @@ export default function UxAudit() {
         serviceTitle="UX Audit & Heuristic Review"
         serviceDescription="Comprehensive UX evaluation with actionable improvement recommendations based on industry best practices."
         fields={FIELDS}
-        estimatedPrice="From $499.00"
+        estimatedPrice="From $499"
+        packages={PACKAGES}
+        faq={FAQ}
+        timeline={TIMELINE}
       />
     </div>
   );

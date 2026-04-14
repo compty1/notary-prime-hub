@@ -16,6 +16,29 @@ const FIELDS: IntakeField[] = [
   { name: "notes", label: "Additional Requirements", type: "textarea" },
 ];
 
+const PACKAGES = [
+  { id: "starter", name: "Starter Plan", price: "$149/mo", description: "Up to 10 notarizations/month", features: ["10 included notarizations", "RON & in-person", "Priority scheduling", "Monthly reporting"] },
+  { id: "professional", name: "Professional", price: "$399/mo", description: "Up to 50 notarizations/month", features: ["50 included notarizations", "All service types", "Dedicated account rep", "API access", "Bulk document prep"], recommended: true },
+  { id: "enterprise", name: "Enterprise", price: "$999/mo", description: "Unlimited notarizations", features: ["Unlimited notarizations", "White-label option", "Custom SLA", "On-site notary available", "24/7 support", "Custom integrations"] },
+];
+
+const FAQ = [
+  { question: "Can I change plans mid-cycle?", answer: "Yes, you can upgrade at any time. Downgrades take effect at the next billing cycle." },
+  { question: "What happens if I exceed my plan limits?", answer: "Additional notarizations are billed at a discounted per-use rate. You'll receive alerts at 80% and 100% usage." },
+  { question: "Is there a contract commitment?", answer: "Monthly plans have no commitment. Annual plans offer a 15% discount with a 12-month term." },
+  { question: "Can multiple team members use one subscription?", answer: "Yes, Professional and Enterprise plans support unlimited team members with role-based access." },
+];
+
+const TIMELINE = {
+  steps: [
+    { title: "Plan Selection", description: "Choose the subscription tier that fits your volume" },
+    { title: "Account Setup", description: "We configure your business account and team access" },
+    { title: "Onboarding Call", description: "30-minute call to set up workflows and preferences" },
+    { title: "Go Live", description: "Start scheduling and using services immediately" },
+  ],
+  turnaround: "Same-day activation",
+};
+
 export default function BusinessSubscriptions() {
   usePageMeta({ title: "Business Subscriptions" });
   return (
@@ -25,7 +48,10 @@ export default function BusinessSubscriptions() {
         serviceTitle="Business Subscription Plans"
         serviceDescription="Volume-based subscription plans for businesses needing recurring notarization and document services."
         fields={FIELDS}
-        estimatedPrice="Custom pricing"
+        estimatedPrice="From $149/month"
+        packages={PACKAGES}
+        faq={FAQ}
+        timeline={TIMELINE}
       />
     </div>
   );

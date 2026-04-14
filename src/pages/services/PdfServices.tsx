@@ -1,6 +1,3 @@
-/**
- * Sprint 3: PDF Services intake (6 tools)
- */
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
 
@@ -20,6 +17,19 @@ const FIELDS: IntakeField[] = [
   ]},
 ];
 
+const PACKAGES = [
+  { id: "single", name: "Single Task", price: "$10", description: "One PDF operation", features: ["1 operation", "Up to 50 pages", "Same-day delivery", "1 revision"] },
+  { id: "bundle", name: "Task Bundle", price: "$25", description: "Up to 5 operations", features: ["5 operations", "Up to 200 pages", "Priority processing", "2 revisions"], recommended: true },
+  { id: "unlimited", name: "Monthly Plan", price: "$49/mo", description: "Unlimited PDF services", features: ["Unlimited operations", "Unlimited pages", "Same-day turnaround", "All formats", "Priority queue"] },
+];
+
+const FAQ = [
+  { question: "What file formats can you convert?", answer: "We convert between PDF, Word, Excel, PowerPoint, images (JPG/PNG), and HTML." },
+  { question: "Is there a file size limit?", answer: "Single files up to 500MB. For larger files, contact us for custom handling." },
+  { question: "Do you maintain document formatting?", answer: "Yes, our conversion tools preserve formatting, fonts, images, and layout as closely as possible." },
+  { question: "Can you add OCR to scanned PDFs?", answer: "Yes, our OCR service converts scanned document images into searchable, editable text within the PDF." },
+];
+
 export default function PdfServices() {
   usePageMeta({ title: "PDF Services" });
   return (
@@ -30,6 +40,8 @@ export default function PdfServices() {
         serviceDescription="Merge, split, compress, convert, and OCR your PDF documents."
         fields={FIELDS}
         estimatedPrice="From $10.00"
+        packages={PACKAGES}
+        faq={FAQ}
       />
     </div>
   );
