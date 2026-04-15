@@ -149,7 +149,7 @@ export default function FeeCalculator() {
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
                       <Label>Service Type</Label>
-                      <Select value={notarizationType} onValueChange={(v) => setNotarizationType(v as any)}>
+                      <Select value={notarizationType} onValueChange={(v) => setNotarizationType(v as never)}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="in_person">In-Person / Mobile Notarization</SelectItem>

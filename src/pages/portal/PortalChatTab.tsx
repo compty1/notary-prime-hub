@@ -55,7 +55,7 @@ export default function PortalChatTab({ userId, chatMessages, chatInput, setChat
       is_admin: false,
       recipient_id: chatRecipient || null,
       attachment_url: attachmentUrl,
-    } as any);
+    } as never);
     toast({ title: "File sent" });
   };
 

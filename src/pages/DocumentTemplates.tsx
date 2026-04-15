@@ -835,7 +835,7 @@ export default function DocumentTemplates() {
         uploaded_by: user.id,
         file_name: fileName,
         file_path: filePath,
-        status: "uploaded" as any,
+        status: "uploaded",
       });
       if (insertError) throw insertError;
       if (selectedTemplate) clearDraft(selectedTemplate.id);
@@ -971,7 +971,7 @@ export default function DocumentTemplates() {
         uploaded_by: user.id,
         file_name: fileName,
         file_path: filePath,
-        status: "uploaded" as any,
+        status: "uploaded",
       });
       if (insertError) throw insertError;
       toast({ title: "Saved to Vault", description: "Document saved to your portal." });

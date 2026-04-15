@@ -515,7 +515,7 @@ export default function RonSession() {
         session_type: "ron",
         ...metadataFields,
       } as never).select("session_unique_id").single();
-      if (((newSession as Record<string, unknown> | null))?.session_unique_id) setSessionUniqueId((newSession as any).session_unique_id);
+      if (((newSession as Record<string, unknown> | null))?.session_unique_id) setSessionUniqueId((newSession as Record<string, unknown>).session_unique_id);
     }
     setParticipantLink(link);
     setSessionStatus("confirmed");
@@ -599,7 +599,7 @@ export default function RonSession() {
       const { data: session } = await supabase.from("notarization_sessions").select("paused_at, total_pause_duration_seconds").eq("appointment_id", appointmentId).single();
       let additionalSeconds = 0;
       if ((session as Record<string, unknown>)?.paused_at) {
-        additionalSeconds = Math.floor((Date.now() - new Date((session as any).paused_at).getTime()) / 1000);
+        additionalSeconds = Math.floor((Date.now() - new Date((session as Record<string, unknown>).paused_at).getTime()) / 1000);
       }
       const totalPause = ((session as Record<string, unknown>)?.total_pause_duration_seconds || 0) + additionalSeconds;
       await supabase.from("notarization_sessions").update({

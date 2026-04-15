@@ -265,7 +265,7 @@ export default function BookingIntakeFields(props: IntakeFieldsProps) {
         <>
           <div className="grid grid-cols-2 gap-3">
             <div><Label>Number of Witnesses Needed</Label><Select value={props.witnessCount} onValueChange={props.setWitnessCount}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="1">1 Witness</SelectItem><SelectItem value="2">2 Witnesses</SelectItem></SelectContent></Select></div>
-            <div><Label>Witness Mode</Label><Select value={props.witnessMode} onValueChange={v => props.setWitnessMode(v as any)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="in_person">In-Person</SelectItem><SelectItem value="virtual">Virtual (via video)</SelectItem></SelectContent></Select></div>
+            <div><Label>Witness Mode</Label><Select value={props.witnessMode} onValueChange={v => props.setWitnessMode(v as never)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="in_person">In-Person</SelectItem><SelectItem value="virtual">Virtual (via video)</SelectItem></SelectContent></Select></div>
           </div>
           <div><Label>Document Type Being Witnessed</Label><Input value={props.witnessDocType} onChange={e => props.setWitnessDocType(e.target.value)} placeholder="e.g. Will, Affidavit, Contract" /></div>
         </>
@@ -413,7 +413,7 @@ export default function BookingIntakeFields(props: IntakeFieldsProps) {
             </div>
             <div>
               <Label>Witness Source</Label>
-              <Select value={props.witnessMode} onValueChange={v => props.setWitnessMode(v as any)}>
+              <Select value={props.witnessMode} onValueChange={v => props.setWitnessMode(v as never)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="in_person">I'll bring my own</SelectItem>
