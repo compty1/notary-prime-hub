@@ -98,15 +98,11 @@ export function OnboardingTour({ run: forcedRun, onComplete }: OnboardingTourPro
       scrollToFirstStep
       callback={handleCallback}
       styles={{
-        options: {
-          primaryColor: "hsl(45 86% 48%)",
-          zIndex: 10000,
-        },
         tooltip: {
           borderRadius: "12px",
           padding: "16px",
         },
-      }}
+      } as any}
       locale={{
         back: "Back",
         close: "Got it",
