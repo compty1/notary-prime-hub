@@ -43,7 +43,7 @@ export default function DesignStudio() {
           {filtered.map(tool => (
             <Card key={tool.id} className="group hover:shadow-lg transition-all cursor-pointer border-border/60 hover:border-primary/40" onClick={() => navigate(tool.route)}>
               <CardContent className="p-0">
-                <div className="p-4"><ProductPreview3D productType={tool.productType} className="h-40 mb-4" /></div>
+                <div className="p-4"><ProductScene3D productType={tool.productType} className="h-40 mb-4" /></div>
                 <div className="px-4 pb-5">
                   <div className="flex items-center gap-2 mb-2"><tool.icon className="h-5 w-5 text-primary" /><h3 className="font-semibold text-foreground">{tool.label}</h3></div>
                   <p className="text-sm text-muted-foreground mb-3">{tool.description}</p>
