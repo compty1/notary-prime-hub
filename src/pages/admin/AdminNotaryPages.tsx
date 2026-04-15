@@ -36,9 +36,9 @@ interface NotaryPage {
   phone: string;
   email: string;
   website_url: string;
-  service_areas: any[];
-  services_offered: any[];
-  credentials: Record<string, any>;
+  service_areas: string[];
+  services_offered: ServiceItem[];
+  credentials: Record<string, string>;
   theme_color: string;
   accent_color: string;
   font_family: string;
@@ -127,7 +127,7 @@ export default function AdminNotaryPages() {
   const fetchPages = async () => {
     setLoading(true);
     const { data } = await supabase.from("notary_pages").select("*").order("created_at", { ascending: false });
-    setPages((data ?? []) as any[]);
+    setPages((data ?? []) as NotaryPage[]);
     setLoading(false);
   };
 
@@ -225,7 +225,7 @@ export default function AdminNotaryPages() {
   const removeService = (i: number) => updateField("services_offered", services.filter((_, idx) => idx !== i));
   const updateService = (i: number, field: string, value: string) => {
     const updated = [...services];
-    (updated[i] as any)[field] = value;
+    (updated[i] as Record<string, string>)[field] = value;
     updateField("services_offered", updated);
   };
 
