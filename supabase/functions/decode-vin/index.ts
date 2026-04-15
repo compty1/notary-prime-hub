@@ -1,10 +1,48 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { corsHeaders } from "@supabase/supabase-js/cors";
+// EF-318: Added auth check + migrated to Deno.serve + rate limiting
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { rateLimitGuard } from "../_shared/middleware.ts";
 
-serve(async (req) => {
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+};
+
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  const rl = rateLimitGuard(req, 20);
+  if (rl) return rl;
 
   try {
+    // Auth check
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    if (!supabaseUrl || !supabaseAnonKey) {
+      return new Response(JSON.stringify({ error: "Server misconfigured" }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { vin } = await req.json();
     if (!vin || typeof vin !== "string") {
       return new Response(JSON.stringify({ error: "VIN is required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -19,7 +57,7 @@ serve(async (req) => {
     if (!resp.ok) throw new Error(`NHTSA API error: ${resp.status}`);
     const data = await resp.json();
 
-    const getValue = (id: number) => data.Results?.find((r: any) => r.VariableId === id)?.Value || null;
+    const getValue = (id: number) => data.Results?.find((r: { VariableId: number; Value: string | null }) => r.VariableId === id)?.Value || null;
 
     const result = {
       vin: cleaned,

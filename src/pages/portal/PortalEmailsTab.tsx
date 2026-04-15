@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import DOMPurify from "dompurify";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -553,7 +554,7 @@ export default function PortalEmailsTab() {
                 ].map((text, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <CheckCircle2 className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
-                    <span dangerouslySetInnerHTML={{ __html: text.replace(/never|from your Gmail/gi, m => `<strong>${m}</strong>`) }} />
+                    <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(text.replace(/never|from your Gmail/gi, m => `<strong>${m}</strong>`), { ALLOWED_TAGS: ["strong"], ALLOWED_ATTR: [] }) }} />
                   </li>
                 ))}
               </ul>

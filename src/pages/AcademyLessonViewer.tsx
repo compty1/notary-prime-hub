@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { ArrowLeft, ArrowRight, CheckCircle2, BookOpen } from "lucide-react";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 export default function AcademyLessonViewer() {
   const { id } = useParams<{ id: string }>();
@@ -95,7 +96,7 @@ export default function AcademyLessonViewer() {
         <Card>
           <CardContent className="pt-6 prose dark:prose-invert max-w-none">
             {lesson.content_html ? (
-              <div dangerouslySetInnerHTML={{ __html: lesson.content_html }} />
+              <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(lesson.content_html) }} />
             ) : (
               <div className="text-center py-12 text-muted-foreground">
                 <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
