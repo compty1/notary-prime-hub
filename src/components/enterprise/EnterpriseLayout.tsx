@@ -53,10 +53,10 @@ const EnterpriseLayout: React.FC<EnterpriseLayoutProps> = ({ children, title, ic
 
       {/* Disclaimer */}
       {showDisclaimer && (
-        <div className="flex items-start gap-3 rounded-[16px] border border-yellow-500/20 bg-yellow-500/5 p-4">
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-yellow-600" />
+        <div className="flex items-start gap-3 rounded-[16px] border border-destructive/20 bg-destructive/5 p-4">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
           <div className="flex-1">
-            <p className="text-xs text-yellow-700 dark:text-yellow-400">
+            <p className="text-xs text-muted-foreground">
               Enterprise tools generate documents for informational purposes only. They do not constitute legal advice. Always consult a licensed attorney.
             </p>
           </div>
