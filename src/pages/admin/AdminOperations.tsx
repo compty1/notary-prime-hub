@@ -11,9 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Search, RefreshCw, AlertTriangle, CheckCircle, Clock, Filter } from "lucide-react";
-
-
+import { Search, RefreshCw, AlertTriangle, CheckCircle, Clock, Filter, Zap } from "lucide-react";
+import { WorkflowAutomationRules } from "@/components/WorkflowAutomationRules";
 const STATUS_COLORS: Record<string, string> = {
   scheduled: "bg-blue-500/10 text-blue-700",
   in_progress: "bg-yellow-500/10 text-yellow-700",
@@ -138,6 +137,7 @@ export default function AdminOperations() {
             <TabsTrigger value="appointments">Appointments ({filteredAppts.length})</TabsTrigger>
             <TabsTrigger value="requests">Service Requests ({(serviceRequests || []).length})</TabsTrigger>
             <TabsTrigger value="issues">Data Issues ({issueCount})</TabsTrigger>
+            <TabsTrigger value="automation"><Zap className="h-3 w-3 mr-1" />Automation</TabsTrigger>
           </TabsList>
 
           <TabsContent value="appointments" className="space-y-4">
@@ -225,7 +225,14 @@ export default function AdminOperations() {
               ))
             )}
           </TabsContent>
+
+          {/* WA-001: Wire workflow automation rules into operations center */}
+          <TabsContent value="automation" className="space-y-4">
+            <WorkflowAutomationRules />
+          </TabsContent>
         </Tabs>
       </div>
+  );
+}
   );
 }
