@@ -75,9 +75,9 @@ export default function AdminContentWorkspace() {
   usePageMeta({ title: "Content Workspace", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
-  const [posts, setPosts] = useState<any[]>([]);
-  const [requests, setRequests] = useState<any[]>([]);
-  const [services, setServices] = useState<any[]>([]);
+  const [posts, setPosts] = useState<Record<string, unknown>[]>([]);
+  const [requests, setRequests] = useState<Record<string, unknown>[]>([]);
+  const [services, setServices] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
@@ -85,7 +85,7 @@ export default function AdminContentWorkspace() {
 
   // Editor state
   const [showEditor, setShowEditor] = useState(false);
-  const [editingPost, setEditingPost] = useState<any>(null);
+  const [editingPost, setEditingPost] = useState<Record<string, unknown> | null>(null);
   const [form, setForm] = useState({ title: "", body: "", category: "blog", status: "draft", service_id: "", hero_image_url: "" });
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);

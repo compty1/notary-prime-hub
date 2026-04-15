@@ -27,8 +27,8 @@ export default function AdminDocuDexPro() {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const [clients, setClients] = useState<any[]>([]);
-  const [appointments, setAppointments] = useState<any[]>([]);
+  const [clients, setClients] = useState<Record<string, unknown>[]>([]);
+  const [appointments, setAppointments] = useState<Record<string, unknown>[]>([]);
   const [selectedClient, setSelectedClient] = useState<string>("none");
   const [selectedAppointment, setSelectedAppointment] = useState<string>("none");
   const [selectedTemplate, setSelectedTemplate] = useState<string>("none");

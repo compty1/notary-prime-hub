@@ -11,7 +11,7 @@ import { usePageMeta } from "@/hooks/usePageMeta";
 export default function AdminRecordingArchive() {
   usePageMeta({ title: "Recording Archive", description: "Manage RON session recordings with 10-year retention compliance" });
 
-  const [sessions, setSessions] = useState<any[]>([]);
+  const [sessions, setSessions] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 

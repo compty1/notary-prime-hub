@@ -104,10 +104,10 @@ const emptyForm: ServiceForm = {
 
 function PricingRulesTab() {
   const { toast } = useToast();
-  const [rules, setRules] = useState<any[]>([]);
+  const [rules, setRules] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingRule, setEditingRule] = useState<any | null>(null);
+  const [editingRule, setEditingRule] = useState<Record<string, unknown> | null>(null);
   const [form, setForm] = useState({ name: "", rule_type: "discount", condition_field: "signer_count", condition_operator: "gte", condition_value: "2", adjustment_type: "percentage", adjustment_value: 10, is_active: true, priority: 0 });
 
   const fetchRules = async () => {

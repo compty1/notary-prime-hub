@@ -37,7 +37,7 @@ export default function AdminPrintOrders() {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [selectedOrder, setSelectedOrder] = useState<Record<string, unknown> | null>(null);
   const [newNote, setNewNote] = useState("");
   const [tab, setTab] = useState("list");
 

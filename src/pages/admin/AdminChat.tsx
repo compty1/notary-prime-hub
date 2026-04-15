@@ -26,7 +26,7 @@ export default function AdminChat() {
   usePageMeta({ title: "Live Chat", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
-  const [allMessages, setAllMessages] = useState<any[]>([]);
+  const [allMessages, setAllMessages] = useState<Record<string, unknown>[]>([]);
   const [profiles, setProfiles] = useState<Record<string, string>>({});
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [message, setMessage] = useState("");

@@ -38,14 +38,14 @@ export default function AdminServiceRequests() {
   usePageMeta({ title: "Service Requests", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
-  const [requests, setRequests] = useState<any[]>([]);
+  const [requests, setRequests] = useState<Record<string, unknown>[]>([]);
   const [profiles, setProfiles] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [assignedFilter, setAssignedFilter] = useState("all");
-  const [selectedRequest, setSelectedRequest] = useState<any>(null);
+  const [selectedRequest, setSelectedRequest] = useState<Record<string, unknown> | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [editStatus, setEditStatus] = useState("");
@@ -53,7 +53,7 @@ export default function AdminServiceRequests() {
   const [editNotes, setEditNotes] = useState("");
   const [editClientStatus, setEditClientStatus] = useState("");
   const [editAssignedTo, setEditAssignedTo] = useState("");
-  const [teamProfiles, setTeamProfiles] = useState<any[]>([]);
+  const [teamProfiles, setTeamProfiles] = useState<Record<string, unknown>[]>([]);
   const [deliverableFile, setDeliverableFile] = useState<File | null>(null);
   const [uploadingDeliverable, setUploadingDeliverable] = useState(false);
   const [externalOrderOpen, setExternalOrderOpen] = useState(false);

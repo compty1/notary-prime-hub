@@ -41,7 +41,7 @@ export { EDGE_AUTOMATIONS, AUTH_TEMPLATES };
 export default function AdminProcessFlows() {
   usePageMeta({ title: "Process Flows & Automation", noIndex: true });
   const { toast } = useToast();
-  const [services, setServices] = useState<any[]>([]);
+  const [services, setServices] = useState<Record<string, unknown>[]>([]);
   const [globalTemplates, setGlobalTemplates] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [editingTemplate, setEditingTemplate] = useState<{ key: string; value: string; scope: string } | null>(null);

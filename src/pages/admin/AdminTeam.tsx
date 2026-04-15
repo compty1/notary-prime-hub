@@ -31,14 +31,14 @@ export default function AdminTeam() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [inviteEmail, setInviteEmail] = useState("");
-  const [invites, setInvites] = useState<any[]>([]);
-  const [notaries, setNotaries] = useState<any[]>([]);
+  const [invites, setInvites] = useState<Record<string, unknown>[]>([]);
+  const [notaries, setNotaries] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [avatarUrls, setAvatarUrls] = useState<Record<string, string>>({});
 
   // Detail dialog
-  const [selectedNotary, setSelectedNotary] = useState<any>(null);
+  const [selectedNotary, setSelectedNotary] = useState<Record<string, unknown> | null>(null);
   const [editForm, setEditForm] = useState({
     full_name: "", phone: "", email: "", address: "", city: "", state: "", zip: "",
     commission_number: "", commission_expiration: "", eo_policy_number: "", eo_expiration: "",

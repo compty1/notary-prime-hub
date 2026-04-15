@@ -91,7 +91,7 @@ export default function AdminTemplates() {
   const { user } = useAuth();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [libraryForms, setLibraryForms] = useState<any[]>([]);
+  const [libraryForms, setLibraryForms] = useState<Record<string, unknown>[]>([]);
   const [loadingLibrary, setLoadingLibrary] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadCategory, setUploadCategory] = useState("General");

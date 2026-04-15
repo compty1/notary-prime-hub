@@ -14,12 +14,12 @@ import { formatDate, formatTime } from "@/lib/utils";
 export default function AdminComplianceReport() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [appointments, setAppointments] = useState<any[]>([]);
-  const [journalEntries, setJournalEntries] = useState<any[]>([]);
-  const [sealVerifications, setSealVerifications] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<Record<string, unknown>[]>([]);
+  const [journalEntries, setJournalEntries] = useState<Record<string, unknown>[]>([]);
+  const [sealVerifications, setSealVerifications] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [drillDownAppt, setDrillDownAppt] = useState<any>(null);
+  const [drillDownAppt, setDrillDownAppt] = useState<Record<string, unknown> | null>(null);
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
