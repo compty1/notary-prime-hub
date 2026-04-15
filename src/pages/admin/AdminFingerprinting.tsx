@@ -21,7 +21,8 @@ export default function AdminFingerprinting() {
   usePageMeta({ title: "Fingerprinting Sessions", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
-  const [sessions, setSessions] = useState<any[]>([]);
+  interface FingerprintSession { id: string; session_type: string; card_type: string; card_count: number; agency_destination: string | null; reason: string | null; fee: number | null; status: string; created_at: string; client_id: string; notes: string | null; }
+  const [sessions, setSessions] = useState<FingerprintSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
@@ -35,14 +36,14 @@ export default function AdminFingerprinting() {
 
   const handleCreate = async () => {
     setSaving(true);
-    const { error } = await supabase.from("fingerprint_sessions").insert({ ...form, card_count: parseInt(form.card_count) || 1, fee: parseFloat(form.fee) || 0, client_id: user?.id || "" } as any);
+    const { error } = await supabase.from("fingerprint_sessions").insert({ ...form, card_count: parseInt(form.card_count) || 1, fee: parseFloat(form.fee) || 0, client_id: user?.id || "" });
     setSaving(false);
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
     toast({ title: "Session created" }); setCreateOpen(false); fetch();
   };
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from("fingerprint_sessions").update({ status } as any).eq("id", id);
+    await supabase.from("fingerprint_sessions").update({ status }).eq("id", id);
     setSessions(prev => prev.map(s => s.id === id ? { ...s, status } : s)); toast({ title: "Updated" });
   };
 

@@ -37,16 +37,20 @@ export default function AdminPricing() {
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [rules, setRules] = useState<PricingRule[]>([]);
-  const [services, setServices] = useState<any[]>([]);
+  interface ServiceItem { id: string; name: string; base_price: number | null; is_active: boolean; category: string | null; price_from: number | null; price_to: number | null; }
+  const [services, setServices] = useState<ServiceItem[]>([]);
 
   // Speed multipliers
   const [speedMultipliers, setSpeedMultipliers] = useState<Record<string, number>>({ standard: 1.0, priority: 1.25, rush: 1.5, emergency: 2.0 });
   // Volume discounts
-  const [volumeTiers, setVolumeTiers] = useState<any[]>([]);
+  interface VolumeTier { minQty: number; maxQty: number; discount: number; }
+  interface LoyaltyTier { name: string; minOrders: number; discount: number; }
+  interface GeoSurcharge { zone: string; surcharge: number; }
+  const [volumeTiers, setVolumeTiers] = useState<VolumeTier[]>([]);
   // Loyalty tiers
-  const [loyaltyTiers, setLoyaltyTiers] = useState<any[]>([]);
+  const [loyaltyTiers, setLoyaltyTiers] = useState<LoyaltyTier[]>([]);
   // Geographic surcharges
-  const [geoSurcharges, setGeoSurcharges] = useState<any[]>([]);
+  const [geoSurcharges, setGeoSurcharges] = useState<GeoSurcharge[]>([]);
 
   // Calculator state
   const [calcInput, setCalcInput] = useState<PricingInput>({
@@ -64,14 +68,14 @@ export default function AdminPricing() {
       ]);
       if (settingsRes.data) {
         const map: Record<string, string> = {};
-        settingsRes.data.forEach((s: any) => { map[s.setting_key] = s.setting_value; });
+        settingsRes.data.forEach((s: { setting_key: string; setting_value: string }) => { map[s.setting_key] = s.setting_value; });
         setSettings(map);
         try { setSpeedMultipliers(JSON.parse(map.speed_multipliers || "{}")); } catch {}
         try { setVolumeTiers(JSON.parse(map.volume_discount_tiers || "[]")); } catch {}
         try { setLoyaltyTiers(JSON.parse(map.loyalty_tiers || "[]")); } catch {}
         try { setGeoSurcharges(JSON.parse(map.geographic_surcharges || "[]")); } catch {}
       }
-      if (rulesRes.data) setRules(rulesRes.data as any);
+      if (rulesRes.data) setRules(rulesRes.data as PricingRule[]);
       if (servicesRes.data) setServices(servicesRes.data);
       setLoading(false);
     })();
@@ -90,7 +94,7 @@ export default function AdminPricing() {
     const { data } = await supabase.from("pricing_rules").insert({
       rule_type: "promotion", name: "New Promotion", adjustment_type: "percentage", adjustment_value: 10, is_active: false,
     }).select().single();
-    if (data) setRules(prev => [...prev, data as any]);
+    if (data) setRules(prev => [...prev, data as PricingRule]);
   };
 
   const deleteRule = async (id: string) => {
@@ -100,7 +104,7 @@ export default function AdminPricing() {
 
   const updateRule = async (id: string, updates: Partial<PricingRule>) => {
     const { conditions, promo_code, start_date, end_date, ...safeUpdates } = updates;
-    await supabase.from("pricing_rules").update(safeUpdates as any).eq("id", id);
+    await supabase.from("pricing_rules").update(safeUpdates).eq("id", id);
     setRules(prev => prev.map(r => r.id === id ? { ...r, ...updates } : r));
   };
 

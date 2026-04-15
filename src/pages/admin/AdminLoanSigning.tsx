@@ -29,8 +29,10 @@ const statusColors: Record<string, string> = {
 export default function AdminLoanSigning() {
   usePageMeta({ title: "Loan Signing Packages", noIndex: true });
   const { toast } = useToast();
-  const [packages, setPackages] = useState<any[]>([]);
-  const [scanbacks, setScanbacks] = useState<any[]>([]);
+  interface LoanPackage { id: string; title_company: string | null; lender_name: string | null; package_type: string; document_count: number; fee: number | null; status: string; created_at: string; notes: string | null; client_id: string; appointment_id: string | null; scanback_required: boolean; scanback_deadline: string | null; updated_at: string; }
+  interface ScanbackItem { id: string; package_id: string | null; scan_status: string; tracking_number: string | null; shipped_at: string | null; document_name: string | null; page_count: number | null; shipping_carrier: string | null; delivery_confirmed_at: string | null; created_at: string; scanned_at: string | null; notes: string | null; updated_at: string; }
+  const [packages, setPackages] = useState<LoanPackage[]>([]);
+  const [scanbacks, setScanbacks] = useState<ScanbackItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
@@ -59,7 +61,7 @@ export default function AdminLoanSigning() {
       fee: parseFloat(form.fee) || 0,
       notes: form.notes,
       client_id: "00000000-0000-0000-0000-000000000000",
-    } as any);
+    });
     setSaving(false);
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
     toast({ title: "Package created" });
@@ -68,7 +70,7 @@ export default function AdminLoanSigning() {
   };
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from("loan_signing_packages").update({ status } as any).eq("id", id);
+    await supabase.from("loan_signing_packages").update({ status }).eq("id", id);
     setPackages(prev => prev.map(p => p.id === id ? { ...p, status } : p));
     toast({ title: "Status updated" });
   };

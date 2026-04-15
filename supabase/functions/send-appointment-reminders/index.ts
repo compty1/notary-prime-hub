@@ -52,6 +52,10 @@ Deno.serve(async (req) => {
     const rlResponse = rateLimitGuard(req, 5);
     if (rlResponse) return rlResponse;
 
+    // Auth check (EF-308)
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) return errorResponse(req, 401, "Missing authorization header");
+
     const envErr = requireEnvVars(req, "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY");
     if (envErr) return envErr;
 
