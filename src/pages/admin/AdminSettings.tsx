@@ -110,19 +110,21 @@ export default function AdminSettings() {
     setSaving(true);
     const changedKeys: string[] = [];
     const beforeValues: Record<string, string> = {};
-    const updates = Object.entries(editValues).map(([key, value]) => {
+    const updates: Promise<{ error: unknown }>[] = [];
+    for (const [key, value] of Object.entries(editValues)) {
       if (settings[key]) {
-        if (settings[key].setting_value === value) return null;
+        if (settings[key].setting_value === value) continue;
         changedKeys.push(key);
         beforeValues[key] = settings[key].setting_value;
-        return supabase.from("platform_settings").update({ setting_value: value, updated_at: new Date().toISOString(), updated_by: user?.id }).eq("setting_key", key);
+        updates.push(supabase.from("platform_settings").update({ setting_value: value, updated_at: new Date().toISOString(), updated_by: user?.id }).eq("setting_key", key));
+      } else {
+        changedKeys.push(key);
+        beforeValues[key] = "";
+        updates.push(supabase.from("platform_settings").insert({ setting_key: key, setting_value: value, updated_by: user?.id }));
       }
-      changedKeys.push(key);
-      beforeValues[key] = "";
-      return supabase.from("platform_settings").insert({ setting_key: key, setting_value: value, updated_by: user?.id });
-    }).filter(Boolean);
+    }
 
-    const results = await Promise.all(updates as unknown as Promise<{ error: unknown }>[]);
+    const results = await Promise.all(updates);
     const hasError = results.some((r) => r?.error);
     if (hasError) toast({ title: "Error saving some settings", variant: "destructive" });
     else {
