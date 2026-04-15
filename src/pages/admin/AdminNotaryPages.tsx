@@ -127,7 +127,7 @@ export default function AdminNotaryPages() {
   const fetchPages = async () => {
     setLoading(true);
     const { data } = await supabase.from("notary_pages").select("*").order("created_at", { ascending: false });
-    setPages((data as any[]) || []);
+    setPages((data ?? []));
     setLoading(false);
   };
 
@@ -136,7 +136,7 @@ export default function AdminNotaryPages() {
     if (!roles || roles.length === 0) { setNotaryUsers([]); return; }
     const userIds = roles.map(r => r.user_id);
     const { data } = await supabase.from("profiles").select("user_id, full_name, email").in("user_id", userIds);
-    setNotaryUsers((data as any[]) || []);
+    setNotaryUsers((data ?? []));
   };
 
   const fetchPlatformServices = async () => {
@@ -148,7 +148,7 @@ export default function AdminNotaryPages() {
 
   const fetchEnrollments = async (userId: string) => {
     const { data } = await supabase.from("professional_service_enrollments").select("*").eq("professional_user_id", userId);
-    setEnrollments((data as any[]) || []);
+    setEnrollments((data ?? []));
   };
 
   const openEditDialog = async (p?: NotaryPage) => {
@@ -225,7 +225,7 @@ export default function AdminNotaryPages() {
   const removeService = (i: number) => updateField("services_offered", services.filter((_, idx) => idx !== i));
   const updateService = (i: number, field: string, value: string) => {
     const updated = [...services];
-    (updated[i] as any)[field] = value;
+    (updated[i] as Record<string, unknown>)[field] = value;
     updateField("services_offered", updated);
   };
 
@@ -306,7 +306,7 @@ export default function AdminNotaryPages() {
         use_platform_booking: editPage.use_platform_booking,
         external_booking_url: editPage.external_booking_url, social_links: editPage.social_links,
         profile_photo_path: editPage.profile_photo_path, cover_photo_path: editPage.cover_photo_path,
-        logo_path: (editPage as any).logo_path || null,
+        logo_path: editPage.logo_path || null,
         gallery_photos: editPage.gallery_photos, nav_services: editPage.nav_services,
         seo_title: editPage.seo_title, seo_description: editPage.seo_description,
         is_published: editPage.is_published, is_featured: editPage.is_featured,
@@ -476,7 +476,7 @@ export default function AdminNotaryPages() {
                    </TableCell>
                    <TableCell>
                      <Badge variant="outline" className="text-xs">
-                       {PROFESSIONAL_TYPES.find(t => t.value === (p as any).professional_type)?.label || "Notary"}
+                       {PROFESSIONAL_TYPES.find(t => t.value === p.professional_type)?.label || "Notary"}
                      </Badge>
                    </TableCell>
                    <TableCell className="font-mono text-sm text-muted-foreground">/n/{p.slug}</TableCell>
@@ -845,9 +845,9 @@ export default function AdminNotaryPages() {
                 <Label className="flex items-center gap-1"><ImageIcon className="h-3 w-3" /> Business Logo</Label>
                 <p className="text-[10px] text-muted-foreground mb-2">Upload your business/operations logo. Displayed in the header of your public page. PNG/SVG recommended, transparent background preferred.</p>
                 <div className="flex items-center gap-3">
-                  {(editPage as any).logo_path ? (
+                  {editPage.logo_path ? (
                     <img
-                      src={(editPage as any).logo_path?.startsWith("http") ? (editPage as any).logo_path : undefined}
+                      src={editPage.logo_path?.startsWith("http") ? editPage.logo_path : undefined}
                       alt="Business Logo"
                       className="h-16 w-auto max-w-[140px] rounded-lg object-contain border p-1 bg-background"
                       onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
@@ -860,9 +860,9 @@ export default function AdminNotaryPages() {
                       onChange={e => e.target.files?.[0] && handlePhotoUpload(e.target.files[0], "logo")} />
                     <Button variant="outline" size="sm" onClick={() => logoInputRef.current?.click()} disabled={uploadingLogo || !editPage.id}>
                       {uploadingLogo ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Upload className="h-3 w-3 mr-1" />}
-                      {(editPage as any).logo_path ? "Replace Logo" : "Upload Logo"}
+                      {editPage.logo_path ? "Replace Logo" : "Upload Logo"}
                     </Button>
-                    {(editPage as any).logo_path && (
+                    {editPage.logo_path && (
                       <Button variant="ghost" size="sm" className="text-destructive text-xs h-7" onClick={() => updateField("logo_path", null)}>
                         <Trash2 className="h-3 w-3 mr-1" /> Remove
                       </Button>
@@ -903,9 +903,9 @@ export default function AdminNotaryPages() {
               {/* Live preview swatch */}
               <div className="rounded-xl border p-4" style={{ background: `linear-gradient(135deg, ${ensureHex(editPage.theme_color)}22, ${ensureHex(editPage.accent_color, "#1e40af")}08)` }}>
                 <div className="flex items-center gap-3">
-                  {(editPage as any).logo_path ? (
+                  {editPage.logo_path ? (
                     <div className="h-12 w-auto max-w-[80px] flex items-center">
-                      <img src={(editPage as any).logo_path} alt="Logo preview" className="max-h-12 w-auto object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                      <img src={editPage.logo_path} alt="Logo preview" className="max-h-12 w-auto object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                     </div>
                   ) : (
                     <div className="h-12 w-12 rounded-full border-2" style={{ borderColor: ensureHex(editPage.theme_color), background: `${ensureHex(editPage.theme_color)}15` }}>

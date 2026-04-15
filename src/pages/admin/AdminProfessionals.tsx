@@ -108,11 +108,11 @@ export default function AdminProfessionals() {
       supabase.from("profit_share_transactions").select("*").order("created_at", { ascending: false }).limit(200),
       supabase.from("services").select("id, name, price_from").eq("is_active", true),
     ]);
-    setProfessionals((proRes.data as any[]) || []);
-    setEnrollments((enrollRes.data as any[]) || []);
-    setProfitConfigs((configRes.data as any[]) || []);
-    setTransactions((txnRes.data as any[]) || []);
-    setServices((svcRes.data as any[]) || []);
+    setProfessionals((proRes.data ?? []));
+    setEnrollments((enrollRes.data ?? []));
+    setProfitConfigs((configRes.data ?? []));
+    setTransactions((txnRes.data ?? []));
+    setServices((svcRes.data ?? []));
     setLoading(false);
   };
 

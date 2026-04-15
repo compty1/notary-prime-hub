@@ -60,7 +60,7 @@ export default function AdminTaskQueue() {
                 <Card key={req.id} className="border-border/50">
                   <CardContent className="p-3">
                     <p className="text-sm font-medium mb-1">{req.service_name}</p>
-                    <p className="text-xs text-muted-foreground mb-2">{(req as any).profiles?.full_name || "Unknown"}</p>
+                    <p className="text-xs text-muted-foreground mb-2">{req.profiles?.full_name || "Unknown"}</p>
                     {req.priority !== "normal" && <Badge variant="destructive" className="text-xs mb-2">{req.priority}</Badge>}
                     {col === "submitted" && <Button size="sm" variant="outline" className="w-full text-xs" onClick={() => moveStatus(req.id, "in_progress", "In Progress")}>Start</Button>}
                     {col === "in_progress" && <Button size="sm" variant="outline" className="w-full text-xs" onClick={() => moveStatus(req.id, "completed", "Completed")}>Complete</Button>}

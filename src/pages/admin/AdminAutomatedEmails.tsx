@@ -541,7 +541,7 @@ function ServiceTemplatesTab() {
 
   const saveService = async (id: string, templates: ServiceEmailTemplates) => {
     setSaving(prev => new Set(prev).add(id));
-    const { error } = await supabase.from("services").update({ email_templates: templates as any }).eq("id", id);
+    const { error } = await supabase.from("services").update({ email_templates: templates }).eq("id", id);
     setSaving(prev => { const n = new Set(prev); n.delete(id); return n; });
     if (error) toast({ title: "Save failed", description: error.message, variant: "destructive" });
     else toast({ title: "Saved", description: "Email templates updated." });
