@@ -17,16 +17,31 @@ import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 
 const serviceTypes = ["acknowledgment", "jurat", "oath", "copy_certification", "other"];
 
+interface JournalEntry {
+  id: string; user_id: string | null; signer_name: string; signer_address: string | null;
+  id_type: string | null; id_number: string | null; id_expiration: string | null;
+  document_type: string | null; document_description: string | null;
+  service_performed: string | null; notarization_type: string | null;
+  fees_charged: number | null; platform_fee: number | null; travel_fee: number | null;
+  witnesses_present: number | null; oath_administered: boolean | null;
+  notes: string | null; appointment_id: string | null; archived: boolean | null;
+  created_at: string; updated_at: string;
+}
+interface JournalAppointment {
+  id: string; scheduled_date: string; scheduled_time: string; service_type: string;
+  status: string; client_id: string;
+}
+
 export default function AdminJournal() {
   usePageMeta({ title: "Notary Journal", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
-  const [entries, setEntries] = useState<any[]>([]);
-  const [appointments, setAppointments] = useState<any[]>([]);
+  const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [appointments, setAppointments] = useState<JournalAppointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingEntry, setEditingEntry] = useState<any>(null);
+  const [editingEntry, setEditingEntry] = useState<JournalEntry | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [selectedAppointment, setSelectedAppointment] = useState<string>("");
   const [form, setForm] = useState({

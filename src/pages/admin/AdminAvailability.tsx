@@ -11,9 +11,14 @@ import { Plus, Trash2, AlertTriangle } from "lucide-react";
 
 const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
+interface TimeSlot {
+  id: string; day_of_week: number; start_time: string; end_time: string;
+  is_active: boolean; max_appointments: number | null;
+}
+
 export default function AdminAvailability() {
   usePageMeta({ title: "Availability", noIndex: true });
-  const [slots, setSlots] = useState<any[]>([]);
+  const [slots, setSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 

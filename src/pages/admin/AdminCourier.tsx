@@ -17,11 +17,18 @@ import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 
 const statusColors: Record<string, string> = { pending: "bg-yellow-100 text-yellow-800", picked_up: "bg-blue-100 text-blue-800", in_transit: "bg-purple-100 text-purple-800", delivered: "bg-emerald-100 text-emerald-800", failed: "bg-red-100 text-red-800" };
 
+interface CourierJob {
+  id: string; client_id: string; pickup_address: string; dropoff_address: string;
+  package_description: string | null; requires_signature: boolean; fee: number | null;
+  status: string; notes: string | null; distance_miles: number | null;
+  created_at: string; updated_at: string;
+}
+
 export default function AdminCourier() {
   usePageMeta({ title: "Courier Jobs", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
-  const [jobs, setJobs] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<CourierJob[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
