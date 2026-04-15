@@ -273,7 +273,7 @@ Deno.serve(async (req) => {
           .select("folder")
           .limit(1000);
 
-        const folders = [...new Set((data || []).map((e: any) => e.folder))];
+        const folders = [...new Set((data || []).map((e: { folder: string }) => e.folder))];
         const defaultFolders = ["inbox", "sent", "drafts", "starred", "archive", "trash"];
         const allFolders = [...new Set([...defaultFolders, ...folders])];
 
@@ -341,11 +341,12 @@ Deno.serve(async (req) => {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
     }
-  } catch (err: any) {
-    console.error("ionos-email error:", err.message, err.stack);
-    const status = err.message === "Unauthorized" ? 401 : err.message?.startsWith("Forbidden") ? 403 : 400;
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "Unknown error";
+    console.error("ionos-email error:", msg);
+    const status = msg === "Unauthorized" ? 401 : msg?.startsWith("Forbidden") ? 403 : 400;
     return new Response(
-      JSON.stringify({ error: err.message }),
+      JSON.stringify({ error: msg }),
       { status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
