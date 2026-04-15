@@ -36,9 +36,9 @@ interface NotaryPage {
   phone: string;
   email: string;
   website_url: string;
-  service_areas: any[];
-  services_offered: any[];
-  credentials: Record<string, any>;
+  service_areas: string[];
+  services_offered: ServiceItem[];
+  credentials: Record<string, string | boolean>;
   theme_color: string;
   accent_color: string;
   font_family: string;
@@ -46,7 +46,7 @@ interface NotaryPage {
   signing_platform_url: string;
   use_platform_booking: boolean;
   external_booking_url: string;
-  social_links: Record<string, any>;
+  social_links: Record<string, string>;
   profile_photo_path: string | null;
   cover_photo_path: string | null;
   logo_path: string | null;
@@ -127,7 +127,7 @@ export default function AdminNotaryPages() {
   const fetchPages = async () => {
     setLoading(true);
     const { data } = await supabase.from("notary_pages").select("*").order("created_at", { ascending: false });
-    setPages((data ?? []) as any[]);
+    setPages((data ?? []) as unknown as NotaryPage[]);
     setLoading(false);
   };
 
@@ -225,7 +225,7 @@ export default function AdminNotaryPages() {
   const removeService = (i: number) => updateField("services_offered", services.filter((_, idx) => idx !== i));
   const updateService = (i: number, field: string, value: string) => {
     const updated = [...services];
-    (updated[i] as any)[field] = value;
+    (updated[i] as unknown as Record<string, string>)[field] = value;
     updateField("services_offered", updated);
   };
 
@@ -613,16 +613,16 @@ export default function AdminNotaryPages() {
               <Separator />
               <h3 className="font-semibold">Credentials</h3>
               <div className="grid gap-4 sm:grid-cols-2">
-                <div><Label>Commission Number</Label><Input value={creds.commission_number || ""} onChange={e => updateCred("commission_number", e.target.value)} /></div>
-                <div><Label>Commission Expiration</Label><Input type="date" value={creds.commission_expiration || ""} onChange={e => updateCred("commission_expiration", e.target.value)} /></div>
-                <div><Label>Commissioned State</Label><Input value={creds.commissioned_state || ""} onChange={e => updateCred("commissioned_state", e.target.value)} /></div>
-                <div><Label>Bond Info</Label><Input value={creds.bond_info || ""} onChange={e => updateCred("bond_info", e.target.value)} /></div>
+                <div><Label>Commission Number</Label><Input value={String(creds.commission_number || "")} onChange={e => updateCred("commission_number", e.target.value)} /></div>
+                <div><Label>Commission Expiration</Label><Input type="date" value={String(creds.commission_expiration || "")} onChange={e => updateCred("commission_expiration", e.target.value)} /></div>
+                <div><Label>Commissioned State</Label><Input value={String(creds.commissioned_state || "")} onChange={e => updateCred("commissioned_state", e.target.value)} /></div>
+                <div><Label>Bond Info</Label><Input value={String(creds.bond_info || "")} onChange={e => updateCred("bond_info", e.target.value)} /></div>
               </div>
               <div className="flex flex-wrap gap-4">
-                <div className="flex items-center gap-2"><Switch checked={creds.nna_certified || false} onCheckedChange={v => updateCred("nna_certified", v)} /><Label className="flex items-center gap-1"><Award className="h-3 w-3" /> NNA Certified</Label></div>
-                <div className="flex items-center gap-2"><Switch checked={creds.ron_certified || false} onCheckedChange={v => updateCred("ron_certified", v)} /><Label className="flex items-center gap-1"><Shield className="h-3 w-3" /> RON Certified</Label></div>
-                <div className="flex items-center gap-2"><Switch checked={creds.eo_insured || false} onCheckedChange={v => updateCred("eo_insured", v)} /><Label className="flex items-center gap-1"><CheckCircle className="h-3 w-3" /> E&O Insured</Label></div>
-                <div className="flex items-center gap-2"><Switch checked={creds.bonded || false} onCheckedChange={v => updateCred("bonded", v)} /><Label className="flex items-center gap-1"><CheckCircle className="h-3 w-3" /> Bonded</Label></div>
+                <div className="flex items-center gap-2"><Switch checked={!!creds.nna_certified} onCheckedChange={v => updateCred("nna_certified", v)} /><Label className="flex items-center gap-1"><Award className="h-3 w-3" /> NNA Certified</Label></div>
+                <div className="flex items-center gap-2"><Switch checked={!!creds.ron_certified} onCheckedChange={v => updateCred("ron_certified", v)} /><Label className="flex items-center gap-1"><Shield className="h-3 w-3" /> RON Certified</Label></div>
+                <div className="flex items-center gap-2"><Switch checked={!!creds.eo_insured} onCheckedChange={v => updateCred("eo_insured", v)} /><Label className="flex items-center gap-1"><CheckCircle className="h-3 w-3" /> E&O Insured</Label></div>
+                <div className="flex items-center gap-2"><Switch checked={!!creds.bonded} onCheckedChange={v => updateCred("bonded", v)} /><Label className="flex items-center gap-1"><CheckCircle className="h-3 w-3" /> Bonded</Label></div>
               </div>
               <Separator />
               <h3 className="font-semibold">Social Links</h3>

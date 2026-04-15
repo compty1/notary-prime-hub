@@ -29,7 +29,7 @@ export default function AddImportTab() {
     if (!form.title.trim()) { toast.error("Title required"); return; }
     const payload: Record<string, unknown> = { ...form };
     if (!payload.page_route) delete payload.page_route;
-    insert.mutate(payload as any);
+    insert.mutate(payload);
     setForm({ title: "", description: "", category: "gap", severity: "medium", impact_area: "", suggested_fix: "", page_route: "" });
   };
 
@@ -55,7 +55,7 @@ export default function AddImportTab() {
       const { category, impact_area } = autoCategorize(line);
       return { title: line, category, severity: "medium", status: "open", impact_area: impact_area || undefined };
     });
-    bulkInsert.mutate(items as any[]);
+    bulkInsert.mutate(items);
     if (skipped > 0) toast.info(`Skipped ${skipped} duplicate items`);
     setBulkText("");
   };
@@ -94,7 +94,7 @@ export default function AddImportTab() {
       }).filter(Boolean);
 
       if (items.length === 0) { toast.error("No valid items found in CSV"); return; }
-      bulkInsert.mutate(items as any[]);
+      bulkInsert.mutate(items);
       toast.success(`Importing ${items.length} items from CSV`);
     };
     reader.readAsText(file);

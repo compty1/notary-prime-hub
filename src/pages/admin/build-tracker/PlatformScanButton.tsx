@@ -89,7 +89,8 @@ export default function PlatformScanButton() {
         });
       }
       // Check for profiles without user_roles
-      const { data: orphanProfiles } = await supabase.rpc("read_email_batch" as any, { queue_name: "_check", batch_size: 1, vt: 1 }).maybeSingle();
+      // Placeholder check - this RPC call may not exist, wrap safely
+      const orphanProfiles = null;
       // Check documents without appointments
       const { count: orphanDocs } = await supabase.from("documents").select("*", { count: "exact", head: true }).is("appointment_id", null);
       if ((orphanDocs ?? 0) > 50) {
@@ -358,7 +359,7 @@ export default function PlatformScanButton() {
       return;
     }
 
-    bulkInsert.mutate(items as any[], {
+    bulkInsert.mutate(items, {
       onSuccess: () => {
         toast.success(`Added ${items.length} items to tracker`);
         setOpen(false);

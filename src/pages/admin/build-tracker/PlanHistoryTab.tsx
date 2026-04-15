@@ -126,7 +126,7 @@ export default function PlanHistoryTab({ items }: Props) {
       is_on_todo: true,
       plan_id: plan.id,
     }));
-    bulkInsert.mutate(newItems as any[]);
+    bulkInsert.mutate(newItems);
   };
 
   const handleImport = () => {

@@ -2,6 +2,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { TrackerItem, TrackerPlan, PlanItem } from "./constants";
+import type { Database } from "@/integrations/supabase/types";
+
+type TrackerInsert = Database["public"]["Tables"]["build_tracker_items"]["Insert"];
+type PlanInsert = Database["public"]["Tables"]["build_tracker_plans"]["Insert"];
 import { autoCategorize, STATUS } from "./constants";
 
 const ALL_KEYS = ["build-tracker-items", "build-tracker-plans"];
@@ -64,7 +68,7 @@ export function useInsertItem() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (item: Partial<TrackerItem>) => {
-      const { error } = await supabase.from("build_tracker_items").insert(item as any);
+      const { error } = await supabase.from("build_tracker_items").insert([item as TrackerInsert]);
       if (error) throw error;
     },
     onSuccess: () => { ALL_KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] })); toast.success("Item added"); },
@@ -79,7 +83,7 @@ export function useBulkInsert() {
       // Auto-chunk into batches of 100
       for (let i = 0; i < items.length; i += 100) {
         const batch = items.slice(i, i + 100);
-        const { error } = await supabase.from("build_tracker_items").insert(batch as any[]);
+        const { error } = await supabase.from("build_tracker_items").insert(batch as TrackerInsert[]);
         if (error) throw error;
       }
     },
@@ -110,7 +114,7 @@ export function useInsertPlan() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (plan: { plan_title: string; plan_summary?: string; plan_items: PlanItem[]; source: string; chat_context?: string }) => {
-      const { error } = await supabase.from("build_tracker_plans").insert(plan as any);
+      const { error } = await supabase.from("build_tracker_plans").insert([plan as PlanInsert]);
       if (error) throw error;
     },
     onSuccess: () => { ALL_KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] })); toast.success("Plan saved"); },
