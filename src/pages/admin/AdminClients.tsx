@@ -82,7 +82,7 @@ export default function AdminClients() {
   const fetchData = async () => {
     const [profileRes, apptRes] = await Promise.all([
       supabase.from("profiles").select("*").order("created_at", { ascending: false }).limit(500),
-      supabase.from("appointments").select("*").order("scheduled_date", { ascending: false }).limit(1000),
+      supabase.from("appointments").select("*").order("scheduled_date", { ascending: false }).limit(999),
     ]);
     if (profileRes.data) {
       setProfiles(profileRes.data);

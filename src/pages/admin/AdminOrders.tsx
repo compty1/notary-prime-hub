@@ -58,7 +58,7 @@ export default function AdminOrders() {
   const fetchOrders = useCallback(async () => {
     const [ordersRes, profilesRes] = await Promise.all([
       supabase.from("orders").select("*").order("created_at", { ascending: false }),
-      supabase.from("profiles").select("user_id, full_name, email").limit(2000),
+      supabase.from("profiles").select("user_id, full_name, email").limit(999),
     ]);
     if (ordersRes.data) setOrders(ordersRes.data ?? []);
     if (profilesRes.data) {

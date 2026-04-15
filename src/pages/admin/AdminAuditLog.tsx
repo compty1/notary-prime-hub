@@ -129,7 +129,7 @@ export default function AdminAuditLog() {
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   const exportCSV = async () => {
-    let query = supabase.from("audit_log").select("*").order("created_at", { ascending: false }).limit(1000);
+    let query = supabase.from("audit_log").select("*").order("created_at", { ascending: false }).limit(999);
     if (filterAction !== "all") query = query.eq("action", filterAction);
     if (dateFrom) query = query.gte("created_at", dateFrom.toISOString());
     if (dateTo) query = query.lte("created_at", new Date(dateTo.getTime() + 86400000).toISOString());
