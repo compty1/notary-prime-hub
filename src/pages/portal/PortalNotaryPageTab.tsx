@@ -267,7 +267,7 @@ export default function PortalNotaryPageTab() {
   const removeService = (i: number) => updateField("services_offered", services.filter((_, idx) => idx !== i));
   const updateService = (i: number, field: string, value: string) => {
     const updated = [...services];
-    (updated[i] as any)[field] = value;
+    (updated[i] as Record<string, unknown>)[field] = value;
     updateField("services_offered", updated);
   };
   const loadDefaultServices = () => updateField("services_offered", DEFAULT_SERVICES);

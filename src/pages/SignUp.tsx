@@ -65,7 +65,7 @@ export default function SignUp() {
       setSignupSuccess(true);
       if (refCode) {
         try {
-          await supabase.from("referrals").update({ status: "signed_up" } as any)
+          await supabase.from("referrals").update({ status: "signed_up" } as never)
             .eq("referral_code", refCode)
             .eq("status", "pending");
         } catch (e) { console.error("Referral tracking error:", e); }

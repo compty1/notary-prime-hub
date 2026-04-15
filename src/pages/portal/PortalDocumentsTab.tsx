@@ -67,7 +67,7 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
       if (error) throw error;
 
       // Store review result
-      await supabase.from("document_reviews" as any).insert({
+      await supabase.from("document_reviews" as never).insert({
         document_id: doc.id,
         reviewed_by: userId,
         overall_status: data.overallStatus || "warning",
