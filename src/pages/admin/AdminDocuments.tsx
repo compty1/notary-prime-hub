@@ -31,7 +31,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
   interface DocRecord {
     id: string; file_name: string; file_path: string; uploaded_by: string;
     status: string; created_at: string; updated_at: string;
-    appointment_id: string | null; document_type: string | null; notes: string | null;
+    appointment_id: string | null; document_hash: string; rejection_reason: string;
   }
   interface ESealVerification {
     id: string; document_id: string; appointment_id: string | null;
