@@ -215,6 +215,23 @@ const AdminSalesCX = lazyRetry(() => import("./pages/admin/AdminSalesCX"));
 const AdminContentCreation = lazyRetry(() => import("./pages/admin/AdminContentCreation"));
 const NotaryGlossary = lazyRetry(() => import("./pages/NotaryGlossary"));
 const Maintenance = lazyRetry(() => import("./pages/Maintenance"));
+
+// Enterprise Tools
+const EnterpriseDashboard = lazyRetry(() => import("./pages/enterprise/EnterpriseDashboard"));
+const AIGrader = lazyRetry(() => import("./pages/enterprise/AIGrader"));
+const KYCSearch = lazyRetry(() => import("./pages/enterprise/KYCSearch"));
+const IPHub = lazyRetry(() => import("./pages/enterprise/IPHub"));
+const CertificateGenerator = lazyRetry(() => import("./pages/enterprise/CertificateGenerator"));
+const ExhibitStamper = lazyRetry(() => import("./pages/enterprise/ExhibitStamper"));
+const DigitalVault = lazyRetry(() => import("./pages/enterprise/DigitalVault"));
+const AutoFleetDesk = lazyRetry(() => import("./pages/enterprise/AutoFleetDesk"));
+const LienCommandCenter = lazyRetry(() => import("./pages/enterprise/LienCommandCenter"));
+const TrustScheduler = lazyRetry(() => import("./pages/enterprise/TrustScheduler"));
+const B2BDispatch = lazyRetry(() => import("./pages/enterprise/B2BDispatch"));
+const CorporateCompliance = lazyRetry(() => import("./pages/enterprise/CorporateCompliance"));
+const ImmigrationHub = lazyRetry(() => import("./pages/enterprise/ImmigrationHub"));
+const ApostilleMatrix = lazyRetry(() => import("./pages/enterprise/ApostilleMatrix"));
+const BrandSettings = lazyRetry(() => import("./pages/enterprise/BrandSettings"));
 const ForNotaries = lazyRetry(() => import("./pages/solutions/ForNotaries"));
 const ForHospitals = lazyRetry(() => import("./pages/solutions/ForHospitals"));
 const ForRealEstate = lazyRetry(() => import("./pages/solutions/ForRealEstate"));
@@ -569,6 +586,22 @@ function AnimatedRoutes() {
         <Route path="certified-copies" element={<ProtectedRoute adminOnly><SR msg="Certified copies failed to load"><AdminCertifiedCopies /></SR></ProtectedRoute>} />
         <Route path="travel-zones" element={<ProtectedRoute adminOnly><SR msg="Travel zones failed to load"><AdminTravelZones /></SR></ProtectedRoute>} />
         <Route path="witnesses" element={<ProtectedRoute adminOnly><SR msg="Witnesses failed to load"><AdminWitnesses /></SR></ProtectedRoute>} />
+        {/* Enterprise Tools */}
+        <Route path="enterprise" element={<ProtectedRoute adminOnly><SR msg="Enterprise dashboard failed to load"><EnterpriseDashboard /></SR></ProtectedRoute>} />
+        <Route path="enterprise/ai-grader" element={<ProtectedRoute adminOnly><SR msg="AI Grader failed to load"><AIGrader /></SR></ProtectedRoute>} />
+        <Route path="enterprise/kyc-search" element={<ProtectedRoute adminOnly><SR msg="KYC Search failed to load"><KYCSearch /></SR></ProtectedRoute>} />
+        <Route path="enterprise/ip-hub" element={<ProtectedRoute adminOnly><SR msg="IP Hub failed to load"><IPHub /></SR></ProtectedRoute>} />
+        <Route path="enterprise/certificates" element={<ProtectedRoute adminOnly><SR msg="Certificate Generator failed to load"><CertificateGenerator /></SR></ProtectedRoute>} />
+        <Route path="enterprise/exhibit-stamper" element={<ProtectedRoute adminOnly><SR msg="Exhibit Stamper failed to load"><ExhibitStamper /></SR></ProtectedRoute>} />
+        <Route path="enterprise/digital-vault" element={<ProtectedRoute adminOnly><SR msg="Digital Vault failed to load"><DigitalVault /></SR></ProtectedRoute>} />
+        <Route path="enterprise/auto-fleet" element={<ProtectedRoute adminOnly><SR msg="Auto Fleet failed to load"><AutoFleetDesk /></SR></ProtectedRoute>} />
+        <Route path="enterprise/lien-center" element={<ProtectedRoute adminOnly><SR msg="Lien Center failed to load"><LienCommandCenter /></SR></ProtectedRoute>} />
+        <Route path="enterprise/trust-scheduler" element={<ProtectedRoute adminOnly><SR msg="Trust Scheduler failed to load"><TrustScheduler /></SR></ProtectedRoute>} />
+        <Route path="enterprise/b2b-dispatch" element={<ProtectedRoute adminOnly><SR msg="B2B Dispatch failed to load"><B2BDispatch /></SR></ProtectedRoute>} />
+        <Route path="enterprise/corporate-compliance" element={<ProtectedRoute adminOnly><SR msg="Corporate Compliance failed to load"><CorporateCompliance /></SR></ProtectedRoute>} />
+        <Route path="enterprise/immigration-hub" element={<ProtectedRoute adminOnly><SR msg="Immigration Hub failed to load"><ImmigrationHub /></SR></ProtectedRoute>} />
+        <Route path="enterprise/apostille-matrix" element={<ProtectedRoute adminOnly><SR msg="Apostille Matrix failed to load"><ApostilleMatrix /></SR></ProtectedRoute>} />
+        <Route path="enterprise/brand-settings" element={<ProtectedRoute adminOnly><SR msg="Brand Settings failed to load"><BrandSettings /></SR></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="*" element={<NotFound />} />

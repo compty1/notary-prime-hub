@@ -61,6 +61,26 @@ const sidebarGroups = [
     ],
   },
   {
+    label: "Enterprise Tools",
+    items: [
+      { title: "Enterprise Hub", url: "/admin/enterprise", icon: Building2, adminOnly: true },
+      { title: "AI Grader", url: "/admin/enterprise/ai-grader", icon: FileCheck, adminOnly: true },
+      { title: "KYC/OFAC Search", url: "/admin/enterprise/kyc-search", icon: ShieldCheck, adminOnly: true },
+      { title: "IP/Patent Hub", url: "/admin/enterprise/ip-hub", icon: Globe, adminOnly: true },
+      { title: "Certificates", url: "/admin/enterprise/certificates", icon: Award, adminOnly: true },
+      { title: "Exhibit Stamper", url: "/admin/enterprise/exhibit-stamper", icon: FileEdit, adminOnly: true },
+      { title: "Digital Vault", url: "/admin/enterprise/digital-vault", icon: FolderOpen, adminOnly: true },
+      { title: "VIN/Auto Fleet", url: "/admin/enterprise/auto-fleet", icon: Truck, adminOnly: true },
+      { title: "Lien Center", url: "/admin/enterprise/lien-center", icon: Hammer, adminOnly: true },
+      { title: "Trust Scheduler", url: "/admin/enterprise/trust-scheduler", icon: ScrollText, adminOnly: true },
+      { title: "B2B Dispatch", url: "/admin/enterprise/b2b-dispatch", icon: Package, adminOnly: true },
+      { title: "BOI/Compliance", url: "/admin/enterprise/corporate-compliance", icon: Building2, adminOnly: true },
+      { title: "Immigration Hub", url: "/admin/enterprise/immigration-hub", icon: Globe, adminOnly: true },
+      { title: "Apostille Matrix", url: "/admin/enterprise/apostille-matrix", icon: Scale, adminOnly: true },
+      { title: "Brand Kits", url: "/admin/enterprise/brand-settings", icon: Palette, adminOnly: true },
+    ],
+  },
+  {
     label: "Field Services",
     items: [
       { title: "Fingerprinting", url: "/admin/fingerprinting", icon: Fingerprint, adminOnly: true },
