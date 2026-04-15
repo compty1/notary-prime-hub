@@ -2671,32 +2671,44 @@ export type Database = {
       }
       document_versions: {
         Row: {
+          content: Json | null
           created_at: string
           document_id: string
           file_name: string
           file_path: string
           id: string
+          is_autosave: boolean | null
+          label: string | null
           notes: string | null
+          snapshot_html: string | null
           uploaded_by: string
           version_number: number
         }
         Insert: {
+          content?: Json | null
           created_at?: string
           document_id: string
           file_name: string
           file_path: string
           id?: string
+          is_autosave?: boolean | null
+          label?: string | null
           notes?: string | null
+          snapshot_html?: string | null
           uploaded_by: string
           version_number?: number
         }
         Update: {
+          content?: Json | null
           created_at?: string
           document_id?: string
           file_name?: string
           file_path?: string
           id?: string
+          is_autosave?: boolean | null
+          label?: string | null
           notes?: string | null
+          snapshot_html?: string | null
           uploaded_by?: string
           version_number?: number
         }
