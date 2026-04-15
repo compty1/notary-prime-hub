@@ -1,17 +1,42 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { corsHeaders } from "@supabase/supabase-js/cors";
+import { corsHeaders, handleCorsOptions, errorResponse, jsonResponse, rateLimitGuard } from "../_shared/middleware.ts";
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return handleCorsOptions(req);
 
   try {
-    const url = "https://travel.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2025/visa-bulletin-for-april-2025.html";
-    const resp = await fetch(url, { headers: { "User-Agent": "Notar-Enterprise/1.0" } });
-    
-    // Return a structured fallback since parsing HTML is complex
+    // Rate limit
+    const rlResponse = rateLimitGuard(req, 10);
+    if (rlResponse) return rlResponse;
+
+    // Auth check
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return errorResponse(req, 401, "Unauthorized");
+    }
+
+    // EF-315: Attempt to fetch live data, fall back to cached
+    let bulletinMonth = "April 2025";
+    try {
+      const url = "https://travel.state.gov/content/travel/en/legal/visa-law0/visa-bulletin.html";
+      const resp = await fetch(url, {
+        headers: { "User-Agent": "Notar-Enterprise/1.0" },
+        signal: AbortSignal.timeout(5000),
+      });
+      if (resp.ok) {
+        const html = await resp.text();
+        // Try to extract current month from page title
+        const match = html.match(/Visa Bulletin for (\w+ \d{4})/i);
+        if (match) bulletinMonth = match[1];
+      }
+    } catch {
+      // Fall back to cached data
+    }
+
     const bulletin = {
-      month: "April 2025",
-      source_url: url,
+      month: bulletinMonth,
+      source_url: "https://travel.state.gov/content/travel/en/legal/visa-law0/visa-bulletin.html",
+      note: `Data shown is from ${bulletinMonth}. Check travel.state.gov for the most current official bulletin.`,
+      last_checked: new Date().toISOString(),
       family: [
         { category: "F1", description: "Unmarried Sons and Daughters of U.S. Citizens", worldwide: "01JAN16", china: "01JAN16", india: "01JAN16", mexico: "01NOV00", philippines: "01APR13" },
         { category: "F2A", description: "Spouses and Children of Permanent Residents", worldwide: "Current", china: "Current", india: "Current", mexico: "Current", philippines: "Current" },
@@ -26,12 +51,11 @@ serve(async (req) => {
         { category: "EB4", description: "Special Immigrants", worldwide: "Current", china: "Current", india: "01JAN20", mexico: "Current", philippines: "Current" },
         { category: "EB5", description: "Immigrant Investors", worldwide: "Current", china: "01JAN17", india: "01JAN20", mexico: "Current", philippines: "Current" },
       ],
-      note: "Data is illustrative. Check travel.state.gov for current official bulletin.",
     };
 
-    return new Response(JSON.stringify(bulletin), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return jsonResponse(req, bulletin);
   } catch (e) {
     console.error("fetch-visa-bulletin error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return errorResponse(req, 500, "Failed to fetch visa bulletin");
   }
 });

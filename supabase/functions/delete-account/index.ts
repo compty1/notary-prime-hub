@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Cascading delete in dependency order
+    // EF-310: Cascading delete including enterprise tables
     const tables = [
       { table: "document_reminders", column: "user_id" },
       { table: "document_reviews", column: "reviewed_by" },
@@ -66,6 +66,26 @@ Deno.serve(async (req) => {
       { table: "referrals", column: "referrer_id" },
       { table: "saved_payment_methods", column: "user_id" },
       { table: "admin_saved_filters", column: "user_id" },
+      // EF-310: Enterprise tables previously missing
+      { table: "accounting_transactions", column: "user_id" },
+      { table: "amortized_expenses", column: "user_id" },
+      { table: "ai_document_grades", column: "user_id" },
+      { table: "construction_projects", column: "user_id" },
+      { table: "continuing_education", column: "user_id" },
+      { table: "cover_letters", column: "user_id" },
+      { table: "resumes", column: "user_id" },
+      { table: "designs", column: "user_id" },
+      { table: "client_brand_kits", column: "user_id" },
+      { table: "consent_logs", column: "user_id" },
+      { table: "data_deletion_requests", column: "user_id" },
+      { table: "docudex_documents", column: "user_id" },
+      { table: "e_course_enrollments", column: "user_id" },
+      { table: "academy_lesson_progress", column: "user_id" },
+      { table: "academy_quiz_attempts", column: "user_id" },
+      { table: "academy_certificates", column: "user_id" },
+      { table: "notification_preferences", column: "user_id" },
+      { table: "session_tracking", column: "user_id" },
+      // Keep last
       { table: "profiles", column: "user_id" },
       { table: "user_roles", column: "user_id" },
     ];

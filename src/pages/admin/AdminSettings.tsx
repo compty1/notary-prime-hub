@@ -157,9 +157,21 @@ export default function AdminSettings() {
       try {
         const imported = JSON.parse(ev.target?.result as string);
         if (typeof imported !== "object" || Array.isArray(imported)) throw new Error("Invalid format");
-        setEditValues(prev => ({ ...prev, ...imported }));
-        toast({ title: "Settings imported", description: "Review and click Save to apply." });
-      } catch { toast({ title: "Invalid file", description: "Please upload a valid settings JSON.", variant: "destructive" }); }
+        // AD-040: Validate imported keys against known settings keys
+        const allowedKeys = new Set(Object.keys(settings));
+        const filtered: Record<string, string> = {};
+        let skipped = 0;
+        for (const [key, value] of Object.entries(imported)) {
+          if (allowedKeys.has(key) && typeof value === "string") {
+            filtered[key] = value;
+          } else {
+            skipped++;
+          }
+        }
+        if (Object.keys(filtered).length === 0) throw new Error("No valid settings found");
+        setEditValues(prev => ({ ...prev, ...filtered }));
+        toast({ title: "Settings imported", description: `${Object.keys(filtered).length} settings loaded${skipped > 0 ? `, ${skipped} unknown keys skipped` : ""}. Review and click Save to apply.` });
+      } catch (e) { toast({ title: "Invalid file", description: e instanceof Error ? e.message : "Please upload a valid settings JSON.", variant: "destructive" }); }
     };
     reader.readAsText(file);
     e.target.value = "";
