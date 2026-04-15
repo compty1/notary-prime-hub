@@ -436,7 +436,7 @@ export default function AdminLeadPortal() {
     setImportingEmail(false);
   };
 
-  // Lead scoring engine
+  // Lead scoring engine — LP-021: Enhanced scoring
   const computeLeadScore = useCallback((lead: Lead): number => {
     let score = 0;
     if (lead.email) score += 20;
@@ -447,8 +447,83 @@ export default function AdminLeadPortal() {
     if (lead.intent_score === "high") score += 20;
     else if (lead.intent_score === "medium") score += 10;
     if (lead.contacted_at) score += 10;
+    // LP-025: Aging penalty — fresher leads score higher
+    if (lead.created_at) {
+      const daysOld = Math.floor((Date.now() - new Date(lead.created_at).getTime()) / (1000 * 60 * 60 * 24));
+      if (daysOld <= 3) score += 10;
+      else if (daysOld <= 7) score += 5;
+    }
     return Math.min(100, score);
   }, []);
+
+  // LP-025: Lead aging indicator
+  const getLeadAge = useCallback((lead: Lead): { days: number; label: string; color: string } => {
+    const days = Math.floor((Date.now() - new Date(lead.created_at).getTime()) / (1000 * 60 * 60 * 24));
+    if (days <= 1) return { days, label: "Today", color: "text-green-600" };
+    if (days <= 3) return { days, label: `${days}d`, color: "text-green-500" };
+    if (days <= 7) return { days, label: `${days}d`, color: "text-yellow-500" };
+    if (days <= 14) return { days, label: `${days}d`, color: "text-orange-500" };
+    if (days <= 30) return { days, label: `${days}d`, color: "text-red-500" };
+    return { days, label: `${days}d`, color: "text-destructive" };
+  }, []);
+
+  // LP-027: Lead response time (time from creation to first contact)
+  const getResponseTime = useCallback((lead: Lead): string | null => {
+    if (!lead.contacted_at) return null;
+    const hours = Math.round((new Date(lead.contacted_at).getTime() - new Date(lead.created_at).getTime()) / (1000 * 60 * 60));
+    if (hours < 1) return "<1h";
+    if (hours < 24) return `${hours}h`;
+    return `${Math.round(hours / 24)}d`;
+  }, []);
+
+  // LP-028: Conversion velocity
+  const conversionVelocity = useMemo(() => {
+    const converted = leads.filter(l => l.status === "converted" && l.contacted_at);
+    if (converted.length === 0) return null;
+    const totalDays = converted.reduce((sum, l) => {
+      const days = Math.max(1, Math.floor((new Date(l.contacted_at!).getTime() - new Date(l.created_at).getTime()) / (1000 * 60 * 60 * 24)));
+      return sum + days;
+    }, 0);
+    return Math.round(totalDays / converted.length);
+  }, [leads]);
+
+  // LP-029: Lead source ROI
+  const sourceStats = useMemo(() => {
+    const map = new Map<string, { total: number; converted: number; highIntent: number }>();
+    leads.forEach(l => {
+      const src = l.source || "unknown";
+      const existing = map.get(src) || { total: 0, converted: 0, highIntent: 0 };
+      existing.total++;
+      if (l.status === "converted" || l.status === "closed-won") existing.converted++;
+      if (l.intent_score === "high") existing.highIntent++;
+      map.set(src, existing);
+    });
+    return Array.from(map.entries())
+      .map(([source, data]) => ({ source, ...data, convRate: data.total > 0 ? Math.round((data.converted / data.total) * 100) : 0 }))
+      .sort((a, b) => b.total - a.total);
+  }, [leads]);
+
+  // LP-036: Pipeline drop-off analysis
+  const pipelineDropoff = useMemo(() => {
+    const counts: Record<string, number> = {};
+    pipelineStatuses.forEach(s => { counts[s] = leads.filter(l => l.status === s).length; });
+    return pipelineStatuses.map((stage, idx) => {
+      const current = counts[stage] || 0;
+      const previous = idx > 0 ? (counts[pipelineStatuses[idx - 1]] || 0) : leads.length;
+      const dropoff = previous > 0 ? Math.round(((previous - current) / previous) * 100) : 0;
+      return { stage, count: current, dropoff };
+    });
+  }, [leads]);
+
+  // LP-026: Stale lead detection
+  const staleLeads = useMemo(() => {
+    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    return leads.filter(l =>
+      !["converted", "closed-won", "closed-lost"].includes(l.status) &&
+      !l.contacted_at &&
+      new Date(l.created_at).getTime() < thirtyDaysAgo
+    );
+  }, [leads]);
 
   const stats = useMemo(() => ({
     total: leads.length,
@@ -457,8 +532,10 @@ export default function AdminLeadPortal() {
     qualified: leads.filter((l) => l.status === "qualified").length,
     converted: leads.filter((l) => l.status === "converted").length,
     highIntent: leads.filter((l) => l.intent_score === "high").length,
-    conversionRate: leads.length > 0 ? Math.round((leads.filter((l) => l.status === "converted").length / leads.length) * 100) : 0,
-  }), [leads]);
+    conversionRate: leads.length > 0 ? Math.round((leads.filter((l) => l.status === "converted" || l.status === "closed-won").length / leads.length) * 100) : 0,
+    avgScore: leads.length > 0 ? Math.round(leads.reduce((s, l) => s + computeLeadScore(l), 0) / leads.length) : 0,
+    stale: staleLeads.length,
+  }), [leads, computeLeadScore, staleLeads]);
 
   // Duplicate detection
   const duplicates = useMemo(() => {
@@ -568,8 +645,21 @@ export default function AdminLeadPortal() {
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
+      {/* Stale lead alert — LP-026 */}
+      {staleLeads.length > 0 && (
+        <Card className="border-destructive/30 bg-destructive/5">
+          <CardContent className="flex items-center gap-3 p-3">
+            <AlertTriangle className="h-5 w-5 text-destructive shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm font-medium">{staleLeads.length} stale lead{staleLeads.length > 1 ? "s" : ""} — untouched for 30+ days</p>
+              <p className="text-xs text-muted-foreground">{staleLeads.slice(0, 3).map(l => l.name || l.business_name).join(", ")}{staleLeads.length > 3 ? ` +${staleLeads.length - 3} more` : ""}</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Stats — enhanced with LP-025/028/029 metrics */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-10">
         {[
           { label: "Total", value: stats.total },
           { label: "New", value: stats.new },
@@ -577,8 +667,10 @@ export default function AdminLeadPortal() {
           { label: "Qualified", value: stats.qualified },
           { label: "Converted", value: stats.converted },
           { label: "High Intent", value: stats.highIntent },
-          { label: "Conversion", value: `${stats.conversionRate}%` },
-          { label: "Duplicates", value: duplicates.size },
+          { label: "Conv. Rate", value: `${stats.conversionRate}%` },
+          { label: "Avg Score", value: stats.avgScore },
+          { label: "Velocity", value: conversionVelocity ? `${conversionVelocity}d` : "—" },
+          { label: "Stale", value: stats.stale },
         ].map((s) => (
           <Card key={s.label} className="border-border/50">
             <CardContent className="p-3 text-center">
