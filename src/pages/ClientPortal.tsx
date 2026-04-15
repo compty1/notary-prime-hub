@@ -173,32 +173,32 @@ export default function ClientPortal() {
     fetchData();
 
     supabase.from("chat_messages").select("*").or(`sender_id.eq.${user.id},and(is_admin.eq.true,recipient_id.eq.${user.id})`).order("created_at").then(({ data }) => {
-      if (data) { setChatMessages(data); setUnreadCount(data.filter((m: any) => m.is_admin && !m.read).length); }
+      if (data) { setChatMessages(data); setUnreadCount(data.filter((m: Record<string, unknown>) => m.is_admin && !m.read).length); }
     });
 
     const chatChannel = supabase.channel("client-chat").on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages", filter: `recipient_id=eq.${user.id}` }, (payload) => {
-      const msg = payload.new as any;
-      if (msg.sender_id === user.id || (msg.is_admin && msg.recipient_id === user.id)) setChatMessages(prev => prev.some(m => m.id === msg.id) ? prev : [...prev, msg]);
+      const msg = payload.new as Record<string, unknown>;
+      if (msg.sender_id === user.id || (msg.is_admin && msg.recipient_id === user.id)) setChatMessages(prev => prev.some(m => m.id === msg.id) ? prev : [...prev, msg as never]);
     }).on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages", filter: `sender_id=eq.${user.id}` }, (payload) => {
-      const msg = payload.new as any;
-      setChatMessages(prev => prev.some(m => m.id === msg.id) ? prev : [...prev, msg]);
+      const msg = payload.new as Record<string, unknown>;
+      setChatMessages(prev => prev.some(m => m.id === msg.id) ? prev : [...prev, msg as never]);
     }).subscribe();
 
     const apptChannel = supabase.channel("client-appointments").on("postgres_changes", { event: "UPDATE", schema: "public", table: "appointments", filter: `client_id=eq.${user.id}` }, (payload) => {
-      const updated = payload.new as any;
-      setAppointments(prev => prev.map(a => a.id === updated.id ? updated : a)); toast({ title: "Appointment updated", description: `Status: ${updated.status.replace(/_/g, " ")}` });
+      const updated = payload.new as Record<string, unknown>;
+      setAppointments(prev => prev.map(a => a.id === updated.id ? updated as never : a)); toast({ title: "Appointment updated", description: `Status: ${String(updated.status).replace(/_/g, " ")}` });
     }).subscribe();
 
     const paymentChannel = supabase.channel("client-payments").on("postgres_changes", { event: "*", schema: "public", table: "payments", filter: `client_id=eq.${user.id}` }, (payload) => {
-      const record = (payload.new || payload.old) as any;
-      if (payload.eventType === "INSERT") { setPayments(prev => [payload.new as any, ...prev]); toast({ title: "New payment request", description: `Amount: $${(payload.new as any).amount}` }); }
-      else if (payload.eventType === "UPDATE") setPayments(prev => prev.map(p => p.id === record.id ? payload.new as any : p));
+      const record = (payload.new || payload.old) as Record<string, unknown>;
+      if (payload.eventType === "INSERT") { setPayments(prev => [payload.new as never, ...prev]); toast({ title: "New payment request", description: `Amount: $${(payload.new as Record<string, unknown>).amount}` }); }
+      else if (payload.eventType === "UPDATE") setPayments(prev => prev.map(p => p.id === record.id ? payload.new as never : p));
     }).subscribe();
 
     const docChannel = supabase.channel("client-documents").on("postgres_changes", { event: "*", schema: "public", table: "documents", filter: `uploaded_by=eq.${user.id}` }, (payload) => {
-      if (payload.eventType === "INSERT") { setDocuments(prev => prev.some(d => d.id === (payload.new as any).id) ? prev : [payload.new as any, ...prev]); toast({ title: "Document uploaded", description: (payload.new as any).file_name }); }
-      else if (payload.eventType === "UPDATE") setDocuments(prev => prev.map(d => d.id === (payload.new as any).id ? payload.new as any : d));
-      else if (payload.eventType === "DELETE") setDocuments(prev => prev.filter(d => d.id !== (payload.old as any).id));
+      if (payload.eventType === "INSERT") { const newDoc = payload.new as Record<string, unknown>; setDocuments(prev => prev.some(d => d.id === newDoc.id) ? prev : [newDoc as never, ...prev]); toast({ title: "Document uploaded", description: String(newDoc.file_name) }); }
+      else if (payload.eventType === "UPDATE") { const upDoc = payload.new as Record<string, unknown>; setDocuments(prev => prev.map(d => d.id === upDoc.id ? upDoc as never : d)); }
+      else if (payload.eventType === "DELETE") { const delDoc = payload.old as Record<string, unknown>; setDocuments(prev => prev.filter(d => d.id !== delDoc.id)); }
     }).subscribe();
 
     return () => { supabase.removeChannel(chatChannel); supabase.removeChannel(apptChannel); supabase.removeChannel(paymentChannel); supabase.removeChannel(docChannel); };
@@ -220,7 +220,7 @@ export default function ClientPortal() {
       return;
     }
     setCancelling(true);
-    const { error } = await supabase.from("appointments").update({ status: "cancelled" as any, admin_notes: cancelReason ? `Client cancel reason: ${cancelReason}` : null } as any).eq("id", id).eq("client_id", user.id);
+    const { error } = await supabase.from("appointments").update({ status: "cancelled", admin_notes: cancelReason ? `Client cancel reason: ${cancelReason}` : null } as never).eq("id", id).eq("client_id", user.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else { toast({ title: "Appointment cancelled" }); setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: "cancelled" } : a)); setCancelReason(""); try { await supabase.functions.invoke("send-appointment-emails", { body: { appointmentId: id, emailType: "cancellation", cancelReason: cancelReason || undefined } }); } catch (e) { console.error("Cancellation email error:", e); } }
     setCancelling(false); setCancelDialogId(null);
@@ -697,9 +697,9 @@ export default function ClientPortal() {
               <Button disabled={!reminderForm.document_id || !reminderForm.expiry_date || savingReminder} onClick={async () => {
                 if (!user) return;
                 setSavingReminder(true);
-                const { data, error } = await supabase.from("document_reminders").insert({ user_id: user.id, document_id: reminderForm.document_id, expiry_date: reminderForm.expiry_date, remind_days_before: parseInt(reminderForm.remind_days_before) } as any).select().single();
+                const { data, error } = await supabase.from("document_reminders").insert({ user_id: user.id, document_id: reminderForm.document_id, expiry_date: reminderForm.expiry_date, remind_days_before: parseInt(reminderForm.remind_days_before) } as never).select().single();
                 if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-                else if (data) { toast({ title: "Reminder set" }); setReminders(prev => [...prev, data].sort((a: any, b: any) => a.expiry_date.localeCompare(b.expiry_date))); setReminderForm({ document_id: "", expiry_date: "", remind_days_before: "30" }); }
+                else if (data) { toast({ title: "Reminder set" }); setReminders(prev => [...prev, data].sort((a: Record<string, string>, b: Record<string, string>) => String(a.expiry_date).localeCompare(String(b.expiry_date)))); setReminderForm({ document_id: "", expiry_date: "", remind_days_before: "30" }); }
                 setSavingReminder(false);
               }} size="sm" className="rounded-xl font-bold bg-foreground text-background shadow-soft">{savingReminder ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Bell className="mr-1 h-4 w-4" />} Set Reminder</Button>
             </CardContent></Card>
