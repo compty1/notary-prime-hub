@@ -418,7 +418,7 @@ Deno.serve(async (req) => {
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Email sync error:", err.message, err.stack);
     return new Response(
       JSON.stringify({ error: "Internal server error" }),

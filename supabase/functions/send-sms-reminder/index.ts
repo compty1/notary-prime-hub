@@ -119,7 +119,7 @@ Deno.serve(async (req) => {
           const err = await response.text();
           console.error(`SMS send failed for ${appt.id}:`, err);
         }
-      } catch (e: any) {
+      } catch (e: unknown) {
         console.error(`SMS error for ${appt.id}:`, e.message);
       }
     }
@@ -127,8 +127,8 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ message: `Sent ${sent} SMS reminders`, sent }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), {
+  } catch (err: unknown) {
+    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

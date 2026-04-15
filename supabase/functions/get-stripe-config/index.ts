@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
       JSON.stringify({ publishableKey }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("get-stripe-config error:", err.message);
     return new Response(
       JSON.stringify({ error: "Internal server error" }),

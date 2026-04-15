@@ -276,7 +276,7 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ ok: true }), {
       headers: responseHeaders,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("SignNow webhook error:", err);
 
     // INT-001: Log failed webhook to dead letter queue for retry
@@ -288,7 +288,7 @@ Deno.serve(async (req) => {
       await dlqSupabase.from("webhook_events").insert({
         source: "signnow",
         event_type: "processing_error",
-        payload: { error: err.message, stack: err.stack?.slice(0, 500) },
+        payload: { error: err instanceof Error ? err.message : "Unknown error", stack: err.stack?.slice(0, 500) },
         status: "failed",
         processed_at: new Date().toISOString(),
       }).then(({ error: dlqErr }) => { if (dlqErr) console.warn("DLQ insert error:", dlqErr.message); });

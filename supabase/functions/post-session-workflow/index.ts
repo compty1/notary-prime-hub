@@ -93,8 +93,8 @@ Deno.serve(async (req) => {
       } else {
         steps.push({ step: "completion_email", status: "skipped", error: "No client email found" });
       }
-    } catch (e: any) {
-      steps.push({ step: "completion_email", status: "failed", error: e.message });
+    } catch (e: unknown) {
+      steps.push({ step: "completion_email", status: "failed", error: e instanceof Error ? e.message : "Unknown error" });
     }
 
     // Step 2: Create journal entries
@@ -116,8 +116,8 @@ Deno.serve(async (req) => {
       } else {
         steps.push({ step: "journal_entry", status: "skipped", error: "No notary_user_id" });
       }
-    } catch (e: any) {
-      steps.push({ step: "journal_entry", status: "failed", error: e.message });
+    } catch (e: unknown) {
+      steps.push({ step: "journal_entry", status: "failed", error: e instanceof Error ? e.message : "Unknown error" });
     }
 
     // Step 3: Calculate profit share
@@ -143,8 +143,8 @@ Deno.serve(async (req) => {
       } else {
         steps.push({ step: "profit_share", status: "skipped", error: "No appointment linked" });
       }
-    } catch (e: any) {
-      steps.push({ step: "profit_share", status: "failed", error: e.message });
+    } catch (e: unknown) {
+      steps.push({ step: "profit_share", status: "failed", error: e instanceof Error ? e.message : "Unknown error" });
     }
 
     // Step 4: Schedule review request (delayed 24h via queue)
@@ -166,8 +166,8 @@ Deno.serve(async (req) => {
         });
         steps.push({ step: "review_request", status: "scheduled" });
       }
-    } catch (e: any) {
-      steps.push({ step: "review_request", status: "failed", error: e.message });
+    } catch (e: unknown) {
+      steps.push({ step: "review_request", status: "failed", error: e instanceof Error ? e.message : "Unknown error" });
     }
 
     // Log all steps to audit
@@ -181,8 +181,8 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ success: true, steps }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), {
+  } catch (err: unknown) {
+    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

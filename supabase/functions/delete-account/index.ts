@@ -110,7 +110,7 @@ Deno.serve(async (req) => {
         } else {
           await adminClient.from(t.table).delete().eq(t.column, userId);
         }
-      } catch (e: any) {
+      } catch (e: unknown) {
         errors.push(`${t.table}: ${e.message}`);
       }
     }
@@ -142,8 +142,8 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), {
+  } catch (err: unknown) {
+    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
