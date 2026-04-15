@@ -44,7 +44,7 @@ export default function PortalServiceRequestsTab({ serviceRequests: initialReque
     const channel = supabase
       .channel("portal-service-requests")
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "service_requests" }, (payload) => {
-        const updated = payload.new as any;
+        const updated = payload.new as Record<string, unknown>;
         setRequests(prev => prev.map(r => r.id === updated.id ? { ...r, ...updated } : r));
       })
       .subscribe();
