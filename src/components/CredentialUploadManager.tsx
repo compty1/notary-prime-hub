@@ -12,17 +12,20 @@ import { toast } from "sonner";
 
 export function CredentialUploadManager() {
   const { user } = useAuth();
-  const [credentials, setCredentials] = useState<any[]>([]);
+  const [credentials, setCredentials] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [credType, setCredType] = useState("notary_commission");
   const [expiresAt, setExpiresAt] = useState("");
 
-  useEffect(() => {
+  const fetchCredentials = async () => {
     if (!user) return;
-    (supabase.from("platform_credentials" as any).select("*") as any).eq("user_id", user.id).order("created_at", { ascending: false })
-      .then(({ data }: any) => { setCredentials(data || []); setLoading(false); });
-  }, [user]);
+    const { data } = await (supabase.from("platform_credentials" as never).select("*") as ReturnType<typeof supabase.from>).eq("user_id", user.id).order("created_at", { ascending: false });
+    setCredentials((data as Record<string, unknown>[]) || []);
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchCredentials(); }, [user]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -32,17 +35,16 @@ export function CredentialUploadManager() {
     const { error: uploadErr } = await supabase.storage.from("documents").upload(path, file);
     if (uploadErr) { toast.error("Upload failed"); setUploading(false); return; }
 
-    const { error } = await (supabase.from("platform_credentials" as any) as any).insert({
+    const { error } = await (supabase.from("platform_credentials" as never) as ReturnType<typeof supabase.from>).insert({
       user_id: user.id,
       credential_type: credType,
       file_path: path,
       expires_at: expiresAt || null,
       status: "pending_review",
-    });
+    } as never);
     if (error) { toast.error(error.message); } else {
       toast.success("Credential uploaded for review");
-      const { data } = await (supabase.from("platform_credentials" as any).select("*") as any).eq("user_id", user.id).order("created_at", { ascending: false });
-      setCredentials(data || []);
+      await fetchCredentials();
     }
     setUploading(false);
   };

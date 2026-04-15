@@ -20,9 +20,9 @@ export function NotaryCommissionTracker() {
 
   useEffect(() => {
     const load = async () => {
-      const { data } = await supabase
-        .from("platform_credentials" as any)
-        .select("user_id, credential_type, expiration_date, status")
+      const { data } = await (supabase
+        .from("platform_credentials" as never)
+        .select("user_id, credential_type, expiration_date, status") as ReturnType<typeof supabase.from>)
         .in("credential_type", ["notary_commission", "surety_bond", "eo_insurance"])
         .order("expiration_date", { ascending: true });
 
@@ -30,7 +30,7 @@ export function NotaryCommissionTracker() {
 
       // Group by user
       const map = new Map<string, Partial<CommissionStatus>>();
-      for (const row of data as any[]) {
+      for (const row of data as Record<string, unknown>[]) {
         const existing = map.get(row.user_id) || {};
         if (row.credential_type === "notary_commission") {
           existing.commissionExpiry = row.expiration_date;

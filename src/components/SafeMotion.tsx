@@ -19,7 +19,7 @@ export const SafeMotionDiv = forwardRef<HTMLDivElement, SafeMotionDivProps>(
     const shouldReduceMotion = useReducedMotion();
 
     if (shouldReduceMotion) {
-      return <div ref={ref} {...(rest as any)}>{children}</div>;
+      return <div ref={ref} {...(rest as React.HTMLAttributes<HTMLDivElement>)}>{children}</div>;
     }
 
     return (
