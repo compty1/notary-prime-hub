@@ -120,7 +120,7 @@ export default function AdminRevenue() {
       }
       const [{ data: journalData }, { data: paymentData }, { data: profileData }, { data: svcData }] = await Promise.all([
         journalQuery, paymentQuery,
-        supabase.from("profiles").select("user_id, full_name, email").limit(1000),
+        supabase.from("profiles").select("user_id, full_name, email").limit(999),
         serviceReqQuery,
       ]);
       if (journalData) setEntries(journalData);

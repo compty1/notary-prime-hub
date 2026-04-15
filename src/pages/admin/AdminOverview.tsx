@@ -18,7 +18,12 @@ import GoogleCalendarWidget from "@/components/GoogleCalendarWidget";
 import { appointmentStatusColors as statusColors } from "@/lib/statusColors";
 import { formatDate, formatTime } from "@/lib/utils";
 
-const CHART_COLORS = ["hsl(224, 63%, 28%)", "hsl(168, 75%, 36%)", "hsl(42, 78%, 55%)", "hsl(0, 85%, 55%)", "hsl(261, 50%, 51%)", "hsl(190, 95%, 39%)", "hsl(30, 95%, 53%)", "hsl(140, 60%, 40%)"];
+// AD-020: Use CSS variable-based colors for dark mode compatibility
+const CHART_COLORS = [
+  "hsl(var(--primary))", "hsl(var(--accent))", "hsl(43, 74%, 49%)",
+  "hsl(var(--destructive))", "hsl(261, 50%, 51%)", "hsl(190, 95%, 39%)",
+  "hsl(30, 95%, 53%)", "hsl(140, 60%, 40%)",
+];
 
 function getGreeting(): string {
   const h = new Date().getHours();
@@ -91,8 +96,8 @@ export default function AdminOverview() {
         supabase.from("appointments").select("id, client_id, scheduled_date, scheduled_time, status, service_type, notarization_type, confirmation_number").order("scheduled_date", { ascending: false }).limit(10),
         supabase.from("payments").select("amount, status, created_at, fees_charged").eq("status", "paid"),
         supabase.from("platform_settings").select("setting_key, setting_value"),
-        supabase.from("profiles").select("user_id, full_name, email").limit(500),
-        supabase.from("appointments").select("scheduled_date, status, notarization_type, client_id, service_type, confirmation_number, scheduled_time").order("scheduled_date", { ascending: true }).gte("scheduled_date", new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]).limit(500),
+        supabase.from("profiles").select("user_id, full_name, email").limit(999),
+        supabase.from("appointments").select("scheduled_date, status, notarization_type, client_id, service_type, confirmation_number, scheduled_time").order("scheduled_date", { ascending: true }).gte("scheduled_date", new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]).limit(999),
         // New: active orders
         supabase.from("orders").select("id", { count: "exact", head: true }).in("status", ["pending", "assigned", "in_progress", "under_review"]),
         // New: pending assignments (unassigned orders)
@@ -426,7 +431,7 @@ export default function AdminOverview() {
                           {a.scheduled_time?.slice(0,5)} {a.service_type?.slice(0,15)}
                         </div>
                       ))}
-                      {dayGcal.map((e: any, i: number) => (
+                      {dayGcal.map((e, i) => (
                         <div key={i} className="rounded bg-blue-100 dark:bg-blue-900/30 px-1.5 py-0.5 text-[10px] text-blue-700 dark:text-blue-300 truncate" title={e.summary}>
                           {e.start?.dateTime ? new Date(e.start.dateTime).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "All day"} {e.summary?.slice(0,12)}
                         </div>

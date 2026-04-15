@@ -43,7 +43,7 @@ export default function AdminJournal() {
 
   const fetchEntries = async () => {
     // Bug 483: Add limit; Bug 484: Filter out archived entries
-    const { data } = await supabase.from("notary_journal").select("*").neq("archived", true).order("created_at", { ascending: false }).limit(1000);
+    const { data } = await supabase.from("notary_journal").select("*").neq("archived", true).order("created_at", { ascending: false }).limit(999);
     if (data) setEntries(data);
     setLoading(false);
   };
