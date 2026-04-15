@@ -795,6 +795,12 @@ export default function AdminLeadPortal() {
                             {lead.city && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{lead.city}, {lead.state}</span>}
                             {lead.service_needed && <span>{lead.service_needed}</span>}
                             {lead.source && lead.source !== "manual" && <Badge variant="outline" className="text-[10px]">{lead.source}</Badge>}
+                            {/* LP-025: Lead age indicator */}
+                            <span className={`flex items-center gap-0.5 ${getLeadAge(lead).color}`}>
+                              <Clock className="h-3 w-3" />{getLeadAge(lead).label}
+                            </span>
+                            {/* LP-027: Response time */}
+                            {getResponseTime(lead) && <span className="text-primary text-[10px]">⚡{getResponseTime(lead)}</span>}
                           </div>
                         </div>
                       </div>
@@ -883,6 +889,108 @@ export default function AdminLeadPortal() {
                 </div>
               );
             })}
+          </div>
+        </TabsContent>
+
+        {/* LP-B/C/D/E: Analytics Tab */}
+        <TabsContent value="analytics" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
+            {/* LP-029: Source ROI */}
+            <Card>
+              <CardContent className="p-4">
+                <h3 className="text-sm font-semibold mb-3">Lead Source Performance</h3>
+                {sourceStats.slice(0, 10).map(s => (
+                  <div key={s.source} className="flex items-center justify-between py-1.5 border-b last:border-0">
+                    <span className="text-sm capitalize">{s.source.replace(/_/g, " ")}</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 h-1.5 rounded-full bg-muted">
+                        <div className="h-1.5 rounded-full bg-primary" style={{ width: `${Math.min(100, (s.total / Math.max(1, leads.length)) * 100)}%` }} />
+                      </div>
+                      <span className="text-xs text-muted-foreground w-8 text-right">{s.total}</span>
+                      <Badge variant={s.convRate > 20 ? "default" : "secondary"} className="text-[10px]">{s.convRate}%</Badge>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* LP-036: Pipeline Drop-off */}
+            <Card>
+              <CardContent className="p-4">
+                <h3 className="text-sm font-semibold mb-3">Pipeline Funnel</h3>
+                {pipelineDropoff.map((p, idx) => (
+                  <div key={p.stage} className="flex items-center gap-3 py-1.5">
+                    <span className="w-20 text-xs capitalize">{p.stage.replace("-", " ")}</span>
+                    <div className="flex-1 rounded-full bg-muted h-2">
+                      <div className="h-2 rounded-full bg-primary transition-all" style={{ width: `${Math.min(100, leads.length > 0 ? (p.count / leads.length) * 100 : 0)}%` }} />
+                    </div>
+                    <span className="w-8 text-right text-xs font-medium">{p.count}</span>
+                    {idx > 0 && p.dropoff > 0 && (
+                      <span className="text-[10px] text-destructive w-10 text-right">-{p.dropoff}%</span>
+                    )}
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* LP-028: Conversion Velocity */}
+            <Card>
+              <CardContent className="p-4">
+                <h3 className="text-sm font-semibold mb-3">Conversion Metrics</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Avg. Conversion Time</span>
+                    <span className="font-medium">{conversionVelocity ? `${conversionVelocity} days` : "N/A"}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Win Rate</span>
+                    <span className="font-medium">{stats.conversionRate}%</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Avg. Lead Score</span>
+                    <span className="font-medium">{stats.avgScore}/100</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">High Intent Ratio</span>
+                    <span className="font-medium">{leads.length > 0 ? Math.round((stats.highIntent / leads.length) * 100) : 0}%</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Stale Leads</span>
+                    <span className={`font-medium ${stats.stale > 5 ? "text-destructive" : ""}`}>{stats.stale}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Duplicate Candidates</span>
+                    <span className="font-medium">{duplicates.size}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* LP-032: Lead Priority Queue (Top 10 by score) */}
+            <Card>
+              <CardContent className="p-4">
+                <h3 className="text-sm font-semibold mb-3">Priority Queue (Top 10)</h3>
+                {leads
+                  .filter(l => !["converted", "closed-won", "closed-lost"].includes(l.status))
+                  .sort((a, b) => computeLeadScore(b) - computeLeadScore(a))
+                  .slice(0, 10)
+                  .map(lead => {
+                    const age = getLeadAge(lead);
+                    return (
+                      <div key={lead.id} className="flex items-center justify-between py-1.5 border-b last:border-0 cursor-pointer hover:bg-muted/50 rounded px-1" onClick={() => openDetail(lead)}>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium w-8">{computeLeadScore(lead)}</span>
+                          <span className="text-sm truncate max-w-[150px]">{lead.name || lead.business_name || "Unnamed"}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge className={intentColors[lead.intent_score] + " text-[10px]"}>{lead.intent_score}</Badge>
+                          <span className={`text-[10px] ${age.color}`}>{age.label}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
       </Tabs>
