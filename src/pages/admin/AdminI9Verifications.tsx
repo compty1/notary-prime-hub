@@ -27,7 +27,8 @@ export default function AdminI9Verifications() {
   usePageMeta({ title: "I-9 Verifications", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
-  const [verifications, setVerifications] = useState<any[]>([]);
+  interface I9Verification { id: string; employee_name: string | null; employer_name: string | null; employer_address: string | null; section_completed: string; notary_notes: string | null; status: string; created_at: string; client_id: string; }
+  const [verifications, setVerifications] = useState<I9Verification[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
@@ -57,7 +58,7 @@ export default function AdminI9Verifications() {
       section_completed: form.section_completed,
       notary_notes: form.notary_notes,
       client_id: user?.id || "",
-    } as any);
+    });
     setSaving(false);
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
     toast({ title: "I-9 verification created" });

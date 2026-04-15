@@ -21,7 +21,8 @@ export default function AdminSkipTracing() {
   usePageMeta({ title: "Skip Tracing", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
-  const [requests, setRequests] = useState<any[]>([]);
+  interface SkipTraceRequest { id: string; subject_name: string | null; subject_last_known_address: string | null; purpose: string | null; fee: number | null; status: string; created_at: string; client_id: string; notes: string | null; found_address: string | null; found_phone: string | null; found_email: string | null; }
+  const [requests, setRequests] = useState<SkipTraceRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
@@ -36,14 +37,14 @@ export default function AdminSkipTracing() {
   const handleCreate = async () => {
     if (!form.subject_name.trim()) { toast({ title: "Subject name required", variant: "destructive" }); return; }
     setSaving(true);
-    const { error } = await supabase.from("skip_trace_requests").insert({ subject_name: form.subject_name, subject_last_known_address: form.subject_last_known_address, purpose: form.purpose, fee: parseFloat(form.fee) || 0, client_id: user?.id || "" } as any);
+    const { error } = await supabase.from("skip_trace_requests").insert({ subject_name: form.subject_name, subject_last_known_address: form.subject_last_known_address, purpose: form.purpose, fee: parseFloat(form.fee) || 0, client_id: user?.id || "" });
     setSaving(false);
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
     toast({ title: "Request created" }); setCreateOpen(false); fetchData();
   };
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from("skip_trace_requests").update({ status } as any).eq("id", id);
+    await supabase.from("skip_trace_requests").update({ status }).eq("id", id);
     setRequests(prev => prev.map(r => r.id === id ? { ...r, status } : r)); toast({ title: "Updated" });
   };
 

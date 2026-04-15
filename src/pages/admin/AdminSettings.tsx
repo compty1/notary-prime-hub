@@ -35,8 +35,9 @@ export default function AdminSettings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editValues, setEditValues] = useState<Record<string, string>>({});
-  const [expiredIds, setExpiredIds] = useState<any[]>([]);
-  const [expiringIds, setExpiringIds] = useState<any[]>([]);
+  interface JournalExpiry { id: string; signer_name: string | null; document_type: string | null; id_expiration: string | null; }
+  const [expiredIds, setExpiredIds] = useState<JournalExpiry[]>([]);
+  const [expiringIds, setExpiringIds] = useState<JournalExpiry[]>([]);
   const [uploadingCert, setUploadingCert] = useState(false);
   const [uploadingSeal, setUploadingSeal] = useState(false);
   const [sealPreviewUrl, setSealPreviewUrl] = useState<string | null>(null);
@@ -46,7 +47,7 @@ export default function AdminSettings() {
     if (data) {
       const mapped: Record<string, SettingItem> = {};
       const values: Record<string, string> = {};
-      data.forEach((s: any) => {
+      data.forEach((s: SettingItem) => {
         mapped[s.setting_key] = s;
         values[s.setting_key] = s.setting_value;
       });
@@ -121,8 +122,8 @@ export default function AdminSettings() {
       return supabase.from("platform_settings").insert({ setting_key: key, setting_value: value, updated_by: user?.id });
     }).filter(Boolean);
 
-    const results = await Promise.all(updates as any[]);
-    const hasError = results.some((r: any) => r?.error);
+    const results = await Promise.all(updates as Promise<{ error: unknown }>[]);
+    const hasError = results.some((r) => r?.error);
     if (hasError) toast({ title: "Error saving some settings", variant: "destructive" });
     else {
       toast({ title: "Settings saved", description: "All changes have been applied." });
