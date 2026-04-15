@@ -40,29 +40,33 @@ Deno.serve(async (req) => {
     const userId = user.id;
     const userEmail = user.email || "";
 
-    const body = await req.json();
-    const rawAmount = Number(body.amount);
-    const appointmentId = body.appointmentId || "";
-    const description = body.description || "Notary service payment";
-    const referralProfessionalId = body.referralProfessionalId || null;
-
-    // Validate amount: must be positive, max $50k, max 2 decimal places
-    if (!Number.isFinite(rawAmount) || rawAmount <= 0) {
-      return new Response(JSON.stringify({ error: "Amount must be greater than $0" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    const { z } = await import("https://esm.sh/zod@3.23.8");
+    const BodySchema = z.object({
+      amount: z.number().positive().max(50000),
+      appointmentId: z.string().uuid().optional().default(""),
+      description: z.string().max(500).optional().default("Notary service payment"),
+      referralProfessionalId: z.string().uuid().nullable().optional().default(null),
+      notarialActCount: z.number().int().min(1).max(100).optional().default(1),
+      serviceType: z.string().max(100).optional(),
+      enforceFeeCap: z.boolean().optional(),
+      notaryFeeOnly: z.number().positive().optional(),
+    });
+    const parsed = BodySchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: "Invalid input", details: parsed.error.flatten().fieldErrors }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
-    if (rawAmount > 50000) {
-      return new Response(JSON.stringify({ error: "Amount exceeds maximum ($50,000)" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-    }
-    const amount = Math.round(rawAmount * 100) / 100; // round to 2 decimal places
+    const { amount: rawAmount, appointmentId, description, referralProfessionalId, notarialActCount, serviceType, enforceFeeCap, notaryFeeOnly } = parsed.data;
+    // Zod already validated positive + max 50k
+    const amount = Math.round(rawAmount * 100) / 100;
 
     // Ohio ORC §147.08 fee cap enforcement: $5 per notarial act
-    // Always enforce for notarization services
-    const notarialActCount = Number(body.notarialActCount) || 1;
-    const isNotarialService = body.serviceType?.toLowerCase()?.includes("notar") || body.enforceFeeCap;
+    const isNotarialService = serviceType?.toLowerCase()?.includes("notar") || enforceFeeCap;
     if (isNotarialService) {
       const ohioFeeCap = notarialActCount * 5;
-      const notaryFeeOnly = Number(body.notaryFeeOnly) || amount;
-      if (notaryFeeOnly > ohioFeeCap) {
+      const feeToCheck = notaryFeeOnly ?? amount;
+      if (feeToCheck > ohioFeeCap) {
         return new Response(JSON.stringify({ error: `Notarization fee exceeds Ohio statutory cap of $${ohioFeeCap.toFixed(2)} for ${notarialActCount} act(s) per ORC §147.08. The notary fee portion must not exceed $5 per act.` }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
     }

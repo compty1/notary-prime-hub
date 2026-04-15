@@ -160,7 +160,7 @@ function DLQViewer() {
   };
 
   const dismissMessage = async (id: string) => {
-    await supabase.from("email_send_log").update({ status: "dismissed" } as any).eq("id", id);
+    await supabase.from("email_send_log").update({ status: "dismissed" }).eq("id", id);
     toast({ title: "Dismissed", description: "Failure acknowledged." });
     fetchFailures();
   };

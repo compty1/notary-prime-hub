@@ -39,11 +39,18 @@ export default function AdminFinances() {
   });
 
   // Fetch transactions
-  const { data: transactions = [] } = useQuery({
+  type TransactionWithCategory = {
+    id: string; user_id: string; type: string; amount: number;
+    description: string; transaction_date: string; vendor: string | null;
+    category_id: string | null; created_at: string;
+    expense_categories: { category_name: string; irs_schedule_c_line: string | null } | null;
+  };
+
+  const { data: transactions = [] } = useQuery<TransactionWithCategory[]>({
     queryKey: ["financial-transactions"],
     queryFn: async () => {
       const { data } = await supabase.from("financial_transactions").select("*, expense_categories(category_name, irs_schedule_c_line)").order("transaction_date", { ascending: false }).limit(200);
-      return data || [];
+      return (data ?? []) as unknown as TransactionWithCategory[];
     },
   });
 
@@ -120,7 +127,7 @@ export default function AdminFinances() {
   const categoryBreakdown = transactions
     .filter(t => t.type === "expense")
     .reduce((acc: Record<string, number>, t) => {
-      const cat = (t as any).expense_categories?.category_name || "Uncategorized";
+      const cat = t.expense_categories?.category_name || "Uncategorized";
       acc[cat] = (acc[cat] || 0) + Number(t.amount);
       return acc;
     }, {});
@@ -217,7 +224,7 @@ export default function AdminFinances() {
                   <TableRow key={t.id}>
                     <TableCell className="text-sm">{formatDate(t.transaction_date)}</TableCell>
                     <TableCell className="text-sm">{t.description || "—"}</TableCell>
-                    <TableCell><Badge variant="outline" className="text-xs">{(t as any).expense_categories?.category_name || "—"}</Badge></TableCell>
+                    <TableCell><Badge variant="outline" className="text-xs">{t.expense_categories?.category_name || "—"}</Badge></TableCell>
                     <TableCell className="text-sm">{t.vendor || "—"}</TableCell>
                     <TableCell className="text-right font-medium text-destructive">{formatCurrency(Number(t.amount))}</TableCell>
                   </TableRow>
@@ -303,8 +310,8 @@ export default function AdminFinances() {
               <TableBody>
                 {Object.entries(
                   transactions.filter(t => t.type === "expense").reduce((acc: Record<string, { categories: string[]; total: number }>, t) => {
-                    const line = (t as any).expense_categories?.irs_schedule_c_line || "Uncategorized";
-                    const cat = (t as any).expense_categories?.category_name || "Other";
+                    const line = t.expense_categories?.irs_schedule_c_line || "Uncategorized";
+                    const cat = t.expense_categories?.category_name || "Other";
                     if (!acc[line]) acc[line] = { categories: [], total: 0 };
                     if (!acc[line].categories.includes(cat)) acc[line].categories.push(cat);
                     acc[line].total += Number(t.amount);
@@ -331,7 +338,7 @@ export default function AdminFinances() {
               <Button variant="outline" size="sm" onClick={() => {
                 const rows = [["Schedule C Line", "Category", "Amount"]];
                 transactions.filter(t => t.type === "expense").forEach(t => {
-                  rows.push([(t as any).expense_categories?.irs_schedule_c_line || "", (t as any).expense_categories?.category_name || "", String(t.amount)]);
+                  rows.push([t.expense_categories?.irs_schedule_c_line || "", t.expense_categories?.category_name || "", String(t.amount)]);
                 });
                 if (totalMileageDeduction > 0) rows.push(["Line 9 (Car)", "Business Mileage", String(totalMileageDeduction.toFixed(2))]);
                 const csv = rows.map(r => r.map(c => `"${c}"`).join(",")).join("\n");

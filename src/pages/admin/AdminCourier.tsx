@@ -36,7 +36,7 @@ export default function AdminCourier() {
   const handleCreate = async () => {
     if (!form.pickup_address.trim() || !form.dropoff_address.trim()) { toast({ title: "Pickup and dropoff addresses required", variant: "destructive" }); return; }
     setSaving(true);
-    const { error } = await supabase.from("courier_jobs").insert({ pickup_address: form.pickup_address, dropoff_address: form.dropoff_address, package_description: form.package_description, requires_signature: form.requires_signature, fee: parseFloat(form.fee) || 0, notes: form.notes, client_id: user?.id || "" } as any);
+    const { error } = await supabase.from("courier_jobs").insert({ pickup_address: form.pickup_address, dropoff_address: form.dropoff_address, package_description: form.package_description, requires_signature: form.requires_signature, fee: parseFloat(form.fee) || 0, notes: form.notes, client_id: user?.id || "" });
     setSaving(false);
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
     toast({ title: "Job created" }); setCreateOpen(false); fetchData();
