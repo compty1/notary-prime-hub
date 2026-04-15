@@ -120,7 +120,7 @@ Deno.serve(async (req) => {
           console.error(`SMS send failed for ${appt.id}:`, err);
         }
       } catch (e: unknown) {
-        console.error(`SMS error for ${appt.id}:`, e.message);
+        console.error(`SMS error for ${appt.id}:`, e instanceof Error ? e.message : e);
       }
     }
 

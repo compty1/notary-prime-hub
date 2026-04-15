@@ -84,7 +84,7 @@ Deno.serve(async (req) => {
         const status = findings.length === 0 ? "pass" : "review";
         results.push({ document_id: docId, file_name: doc.file_name, status, findings });
       } catch (e: unknown) {
-        results.push({ document_id: docId, file_name: "Unknown", status: "error", findings: [e.message] });
+        results.push({ document_id: docId, file_name: "Unknown", status: "error", findings: [e instanceof Error ? e.message : "Unknown error"] });
       }
     }
 
