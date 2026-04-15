@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Menu, ChevronDown } from "lucide-react";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
@@ -171,7 +172,8 @@ export function Navbar() {
             Pricing
           </Link>
 
-          <div className="ml-4 flex items-center gap-3">
+          <div className="ml-4 flex items-center gap-2">
+            <DarkModeToggle className="text-muted-foreground" />
             {user ? (
               <Link to={portalLink}>
                 <Button variant="ghost" size="sm" className="text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted">{portalLabel}</Button>

@@ -6,9 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { PenLine, Stamp, Calculator, Clock, FileText, QrCode, Palette } from "lucide-react";
+import { PenLine, Stamp, Calculator, Clock, FileText, QrCode } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 
 function SignatureGenerator() {
