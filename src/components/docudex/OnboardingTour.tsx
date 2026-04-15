@@ -4,7 +4,6 @@
 import { useState, useEffect } from "react";
 import { Joyride, STATUS } from "react-joyride";
 import type { Step } from "react-joyride";
-import type { Step } from "react-joyride";
 import { safeGetItem, safeSetItem } from "@/lib/safeStorage";
 
 const TOUR_STEPS: Step[] = [
