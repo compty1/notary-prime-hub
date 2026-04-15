@@ -93,7 +93,7 @@ export default function AdminOrders() {
     setCreating(true);
     const { data, error } = await supabase.from("orders").insert([{
       client_id: newOrder.client_id,
-      priority: newOrder.priority,
+      priority: (newOrder.priority || "standard") as "emergency" | "priority" | "rush" | "standard",
       service_category: newOrder.service_category || null,
       notes: newOrder.notes || null,
     }]).select().single();
