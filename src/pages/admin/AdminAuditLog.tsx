@@ -66,8 +66,8 @@ const PAGE_SIZE = 25;
 
 interface AuditLogEntry {
   id: string; action: string; entity_type: string | null; entity_id: string | null;
-  user_id: string | null; details: Record<string, unknown> | null;
-  old_value_json: Record<string, unknown> | null; new_value_json: Record<string, unknown> | null;
+  user_id: string | null; details: unknown;
+  old_value_json: unknown; new_value_json: unknown;
   ip_address: string | null; created_at: string;
 }
 

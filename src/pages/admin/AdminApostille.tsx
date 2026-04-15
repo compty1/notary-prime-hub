@@ -268,7 +268,7 @@ export default function AdminApostille() {
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-sm font-medium">${parseFloat(req.fee || "0").toFixed(2)}</span>
+                        <span className="text-sm font-medium">${parseFloat(String(req.fee ?? 0)).toFixed(2)}</span>
                         <ChevronRight className="h-4 w-4 text-muted-foreground" />
                       </div>
                     </div>

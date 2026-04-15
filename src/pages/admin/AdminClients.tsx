@@ -21,7 +21,7 @@ import { formatDate } from "@/lib/utils";
 const PAGE_SIZE = 30;
 
 interface ClientProfile {
-  user_id: string; full_name: string | null; email: string | null; phone: string | null;
+  id?: string; user_id: string; full_name: string | null; email: string | null; phone: string | null;
   address: string | null; city: string | null; state: string | null; zip: string | null;
   avatar_path: string | null; admin_notes: string | null; created_at: string;
   plan?: string | null; role?: string | null;
