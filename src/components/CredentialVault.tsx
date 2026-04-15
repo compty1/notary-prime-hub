@@ -184,7 +184,7 @@ export default function CredentialVault() {
               <CardHeader className="pb-2 flex-row items-center gap-3">
                 <img
                   src={c.service_logo_url || getLogoUrl(c.service_url, c.service_name)}
-                  alt=""
+                  alt="Credential document preview"
                   className="h-8 w-8 rounded"
                   onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(c.service_name)}&size=64&background=6366f1&color=fff`; }}
                 />
