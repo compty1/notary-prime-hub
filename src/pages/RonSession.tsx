@@ -229,23 +229,23 @@ export default function RonSession() {
         setKbaCompleted(session.kba_completed || false);
         setSessionStatus(session.status || "scheduled");
         if (session.status === "in_session" || session.status === "completed") setShowWaitingRoom(false);
-        if ((session as any).participant_link) setParticipantLink((session as any).participant_link);
-        if ((session as any).session_unique_id) setSessionUniqueId((session as any).session_unique_id);
-        if ((session as any).recording_consent) {
+        const s = session as Record<string, unknown>;
+        if (s.participant_link) setParticipantLink(s.participant_link as string);
+        if (s.session_unique_id) setSessionUniqueId(s.session_unique_id as string);
+        if (s.recording_consent) {
           setRecordingConsent(true);
-          setRecordingConsentAt((session as any).recording_consent_at || null);
+          setRecordingConsentAt((s.recording_consent_at as string) || null);
         }
-        // Load new fields
-        if ((session as any).session_mode) setSessionMode((session as any).session_mode);
-        if ((session as any).signing_platform) setSigningPlatform((session as any).signing_platform);
-        if ((session as any).document_name) setDocumentName((session as any).document_name);
-        if ((session as any).signer_email) setSignerEmail((session as any).signer_email);
-        if ((session as any).kba_attempts) setKbaAttempts((session as any).kba_attempts);
-        if ((session as any).session_timeout_minutes) setSessionTimeoutMinutes((session as any).session_timeout_minutes);
-        if ((session as any).started_at) setSessionStartedAt((session as any).started_at);
-        if ((session as any).webhook_status) setWebhookStatus((session as any).webhook_status);
-        if ((session as any).webhook_events_registered) setWebhookEventsRegistered((session as any).webhook_events_registered);
-        if ((session as any).signnow_document_id) setSignnowDocumentId((session as any).signnow_document_id);
+        if (s.session_mode) setSessionMode(s.session_mode as string);
+        if (s.signing_platform) setSigningPlatform(s.signing_platform as string);
+        if (s.document_name) setDocumentName(s.document_name as string);
+        if (s.signer_email) setSignerEmail(s.signer_email as string);
+        if (s.kba_attempts) setKbaAttempts(s.kba_attempts as number);
+        if (s.session_timeout_minutes) setSessionTimeoutMinutes(s.session_timeout_minutes as number);
+        if (s.started_at) setSessionStartedAt(s.started_at as string);
+        if (s.webhook_status) setWebhookStatus(s.webhook_status as string);
+        if (s.webhook_events_registered) setWebhookEventsRegistered(s.webhook_events_registered as boolean);
+        if (s.signnow_document_id) setSignnowDocumentId(s.signnow_document_id as string);
       } else {
         // Capture signer IP on first session load (Ohio RON compliance)
         try {
@@ -254,10 +254,11 @@ export default function RonSession() {
           if (ipData?.ip) {
             const { data: newSession } = await supabase.from("notarization_sessions").insert({
               appointment_id: appointmentId,
-              session_type: "ron" as any,
+              session_type: "ron",
               signer_ip: ipData.ip,
-            } as any).select("session_unique_id, signer_ip").single();
-            if ((newSession as any)?.session_unique_id) setSessionUniqueId((newSession as any).session_unique_id);
+            } as never).select("session_unique_id, signer_ip").single();
+            const ns = newSession as Record<string, unknown> | null;
+            if (ns?.session_unique_id) setSessionUniqueId(ns.session_unique_id as string);
           }
         } catch (e) { console.error("Session init error:", e); }
       }
