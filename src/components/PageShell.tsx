@@ -10,6 +10,7 @@ import { AILeadChatbot } from "@/components/AILeadChatbot";
 import LegalGlossaryProvider from "@/components/LegalGlossaryProvider";
 import { PrintStylesheet } from "@/components/PrintStylesheet";
 import { useSettings } from "@/hooks/useSettings";
+import { useBrandColors } from "@/hooks/useBrandColors";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { pageTransition } from "@/lib/animations";
@@ -27,6 +28,8 @@ export function PageShell({ children, hideNav = false, hideFooter = false, isSta
   const isInternalRoute = pathname.startsWith("/admin") || pathname.startsWith("/portal");
   const { get, isEnabled } = useSettings();
   const { isAdmin, user } = useAuth();
+  // GS-009/GS-010: Apply brand colors and font from settings to CSS vars
+  useBrandColors();
 
   const phone = get("notary_phone", "(614) 300-6890");
   const email = get("notary_email", "shane@notardex.com");
