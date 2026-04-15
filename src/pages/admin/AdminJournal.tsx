@@ -17,26 +17,9 @@ import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 
 const serviceTypes = ["acknowledgment", "jurat", "oath", "copy_certification", "other"];
 
-interface JournalEntry {
-  id: string; signer_name: string; signer_address: string | null;
-  id_type: string | null; id_number: string | null; id_expiration: string | null;
-  document_type: string | null; document_description: string | null;
-  service_performed: string | null; notarization_type: string | null;
-  fees_charged: number | null; platform_fee: number | null; travel_fee: number | null;
-  witnesses_present: number | null; oath_administered: boolean | null;
-  notes: string | null; appointment_id: string | null; archived: boolean | null;
-  journal_number: number | null; entry_time: string | null; document_date: string | null;
-  notary_commission_number: string | null; communication_technology: string | null;
-  credential_analysis_method: string | null; net_profit: number | null;
-  oath_timestamp: string | null; recording_url: string | null;
-  created_at: string; updated_at: string;
-  [key: string]: unknown;
-}
-interface JournalAppointment {
-  id: string; scheduled_date: string; scheduled_time: string; service_type: string;
-  status: string; client_id: string; notarization_type: string;
-  [key: string]: unknown;
-}
+import type { Database } from "@/integrations/supabase/types";
+type JournalEntry = Database["public"]["Tables"]["notary_journal"]["Row"];
+type JournalAppointment = Database["public"]["Tables"]["appointments"]["Row"];
 
 export default function AdminJournal() {
   usePageMeta({ title: "Notary Journal", noIndex: true });
