@@ -5,6 +5,14 @@ const prefersReducedMotion = typeof window !== "undefined" && window.matchMedia?
 const duration = (d: number) => prefersReducedMotion ? 0.01 : d;
 const delay = (d: number) => prefersReducedMotion ? 0 : d;
 
+// Brand motion tokens (Sprint 3.2)
+export const MOTION = {
+  fast: 0.15,
+  base: 0.2,
+  slow: 0.3,
+  bounce: [0.34, 1.56, 0.64, 1] as [number, number, number, number],
+} as const;
+
 export const fadeUp: Variants = {
   hidden: { opacity: 0, y: prefersReducedMotion ? 0 : 20 },
   visible: (i: number = 0) => ({
