@@ -20,9 +20,9 @@ import { formatDate, formatTime } from "@/lib/utils";
 
 // AD-020: Use CSS variable-based colors for dark mode compatibility
 const CHART_COLORS = [
-  "hsl(var(--primary))", "hsl(var(--accent))", "hsl(43, 74%, 49%)",
-  "hsl(var(--destructive))", "hsl(261, 50%, 51%)", "hsl(190, 95%, 39%)",
-  "hsl(30, 95%, 53%)", "hsl(140, 60%, 40%)",
+  "hsl(var(--primary))", "hsl(var(--accent))", "hsl(var(--chart-3, 43 74% 49%))",
+  "hsl(var(--destructive))", "hsl(var(--chart-4, 261 50% 51%))", "hsl(var(--chart-5, 190 95% 39%))",
+  "hsl(var(--chart-1, 30 95% 53%))", "hsl(var(--chart-2, 140 60% 40%))",
 ];
 
 function getGreeting(): string {

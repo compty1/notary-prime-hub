@@ -1,10 +1,23 @@
-import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 import { Toaster as Sonner, toast } from "sonner";
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
+function useLocalTheme() {
+  const [theme, setTheme] = useState<string>(() => {
+    if (typeof window === "undefined") return "system";
+    return localStorage.getItem("theme") || "system";
+  });
+  useEffect(() => {
+    const handler = () => setTheme(localStorage.getItem("theme") || "system");
+    window.addEventListener("storage", handler);
+    return () => window.removeEventListener("storage", handler);
+  }, []);
+  return theme;
+}
+
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme();
+  const theme = useLocalTheme();
 
   return (
     <div aria-live="polite" aria-atomic="true">

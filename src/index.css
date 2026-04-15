@@ -183,16 +183,16 @@
 
   .text-gradient-primary {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(45 86% 48%) 0%, hsl(42 92% 60%) 100%);
+    background-image: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow, var(--primary))) 100%);
   }
 
-  /* GAP-0007: Hero gradient — white-to-cream wash */
+  /* GAP-0007: Hero gradient — white-to-cream wash (uses semantic surface tokens) */
   .bg-gradient-hero {
-    background: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(48 100% 97%) 40%, hsl(48 95% 93%) 100%);
+    background: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted)) 40%, hsl(var(--muted)) 100%);
   }
 
   .dark .bg-gradient-hero {
-    background: linear-gradient(160deg, hsl(30 10% 5%) 0%, hsl(30 10% 11%) 50%, hsl(30 10% 7%) 100%);
+    background: linear-gradient(160deg, hsl(var(--background)) 0%, hsl(var(--card)) 50%, hsl(var(--background)) 100%);
   }
 
   /* WCAG AA-compliant amber for text on white backgrounds (4.5:1+) */
@@ -278,15 +278,7 @@ html {
   }
 }
 
-/* GAP-0012: Focus indicators */
-:focus-visible {
-  outline: 2px solid hsl(var(--primary));
-  outline-offset: 2px;
-}
-
-.dark :focus-visible {
-  outline-color: hsl(var(--primary));
-}
+/* GAP-0012: Focus indicators — consolidated into @layer base *:focus-visible (line 126) */
 
 /* GAP-0030: Standardized backdrop opacity for dialogs */
 [data-radix-popper-content-wrapper],
@@ -312,7 +304,7 @@ button, a, [role="button"] {
 .interactive-card:hover {
   transform: translateY(-4px);
   border-color: hsl(var(--primary) / 0.3);
-  box-shadow: 0 16px 32px -8px hsl(45 86% 48% / 0.12);
+  box-shadow: 0 16px 32px -8px hsl(var(--primary) / 0.12);
 }
 
 /* GAP-0468/0478: will-change hints for animated elements */
@@ -320,19 +312,19 @@ button, a, [role="button"] {
   will-change: transform, opacity;
 }
 
-/* Gradient mesh background — warm accents */
+/* Gradient mesh background — warm accents (uses semantic tokens) */
 .gradient-mesh {
   background:
-    radial-gradient(ellipse at 20% 50%, hsl(45 86% 48% / 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, hsl(42 92% 60% / 0.05) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, hsl(45 86% 48% / 0.03) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, hsl(var(--primary) / 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, hsl(var(--accent) / 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, hsl(var(--primary) / 0.03) 0%, transparent 50%);
 }
 
 /* Grid pattern overlay */
 .grid-pattern {
   background-image:
-    linear-gradient(hsl(45 20% 90% / 0.4) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(45 20% 90% / 0.4) 1px, transparent 1px);
+    linear-gradient(hsl(var(--border) / 0.4) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--border) / 0.4) 1px, transparent 1px);
   background-size: 60px 60px;
 }
 
@@ -546,20 +538,4 @@ button:active, a[role="button"]:active {
   }
 }
 
-/* WCAG 2.1 AA: Respect prefers-reduced-motion (GAP-P2-02 / §4.11) */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* Focus visible ring for keyboard navigation */
-:focus-visible {
-  outline: 2px solid hsl(var(--ring));
-  outline-offset: 2px;
-}
+/* Duplicate prefers-reduced-motion and :focus-visible blocks removed — see lines 462 and 126 */
