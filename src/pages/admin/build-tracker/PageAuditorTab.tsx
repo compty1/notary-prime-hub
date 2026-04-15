@@ -58,7 +58,7 @@ export default function PageAuditorTab({ items }: Props) {
 
   const handleAdd = () => {
     if (!addTitle.trim() || !addForRoute) return;
-    insert.mutate({ title: addTitle, category: addCategory, severity: addSeverity, description: addDesc || undefined, page_route: addForRoute, status: "open" } as any);
+    insert.mutate({ title: addTitle, category: addCategory, severity: addSeverity, description: addDesc || undefined, page_route: addForRoute, status: "open" });
     setAddTitle(""); setAddDesc(""); setAddForRoute(null);
   };
 

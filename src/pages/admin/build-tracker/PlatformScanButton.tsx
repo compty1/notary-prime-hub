@@ -358,7 +358,7 @@ export default function PlatformScanButton() {
       return;
     }
 
-    bulkInsert.mutate(items as any[], {
+    bulkInsert.mutate(items, {
       onSuccess: () => {
         toast.success(`Added ${items.length} items to tracker`);
         setOpen(false);
