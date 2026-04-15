@@ -151,9 +151,9 @@ export default function BookAppointment() {
         };
         const { data: existing } = await supabase.from("booking_drafts").select("id").eq("user_id", user.id).limit(1).maybeSingle();
         if (existing) {
-          await supabase.from("booking_drafts").update({ draft_data: draftData as any, step, updated_at: new Date().toISOString() }).eq("id", existing.id);
+          await supabase.from("booking_drafts").update({ draft_data: draftData as Record<string, unknown>, step, updated_at: new Date().toISOString() }).eq("id", existing.id);
         } else {
-          await supabase.from("booking_drafts").insert({ user_id: user.id, draft_data: draftData as any, step });
+          await supabase.from("booking_drafts").insert({ user_id: user.id, draft_data: draftData as Record<string, unknown>, step });
         }
       } catch (e) { console.error("Draft save error:", e); }
     };
@@ -510,7 +510,7 @@ export default function BookAppointment() {
     const fullAddress = data.clientAddress ? `${data.clientAddress}, ${data.clientCity}, ${data.clientState} ${data.clientZip}`.trim() : (data.location || location);
     const maxPerDay = parseInt(pricingSettings.max_appointments_per_day || "0");
     if (maxPerDay > 0) {
-      const { count } = await supabase.from("appointments").select("*", { count: "exact", head: true }).eq("scheduled_date", data.date || date).neq("status", "cancelled" as any).neq("status", "no_show" as any);
+      const { count } = await supabase.from("appointments").select("*", { count: "exact", head: true }).eq("scheduled_date", data.date || date).not("status", "in", '("cancelled","no_show")');
       if (count && count >= maxPerDay) { toast({ title: "Day is fully booked", variant: "destructive" }); setSubmitting(false); return; }
     }
     // Detect notarial act type from service name
@@ -562,7 +562,7 @@ export default function BookAppointment() {
     };
     let appointmentResultId: string;
     if (rebookingId) {
-      const { error } = await supabase.from("appointments").update({ ...payload, status: "scheduled" as any }).eq("id", rebookingId);
+      const { error } = await supabase.from("appointments").update({ ...payload, status: "scheduled" }).eq("id", rebookingId);
       if (error) { toast({ title: "Reschedule failed", description: error.message, variant: "destructive" }); setSubmitting(false); return; }
       appointmentResultId = rebookingId;
     } else {
@@ -733,7 +733,7 @@ export default function BookAppointment() {
       preferred_date: date,
       preferred_time: time || null,
       status: "waiting",
-    } as any);
+    } as Record<string, unknown>);
     if (error) { toast({ title: "Could not join waitlist", description: error.message, variant: "destructive" }); }
     else { setWaitlistJoined(true); toast({ title: "You're on the waitlist!", description: "We'll notify you when a slot opens." }); }
     setJoiningWaitlist(false);
