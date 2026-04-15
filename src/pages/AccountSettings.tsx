@@ -86,7 +86,7 @@ export default function AccountSettings() {
           entity_type: "user",
           user_id: user?.id,
           details: { timestamp: new Date().toISOString() },
-        } as any);
+        } as never);
       } catch { /* non-critical */ }
     }
     setChangingPassword(false);
