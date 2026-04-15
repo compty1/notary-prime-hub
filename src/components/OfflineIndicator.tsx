@@ -10,7 +10,7 @@ async function defaultHandler(action: string, payload: unknown): Promise<boolean
     const table = p.table as string;
     if (!table) return false;
     // Use supabase.from with explicit cast for dynamic table names
-    const client = supabase as any;
+    const client = supabase as unknown as { from: (table: string) => { insert: (data: unknown) => Promise<{ error: unknown }>; update: (data: unknown) => { eq: (col: string, val: unknown) => Promise<{ error: unknown }> } } };
     switch (action) {
       case "insert": {
         const { error } = await client.from(table).insert(p.data);

@@ -24,16 +24,17 @@ export function ComplianceScorecard({ className }: { className?: string }) {
     queryKey: ["compliance-scorecard", user?.id],
     enabled: !!user,
     queryFn: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- platform_credentials not in generated types
       const { data: creds } = await (supabase
-        .from("platform_credentials" as any)
+        .from("platform_credentials" as any) as any)
         .select("*")
-        .eq("user_id", user!.id) as any);
+        .eq("user_id", user!.id);
 
       const items: CredentialItem[] = [];
       const now = new Date();
 
       const checkCred = (label: string, type: string) => {
-        const cred = ((creds as any[]) ?? []).find((c: any) => c.credential_type === type);
+        const cred = ((creds as Record<string, any>[]) ?? []).find((c) => c.credential_type === type);
         if (!cred) {
           items.push({ label, status: "missing" });
         } else if (cred.expiration_date) {

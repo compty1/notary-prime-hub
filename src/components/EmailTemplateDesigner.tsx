@@ -173,7 +173,7 @@ export default function EmailTemplateDesigner({ settings, onSave }: EmailTemplat
               { key: "footer_text", label: "Footer Text" },
             ].map(({ key, label }) => (
               <div key={key} className="flex items-center gap-2">
-                <input type="color" value={(config as any)[key]} onChange={(e) => update(key, e.target.value)} className="h-8 w-8 cursor-pointer rounded border border-border" />
+                <input type="color" value={(config as Record<string, string>)[key]} onChange={(e) => update(key, e.target.value)} className="h-8 w-8 cursor-pointer rounded border border-border" />
                 <Label className="text-xs">{label}</Label>
               </div>
             ))}
