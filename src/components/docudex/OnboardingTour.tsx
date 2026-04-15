@@ -2,7 +2,8 @@
  * P5-006: Interactive onboarding tour (8 steps + contextual tooltips)
  */
 import { useState, useEffect } from "react";
-import ReactJoyride, { STATUS } from "react-joyride";
+import { Joyride, STATUS } from "react-joyride";
+import type { Step } from "react-joyride";
 import type { Step } from "react-joyride";
 import { safeGetItem, safeSetItem } from "@/lib/safeStorage";
 
