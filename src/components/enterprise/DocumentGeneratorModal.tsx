@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import DOMPurify from "dompurify";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -198,7 +199,7 @@ const DocumentGeneratorModal: React.FC<DocumentGeneratorModalProps> = ({
 
           {/* Right: Preview */}
           <div className="flex-1 overflow-y-auto rounded-[16px] border bg-white p-6">
-            <div ref={previewRef} dangerouslySetInnerHTML={{ __html: renderedHtml }} />
+            <div ref={previewRef} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderedHtml) }} />
           </div>
         </div>
       </DialogContent>
