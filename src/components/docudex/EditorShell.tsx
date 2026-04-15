@@ -1,18 +1,31 @@
 /**
  * DocuDex Editor Shell — Main layout wrapper (P0-003)
- * Composes CanvasViewport, PropertyPanel, LayersPanel, ToolbarController, PageNavigator
+ * Composes CanvasViewport, PropertyPanel, LayersPanel, CommentsPanel,
+ * VersionHistory, ApprovalWorkflow, OnboardingTour, ShareDialog
  */
+import { useState, useCallback } from "react";
 import { useEditorStore } from "@/stores/editorStore";
+import { useAuth } from "@/contexts/AuthContext";
+import { useDocuDexAutoSave } from "@/hooks/useDocuDexAutoSave";
+import { useDocumentPermissions } from "@/hooks/useDocumentPermissions";
 import { CanvasViewport } from "./CanvasViewport";
 import { PropertyPanel } from "./PropertyPanel";
 import { LayersPanel } from "./LayersPanel";
+import { CommentsPanel } from "./CommentsPanel";
+import { VersionHistory } from "./VersionHistory";
+import { ApprovalWorkflow } from "./ApprovalWorkflow";
+import type { ApprovalStatus } from "./ApprovalWorkflow";
+import { OnboardingTour } from "./OnboardingTour";
+import { ShareDialog } from "./ShareDialog";
+import { EditorErrorBoundary } from "./EditorErrorBoundary";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import {
   Type, Square, Image, PenTool, QrCode, Table2,
-  Plus, Minus, ZoomIn, Grid3X3, Ruler, Layers,
+  Plus, Minus, Grid3X3, Ruler, Layers,
   Undo2, Redo2, Save, Download, ChevronLeft, ChevronRight,
+  MessageSquare, History, Users, HelpCircle,
 } from "lucide-react";
 
 interface EditorShellProps {
@@ -26,8 +39,18 @@ export function EditorShell({ className, onSave, onExport }: EditorShellProps) {
     title, setTitle, pages, activePageId, zoom, setZoom,
     showGrid, toggleGrid, showRulers, toggleRulers,
     showLayers, toggleLayers, addPage, setActivePage,
-    addElement, undo, redo, undoStack, redoStack,
+    addElement, undo, redo, undoStack, redoStack, documentId,
   } = useEditorStore();
+
+  const { user } = useAuth();
+  const { manualSave } = useDocuDexAutoSave({ enabled: !!user });
+  const { shares, canEdit, shareDocument, revokeAccess } = useDocumentPermissions(documentId);
+
+  const [showComments, setShowComments] = useState(false);
+  const [showVersions, setShowVersions] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [showTour, setShowTour] = useState(false);
+  const [approvalStatus, setApprovalStatus] = useState<ApprovalStatus>("draft");
 
   const activePageIndex = pages.findIndex(p => p.id === activePageId);
 
@@ -52,118 +75,181 @@ export function EditorShell({ className, onSave, onExport }: EditorShellProps) {
         ? { text: "Type here..." }
         : type === "qrcode"
           ? { data: "https://notar.com" }
-          : {},
+          : type === "signature"
+            ? { dataUrl: "" }
+            : {},
     };
     addElement(activePageId, base);
   };
 
+  const handleSave = useCallback(() => {
+    manualSave();
+    onSave?.();
+  }, [manualSave, onSave]);
+
   return (
-    <div className={cn("flex flex-col h-full bg-background", className)}>
-      {/* Top toolbar */}
-      <div className="flex items-center gap-2 px-4 py-2 border-b border-border bg-card">
-        <input
-          value={title}
-          onChange={e => setTitle(e.target.value)}
-          className="bg-transparent text-sm font-semibold text-foreground border-none outline-none w-48"
-          placeholder="Document title..."
-        />
-        <div className="flex-1" />
+    <EditorErrorBoundary>
+      <OnboardingTour run={showTour} onComplete={() => setShowTour(false)} />
+      <ShareDialog
+        open={showShareDialog}
+        onOpenChange={setShowShareDialog}
+        shares={shares}
+        onShare={shareDocument}
+        onRevoke={revokeAccess}
+      />
 
-        {/* Undo/Redo */}
-        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={undo} disabled={undoStack.length === 0} title="Undo (Ctrl+Z)">
-          <Undo2 className="w-4 h-4" />
-        </Button>
-        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={redo} disabled={redoStack.length === 0} title="Redo (Ctrl+Y)">
-          <Redo2 className="w-4 h-4" />
-        </Button>
+      <div className={cn("flex flex-col h-full bg-background", className)}>
+        {/* Top toolbar */}
+        <div className="flex items-center gap-2 px-4 py-2 border-b border-border bg-card">
+          <input
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            className="bg-transparent text-sm font-semibold text-foreground border-none outline-none w-48"
+            placeholder="Document title..."
+          />
 
-        <div className="w-px h-6 bg-border mx-1" />
+          {/* Approval workflow */}
+          <div className="hidden md:flex items-center">
+            <ApprovalWorkflow
+              status={approvalStatus}
+              onStatusChange={setApprovalStatus}
+              isOwner={true}
+              className="scale-90 origin-left"
+            />
+          </div>
 
-        {/* Zoom */}
-        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setZoom(zoom - 0.1)}>
-          <Minus className="w-3.5 h-3.5" />
-        </Button>
-        <Badge variant="outline" className="text-xs min-w-[3rem] justify-center">{Math.round(zoom * 100)}%</Badge>
-        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setZoom(zoom + 0.1)}>
-          <Plus className="w-3.5 h-3.5" />
-        </Button>
+          <div className="flex-1" />
 
-        <div className="w-px h-6 bg-border mx-1" />
+          {/* Undo/Redo */}
+          <div data-tour="undo-redo" className="flex gap-0.5">
+            <Button size="icon" variant="ghost" className="h-8 w-8" onClick={undo} disabled={undoStack.length === 0} title="Undo (Ctrl+Z)">
+              <Undo2 className="w-4 h-4" />
+            </Button>
+            <Button size="icon" variant="ghost" className="h-8 w-8" onClick={redo} disabled={redoStack.length === 0} title="Redo (Ctrl+Y)">
+              <Redo2 className="w-4 h-4" />
+            </Button>
+          </div>
 
-        {/* View toggles */}
-        <Button size="icon" variant={showGrid ? "secondary" : "ghost"} className="h-8 w-8" onClick={toggleGrid} title="Toggle Grid">
-          <Grid3X3 className="w-4 h-4" />
-        </Button>
-        <Button size="icon" variant={showRulers ? "secondary" : "ghost"} className="h-8 w-8" onClick={toggleRulers} title="Toggle Rulers">
-          <Ruler className="w-4 h-4" />
-        </Button>
-        <Button size="icon" variant={showLayers ? "secondary" : "ghost"} className="h-8 w-8" onClick={toggleLayers} title="Toggle Layers">
-          <Layers className="w-4 h-4" />
-        </Button>
+          <div className="w-px h-6 bg-border mx-1" />
 
-        <div className="w-px h-6 bg-border mx-1" />
+          {/* Zoom */}
+          <div data-tour="zoom-controls" className="flex items-center gap-0.5">
+            <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setZoom(zoom - 0.1)}>
+              <Minus className="w-3.5 h-3.5" />
+            </Button>
+            <Badge variant="outline" className="text-xs min-w-[3rem] justify-center">{Math.round(zoom * 100)}%</Badge>
+            <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setZoom(zoom + 0.1)}>
+              <Plus className="w-3.5 h-3.5" />
+            </Button>
+          </div>
 
-        <Button size="sm" variant="outline" onClick={onSave} className="h-8 gap-1.5">
-          <Save className="w-3.5 h-3.5" /> Save
-        </Button>
-        <Button size="sm" variant="accent" onClick={onExport} className="h-8 gap-1.5">
-          <Download className="w-3.5 h-3.5" /> Export
-        </Button>
-      </div>
+          <div className="w-px h-6 bg-border mx-1" />
 
-      {/* Main content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Element sidebar */}
-        <div className="w-14 border-r border-border bg-card flex flex-col items-center py-3 gap-1">
-          {[
-            { type: "text", icon: <Type className="w-4 h-4" />, label: "Text" },
-            { type: "shape", icon: <Square className="w-4 h-4" />, label: "Shape" },
-            { type: "image", icon: <Image className="w-4 h-4" />, label: "Image" },
-            { type: "table", icon: <Table2 className="w-4 h-4" />, label: "Table" },
-            { type: "signature", icon: <PenTool className="w-4 h-4" />, label: "Sign" },
-            { type: "qrcode", icon: <QrCode className="w-4 h-4" />, label: "QR" },
-          ].map(item => (
-            <button
-              key={item.type}
-              onClick={() => addElementToPage(item.type)}
-              className="w-10 h-10 rounded-lg flex flex-col items-center justify-center hover:bg-muted transition-colors group"
-              title={`Add ${item.label}`}
-            >
-              <span className="text-muted-foreground group-hover:text-foreground transition-colors">{item.icon}</span>
-              <span className="text-[9px] text-muted-foreground group-hover:text-foreground mt-0.5">{item.label}</span>
-            </button>
-          ))}
+          {/* View toggles */}
+          <Button size="icon" variant={showGrid ? "secondary" : "ghost"} className="h-8 w-8" onClick={toggleGrid} title="Toggle Grid">
+            <Grid3X3 className="w-4 h-4" />
+          </Button>
+          <Button size="icon" variant={showRulers ? "secondary" : "ghost"} className="h-8 w-8" onClick={toggleRulers} title="Toggle Rulers">
+            <Ruler className="w-4 h-4" />
+          </Button>
+          <Button size="icon" variant={showLayers ? "secondary" : "ghost"} className="h-8 w-8" onClick={toggleLayers} title="Toggle Layers" data-tour="layers-toggle">
+            <Layers className="w-4 h-4" />
+          </Button>
+          <Button size="icon" variant={showComments ? "secondary" : "ghost"} className="h-8 w-8" onClick={() => setShowComments(!showComments)} title="Comments">
+            <MessageSquare className="w-4 h-4" />
+          </Button>
+          <Button size="icon" variant={showVersions ? "secondary" : "ghost"} className="h-8 w-8" onClick={() => setShowVersions(!showVersions)} title="Version History">
+            <History className="w-4 h-4" />
+          </Button>
+
+          <div className="w-px h-6 bg-border mx-1" />
+
+          <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setShowShareDialog(true)} title="Share">
+            <Users className="w-4 h-4" />
+          </Button>
+          <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setShowTour(true)} title="Help Tour">
+            <HelpCircle className="w-4 h-4" />
+          </Button>
+
+          <div className="w-px h-6 bg-border mx-1" />
+
+          <div data-tour="save-export" className="flex gap-1.5">
+            <Button size="sm" variant="outline" onClick={handleSave} className="h-8 gap-1.5">
+              <Save className="w-3.5 h-3.5" /> Save
+            </Button>
+            <Button size="sm" onClick={onExport} className="h-8 gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90">
+              <Download className="w-3.5 h-3.5" /> Export
+            </Button>
+          </div>
         </div>
 
-        {/* Canvas */}
-        <CanvasViewport />
+        {/* Main content */}
+        <div className="flex flex-1 overflow-hidden">
+          {/* Element sidebar */}
+          <div data-tour="element-sidebar" className="w-14 border-r border-border bg-card flex flex-col items-center py-3 gap-1">
+            {[
+              { type: "text", icon: <Type className="w-4 h-4" />, label: "Text" },
+              { type: "shape", icon: <Square className="w-4 h-4" />, label: "Shape" },
+              { type: "image", icon: <Image className="w-4 h-4" />, label: "Image" },
+              { type: "table", icon: <Table2 className="w-4 h-4" />, label: "Table" },
+              { type: "signature", icon: <PenTool className="w-4 h-4" />, label: "Sign" },
+              { type: "qrcode", icon: <QrCode className="w-4 h-4" />, label: "QR" },
+            ].map(item => (
+              <button
+                key={item.type}
+                onClick={() => addElementToPage(item.type)}
+                className="w-10 h-10 rounded-lg flex flex-col items-center justify-center hover:bg-muted transition-colors group"
+                title={`Add ${item.label}`}
+              >
+                <span className="text-muted-foreground group-hover:text-foreground transition-colors">{item.icon}</span>
+                <span className="text-[9px] text-muted-foreground group-hover:text-foreground mt-0.5">{item.label}</span>
+              </button>
+            ))}
+          </div>
 
-        {/* Layers panel (conditional) */}
-        {showLayers && <LayersPanel />}
+          {/* Canvas */}
+          <div data-tour="canvas" className="flex-1 flex">
+            <CanvasViewport />
+          </div>
 
-        {/* Property panel */}
-        <PropertyPanel />
+          {/* Layers panel (conditional) */}
+          {showLayers && <LayersPanel />}
+
+          {/* Comments panel (conditional) */}
+          {showComments && <CommentsPanel documentId={documentId} />}
+
+          {/* Version history panel (conditional) */}
+          {showVersions && <VersionHistory documentId={documentId} />}
+
+          {/* Property panel */}
+          <div data-tour="property-panel">
+            <PropertyPanel />
+          </div>
+        </div>
+
+        {/* Bottom bar — page navigation */}
+        <div data-tour="page-nav" className="flex items-center gap-2 px-4 py-1.5 border-t border-border bg-card">
+          <Button size="icon" variant="ghost" className="h-7 w-7" disabled={activePageIndex <= 0} onClick={() => pages[activePageIndex - 1] && setActivePage(pages[activePageIndex - 1].id)}>
+            <ChevronLeft className="w-3.5 h-3.5" />
+          </Button>
+          <span className="text-xs text-muted-foreground">
+            Page {activePageIndex + 1} of {pages.length}
+          </span>
+          <Button size="icon" variant="ghost" className="h-7 w-7" disabled={activePageIndex >= pages.length - 1} onClick={() => pages[activePageIndex + 1] && setActivePage(pages[activePageIndex + 1].id)}>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </Button>
+          <Button size="sm" variant="ghost" className="h-7 text-xs gap-1" onClick={() => addPage()}>
+            <Plus className="w-3 h-3" /> Add Page
+          </Button>
+          <div className="flex-1" />
+          <Badge variant="outline" className="text-[10px]">
+            {approvalStatus.toUpperCase()}
+          </Badge>
+          <span className="text-xs text-muted-foreground">
+            {pages.find(p => p.id === activePageId)?.elements.length || 0} elements
+          </span>
+        </div>
       </div>
-
-      {/* Bottom bar — page navigation */}
-      <div className="flex items-center gap-2 px-4 py-1.5 border-t border-border bg-card">
-        <Button size="icon" variant="ghost" className="h-7 w-7" disabled={activePageIndex <= 0} onClick={() => pages[activePageIndex - 1] && setActivePage(pages[activePageIndex - 1].id)}>
-          <ChevronLeft className="w-3.5 h-3.5" />
-        </Button>
-        <span className="text-xs text-muted-foreground">
-          Page {activePageIndex + 1} of {pages.length}
-        </span>
-        <Button size="icon" variant="ghost" className="h-7 w-7" disabled={activePageIndex >= pages.length - 1} onClick={() => pages[activePageIndex + 1] && setActivePage(pages[activePageIndex + 1].id)}>
-          <ChevronRight className="w-3.5 h-3.5" />
-        </Button>
-        <Button size="sm" variant="ghost" className="h-7 text-xs gap-1" onClick={() => addPage()}>
-          <Plus className="w-3 h-3" /> Add Page
-        </Button>
-        <div className="flex-1" />
-        <span className="text-xs text-muted-foreground">
-          {pages.find(p => p.id === activePageId)?.elements.length || 0} elements
-        </span>
-      </div>
-    </div>
+    </EditorErrorBoundary>
   );
 }
