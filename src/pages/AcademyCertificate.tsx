@@ -34,7 +34,7 @@ export default function AcademyCertificate() {
 
   if (!cert) return <div className="flex justify-center py-20"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>;
 
-  const course = (cert as any).e_courses;
+  const course = (cert as Record<string, unknown>)?.e_courses;
   const courseName = course?.certificate_title || course?.title || "Course";
 
   return (

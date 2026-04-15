@@ -327,7 +327,7 @@ export default function RonSession() {
   // Voice recognition setup
   useEffect(() => {
     if (!isAdminOrNotary) return;
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition = (window as unknown as Record<string, unknown>).SpeechRecognition || (window as unknown as Record<string, unknown>).webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
@@ -508,14 +508,14 @@ export default function RonSession() {
     const { data: existing } = await supabase.from("notarization_sessions").select("id, session_unique_id").eq("appointment_id", appointmentId).single();
     if (existing) {
       await supabase.from("notarization_sessions").update(metadataFields as never).eq("appointment_id", appointmentId);
-      if ((existing as any).session_unique_id) setSessionUniqueId((existing as any).session_unique_id);
+      if (((existing as Record<string, unknown>)).session_unique_id) setSessionUniqueId(((existing as Record<string, unknown>)).session_unique_id);
     } else {
       const { data: newSession } = await supabase.from("notarization_sessions").insert({
         appointment_id: appointmentId,
         session_type: "ron",
         ...metadataFields,
       } as never).select("session_unique_id").single();
-      if ((newSession as any)?.session_unique_id) setSessionUniqueId((newSession as any).session_unique_id);
+      if (((newSession as Record<string, unknown> | null))?.session_unique_id) setSessionUniqueId((newSession as any).session_unique_id);
     }
     setParticipantLink(link);
     setSessionStatus("confirmed");
@@ -598,10 +598,10 @@ export default function RonSession() {
       // Resume — calculate pause duration
       const { data: session } = await supabase.from("notarization_sessions").select("paused_at, total_pause_duration_seconds").eq("appointment_id", appointmentId).single();
       let additionalSeconds = 0;
-      if ((session as any)?.paused_at) {
+      if ((session as Record<string, unknown>)?.paused_at) {
         additionalSeconds = Math.floor((Date.now() - new Date((session as any).paused_at).getTime()) / 1000);
       }
-      const totalPause = ((session as any)?.total_pause_duration_seconds || 0) + additionalSeconds;
+      const totalPause = ((session as Record<string, unknown>)?.total_pause_duration_seconds || 0) + additionalSeconds;
       await supabase.from("notarization_sessions").update({
         paused_at: null,
         pause_reason: null,

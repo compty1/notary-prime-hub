@@ -50,7 +50,7 @@ export default function AcademyQuiz() {
     },
   });
 
-  const questions: Question[] = (quiz?.questions as any) || [];
+  const questions: Question[] = (quiz?.questions as Question[]) || [];
   const isFinal = quiz?.quiz_type === "final";
   const maxAttempts = isFinal ? 3 : Infinity;
   const canAttempt = pastAttempts.length < maxAttempts && !pastAttempts.some((a: any) => a.passed);
@@ -75,7 +75,7 @@ export default function AcademyQuiz() {
         quiz_id: id!,
         score,
         passed,
-        answers: answers as any,
+        answers: JSON.parse(JSON.stringify(answers)),
       });
       if (error) throw error;
 
@@ -102,7 +102,7 @@ export default function AcademyQuiz() {
 
   if (!quiz) return <div className="flex justify-center py-20"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>;
 
-  const course = (quiz as any).e_courses;
+  const course = ((quiz as Record<string, unknown>))?.e_courses;
   const alreadyPassed = pastAttempts.some((a: any) => a.passed);
 
   return (
