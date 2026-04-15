@@ -367,7 +367,7 @@ export default function RonSession() {
       if (appointmentId) {
         supabase.from("notarization_sessions").update({
           last_activity_at: new Date().toISOString(),
-        } as any).eq("appointment_id", appointmentId).then(() => {}, () => {});
+        } as never).eq("appointment_id", appointmentId).then(() => {}, () => {});
       }
     };
     const handleVisibilityChange = () => {
@@ -422,7 +422,7 @@ export default function RonSession() {
           esign_consent_at: esignConsentTimestamp,
           witness_verified: witnessVerified,
           witness_name: witnessName || null,
-        } as any).eq("appointment_id", appointmentId);
+        } as never).eq("appointment_id", appointmentId);
         // Also save notes
         await supabase.from("appointments").update({ admin_notes: notes }).eq("id", appointmentId);
       } catch { /* silent auto-save failure — manual save is still available */ }
@@ -436,7 +436,7 @@ export default function RonSession() {
     supabase.from("notarization_sessions").update({
       esign_consent: true,
       esign_consent_at: esignConsentTimestamp,
-    } as any).eq("appointment_id", appointmentId).then(() => {}, () => {});
+    } as never).eq("appointment_id", appointmentId).then(() => {}, () => {});
   }, [esignConsented, esignConsentTimestamp, appointmentId]);
 
   // Issue 5.6: Persist recording consent immediately when granted
@@ -445,7 +445,7 @@ export default function RonSession() {
     supabase.from("notarization_sessions").update({
       recording_consent: true,
       recording_consent_at: recordingConsentAt,
-    } as any).eq("appointment_id", appointmentId).then(() => {}, () => {});
+    } as never).eq("appointment_id", appointmentId).then(() => {}, () => {});
   }, [recordingConsent, recordingConsentAt, appointmentId]);
 
   const toggleVoice = () => {
@@ -478,7 +478,7 @@ export default function RonSession() {
         oath_administered: true,
         oath_timestamp: timestamp,
         oath_type: oathType,
-      } as any).eq("appointment_id", appointmentId);
+      } as never).eq("appointment_id", appointmentId);
     }
   };
 
@@ -498,7 +498,7 @@ export default function RonSession() {
     const link = sessionLink.trim();
     const metadataFields = {
       participant_link: link,
-      status: "confirmed" as any,
+      status: "confirmed",
       session_mode: sessionMode,
       signing_platform: signingPlatform,
       document_name: documentName || null,
@@ -507,14 +507,14 @@ export default function RonSession() {
 
     const { data: existing } = await supabase.from("notarization_sessions").select("id, session_unique_id").eq("appointment_id", appointmentId).single();
     if (existing) {
-      await supabase.from("notarization_sessions").update(metadataFields as any).eq("appointment_id", appointmentId);
+      await supabase.from("notarization_sessions").update(metadataFields as never).eq("appointment_id", appointmentId);
       if ((existing as any).session_unique_id) setSessionUniqueId((existing as any).session_unique_id);
     } else {
       const { data: newSession } = await supabase.from("notarization_sessions").insert({
         appointment_id: appointmentId,
-        session_type: "ron" as any,
+        session_type: "ron",
         ...metadataFields,
-      } as any).select("session_unique_id").single();
+      } as never).select("session_unique_id").single();
       if ((newSession as any)?.session_unique_id) setSessionUniqueId((newSession as any).session_unique_id);
     }
     setParticipantLink(link);
@@ -553,7 +553,7 @@ export default function RonSession() {
     await supabase.from("notarization_sessions").update({
       id_verified: idVerified,
       kba_completed: kbaCompleted,
-      status: oathAdministered ? ("completed" as any) : ("in_session" as any),
+      status: oathAdministered ? ("completed") : ("in_session"),
       completed_at: oathAdministered ? new Date().toISOString() : null,
       recording_consent: recordingConsent,
       recording_consent_at: recordingConsentAt,
@@ -561,7 +561,7 @@ export default function RonSession() {
       signing_platform: signingPlatform,
       document_name: documentName || null,
       signer_email: signerEmail || null,
-    } as any).eq("appointment_id", appointmentId);
+    } as never).eq("appointment_id", appointmentId);
 
     await logAuditEvent("ron_session_saved", {
       entityType: "appointment",
@@ -590,7 +590,7 @@ export default function RonSession() {
       await supabase.from("notarization_sessions").update({
         paused_at: new Date().toISOString(),
         pause_reason: pauseReason || "Manual pause",
-      } as any).eq("appointment_id", appointmentId);
+      } as never).eq("appointment_id", appointmentId);
       setIsPaused(true);
       await logAuditEvent("ron_session_paused", { entityType: "appointment", entityId: appointmentId, details: { reason: pauseReason } as Record<string, Json | undefined> });
       toast({ title: "Session paused", description: "The session has been paused. Resume when ready." });
@@ -606,7 +606,7 @@ export default function RonSession() {
         paused_at: null,
         pause_reason: null,
         total_pause_duration_seconds: totalPause,
-      } as any).eq("appointment_id", appointmentId);
+      } as never).eq("appointment_id", appointmentId);
       setIsPaused(false);
       setPauseReason("");
       await logAuditEvent("ron_session_resumed", { entityType: "appointment", entityId: appointmentId, details: { pause_duration_seconds: additionalSeconds } as Record<string, Json | undefined> });
@@ -668,11 +668,11 @@ export default function RonSession() {
     // Item 406: Capture signer location state
     const signerLocationState = clientProfile?.state || null;
 
-    await supabase.from("appointments").update({ status: "completed" as any, admin_notes: notes }).eq("id", appointmentId);
+    await supabase.from("appointments").update({ status: "completed", admin_notes: notes }).eq("id", appointmentId);
     await supabase.from("notarization_sessions").update({
       id_verified: true,
       kba_completed: true,
-      status: "completed" as any,
+      status: "completed",
       completed_at: new Date().toISOString(),
       last_activity_at: new Date().toISOString(),
       session_mode: sessionMode,
@@ -681,8 +681,8 @@ export default function RonSession() {
       signer_email: signerEmail || null,
       signer_location_state: signerLocationState,
       recording_url: recordingUrl || null,
-    } as any).eq("appointment_id", appointmentId);
-    await supabase.from("documents").update({ status: "notarized" as any }).eq("appointment_id", appointmentId);
+    } as never).eq("appointment_id", appointmentId);
+    await supabase.from("documents").update({ status: "notarized" }).eq("appointment_id", appointmentId);
 
     const fee = appointment.estimated_price || 5;
     const platformLabel = SIGNING_PLATFORMS.find(p => p.value === signingPlatform)?.label || signingPlatform;
@@ -711,7 +711,7 @@ export default function RonSession() {
       document_type: appointment.service_type || "General",
       document_description: documentName || null,
       service_performed: oathType === "acknowledgment" ? "acknowledgment" : oathType,
-      notarization_type: "ron" as any,
+      notarization_type: "ron",
       fees_charged: fee,
       oath_administered: oathAdministered,
       oath_timestamp: oathTimestamp,
@@ -729,7 +729,7 @@ export default function RonSession() {
         id_verified: idVerified,
         verified_at: new Date().toISOString(),
       },
-    } as any);
+    } as never);
 
     // e-seal: prefer uploaded doc, fall back to manual document_name
     const { data: docs } = await supabase.from("documents").select("id, file_name, file_path").eq("appointment_id", appointmentId).limit(1);
@@ -746,7 +746,7 @@ export default function RonSession() {
         file_path: `placeholder/${appointmentId}`,
         uploaded_by: user.id,
         appointment_id: appointmentId,
-        status: "notarized" as any,
+        status: "notarized",
       }).select("id").single();
       eSealDocId = newDoc?.id || crypto.randomUUID();
       eSealDocName = placeholderName;
@@ -778,7 +778,7 @@ export default function RonSession() {
       commissioned_state: "OH",
       status: "valid",
       document_hash: documentHash,
-    } as any);
+    } as never);
 
     // Save credential analysis result for Ohio compliance
     if (idType || idNumber || kbaCompleted) {
@@ -792,7 +792,7 @@ export default function RonSession() {
           id_verified: idVerified,
           verified_at: new Date().toISOString(),
         },
-      } as any).eq("appointment_id", appointmentId);
+      } as never).eq("appointment_id", appointmentId);
     }
 
     // Log signer acknowledgment per document (Ohio compliance gap)
@@ -1935,7 +1935,7 @@ export default function RonSession() {
                       if (appointmentId) {
                         await supabase.from("notarization_sessions").update({
                           kba_attempts: newAttempts,
-                        } as any).eq("appointment_id", appointmentId);
+                        } as never).eq("appointment_id", appointmentId);
                         // Audit log KBA attempt per ORC §147.66
                         await logAuditEvent("kba_attempt_recorded", {
                           entityType: "appointment",
@@ -2083,7 +2083,7 @@ export default function RonSession() {
                           supabase.from("notarization_sessions").update({
                             recording_consent: true,
                             recording_consent_at: ts,
-                          } as any).eq("appointment_id", appointmentId);
+                          } as never).eq("appointment_id", appointmentId);
                         }
                       }
                     }}
