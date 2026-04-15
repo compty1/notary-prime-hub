@@ -37,7 +37,7 @@ export function AppointmentCancellationDialog({ open, onOpenChange, appointmentI
     const { error } = await supabase
       .from("appointments")
       .update({
-        status: "cancelled" as any,
+        status: "cancelled",
         admin_notes: `Cancelled: ${reason}${notes ? ` — ${notes}` : ""}`,
       })
       .eq("id", appointmentId);

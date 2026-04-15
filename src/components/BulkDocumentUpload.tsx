@@ -105,7 +105,7 @@ export default function BulkDocumentUpload({ userId, onComplete }: Props) {
         uploaded_by: userId,
         file_name: f.file.name,
         file_path: path,
-        status: "uploaded" as any,
+        status: "uploaded",
       });
 
       if (dbErr) {

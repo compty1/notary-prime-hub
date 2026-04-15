@@ -38,7 +38,7 @@ export function DataDeletionRequest({ open, onOpenChange }: DataDeletionRequestP
         status: "pending",
         priority: "standard",
         description: `User ${user.email} has requested complete data deletion per privacy policy. User ID: ${user.id}`,
-      } as any);
+      } as never);
       if (error) throw error;
 
       await logAuditEvent("data_deletion_requested", {

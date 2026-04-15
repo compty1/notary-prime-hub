@@ -46,7 +46,7 @@ export function AdminSavedFilters({ pageKey, currentFilters, onApplyFilter }: Ad
         user_id: user.id,
         page_key: pageKey,
         filter_name: newName.trim(),
-        filter_config: currentFilters as any,
+        filter_config: JSON.parse(JSON.stringify(currentFilters)),
       })
       .select()
       .single();

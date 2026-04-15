@@ -26,7 +26,7 @@ export function NotaryWorkQueue() {
         .from("appointments")
         .select("id, service_type, status, scheduled_date, scheduled_time, confirmation_number, notes, admin_notes, notarization_type, signer_count")
         .eq("notary_id", user.id)
-        .in("status", ["scheduled", "in_progress", "confirmed"] as any[])
+        .in("status", ["scheduled", "in_progress", "confirmed"])
         .order("scheduled_date", { ascending: true })
         .limit(50);
       if (error) throw error;
@@ -39,7 +39,7 @@ export function NotaryWorkQueue() {
     mutationFn: async ({ id, status, note }: { id: string; status: string; note?: string }) => {
       const update: Record<string, unknown> = { status };
       if (note) update.admin_notes = note;
-      const { error } = await supabase.from("appointments").update(update as any).eq("id", id);
+      const { error } = await supabase.from("appointments").update(update as never).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {

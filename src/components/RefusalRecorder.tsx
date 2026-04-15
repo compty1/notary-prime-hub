@@ -41,7 +41,7 @@ export function RefusalRecorder({ appointmentId, onRefused }: RefusalRecorderPro
       const { error } = await supabase
         .from("appointments")
         .update({
-          status: "cancelled" as any,
+          status: "cancelled",
           refusal_reason: `${category}${reason ? ": " + reason : ""}`,
           refused_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),

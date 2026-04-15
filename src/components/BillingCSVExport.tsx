@@ -33,7 +33,7 @@ export function BillingCSVExport({ open, onOpenChange }: BillingCSVExportProps) 
 
       if (startDate) q = q.gte("created_at", startDate);
       if (endDate) q = q.lte("created_at", `${endDate}T23:59:59`);
-      if (statusFilter !== "all") q = q.eq("status", statusFilter as any);
+      if (statusFilter !== "all") q = q.eq("status", statusFilter);
 
       const { data, error } = await q;
       if (error) throw error;

@@ -23,7 +23,7 @@ export function NoShowWorkflowPanel({ appointmentId, clientId, onComplete }: NoS
     setLoading(true);
     try {
       const { error } = await supabase.from("appointments").update({
-        status: "no_show" as any,
+        status: "no_show",
         admin_notes: `No-show. ${notes}`.trim(),
       }).eq("id", appointmentId);
       if (error) throw error;

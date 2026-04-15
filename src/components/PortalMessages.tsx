@@ -57,7 +57,7 @@ export function PortalMessages() {
         },
         (payload) => {
           const msg = payload.new as Message;
-          if (msg.sender_id === user.id || (payload.new as any).recipient_id === user.id) {
+          if (msg.sender_id === user.id || ((payload.new as Record<string, unknown>)).recipient_id === user.id) {
             setMessages((prev) => [...prev, msg]);
           }
         }

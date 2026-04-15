@@ -38,7 +38,7 @@ export function ClientFeedbackForm({ appointmentId, onSubmitted }: ClientFeedbac
       nps_score: npsScore,
       comment: comment.trim() || null,
       feedback_type: 'appointment_review',
-    } as any);
+    } as never);
     if (error) {
       toast.error("Failed to submit feedback");
     } else {
