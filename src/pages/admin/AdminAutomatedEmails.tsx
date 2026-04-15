@@ -536,12 +536,12 @@ function ServiceTemplatesTab() {
   const getTemplates = (s: ServiceRow): ServiceEmailTemplates => s.email_templates ?? defaultServiceTemplates(s.name);
 
   const updateLocal = (id: string, templates: ServiceEmailTemplates) => {
-    setServices(prev => prev.map(s => (s.id === id ? { ...s, email_templates: templates } : s)));
+    setServices(prev => prev.map(s => (s.id === id ? { ...s, email_templates: templates as unknown as import("@/integrations/supabase/types").Json } : s)));
   };
 
   const saveService = async (id: string, templates: ServiceEmailTemplates) => {
     setSaving(prev => new Set(prev).add(id));
-    const { error } = await supabase.from("services").update({ email_templates: templates }).eq("id", id);
+    const { error } = await supabase.from("services").update({ email_templates: templates as unknown as import("@/integrations/supabase/types").Json }).eq("id", id);
     setSaving(prev => { const n = new Set(prev); n.delete(id); return n; });
     if (error) toast({ title: "Save failed", description: error.message, variant: "destructive" });
     else toast({ title: "Saved", description: "Email templates updated." });

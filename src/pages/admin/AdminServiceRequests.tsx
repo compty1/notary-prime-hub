@@ -67,7 +67,7 @@ export default function AdminServiceRequests() {
       .on("postgres_changes", { event: "*", schema: "public", table: "service_requests" }, (payload) => {
         if (payload.eventType === "INSERT") {
           setRequests(prev => [payload.new as Record<string, unknown>, ...prev]);
-          toast({ title: "New service request", description: (payload.new as Record<string, unknown>).service_name });
+          toast({ title: "New service request", description: String((payload.new as Record<string, unknown>).service_name || "") });
         } else if (payload.eventType === "UPDATE") {
           setRequests(prev => prev.map(r => r.id === (payload.new as Record<string, unknown>).id ? payload.new as Record<string, unknown> : r));
         } else if (payload.eventType === "DELETE") {

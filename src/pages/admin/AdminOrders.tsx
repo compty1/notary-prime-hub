@@ -82,7 +82,7 @@ export default function AdminOrders() {
   });
 
   const handleStatusChange = async (orderId: string, newStatus: string) => {
-    await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
+    await supabase.from("orders").update({ status: newStatus as "pending" | "in_progress" | "completed" | "cancelled" }).eq("id", orderId);
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
     if (selectedOrder?.id === orderId) setSelectedOrder(prev => prev ? { ...prev, status: newStatus } : null);
     toast({ title: `Order updated to ${newStatus.replace(/_/g, " ")}` });

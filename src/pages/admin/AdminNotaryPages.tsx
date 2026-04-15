@@ -127,7 +127,7 @@ export default function AdminNotaryPages() {
   const fetchPages = async () => {
     setLoading(true);
     const { data } = await supabase.from("notary_pages").select("*").order("created_at", { ascending: false });
-    setPages((data ?? []));
+    setPages((data ?? []) as any[]);
     setLoading(false);
   };
 
@@ -225,7 +225,7 @@ export default function AdminNotaryPages() {
   const removeService = (i: number) => updateField("services_offered", services.filter((_, idx) => idx !== i));
   const updateService = (i: number, field: string, value: string) => {
     const updated = [...services];
-    (updated[i] as Record<string, unknown>)[field] = value;
+    (updated[i] as any)[field] = value;
     updateField("services_offered", updated);
   };
 
