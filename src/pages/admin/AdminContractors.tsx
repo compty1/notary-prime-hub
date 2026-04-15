@@ -37,7 +37,7 @@ export default function AdminContractors() {
 
   const fetchContractors = useCallback(async () => {
     const { data } = await supabase.from("contractors").select("*").order("display_name");
-    if (data) setContractors(data as any);
+    if (data) setContractors(data.map(d => ({ ...d, specializations: d.specializations ?? [], total_jobs: d.total_jobs ?? 0 })));
     setLoading(false);
   }, []);
 

@@ -39,11 +39,18 @@ export default function AdminFinances() {
   });
 
   // Fetch transactions
-  const { data: transactions = [] } = useQuery({
+  type TransactionWithCategory = {
+    id: string; user_id: string; type: string; amount: number;
+    description: string; transaction_date: string; vendor: string | null;
+    category_id: string | null; created_at: string;
+    expense_categories: { category_name: string; irs_schedule_c_line: string | null } | null;
+  };
+
+  const { data: transactions = [] } = useQuery<TransactionWithCategory[]>({
     queryKey: ["financial-transactions"],
     queryFn: async () => {
       const { data } = await supabase.from("financial_transactions").select("*, expense_categories(category_name, irs_schedule_c_line)").order("transaction_date", { ascending: false }).limit(200);
-      return data || [];
+      return (data ?? []) as unknown as TransactionWithCategory[];
     },
   });
 

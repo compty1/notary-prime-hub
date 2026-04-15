@@ -134,7 +134,16 @@ export default function AdminCRM() {
 
   const createDeal = useMutation({
     mutationFn: async (deal: Partial<Deal>) => {
-      const { error } = await supabase.from("deals").insert(deal as any);
+      const { error } = await supabase.from("deals").insert({
+        title: deal.title ?? "Untitled",
+        stage: deal.stage ?? "new",
+        contact_id: deal.contact_id ?? null,
+        lead_id: deal.lead_id ?? null,
+        value: deal.value ?? null,
+        expected_close: deal.expected_close ?? null,
+        assigned_to: deal.assigned_to ?? null,
+        notes: deal.notes ?? null,
+      });
       if (error) throw error;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["crm-deals"] }); toast({ title: "Deal created" }); },
@@ -150,7 +159,14 @@ export default function AdminCRM() {
 
   const addActivity = useMutation({
     mutationFn: async (activity: Partial<Activity>) => {
-      const { error } = await supabase.from("crm_activities").insert({ ...activity, created_by: user?.id } as any);
+      const { error } = await supabase.from("crm_activities").insert({
+        contact_id: activity.contact_id ?? "",
+        contact_type: activity.contact_type ?? "client",
+        activity_type: activity.activity_type ?? "note",
+        subject: activity.subject ?? null,
+        body: activity.body ?? null,
+        created_by: user?.id ?? null,
+      });
       if (error) throw error;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["crm-activities"] }); toast({ title: "Activity logged" }); },
