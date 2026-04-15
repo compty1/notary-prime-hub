@@ -1,149 +1,211 @@
 
 
-# Service Flows Comprehensive Audit & Remediation Plan
+# Enterprise Tools — Full Implementation Plan
 
-## Key Findings
+## Overview
 
-### 1. SERVICE FLOW GAPS
-
-**`serviceFlowConfig.ts` covers only 12 of 42 registry services** — 30 services in the registry have no flow config (no steps, no document checklists, no turnaround time). And the DB has 139 active services vs 42 in the registry.
-
-Missing flow configs for active registry services:
-- `standard-translation`, `certified-translation`, `court-certified-translation`, `credential-evaluation`
-- `business-subscriptions`, `api-integration`, `white-label-partner`
-- `ron-onboarding-consulting`, `workflow-audit`
-- `email-management`, `registered-agent`
-- `data-entry`, `travel-arrangements`
-- `blog-writing`, `social-media-content`, `newsletter-design`
-- `market-research`, `lead-generation`
-- `email-support`, `live-chat-support`
-- `website-content-updates`, `ux-audit`
-- `document-digitization` (exists but marked `hasAdminDashboard: false`)
-- `fingerprinting`, `process-serving`, `courier`, `background-check`, `passport-photo`, `kyc-verification`
-
-### 2. FILE UPLOAD IS NON-FUNCTIONAL
-
-`ServiceIntakeForm.tsx` line 161-165: File upload field shows "File upload will be available after submission" placeholder. Process Serving, Background Check, and other services list `type: "file"` fields that don't actually upload anything. This is a critical gap for services like Process Serving where documents to serve are required.
-
-### 3. CROSS-SELL RULES MISSING FOR CORE SERVICES
-
-55 cross-sell rules exist but **28 core active services** (notarization, court_forms, authentication, real_estate, translation, etc.) have zero cross-sell rules. The `CrossSellPanel` component exists and works but is never shown on most intake form success screens.
-
-### 4. SERVICE DESCRIPTIONS / SHORT DESCRIPTIONS
-
-2 active services have NULL `short_description`:
-- Apostille Coordination (authentication)
-- Newsletter/Magazine Production (publishing)
-
-### 5. SERVICE WORKFLOWS MISSING FROM DB
-
-73+ active services have NO `service_workflows` entries. This means the `ServiceDetailPanel` component renders "No specific requirements or workflow steps configured" for those services. Affected categories: all court_forms (9), all compliance (5), all creative (3), all financial (5), all operations_hr (6), all print (22), all publishing (3), all real_estate (3), all sales_cx (7), all subscription (3).
-
-### 6. ADMIN DASHBOARD GAPS
-
-- **`ServiceAdminDashboard`** reusable component exists but is **never used** in any admin page. All admin pages use custom implementations instead.
-- No admin pages for: compliance services (5), creative services (3), financial services (5), digital_legacy (1), operations_hr (6), most sales_cx (7), subscription plans (3), most print services.
-- `AdminServiceRequests.tsx` exists as a catch-all but lacks service-specific tools/views.
-
-### 7. INTAKE PAGES HAVE MINIMAL CONTENT
-
-All 43 service intake pages use the same bare pattern:
-- Title + 1-line description + field list + single price string
-- **No packages/tiers** (e.g., Basic/Standard/Rush)
-- **No add-ons** section (e.g., "Add expedited processing +$25")
-- **No FAQ** section
-- **No "What to Expect" / turnaround info** even though `serviceFlowConfig` has this data
-- **No document checklist display** even though the data exists
-- **No cross-sell panel** after submission
-
-Only `EstatePlanningServices.tsx` and `RealEstateClosingsServices.tsx` have rich content pages with process steps, pricing tables, coverage areas, and bundles.
-
-### 8. PRICING NOT CONNECTED TO PRICING ENGINE
-
-`pricingQuoteGenerator.ts` exists with travel zones, rush multipliers, RON fees, and statutory caps, but it's never invoked from any intake form. The `estimatedPrice` on intake pages is a hardcoded string.
+Build 15 enterprise-grade professional tools with premium UI/UX from the Notar_Updates blueprint. Nothing exists yet — all tables, edge functions, components, pages, and routes must be created. Each tool gets a polished, feature-rich interface following the Block Shadow design system (24px corners, bold typography, semantic theming).
 
 ---
 
-## Implementation Plan
+## Phase 1: Database & Storage Infrastructure
 
-### Phase 1: Fix Critical Bugs (3 items)
+**Single migration** — 8 tables + 1 storage bucket + indexes + RLS:
 
-1. **Make file upload functional** in `ServiceIntakeForm.tsx` — upload to Supabase `documents` bucket, store URL in `intake_data`
-2. **Connect `CrossSellPanel`** to intake form success screen so recommendations show after submission
-3. **Fill 2 missing `short_description` values** via DB insert
+1. **`ai_document_grades`** — Stores AI compliance grading results (score, grade letter, findings jsonb, compliance standard)
+2. **`ofac_sdn_list`** — Treasury SDN sanctions data cache with GIN trigram index for fuzzy name search
+3. **`construction_projects`** — Lien project tracking (name, address, owner, contractor, contract amount, dates, status)
+4. **`lien_waivers`** — Individual waivers per project (4 AIA types, claimant, amount, through-date, status workflow)
+5. **`trust_documents`** — Estate trust records (name, type, grantor, trustee, status)
+6. **`trust_assets`** — Assets within trusts grouped by category (6 categories, value, institution, address)
+7. **`bulk_dispatch_requests`** — B2B batch signing tracking (total/processed/failed rows, status, error log)
+8. **`client_brand_kits`** — White-label branding (logo, colors, font, tagline, is_default)
 
-### Phase 2: Enrich Service Intake Pages (43 pages)
-
-For each of the 43 service intake pages, enhance with:
-- **Service packages/tiers** (e.g., Standard / Rush / Premium) where applicable
-- **Add-ons** section with checkboxes and pricing
-- **"What to Expect"** section pulling from `serviceFlowConfig` data
-- **Document checklist** rendering (what clients need to prepare)
-- **FAQ** section with 3-5 common questions per service
-- **Turnaround time** display
-
-Priority services to enrich first (highest traffic):
-1. RON / In-Person / Mobile Notarization (booking flow, not intake)
-2. Fingerprinting, Process Serving, Apostille, Business Formation
-3. Estate Planning, Loan Signing, Court Forms
-4. Translation services, Document services
-
-### Phase 3: Add Missing Service Flow Configs (30 services)
-
-Add entries to `serviceFlowConfig.ts` for all 30 missing registry services, including proper steps, document checklists, turnaround times, and post-actions.
-
-### Phase 4: Seed Cross-Sell Rules (28 services)
-
-Insert cross-sell rules for the 28 core services missing them. Examples:
-- Apostille → Certified Translation, Consular Legalization
-- Divorce Filing → Process Serving, Notarization, Custody Package
-- Business Formation → Registered Agent, Business Subscription
-- Mobile Notarization → Estate Plan Bundle, Loan Signing
-
-### Phase 5: Seed Service Workflows in DB (73 services)
-
-Insert `service_workflows` step data for the 73 active services with no workflow steps, so `ServiceDetailPanel` shows real content.
-
-### Phase 6: Admin Dashboard for Uncovered Categories
-
-Create lightweight admin views for categories without dedicated dashboards:
-- Compliance services admin
-- Financial services admin
-- Creative services admin
-- Operations/HR admin
-- Sales/CX admin
-
-These can use the existing `ServiceAdminDashboard` reusable component.
-
-### Phase 7: Connect Pricing Engine to Intake
-
-Wire `pricingQuoteGenerator.ts` into notarization and document service intake forms to show dynamic pricing based on signer count, document count, rush, travel zone, etc.
+All tables have RLS scoped to `auth.uid()`. Storage bucket `compliance_documents` created as private.
 
 ---
 
-## Technical Details
+## Phase 2: NPM Dependencies
 
-### Files to Create
-- `src/components/services/ServicePackages.tsx` — reusable tier/package selector
-- `src/components/services/ServiceAddOns.tsx` — add-on checkboxes with pricing
-- `src/components/services/ServiceFAQ.tsx` — FAQ accordion per service
-- `src/components/services/ServiceChecklist.tsx` — document checklist display
-- `src/components/services/ServiceTimeline.tsx` — "What to Expect" steps view
-- 5-6 new admin pages for uncovered categories
+- `pdf-lib` — client-side PDF page stamping (Exhibit Stamper)
+- `papaparse` — CSV parsing (B2B Dispatch, OFAC sync)
+- `jszip` — ZIP bundling (Digital Vault audit packages)
+- `html2pdf.js` — HTML-to-PDF export from TipTap templates
 
-### Files to Modify
-- `src/components/services/ServiceIntakeForm.tsx` — file upload, cross-sell, packages, add-ons, FAQ, checklist, timeline integration
-- All 43 `src/pages/services/*.tsx` — add service-specific packages, add-ons, FAQs
-- `src/lib/serviceFlowConfig.ts` — add 30 missing flow configurations
-- `src/App.tsx` — add routes for new admin pages
+---
 
-### Database Changes
-- Insert ~140 cross-sell rules for 28 services
-- Insert ~350 service_workflow steps for 73 services
-- Update 2 services with missing short_descriptions
+## Phase 3: Edge Functions (7 new)
 
-### Estimated Scope
-- ~50 files modified, ~6 files created
-- ~200 DB inserts (cross-sell + workflows)
-- No schema changes needed
+1. **`analyze-document`** — Sends document text to Lovable AI (`google/gemini-2.5-flash`) with Ohio ORC 147 compliance system prompt. Returns score (0-100), grade letter (A-F), categorized findings with severity, saves to `ai_document_grades`.
+2. **`sync-ofac-data`** — Downloads Treasury SDN CSV, parses pipe-delimited format, upserts into `ofac_sdn_list`.
+3. **`search-uspto`** — Proxies USPTO OpenData API for patent search results.
+4. **`decode-vin`** — Proxies free NHTSA VIN Decoder API, validates 17-char format.
+5. **`search-corporate`** — Proxies OpenCorporates free API for entity/officer lookup.
+6. **`fetch-visa-bulletin`** — Fetches State Department Visa Bulletin HTML, parses structured data.
+7. **`generate-audit-hash`** — SHA-256 hashing with chain-of-custody from `notarization_sessions`.
+
+---
+
+## Phase 4: Core Engine
+
+### Data Files
+- **`apostilleStateData.ts`** — All 50 states + DC: SOS name/address/phone/email, fee, processing time, electronic acceptance, walk-in availability
+- **`documentTemplates.ts`** — 12 HTML templates with `{{placeholder}}` tokens: acknowledgment, jurat, copy certification, corporate resolution, 4 lien waiver types, apostille cover letter, trust schedule A, translation affidavit, odometer disclosure
+- **`templateRenderer.ts`** — Token replacement engine + brand kit header/footer injection
+
+### DocumentGeneratorModal (`src/components/enterprise/DocumentGeneratorModal.tsx`)
+- Template selector with category grouping
+- Auto-populated data binding form from calling tool
+- Live TipTap preview with real-time token replacement
+- Brand kit selector (if user has kits)
+- Export: "Download PDF" (html2pdf.js), "Print", "Save to Vault"
+- Legal disclaimer auto-appended to every document
+
+### EnterpriseLayout (`src/components/enterprise/EnterpriseLayout.tsx`)
+- Consistent header with icon + title + breadcrumbs
+- Collapsible legal disclaimer banner
+- Quick-action bar linking to Brand Settings, Digital Vault, AI Grader
+
+---
+
+## Phase 5: Frontend Pages (15 tools with premium UI)
+
+### Tool 1: AI Document Grader
+- Drag-drop PDF upload zone (max 10MB), client-side text extraction via `pdf-lib`
+- Animated circular score gauge (0-100) with gradient colors + grade letter overlay
+- Risk level badge with pulse animation for Critical findings
+- Sortable findings DataTable: Category, Issue, Severity (color badges), Recommendation
+- Compliance breakdown accordion by ORC section
+- Grade history tab with past analyses
+- **Bonus**: Batch upload queue, comparison view (side-by-side two grades)
+
+### Tool 2: KYC/OFAC Search
+- Full-width search with 300ms debounce and typeahead
+- Sync status card (last sync date, record count, "Sync Now" admin button)
+- Red alert card for matches (name highlighted, confidence %, SDN details, aliases)
+- Green confirmation card for no-match with clearance certificate export
+- Fuzzy matching visualization (Levenshtein distance)
+- **Bonus**: Bulk name search via CSV upload, search history, watchlist
+
+### Tool 3: USPTO/IP Hub
+- Search bar with recent suggestions, card grid results (3-col responsive)
+- Expandable detail drawer per patent (full abstract, claims, citations)
+- Filters sidebar: patent type, date range, assignee
+- **Bonus**: Patent timeline visualization, research folder bookmarks, PDF report export
+
+### Tool 4: Notarial Certificate Generator
+- Two-panel layout: form (left) + live preview (right)
+- State dropdown (50 states, Ohio default), county autocomplete for Ohio
+- Certificate type selector: 5 large icon cards (Acknowledgment, Jurat, Copy Cert, Oath, Witnessing)
+- Dynamic multi-signer rows (up to 10), ID type from existing `OHIO_ACCEPTED_ID_TYPES`
+- Live preview renders ORC-compliant statutory text from `ohioCompliance.ts`
+- RON toggle adds technology provider fields per ORC §147.62
+- **Bonus**: Commission expiration warning, save as reusable template, multi-signer support
+
+### Tool 5: Legal Exhibit Stamper
+- Drag-drop multi-PDF upload with sequential labeling (A, B, C...)
+- Visual position selector (4-quadrant clickable diagram)
+- Color swatches (Red/Blue/Black) + custom hex, font size slider
+- Side-by-side before/after preview with page navigation
+- Uses `pdf-lib` for client-side PDF manipulation
+- **Bonus**: Custom stamp text (ATTACHMENT, APPENDIX, SCHEDULE), Bates numbering mode, watermark mode, date stamps, batch ZIP download
+
+### Tool 6: Digital Vault & Audit Trail
+- DataTable of completed RON sessions from `notarization_sessions`
+- Detail drawer with vertical chain-of-custody timeline (Created → ID Verified → KBA → Signed → Sealed → Completed)
+- SHA-256 hash certificate card with copy button
+- Hash verification input (paste hash → visual match/mismatch)
+- "Download Audit Package" via `jszip` (metadata JSON + hash cert + document links)
+- **Bonus**: Bulk hash generation, QR code per hash, retention policy display, audit report PDF
+
+### Tool 7: Auto Fleet/VIN Decoder
+- 17-character VIN input with real-time validation + character counter
+- Decoded results in chip grid: Year, Make, Model, Body, Fuel, Engine, Drive, Doors, GVWR
+- "Generate Odometer Disclosure" → DocumentGeneratorModal with VIN data
+- Fleet history in localStorage
+- **Bonus**: Batch VIN decode (paste multiple), recall lookup link, title status indicator, fleet grouping by client
+
+### Tool 8: Construction Lien Command Center
+- Master-detail with `react-resizable-panels` (30/70 split)
+- Project list with search/filter, financial summary cards (Contract Amount, Waivers Issued, Remaining Balance)
+- Waiver DataTable with 4 AIA types, status pipeline (Draft → Sent → Signed → Filed)
+- Waiver creation drawer with type selector (4 large cards)
+- "Generate Waiver" → DocumentGeneratorModal with appropriate template
+- **Bonus**: Financial pie/bar charts, project timeline Gantt bar, deadline alerts, project duplication, notes thread
+
+### Tool 9: Trust Asset Scheduler
+- Trust card grid showing name, type badge, grantor, trustee, asset count, total value
+- Trust detail view with assets grouped in accordion by category (6 categories)
+- Asset entry form per trust, formatted currency values
+- Category subtotals + grand total estate value
+- "Generate Schedule A" → DocumentGeneratorModal
+- **Bonus**: Beneficiary designation notes, trust comparison view, export full trust package PDF, duplicate for amendments
+
+### Tool 10: B2B Bulk Dispatch
+- CSV drag-drop upload with "Download Template" link
+- Column mapping UI if headers mismatch (visual drag-connect)
+- Validation table: every row with green ✓ or red ✗ + error tooltip, error summary bar
+- Progress bar during batch processing with row-by-row status
+- Batch history DataTable from `bulk_dispatch_requests`
+- **Bonus**: Duplicate detection, re-process failed rows, export results CSV, batch analytics (success rate, common errors)
+
+### Tool 11: Corporate Compliance/BOI
+- Entity search with jurisdiction filter, results as company cards
+- Officer mapping section per company (name, title, appointment date)
+- BOI report form with beneficial owner rows (dynamic add/remove)
+- "Generate BOI Report" → DocumentGeneratorModal
+- Manual entry fallback for entities not found
+- **Bonus**: Filing deadline tracker, multi-entity management, annual report reminders, Ohio SOS portal link
+
+### Tool 12: Immigration & Visa Hub
+- Auto-fetched visa bulletin displayed in two tables (Family/Employment)
+- Color-coded dates: Current (green), Retrogressed (red), Advanced (blue)
+- Translation Affidavit Generator form (language, translator, credentials)
+- USCIS forms checklist accordion (I-130, I-485, I-765, N-400, etc.)
+- Quick links to existing translation service intake pages
+- **Bonus**: Month-over-month bulletin comparison, priority date calculator, country-specific backlog notes
+
+### Tool 13: 50-State Apostille Matrix
+- Searchable DataTable of all 50 states + DC (SOS office, fee, processing, electronic, walk-in)
+- State detail drawer with full contact info + notes
+- Fee calculator: state + document count + rush = itemized total
+- "Generate Cover Letter" → DocumentGeneratorModal with selected state SOS info
+- **Bonus**: State comparison mode (2-3 side-by-side), document compatibility matrix, export as CSV, bookmark frequent states
+
+### Tool 14: Brand Kit Settings
+- Brand kit card grid from `client_brand_kits` with logo thumbnail + color swatches
+- Create/edit form: logo upload, company name, tagline, color pickers (primary/secondary), font selector with live preview
+- "Set as Default" toggle (one per user)
+- Live preview card showing document header/footer with applied branding
+- **Bonus**: Brand kit duplication, color contrast checker, brand guidelines PDF export
+
+### Tool 15: Enterprise Dashboard Landing
+- Hero section with animated gradient
+- 4 KPI stat cards (Documents Graded, Active Projects, Trusts Managed, Batches Processed)
+- 14-tool card grid grouped by category with usage counts
+- Recent activity feed (last 10 actions across all tools)
+
+---
+
+## Phase 6: Routing & Navigation
+
+**`App.tsx`** — 16 new lazy imports + routes under `/admin/enterprise/*`, all `ProtectedRoute adminOnly`.
+
+**`AdminDashboard.tsx`** — New "Enterprise Tools" sidebar group with 15 items positioned between "Documents & Tools" and "Field Services".
+
+---
+
+## Phase 7: Implementation Order
+
+1. Migration: 8 tables + storage bucket + indexes + RLS
+2. NPM: Install 4 packages
+3. Data files: `apostilleStateData.ts`, `documentTemplates.ts`, `templateRenderer.ts`
+4. Edge functions: All 7 deployed
+5. Core components: `EnterpriseLayout.tsx`, `DocumentGeneratorModal.tsx`
+6. Pages batch 1 (no DB): CertificateGenerator, ExhibitStamper, ApostilleMatrix, IPHub, AutoFleetDesk, EnterpriseDashboard
+7. Pages batch 2 (DB): AIGrader, KYCSearch, DigitalVault, LienCommandCenter, TrustScheduler, B2BDispatch, CorporateCompliance, ImmigrationHub, BrandSettings
+8. Routing: App.tsx + AdminDashboard.tsx sidebar
+9. TypeScript validation: zero errors
+
+**~35 files created, 2 files modified, 1 migration, 4 npm packages**
 
