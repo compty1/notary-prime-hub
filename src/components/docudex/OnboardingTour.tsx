@@ -89,7 +89,7 @@ export function OnboardingTour({ run: forcedRun, onComplete }: OnboardingTourPro
   };
 
   return (
-    <ReactJoyride
+    <Joyride
       steps={TOUR_STEPS}
       run={run}
       continuous
