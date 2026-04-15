@@ -171,7 +171,7 @@ export default function AdminJournal() {
     setDeletingId(id);
     const entry = entries.find(e => e.id === id);
     // Bug 484: Soft-delete for ORC §147.551 compliance (5-year retention)
-    const { error } = await supabase.from("notary_journal").update({ archived: true } as any).eq("id", id);
+    const { error } = await supabase.from("notary_journal").update({ archived: true }).eq("id", id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else {
       toast({ title: "Entry deleted" });

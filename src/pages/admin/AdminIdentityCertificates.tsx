@@ -36,7 +36,7 @@ export default function AdminIdentityCertificates() {
   const handleCreate = async () => {
     if (!form.issued_to_name.trim()) { toast({ title: "Name required", variant: "destructive" }); return; }
     setSaving(true);
-    const { error } = await supabase.from("identity_certificates").insert({ issued_to_name: form.issued_to_name, certificate_type: form.certificate_type, verification_method: form.verification_method, id_document_type: form.id_document_type, notes: form.notes, client_id: user?.id || "", created_by: user?.id || "" } as any);
+    const { error } = await supabase.from("identity_certificates").insert({ issued_to_name: form.issued_to_name, certificate_type: form.certificate_type, verification_method: form.verification_method, id_document_type: form.id_document_type, notes: form.notes, client_id: user?.id || "", created_by: user?.id || "" });
     setSaving(false);
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
     toast({ title: "Certificate created" }); setCreateOpen(false); fetchData();

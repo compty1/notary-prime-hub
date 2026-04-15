@@ -421,7 +421,7 @@ export default function AdminApostille() {
               const { error } = await supabase.from("apostille_requests").insert({
                 document_description: newDesc, notes: newNotes || null, client_id: newClientId, fee: parseFloat(newFee) || 75,
                 destination_country: newDestCountry || null, document_count: parseInt(newDocCount) || 1,
-              } as any);
+              });
               if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
               else {
                 toast({ title: "Request created" });

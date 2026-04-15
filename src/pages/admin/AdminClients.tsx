@@ -129,7 +129,7 @@ export default function AdminClients() {
       state: editForm.state || null,
       zip: editForm.zip || null,
       admin_notes: adminNotes || null,
-    } as any).eq("user_id", selectedClient.user_id);
+    }).eq("user_id", selectedClient.user_id);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
@@ -149,7 +149,7 @@ export default function AdminClients() {
   const saveAdminNotes = async () => {
     if (!selectedClient || !user) return;
     setSavingNotes(true);
-    const { error } = await supabase.from("profiles").update({ admin_notes: adminNotes || null } as any).eq("user_id", selectedClient.user_id);
+    const { error } = await supabase.from("profiles").update({ admin_notes: adminNotes || null }).eq("user_id", selectedClient.user_id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else {
       toast({ title: "Notes saved" });
@@ -171,7 +171,7 @@ export default function AdminClients() {
       setUploadingAvatar(false);
       return;
     }
-    await supabase.from("profiles").update({ avatar_path: path } as any).eq("user_id", selectedClient.user_id);
+    await supabase.from("profiles").update({ avatar_path: path }).eq("user_id", selectedClient.user_id);
     const { data: urlData } = await supabase.storage.from("documents").createSignedUrl(path, 3600);
     if (urlData?.signedUrl) {
       setAvatarUrls((prev) => ({ ...prev, [selectedClient.user_id]: urlData.signedUrl }));

@@ -62,9 +62,9 @@ export default function AdminBusinessGrowth() {
   const seedMutation = useMutation({
     mutationFn: async () => {
       for (const g of GUIDES) {
-        const existing = resources.find((r: any) => r.slug === g.slug);
+        const existing = resources.find((r: Record<string, unknown>) => r.slug === g.slug);
         if (!existing) {
-          await supabase.from("growth_resources").insert(g as any);
+          await supabase.from("growth_resources").insert(g);
         }
       }
     },
@@ -73,7 +73,7 @@ export default function AdminBusinessGrowth() {
 
   const addMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("growth_resources").insert(form as any);
+      const { error } = await supabase.from("growth_resources").insert(form);
       if (error) throw error;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["growth-resources"] }); setShowAdd(false); toast({ title: "Resource added" }); },

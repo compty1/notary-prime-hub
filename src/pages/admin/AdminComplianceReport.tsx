@@ -33,11 +33,11 @@ export default function AdminComplianceReport() {
     Promise.all([
       supabase.from("appointments").select("*").eq("notarization_type", "ron").gte("scheduled_date", startDate).lt("scheduled_date", endDate),
       supabase.from("notary_journal").select("*").gte("created_at", startDate).lt("created_at", endDate),
-      supabase.from("e_seal_verifications" as any).select("*").gte("notarized_at", startDate).lt("notarized_at", endDate),
+      supabase.from("e_seal_verifications").select("*").gte("notarized_at", startDate).lt("notarized_at", endDate),
     ]).then(([apptRes, journalRes, sealRes]) => {
       setAppointments(apptRes.data || []);
       setJournalEntries(journalRes.data || []);
-      setSealVerifications((sealRes.data as any[]) || []);
+      setSealVerifications(sealRes.data || []);
       setLoading(false);
     });
   }, [selectedMonth]);
@@ -72,7 +72,7 @@ export default function AdminComplianceReport() {
     }
 
     // Missing seal verifications
-    const sealDocIds = new Set((sealVerifications as any[]).map((v: any) => v.appointment_id).filter(Boolean));
+    const sealDocIds = new Set(sealVerifications.map((v: Record<string, unknown>) => v.appointment_id as string).filter(Boolean));
     const missingSeal = [...completedApptIds].filter(id => !sealDocIds.has(id)).length;
     if (missingSeal > 0) {
       gaps.push({ type: "seal", message: `${missingSeal} completed session(s) without e-seal verification`, severity: "warning", count: missingSeal });
@@ -87,7 +87,7 @@ export default function AdminComplianceReport() {
   const getSessionAudit = (appt: any) => {
     const hasJournal = journalEntries.some(j => j.appointment_id === appt.id);
     const hasRecording = appt.session_recording_duration > 0;
-    const hasSeal = (sealVerifications as any[]).some((v: any) => v.appointment_id === appt.id);
+    const hasSeal = sealVerifications.some((v: Record<string, unknown>) => v.appointment_id === appt.id);
     return { hasJournal, hasRecording, hasSeal };
   };
 
