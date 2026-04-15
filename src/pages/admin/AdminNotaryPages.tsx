@@ -113,7 +113,7 @@ export default function AdminNotaryPages() {
   const [search, setSearch] = useState("");
   const [notaryUsers, setNotaryUsers] = useState<{ user_id: string; full_name: string; email: string }[]>([]);
   const [platformServices, setPlatformServices] = useState<PlatformService[]>([]);
-  const [enrollments, setEnrollments] = useState<Record<string, unknown>[]>([]);
+  const [enrollments, setEnrollments] = useState<Record<string, any>[]>([]);
   const [uploadingProfile, setUploadingProfile] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);

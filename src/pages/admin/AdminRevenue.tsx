@@ -44,11 +44,11 @@ const paymentStatusColors: Record<string, string> = {
 export default function AdminRevenue() {
   usePageMeta({ title: "Revenue", noIndex: true });
   const { toast } = useToast();
-  const [entries, setEntries] = useState<Record<string, unknown>[]>([]);
-  const [payments, setPayments] = useState<Record<string, unknown>[]>([]);
-  const [servicePayments, setServicePayments] = useState<Record<string, unknown>[]>([]);
+  const [entries, setEntries] = useState<Record<string, any>[]>([]);
+  const [payments, setPayments] = useState<Record<string, any>[]>([]);
+  const [servicePayments, setServicePayments] = useState<Record<string, any>[]>([]);
   const [profiles, setProfiles] = useState<Record<string, string>>({});
-  const [allProfiles, setAllProfiles] = useState<Record<string, unknown>[]>([]);
+  const [allProfiles, setAllProfiles] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const [typeFilter, setTypeFilter] = useState("all");
   const [dateRange, setDateRange] = useState("all");
@@ -65,7 +65,7 @@ export default function AdminRevenue() {
 
   // Refund dialog
   const [refundDialogOpen, setRefundDialogOpen] = useState(false);
-  const [refundTarget, setRefundTarget] = useState<Record<string, unknown> | null>(null);
+  const [refundTarget, setRefundTarget] = useState<Record<string, any> | null>(null);
   const [refundReason, setRefundReason] = useState("Requested by customer");
   const [processingRefund, setProcessingRefund] = useState(false);
 

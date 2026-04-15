@@ -13,7 +13,7 @@ import { formatDate } from "@/lib/utils";
 export default function AdminRonRecordings() {
   usePageMeta({ title: "RON Recordings Archive", noIndex: true });
   const { toast } = useToast();
-  const [recordings, setRecordings] = useState<Record<string, unknown>[]>([]);
+  const [recordings, setRecordings] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 

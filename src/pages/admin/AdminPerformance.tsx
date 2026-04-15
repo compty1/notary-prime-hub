@@ -7,8 +7,8 @@ import { Loader2, Users, Star, Clock, CheckCircle2, TrendingUp } from "lucide-re
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function AdminPerformance() {
-  const [appointments, setAppointments] = useState<Record<string, unknown>[]>([]);
-  const [feedback, setFeedback] = useState<Record<string, unknown>[]>([]);
+  const [appointments, setAppointments] = useState<Record<string, any>[]>([]);
+  const [feedback, setFeedback] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

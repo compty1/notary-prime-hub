@@ -14,12 +14,12 @@ import { formatDate, formatTime } from "@/lib/utils";
 export default function AdminComplianceReport() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [appointments, setAppointments] = useState<Record<string, unknown>[]>([]);
-  const [journalEntries, setJournalEntries] = useState<Record<string, unknown>[]>([]);
-  const [sealVerifications, setSealVerifications] = useState<Record<string, unknown>[]>([]);
+  const [appointments, setAppointments] = useState<Record<string, any>[]>([]);
+  const [journalEntries, setJournalEntries] = useState<Record<string, any>[]>([]);
+  const [sealVerifications, setSealVerifications] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [drillDownAppt, setDrillDownAppt] = useState<Record<string, unknown> | null>(null);
+  const [drillDownAppt, setDrillDownAppt] = useState<Record<string, any> | null>(null);
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
@@ -72,7 +72,7 @@ export default function AdminComplianceReport() {
     }
 
     // Missing seal verifications
-    const sealDocIds = new Set(sealVerifications.map((v: Record<string, unknown>) => v.appointment_id as string).filter(Boolean));
+    const sealDocIds = new Set(sealVerifications.map((v: Record<string, any>) => v.appointment_id as string).filter(Boolean));
     const missingSeal = [...completedApptIds].filter(id => !sealDocIds.has(id)).length;
     if (missingSeal > 0) {
       gaps.push({ type: "seal", message: `${missingSeal} completed session(s) without e-seal verification`, severity: "warning", count: missingSeal });
@@ -87,7 +87,7 @@ export default function AdminComplianceReport() {
   const getSessionAudit = (appt: any) => {
     const hasJournal = journalEntries.some(j => j.appointment_id === appt.id);
     const hasRecording = appt.session_recording_duration > 0;
-    const hasSeal = sealVerifications.some((v: Record<string, unknown>) => v.appointment_id === appt.id);
+    const hasSeal = sealVerifications.some((v: Record<string, any>) => v.appointment_id === appt.id);
     return { hasJournal, hasRecording, hasSeal };
   };
 

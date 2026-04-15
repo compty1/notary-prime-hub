@@ -117,13 +117,13 @@ export default function AdminMailbox() {
   const [composeInReplyTo, setComposeInReplyTo] = useState("");
   const [sending, setSending] = useState(false);
 
-  const [signatures, setSignatures] = useState<Record<string, unknown>[]>([]);
+  const [signatures, setSignatures] = useState<Record<string, any>[]>([]);
   const [showSignatures, setShowSignatures] = useState(false);
   const [sigName, setSigName] = useState("");
   const [sigHtml, setSigHtml] = useState("");
   const [editingSigId, setEditingSigId] = useState<string | null>(null);
 
-  const [profiles, setProfiles] = useState<Record<string, unknown>[]>([]);
+  const [profiles, setProfiles] = useState<Record<string, any>[]>([]);
 
   const fallbackQuery = useCallback(async () => {
     let query = supabase

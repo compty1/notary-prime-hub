@@ -8,7 +8,7 @@ import { Loader2, RefreshCw, CheckCircle, Clock, ArrowRight } from "lucide-react
 
 export default function AdminTaskQueue() {
   usePageMeta({ title: "Task Queue", noIndex: true });
-  const [requests, setRequests] = useState<Record<string, unknown>[]>([]);
+  const [requests, setRequests] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
 
   const taskServices = [

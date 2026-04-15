@@ -26,7 +26,7 @@ function EmailSettings() {
   const [testing, setTesting] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<"idle" | "success" | "error">("idle");
   const [statusMessage, setStatusMessage] = useState("");
-  const [signatures, setSignatures] = useState<Record<string, unknown>[]>([]);
+  const [signatures, setSignatures] = useState<Record<string, any>[]>([]);
   const [sigLoading, setSigLoading] = useState(false);
   const [newSigName, setNewSigName] = useState("");
   const [newSigHtml, setNewSigHtml] = useState("");
@@ -123,7 +123,7 @@ function EmailSettings() {
 /** ADMIN-003: Dead Letter Queue monitoring tab */
 function DLQViewer() {
   const { toast } = useToast();
-  const [failures, setFailures] = useState<Record<string, unknown>[]>([]);
+  const [failures, setFailures] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchFailures = async () => {

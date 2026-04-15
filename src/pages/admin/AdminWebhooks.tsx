@@ -21,10 +21,10 @@ const AVAILABLE_EVENTS = [
 ];
 
 function InboundTab() {
-  const [events, setEvents] = useState<Record<string, unknown>[]>([]);
+  const [events, setEvents] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const [sourceFilter, setSourceFilter] = useState("all");
-  const [selectedEvent, setSelectedEvent] = useState<Record<string, unknown> | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<Record<string, any> | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -101,8 +101,8 @@ function InboundTab() {
 
 function OutboundTab() {
   const { toast } = useToast();
-  const [webhooks, setWebhooks] = useState<Record<string, unknown>[]>([]);
-  const [logs, setLogs] = useState<Record<string, unknown>[]>([]);
+  const [webhooks, setWebhooks] = useState<Record<string, any>[]>([]);
+  const [logs, setLogs] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [newUrl, setNewUrl] = useState("");

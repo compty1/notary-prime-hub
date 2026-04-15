@@ -26,7 +26,7 @@ export default function AdminChat() {
   usePageMeta({ title: "Live Chat", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
-  const [allMessages, setAllMessages] = useState<Record<string, unknown>[]>([]);
+  const [allMessages, setAllMessages] = useState<Record<string, any>[]>([]);
   const [profiles, setProfiles] = useState<Record<string, string>>({});
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [message, setMessage] = useState("");
@@ -54,7 +54,7 @@ export default function AdminChat() {
     fetchData();
 
     const channel = supabase.channel("admin-chat").on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages" }, (payload) => {
-      const msg = payload.new as Record<string, unknown>;
+      const msg = payload.new as Record<string, any>;
       setAllMessages((prev) => {
         if (prev.some((m) => m.id === msg.id)) return prev;
         return [...prev, msg];

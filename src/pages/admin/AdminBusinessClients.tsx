@@ -20,7 +20,7 @@ export default function AdminBusinessClients() {
   usePageMeta({ title: "Business Clients", noIndex: true });
   const { toast } = useToast();
   const { user } = useAuth();
-  const [businesses, setBusinesses] = useState<Record<string, unknown>[]>([]);
+  const [businesses, setBusinesses] = useState<Record<string, any>[]>([]);
   const [memberCounts, setMemberCounts] = useState<Record<string, number>>({});
   const [ownerProfiles, setOwnerProfiles] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
