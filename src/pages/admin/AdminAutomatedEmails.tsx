@@ -190,15 +190,15 @@ function useGlobalEmailSettings() {
   const { data, isLoading } = useQuery({
     queryKey: ["email-template-settings"],
     queryFn: async () => {
-      const { data, error } = await (supabase as any).from("platform_settings").select("*").eq("setting_key", "email_templates").maybeSingle();
+      const { data, error } = await supabase.from("platform_settings").select("*").eq("setting_key", "email_templates").maybeSingle();
       if (error && !error.message?.includes("does not exist")) throw error;
-      return (data?.setting_value ?? null) as { master: MasterTemplate; templates: Record<string, { subject: string; bodyHtml: string }> } | null;
+      return (data?.setting_value ? (typeof data.setting_value === 'string' ? JSON.parse(data.setting_value) : data.setting_value) : null) as { master: MasterTemplate; templates: Record<string, { subject: string; bodyHtml: string }> } | null;
     },
   });
 
   const save = useMutation({
     mutationFn: async (settings: { master: MasterTemplate; templates: Record<string, { subject: string; bodyHtml: string }> }) => {
-      const { error } = await (supabase as any).from("platform_settings").upsert(
+      const { error } = await supabase.from("platform_settings").upsert(
         { setting_key: "email_templates", setting_value: JSON.stringify(settings) },
         { onConflict: "setting_key" }
       );

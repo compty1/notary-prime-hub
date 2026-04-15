@@ -105,7 +105,17 @@ Deno.serve(async (req) => {
       });
     }
 
-    const systemPrompt = custom_rules || BUILT_IN_RULES[rule_set] || BUILT_IN_RULES.general_legal;
+    // AI-003: Sanitize custom_rules to prevent prompt injection — only allow plain compliance text
+    let effectivePrompt = BUILT_IN_RULES[rule_set] || BUILT_IN_RULES.general_legal;
+    if (custom_rules && typeof custom_rules === "string") {
+      // Strip any system/role injection attempts and limit length
+      const sanitized = custom_rules
+        .replace(/\b(system|assistant|user)\s*:/gi, "")
+        .replace(/ignore\s+(all\s+)?previous\s+instructions/gi, "")
+        .slice(0, 5000);
+      effectivePrompt += "\n\nAdditional custom rules:\n" + sanitized;
+    }
+    const systemPrompt = effectivePrompt;
 
     const tools = [
       {

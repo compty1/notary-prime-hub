@@ -154,9 +154,9 @@ export default function AdminAppointments() {
 
   const fetchData = async () => {
     let query = supabase.from("appointments").select("*").order("scheduled_date", { ascending: false }).range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
-    if (filter !== "all") query = query.eq("status", filter as any);
+    if (filter !== "all") query = query.eq("status", filter as "confirmed" | "scheduled" | "completed" | "cancelled" | "no_show" | "in_session" | "kba_pending" | "id_verification");
     if (serviceTypeFilter !== "all") query = query.eq("service_type", serviceTypeFilter);
-    if (notarizationTypeFilter !== "all") query = query.eq("notarization_type", notarizationTypeFilter as any);
+    if (notarizationTypeFilter !== "all") query = query.eq("notarization_type", notarizationTypeFilter as "in_person" | "ron");
     const df = getDateFilter();
     if (df) query = query.gte("scheduled_date", df.from).lte("scheduled_date", df.to);
     const [{ data: appts }, { data: profs }, { data: svcs }] = await Promise.all([
@@ -207,7 +207,7 @@ export default function AdminAppointments() {
       return;
     }
     setUpdatingId(id);
-    const { error } = await supabase.from("appointments").update({ status: newStatus as any }).eq("id", id);
+    const { error } = await supabase.from("appointments").update({ status: newStatus as "confirmed" | "scheduled" | "completed" | "cancelled" }).eq("id", id);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
@@ -272,7 +272,7 @@ export default function AdminAppointments() {
     if (!refuseAppt || !refusalReason.trim()) return;
     setRefusingAppt(true);
     const { error } = await supabase.from("appointments").update({
-      status: "cancelled" as any,
+      status: "cancelled",
       refusal_reason: refusalReason,
       refused_at: new Date().toISOString(),
     }).eq("id", refuseAppt.id);
@@ -383,13 +383,13 @@ export default function AdminAppointments() {
     const { data: insertedAppt, error } = await supabase.from("appointments").insert({
       client_id: newAppt.client_id,
       service_type: newAppt.service_type,
-      notarization_type: newAppt.notarization_type as any,
+      notarization_type: newAppt.notarization_type,
       scheduled_date: newAppt.scheduled_date,
       scheduled_time: newAppt.scheduled_time,
       location: newAppt.notarization_type === "ron" ? "Remote" : (newAppt.location || null),
       notes: newAppt.notes || null,
       estimated_price: newAppt.estimated_price ? parseFloat(newAppt.estimated_price) : null,
-      status: "confirmed" as any,
+      status: "confirmed",
     }).select("id").single();
     if (error) {
       toast({ title: "Error creating appointment", description: error.message, variant: "destructive" });

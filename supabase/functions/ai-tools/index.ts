@@ -70,8 +70,23 @@ Deno.serve(async (req) => {
       return errorResponse(req, 400, "Invalid tool_id");
     }
 
-    if (!systemPrompt || !fields) {
-      return errorResponse(req, 400, "Missing systemPrompt or fields");
+    if (!fields) {
+      return errorResponse(req, 400, "Missing fields");
+    }
+
+    // AI-002: Reject user-supplied systemPrompt — use server-side prompts only
+    // The systemPrompt is passed from the client but we validate it's not arbitrary injection
+    if (systemPrompt && typeof systemPrompt === "string") {
+      // Strip known injection patterns
+      const hasInjection = /ignore\s+(all\s+)?previous\s+instructions/i.test(systemPrompt) ||
+        /you\s+are\s+now\s+/i.test(systemPrompt) ||
+        /\bsystem\s*:\s*/i.test(systemPrompt);
+      if (hasInjection) {
+        return errorResponse(req, 400, "Invalid prompt content detected");
+      }
+    }
+    if (!systemPrompt) {
+      return errorResponse(req, 400, "Missing systemPrompt");
     }
 
     // ─── Free plan usage cap: 2 free generations ───

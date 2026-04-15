@@ -118,7 +118,7 @@ export default function AdminDocuDexPro() {
       file_path: filePath,
       uploaded_by: user.id,
       appointment_id: selectedAppointment !== "none" ? selectedAppointment : null,
-      status: "uploaded" as any,
+      status: "uploaded",
     });
     if (dbError) throw dbError;
 
