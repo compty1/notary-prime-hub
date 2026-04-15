@@ -38,7 +38,7 @@ interface NotaryPage {
   website_url: string;
   service_areas: string[];
   services_offered: ServiceItem[];
-  credentials: Record<string, string>;
+  credentials: Record<string, string | boolean>;
   theme_color: string;
   accent_color: string;
   font_family: string;
@@ -46,7 +46,7 @@ interface NotaryPage {
   signing_platform_url: string;
   use_platform_booking: boolean;
   external_booking_url: string;
-  social_links: Record<string, any>;
+  social_links: Record<string, string>;
   profile_photo_path: string | null;
   cover_photo_path: string | null;
   logo_path: string | null;
@@ -127,7 +127,7 @@ export default function AdminNotaryPages() {
   const fetchPages = async () => {
     setLoading(true);
     const { data } = await supabase.from("notary_pages").select("*").order("created_at", { ascending: false });
-    setPages((data ?? []) as NotaryPage[]);
+    setPages((data ?? []) as unknown as NotaryPage[]);
     setLoading(false);
   };
 
@@ -225,7 +225,7 @@ export default function AdminNotaryPages() {
   const removeService = (i: number) => updateField("services_offered", services.filter((_, idx) => idx !== i));
   const updateService = (i: number, field: string, value: string) => {
     const updated = [...services];
-    (updated[i] as Record<string, string>)[field] = value;
+    (updated[i] as unknown as Record<string, string>)[field] = value;
     updateField("services_offered", updated);
   };
 
@@ -619,10 +619,10 @@ export default function AdminNotaryPages() {
                 <div><Label>Bond Info</Label><Input value={creds.bond_info || ""} onChange={e => updateCred("bond_info", e.target.value)} /></div>
               </div>
               <div className="flex flex-wrap gap-4">
-                <div className="flex items-center gap-2"><Switch checked={creds.nna_certified || false} onCheckedChange={v => updateCred("nna_certified", v)} /><Label className="flex items-center gap-1"><Award className="h-3 w-3" /> NNA Certified</Label></div>
-                <div className="flex items-center gap-2"><Switch checked={creds.ron_certified || false} onCheckedChange={v => updateCred("ron_certified", v)} /><Label className="flex items-center gap-1"><Shield className="h-3 w-3" /> RON Certified</Label></div>
-                <div className="flex items-center gap-2"><Switch checked={creds.eo_insured || false} onCheckedChange={v => updateCred("eo_insured", v)} /><Label className="flex items-center gap-1"><CheckCircle className="h-3 w-3" /> E&O Insured</Label></div>
-                <div className="flex items-center gap-2"><Switch checked={creds.bonded || false} onCheckedChange={v => updateCred("bonded", v)} /><Label className="flex items-center gap-1"><CheckCircle className="h-3 w-3" /> Bonded</Label></div>
+                <div className="flex items-center gap-2"><Switch checked={!!creds.nna_certified} onCheckedChange={v => updateCred("nna_certified", v)} /><Label className="flex items-center gap-1"><Award className="h-3 w-3" /> NNA Certified</Label></div>
+                <div className="flex items-center gap-2"><Switch checked={!!creds.ron_certified} onCheckedChange={v => updateCred("ron_certified", v)} /><Label className="flex items-center gap-1"><Shield className="h-3 w-3" /> RON Certified</Label></div>
+                <div className="flex items-center gap-2"><Switch checked={!!creds.eo_insured} onCheckedChange={v => updateCred("eo_insured", v)} /><Label className="flex items-center gap-1"><CheckCircle className="h-3 w-3" /> E&O Insured</Label></div>
+                <div className="flex items-center gap-2"><Switch checked={!!creds.bonded} onCheckedChange={v => updateCred("bonded", v)} /><Label className="flex items-center gap-1"><CheckCircle className="h-3 w-3" /> Bonded</Label></div>
               </div>
               <Separator />
               <h3 className="font-semibold">Social Links</h3>
