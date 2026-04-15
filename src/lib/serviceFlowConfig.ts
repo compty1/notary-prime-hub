@@ -837,6 +837,98 @@ export const SERVICE_FLOWS: Record<string, ServiceFlowConfig> = {
     hasAdminDashboard: true,
     hasStatusTracking: true,
   },
+
+  "certified-copies": {
+    serviceId: "certified-copies",
+    intakeRoute: "book",
+    steps: [
+      { step: 1, label: "Select Service", description: "Choose certified copy services", required: true },
+      { step: 2, label: "Bring Original", description: "Prepare original document for certification", required: true },
+      { step: 3, label: "Schedule", description: "Pick date and time", required: true },
+      { step: 4, label: "Notarization", description: "Notary certifies the copy", required: true },
+    ],
+    documentChecklist: [
+      { name: "Original Document", description: "The original document to be certified", required: true },
+      { name: "Government ID", description: "Valid photo identification", required: true },
+    ],
+    postActions: ["Generate journal entry", "Issue certified copy", "Send confirmation"],
+    turnaroundTime: "Same day",
+    hasAdminDashboard: true,
+    hasStatusTracking: true,
+  },
+
+  "oath-administration": {
+    serviceId: "oath-administration",
+    intakeRoute: "book",
+    steps: [
+      { step: 1, label: "Select Service", description: "Choose oath/affirmation administration", required: true },
+      { step: 2, label: "Purpose", description: "Describe the purpose of the oath", required: true },
+      { step: 3, label: "Schedule", description: "Pick date and time", required: true },
+      { step: 4, label: "Administration", description: "Notary administers oath/affirmation", required: true },
+    ],
+    documentChecklist: [
+      { name: "Government ID", description: "Valid photo identification", required: true },
+      { name: "Supporting Document", description: "Affidavit or document requiring oath", required: false },
+    ],
+    postActions: ["Generate journal entry", "Issue certificate", "Send confirmation"],
+    turnaroundTime: "Same day",
+    hasAdminDashboard: true,
+    hasStatusTracking: true,
+  },
+
+  "witness-services": {
+    serviceId: "witness-services",
+    intakeRoute: "book",
+    steps: [
+      { step: 1, label: "Select Service", description: "Choose signing witness services", required: true },
+      { step: 2, label: "Details", description: "Describe the signing event", required: true },
+      { step: 3, label: "Schedule", description: "Pick date, time, and location", required: true },
+      { step: 4, label: "Witness", description: "Professional witness attends signing", required: true },
+    ],
+    documentChecklist: [
+      { name: "Document to Witness", description: "The document requiring a witness", required: true },
+    ],
+    postActions: ["Log witness event", "Send confirmation", "Generate attestation"],
+    turnaroundTime: "Same day",
+    hasAdminDashboard: true,
+    hasStatusTracking: true,
+  },
+
+  "skip-tracing": {
+    serviceId: "skip-tracing",
+    intakeRoute: "request",
+    steps: [
+      { step: 1, label: "Submit Request", description: "Provide subject information", required: true },
+      { step: 2, label: "Research", description: "Professional search and locate", required: true },
+      { step: 3, label: "Report", description: "Receive findings report", required: true },
+    ],
+    documentChecklist: [
+      { name: "Subject Information", description: "Name, last known address, any identifiers", required: true },
+    ],
+    postActions: ["Deliver report", "Send confirmation"],
+    turnaroundTime: "1–3 business days",
+    hasAdminDashboard: true,
+    hasStatusTracking: true,
+  },
+
+  "vital-records": {
+    serviceId: "vital-records",
+    intakeRoute: "request",
+    steps: [
+      { step: 1, label: "Select Record Type", description: "Birth, death, or marriage certificate", required: true },
+      { step: 2, label: "Provide Details", description: "Subject name, dates, jurisdiction", required: true },
+      { step: 3, label: "Processing", description: "Request submitted to records office", required: true },
+      { step: 4, label: "Delivery", description: "Record delivered to client", required: true },
+    ],
+    documentChecklist: [
+      { name: "Requestor ID", description: "Valid ID of the person requesting records", required: true },
+      { name: "Authorization", description: "Proof of eligibility to receive records", required: false },
+    ],
+    postActions: ["Submit to records office", "Track status", "Notify on delivery"],
+    turnaroundTime: "5–15 business days depending on jurisdiction",
+    hasAdminDashboard: true,
+    hasStatusTracking: true,
+  },
 };
 
 /** Get flow config for a service */

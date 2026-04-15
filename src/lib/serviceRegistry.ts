@@ -499,6 +499,68 @@ export const SERVICE_REGISTRY: ServiceRegistryEntry[] = [
     tags: ["remote"],
     requiresNotary: false, ronAvailable: false, idRequired: false, estimatedDuration: 120,
   },
+  // Certified Copies
+  {
+    id: "certified-copies",
+    name: "Certified Copy Services",
+    slug: "certified-copy-services",
+    category: "notarization",
+    description: "Notary-certified copies of original documents per ORC §147.542",
+    path: "/book",
+    requiredFields: ["fullName", "email", "phone", "documentDescription", "scheduledDate", "scheduledTime"],
+    tags: ["in-person", "notary-required", "same-day"],
+    requiresNotary: true, ronAvailable: false, idRequired: true, estimatedDuration: 15,
+    orcReference: "ORC §147.542",
+  },
+  // Oath Administration
+  {
+    id: "oath-administration",
+    name: "Oath & Affirmation Administration",
+    slug: "oath-affirmation-administration",
+    category: "notarization",
+    description: "Administration of oaths and affirmations per ORC §147.53",
+    path: "/book",
+    requiredFields: ["fullName", "email", "phone", "purpose", "scheduledDate", "scheduledTime"],
+    tags: ["in-person", "notary-required"],
+    requiresNotary: true, ronAvailable: true, idRequired: true, estimatedDuration: 15,
+    orcReference: "ORC §147.53",
+  },
+  // Witness Services
+  {
+    id: "witness-services",
+    name: "Signing Witness Services",
+    slug: "signing-witness-services",
+    category: "notarization",
+    description: "Professional witness for document signings and legal proceedings",
+    path: "/book",
+    requiredFields: ["fullName", "email", "phone", "scheduledDate", "scheduledTime"],
+    tags: ["in-person", "same-day"],
+    requiresNotary: false, ronAvailable: false, idRequired: true, estimatedDuration: 30,
+  },
+  // Skip Tracing
+  {
+    id: "skip-tracing",
+    name: "Skip Tracing",
+    slug: "skip-tracing",
+    category: "legal_support",
+    description: "People search and locate services for legal proceedings",
+    path: "/request",
+    requiredFields: ["fullName", "email", "subjectName"],
+    tags: ["remote", "rush-available"],
+    requiresNotary: false, ronAvailable: false, idRequired: false, estimatedDuration: 60,
+  },
+  // Vital Records
+  {
+    id: "vital-records",
+    name: "Vital Records Request",
+    slug: "vital-records-request",
+    category: "legal_support",
+    description: "Birth, death, and marriage certificate request coordination",
+    path: "/request",
+    requiredFields: ["fullName", "email", "recordType", "jurisdiction"],
+    tags: ["remote", "ohio-only"],
+    requiresNotary: false, ronAvailable: false, idRequired: true, estimatedDuration: 30,
+  },
 ];
 
 /** Lookup a service by ID */
