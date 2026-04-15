@@ -837,7 +837,6 @@ export const SERVICE_FLOWS: Record<string, ServiceFlowConfig> = {
     hasAdminDashboard: true,
     hasStatusTracking: true,
   },
-},
 
   "certified-copies": {
     serviceId: "certified-copies",
