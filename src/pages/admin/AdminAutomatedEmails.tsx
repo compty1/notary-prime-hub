@@ -536,7 +536,7 @@ function ServiceTemplatesTab() {
   const getTemplates = (s: ServiceRow): ServiceEmailTemplates => s.email_templates ?? defaultServiceTemplates(s.name);
 
   const updateLocal = (id: string, templates: ServiceEmailTemplates) => {
-    setServices(prev => prev.map(s => (s.id === id ? { ...s, email_templates: templates as unknown as import("@/integrations/supabase/types").Json } : s)));
+    setServices(prev => prev.map(s => (s.id === id ? { ...s, email_templates: templates } : s)));
   };
 
   const saveService = async (id: string, templates: ServiceEmailTemplates) => {
