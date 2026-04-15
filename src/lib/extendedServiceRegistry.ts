@@ -80,20 +80,20 @@ export const EXTENDED_SERVICES: ServiceRegistryEntry[] = [
     idRequired: false,
     estimatedDuration: 60,
   },
-  // Registered Agent
+  // Registered Agent (extended — supplements core registry entry with subscription focus)
   {
-    id: "registered-agent",
-    name: "Registered Agent Service",
-    slug: "registered-agent",
+    id: "registered-agent-subscription",
+    name: "Registered Agent Subscription",
+    slug: "registered-agent-subscription",
     category: "business",
-    description: "Ohio registered agent service for business entities",
-    path: "/request",
+    description: "Ongoing Ohio registered agent service with annual renewal",
+    path: "/subscribe",
     requiredFields: ["fullName", "email", "businessName", "entityType"],
     tags: ["remote", "subscription"],
     requiresNotary: false,
     ronAvailable: false,
     idRequired: false,
-    estimatedDuration: 0, // subscription
+    estimatedDuration: 0,
   },
   // Mediation
   {
