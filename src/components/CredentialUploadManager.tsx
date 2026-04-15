@@ -18,10 +18,13 @@ export function CredentialUploadManager() {
   const [credType, setCredType] = useState("notary_commission");
   const [expiresAt, setExpiresAt] = useState("");
 
+  // platform_credentials table accessed via dynamic name (not in generated types)
+  const credTable = () => (supabase as unknown as { from: (t: string) => Record<string, (...args: unknown[]) => unknown> }).from("platform_credentials");
+
   const fetchCredentials = async () => {
     if (!user) return;
-    const { data } = await (supabase.from("platform_credentials" as never).select("*") as ReturnType<typeof supabase.from>).eq("user_id", user.id).order("created_at", { ascending: false });
-    setCredentials((data as Record<string, unknown>[]) || []);
+    const { data } = await (credTable().select("*") as unknown as { eq: (col: string, val: string) => { order: (col: string, opts: { ascending: boolean }) => Promise<{ data: Record<string, unknown>[] | null }> } }).eq("user_id", user.id).order("created_at", { ascending: false });
+    setCredentials(data || []);
     setLoading(false);
   };
 
