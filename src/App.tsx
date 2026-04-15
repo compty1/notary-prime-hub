@@ -76,6 +76,7 @@ const ApparelDesigner = lazyRetry(() => import("./pages/design/ApparelDesigner")
 const SignageDesigner = lazyRetry(() => import("./pages/design/SignageDesigner"));
 const PromoDesigner = lazyRetry(() => import("./pages/design/PromoDesigner"));
 const VendorPortal = lazyRetry(() => import("./pages/VendorPortal"));
+const AnimationGallery = lazyRetry(() => import("./pages/AnimationGallery"));
 
 // Shop pages
 const ShopLanding = lazyRetry(() => import("./pages/shop/ShopLanding"));
