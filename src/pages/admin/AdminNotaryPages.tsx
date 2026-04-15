@@ -613,10 +613,10 @@ export default function AdminNotaryPages() {
               <Separator />
               <h3 className="font-semibold">Credentials</h3>
               <div className="grid gap-4 sm:grid-cols-2">
-                <div><Label>Commission Number</Label><Input value={creds.commission_number || ""} onChange={e => updateCred("commission_number", e.target.value)} /></div>
-                <div><Label>Commission Expiration</Label><Input type="date" value={creds.commission_expiration || ""} onChange={e => updateCred("commission_expiration", e.target.value)} /></div>
-                <div><Label>Commissioned State</Label><Input value={creds.commissioned_state || ""} onChange={e => updateCred("commissioned_state", e.target.value)} /></div>
-                <div><Label>Bond Info</Label><Input value={creds.bond_info || ""} onChange={e => updateCred("bond_info", e.target.value)} /></div>
+                <div><Label>Commission Number</Label><Input value={String(creds.commission_number || "")} onChange={e => updateCred("commission_number", e.target.value)} /></div>
+                <div><Label>Commission Expiration</Label><Input type="date" value={String(creds.commission_expiration || "")} onChange={e => updateCred("commission_expiration", e.target.value)} /></div>
+                <div><Label>Commissioned State</Label><Input value={String(creds.commissioned_state || "")} onChange={e => updateCred("commissioned_state", e.target.value)} /></div>
+                <div><Label>Bond Info</Label><Input value={String(creds.bond_info || "")} onChange={e => updateCred("bond_info", e.target.value)} /></div>
               </div>
               <div className="flex flex-wrap gap-4">
                 <div className="flex items-center gap-2"><Switch checked={!!creds.nna_certified} onCheckedChange={v => updateCred("nna_certified", v)} /><Label className="flex items-center gap-1"><Award className="h-3 w-3" /> NNA Certified</Label></div>
