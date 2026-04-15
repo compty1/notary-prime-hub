@@ -41,7 +41,7 @@ export function NotarizationComplete({ trigger = false, onComplete, className }:
             className={cn(
               "transition-all",
               phase === "check" && "animate-[drawCheck_0.5s_ease-out_forwards]",
-              phase === "idle" || phase === "seal" ? "opacity-0 [stroke-dasharray:40] [stroke-dashoffset:40]" : ""
+              phase === "seal" ? "opacity-0 [stroke-dasharray:40] [stroke-dashoffset:40]" : ""
             )}
           />
         </svg>

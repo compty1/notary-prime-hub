@@ -43,7 +43,7 @@ export function IdentityVerified({ trigger = false, onComplete, className }: Ide
             strokeLinecap="round"
             strokeLinejoin="round"
             className={cn(phase === "badge" && "animate-[drawCheck_0.4s_ease-out_forwards]")}
-            style={{ strokeDasharray: 40, strokeDashoffset: phase === "idle" || phase === "shield" ? 40 : 0 }}
+            style={{ strokeDasharray: 40, strokeDashoffset: phase === "shield" ? 40 : 0 }}
           />
         </svg>
         {phase === "badge" && (
