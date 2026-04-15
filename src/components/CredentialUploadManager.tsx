@@ -12,7 +12,7 @@ import { toast } from "sonner";
 
 export function CredentialUploadManager() {
   const { user } = useAuth();
-  const [credentials, setCredentials] = useState<Record<string, unknown>[]>([]);
+  const [credentials, setCredentials] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [credType, setCredType] = useState("notary_commission");
@@ -24,7 +24,7 @@ export function CredentialUploadManager() {
   const fetchCredentials = async () => {
     if (!user) return;
     const { data } = await credTable().select("*").eq("user_id", user.id).order("created_at", { ascending: false });
-    setCredentials((data as Record<string, unknown>[]) || []);
+    setCredentials((data as Record<string, any>[]) || []);
     setLoading(false);
   };
 

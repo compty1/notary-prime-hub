@@ -34,7 +34,7 @@ export function ComplianceScorecard({ className }: { className?: string }) {
       const now = new Date();
 
       const checkCred = (label: string, type: string) => {
-        const cred = ((creds as Record<string, unknown>[]) ?? []).find((c) => c.credential_type === type);
+        const cred = ((creds as Record<string, any>[]) ?? []).find((c) => c.credential_type === type);
         if (!cred) {
           items.push({ label, status: "missing" });
         } else if (cred.expiration_date) {

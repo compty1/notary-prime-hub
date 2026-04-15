@@ -22,7 +22,7 @@ export default function AdminScrivener() {
   usePageMeta({ title: "Scrivener / Form Typing", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
-  const [jobs, setJobs] = useState<Record<string, unknown>[]>([]);
+  const [jobs, setJobs] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
