@@ -254,7 +254,7 @@ export function DocuDexSidebar({
                             <div className="text-[10px] font-semibold mb-1">{t.label} Preview</div>
                             <div
                               className="prose prose-xs max-w-none max-h-48 overflow-auto border rounded p-2 text-[9px] bg-card"
-                              dangerouslySetInnerHTML={{ __html: t.content.slice(0, 500) }}
+                              dangerouslySetInnerHTML={{ __html: sanitizeHtml(t.content.slice(0, 500)) }}
                             />
                             <div className="flex gap-1 mt-2">
                               <Button size="sm" className="flex-1 text-xs h-7" onClick={() => onApplyTemplate(t.id)}>
