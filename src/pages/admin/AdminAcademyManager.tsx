@@ -371,8 +371,8 @@ function CertificatesTab({ courseId }: { courseId: string }) {
                 <TableCell className="text-right">
                   <Button variant="ghost" size="sm" className="text-destructive" onClick={() => { if (confirm("Revoke this certificate?")) revoke.mutate(c.id); }}>Revoke</Button>
                 </TableCell>
-              </TableRow>
-            ))}
+              </TableRow>;
+            })}
           </TableBody>
         </Table>
       )}
