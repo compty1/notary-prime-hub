@@ -73,7 +73,7 @@ export default function AdminApostille() {
   };
 
   const updateStatus = async (id: string, newStatus: string) => {
-    const { error } = await supabase.from("apostille_requests").update({ status: newStatus, updated_at: new Date().toISOString() } as any).eq("id", id);
+    const { error } = await supabase.from("apostille_requests").update({ status: newStatus, updated_at: new Date().toISOString() }).eq("id", id);
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
     setRequests(prev => prev.map(r => r.id === id ? { ...r, status: newStatus } : r));
     if (detailReq?.id === id) setDetailReq((prev: any) => prev ? { ...prev, status: newStatus } : null);
@@ -82,7 +82,7 @@ export default function AdminApostille() {
   };
 
   const updateField = async (id: string, field: string, value: any) => {
-    const { error } = await supabase.from("apostille_requests").update({ [field]: value, updated_at: new Date().toISOString() } as any).eq("id", id);
+    const { error } = await supabase.from("apostille_requests").update({ [field]: value, updated_at: new Date().toISOString() }).eq("id", id);
     if (!error) {
       setRequests(prev => prev.map(r => r.id === id ? { ...r, [field]: value } : r));
       if (detailReq?.id === id) setDetailReq((prev: any) => prev ? { ...prev, [field]: value } : null);

@@ -37,14 +37,14 @@ export default function AdminBackgroundChecks() {
   const handleCreate = async () => {
     if (!form.subject_name.trim()) { toast({ title: "Subject name required", variant: "destructive" }); return; }
     setSaving(true);
-    const { error } = await supabase.from("background_checks").insert({ subject_name: form.subject_name, check_type: form.check_type, agency: form.agency, purpose: form.purpose, fingerprints_required: form.fingerprints_required, fee: parseFloat(form.fee) || 0, notes: form.notes, client_id: user?.id || "" } as any);
+    const { error } = await supabase.from("background_checks").insert({ subject_name: form.subject_name, check_type: form.check_type, agency: form.agency, purpose: form.purpose, fingerprints_required: form.fingerprints_required, fee: parseFloat(form.fee) || 0, notes: form.notes, client_id: user?.id || "" });
     setSaving(false);
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
     toast({ title: "Check created" }); setCreateOpen(false); fetchData();
   };
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from("background_checks").update({ status } as any).eq("id", id);
+    await supabase.from("background_checks").update({ status }).eq("id", id);
     setChecks(prev => prev.map(c => c.id === id ? { ...c, status } : c)); toast({ title: "Updated" });
   };
 

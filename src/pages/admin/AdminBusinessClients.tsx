@@ -50,7 +50,7 @@ export default function AdminBusinessClients() {
   }, []);
 
   const updateVerification = async (id: string, status: string) => {
-    const { error } = await supabase.from("business_profiles").update({ verification_status: status, updated_at: new Date().toISOString() } as any).eq("id", id);
+    const { error } = await supabase.from("business_profiles").update({ verification_status: status, updated_at: new Date().toISOString() }).eq("id", id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else {
       setBusinesses((prev) => prev.map((b) => b.id === id ? { ...b, verification_status: status } : b));
