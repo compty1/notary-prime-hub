@@ -22,7 +22,7 @@ export default function AdminVATasks() {
   usePageMeta({ title: "Virtual Assistant Tasks", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
-  const [tasks, setTasks] = useState<Record<string, unknown>[]>([]);
+  const [tasks, setTasks] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
