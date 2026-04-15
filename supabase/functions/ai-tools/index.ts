@@ -161,16 +161,43 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Save generation to database (non-blocking)
-    supabase.from("tool_generations").insert({
-      user_id: user.id,
-      tool_id,
-      fields,
-      result: "[streaming]",
-      is_preset: false,
-    }).then(() => {}, () => {});
+    // AI-004: Tee the stream so we can capture the full result while still streaming to client
+    const [clientStream, captureStream] = response.body!.tee();
 
-    return new Response(response.body, {
+    // Non-blocking: read the capture stream and save full result to DB
+    (async () => {
+      try {
+        const reader = captureStream.getReader();
+        const decoder = new TextDecoder();
+        let fullResult = "";
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          // Parse SSE data lines to extract content
+          for (const line of chunk.split("\n")) {
+            if (line.startsWith("data: ") && line !== "data: [DONE]") {
+              try {
+                const parsed = JSON.parse(line.slice(6));
+                const content = parsed.choices?.[0]?.delta?.content;
+                if (content) fullResult += content;
+              } catch { /* skip malformed SSE lines */ }
+            }
+          }
+        }
+        if (fullResult) {
+          await supabase.from("tool_generations").insert({
+            user_id: user.id,
+            tool_id,
+            fields,
+            result: fullResult,
+            is_preset: false,
+          });
+        }
+      } catch { /* non-critical — don't break client stream */ }
+    })();
+
+    return new Response(clientStream, {
       headers: {
         ...corsHeaders(req),
         "Content-Type": "text/event-stream",

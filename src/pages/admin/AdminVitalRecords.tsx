@@ -22,7 +22,7 @@ export default function AdminVitalRecords() {
   usePageMeta({ title: "Vital Records", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
-  const [requests, setRequests] = useState<Record<string, unknown>[]>([]);
+  const [requests, setRequests] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [createOpen, setCreateOpen] = useState(false);

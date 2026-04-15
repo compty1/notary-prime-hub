@@ -40,9 +40,9 @@ import { formatDate, formatTime } from "@/lib/utils";
 
 export default function AdminAppointments() {
   usePageMeta({ title: "Appointments", noIndex: true });
-  const [appointments, setAppointments] = useState<any[]>([]);
-  const [profiles, setProfiles] = useState<any[]>([]);
-  const [services, setServices] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<Record<string, any>[]>([]);
+  const [profiles, setProfiles] = useState<Record<string, any>[]>([]);
+  const [services, setServices] = useState<Record<string, any>[]>([]);
   const [filter, setFilter] = useState("all");
   const [dateRange, setDateRange] = useState("all");
   const [serviceTypeFilter, setServiceTypeFilter] = useState("all");
@@ -56,25 +56,25 @@ export default function AdminAppointments() {
 
   // Service requests
   const [showRequests, setShowRequests] = useState(false);
-  const [serviceRequests, setServiceRequests] = useState<any[]>([]);
+  const [serviceRequests, setServiceRequests] = useState<Record<string, any>[]>([]);
   const [requestsLoading, setRequestsLoading] = useState(false);
-  const [receiptAppt, setReceiptAppt] = useState<any>(null);
-  const [quickJournalAppt, setQuickJournalAppt] = useState<any>(null);
-  const [detailAppt, setDetailAppt] = useState<any>(null);
-  const [detailDocs, setDetailDocs] = useState<any[]>([]);
+  const [receiptAppt, setReceiptAppt] = useState<Record<string, any> | null>(null);
+  const [quickJournalAppt, setQuickJournalAppt] = useState<Record<string, any> | null>(null);
+  const [detailAppt, setDetailAppt] = useState<Record<string, any> | null>(null);
+  const [detailDocs, setDetailDocs] = useState<Record<string, any>[]>([]);
   const [editNotes, setEditNotes] = useState("");
   const [editAdminNotes, setEditAdminNotes] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [creatingAppt, setCreatingAppt] = useState(false);
   // Message client state
-  const [messageAppt, setMessageAppt] = useState<any>(null);
+  const [messageAppt, setMessageAppt] = useState<Record<string, any> | null>(null);
   const [messageSubject, setMessageSubject] = useState("");
   const [messageBody, setMessageBody] = useState("");
   const [sendingMessage, setSendingMessage] = useState(false);
   const [showKBA, setShowKBA] = useState(false);
   const [showTranslation, setShowTranslation] = useState(false);
-  const [refuseAppt, setRefuseAppt] = useState<any>(null);
+  const [refuseAppt, setRefuseAppt] = useState<Record<string, any> | null>(null);
   const [refusalReason, setRefusalReason] = useState("");
   const [refusingAppt, setRefusingAppt] = useState(false);
   const [cancelConfirm, setCancelConfirm] = useState<{ id: string; name: string } | null>(null);

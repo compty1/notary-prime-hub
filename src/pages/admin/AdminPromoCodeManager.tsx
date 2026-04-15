@@ -15,10 +15,10 @@ import { usePageMeta } from "@/hooks/usePageMeta";
 export default function AdminPromoCodeManager() {
   usePageMeta({ title: "Promo Code Manager", description: "Manage promotional discount codes" });
   const { toast } = useToast();
-  const [codes, setCodes] = useState<any[]>([]);
+  const [codes, setCodes] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editing, setEditing] = useState<any>(null);
+  const [editing, setEditing] = useState<Record<string, any> | null>(null);
   const [form, setForm] = useState({ code: "", discount_percent: 10, max_uses: 100, is_active: true });
 
   const load = async () => {

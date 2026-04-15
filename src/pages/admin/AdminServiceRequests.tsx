@@ -38,14 +38,14 @@ export default function AdminServiceRequests() {
   usePageMeta({ title: "Service Requests", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
-  const [requests, setRequests] = useState<any[]>([]);
+  const [requests, setRequests] = useState<Record<string, any>[]>([]);
   const [profiles, setProfiles] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [assignedFilter, setAssignedFilter] = useState("all");
-  const [selectedRequest, setSelectedRequest] = useState<any>(null);
+  const [selectedRequest, setSelectedRequest] = useState<Record<string, any> | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [editStatus, setEditStatus] = useState("");
@@ -53,7 +53,7 @@ export default function AdminServiceRequests() {
   const [editNotes, setEditNotes] = useState("");
   const [editClientStatus, setEditClientStatus] = useState("");
   const [editAssignedTo, setEditAssignedTo] = useState("");
-  const [teamProfiles, setTeamProfiles] = useState<any[]>([]);
+  const [teamProfiles, setTeamProfiles] = useState<Record<string, any>[]>([]);
   const [deliverableFile, setDeliverableFile] = useState<File | null>(null);
   const [uploadingDeliverable, setUploadingDeliverable] = useState(false);
   const [externalOrderOpen, setExternalOrderOpen] = useState(false);
@@ -66,12 +66,12 @@ export default function AdminServiceRequests() {
     const channel = supabase.channel("admin-service-requests")
       .on("postgres_changes", { event: "*", schema: "public", table: "service_requests" }, (payload) => {
         if (payload.eventType === "INSERT") {
-          setRequests(prev => [payload.new as Record<string, unknown>, ...prev]);
-          toast({ title: "New service request", description: String((payload.new as Record<string, unknown>).service_name || "") });
+          setRequests(prev => [payload.new as Record<string, any>, ...prev]);
+          toast({ title: "New service request", description: String((payload.new as Record<string, any>).service_name || "") });
         } else if (payload.eventType === "UPDATE") {
-          setRequests(prev => prev.map(r => r.id === (payload.new as Record<string, unknown>).id ? payload.new as Record<string, unknown> : r));
+          setRequests(prev => prev.map(r => r.id === (payload.new as Record<string, any>).id ? payload.new as Record<string, any> : r));
         } else if (payload.eventType === "DELETE") {
-          setRequests(prev => prev.filter(r => r.id !== (payload.old as Record<string, unknown>).id));
+          setRequests(prev => prev.filter(r => r.id !== (payload.old as Record<string, any>).id));
         }
       }).subscribe();
     return () => { supabase.removeChannel(channel); };

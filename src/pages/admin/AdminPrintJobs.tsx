@@ -21,7 +21,7 @@ const statusColors: Record<string, string> = {
 export default function AdminPrintJobs() {
   usePageMeta({ title: "Print Queue", noIndex: true });
   const { toast } = useToast();
-  const [jobs, setJobs] = useState<Record<string, unknown>[]>([]);
+  const [jobs, setJobs] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 

@@ -300,9 +300,11 @@ Deno.serve(async (req) => {
             const subject = headers["subject"] || "(no subject)";
             const from = headers["from"] || "";
             const to = headers["to"] || "";
+            const cc = headers["cc"] || "";
             const dateStr = headers["date"] || "";
             const messageIdRaw = headers["message-id"] || "";
             const inReplyTo = headers["in-reply-to"] || null;
+            const contentType = headers["content-type"] || "";
 
             if (!messageIdRaw && !subject) continue;
 
@@ -319,6 +321,8 @@ Deno.serve(async (req) => {
             const fromAddr = extractEmailAddress(from);
             const fromName = extractEmailName(from);
             const toAddrs = extractAddresses(to);
+            // IA-010: Parse CC addresses
+            const ccAddrs = cc ? extractAddresses(cc) : [];
             const date = dateStr ? new Date(dateStr).toISOString() : new Date().toISOString();
 
             const bodyMatch = msgBlock.match(/BODY\[\]\s*\{(\d+)\}\r?\n([\s\S]*?)(?:\)\r?\n|$)/);
@@ -328,19 +332,24 @@ Deno.serve(async (req) => {
 
             const isRead = msgBlock.includes("\\Seen");
 
+            // IA-009: Detect attachments from Content-Type or MIME boundaries
+            const hasAttachments = /multipart\/mixed/i.test(contentType) ||
+              /Content-Disposition:\s*attachment/i.test(rawBody) ||
+              /filename=/i.test(rawBody);
+
             await supabase.from("email_cache").insert({
               message_id: messageId,
               folder: folderKey,
               from_address: fromAddr,
               from_name: fromName,
               to_addresses: toAddrs,
-              cc_addresses: [],
+              cc_addresses: ccAddrs,
               subject,
               body_text: textPlain || null,
               body_html: textHtml || null,
               date,
               is_read: isRead || folderKey !== "inbox",
-              has_attachments: false,
+              has_attachments: hasAttachments,
               in_reply_to: inReplyTo,
               synced_at: new Date().toISOString(),
             });

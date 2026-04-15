@@ -69,8 +69,9 @@ Deno.serve(async (req) => {
     }
 
     if (action === "create_event") {
-      const { summary, description, start, end, location } = params;
-      const event = { summary, description, location, start: { dateTime: start, timeZone: "America/New_York" }, end: { dateTime: end, timeZone: "America/New_York" }, reminders: { useDefault: false, overrides: [{ method: "popup", minutes: 30 }] } };
+      const { summary, description, start, end, location, timeZone: tz } = params;
+      const timeZone = tz || "America/New_York";
+      const event = { summary, description, location, start: { dateTime: start, timeZone }, end: { dateTime: end, timeZone }, reminders: { useDefault: false, overrides: [{ method: "popup", minutes: 30 }] } };
       const res = await fetch(`${GOOGLE_API}/calendars/primary/events`, { method: "POST", headers, body: JSON.stringify(event) });
       const data = await res.json();
       return jsonResponse(req, { connected: true, event: data });

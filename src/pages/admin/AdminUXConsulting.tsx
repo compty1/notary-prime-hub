@@ -57,7 +57,7 @@ export default function AdminUXConsulting() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [showNewProject, setShowNewProject] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [selectedProject, setSelectedProject] = useState<Record<string, any> | null>(null);
 
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ["ux-projects"],
