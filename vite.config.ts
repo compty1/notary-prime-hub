@@ -40,6 +40,12 @@ export default defineConfig(({ mode }) => ({
               id.includes("src/pages/admin/AdminContentWorkspace")) {
             return "admin-tools";
           }
+          if (id.includes("@react-three") || id.includes("node_modules/three")) {
+            return "three-engine";
+          }
+          if (id.includes("src/pages/design/") || id.includes("src/components/design/")) {
+            return "design-studio";
+          }
         },
       },
     },
