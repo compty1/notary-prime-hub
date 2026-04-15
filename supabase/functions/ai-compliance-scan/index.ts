@@ -105,14 +105,24 @@ Deno.serve(async (req) => {
       });
     }
 
-    // AI-003: Sanitize custom_rules to prevent prompt injection — only allow plain compliance text
+    // AI-003: Enhanced sanitization of custom_rules to prevent prompt injection
     let effectivePrompt = BUILT_IN_RULES[rule_set] || BUILT_IN_RULES.general_legal;
     if (custom_rules && typeof custom_rules === "string") {
-      // Strip any system/role injection attempts and limit length
-      const sanitized = custom_rules
-        .replace(/\b(system|assistant|user)\s*:/gi, "")
-        .replace(/ignore\s+(all\s+)?previous\s+instructions/gi, "")
-        .slice(0, 5000);
+      const injectionPatterns = [
+        /\b(system|assistant|user)\s*:/gi,
+        /ignore\s+(all\s+)?previous\s+instructions/gi,
+        /forget\s+(all\s+)?previous/gi,
+        /override\s+instructions/gi,
+        /new\s+instructions?\s*:/gi,
+        /pretend\s+(you\s+are|to\s+be)/gi,
+        /\[\s*system\s*\]/gi,
+        /do\s+not\s+follow\s+(the\s+)?above/gi,
+      ];
+      let sanitized = custom_rules;
+      for (const pattern of injectionPatterns) {
+        sanitized = sanitized.replace(pattern, "[FILTERED]");
+      }
+      sanitized = sanitized.slice(0, 5000);
       effectivePrompt += "\n\nAdditional custom rules:\n" + sanitized;
     }
     const systemPrompt = effectivePrompt;

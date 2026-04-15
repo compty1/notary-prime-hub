@@ -234,7 +234,7 @@ export default function NotaryPage() {
       svcLinkMap.set(key, { id: r.id, name: r.name, short_description: null, category: r.category, price_from: null, pricing_model: "flat", registryPath: r.path });
     } else {
       const existing = svcLinkMap.get(key)!;
-      (existing as any).registryPath = r.path;
+      (existing as unknown as Record<string, unknown>).registryPath = r.path;
     }
   });
 
@@ -267,9 +267,9 @@ export default function NotaryPage() {
   };
 
   return (
-    <div style={{ fontFamily: `"${fontFamily}", sans-serif` }}>
+    <div style={{ fontFamily: `"${fontFamily.replace(/[^a-zA-Z0-9\s-]/g, "")}", sans-serif` }}>
       {fontFamily !== "Inter" && (
-        <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontFamily)}:wght@400;500;600;700;800;900&display=swap`} />
+        <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontFamily.replace(/[^a-zA-Z0-9\s-]/g, ""))}:wght@400;500;600;700;800;900&display=swap`} />
       )}
       <PageShell hideNav hideFooter isStandalonePage>
         {/* Sticky Nav */}

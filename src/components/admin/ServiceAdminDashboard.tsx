@@ -207,7 +207,7 @@ export function ServiceAdminDashboard({
                         </TableCell>
                         {extraColumns.map(col => (
                           <TableCell key={col.key}>
-                            {col.render ? col.render(req) : ((req as Record<string, unknown>)[col.key])}
+                            {col.render ? col.render(req) : (String((req as any)[col.key] ?? ""))}
                           </TableCell>
                         ))}
                         <TableCell className="text-xs text-muted-foreground">

@@ -74,19 +74,37 @@ Deno.serve(async (req) => {
       return errorResponse(req, 400, "Missing fields");
     }
 
-    // AI-002: Reject user-supplied systemPrompt — use server-side prompts only
-    // The systemPrompt is passed from the client but we validate it's not arbitrary injection
+    // AI-002: Comprehensive prompt injection guard
     if (systemPrompt && typeof systemPrompt === "string") {
-      // Strip known injection patterns
-      const hasInjection = /ignore\s+(all\s+)?previous\s+instructions/i.test(systemPrompt) ||
-        /you\s+are\s+now\s+/i.test(systemPrompt) ||
-        /\bsystem\s*:\s*/i.test(systemPrompt);
-      if (hasInjection) {
+      const injectionPatterns = [
+        /ignore\s+(all\s+)?previous\s+instructions/i,
+        /you\s+are\s+now\s+/i,
+        /\bsystem\s*:\s*/i,
+        /forget\s+(all\s+)?previous/i,
+        /disregard\s+(all\s+)?previous/i,
+        /override\s+instructions/i,
+        /new\s+instructions?\s*:/i,
+        /act\s+as\s+(a\s+)?different/i,
+        /pretend\s+(you\s+are|to\s+be)/i,
+        /\[\s*system\s*\]/i,
+        /\<\s*system\s*\>/i,
+        /do\s+not\s+follow\s+(the\s+)?above/i,
+      ];
+      if (injectionPatterns.some(p => p.test(systemPrompt))) {
         return errorResponse(req, 400, "Invalid prompt content detected");
+      }
+      // AI-006: Server-side input length limit
+      if (systemPrompt.length > 10000) {
+        return errorResponse(req, 400, "Prompt too long (max 10,000 chars)");
       }
     }
     if (!systemPrompt) {
       return errorResponse(req, 400, "Missing systemPrompt");
+    }
+    // AI-006: Validate fields total size
+    const fieldsStr = JSON.stringify(fields);
+    if (fieldsStr.length > 50000) {
+      return errorResponse(req, 400, "Input fields too large (max 50KB)");
     }
 
     // ─── Free plan usage cap: 2 free generations ───

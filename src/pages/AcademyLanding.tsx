@@ -44,9 +44,9 @@ function CourseCard({ course, userId }: { course: any; userId?: string }) {
     },
   });
 
-  const tier = ((course as Record<string, unknown>).tier) || 1;
-  const totalHours = ((course as Record<string, unknown>).total_hours) || Math.round(course.duration_minutes / 60);
-  const hasPrereqs = (((course as Record<string, unknown>).prerequisite_course_ids) || []).length > 0;
+  const tier = ((course as any).tier) || 1;
+  const totalHours = ((course as any).total_hours) || Math.round(course.duration_minutes / 60);
+  const hasPrereqs = (((course as any).prerequisite_course_ids) || []).length > 0;
   const isEnrolled = !!enrollment;
 
   return (
@@ -149,7 +149,7 @@ export default function AcademyLanding() {
                     <CardContent className="pt-4 flex items-center gap-3">
                       <Award className="h-8 w-8 text-primary shrink-0" />
                       <div>
-                        <p className="font-medium text-sm">{(cert as Record<string, unknown>)?.e_courses?.title || "Course"}</p>
+                        <p className="font-medium text-sm">{(cert as any)?.e_courses?.title || "Course"}</p>
                         <p className="text-xs text-muted-foreground">{cert.certificate_number}</p>
                       </div>
                     </CardContent>

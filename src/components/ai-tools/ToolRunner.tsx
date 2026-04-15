@@ -71,7 +71,7 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
         supabase.from("profiles").select("plan").eq("user_id", user.id).single(),
       ]);
       setUsageCount(count ?? 0);
-      setUserPlan(((profile as Record<string, unknown>))?.plan || "free");
+      setUserPlan(String(((profile as Record<string, unknown>))?.plan || "free"));
     })();
   }, [user]);
 

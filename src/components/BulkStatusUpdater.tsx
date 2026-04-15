@@ -34,7 +34,7 @@ export function BulkStatusUpdater({ target, selectedIds, onComplete }: BulkStatu
     try {
       const { error } = await supabase
         .from(target)
-        .update({ status: newStatus, updated_at: new Date().toISOString() })
+        .update({ status: newStatus as any, updated_at: new Date().toISOString() })
         .in("id", selectedIds);
 
       if (error) throw error;

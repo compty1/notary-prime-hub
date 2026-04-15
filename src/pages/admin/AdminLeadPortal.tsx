@@ -436,7 +436,7 @@ export default function AdminLeadPortal() {
     setImportingEmail(false);
   };
 
-  // Lead scoring engine
+  // Lead scoring engine — LP-021: Enhanced scoring
   const computeLeadScore = useCallback((lead: Lead): number => {
     let score = 0;
     if (lead.email) score += 20;
@@ -447,8 +447,83 @@ export default function AdminLeadPortal() {
     if (lead.intent_score === "high") score += 20;
     else if (lead.intent_score === "medium") score += 10;
     if (lead.contacted_at) score += 10;
+    // LP-025: Aging penalty — fresher leads score higher
+    if (lead.created_at) {
+      const daysOld = Math.floor((Date.now() - new Date(lead.created_at).getTime()) / (1000 * 60 * 60 * 24));
+      if (daysOld <= 3) score += 10;
+      else if (daysOld <= 7) score += 5;
+    }
     return Math.min(100, score);
   }, []);
+
+  // LP-025: Lead aging indicator
+  const getLeadAge = useCallback((lead: Lead): { days: number; label: string; color: string } => {
+    const days = Math.floor((Date.now() - new Date(lead.created_at).getTime()) / (1000 * 60 * 60 * 24));
+    if (days <= 1) return { days, label: "Today", color: "text-green-600" };
+    if (days <= 3) return { days, label: `${days}d`, color: "text-green-500" };
+    if (days <= 7) return { days, label: `${days}d`, color: "text-yellow-500" };
+    if (days <= 14) return { days, label: `${days}d`, color: "text-orange-500" };
+    if (days <= 30) return { days, label: `${days}d`, color: "text-red-500" };
+    return { days, label: `${days}d`, color: "text-destructive" };
+  }, []);
+
+  // LP-027: Lead response time (time from creation to first contact)
+  const getResponseTime = useCallback((lead: Lead): string | null => {
+    if (!lead.contacted_at) return null;
+    const hours = Math.round((new Date(lead.contacted_at).getTime() - new Date(lead.created_at).getTime()) / (1000 * 60 * 60));
+    if (hours < 1) return "<1h";
+    if (hours < 24) return `${hours}h`;
+    return `${Math.round(hours / 24)}d`;
+  }, []);
+
+  // LP-028: Conversion velocity
+  const conversionVelocity = useMemo(() => {
+    const converted = leads.filter(l => l.status === "converted" && l.contacted_at);
+    if (converted.length === 0) return null;
+    const totalDays = converted.reduce((sum, l) => {
+      const days = Math.max(1, Math.floor((new Date(l.contacted_at!).getTime() - new Date(l.created_at).getTime()) / (1000 * 60 * 60 * 24)));
+      return sum + days;
+    }, 0);
+    return Math.round(totalDays / converted.length);
+  }, [leads]);
+
+  // LP-029: Lead source ROI
+  const sourceStats = useMemo(() => {
+    const map = new Map<string, { total: number; converted: number; highIntent: number }>();
+    leads.forEach(l => {
+      const src = l.source || "unknown";
+      const existing = map.get(src) || { total: 0, converted: 0, highIntent: 0 };
+      existing.total++;
+      if (l.status === "converted" || l.status === "closed-won") existing.converted++;
+      if (l.intent_score === "high") existing.highIntent++;
+      map.set(src, existing);
+    });
+    return Array.from(map.entries())
+      .map(([source, data]) => ({ source, ...data, convRate: data.total > 0 ? Math.round((data.converted / data.total) * 100) : 0 }))
+      .sort((a, b) => b.total - a.total);
+  }, [leads]);
+
+  // LP-036: Pipeline drop-off analysis
+  const pipelineDropoff = useMemo(() => {
+    const counts: Record<string, number> = {};
+    pipelineStatuses.forEach(s => { counts[s] = leads.filter(l => l.status === s).length; });
+    return pipelineStatuses.map((stage, idx) => {
+      const current = counts[stage] || 0;
+      const previous = idx > 0 ? (counts[pipelineStatuses[idx - 1]] || 0) : leads.length;
+      const dropoff = previous > 0 ? Math.round(((previous - current) / previous) * 100) : 0;
+      return { stage, count: current, dropoff };
+    });
+  }, [leads]);
+
+  // LP-026: Stale lead detection
+  const staleLeads = useMemo(() => {
+    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    return leads.filter(l =>
+      !["converted", "closed-won", "closed-lost"].includes(l.status) &&
+      !l.contacted_at &&
+      new Date(l.created_at).getTime() < thirtyDaysAgo
+    );
+  }, [leads]);
 
   const stats = useMemo(() => ({
     total: leads.length,
@@ -457,8 +532,10 @@ export default function AdminLeadPortal() {
     qualified: leads.filter((l) => l.status === "qualified").length,
     converted: leads.filter((l) => l.status === "converted").length,
     highIntent: leads.filter((l) => l.intent_score === "high").length,
-    conversionRate: leads.length > 0 ? Math.round((leads.filter((l) => l.status === "converted").length / leads.length) * 100) : 0,
-  }), [leads]);
+    conversionRate: leads.length > 0 ? Math.round((leads.filter((l) => l.status === "converted" || l.status === "closed-won").length / leads.length) * 100) : 0,
+    avgScore: leads.length > 0 ? Math.round(leads.reduce((s, l) => s + computeLeadScore(l), 0) / leads.length) : 0,
+    stale: staleLeads.length,
+  }), [leads, computeLeadScore, staleLeads]);
 
   // Duplicate detection
   const duplicates = useMemo(() => {
@@ -568,8 +645,21 @@ export default function AdminLeadPortal() {
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
+      {/* Stale lead alert — LP-026 */}
+      {staleLeads.length > 0 && (
+        <Card className="border-destructive/30 bg-destructive/5">
+          <CardContent className="flex items-center gap-3 p-3">
+            <AlertTriangle className="h-5 w-5 text-destructive shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm font-medium">{staleLeads.length} stale lead{staleLeads.length > 1 ? "s" : ""} — untouched for 30+ days</p>
+              <p className="text-xs text-muted-foreground">{staleLeads.slice(0, 3).map(l => l.name || l.business_name).join(", ")}{staleLeads.length > 3 ? ` +${staleLeads.length - 3} more` : ""}</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Stats — enhanced with LP-025/028/029 metrics */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-10">
         {[
           { label: "Total", value: stats.total },
           { label: "New", value: stats.new },
@@ -577,8 +667,10 @@ export default function AdminLeadPortal() {
           { label: "Qualified", value: stats.qualified },
           { label: "Converted", value: stats.converted },
           { label: "High Intent", value: stats.highIntent },
-          { label: "Conversion", value: `${stats.conversionRate}%` },
-          { label: "Duplicates", value: duplicates.size },
+          { label: "Conv. Rate", value: `${stats.conversionRate}%` },
+          { label: "Avg Score", value: stats.avgScore },
+          { label: "Velocity", value: conversionVelocity ? `${conversionVelocity}d` : "—" },
+          { label: "Stale", value: stats.stale },
         ].map((s) => (
           <Card key={s.label} className="border-border/50">
             <CardContent className="p-3 text-center">
@@ -630,6 +722,7 @@ export default function AdminLeadPortal() {
         <TabsList>
           <TabsTrigger value="list">List View</TabsTrigger>
           <TabsTrigger value="pipeline">Pipeline View</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
 
         <TabsContent value="list">
@@ -702,6 +795,12 @@ export default function AdminLeadPortal() {
                             {lead.city && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{lead.city}, {lead.state}</span>}
                             {lead.service_needed && <span>{lead.service_needed}</span>}
                             {lead.source && lead.source !== "manual" && <Badge variant="outline" className="text-[10px]">{lead.source}</Badge>}
+                            {/* LP-025: Lead age indicator */}
+                            <span className={`flex items-center gap-0.5 ${getLeadAge(lead).color}`}>
+                              <Clock className="h-3 w-3" />{getLeadAge(lead).label}
+                            </span>
+                            {/* LP-027: Response time */}
+                            {getResponseTime(lead) && <span className="text-primary text-[10px]">⚡{getResponseTime(lead)}</span>}
                           </div>
                         </div>
                       </div>
@@ -790,6 +889,108 @@ export default function AdminLeadPortal() {
                 </div>
               );
             })}
+          </div>
+        </TabsContent>
+
+        {/* LP-B/C/D/E: Analytics Tab */}
+        <TabsContent value="analytics" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
+            {/* LP-029: Source ROI */}
+            <Card>
+              <CardContent className="p-4">
+                <h3 className="text-sm font-semibold mb-3">Lead Source Performance</h3>
+                {sourceStats.slice(0, 10).map(s => (
+                  <div key={s.source} className="flex items-center justify-between py-1.5 border-b last:border-0">
+                    <span className="text-sm capitalize">{s.source.replace(/_/g, " ")}</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 h-1.5 rounded-full bg-muted">
+                        <div className="h-1.5 rounded-full bg-primary" style={{ width: `${Math.min(100, (s.total / Math.max(1, leads.length)) * 100)}%` }} />
+                      </div>
+                      <span className="text-xs text-muted-foreground w-8 text-right">{s.total}</span>
+                      <Badge variant={s.convRate > 20 ? "default" : "secondary"} className="text-[10px]">{s.convRate}%</Badge>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* LP-036: Pipeline Drop-off */}
+            <Card>
+              <CardContent className="p-4">
+                <h3 className="text-sm font-semibold mb-3">Pipeline Funnel</h3>
+                {pipelineDropoff.map((p, idx) => (
+                  <div key={p.stage} className="flex items-center gap-3 py-1.5">
+                    <span className="w-20 text-xs capitalize">{p.stage.replace("-", " ")}</span>
+                    <div className="flex-1 rounded-full bg-muted h-2">
+                      <div className="h-2 rounded-full bg-primary transition-all" style={{ width: `${Math.min(100, leads.length > 0 ? (p.count / leads.length) * 100 : 0)}%` }} />
+                    </div>
+                    <span className="w-8 text-right text-xs font-medium">{p.count}</span>
+                    {idx > 0 && p.dropoff > 0 && (
+                      <span className="text-[10px] text-destructive w-10 text-right">-{p.dropoff}%</span>
+                    )}
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* LP-028: Conversion Velocity */}
+            <Card>
+              <CardContent className="p-4">
+                <h3 className="text-sm font-semibold mb-3">Conversion Metrics</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Avg. Conversion Time</span>
+                    <span className="font-medium">{conversionVelocity ? `${conversionVelocity} days` : "N/A"}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Win Rate</span>
+                    <span className="font-medium">{stats.conversionRate}%</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Avg. Lead Score</span>
+                    <span className="font-medium">{stats.avgScore}/100</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">High Intent Ratio</span>
+                    <span className="font-medium">{leads.length > 0 ? Math.round((stats.highIntent / leads.length) * 100) : 0}%</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Stale Leads</span>
+                    <span className={`font-medium ${stats.stale > 5 ? "text-destructive" : ""}`}>{stats.stale}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Duplicate Candidates</span>
+                    <span className="font-medium">{duplicates.size}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* LP-032: Lead Priority Queue (Top 10 by score) */}
+            <Card>
+              <CardContent className="p-4">
+                <h3 className="text-sm font-semibold mb-3">Priority Queue (Top 10)</h3>
+                {leads
+                  .filter(l => !["converted", "closed-won", "closed-lost"].includes(l.status))
+                  .sort((a, b) => computeLeadScore(b) - computeLeadScore(a))
+                  .slice(0, 10)
+                  .map(lead => {
+                    const age = getLeadAge(lead);
+                    return (
+                      <div key={lead.id} className="flex items-center justify-between py-1.5 border-b last:border-0 cursor-pointer hover:bg-muted/50 rounded px-1" onClick={() => openDetail(lead)}>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium w-8">{computeLeadScore(lead)}</span>
+                          <span className="text-sm truncate max-w-[150px]">{lead.name || lead.business_name || "Unnamed"}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge className={intentColors[lead.intent_score] + " text-[10px]"}>{lead.intent_score}</Badge>
+                          <span className={`text-[10px] ${age.color}`}>{age.label}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
       </Tabs>

@@ -64,8 +64,8 @@ export default function AcademyLessonViewer() {
   const prevLesson = currentIdx > 0 ? siblings[currentIdx - 1] : null;
   const nextLesson = currentIdx < siblings.length - 1 ? siblings[currentIdx + 1] : null;
 
-  const mod = ((lesson as Record<string, unknown>))?.academy_modules;
-  const course = mod?.e_courses;
+  const mod = (lesson as any)?.academy_modules;
+  const course = (mod as any)?.e_courses;
 
   if (!lesson) return <div className="flex justify-center py-20"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>;
 
@@ -76,9 +76,9 @@ export default function AcademyLessonViewer() {
         <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
           <Link to="/academy" className="hover:text-foreground">Academy</Link>
           <span>/</span>
-          {course && <Link to={`/academy/course/${course.slug || course.id}`} className="hover:text-foreground">{course.title}</Link>}
+          {course && <Link to={`/academy/course/${(course as any)?.slug || (course as any)?.id}`} className="hover:text-foreground">{(course as any)?.title}</Link>}
           <span>/</span>
-          {mod && <span>{mod.title}</span>}
+          {mod && <span>{(mod as any)?.title}</span>}
         </div>
 
         {/* Lesson header */}
@@ -123,7 +123,7 @@ export default function AcademyLessonViewer() {
               <Button size="sm">Next Lesson <ArrowRight className="h-4 w-4 ml-1" /></Button>
             </Link>
           ) : (
-            <Link to={course ? `/academy/course/${course.slug || course.id}` : "/academy"}>
+            <Link to={course ? `/academy/course/${(course as any)?.slug || (course as any)?.id}` : "/academy"}>
               <Button variant="outline" size="sm">Back to Course</Button>
             </Link>
           )}
