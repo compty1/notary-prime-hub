@@ -1,174 +1,100 @@
 
 
-# Full Implementation Plan — All Three Documents
+# Two-Part Plan: 3D Paper-Cut Icon Regeneration + Full Audit Remediation
 
-This plan covers every item from the three uploaded attachments:
-1. **Animations DOCX** — 14 micro-interaction components with 27 brand keyframes
-2. **Design System PDF (50 pages)** — Brand identity, colors, Montserrat typography, components, routing, 57 services, accessibility
-3. **DocuDex CSV (56 items)** — 7-phase Canva-style editor transformation
+## Part 1: 3D Paper-Cut Icon Style Upgrade
 
----
+The uploaded reference image shows a specific aesthetic: **paper-cut 3D style** with soft white paper surfaces, folded corners, subtle shadows, warm light reflections, and a golden yellow accent seal. All 37 existing icons in `src/assets/icons-3d/` need to be regenerated to match this unified style.
 
-## Sprint 1: Brand Animation Library (Animations DOCX — all 14 components)
+### Approach
+- Use the Lovable AI image generation model (`google/gemini-3-pro-image-preview`) to regenerate each icon with a consistent prompt describing the paper-cut 3D style: white paper/document forms, soft ambient occlusion shadows, golden-yellow (#E4AC0F) accent elements, clean white background, light reflections on surfaces
+- Replace all 37 PNG files in `src/assets/icons-3d/` with the new renders
+- No code changes needed — the `icon3dMap.tsx` imports remain identical since filenames stay the same
 
-### 1.1 Brand Keyframes in index.css
-Add all 27 keyframes: `sealDrop`, `drawCheck`, `fadeUp`, `glowPulse`, `particleBurst`, `driftDown`, `docSlide`, `checkPop`, `shimmer`, `ringDraw`, `morphBounce`, `receiptSlide`, `subtlePulse`, `errorShake`, `shieldFill`, `badgePop`, `cameraIris`, `livePulse`, `tileSlide`, `cardSlideUp`, `skeletonSweep`, `curtainWipe`, `toastSlideIn`, `toastSlideOut`, `bannerSlideDown`, `widthRetract`, `ellipsisAnim`. Add brand CSS variables (`--notar-yellow`, `--notar-blue`, `--transition-fast/base/slow`, `--bounce-easing`).
-
-### 1.2 Create 14 Animation Components
-Adapt each from the DOCX into `src/components/animations/`:
-`NotarizationComplete`, `DocumentUpload`, `PaymentConfirmed`, `IdentityVerified`, `SessionJoined`, `CenturyClub`, `UploadFailed`, `SessionDisconnected`, `BusinessPlanUpgrade`, `SkeletonLoading`, `ToastNotification`, `ButtonLoadingState`, `FormError`, `MilestoneRating` — using semantic tokens, not hardcoded hex.
-
-### 1.3 Animation Gallery Page
-Create `/animations` route with triggerable gallery grid.
+### Icons to regenerate (37 total)
+`checklist`, `notary-agent`, `identity-verify-clean`, `doc-shield-clean`, `certificate`, `task-list`, `warning`, `folders`, `scroll`, `doc-search`, `receipt`, `lightbulb`, `handshake`, `verified-badge`, `calendar`, `analytics`, `folder-verified`, `rocket`, `video-call`, `cloud-upload`, `pie-chart`, `cloud-security`, `award`, `team-review`, `medal`, `tools`, `password`, `email`, `thumbs-up`, `workflow`, `globe-docs`, `newsletter`, `lock-shield`, `clock-fast`, `legal-doc`, `encryption`, `verified-seal`
 
 ---
 
-## Sprint 2: Design System Alignment (PDF Sections 1-5)
+## Part 2: Full Codebase Audit Remediation (47 findings)
 
-### 2.1 Typography Switch to Montserrat
-The PDF mandates **Montserrat** (currently DM Sans). Update `@import`, `--font-heading`, `--font-body`, and `brandConfig.ts`.
+### Sprint 1: P0 Critical Fixes (6 items, ~20h)
 
-### 2.2 Color Token Verification
-Confirm `--primary` maps to #E4AC0F. Add dedicated `--notar-blue: #004FDF` token. Verify semantic colors (success #2ECC71, error #E74C3C). Audit dark mode mappings against PDF.
+| ID | Fix | Files |
+|----|-----|-------|
+| C-01 | Change all 15 enterprise sidebar links from `/admin/enterprise/*` to `/enterprise/*` | `AdminDashboard.tsx`, `EnterpriseDashboard.tsx`, `EnterpriseLayout.tsx` |
+| C-02 | Gate booking/uploads/payments behind `email_confirmed_at` check; add verification interstitial | `ProtectedRoute.tsx`, new `EmailVerificationGate.tsx` |
+| C-03 | Add DOMPurify to ClientPortal chat message rendering | `ClientPortal.tsx` |
+| C-04 | Add password re-entry before account deletion, 30-day soft-delete with recovery | `ClientPortal.tsx`, `delete-account` edge function |
+| C-05 | Audit `user_credentials` table — ensure vault uses Supabase Vault, not reversible encryption | Migration + edge function audit |
+| C-06 | Remove dead `dbServices` query from homepage OR render dynamic data | `Index.tsx` |
 
-### 2.3 Spacing, Elevation, Radius
-Add any missing spacing tokens (4/8/12/16/24/32/48/64/96px) and shadow scale to CSS + Tailwind config.
+### Sprint 2: P1 High Fixes (11 items, ~23h)
 
-### 2.4 Logo System
-Update `brandConfig.ts` with favicon size specs (16/32/192/512), clear space rules, and all variant references.
+| ID | Fix |
+|----|-----|
+| H-01 | Fix 3 dead sidebar links (`/admin/ai-assistant`, `/admin/service-requests`, `/admin/reports`) |
+| H-02 | Consolidate `/booking` and `/schedule` to redirect to `/book` |
+| H-03 | Align auth gating: `/pricing` public for browsing, `/subscribe` protected for action |
+| H-04 | Redirect `/professionals` to `/notaries` |
+| H-05 | Refactor ClientPortal monolith — use existing portal tab components with lazy loading |
+| H-06 | Add per-section error handling + retry buttons to ClientPortal data fetches |
+| H-07 | Fix profile dialog close bug — add "Discard changes?" confirmation |
+| H-08 | Fix or remove Remember Me (implement Supabase session config or remove UI) |
+| H-09 | Create shared `validatePassword()` utility with strength meter |
+| H-10 | Replace `window.location.href = "/"` signout with `navigate("/")` + React Query invalidation |
+| H-11 | Require appointment selection for review submission |
 
----
+### Sprint 3: P2 Medium Fixes (14 items, ~36h)
 
-## Sprint 3: Component & Motion Alignment (PDF Sections 2, 6, 16-18)
+| ID | Fix |
+|----|-----|
+| M-01 | Consolidate `feedback`/`client_feedback`/`service_reviews` tables; consolidate financial tables |
+| M-02 | Create RPC functions for booking validation, financial reporting, dashboard metrics |
+| M-03 | Fix AI tools grid: `md:grid-cols-2 lg:grid-cols-4` |
+| M-04 | Add content links to industry insights cards |
+| M-05 | Audit and remove redundant `ProtectedRoute` double-wrapping on admin child routes |
+| M-06 | Rename package.json from `vite_react_shadcn_ts` to `notar-platform` |
+| M-07 | Split App.tsx routes into `publicRoutes`, `adminRoutes`, `enterpriseRoutes`, `serviceRoutes`, `shopRoutes` |
+| M-08 | Handle ProtectedRoute auth timeout edge case (show loading state when user exists but role hasn't loaded) |
+| M-09 | Implement login redirect parameter reading and post-auth redirect |
+| M-10 | Clean up duplicate EstatePlanning imports |
+| M-11 | Add error handling to staffUsers query |
+| M-12 | Add client-side rate limiting on admin route access |
+| M-13 | Deduplicate local `formatDate` — import from shared utils |
+| M-14 | Refactor BookAppointment 50+ state variables into `useReducer` or booking context |
 
-### 3.1 Component Specs
-Verify Button, Input, Card, Dialog, Sheet, Badge match PDF sizing, radius, and state specs.
+### Sprint 4: P3 Low Fixes (8 items, ~8h)
 
-### 3.2 Motion System
-Wire brand easings into `animations.ts`: `--transition-fast: 150ms`, `--transition-base: 200ms`, `--transition-slow: 300ms`, `--bounce-easing: cubic-bezier(0.34, 1.56, 0.64, 1)`.
+| ID | Fix |
+|----|-----|
+| L-01 | Add tooltip with description on service card hover |
+| L-02 | Implement enhanced hero animation (parallax or particle effects) |
+| L-03 | Move cookie consent from PageShell to App.tsx level |
+| L-04 | Defer geolocation request until user clicks "Use my location" |
+| L-05 | Extract booking draft expiry to named constant `BOOKING_DRAFT_EXPIRY_MS` |
+| L-06 | Add `clientAddress` to beforeunload useEffect dependency array |
+| L-07 | Look up service_id from services table for waitlist inserts |
+| L-08 | Improve NOTARIAL_ACT_MAP matching with priority-ordered exact matches |
 
-### 3.3 Dark Mode Audit
-Compare all dark mode CSS variables against PDF Section 18 mapping table.
+### Sprint 5: Verification & Testing (~47h)
 
-### 3.4 Responsive Verification
-Ensure correct rendering at all PDF-specified breakpoints (320/375/414/768/1024/1280/1440/1920).
-
----
-
-## Sprint 4: DocuDex Phase 0 — Architecture Foundation (P0-001 to P0-005)
-
-- **P0-001**: Install `zustand` + `immer`. Create `stores/editorStore.ts` with `documentSlice`, `uiSlice`, `historySlice`, `settingsSlice`. Migrate all 60+ useState hooks.
-- **P0-002**: Replace flat `PageData = {id, html}` with structured `ElementNode` schema (id, type, x, y, width, height, rotation, opacity, locked, layerIndex, styles, content).
-- **P0-003**: Decompose 1200-line DocuDexEditor.tsx into EditorShell, CanvasViewport, ElementRenderer, PropertyPanel, ToolbarController, PageNavigator, AIAssistant, ExportEngine.
-- **P0-004**: Implement Command pattern undo/redo stack. Ctrl+Z/Y. Max 100 entries with LRU.
-- **P0-005**: Convert all 40+ HTML string templates to element-schema JSON.
-
----
-
-## Sprint 5: DocuDex Phase 1 — Canvas Engine (P1-001 to P1-010)
-
-- **P1-001**: Install Fabric.js. Hybrid canvas rendering + TipTap for text.
-- **P1-002**: Drag-and-drop from sidebar to canvas with ghost preview (`@dnd-kit/core`).
-- **P1-003**: Smart alignment guides during drag/resize.
-- **P1-004**: 8-point resize handles. Shift=lock ratio. Alt=center resize.
-- **P1-005**: Rotation handle with Shift snap to 15° increments.
-- **P1-006**: Marquee multi-select + Shift+Click. Ctrl+G group/ungroup.
-- **P1-007**: Visual layers panel with z-index reorder, visibility/lock toggles.
-- **P1-008**: Floating context toolbar per element type (`@floating-ui/react`).
-- **P1-009**: Scroll-to-zoom, pinch-to-zoom, Space+drag pan, minimap.
-- **P1-010**: Arrow nudge, Tab cycle, Delete, Escape, Ctrl+A/D/C/V.
-
----
-
-## Sprint 6: DocuDex Phase 2 — Element Properties (P2-001 to P2-007)
-
-- **P2-001**: Advanced color picker (hex/RGB/HSL, eyedropper, brand palette, gradients)
-- **P2-002**: Text properties (Google Fonts 500+, line height, letter spacing, text shadow)
-- **P2-003**: Shape properties (fill gradients, per-corner radius, shadow, 30+ shapes)
-- **P2-004**: Image properties (crop, filters, flip, fit mode, border-radius)
-- **P2-005**: Signature element (draw/type/upload modes, SignNow integration)
-- **P2-006**: Table properties (merge/split, style presets, drag-resize columns)
-- **P2-007**: QR code (local generation, custom colors, center logo)
-
----
-
-## Sprint 7: DocuDex Phase 3 — Template Library (P3-001 to P3-006)
-
-- **P3-001**: Full-screen Canva-style template gallery with thumbnails and search
-- **P3-002**: Automated thumbnail generation pipeline
-- **P3-003**: Smart fields `{{variable_name}}` with reactive binding
-- **P3-004**: Template persistence in Supabase (templates table with RLS)
-- **P3-005**: Expand to 20+ categories, 150+ templates
-- **P3-006**: Template marketplace (community + premium, revenue share)
+- A-06: Establish Vitest + Playwright test baseline for critical booking/payment paths
+- A-07: Audit Academy/LMS for real vs stub content
+- A-08: Verify all 15 enterprise tools + 8 design studio tools are functional
+- End-to-end verification: Stripe payment flow, SignNow/RON flow, IONOS email system
+- Full admin sidebar link audit (100+ items vs routes)
 
 ---
 
-## Sprint 8: DocuDex Phase 4 — Enterprise (P4-001 to P4-008)
+## Implementation Order
 
-- **P4-001**: Real-time collaboration (Yjs + Supabase Realtime, live cursors)
-- **P4-002**: RBAC (Owner/Editor/Commenter/Viewer, per-element locks)
-- **P4-003**: Auto-save + version history in Supabase
-- **P4-004**: White-label branding (org logo/colors/fonts/custom domain)
-- **P4-005**: Audit trail with hash chain tamper detection
-- **P4-006**: PDF export engine (server-side, embedded fonts, PDF/A)
-- **P4-007**: Threaded comments with @mentions and resolve/unresolve
-- **P4-008**: Document approval workflows (Draft → Review → Approved → Signed)
+1. **Icon regeneration** (Part 1) — runs in parallel with code fixes since it's asset-only
+2. **Sprint 1** (P0 criticals) — security and navigation, must be first
+3. **Sprint 2** (P1 highs) — broken UX and auth issues
+4. **Sprint 3** (P2 mediums) — architecture and data integrity
+5. **Sprint 4** (P3 lows) — polish
+6. **Sprint 5** — verification and testing
 
----
-
-## Sprint 9: DocuDex Phase 5 — Polish (P5-001 to P5-006)
-
-- **P5-001**: Canvas performance (virtual rendering, Web Workers, 60fps at 500+ elements)
-- **P5-002**: Micro-interactions (select, drag, drop, toolbar animations)
-- **P5-003**: Responsive editor (tablet drawer, mobile bottom bar, touch gestures)
-- **P5-004**: WCAG 2.1 AA (keyboard nav, ARIA, focus traps, contrast)
-- **P5-005**: Skeleton loaders, error boundaries, offline indicator
-- **P5-006**: Interactive onboarding tour (8 steps + contextual tooltips)
-
----
-
-## Sprint 10: DocuDex Phase 6-7 & Cross-Cutting (P6/P7/CC)
-
-- **P6-001**: Deep SignNow e-signature integration
-- **P6-002**: Cloud storage (Google Drive, OneDrive, Dropbox)
-- **P6-003**: AI suite (auto-layout, clause detection, compliance checking)
-- **P6-004**: Mail merge engine (CSV, batch generation, email delivery)
-- **P6-005**: Import/export expansion (PDF import, DOCX/EPUB/SVG/PNG export)
-- **P7-001**: Feature gating (Free/Pro/Business/Enterprise tiers)
-- **P7-002**: Product analytics and behavior tracking
-- **P7-003**: Marketing landing pages and public template gallery
-- **P7-004**: REST API and embeddable editor widget
-- **CC-001**: Test suite (Vitest unit + Playwright E2E)
-- **CC-003**: Security hardening (CSP, rate limiting, magic byte validation)
-- **CC-004**: i18n framework (5 languages, RTL support)
-- **CC-005**: User and developer documentation
-
----
-
-## Sprint 11: Service Catalog Verification (PDF Section 4)
-
-Verify all 57 services from the PDF have working routes, intake components, and admin modules. Fill any gaps against the `serviceRegistry`.
-
----
-
-## Database Migrations Required
-
-- `document_versions` — Auto-save version history
-- `templates` — Supabase template persistence with RLS
-- `document_permissions` — RBAC roles per document
-- `audit_events` — Element-level audit trail with hash chain
-- `org_branding` — White-label settings per organization
-
----
-
-## Key Dependencies
-
-- Sprints 1-3 (animations + design system) are **independent** of DocuDex work
-- Sprint 4 (P0 architecture) must complete before Sprints 5-10
-- Sprint 5 (canvas engine) depends on Sprint 4 completing
-- All sprints respect existing constraints: layered enhancement, semantic tokens, Ohio ORC compliance
-
-## New Libraries Required
-
-`zustand`, `immer`, `fabric`, `@dnd-kit/core`, `@floating-ui/react`, `signature_pad`, `qrcode.react`, `yjs`, `y-supabase`, `react-joyride`, `react-i18next`
+Each sprint will be implemented incrementally. I will start with the icon regeneration + Sprint 1 critical fixes upon approval.
 
