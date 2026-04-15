@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=DM+Serif+Display&family=DM+Mono:wght@400;500&display=swap&font-display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&family=DM+Mono:wght@400;500&display=swap&font-display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,7 +6,19 @@
 
 @layer base {
   :root {
-    /* Notar Brand v2.0: Warm & Friendly — Light mode */
+    /* Notar Brand v3.0: Montserrat + Brand animation tokens */
+    --font-heading: 'Montserrat', system-ui, sans-serif;
+    --font-body: 'Montserrat', system-ui, sans-serif;
+    --font-mono: 'DM Mono', monospace;
+
+    /* Brand animation tokens */
+    --notar-yellow: 45 86% 48%;
+    --notar-blue: 217 100% 56%;
+    --transition-fast: 150ms;
+    --transition-base: 200ms;
+    --transition-slow: 300ms;
+    --bounce-easing: cubic-bezier(0.34, 1.56, 0.64, 1);
+
     --background: 48 100% 97%;
     --foreground: 0 0% 10%;
 
@@ -136,12 +148,12 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
   /* GAP-0005: Consistent heading typography */
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'DM Sans', system-ui, sans-serif;
+    font-family: 'Montserrat', system-ui, sans-serif;
     font-weight: 700;
     letter-spacing: -0.02em;
   }
@@ -166,15 +178,16 @@
 
 @layer utilities {
   .font-heading {
-    font-family: 'DM Sans', system-ui, sans-serif;
+    font-family: 'Montserrat', system-ui, sans-serif;
   }
 
   .font-body {
-    font-family: 'DM Sans', system-ui, sans-serif;
+    font-family: 'Montserrat', system-ui, sans-serif;
   }
 
   .font-display {
-    font-family: 'DM Serif Display', Georgia, serif;
+    font-family: 'Montserrat', Georgia, serif;
+    font-weight: 800;
   }
 
   .font-mono {
