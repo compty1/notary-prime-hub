@@ -67,7 +67,7 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
       if (error) throw error;
 
       // Store review result
-      await supabase.from("document_reviews" as any).insert({
+      await supabase.from("document_reviews" as never).insert({
         document_id: doc.id,
         reviewed_by: userId,
         overall_status: data.overallStatus || "warning",
@@ -125,7 +125,7 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
       const filePath = `${userId}/${Date.now()}_${file.name}`;
       const { error: uploadError } = await supabase.storage.from("documents").upload(filePath, file);
       if (uploadError) { toast({ title: "Upload failed", description: uploadError.message, variant: "destructive" }); continue; }
-      const { data: docData, error: insertError } = await supabase.from("documents").insert({ uploaded_by: userId, file_name: file.name, file_path: filePath, status: "uploaded" as any }).select().single();
+      const { data: docData, error: insertError } = await supabase.from("documents").insert({ uploaded_by: userId, file_name: file.name, file_path: filePath, status: "uploaded" }).select().single();
       if (insertError) toast({ title: "Error", description: insertError.message, variant: "destructive" });
       else if (docData) setDocuments(prev => [docData, ...prev]);
     }

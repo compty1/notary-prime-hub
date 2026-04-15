@@ -64,7 +64,7 @@ export default function AcademyLessonViewer() {
   const prevLesson = currentIdx > 0 ? siblings[currentIdx - 1] : null;
   const nextLesson = currentIdx < siblings.length - 1 ? siblings[currentIdx + 1] : null;
 
-  const mod = (lesson as any)?.academy_modules;
+  const mod = ((lesson as Record<string, unknown>))?.academy_modules;
   const course = mod?.e_courses;
 
   if (!lesson) return <div className="flex justify-center py-20"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>;
@@ -109,7 +109,7 @@ export default function AcademyLessonViewer() {
         {/* Navigation */}
         <div className="flex items-center justify-between">
           {prevLesson ? (
-            <Link to={`/academy/lesson/${(prevLesson as any).id}`}>
+            <Link to={`/academy/lesson/${((prevLesson as Record<string, unknown>).id)}`}>
               <Button variant="outline" size="sm"><ArrowLeft className="h-4 w-4 mr-1" /> Previous</Button>
             </Link>
           ) : <div />}
@@ -119,7 +119,7 @@ export default function AcademyLessonViewer() {
               {markComplete.isPending ? "Saving..." : "Mark Complete & Continue"}
             </Button>
           ) : nextLesson ? (
-            <Link to={`/academy/lesson/${(nextLesson as any).id}`}>
+            <Link to={`/academy/lesson/${((nextLesson as Record<string, unknown>).id)}`}>
               <Button size="sm">Next Lesson <ArrowRight className="h-4 w-4 ml-1" /></Button>
             </Link>
           ) : (

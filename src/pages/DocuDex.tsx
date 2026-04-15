@@ -61,7 +61,7 @@ export default function DocuDex() {
       file_name: fileName,
       file_path: filePath,
       uploaded_by: user.id,
-      status: "uploaded" as any,
+      status: "uploaded",
     });
     if (dbError) throw dbError;
   };

@@ -151,9 +151,9 @@ export default function BookAppointment() {
         };
         const { data: existing } = await supabase.from("booking_drafts").select("id").eq("user_id", user.id).limit(1).maybeSingle();
         if (existing) {
-          await supabase.from("booking_drafts").update({ draft_data: draftData as any, step, updated_at: new Date().toISOString() }).eq("id", existing.id);
+          await supabase.from("booking_drafts").update({ draft_data: JSON.parse(JSON.stringify(draftData)), step, updated_at: new Date().toISOString() }).eq("id", existing.id);
         } else {
-          await supabase.from("booking_drafts").insert({ user_id: user.id, draft_data: draftData as any, step });
+          await supabase.from("booking_drafts").insert({ user_id: user.id, draft_data: JSON.parse(JSON.stringify(draftData)), step });
         }
       } catch (e) { console.error("Draft save error:", e); }
     };
@@ -323,11 +323,21 @@ export default function BookAppointment() {
         .eq("is_published", true)
         .maybeSingle();
       if (data) {
-        if (!(data as any).use_platform_booking && (data as any).external_booking_url) {
-          window.location.href = (data as any).external_booking_url;
+        const notaryData = data as { display_name: string; theme_color: string; slug: string; use_platform_booking: boolean; external_booking_url: string | null; user_id: string };
+        if (!notaryData.use_platform_booking && notaryData.external_booking_url) {
+          // PP-041: Validate external URL to prevent open redirect
+          try {
+            const extUrl = new URL(notaryData.external_booking_url);
+            if (extUrl.protocol === "https:" || extUrl.protocol === "http:") {
+              window.location.href = notaryData.external_booking_url;
+              return;
+            }
+          } catch {
+            console.error("Invalid external booking URL");
+          }
           return;
         }
-        setNotaryBranding(data as any);
+        setNotaryBranding(notaryData);
       }
     })();
   }, [searchParams]);
@@ -500,7 +510,7 @@ export default function BookAppointment() {
     const fullAddress = data.clientAddress ? `${data.clientAddress}, ${data.clientCity}, ${data.clientState} ${data.clientZip}`.trim() : (data.location || location);
     const maxPerDay = parseInt(pricingSettings.max_appointments_per_day || "0");
     if (maxPerDay > 0) {
-      const { count } = await supabase.from("appointments").select("*", { count: "exact", head: true }).eq("scheduled_date", data.date || date).neq("status", "cancelled" as any).neq("status", "no_show" as any);
+      const { count } = await supabase.from("appointments").select("*", { count: "exact", head: true }).eq("scheduled_date", data.date || date).not("status", "in", '("cancelled","no_show")');
       if (count && count >= maxPerDay) { toast({ title: "Day is fully booked", variant: "destructive" }); setSubmitting(false); return; }
     }
     // Detect notarial act type from service name
@@ -552,7 +562,7 @@ export default function BookAppointment() {
     };
     let appointmentResultId: string;
     if (rebookingId) {
-      const { error } = await supabase.from("appointments").update({ ...payload, status: "scheduled" as any }).eq("id", rebookingId);
+      const { error } = await supabase.from("appointments").update({ ...payload, status: "scheduled" }).eq("id", rebookingId);
       if (error) { toast({ title: "Reschedule failed", description: error.message, variant: "destructive" }); setSubmitting(false); return; }
       appointmentResultId = rebookingId;
     } else {
@@ -717,13 +727,12 @@ export default function BookAppointment() {
   const handleJoinWaitlist = async () => {
     if (!user || !date || !serviceType) return;
     setJoiningWaitlist(true);
-    const { error } = await supabase.from("waitlist").insert({
-      client_id: user.id,
-      service_id: null,
+    const waitlistEntry: Record<string, string | null> = {
+      user_id: user.id,
       preferred_date: date,
-      preferred_time: time || null,
       status: "waiting",
-    } as any);
+    };
+    const { error } = await supabase.from("waitlist").insert(waitlistEntry as never);
     if (error) { toast({ title: "Could not join waitlist", description: error.message, variant: "destructive" }); }
     else { setWaitlistJoined(true); toast({ title: "You're on the waitlist!", description: "We'll notify you when a slot opens." }); }
     setJoiningWaitlist(false);

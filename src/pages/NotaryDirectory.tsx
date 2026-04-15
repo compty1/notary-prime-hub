@@ -137,7 +137,7 @@ export default function NotaryDirectory() {
             </SelectContent>
           </Select>
           {/* DIR002: Sort options */}
-          <Select value={sortBy} onValueChange={(v) => { setSortBy(v as any); setCurrentPage(1); }}>
+          <Select value={sortBy} onValueChange={(v) => { setSortBy(v as never); setCurrentPage(1); }}>
             <SelectTrigger className="w-full sm:w-40">
               <ArrowUpDown className="mr-1 h-3 w-3" />
               <SelectValue placeholder="Sort" />

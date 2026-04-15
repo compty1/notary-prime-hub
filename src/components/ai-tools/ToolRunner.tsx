@@ -71,7 +71,7 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
         supabase.from("profiles").select("plan").eq("user_id", user.id).single(),
       ]);
       setUsageCount(count ?? 0);
-      setUserPlan((profile as any)?.plan || "free");
+      setUserPlan(((profile as Record<string, unknown>))?.plan || "free");
     })();
   }, [user]);
 
@@ -287,7 +287,7 @@ export function ToolRunner({ tool, onBack }: ToolRunnerProps) {
             .limit(1);
           if (recent?.[0]) {
             await supabase.from("tool_generations")
-              .update({ result: fullResult } as any)
+              .update({ result: fullResult } as never)
               .eq("id", recent[0].id);
           }
           setUsageCount((prev) => (prev ?? 0) + 1);
@@ -578,10 +578,10 @@ code{background:#f5f5f5;padding:2px 6px;border-radius:3px}</style></head>
                     const { error } = await supabase.from("tool_generations").upsert({
                       user_id: user.id,
                       tool_id: tool.id,
-                      fields: fieldValues as any,
+                      fields: JSON.parse(JSON.stringify(fieldValues)),
                       result,
                       is_preset: false,
-                    } as any);
+                    } as never);
                     setSaving(false);
                     if (error) {
                       toast({ title: "Save failed", description: error.message, variant: "destructive" });

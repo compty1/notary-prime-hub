@@ -161,7 +161,7 @@ export default function DocumentDigitize() {
         uploaded_by: user.id,
         file_name: fileName,
         file_path: filePath,
-        status: "uploaded" as any,
+        status: "uploaded",
       });
       if (dbError) throw dbError;
 
@@ -221,7 +221,7 @@ export default function DocumentDigitize() {
       <div className="container mx-auto max-w-5xl px-4 py-8">
         <Breadcrumbs />
         {/* Mode tabs */}
-        <Tabs value={activeMode} onValueChange={v => setActiveMode(v as any)} className="mb-6">
+        <Tabs value={activeMode} onValueChange={v => setActiveMode(v as never)} className="mb-6">
           <TabsList>
             <TabsTrigger value="digitize"><Eye className="mr-1 h-4 w-4" /> Digitize</TabsTrigger>
             <TabsTrigger value="translate"><Languages className="mr-1 h-4 w-4" /> Translate</TabsTrigger>

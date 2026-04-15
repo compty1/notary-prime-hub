@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 /** In-memory cache shared across all hook instances */
 let _cache: Record<string, string> = {};
 let _cacheTime = 0;
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 2 * 60 * 1000; // GS-006: Reduced to 2 minutes for faster propagation
 
 export function useSettings(keys?: string[]) {
   const [settings, setSettings] = useState<Record<string, string>>(_cache);
@@ -24,7 +24,7 @@ export function useSettings(keys?: string[]) {
       if (cancelled) return;
       if (data) {
         const map: Record<string, string> = {};
-        data.forEach((s: any) => { map[s.setting_key] = s.setting_value; });
+        data.forEach((s: { setting_key: string; setting_value: string }) => { map[s.setting_key] = s.setting_value; });
         _cache = map;
         _cacheTime = Date.now();
         setSettings(map);

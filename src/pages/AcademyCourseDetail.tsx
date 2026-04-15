@@ -110,7 +110,7 @@ export default function AcademyCourseDetail() {
   const isLocked = prereq && !prereq.met;
   const isEnrolled = !!enrollment;
   const totalLessons = modules.reduce((s: number, m: any) => s + m.academy_lessons.length, 0);
-  const totalHours = (course as any).total_hours || Math.round(course.duration_minutes / 60);
+  const totalHours = ((course as Record<string, unknown>).total_hours) || Math.round(course.duration_minutes / 60);
 
   return (
     <div className="min-h-screen bg-background">
@@ -120,7 +120,7 @@ export default function AcademyCourseDetail() {
         {/* Course Header */}
         <div className="space-y-4">
           <div className="flex items-center gap-2 flex-wrap">
-            <Badge>{(course as any).course_code || course.category}</Badge>
+            <Badge>{((course as Record<string, unknown>).course_code) || course.category}</Badge>
             <Badge variant="outline"><Clock className="h-3 w-3 mr-1" />{totalHours}h</Badge>
             <Badge variant="outline"><BookOpen className="h-3 w-3 mr-1" />{totalLessons} lessons</Badge>
           </div>

@@ -238,7 +238,7 @@ export default function PortalNotaryPageTab() {
       gallery_photos: page.gallery_photos,
       professional_type: page.professional_type,
       is_published: page.is_published,
-    } as any).eq("id", page.id);
+    } as never).eq("id", page.id);
     if (error) toast({ title: "Error saving", description: error.message, variant: "destructive" });
     else toast({ title: "Page saved!" });
     setSaving(false);
@@ -267,7 +267,7 @@ export default function PortalNotaryPageTab() {
   const removeService = (i: number) => updateField("services_offered", services.filter((_, idx) => idx !== i));
   const updateService = (i: number, field: string, value: string) => {
     const updated = [...services];
-    (updated[i] as any)[field] = value;
+    (updated[i] as Record<string, unknown>)[field] = value;
     updateField("services_offered", updated);
   };
   const loadDefaultServices = () => updateField("services_offered", DEFAULT_SERVICES);
@@ -308,7 +308,7 @@ export default function PortalNotaryPageTab() {
         service_id: serviceId,
         is_active: false,
         show_on_site: true,
-      } as any).select().single();
+      } as never).select().single();
       if (error) { toast({ title: "Enrollment failed", description: error.message, variant: "destructive" }); setEnrollingServiceId(null); return; }
       if (data) setEnrollments([...enrollments, data]);
       toast({ title: "Service enrollment requested", description: "Pending admin approval." });
@@ -331,7 +331,7 @@ export default function PortalNotaryPageTab() {
         font_family: page.font_family, nav_services: page.nav_services,
         gallery_photos: page.gallery_photos, professional_type: page.professional_type,
         logo_path: page.logo_path,
-      } as any).eq("id", page.id);
+      } as never).eq("id", page.id);
       if (!error) setLastAutoSave(new Date());
     }, 30000);
     return () => clearTimeout(timer);
@@ -357,7 +357,7 @@ export default function PortalNotaryPageTab() {
         commissioned_county: getSetting("commission_county", ""),
       },
       is_published: false,
-    } as any).select().single();
+    } as never).select().single();
     if (error) {
       toast({ title: "Could not create page", description: error.message, variant: "destructive" });
     } else if (data) {

@@ -38,7 +38,7 @@ export function PartialRefundDialog({ open, onOpenChange, paymentId, maxAmount, 
       const { error } = await supabase
         .from("payments")
         .update({
-          status: refundAmount >= maxAmount ? "refunded" : "partial_refund" as any,
+          status: refundAmount >= maxAmount ? "refunded" : "partial_refund",
           refund_amount: refundAmount,
           refunded_at: new Date().toISOString(),
         })

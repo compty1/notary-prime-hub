@@ -73,8 +73,8 @@ export default function BusinessPortal() {
     const signers = form.signers.split(",").map((s) => s.trim()).filter(Boolean);
     const { data, error } = await supabase.from("business_profiles").insert({
       business_name: form.business_name, ein: form.ein || null, business_type: form.business_type || null,
-      authorized_signers: signers as any, created_by: user.id,
-    } as any).select().single();
+      authorized_signers: JSON.parse(JSON.stringify(signers)), created_by: user.id,
+    } as never).select().single();
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else { setBusiness(data); setRegisterOpen(false); toast({ title: "Business registered!" }); }
   };
@@ -87,7 +87,7 @@ export default function BusinessPortal() {
       const filePath = `${user.id}/business/${Date.now()}_${file.name}`;
       const { error: upErr } = await supabase.storage.from("documents").upload(filePath, file);
       if (!upErr) {
-        const { data } = await supabase.from("documents").insert({ uploaded_by: user.id, file_name: file.name, file_path: filePath, status: "uploaded" as any }).select().single();
+        const { data } = await supabase.from("documents").insert({ uploaded_by: user.id, file_name: file.name, file_path: filePath, status: "uploaded" }).select().single();
         if (data) setDocuments((prev) => [data, ...prev]);
       }
     }

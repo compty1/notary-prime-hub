@@ -40,7 +40,7 @@ export function OperationalKPIDashboard() {
       const { count: completed } = await supabase
         .from("appointments")
         .select("*", { count: "exact", head: true })
-        .eq("status", "completed" as any)
+        .eq("status", "completed")
         .gte("created_at", thirtyDaysAgo);
 
       // Active clients

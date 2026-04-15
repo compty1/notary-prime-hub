@@ -254,13 +254,13 @@ export default function DocumentBuilder() {
                         const { error: uploadError } = await supabase.storage.from("documents").upload(filePath, blob);
                         if (uploadError) throw uploadError;
                         const { error: insertError } = await supabase.from("documents").insert({
-                          uploaded_by: user.id, file_name: fileName, file_path: filePath, status: "uploaded" as any,
+                          uploaded_by: user.id, file_name: fileName, file_path: filePath, status: "uploaded",
                         });
                         if (insertError) throw insertError;
                         toast({ title: "Saved to My Documents", description: "You can find it in your Client Portal." });
                         freeTier.recordUsage();
-                      } catch (e: any) {
-                        toast({ title: "Save failed", description: e.message, variant: "destructive" });
+                      } catch (e: unknown) {
+                        toast({ title: "Save failed", description: e instanceof Error ? e.message : "Unknown error", variant: "destructive" });
                       }
                       setSaving(false);
                     }}>

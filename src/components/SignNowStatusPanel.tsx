@@ -41,7 +41,7 @@ export function SignNowStatusPanel({ appointmentId, compact = false }: SignNowSt
         .select("*")
         .eq("appointment_id", appointmentId)
         .order("created_at", { ascending: false });
-      setDocs((data as any[]) || []);
+      setDocs((data as Record<string, unknown>[]) || []);
       setLoading(false);
     };
     fetch();
@@ -58,7 +58,7 @@ export function SignNowStatusPanel({ appointmentId, compact = false }: SignNowSt
         if (payload.eventType === "INSERT") {
           setDocs(prev => [payload.new as any, ...prev]);
         } else if (payload.eventType === "UPDATE") {
-          setDocs(prev => prev.map(d => d.id === (payload.new as any).id ? payload.new as any : d));
+          setDocs(prev => prev.map(d => d.id === ((payload.new as Record<string, unknown>)).id ? payload.new as any : d));
         }
       })
       .subscribe();

@@ -102,7 +102,7 @@ export function SessionWaitingRoom({ appointmentId, signerName, notaryName, witn
         party_name: myRole === "Signer" ? (signerName || "Signer") : (notaryName || "Notary Public"),
         party_status: "in_lobby",
         user_id: user.id,
-      } as any, { onConflict: "appointment_id,party_role" }).then(() => {}, () => {});
+      } as never, { onConflict: "appointment_id,party_role" }).then(() => {}, () => {});
       // Update local state immediately
       setParties(prev => prev.map(p => p.role === myRole ? { ...p, status: "in_lobby" } : p));
     };
@@ -132,7 +132,7 @@ export function SessionWaitingRoom({ appointmentId, signerName, notaryName, witn
       party_role: role.toLowerCase(),
       party_status: "ready",
       user_id: user?.id,
-    } as any, { onConflict: "appointment_id,party_role" }).then(() => {}, () => {});
+    } as never, { onConflict: "appointment_id,party_role" }).then(() => {}, () => {});
     // Update local state immediately
     setParties(prev => prev.map(p => p.role === role ? { ...p, status: "ready" } : p));
     setMarkingReady(false);
