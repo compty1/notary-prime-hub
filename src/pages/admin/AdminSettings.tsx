@@ -110,7 +110,7 @@ export default function AdminSettings() {
     setSaving(true);
     const changedKeys: string[] = [];
     const beforeValues: Record<string, string> = {};
-    const updates: Promise<{ error: unknown }>[] = [];
+    const updates: PromiseLike<{ error: unknown }>[] = [];
     for (const [key, value] of Object.entries(editValues)) {
       if (settings[key]) {
         if (settings[key].setting_value === value) continue;
