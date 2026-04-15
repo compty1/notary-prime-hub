@@ -347,7 +347,7 @@ export default function AdminMailbox() {
       await supabase.from("email_drafts").insert({
         user_id: user.id, to_addresses: composeTo ? [composeTo] : [], cc_addresses: composeCc ? [composeCc] : [],
         subject: composeSubject, body_html: composeBody, in_reply_to: composeInReplyTo || null,
-      } as any);
+      });
       toast({ title: "Draft saved" });
       setShowCompose(false);
     } catch (e: any) {
@@ -358,11 +358,11 @@ export default function AdminMailbox() {
   const handleSaveSignature = async () => {
     if (!user || !sigName.trim()) return;
     if (editingSigId) {
-      await supabase.from("email_signatures").update({ name: sigName, signature_html: sigHtml } as any).eq("id", editingSigId);
+      await supabase.from("email_signatures").update({ name: sigName, signature_html: sigHtml } ).eq("id", editingSigId);
     } else {
       await supabase.from("email_signatures").insert({
         user_id: user.id, name: sigName, signature_html: sigHtml, is_default: signatures.length === 0,
-      } as any);
+      });
     }
     setSigName(""); setSigHtml(""); setEditingSigId(null);
     fetchSignatures();
@@ -371,8 +371,8 @@ export default function AdminMailbox() {
 
   const handleSetDefaultSig = async (id: string) => {
     if (!user) return;
-    await supabase.from("email_signatures").update({ is_default: false } as any).eq("user_id", user.id);
-    await supabase.from("email_signatures").update({ is_default: true } as any).eq("id", id);
+    await supabase.from("email_signatures").update({ is_default: false } ).eq("user_id", user.id);
+    await supabase.from("email_signatures").update({ is_default: true } ).eq("id", id);
     fetchSignatures();
   };
 

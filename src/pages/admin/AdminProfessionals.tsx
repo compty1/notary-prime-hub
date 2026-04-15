@@ -123,28 +123,28 @@ export default function AdminProfessionals() {
 
   // Toggle published
   const togglePublished = async (pro: Professional) => {
-    await supabase.from("notary_pages").update({ is_published: !pro.is_published } as any).eq("id", pro.id);
+    await supabase.from("notary_pages").update({ is_published: !pro.is_published } ).eq("id", pro.id);
     setProfessionals(prev => prev.map(p => p.id === pro.id ? { ...p, is_published: !p.is_published } : p));
     toast({ title: `Page ${!pro.is_published ? "published" : "unpublished"}` });
   };
 
   // Toggle featured
   const toggleFeatured = async (pro: Professional) => {
-    await supabase.from("notary_pages").update({ is_featured: !pro.is_featured } as any).eq("id", pro.id);
+    await supabase.from("notary_pages").update({ is_featured: !pro.is_featured } ).eq("id", pro.id);
     setProfessionals(prev => prev.map(p => p.id === pro.id ? { ...p, is_featured: !p.is_featured } : p));
     toast({ title: `Featured status updated` });
   };
 
   // Toggle profit share
   const toggleProfitShare = async (pro: Professional) => {
-    await supabase.from("notary_pages").update({ profit_share_enabled: !pro.profit_share_enabled } as any).eq("id", pro.id);
+    await supabase.from("notary_pages").update({ profit_share_enabled: !pro.profit_share_enabled } ).eq("id", pro.id);
     setProfessionals(prev => prev.map(p => p.id === pro.id ? { ...p, profit_share_enabled: !p.profit_share_enabled } : p));
     toast({ title: `Profit share ${!pro.profit_share_enabled ? "enabled" : "disabled"}` });
   };
 
   // Approve/reject enrollment
   const toggleEnrollment = async (enrollment: Enrollment) => {
-    await supabase.from("professional_service_enrollments").update({ is_active: !enrollment.is_active } as any).eq("id", enrollment.id);
+    await supabase.from("professional_service_enrollments").update({ is_active: !enrollment.is_active } ).eq("id", enrollment.id);
     setEnrollments(prev => prev.map(e => e.id === enrollment.id ? { ...e, is_active: !e.is_active } : e));
     toast({ title: `Enrollment ${!enrollment.is_active ? "approved" : "deactivated"}` });
   };
@@ -158,13 +158,13 @@ export default function AdminProfessionals() {
       is_active: editConfig.is_active,
     };
     if (editConfig.id) {
-      await supabase.from("profit_share_config").update(payload as any).eq("id", editConfig.id);
+      await supabase.from("profit_share_config").update(payload ).eq("id", editConfig.id);
     } else {
       await supabase.from("profit_share_config").insert({
         ...payload,
         professional_user_id: editConfig.professional_user_id,
         service_id: editConfig.service_id,
-      } as any);
+      });
     }
     setConfigDialog(false);
     fetchAll();
@@ -173,7 +173,7 @@ export default function AdminProfessionals() {
 
   // Mark transaction as paid
   const markPaid = async (txn: ProfitTransaction) => {
-    await supabase.from("profit_share_transactions").update({ status: "paid", paid_at: new Date().toISOString() } as any).eq("id", txn.id);
+    await supabase.from("profit_share_transactions").update({ status: "paid", paid_at: new Date().toISOString() } ).eq("id", txn.id);
     setTransactions(prev => prev.map(t => t.id === txn.id ? { ...t, status: "paid", paid_at: new Date().toISOString() } : t));
     toast({ title: "Marked as paid" });
   };

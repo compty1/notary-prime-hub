@@ -132,7 +132,7 @@ export default function AdminNotaryPages() {
   };
 
   const fetchNotaryUsers = async () => {
-    const { data: roles } = await supabase.from("user_roles").select("user_id").in("role", ["notary", "admin"] as any);
+    const { data: roles } = await supabase.from("user_roles").select("user_id").in("role", ["notary", "admin"]);
     if (!roles || roles.length === 0) { setNotaryUsers([]); return; }
     const userIds = roles.map(r => r.user_id);
     const { data } = await supabase.from("profiles").select("user_id, full_name, email").in("user_id", userIds);
@@ -243,7 +243,7 @@ export default function AdminNotaryPages() {
         service_id: serviceId,
         is_active: true,
         show_on_site: true,
-      } as any).select().single();
+      } ).select().single();
       if (error) { toast({ title: "Enrollment failed", description: error.message, variant: "destructive" }); return; }
       if (data) setEnrollments([...enrollments, data]);
       toast({ title: "Service enrolled (auto-approved)" });
@@ -251,7 +251,7 @@ export default function AdminNotaryPages() {
   };
 
   const toggleEnrollmentActive = async (enrollmentId: string, current: boolean) => {
-    await supabase.from("professional_service_enrollments").update({ is_active: !current } as any).eq("id", enrollmentId);
+    await supabase.from("professional_service_enrollments").update({ is_active: !current } ).eq("id", enrollmentId);
     setEnrollments(enrollments.map(e => e.id === enrollmentId ? { ...e, is_active: !current } : e));
     toast({ title: !current ? "Enrollment approved" : "Enrollment deactivated" });
   };
@@ -349,12 +349,12 @@ export default function AdminNotaryPages() {
   };
 
   const togglePublish = async (p: NotaryPage) => {
-    await supabase.from("notary_pages").update({ is_published: !p.is_published } as any).eq("id", p.id);
+    await supabase.from("notary_pages").update({ is_published: !p.is_published } ).eq("id", p.id);
     fetchPages();
   };
 
   const toggleFeatured = async (p: NotaryPage) => {
-    await supabase.from("notary_pages").update({ is_featured: !p.is_featured } as any).eq("id", p.id);
+    await supabase.from("notary_pages").update({ is_featured: !p.is_featured } ).eq("id", p.id);
     fetchPages();
   };
 
@@ -384,7 +384,7 @@ export default function AdminNotaryPages() {
   };
   const bulkPublish = async (publish: boolean) => {
     for (const id of selectedIds) {
-      await supabase.from("notary_pages").update({ is_published: publish } as any).eq("id", id);
+      await supabase.from("notary_pages").update({ is_published: publish } ).eq("id", id);
     }
     setSelectedIds(new Set());
     fetchPages();

@@ -36,14 +36,14 @@ export default function AdminProcessServing() {
   const handleCreate = async () => {
     if (!form.respondent_name.trim()) { toast({ title: "Respondent name required", variant: "destructive" }); return; }
     setSaving(true);
-    const { error } = await supabase.from("process_serving_cases").insert({ ...form, fee: parseFloat(form.fee) || 0, client_id: user?.id || "" } as any);
+    const { error } = await supabase.from("process_serving_cases").insert({ ...form, fee: parseFloat(form.fee) || 0, client_id: user?.id || "" });
     setSaving(false);
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
     toast({ title: "Case created" }); setCreateOpen(false); fetchData();
   };
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from("process_serving_cases").update({ status } as any).eq("id", id);
+    await supabase.from("process_serving_cases").update({ status } ).eq("id", id);
     setCases(prev => prev.map(c => c.id === id ? { ...c, status } : c)); toast({ title: "Updated" });
   };
 

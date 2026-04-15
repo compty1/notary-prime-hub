@@ -112,7 +112,7 @@ export default function AdminTeam() {
       eo_expiration: editForm.eo_expiration || null,
       bond_company: editForm.bond_company || null,
       bond_amount: editForm.bond_amount ? parseFloat(editForm.bond_amount) : null,
-    } as any).eq("user_id", selectedNotary.user_id);
+    } ).eq("user_id", selectedNotary.user_id);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
       setSaving(false);
@@ -162,7 +162,7 @@ export default function AdminTeam() {
       setUploadingAvatar(false);
       return;
     }
-    await supabase.from("profiles").update({ avatar_path: path } as any).eq("user_id", selectedNotary.user_id);
+    await supabase.from("profiles").update({ avatar_path: path } ).eq("user_id", selectedNotary.user_id);
     const { data: urlData } = await supabase.storage.from("documents").createSignedUrl(path, 3600);
     if (urlData?.signedUrl) setAvatarUrls((prev) => ({ ...prev, [selectedNotary.user_id]: urlData.signedUrl }));
     toast({ title: "Avatar uploaded" });
@@ -232,7 +232,7 @@ export default function AdminTeam() {
     const { error } = await supabase.from("notary_invites").insert({
       email: inviteEmail.trim().toLowerCase(),
       invited_by: user.id,
-    } as any);
+    });
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
@@ -258,7 +258,7 @@ export default function AdminTeam() {
       toast({ title: "Cannot remove your own notary role", variant: "destructive" });
       return;
     }
-    await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", "notary" as any);
+    await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", "notary");
     toast({ title: "Notary role removed" });
     fetchData();
   };

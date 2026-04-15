@@ -37,14 +37,14 @@ export default function AdminTranslations() {
   const handleCreate = async () => {
     if (!form.document_name.trim()) { toast({ title: "Document name required", variant: "destructive" }); return; }
     setSaving(true);
-    const { error } = await supabase.from("translation_requests").insert({ document_name: form.document_name, source_language: form.source_language, target_language: form.target_language, certified: form.certified, page_count: parseInt(form.page_count) || 1, fee: parseFloat(form.fee) || 0, translator_name: form.translator_name, notes: form.notes, client_id: user?.id || "" } as any);
+    const { error } = await supabase.from("translation_requests").insert({ document_name: form.document_name, source_language: form.source_language, target_language: form.target_language, certified: form.certified, page_count: parseInt(form.page_count) || 1, fee: parseFloat(form.fee) || 0, translator_name: form.translator_name, notes: form.notes, client_id: user?.id || "" });
     setSaving(false);
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
     toast({ title: "Request created" }); setCreateOpen(false); fetchData();
   };
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from("translation_requests").update({ status } as any).eq("id", id);
+    await supabase.from("translation_requests").update({ status } ).eq("id", id);
     setRequests(prev => prev.map(r => r.id === id ? { ...r, status } : r)); toast({ title: "Updated" });
   };
 

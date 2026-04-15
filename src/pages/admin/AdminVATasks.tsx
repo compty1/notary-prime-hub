@@ -37,14 +37,14 @@ export default function AdminVATasks() {
   const handleCreate = async () => {
     if (!form.title.trim()) { toast({ title: "Title required", variant: "destructive" }); return; }
     setSaving(true);
-    const { error } = await supabase.from("virtual_assistant_tasks").insert({ title: form.title, task_type: form.task_type, description: form.description, hours_estimated: parseFloat(form.hours_estimated) || 1, hourly_rate: parseFloat(form.hourly_rate) || 35, priority: form.priority, notes: form.notes, client_id: user?.id || "" } as any);
+    const { error } = await supabase.from("virtual_assistant_tasks").insert({ title: form.title, task_type: form.task_type, description: form.description, hours_estimated: parseFloat(form.hours_estimated) || 1, hourly_rate: parseFloat(form.hourly_rate) || 35, priority: form.priority, notes: form.notes, client_id: user?.id || "" });
     setSaving(false);
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
     toast({ title: "Task created" }); setCreateOpen(false); fetchData();
   };
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from("virtual_assistant_tasks").update({ status } as any).eq("id", id);
+    await supabase.from("virtual_assistant_tasks").update({ status } ).eq("id", id);
     setTasks(prev => prev.map(t => t.id === id ? { ...t, status } : t)); toast({ title: "Updated" });
   };
 

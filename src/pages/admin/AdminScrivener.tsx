@@ -37,14 +37,14 @@ export default function AdminScrivener() {
   const handleCreate = async () => {
     if (!form.upl_acknowledgment) { toast({ title: "UPL acknowledgment required", description: "You must acknowledge this is typing only, not legal advice.", variant: "destructive" }); return; }
     setSaving(true);
-    const { error } = await supabase.from("scrivener_jobs").insert({ form_type: form.form_type, form_name: form.form_name, court_jurisdiction: form.court_jurisdiction, page_count: parseInt(form.page_count) || 1, fee: parseFloat(form.fee) || 0, upl_acknowledgment: form.upl_acknowledgment, notes: form.notes, client_id: user?.id || "" } as any);
+    const { error } = await supabase.from("scrivener_jobs").insert({ form_type: form.form_type, form_name: form.form_name, court_jurisdiction: form.court_jurisdiction, page_count: parseInt(form.page_count) || 1, fee: parseFloat(form.fee) || 0, upl_acknowledgment: form.upl_acknowledgment, notes: form.notes, client_id: user?.id || "" });
     setSaving(false);
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
     toast({ title: "Job created" }); setCreateOpen(false); fetchData();
   };
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from("scrivener_jobs").update({ status } as any).eq("id", id);
+    await supabase.from("scrivener_jobs").update({ status } ).eq("id", id);
     setJobs(prev => prev.map(j => j.id === id ? { ...j, status } : j)); toast({ title: "Updated" });
   };
 
