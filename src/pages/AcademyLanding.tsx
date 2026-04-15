@@ -149,7 +149,7 @@ export default function AcademyLanding() {
                     <CardContent className="pt-4 flex items-center gap-3">
                       <Award className="h-8 w-8 text-primary shrink-0" />
                       <div>
-                        <p className="font-medium text-sm">{(cert as Record<string, unknown>)?.e_courses?.title || "Course"}</p>
+                        <p className="font-medium text-sm">{(cert as any)?.e_courses?.title || "Course"}</p>
                         <p className="text-xs text-muted-foreground">{cert.certificate_number}</p>
                       </div>
                     </CardContent>
