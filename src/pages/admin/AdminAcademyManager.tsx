@@ -284,11 +284,11 @@ function QuizzesTab({ courseId }: { courseId: string }) {
         <Table>
           <TableHeader><TableRow><TableHead>Title</TableHead><TableHead>Type</TableHead><TableHead>Module</TableHead><TableHead>Pass %</TableHead><TableHead>Questions</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
           <TableBody>
-            {quizzes.map((q: any) => (
+            {quizzes.map((q) => (
               <TableRow key={q.id}>
                 <TableCell className="font-medium">{q.title}</TableCell>
                 <TableCell><Badge variant={q.quiz_type === "final" ? "default" : "outline"}>{q.quiz_type}</Badge></TableCell>
-                <TableCell className="text-sm">{(q as any).academy_modules?.title || "—"}</TableCell>
+                <TableCell className="text-sm">{(q as Record<string, unknown> & { academy_modules?: { title?: string } }).academy_modules?.title || "—"}</TableCell>
                 <TableCell>{q.passing_score}%</TableCell>
                 <TableCell>{Array.isArray(q.questions) ? q.questions.length : 0}</TableCell>
                 <TableCell className="text-right">
@@ -362,9 +362,10 @@ function CertificatesTab({ courseId }: { courseId: string }) {
         <Table>
           <TableHeader><TableRow><TableHead>Learner</TableHead><TableHead>Certificate #</TableHead><TableHead>Issued</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
           <TableBody>
-            {certs.map((c: any) => (
-              <TableRow key={c.id}>
-                <TableCell className="font-medium">{(c as any).profiles?.full_name || (c as any).profiles?.email || c.user_id.slice(0, 8)}</TableCell>
+            {certs.map((c) => {
+              const profile = (c as Record<string, unknown> & { profiles?: { full_name?: string; email?: string } }).profiles;
+              return <TableRow key={c.id}>
+                <TableCell className="font-medium">{profile?.full_name || profile?.email || c.user_id.slice(0, 8)}</TableCell>
                 <TableCell className="font-mono text-xs">{c.certificate_number}</TableCell>
                 <TableCell className="text-sm">{format(new Date(c.issued_at), "MMM d, yyyy")}</TableCell>
                 <TableCell className="text-right">
