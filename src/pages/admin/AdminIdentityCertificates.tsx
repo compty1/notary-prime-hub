@@ -21,7 +21,7 @@ export default function AdminIdentityCertificates() {
   usePageMeta({ title: "Identity Certificates", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
-  const [certs, setCerts] = useState<any[]>([]);
+  const [certs, setCerts] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [createOpen, setCreateOpen] = useState(false);

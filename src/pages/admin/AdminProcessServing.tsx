@@ -21,7 +21,7 @@ export default function AdminProcessServing() {
   usePageMeta({ title: "Process Serving", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
-  const [cases, setCases] = useState<any[]>([]);
+  const [cases, setCases] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
