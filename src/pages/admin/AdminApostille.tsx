@@ -38,14 +38,22 @@ const CHECKLIST_ITEMS = [
   { key: "shipping_label", label: "Return shipping label" },
 ];
 
+interface ApostilleRequest {
+  id: string; client_id: string; document_description: string; document_count: number;
+  destination_country: string | null; fee: number | null; status: string;
+  tracking_number: string | null; shipping_label_url: string | null; notes: string | null;
+  created_at: string; updated_at: string;
+}
+interface ProfileInfo { user_id: string; full_name: string | null; email: string | null; address: string | null; city: string | null; state: string | null; zip: string | null; phone: string | null; }
+
 export default function AdminApostille() {
   usePageMeta({ title: "Apostille Requests", noIndex: true });
   const { toast } = useToast();
-  const [requests, setRequests] = useState<any[]>([]);
-  const [profiles, setProfiles] = useState<any[]>([]);
+  const [requests, setRequests] = useState<ApostilleRequest[]>([]);
+  const [profiles, setProfiles] = useState<ProfileInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
-  const [detailReq, setDetailReq] = useState<any>(null);
+  const [detailReq, setDetailReq] = useState<ApostilleRequest | null>(null);
   const [newDesc, setNewDesc] = useState("");
   const [newNotes, setNewNotes] = useState("");
   const [newFee, setNewFee] = useState("75");
@@ -131,7 +139,7 @@ export default function AdminApostille() {
         <div class="field"><span class="label">Description:</span> ${detailReq.document_description}</div>
         <div class="field"><span class="label">Document Count:</span> ${detailReq.document_count}</div>
         <div class="field"><span class="label">Destination Country:</span> ${detailReq.destination_country || "N/A"}</div>
-        <div class="field"><span class="label">Fee:</span> $${parseFloat(detailReq.fee || "0").toFixed(2)}</div>
+        <div class="field"><span class="label">Fee:</span> $${parseFloat(String(detailReq.fee ?? 0)).toFixed(2)}</div>
       </div>
       <div class="section"><h3>Submission Details</h3>
         <div class="field"><span class="label">Request Date:</span> ${new Date(detailReq.created_at).toLocaleDateString()}</div>
@@ -260,7 +268,7 @@ export default function AdminApostille() {
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-sm font-medium">${parseFloat(req.fee || "0").toFixed(2)}</span>
+                        <span className="text-sm font-medium">${parseFloat(String(req.fee ?? 0)).toFixed(2)}</span>
                         <ChevronRight className="h-4 w-4 text-muted-foreground" />
                       </div>
                     </div>

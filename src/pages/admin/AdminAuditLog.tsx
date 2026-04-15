@@ -64,14 +64,21 @@ const entityRoutes: Record<string, string> = {
 
 const PAGE_SIZE = 25;
 
+interface AuditLogEntry {
+  id: string; action: string; entity_type: string | null; entity_id: string | null;
+  user_id: string | null; details: unknown;
+  old_value_json: unknown; new_value_json: unknown;
+  ip_address: string | null; created_at: string;
+}
+
 export default function AdminAuditLog() {
   usePageMeta({ title: "Audit Log", noIndex: true });
   const [searchParams, setSearchParams] = useSearchParams();
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<AuditLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
-  const [selectedLog, setSelectedLog] = useState<any>(null);
+  const [selectedLog, setSelectedLog] = useState<AuditLogEntry | null>(null);
   const [compact, setCompact] = useState(false);
 
   // URL-synced filters
