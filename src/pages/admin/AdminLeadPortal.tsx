@@ -14,11 +14,45 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { Phone, Mail, MapPin, Plus, Search, Loader2, Calendar, Building2, User, Star, ArrowRight, Download, Upload, ExternalLink, Pencil, Trash2, Sparkles, RefreshCw, Inbox, Clock, Globe, FileText, Tag, ChevronLeft, ChevronRight } from "lucide-react";
+import { Phone, Mail, MapPin, Plus, Search, Loader2, Calendar, Building2, User, Star, ArrowRight, Download, Upload, ExternalLink, Pencil, Trash2, Sparkles, RefreshCw, Inbox, Clock, Globe, FileText, Tag, ChevronLeft, ChevronRight, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { leadIntentColors as intentColors, leadStatusColors as statusColors } from "@/lib/statusColors";
+
+// LP-001/002/003: Proper Lead type from DB schema
+interface Lead {
+  id: string;
+  name: string | null;
+  phone: string | null;
+  email: string | null;
+  business_name: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  zip: string | null;
+  lead_type: string;
+  service_needed: string | null;
+  intent_score: string;
+  source: string | null;
+  source_url: string | null;
+  notes: string | null;
+  status: string;
+  contacted_at: string | null;
+  created_at: string;
+  updated_at: string;
+  email_cache_id: string | null;
+  hubspot_contact_id: string | null;
+}
+
+interface SourceEmail {
+  from_address: string | null;
+  from_name: string | null;
+  subject: string | null;
+  body_text: string | null;
+  date: string | null;
+}
 
 const pipelineStatuses = ["new", "contacted", "qualified", "proposal", "converted", "closed-won", "closed-lost"];
 
@@ -27,45 +61,93 @@ const emptyLead = {
   lead_type: "individual", service_needed: "", intent_score: "medium", source: "manual", source_url: "", notes: "",
 };
 
+// LP-009: Proper CSV parser that handles quoted fields
+function parseCSVLine(line: string): string[] {
+  const result: string[] = [];
+  let current = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (i + 1 < line.length && line[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        current += ch;
+      }
+    } else {
+      if (ch === '"') {
+        inQuotes = true;
+      } else if (ch === ',') {
+        result.push(current.trim());
+        current = "";
+      } else {
+        current += ch;
+      }
+    }
+  }
+  result.push(current.trim());
+  return result;
+}
+
 export default function AdminLeadPortal() {
   usePageMeta({ title: "Lead Portal", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [leads, setLeads] = useState<any[]>([]);
+  // LP-001: Typed state
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null); // LP-018: Error state
   const [searchTerm, setSearchTerm] = useState("");
   const [filterIntent, setFilterIntent] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterType, setFilterType] = useState("all");
   const [activeTab, setActiveTab] = useState("list");
   const [showCreate, setShowCreate] = useState(false);
-  const [editingLead, setEditingLead] = useState<any>(null);
+  // LP-002: Typed editingLead
+  const [editingLead, setEditingLead] = useState<Lead | null>(null);
   const [form, setForm] = useState(emptyLead);
   const [saving, setSaving] = useState(false);
   const [discovering, setDiscovering] = useState(false);
   const [enriching, setEnriching] = useState(false);
   const [scrapingSocial, setScrapingSocial] = useState(false);
   const [importingEmail, setImportingEmail] = useState(false);
-  const [selectedLead, setSelectedLead] = useState<any>(null);
-  const [sourceEmail, setSourceEmail] = useState<any>(null);
+  // LP-003: Typed selectedLead
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [sourceEmail, setSourceEmail] = useState<SourceEmail | null>(null);
   const [newLeadIds, setNewLeadIds] = useState<Set<string>>(new Set());
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const PAGE_SIZE = 25;
   // Bulk selection
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [bulkAction, setBulkAction] = useState("");
+  // LP-012: Separate bulk action state with confirmation
+  const [pendingBulkAction, setPendingBulkAction] = useState("");
 
+  // LP-004: Fetch with error handling (LP-018)
   const fetchLeads = useCallback(async () => {
-    const { data } = await supabase.from("leads").select("*").order("created_at", { ascending: false });
-    if (data) setLeads(data);
+    setFetchError(null);
+    const { data, error } = await supabase
+      .from("leads")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) {
+      setFetchError(error.message);
+      setLoading(false);
+      return;
+    }
+    if (data) setLeads(data as Lead[]);
     setLoading(false);
   }, []);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
 
-  // Real-time subscription
+  // Real-time subscription — LP-020: Handle UPDATE correctly
   useEffect(() => {
     const channel = supabase
       .channel("leads-realtime")
@@ -73,13 +155,17 @@ export default function AdminLeadPortal() {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "leads" },
         (payload) => {
-          setLeads((prev) => [payload.new as any, ...prev]);
-          setNewLeadIds((prev) => new Set(prev).add((payload.new as any).id));
-          // Clear "new" highlight after 10s
+          const newLead = payload.new as Lead;
+          setLeads((prev) => {
+            // Prevent duplicate if already in list
+            if (prev.some(l => l.id === newLead.id)) return prev;
+            return [newLead, ...prev];
+          });
+          setNewLeadIds((prev) => new Set(prev).add(newLead.id));
           setTimeout(() => {
             setNewLeadIds((prev) => {
               const next = new Set(prev);
-              next.delete((payload.new as any).id);
+              next.delete(newLead.id);
               return next;
             });
           }, 10000);
@@ -89,14 +175,19 @@ export default function AdminLeadPortal() {
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "leads" },
         (payload) => {
-          setLeads((prev) => prev.map((l) => (l.id === (payload.new as any).id ? payload.new as any : l)));
+          const updated = payload.new as Lead;
+          setLeads((prev) => prev.map((l) => (l.id === updated.id ? updated : l)));
+          // Also update selectedLead if it's the same one
+          setSelectedLead((prev) => prev && prev.id === updated.id ? updated : prev);
         }
       )
       .on(
         "postgres_changes",
         { event: "DELETE", schema: "public", table: "leads" },
         (payload) => {
-          setLeads((prev) => prev.filter((l) => l.id !== (payload.old as any).id));
+          const deletedId = (payload.old as { id: string }).id;
+          setLeads((prev) => prev.filter((l) => l.id !== deletedId));
+          setSelectedLead((prev) => prev && prev.id === deletedId ? null : prev);
         }
       )
       .subscribe();
@@ -140,29 +231,39 @@ export default function AdminLeadPortal() {
     }
   };
 
+  // LP-005/006: Batch operations using .in()
   const executeBulkAction = async (action: string) => {
     if (selectedIds.size === 0) return;
     const ids = Array.from(selectedIds);
+    
     if (action === "delete") {
       if (!confirm(`Delete ${ids.length} leads?`)) return;
-      for (const id of ids) await supabase.from("leads").delete().eq("id", id);
-      toast({ title: `Deleted ${ids.length} leads` });
-    } else if (pipelineStatuses.includes(action)) {
-      for (const id of ids) {
-        await supabase.from("leads").update({
-          status: action,
-          ...(action === "contacted" ? { contacted_at: new Date().toISOString() } : {}),
-        } as any).eq("id", id);
+      const { error } = await supabase.from("leads").delete().in("id", ids);
+      if (error) {
+        toast({ title: "Delete failed", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: `Deleted ${ids.length} leads` });
       }
-      toast({ title: `Moved ${ids.length} leads → ${action}` });
+    } else if (pipelineStatuses.includes(action)) {
+      // LP-006: Batch status update
+      const updatePayload: Record<string, string> = { status: action };
+      if (action === "contacted") {
+        updatePayload.contacted_at = new Date().toISOString();
+      }
+      const { error } = await supabase.from("leads").update(updatePayload).in("id", ids);
+      if (error) {
+        toast({ title: "Update failed", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: `Moved ${ids.length} leads → ${action}` });
+      }
     }
     setSelectedIds(new Set());
-    setBulkAction("");
+    setPendingBulkAction("");
     fetchLeads();
   };
 
   const openCreate = () => { setEditingLead(null); setForm(emptyLead); setShowCreate(true); };
-  const openEdit = (lead: any) => {
+  const openEdit = (lead: Lead) => {
     setEditingLead(lead);
     setForm({
       name: lead.name || "", phone: lead.phone || "", email: lead.email || "",
@@ -175,20 +276,20 @@ export default function AdminLeadPortal() {
     setShowCreate(true);
   };
 
-  const openDetail = async (lead: any) => {
+  const openDetail = async (lead: Lead) => {
     setSelectedLead(lead);
     setSourceEmail(null);
-    // Load source email if linked
     if (lead.email_cache_id) {
       const { data } = await supabase
         .from("email_cache")
         .select("from_address, from_name, subject, body_text, date")
         .eq("id", lead.email_cache_id)
         .single();
-      if (data) setSourceEmail(data);
+      if (data) setSourceEmail(data as SourceEmail);
     }
   };
 
+  // LP-007: Remove `as any` casts
   const saveLead = async () => {
     if (!form.name && !form.business_name) {
       toast({ title: "Name or business required", variant: "destructive" });
@@ -196,11 +297,41 @@ export default function AdminLeadPortal() {
     }
     setSaving(true);
     if (editingLead) {
-      const { error } = await supabase.from("leads").update(form as any).eq("id", editingLead.id);
+      const { error } = await supabase.from("leads").update({
+        name: form.name || null,
+        phone: form.phone || null,
+        email: form.email || null,
+        business_name: form.business_name || null,
+        address: form.address || null,
+        city: form.city || null,
+        state: form.state || "OH",
+        zip: form.zip || null,
+        lead_type: form.lead_type,
+        service_needed: form.service_needed || null,
+        intent_score: form.intent_score,
+        source: form.source || "manual",
+        source_url: form.source_url || null,
+        notes: form.notes || null,
+      }).eq("id", editingLead.id);
       if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
       else toast({ title: "Lead updated" });
     } else {
-      const { error } = await supabase.from("leads").insert(form as any);
+      const { error } = await supabase.from("leads").insert({
+        name: form.name || null,
+        phone: form.phone || null,
+        email: form.email || null,
+        business_name: form.business_name || null,
+        address: form.address || null,
+        city: form.city || null,
+        state: form.state || "OH",
+        zip: form.zip || null,
+        lead_type: form.lead_type,
+        service_needed: form.service_needed || null,
+        intent_score: form.intent_score,
+        source: form.source || "manual",
+        source_url: form.source_url || null,
+        notes: form.notes || null,
+      });
       if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
       else toast({ title: "Lead added" });
     }
@@ -209,11 +340,13 @@ export default function AdminLeadPortal() {
     fetchLeads();
   };
 
+  // LP-008: Remove `as any` cast
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from("leads").update({
-      status,
-      ...(status === "contacted" ? { contacted_at: new Date().toISOString() } : {}),
-    } as any).eq("id", id);
+    const updatePayload: Record<string, string> = { status };
+    if (status === "contacted") {
+      updatePayload.contacted_at = new Date().toISOString();
+    }
+    await supabase.from("leads").update(updatePayload).eq("id", id);
     toast({ title: `Lead → ${status}` });
     fetchLeads();
   };
@@ -226,34 +359,57 @@ export default function AdminLeadPortal() {
     fetchLeads();
   };
 
+  // LP-109: Export includes all fields
   const exportCSV = () => {
-    const headers = ["Name", "Phone", "Email", "Business", "City", "State", "Service", "Intent", "Status", "Source"];
-    const rows = filtered.map((l) => [l.name, l.phone, l.email, l.business_name, l.city, l.state, l.service_needed, l.intent_score, l.status, l.source]);
-    const csv = [headers.join(","), ...rows.map((r) => r.map((v: string) => `"${(v || "").replace(/"/g, '""')}"`).join(","))].join("\n");
+    const headers = ["Name", "Phone", "Email", "Business", "Address", "City", "State", "Zip", "Service", "Intent", "Status", "Source", "Notes", "Created", "Score"];
+    const rows = filtered.map((l) => [
+      l.name, l.phone, l.email, l.business_name, l.address, l.city, l.state, l.zip,
+      l.service_needed, l.intent_score, l.status, l.source, l.notes,
+      l.created_at, String(computeLeadScore(l)),
+    ]);
+    const csv = [headers.join(","), ...rows.map((r) => r.map((v: string | null) => `"${(v || "").replace(/"/g, '""')}"`).join(","))].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a"); a.href = url; a.download = `leads_${new Date().toISOString().split("T")[0]}.csv`; a.click();
     URL.revokeObjectURL(url);
   };
 
+  // LP-009/010/011: Proper CSV parsing with batch insert
   const importCSV = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const text = await file.text();
-    const lines = text.split("\n").slice(1);
-    let imported = 0;
+    const lines = text.split("\n").slice(1).filter(l => l.trim());
+    const leadsToInsert: Array<Record<string, string | null>> = [];
+    
     for (const line of lines) {
-      const cols = line.split(",").map((c) => c.replace(/^"|"$/g, "").trim());
+      const cols = parseCSVLine(line);
       if (cols.length < 2 || (!cols[0] && !cols[3])) continue;
-      await supabase.from("leads").insert({
-        name: cols[0] || null, phone: cols[1] || null, email: cols[2] || null,
-        business_name: cols[3] || null, city: cols[4] || null, state: cols[5] || "OH",
-        service_needed: cols[6] || null, intent_score: cols[7] || "medium",
-        status: "new", source: "csv_import",
-      } as any);
-      imported++;
+      leadsToInsert.push({
+        name: cols[0] || null,
+        phone: cols[1] || null,
+        email: cols[2] || null,
+        business_name: cols[3] || null,
+        city: cols[4] || null,
+        state: cols[5] || "OH",
+        service_needed: cols[6] || null,
+        intent_score: cols[7] || "medium",
+        status: "new",
+        source: "csv_import",
+      });
     }
-    toast({ title: `Imported ${imported} leads` });
+    
+    if (leadsToInsert.length > 0) {
+      // LP-010: Batch insert
+      const { error } = await supabase.from("leads").insert(leadsToInsert);
+      if (error) {
+        toast({ title: "Import error", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: `Imported ${leadsToInsert.length} leads` });
+      }
+    } else {
+      toast({ title: "No valid rows found in CSV", variant: "destructive" });
+    }
     fetchLeads();
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
@@ -272,27 +428,29 @@ export default function AdminLeadPortal() {
         });
         fetchLeads();
       }
-    } catch (e: any) {
-      toast({ title: "Import error", description: e.message, variant: "destructive" });
+    } catch (e: unknown) {
+      // LP-017: Typed error catch
+      const msg = e instanceof Error ? e.message : "Unknown error";
+      toast({ title: "Import error", description: msg, variant: "destructive" });
     }
     setImportingEmail(false);
   };
 
-  // Lead scoring engine (CRM-03)
-  const computeLeadScore = useCallback((lead: any): number => {
+  // Lead scoring engine
+  const computeLeadScore = useCallback((lead: Lead): number => {
     let score = 0;
     if (lead.email) score += 20;
     if (lead.phone) score += 15;
     if (lead.lead_type === "business") score += 10;
     const highValueServices = ["Real Estate", "Loan Signing", "Estate Plan", "Business Formation", "Apostille"];
-    if (lead.service_needed && highValueServices.some(s => lead.service_needed.toLowerCase().includes(s.toLowerCase()))) score += 25;
+    if (lead.service_needed && highValueServices.some(s => lead.service_needed!.toLowerCase().includes(s.toLowerCase()))) score += 25;
     if (lead.intent_score === "high") score += 20;
     else if (lead.intent_score === "medium") score += 10;
     if (lead.contacted_at) score += 10;
     return Math.min(100, score);
   }, []);
 
-  const stats = {
+  const stats = useMemo(() => ({
     total: leads.length,
     new: leads.filter((l) => l.status === "new").length,
     contacted: leads.filter((l) => l.status === "contacted").length,
@@ -300,7 +458,7 @@ export default function AdminLeadPortal() {
     converted: leads.filter((l) => l.status === "converted").length,
     highIntent: leads.filter((l) => l.intent_score === "high").length,
     conversionRate: leads.length > 0 ? Math.round((leads.filter((l) => l.status === "converted").length / leads.length) * 100) : 0,
-  };
+  }), [leads]);
 
   // Duplicate detection
   const duplicates = useMemo(() => {
@@ -323,14 +481,14 @@ export default function AdminLeadPortal() {
   }, [leads]);
 
   const discoverLeads = async () => {
-    if (discovering) return; // Bug 491: debounce guard
+    if (discovering) return;
     setDiscovering(true);
     try {
       const { data, error } = await supabase.functions.invoke("discover-leads", { body: { action: "discover" } });
       if (error) throw error;
       if (data?.error) toast({ title: "Discovery issue", description: data.error, variant: "destructive" });
       else { toast({ title: "AI Discovery Complete", description: `Found ${data.found} leads, inserted ${data.inserted} new ones.` }); fetchLeads(); }
-    } catch (e: any) { toast({ title: "Discovery error", description: e.message, variant: "destructive" }); }
+    } catch (e: unknown) { const msg = e instanceof Error ? e.message : "Unknown error"; toast({ title: "Discovery error", description: msg, variant: "destructive" }); }
     setDiscovering(false);
   };
 
@@ -341,7 +499,7 @@ export default function AdminLeadPortal() {
       if (error) throw error;
       if (data?.error) toast({ title: "Enrichment issue", description: data.error, variant: "destructive" });
       else { toast({ title: "Enrichment Complete", description: `Enriched ${data.enriched} leads.` }); fetchLeads(); }
-    } catch (e: any) { toast({ title: "Enrichment error", description: e.message, variant: "destructive" }); }
+    } catch (e: unknown) { const msg = e instanceof Error ? e.message : "Unknown error"; toast({ title: "Enrichment error", description: msg, variant: "destructive" }); }
     setEnriching(false);
   };
 
@@ -352,11 +510,32 @@ export default function AdminLeadPortal() {
       if (error) throw error;
       if (data?.error) toast({ title: "Scrape issue", description: data.error, variant: "destructive" });
       else { toast({ title: "Social Scrape Complete", description: `Found ${data.results_found} results, extracted ${data.leads_extracted} leads, inserted ${data.inserted} new ones.` }); fetchLeads(); }
-    } catch (e: any) { toast({ title: "Scrape error", description: e.message, variant: "destructive" }); }
+    } catch (e: unknown) { const msg = e instanceof Error ? e.message : "Unknown error"; toast({ title: "Scrape error", description: msg, variant: "destructive" }); }
     setScrapingSocial(false);
   };
 
   const formatDate = (d: string | null) => d ? new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }) : "—";
+
+  // LP-019: Loading skeleton
+  const LoadingSkeleton = () => (
+    <div className="space-y-3">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Card key={i} className="border-border/50">
+          <CardContent className="flex items-center gap-4 p-4">
+            <Skeleton className="h-10 w-10 rounded-lg" />
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-4 w-[200px]" />
+              <Skeleton className="h-3 w-[150px]" />
+            </div>
+            <div className="flex gap-2">
+              <Skeleton className="h-7 w-20" />
+              <Skeleton className="h-7 w-24" />
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -454,13 +633,24 @@ export default function AdminLeadPortal() {
         </TabsList>
 
         <TabsContent value="list">
-          {loading ? (
-            <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
+          {/* LP-018: Error state */}
+          {fetchError ? (
+            <Card className="border-destructive/50">
+              <CardContent className="py-8 text-center">
+                <AlertTriangle className="h-8 w-8 text-destructive mx-auto mb-2" />
+                <p className="text-destructive font-medium">Failed to load leads</p>
+                <p className="text-sm text-muted-foreground mt-1">{fetchError}</p>
+                <Button variant="outline" size="sm" className="mt-3" onClick={fetchLeads}>Retry</Button>
+              </CardContent>
+            </Card>
+          ) : loading ? (
+            // LP-019: Skeleton instead of spinner
+            <LoadingSkeleton />
           ) : filtered.length === 0 ? (
             <Card className="border-border/50"><CardContent className="py-8 text-center text-muted-foreground">No leads found. Add your first lead or import from your inbox.</CardContent></Card>
           ) : (
             <div className="space-y-3">
-              {/* Bulk Actions Bar */}
+              {/* Bulk Actions Bar — LP-012: Confirmation step */}
               <div className="flex items-center gap-3 text-sm">
                 <Checkbox
                   checked={selectedIds.size === paginated.length && paginated.length > 0}
@@ -470,14 +660,19 @@ export default function AdminLeadPortal() {
                 <span className="text-muted-foreground">{selectedIds.size > 0 ? `${selectedIds.size} selected` : `${filtered.length} leads`}</span>
                 {selectedIds.size > 0 && (
                   <>
-                    <Select value={bulkAction} onValueChange={(v) => { setBulkAction(v); executeBulkAction(v); }}>
+                    <Select value={pendingBulkAction} onValueChange={setPendingBulkAction}>
                       <SelectTrigger className="w-36 h-7 text-xs"><SelectValue placeholder="Bulk action..." /></SelectTrigger>
                       <SelectContent>
                         {pipelineStatuses.map((s) => <SelectItem key={s} value={s}>Move → {s}</SelectItem>)}
                         <SelectItem value="delete">Delete selected</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Button variant="ghost" size="sm" className="text-xs" onClick={() => setSelectedIds(new Set())}>Clear</Button>
+                    {pendingBulkAction && (
+                      <Button size="sm" variant="default" className="text-xs h-7" onClick={() => executeBulkAction(pendingBulkAction)}>
+                        Apply to {selectedIds.size}
+                      </Button>
+                    )}
+                    <Button variant="ghost" size="sm" className="text-xs" onClick={() => { setSelectedIds(new Set()); setPendingBulkAction(""); }}>Clear</Button>
                   </>
                 )}
                 <span className="ml-auto text-xs text-muted-foreground">Page {currentPage} of {totalPages}</span>
@@ -522,7 +717,7 @@ export default function AdminLeadPortal() {
                           <Button size="sm" variant="ghost" className="text-xs"><Mail className="h-3 w-3" /></Button>
                         </a>
                       )}
-                      <Link to={`/admin/appointments?newLead=${lead.name || lead.business_name}`}>
+                      <Link to={`/admin/appointments?newLead=${encodeURIComponent(lead.name || lead.business_name || "")}`}>
                         <Button size="sm" variant="outline" className="text-xs"><Calendar className="mr-1 h-3 w-3" /> Schedule</Button>
                       </Link>
                       <Link to={`/ai-writer?tab=proposal&leadId=${lead.id}`}>
@@ -570,10 +765,11 @@ export default function AdminLeadPortal() {
           )}
         </TabsContent>
 
+        {/* LP-013: Fix pipeline grid to show all 7 columns + LP-014: Use filtered instead of leads */}
         <TabsContent value="pipeline">
-          <div className="grid grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
             {pipelineStatuses.map((status) => {
-              const pipeLeads = leads.filter((l) => l.status === status);
+              const pipeLeads = filtered.filter((l) => l.status === status);
               return (
                 <div key={status} className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -734,8 +930,7 @@ export default function AdminLeadPortal() {
 
               <Separator />
 
-              {/* Lead Score */}
-              <Separator />
+              {/* LP-015: Fixed double separator — Lead Score */}
               <div>
                 <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-3 flex items-center gap-1.5"><Star className="h-3.5 w-3.5" /> Lead Score</h4>
                 <div className="flex items-center gap-3">
@@ -749,7 +944,7 @@ export default function AdminLeadPortal() {
 
               <Separator />
 
-              {/* Actions */}
+              {/* LP-016: Proper URL encoding for actions */}
               <div className="flex flex-wrap gap-2">
                 <Button size="sm" variant="outline" onClick={() => { setSelectedLead(null); openEdit(selectedLead); }}>
                   <Pencil className="mr-1 h-3 w-3" /> Edit
@@ -757,7 +952,7 @@ export default function AdminLeadPortal() {
                 <Link to={`/book?service=${encodeURIComponent(selectedLead.service_needed || "Notarization")}&name=${encodeURIComponent(selectedLead.name || "")}&email=${encodeURIComponent(selectedLead.email || "")}&phone=${encodeURIComponent(selectedLead.phone || "")}`}>
                   <Button size="sm" variant="outline"><Calendar className="mr-1 h-3 w-3" /> Book Appointment</Button>
                 </Link>
-                <Link to={`/ai-writer?tab=proposal&leadId=${selectedLead.id}`}>
+                <Link to={`/ai-writer?tab=proposal&leadId=${encodeURIComponent(selectedLead.id)}`}>
                   <Button size="sm" variant="outline"><Sparkles className="mr-1 h-3 w-3" /> Generate Proposal</Button>
                 </Link>
                 <Select value={selectedLead.status} onValueChange={(v) => { updateStatus(selectedLead.id, v); setSelectedLead({ ...selectedLead, status: v }); }}>

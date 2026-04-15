@@ -1,4 +1,5 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// EF-301: Migrated from deprecated `serve` to `Deno.serve`
+// LP-083: Fixed deprecated import
 import { rateLimitGuard } from "../_shared/middleware.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -51,7 +52,7 @@ Guidelines:
 - End with contact info and booking link (notar.com/book)
 - Do NOT include any explanations outside the proposal text`;
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -67,11 +68,18 @@ serve(async (req) => {
       });
     }
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } } }
-    );
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    if (!supabaseUrl || !supabaseAnonKey) {
+      return new Response(JSON.stringify({ error: "Server misconfigured" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
 
     const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
     if (authError || !authUser) {
@@ -89,7 +97,7 @@ serve(async (req) => {
       .select("role")
       .eq("user_id", userId);
 
-    const userRoles = (roles || []).map((r: any) => r.role);
+    const userRoles = (roles || []).map((r: { role: string }) => r.role);
     if (!userRoles.includes("admin") && !userRoles.includes("notary")) {
       return new Response(JSON.stringify({ error: "Forbidden — admin or notary role required" }), {
         status: 403,
