@@ -64,7 +64,7 @@ export function useInsertItem() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (item: Partial<TrackerItem>) => {
-      const { error } = await supabase.from("build_tracker_items").insert(item as any);
+      const { error } = await supabase.from("build_tracker_items").insert(item as Record<string, unknown>);
       if (error) throw error;
     },
     onSuccess: () => { ALL_KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] })); toast.success("Item added"); },
@@ -79,7 +79,7 @@ export function useBulkInsert() {
       // Auto-chunk into batches of 100
       for (let i = 0; i < items.length; i += 100) {
         const batch = items.slice(i, i + 100);
-        const { error } = await supabase.from("build_tracker_items").insert(batch as any[]);
+        const { error } = await supabase.from("build_tracker_items").insert(batch as Record<string, unknown>[]);
         if (error) throw error;
       }
     },
@@ -110,7 +110,7 @@ export function useInsertPlan() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (plan: { plan_title: string; plan_summary?: string; plan_items: PlanItem[]; source: string; chat_context?: string }) => {
-      const { error } = await supabase.from("build_tracker_plans").insert(plan as any);
+      const { error } = await supabase.from("build_tracker_plans").insert(plan as Record<string, unknown>);
       if (error) throw error;
     },
     onSuccess: () => { ALL_KEYS.forEach(k => qc.invalidateQueries({ queryKey: [k] })); toast.success("Plan saved"); },
