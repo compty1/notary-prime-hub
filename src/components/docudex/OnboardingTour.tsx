@@ -2,7 +2,8 @@
  * P5-006: Interactive onboarding tour (8 steps + contextual tooltips)
  */
 import { useState, useEffect } from "react";
-import Joyride, { CallBackProps, STATUS, Step } from "react-joyride";
+import ReactJoyride, { STATUS } from "react-joyride";
+import type { Step } from "react-joyride";
 import { safeGetItem, safeSetItem } from "@/lib/safeStorage";
 
 const TOUR_STEPS: Step[] = [
@@ -11,7 +12,6 @@ const TOUR_STEPS: Step[] = [
     content: "Add text, shapes, images, tables, signatures, and QR codes to your document.",
     title: "Element Toolbar",
     placement: "right",
-    disableBeacon: true,
   },
   {
     target: '[data-tour="canvas"]',
@@ -74,13 +74,12 @@ export function OnboardingTour({ run: forcedRun, onComplete }: OnboardingTourPro
     }
     const completed = safeGetItem(TOUR_STORAGE_KEY);
     if (!completed) {
-      // Small delay to let the UI render
       const timer = setTimeout(() => setRun(true), 1500);
       return () => clearTimeout(timer);
     }
   }, [forcedRun]);
 
-  const handleCallback = (data: CallBackProps) => {
+  const handleCallback = (data: any) => {
     const { status } = data;
     if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
       setRun(false);
@@ -90,7 +89,7 @@ export function OnboardingTour({ run: forcedRun, onComplete }: OnboardingTourPro
   };
 
   return (
-    <Joyride
+    <ReactJoyride
       steps={TOUR_STEPS}
       run={run}
       continuous
@@ -102,35 +101,10 @@ export function OnboardingTour({ run: forcedRun, onComplete }: OnboardingTourPro
         options: {
           primaryColor: "hsl(45 86% 48%)",
           zIndex: 10000,
-          arrowColor: "hsl(var(--card))",
-          backgroundColor: "hsl(var(--card))",
-          textColor: "hsl(var(--foreground))",
         },
         tooltip: {
           borderRadius: "12px",
           padding: "16px",
-        },
-        tooltipTitle: {
-          fontSize: "14px",
-          fontWeight: "600",
-          fontFamily: "Montserrat, sans-serif",
-        },
-        tooltipContent: {
-          fontSize: "13px",
-          fontFamily: "Montserrat, sans-serif",
-        },
-        buttonNext: {
-          borderRadius: "8px",
-          fontSize: "12px",
-          fontWeight: "600",
-          padding: "8px 16px",
-        },
-        buttonBack: {
-          fontSize: "12px",
-          marginRight: "8px",
-        },
-        buttonSkip: {
-          fontSize: "11px",
         },
       }}
       locale={{
