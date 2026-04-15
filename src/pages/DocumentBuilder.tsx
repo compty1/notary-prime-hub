@@ -260,7 +260,7 @@ export default function DocumentBuilder() {
                         toast({ title: "Saved to My Documents", description: "You can find it in your Client Portal." });
                         freeTier.recordUsage();
                       } catch (e: unknown) {
-                        toast({ title: "Save failed", description: e.message, variant: "destructive" });
+                        toast({ title: "Save failed", description: e instanceof Error ? e.message : "Unknown error", variant: "destructive" });
                       }
                       setSaving(false);
                     }}>
