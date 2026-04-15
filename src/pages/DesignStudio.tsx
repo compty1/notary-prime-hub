@@ -6,7 +6,7 @@ import { Footer } from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ProductPreview3D } from "@/components/ProductPreview3D";
+import { ProductScene3D } from "@/components/design/ProductScene3D";
 import { Search, PenTool, BookOpen, NotebookPen, CreditCard, Shirt, Bookmark, FileText, Palette, Sticker } from "lucide-react";
 
 const DESIGN_TOOLS = [
