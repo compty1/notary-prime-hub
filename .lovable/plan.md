@@ -1,137 +1,174 @@
 
 
-# Design Studio & Custom Products — Full Implementation Plan
+# Full Implementation Plan — All Three Documents
 
-Based on the uploaded 49-page engineering audit, this plan addresses all 67 bugs and 31 missing features across 6 phases.
-
----
-
-## Phase 0: Foundation & Infrastructure (Sprint 1-2)
-
-### 0.1 Install Real 3D Libraries
-- Install `three@>=0.133`, `@react-three/fiber@^8.18`, `@react-three/drei@^9.122.0` (React 18 compatible versions)
-- Create base `ProductScene3D` component with proper lighting (ambient + directional), `OrbitControls`, and `Stage` environment
-
-### 0.2 File Upload System
-- Create a reusable `DesignFileUpload` component using Supabase Storage (`design-assets` bucket)
-- Support drag-and-drop, file type validation (PNG/JPG/SVG/PDF), size limits (10MB)
-- Generate thumbnails and return signed URLs
-- Wire into all 8 designers replacing dead Upload buttons
-
-### 0.3 Design State Manager
-- Create `useDesignState` hook with localStorage persistence + auto-save
-- Serializable design config (colors, text, uploaded asset URLs, product options)
-- Session recovery on page reload
-
-### 0.4 Cart Integration Bridge
-- Create `useDesignCart` hook that bridges designer output → `shop_cart_items` table
-- Store full design config as JSON in a new `design_config` JSONB column on cart items
-- Wire all 8 "Add to Cart" buttons to persist design data
+This plan covers every item from the three uploaded attachments:
+1. **Animations DOCX** — 14 micro-interaction components with 27 brand keyframes
+2. **Design System PDF (50 pages)** — Brand identity, colors, Montserrat typography, components, routing, 57 services, accessibility
+3. **DocuDex CSV (56 items)** — 7-phase Canva-style editor transformation
 
 ---
 
-## Phase 1: True 3D Preview Engine (Sprint 2-3)
+## Sprint 1: Brand Animation Library (Animations DOCX — all 14 components)
 
-### 1.1 Replace ProductPreview3D with Real 3D
-- Create `ProductScene3D` wrapper: `<Canvas>` + `<Stage>` + `<OrbitControls>` + `<Environment preset="studio">`
-- WebGL fallback: detect `WebGLRenderingContext` support, show current CSS preview as fallback
+### 1.1 Brand Keyframes in index.css
+Add all 27 keyframes: `sealDrop`, `drawCheck`, `fadeUp`, `glowPulse`, `particleBurst`, `driftDown`, `docSlide`, `checkPop`, `shimmer`, `ringDraw`, `morphBounce`, `receiptSlide`, `subtlePulse`, `errorShake`, `shieldFill`, `badgePop`, `cameraIris`, `livePulse`, `tileSlide`, `cardSlideUp`, `skeletonSweep`, `curtainWipe`, `toastSlideIn`, `toastSlideOut`, `bannerSlideDown`, `widthRetract`, `ellipsisAnim`. Add brand CSS variables (`--notar-yellow`, `--notar-blue`, `--transition-fast/base/slow`, `--bounce-easing`).
 
-### 1.2 Product-Specific 3D Models (Procedural Geometry)
-- **Business Cards**: `<RoundedBox>` at 3.5×2 ratio with `useTexture` for front/back faces mapped from user design
-- **Stickers**: `<Circle>`/`<RoundedBox>` geometry with clip-path shapes (star, heart via custom `ShapeGeometry`)
-- **Books/Notebooks**: Box geometry with spine thickness, `useTexture` for cover art
-- **Apparel**: Flat plane with garment outline SVG, logo placement via `<Decal>` from drei
-- **Signage/Banners**: Scaled `<Plane>` at correct aspect ratios (18×24, 3×6ft, etc.)
-- **Promo Items**: Product-specific meshes (cylinder for mugs, box for USB drives)
-- **Letterhead**: `<Plane>` at 8.5×11 proportions with header/footer layout
+### 1.2 Create 14 Animation Components
+Adapt each from the DOCX into `src/components/animations/`:
+`NotarizationComplete`, `DocumentUpload`, `PaymentConfirmed`, `IdentityVerified`, `SessionJoined`, `CenturyClub`, `UploadFailed`, `SessionDisconnected`, `BusinessPlanUpgrade`, `SkeletonLoading`, `ToastNotification`, `ButtonLoadingState`, `FormError`, `MilestoneRating` — using semantic tokens, not hardcoded hex.
 
-### 1.3 Dynamic Texture Mapping
-- Render user's design config (text, colors, uploaded logo) to an offscreen `<canvas>` element
-- Convert to texture via `CanvasTexture` and map onto 3D geometry in real-time
-- Update texture on every form change for live preview
+### 1.3 Animation Gallery Page
+Create `/animations` route with triggerable gallery grid.
 
 ---
 
-## Phase 2: Designer Upgrades (All 8) (Sprint 3-4)
+## Sprint 2: Design System Alignment (PDF Sections 1-5)
 
-### Per-Designer Fixes (from audit bug list):
+### 2.1 Typography Switch to Montserrat
+The PDF mandates **Montserrat** (currently DM Sans). Update `@import`, `--font-heading`, `--font-body`, and `brandConfig.ts`.
 
-**Business Cards** — Add Export PDF via `html2pdf.js`, font family selector (5 fonts), logo upload, QR code generator, bleed line preview
-**Stickers** — Fix star/heart shapes (use CSS `clip-path`), add finish options (matte/gloss/holographic), quantity price breaks
-**Apparel** — Add size chart, placement area selector (front/back/sleeve), print method options (screen/DTG/embroidery)
-**Book Covers** — Spine width calculator from page count, ISBN barcode placement, bleed area visualization
-**Letterhead** — Matching envelope designer, watermark toggle, header/footer zones
-**Notebooks** — Binding type visual (spiral/perfect/saddle), page count impact on spine, cover finish
-**Signage** — Scale ruler/dimensions overlay, material thickness options, mounting hardware selector
-**Promo** — Product-specific previews (mug wrap, pen barrel), imprint area indicators, PMS color matching
+### 2.2 Color Token Verification
+Confirm `--primary` maps to #E4AC0F. Add dedicated `--notar-blue: #004FDF` token. Verify semantic colors (success #2ECC71, error #E74C3C). Audit dark mode mappings against PDF.
 
----
+### 2.3 Spacing, Elevation, Radius
+Add any missing spacing tokens (4/8/12/16/24/32/48/64/96px) and shadow scale to CSS + Tailwind config.
 
-## Phase 3: Checkout & Payment (Sprint 5)
-
-### 3.1 Unified Cart Page
-- Create `/cart` page reading from `shop_cart_items` with design previews
-- Show 3D thumbnail of each configured product
-- Quantity editor, design config summary, subtotal/tax/total
-
-### 3.2 Stripe Checkout Integration
-- Wire existing `@stripe/react-stripe-js` to a `create-checkout-session` edge function
-- Pass cart items with design config as metadata
-- Handle success/cancel redirects, webhook for order creation
+### 2.4 Logo System
+Update `brandConfig.ts` with favicon size specs (16/32/192/512), clear space rules, and all variant references.
 
 ---
 
-## Phase 4: True 3D Models (Sprint 6-7) — Optional Enhancement
+## Sprint 3: Component & Motion Alignment (PDF Sections 2, 6, 16-18)
 
-- Replace procedural geometry with `.glb` models for higher fidelity (mugs, t-shirts, pens)
-- Use `useGLTF` from drei for model loading
-- Apply user textures via material replacement
+### 3.1 Component Specs
+Verify Button, Input, Card, Dialog, Sheet, Badge match PDF sizing, radius, and state specs.
 
----
+### 3.2 Motion System
+Wire brand easings into `animations.ts`: `--transition-fast: 150ms`, `--transition-base: 200ms`, `--transition-slow: 300ms`, `--bounce-easing: cubic-bezier(0.34, 1.56, 0.64, 1)`.
 
-## Phase 5: Export & Production Files (Sprint 8)
+### 3.3 Dark Mode Audit
+Compare all dark mode CSS variables against PDF Section 18 mapping table.
 
-- PDF export for print-ready files with bleed marks
-- Design spec sheet generation for vendor fulfillment
-- Order-to-vendor handoff via existing vendor fulfillment portal
-
----
-
-## Database Migration Required
-
-```sql
--- Add design_config to cart items
-ALTER TABLE shop_cart_items ADD COLUMN IF NOT EXISTS design_config jsonb DEFAULT '{}';
-
--- Create design assets storage bucket (via Supabase Storage)
-INSERT INTO storage.buckets (id, name, public) VALUES ('design-assets', 'design-assets', false);
-
--- RLS for design assets
-CREATE POLICY "Users can upload their own design assets"
-ON storage.objects FOR INSERT TO authenticated
-WITH CHECK (bucket_id = 'design-assets' AND (storage.foldername(name))[1] = auth.uid()::text);
-
-CREATE POLICY "Users can view their own design assets"
-ON storage.objects FOR SELECT TO authenticated
-USING (bucket_id = 'design-assets' AND (storage.foldername(name))[1] = auth.uid()::text);
-```
+### 3.4 Responsive Verification
+Ensure correct rendering at all PDF-specified breakpoints (320/375/414/768/1024/1280/1440/1920).
 
 ---
 
-## Implementation Priority
+## Sprint 4: DocuDex Phase 0 — Architecture Foundation (P0-001 to P0-005)
 
-| Priority | What | Impact |
-|----------|------|--------|
-| P0 | File upload system + cart integration | Unblocks all designers |
-| P0 | Wire all dead buttons (upload, export, add-to-cart) | 12 critical bugs fixed |
-| P1 | Install 3D libs + base ProductScene3D | Real 3D previews |
-| P1 | Business card & sticker 3D models | Most-used designers |
-| P2 | Remaining 6 designer 3D models | Full coverage |
-| P2 | Stripe checkout flow | Revenue capability |
-| P3 | GLB models, production exports | Polish |
+- **P0-001**: Install `zustand` + `immer`. Create `stores/editorStore.ts` with `documentSlice`, `uiSlice`, `historySlice`, `settingsSlice`. Migrate all 60+ useState hooks.
+- **P0-002**: Replace flat `PageData = {id, html}` with structured `ElementNode` schema (id, type, x, y, width, height, rotation, opacity, locked, layerIndex, styles, content).
+- **P0-003**: Decompose 1200-line DocuDexEditor.tsx into EditorShell, CanvasViewport, ElementRenderer, PropertyPanel, ToolbarController, PageNavigator, AIAssistant, ExportEngine.
+- **P0-004**: Implement Command pattern undo/redo stack. Ctrl+Z/Y. Max 100 entries with LRU.
+- **P0-005**: Convert all 40+ HTML string templates to element-schema JSON.
 
-## Technical Notes
-- Three.js versions: `three@>=0.133`, `@react-three/fiber@^8.18`, `@react-three/drei@^9.122.0` (React 18 constraint)
-- WebGL fallback preserves current CSS preview for devices without GPU
-- All design state persists to localStorage + Supabase on cart add
+---
+
+## Sprint 5: DocuDex Phase 1 — Canvas Engine (P1-001 to P1-010)
+
+- **P1-001**: Install Fabric.js. Hybrid canvas rendering + TipTap for text.
+- **P1-002**: Drag-and-drop from sidebar to canvas with ghost preview (`@dnd-kit/core`).
+- **P1-003**: Smart alignment guides during drag/resize.
+- **P1-004**: 8-point resize handles. Shift=lock ratio. Alt=center resize.
+- **P1-005**: Rotation handle with Shift snap to 15° increments.
+- **P1-006**: Marquee multi-select + Shift+Click. Ctrl+G group/ungroup.
+- **P1-007**: Visual layers panel with z-index reorder, visibility/lock toggles.
+- **P1-008**: Floating context toolbar per element type (`@floating-ui/react`).
+- **P1-009**: Scroll-to-zoom, pinch-to-zoom, Space+drag pan, minimap.
+- **P1-010**: Arrow nudge, Tab cycle, Delete, Escape, Ctrl+A/D/C/V.
+
+---
+
+## Sprint 6: DocuDex Phase 2 — Element Properties (P2-001 to P2-007)
+
+- **P2-001**: Advanced color picker (hex/RGB/HSL, eyedropper, brand palette, gradients)
+- **P2-002**: Text properties (Google Fonts 500+, line height, letter spacing, text shadow)
+- **P2-003**: Shape properties (fill gradients, per-corner radius, shadow, 30+ shapes)
+- **P2-004**: Image properties (crop, filters, flip, fit mode, border-radius)
+- **P2-005**: Signature element (draw/type/upload modes, SignNow integration)
+- **P2-006**: Table properties (merge/split, style presets, drag-resize columns)
+- **P2-007**: QR code (local generation, custom colors, center logo)
+
+---
+
+## Sprint 7: DocuDex Phase 3 — Template Library (P3-001 to P3-006)
+
+- **P3-001**: Full-screen Canva-style template gallery with thumbnails and search
+- **P3-002**: Automated thumbnail generation pipeline
+- **P3-003**: Smart fields `{{variable_name}}` with reactive binding
+- **P3-004**: Template persistence in Supabase (templates table with RLS)
+- **P3-005**: Expand to 20+ categories, 150+ templates
+- **P3-006**: Template marketplace (community + premium, revenue share)
+
+---
+
+## Sprint 8: DocuDex Phase 4 — Enterprise (P4-001 to P4-008)
+
+- **P4-001**: Real-time collaboration (Yjs + Supabase Realtime, live cursors)
+- **P4-002**: RBAC (Owner/Editor/Commenter/Viewer, per-element locks)
+- **P4-003**: Auto-save + version history in Supabase
+- **P4-004**: White-label branding (org logo/colors/fonts/custom domain)
+- **P4-005**: Audit trail with hash chain tamper detection
+- **P4-006**: PDF export engine (server-side, embedded fonts, PDF/A)
+- **P4-007**: Threaded comments with @mentions and resolve/unresolve
+- **P4-008**: Document approval workflows (Draft → Review → Approved → Signed)
+
+---
+
+## Sprint 9: DocuDex Phase 5 — Polish (P5-001 to P5-006)
+
+- **P5-001**: Canvas performance (virtual rendering, Web Workers, 60fps at 500+ elements)
+- **P5-002**: Micro-interactions (select, drag, drop, toolbar animations)
+- **P5-003**: Responsive editor (tablet drawer, mobile bottom bar, touch gestures)
+- **P5-004**: WCAG 2.1 AA (keyboard nav, ARIA, focus traps, contrast)
+- **P5-005**: Skeleton loaders, error boundaries, offline indicator
+- **P5-006**: Interactive onboarding tour (8 steps + contextual tooltips)
+
+---
+
+## Sprint 10: DocuDex Phase 6-7 & Cross-Cutting (P6/P7/CC)
+
+- **P6-001**: Deep SignNow e-signature integration
+- **P6-002**: Cloud storage (Google Drive, OneDrive, Dropbox)
+- **P6-003**: AI suite (auto-layout, clause detection, compliance checking)
+- **P6-004**: Mail merge engine (CSV, batch generation, email delivery)
+- **P6-005**: Import/export expansion (PDF import, DOCX/EPUB/SVG/PNG export)
+- **P7-001**: Feature gating (Free/Pro/Business/Enterprise tiers)
+- **P7-002**: Product analytics and behavior tracking
+- **P7-003**: Marketing landing pages and public template gallery
+- **P7-004**: REST API and embeddable editor widget
+- **CC-001**: Test suite (Vitest unit + Playwright E2E)
+- **CC-003**: Security hardening (CSP, rate limiting, magic byte validation)
+- **CC-004**: i18n framework (5 languages, RTL support)
+- **CC-005**: User and developer documentation
+
+---
+
+## Sprint 11: Service Catalog Verification (PDF Section 4)
+
+Verify all 57 services from the PDF have working routes, intake components, and admin modules. Fill any gaps against the `serviceRegistry`.
+
+---
+
+## Database Migrations Required
+
+- `document_versions` — Auto-save version history
+- `templates` — Supabase template persistence with RLS
+- `document_permissions` — RBAC roles per document
+- `audit_events` — Element-level audit trail with hash chain
+- `org_branding` — White-label settings per organization
+
+---
+
+## Key Dependencies
+
+- Sprints 1-3 (animations + design system) are **independent** of DocuDex work
+- Sprint 4 (P0 architecture) must complete before Sprints 5-10
+- Sprint 5 (canvas engine) depends on Sprint 4 completing
+- All sprints respect existing constraints: layered enhancement, semantic tokens, Ohio ORC compliance
+
+## New Libraries Required
+
+`zustand`, `immer`, `fabric`, `@dnd-kit/core`, `@floating-ui/react`, `signature_pad`, `qrcode.react`, `yjs`, `y-supabase`, `react-joyride`, `react-i18next`
 
