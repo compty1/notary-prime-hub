@@ -234,5 +234,3 @@ export default function AdminOperations() {
       </div>
   );
 }
-  );
-}
