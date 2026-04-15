@@ -60,7 +60,7 @@ export default function AdminTeam() {
   const fetchData = async () => {
     const [{ data: inviteData }, { data: roleData }] = await Promise.all([
       supabase.from("notary_invites").select("*").order("created_at", { ascending: false }),
-      supabase.from("user_roles").select("user_id, role").eq("role", "notary" as any),
+      supabase.from("user_roles").select("user_id, role").eq("role", "notary"),
     ]);
     if (inviteData) setInvites(inviteData);
     if (roleData && roleData.length > 0) {

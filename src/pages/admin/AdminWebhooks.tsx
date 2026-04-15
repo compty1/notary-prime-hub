@@ -72,7 +72,7 @@ function InboundTab() {
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-sm">{event.event_type}</span>
                       <Badge variant="outline" className="text-xs">{event.source}</Badge>
-                      <Badge variant={statusColor(event.status) as any} className="text-xs">{event.status}</Badge>
+                      <Badge variant={statusColor(event.status)} className="text-xs">{event.status}</Badge>
                     </div>
                     <p className="text-xs text-muted-foreground">
                       {new Date(event.created_at).toLocaleString()}

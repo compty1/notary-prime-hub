@@ -35,7 +35,7 @@ export default function AdminOperations() {
         .select("id, service_type, status, scheduled_date, scheduled_time, client_id, confirmation_number, notarization_type")
         .order("scheduled_date", { ascending: true })
         .limit(200);
-      if (statusFilter !== "all") q = q.eq("status", statusFilter as any);
+      if (statusFilter !== "all") q = q.eq("status", statusFilter);
       const { data, error } = await q;
       if (error) throw error;
       return data || [];

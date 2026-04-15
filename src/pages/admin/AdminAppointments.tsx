@@ -915,7 +915,7 @@ export default function AdminAppointments() {
                   signerName={getClientName(detailAppt.client_id)}
                   onComplete={async (passed) => {
                     setShowKBA(false);
-                    await supabase.from("notarization_sessions").update({ kba_completed: passed } as any).eq("appointment_id", detailAppt.id);
+                    await supabase.from("notarization_sessions").update({ kba_completed: passed }).eq("appointment_id", detailAppt.id);
                     if (passed) {
                       toast({ title: "KBA Passed", description: "Identity verified. Proceed with notarization." });
                     } else {

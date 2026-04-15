@@ -339,9 +339,9 @@ export default function AdminServices() {
       rows?.forEach(r => { map[r.service_id] = (map[r.service_id] || 0) + 1; });
       return map;
     };
-    setFaqCount(count(faqRes.data as any));
-    setReqCount(count(reqRes.data as any));
-    setWorkflowCount(count(wfRes.data as any));
+    setFaqCount(count(faqRes.data ?? []));
+    setReqCount(count(reqRes.data ?? []));
+    setWorkflowCount(count(wfRes.data ?? []));
   };
 
   useEffect(() => { fetchServices(); fetchRelatedCounts(); }, []);

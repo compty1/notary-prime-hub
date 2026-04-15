@@ -357,7 +357,7 @@ export default function AdminPricing() {
               <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Calculator className="h-5 w-5 text-primary" /> Price Simulator</CardTitle></CardHeader>
               <CardContent className="space-y-4">
                 <div><Label>Notarization Type</Label>
-                  <Select value={calcInput.notarizationType} onValueChange={v => setCalcInput(p => ({ ...p, notarizationType: v as any }))}>
+                  <Select value={calcInput.notarizationType} onValueChange={v => setCalcInput(p => ({ ...p, notarizationType: v }))}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent><SelectItem value="in_person">In Person</SelectItem><SelectItem value="ron">RON</SelectItem></SelectContent>
                   </Select>
