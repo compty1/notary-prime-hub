@@ -126,7 +126,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
     if (profilesRes.data) setProfiles(profilesRes.data);
     if (verificationsRes.data) {
       const mapped: Record<string, any> = {};
-      (verificationsRes.data as any[]).forEach((v: any) => { mapped[v.document_id] = v; });
+      (verificationsRes.data as ESealVerification[]).forEach((v) => { mapped[v.document_id] = v; });
       setVerificationByDoc(mapped);
     }
     setLoading(false);
@@ -160,7 +160,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
 
   const updateStatus = async (id: string, newStatus: string) => {
     setUpdatingId(id);
-    const { error } = await supabase.from("documents").update({ status: newStatus as any }).eq("id", id);
+    const { error } = await supabase.from("documents").update({ status: newStatus as "uploaded" | "pending_review" | "approved" | "notarized" | "rejected" }).eq("id", id);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
@@ -187,7 +187,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
         file_name: uploadFile.name,
         file_path: path,
         uploaded_by: clientId,
-        status: "uploaded" as any,
+        status: "uploaded",
       });
       if (insertError) throw insertError;
 
@@ -219,12 +219,12 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
           signerName = profile?.full_name || null;
         }
       }
-      const response = await supabase.from("e_seal_verifications" as any).insert({
+      const response = await supabase.from("e_seal_verifications").insert({
         document_id: doc.id, appointment_id: doc.appointment_id || null, document_name: doc.file_name,
         signer_name: signerName, notarized_at: new Date().toISOString(), created_by: user.id, status: "valid",
       }).select("*").single();
-      const data = response.data as any;
-      const error = response.error as any;
+      const data = response.data;
+      const error = response.error;
       if (error) {
         if (error.message?.includes("duplicate") || error.message?.includes("unique")) {
           toast({ title: "Verification already exists" });
@@ -242,7 +242,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
 
   const revokeVerification = async (docId: string, verificationId: string) => {
     setSealingId(docId);
-    const { error } = await supabase.from("e_seal_verifications" as any).update({ status: "revoked", revoked_at: new Date().toISOString() }).eq("id", verificationId);
+    const { error } = await supabase.from("e_seal_verifications").update({ status: "revoked", revoked_at: new Date().toISOString() }).eq("id", verificationId);
     if (error) toast({ title: "Revoke failed", description: error.message, variant: "destructive" });
     else {
       setVerificationByDoc((prev) => ({ ...prev, [docId]: { ...prev[docId], status: "revoked" } }));
@@ -336,7 +336,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
     if (selectedDocs.size === 0) return;
     setBulkUpdating(true);
     const ids = Array.from(selectedDocs);
-    const { error } = await supabase.from("documents").update({ status: newStatus as any }).in("id", ids);
+    const { error } = await supabase.from("documents").update({ status: newStatus as "uploaded" | "pending_review" | "approved" | "notarized" | "rejected" }).in("id", ids);
     if (error) toast({ title: "Bulk update failed", description: error.message, variant: "destructive" });
     else {
       toast({ title: `${ids.length} document(s) updated to ${newStatus.replace(/_/g, " ")}` });
@@ -383,7 +383,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
             {docStatuses.map(s => <SelectItem key={s} value={s}>{s.replace(/_/g, " ")}</SelectItem>)}
           </SelectContent>
         </Select>
-        <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+        <Select value={sortBy} onValueChange={(v) => setSortBy(v as "date" | "name" | "status")}>
           <SelectTrigger className="w-36"><ArrowUpDown className="mr-1 h-3 w-3" /><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="date">Sort by Date</SelectItem>
