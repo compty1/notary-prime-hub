@@ -236,7 +236,7 @@ export default function RonSession() {
           setRecordingConsent(true);
           setRecordingConsentAt((s.recording_consent_at as string) || null);
         }
-        if (s.session_mode) setSessionMode(s.session_mode as string);
+        if (s.session_mode) setSessionMode(s.session_mode as "api" | "manual");
         if (s.signing_platform) setSigningPlatform(s.signing_platform as string);
         if (s.document_name) setDocumentName(s.document_name as string);
         if (s.signer_email) setSignerEmail(s.signer_email as string);
@@ -244,7 +244,7 @@ export default function RonSession() {
         if (s.session_timeout_minutes) setSessionTimeoutMinutes(s.session_timeout_minutes as number);
         if (s.started_at) setSessionStartedAt(s.started_at as string);
         if (s.webhook_status) setWebhookStatus(s.webhook_status as string);
-        if (s.webhook_events_registered) setWebhookEventsRegistered(s.webhook_events_registered as boolean);
+        if (s.webhook_events_registered) setWebhookEventsRegistered(s.webhook_events_registered as number);
         if (s.signnow_document_id) setSignnowDocumentId(s.signnow_document_id as string);
       } else {
         // Capture signer IP on first session load (Ohio RON compliance)
