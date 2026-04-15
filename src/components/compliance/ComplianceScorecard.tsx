@@ -24,9 +24,10 @@ export function ComplianceScorecard({ className }: { className?: string }) {
     queryKey: ["compliance-scorecard", user?.id],
     enabled: !!user,
     queryFn: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- platform_credentials not in generated types
       const { data: creds } = await (supabase
-        .from("platform_credentials" as never)
-        .select("*") as ReturnType<typeof supabase.from>)
+        .from("platform_credentials" as any) as any)
+        .select("*")
         .eq("user_id", user!.id);
 
       const items: CredentialItem[] = [];

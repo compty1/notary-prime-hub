@@ -18,13 +18,13 @@ export function CredentialUploadManager() {
   const [credType, setCredType] = useState("notary_commission");
   const [expiresAt, setExpiresAt] = useState("");
 
-  // platform_credentials table accessed via dynamic name (not in generated types)
-  const credTable = () => (supabase as unknown as { from: (t: string) => Record<string, (...args: unknown[]) => unknown> }).from("platform_credentials");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- platform_credentials not in generated types
+  const credTable = () => supabase.from("platform_credentials" as any) as any;
 
   const fetchCredentials = async () => {
     if (!user) return;
-    const { data } = await (credTable().select("*") as unknown as { eq: (col: string, val: string) => { order: (col: string, opts: { ascending: boolean }) => Promise<{ data: Record<string, unknown>[] | null }> } }).eq("user_id", user.id).order("created_at", { ascending: false });
-    setCredentials(data || []);
+    const { data } = await credTable().select("*").eq("user_id", user.id).order("created_at", { ascending: false });
+    setCredentials((data as Record<string, unknown>[]) || []);
     setLoading(false);
   };
 
@@ -38,13 +38,13 @@ export function CredentialUploadManager() {
     const { error: uploadErr } = await supabase.storage.from("documents").upload(path, file);
     if (uploadErr) { toast.error("Upload failed"); setUploading(false); return; }
 
-    const { error } = await (supabase.from("platform_credentials" as never) as ReturnType<typeof supabase.from>).insert({
+    const { error } = await credTable().insert({
       user_id: user.id,
       credential_type: credType,
       file_path: path,
       expires_at: expiresAt || null,
       status: "pending_review",
-    } as never);
+    });
     if (error) { toast.error(error.message); } else {
       toast.success("Credential uploaded for review");
       await fetchCredentials();
