@@ -29,8 +29,8 @@ const statusColors: Record<string, string> = {
 export default function AdminLoanSigning() {
   usePageMeta({ title: "Loan Signing Packages", noIndex: true });
   const { toast } = useToast();
-  interface LoanPackage { id: string; title_company: string | null; lender_name: string | null; package_type: string; document_count: number; fee: number | null; status: string; created_at: string; notes: string | null; client_id: string; signing_date: string | null; signing_location: string | null; }
-  interface ScanbackItem { id: string; package_id: string | null; status: string; tracking_number: string | null; shipped_at: string | null; received_at: string | null; created_at: string; }
+  interface LoanPackage { id: string; title_company: string | null; lender_name: string | null; package_type: string; document_count: number; fee: number | null; status: string; created_at: string; notes: string | null; client_id: string; appointment_id: string | null; scanback_required: boolean; scanback_deadline: string | null; updated_at: string; }
+  interface ScanbackItem { id: string; package_id: string | null; scan_status: string; tracking_number: string | null; shipped_at: string | null; document_name: string | null; page_count: number | null; shipping_carrier: string | null; delivery_confirmed_at: string | null; created_at: string; scanned_at: string | null; notes: string | null; updated_at: string; }
   const [packages, setPackages] = useState<LoanPackage[]>([]);
   const [scanbacks, setScanbacks] = useState<ScanbackItem[]>([]);
   const [loading, setLoading] = useState(true);

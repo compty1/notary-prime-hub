@@ -122,7 +122,7 @@ export default function AdminSettings() {
       return supabase.from("platform_settings").insert({ setting_key: key, setting_value: value, updated_by: user?.id });
     }).filter(Boolean);
 
-    const results = await Promise.all(updates as Promise<{ error: unknown }>[]);
+    const results = await Promise.all(updates as unknown as Promise<{ error: unknown }>[]);
     const hasError = results.some((r) => r?.error);
     if (hasError) toast({ title: "Error saving some settings", variant: "destructive" });
     else {

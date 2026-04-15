@@ -21,7 +21,7 @@ export default function AdminSkipTracing() {
   usePageMeta({ title: "Skip Tracing", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
-  interface SkipTraceRequest { id: string; subject_name: string | null; subject_last_known_address: string | null; purpose: string | null; fee: number | null; status: string; created_at: string; client_id: string; notes: string | null; found_address: string | null; found_phone: string | null; found_email: string | null; }
+  interface SkipTraceRequest { id: string; subject_name: string | null; subject_last_known_address: string | null; purpose: string | null; fee: number | null; status: string; created_at: string; client_id: string; notes: string | null; result_address: string | null; result_phone: string | null; result_email: string | null; result_notes: string | null; data_sources_used: string[] | null; subject_dob: string | null; updated_at: string; }
   const [requests, setRequests] = useState<SkipTraceRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");

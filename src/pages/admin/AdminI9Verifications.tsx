@@ -27,7 +27,7 @@ export default function AdminI9Verifications() {
   usePageMeta({ title: "I-9 Verifications", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
-  interface I9Verification { id: string; employee_name: string | null; employer_name: string | null; employer_address: string | null; section_completed: string; notary_notes: string | null; status: string; created_at: string; client_id: string; }
+  interface I9Verification { id: string; employee_name: string | null; employer_name: string | null; employer_address: string | null; section_completed: string; notary_notes: string | null; status: string; created_at: string; client_id: string; verification_date: string | null; }
   const [verifications, setVerifications] = useState<I9Verification[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");

@@ -37,7 +37,7 @@ export default function AdminPricing() {
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [rules, setRules] = useState<PricingRule[]>([]);
-  interface ServiceItem { id: string; name: string; base_price: number | null; is_active: boolean; category: string | null; }
+  interface ServiceItem { id: string; name: string; base_price: number | null; is_active: boolean; category: string | null; price_from: number | null; price_to: number | null; }
   const [services, setServices] = useState<ServiceItem[]>([]);
 
   // Speed multipliers
