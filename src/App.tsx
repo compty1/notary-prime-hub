@@ -461,6 +461,7 @@ function AnimatedRoutes() {
       <Route path="/design/signage" element={<ProtectedRoute><SR><SignageDesigner /></SR></ProtectedRoute>} />
       <Route path="/design/promo" element={<ProtectedRoute><SR><PromoDesigner /></SR></ProtectedRoute>} />
       <Route path="/vendor-portal" element={<ProtectedRoute><SR msg="Vendor portal failed to load"><VendorPortal /></SR></ProtectedRoute>} />
+      <Route path="/animations" element={<SR><AnimationGallery /></SR>} />
       <Route path="/academy" element={<SR msg="Academy failed to load"><AcademyLanding /></SR>} />
       <Route path="/academy/course/:slug" element={<SR msg="Course failed to load"><AcademyCourseDetail /></SR>} />
       <Route path="/academy/lesson/:id" element={<ProtectedRoute><SR msg="Lesson failed to load"><AcademyLessonViewer /></SR></ProtectedRoute>} />

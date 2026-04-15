@@ -28,9 +28,9 @@ export const BRAND_CONFIG = {
 
   // Typography
   fonts: {
-    heading: "var(--font-heading, 'Inter', sans-serif)",
-    body: "var(--font-body, 'Inter', sans-serif)",
-    mono: "var(--font-mono, 'JetBrains Mono', monospace)",
+    heading: "var(--font-heading, 'Montserrat', sans-serif)",
+    body: "var(--font-body, 'Montserrat', sans-serif)",
+    mono: "var(--font-mono, 'DM Mono', monospace)",
   },
 
   // Social / SEO
