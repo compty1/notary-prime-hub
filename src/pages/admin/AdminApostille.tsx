@@ -38,14 +38,22 @@ const CHECKLIST_ITEMS = [
   { key: "shipping_label", label: "Return shipping label" },
 ];
 
+interface ApostilleRequest {
+  id: string; client_id: string; document_description: string; document_count: number;
+  destination_country: string | null; fee: number | null; status: string;
+  tracking_number: string | null; shipping_label_url: string | null; notes: string | null;
+  created_at: string; updated_at: string;
+}
+interface ProfileInfo { user_id: string; full_name: string | null; email: string | null; address: string | null; city: string | null; state: string | null; zip: string | null; phone: string | null; }
+
 export default function AdminApostille() {
   usePageMeta({ title: "Apostille Requests", noIndex: true });
   const { toast } = useToast();
-  const [requests, setRequests] = useState<any[]>([]);
-  const [profiles, setProfiles] = useState<any[]>([]);
+  const [requests, setRequests] = useState<ApostilleRequest[]>([]);
+  const [profiles, setProfiles] = useState<ProfileInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
-  const [detailReq, setDetailReq] = useState<any>(null);
+  const [detailReq, setDetailReq] = useState<ApostilleRequest | null>(null);
   const [newDesc, setNewDesc] = useState("");
   const [newNotes, setNewNotes] = useState("");
   const [newFee, setNewFee] = useState("75");

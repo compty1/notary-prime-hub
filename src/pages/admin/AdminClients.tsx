@@ -20,15 +20,26 @@ import { formatDate } from "@/lib/utils";
 
 const PAGE_SIZE = 30;
 
+interface ClientProfile {
+  user_id: string; full_name: string | null; email: string | null; phone: string | null;
+  address: string | null; city: string | null; state: string | null; zip: string | null;
+  avatar_path: string | null; admin_notes: string | null; created_at: string;
+  plan?: string | null; role?: string | null;
+}
+interface ClientAppointment {
+  id: string; client_id: string; scheduled_date: string; scheduled_time: string;
+  service_type: string; status: string; notarization_type: string;
+}
+
 export default function AdminClients() {
   usePageMeta({ title: "Clients", noIndex: true });
   const { toast } = useToast();
   const { user } = useAuth();
-  const [profiles, setProfiles] = useState<any[]>([]);
-  const [appointments, setAppointments] = useState<any[]>([]);
+  const [profiles, setProfiles] = useState<ClientProfile[]>([]);
+  const [appointments, setAppointments] = useState<ClientAppointment[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-  const [selectedClient, setSelectedClient] = useState<any>(null);
+  const [selectedClient, setSelectedClient] = useState<ClientProfile | null>(null);
   const [adminNotes, setAdminNotes] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
   const [page, setPage] = useState(0);
@@ -43,7 +54,7 @@ export default function AdminClients() {
   const [createForm, setCreateForm] = useState({ full_name: "", email: "", phone: "", address: "", city: "", state: "OH", zip: "" });
   const [creating, setCreating] = useState(false);
   // Message state
-  const [messageClient, setMessageClient] = useState<any>(null);
+  const [messageClient, setMessageClient] = useState<ClientProfile | null>(null);
   const [messageSubject, setMessageSubject] = useState("");
   const [messageBody, setMessageBody] = useState("");
   const [sendingMessage, setSendingMessage] = useState(false);
