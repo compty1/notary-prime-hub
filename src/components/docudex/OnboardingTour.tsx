@@ -93,16 +93,8 @@ export function OnboardingTour({ run: forcedRun, onComplete }: OnboardingTourPro
       steps={TOUR_STEPS}
       run={run}
       continuous
-      showSkipButton
-      showProgress
       scrollToFirstStep
       callback={handleCallback}
-      styles={{
-        tooltip: {
-          borderRadius: "12px",
-          padding: "16px",
-        },
-      } as any}
       locale={{
         back: "Back",
         close: "Got it",
