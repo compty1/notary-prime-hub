@@ -33,7 +33,7 @@ export function IdentityVerified({ trigger = false, onComplete, className }: Ide
             stroke="hsl(var(--primary))"
             strokeWidth="3"
             className="transition-all duration-700"
-            style={{ fill: phase !== "idle" ? "hsl(var(--primary) / 0.1)" : "none" }}
+            style={{ fill: "hsl(var(--primary) / 0.1)" }}
           />
           <path
             d="M28 48 L38 58 L56 36"
