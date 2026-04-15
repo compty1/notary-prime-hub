@@ -124,7 +124,7 @@ Deno.serve(async (req) => {
       JSON.stringify({ clientSecret: paymentIntent.client_secret, paymentIntentId: paymentIntent.id }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("create-payment-intent error:", err.message, err.stack);
     return new Response(
       JSON.stringify({ error: "Payment processing failed. Please try again." }),

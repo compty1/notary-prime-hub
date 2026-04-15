@@ -459,8 +459,8 @@ Deno.serve(async (req) => {
           return new Response(JSON.stringify({ valid: true, expires_in: data.expires_in, scope: data.scope, token_type: data.token_type }), {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
-        } catch (e: any) {
-          return new Response(JSON.stringify({ valid: false, error: e.message }), {
+        } catch (e: unknown) {
+          return new Response(JSON.stringify({ valid: false, error: e instanceof Error ? e.message : "Unknown error" }), {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
@@ -579,9 +579,9 @@ Deno.serve(async (req) => {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("SignNow function error:", err);
-    return new Response(JSON.stringify({ error: err.message }), {
+    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

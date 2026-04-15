@@ -34,10 +34,10 @@ export default function AdminPromoCodeManager() {
     const payload = { code: form.code.toUpperCase().trim(), discount_percent: form.discount_percent, max_uses: form.max_uses, is_active: form.is_active };
 
     if (editing) {
-      await supabase.from("promo_codes").update(payload as any).eq("id", editing.id);
+      await supabase.from("promo_codes").update(payload ).eq("id", editing.id);
       toast({ title: "Promo code updated" });
     } else {
-      await supabase.from("promo_codes").insert(payload as any);
+      await supabase.from("promo_codes").insert(payload);
       toast({ title: "Promo code created" });
     }
     setDialogOpen(false);

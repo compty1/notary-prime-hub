@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
     }
     try {
       event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Webhook signature verification failed:", err.message);
       return new Response(JSON.stringify({ error: `Webhook signature verification failed: ${err.message}` }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -209,19 +209,19 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ received: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     // REM-025: Log failed webhook to DLQ for retry
     try {
       const supabaseForDlq = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
       await supabaseForDlq.from("webhook_events").insert({
         source: "stripe",
         event_type: "processing_error",
-        payload: { error: err.message },
+        payload: { error: err instanceof Error ? err.message : "Unknown error" },
         status: "failed",
       }).then(({ error: dlqErr }) => { if (dlqErr) console.warn("DLQ log error:", dlqErr.message); });
     } catch (_) { /* best-effort DLQ logging */ }
     return new Response(
-      JSON.stringify({ error: err.message }),
+      JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }),
       { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

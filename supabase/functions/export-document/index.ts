@@ -26,12 +26,19 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { content, format, filename } = await req.json();
-    if (!content || !format) {
-      return new Response(JSON.stringify({ error: "Missing content or format" }), {
+    const { z } = await import("https://esm.sh/zod@3.23.8");
+    const BodySchema = z.object({
+      content: z.string().min(1).max(500000),
+      format: z.enum(["html", "markdown", "text"]),
+      filename: z.string().max(200).optional(),
+    });
+    const parsed = BodySchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: "Invalid input", details: parsed.error.flatten().fieldErrors }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    const { content, format, filename } = parsed.data;
 
     if (format === "html") {
       // Return styled HTML that can be printed to PDF client-side
@@ -61,8 +68,8 @@ ul, ol { padding-left: 24px; }
     return new Response(JSON.stringify({ content, filename: filename || "document" }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), {
+  } catch (err: unknown) {
+    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

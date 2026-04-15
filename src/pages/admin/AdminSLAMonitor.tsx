@@ -36,14 +36,14 @@ export default function AdminSLAMonitor() {
     queryFn: async () => {
       const { data } = await supabase.from("orders").select("id, status, created_at, updated_at")
         .order("created_at", { ascending: false }).limit(200);
-      return (data || []) as any[];
+      return (data || []) as { id: string; status: string; created_at: string; scheduled_date?: string; updated_at?: string }[];
     },
   });
 
   // Calculate SLA metrics per service type
   const slaMetrics = Object.entries(SLA_TARGETS).map(([service, target]) => {
     const serviceAppts = appointments.filter((a: any) => a.service_type === service);
-    const allItems = [...serviceAppts] as any[];
+    const allItems = [...serviceAppts] as { id: string; status: string; created_at: string; scheduled_date?: string; updated_at?: string }[];
     
 
     if (allItems.length === 0) return { service, ...target, total: 0, met: 0, breached: 0, pending: 0, compliance: 100 };

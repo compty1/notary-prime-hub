@@ -37,14 +37,14 @@ export default function AdminVitalRecords() {
   const handleCreate = async () => {
     if (!form.person_name.trim()) { toast({ title: "Person name required", variant: "destructive" }); return; }
     setSaving(true);
-    const { error } = await supabase.from("vital_records_requests").insert({ person_name: form.person_name, record_type: form.record_type, county: form.county, state: form.state, agency: form.agency, copies_requested: parseInt(form.copies_requested) || 1, agency_fee: parseFloat(form.agency_fee) || 0, service_fee: parseFloat(form.service_fee) || 0, client_id: user?.id || "" } as any);
+    const { error } = await supabase.from("vital_records_requests").insert({ person_name: form.person_name, record_type: form.record_type, county: form.county, state: form.state, agency: form.agency, copies_requested: parseInt(form.copies_requested) || 1, agency_fee: parseFloat(form.agency_fee) || 0, service_fee: parseFloat(form.service_fee) || 0, client_id: user?.id || "" });
     setSaving(false);
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
     toast({ title: "Request created" }); setCreateOpen(false); fetchData();
   };
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from("vital_records_requests").update({ status } as any).eq("id", id);
+    await supabase.from("vital_records_requests").update({ status } ).eq("id", id);
     setRequests(prev => prev.map(r => r.id === id ? { ...r, status } : r)); toast({ title: "Updated" });
   };
 

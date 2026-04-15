@@ -262,7 +262,7 @@ export default function AdminRevenue() {
     const { error } = await supabase.from("payments").update({
       status: "paid",
       paid_at: new Date().toISOString(),
-    } as any).eq("id", paymentId);
+    } ).eq("id", paymentId);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {

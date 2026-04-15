@@ -66,12 +66,12 @@ export default function AdminServiceRequests() {
     const channel = supabase.channel("admin-service-requests")
       .on("postgres_changes", { event: "*", schema: "public", table: "service_requests" }, (payload) => {
         if (payload.eventType === "INSERT") {
-          setRequests(prev => [payload.new as any, ...prev]);
-          toast({ title: "New service request", description: (payload.new as any).service_name });
+          setRequests(prev => [payload.new as Record<string, unknown>, ...prev]);
+          toast({ title: "New service request", description: String((payload.new as Record<string, unknown>).service_name || "") });
         } else if (payload.eventType === "UPDATE") {
-          setRequests(prev => prev.map(r => r.id === (payload.new as any).id ? payload.new as any : r));
+          setRequests(prev => prev.map(r => r.id === (payload.new as Record<string, unknown>).id ? payload.new as Record<string, unknown> : r));
         } else if (payload.eventType === "DELETE") {
-          setRequests(prev => prev.filter(r => r.id !== (payload.old as any).id));
+          setRequests(prev => prev.filter(r => r.id !== (payload.old as Record<string, unknown>).id));
         }
       }).subscribe();
     return () => { supabase.removeChannel(channel); };

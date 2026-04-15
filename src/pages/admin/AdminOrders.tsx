@@ -60,7 +60,7 @@ export default function AdminOrders() {
       supabase.from("orders").select("*").order("created_at", { ascending: false }),
       supabase.from("profiles").select("user_id, full_name, email").limit(2000),
     ]);
-    if (ordersRes.data) setOrders(ordersRes.data as any);
+    if (ordersRes.data) setOrders(ordersRes.data ?? []);
     if (profilesRes.data) {
       const map: Record<string, string> = {};
       profilesRes.data.forEach((p: any) => { map[p.user_id] = p.full_name || p.email || p.user_id.slice(0, 8); });
@@ -82,7 +82,7 @@ export default function AdminOrders() {
   });
 
   const handleStatusChange = async (orderId: string, newStatus: string) => {
-    await supabase.from("orders").update({ status: newStatus as any }).eq("id", orderId);
+    await supabase.from("orders").update({ status: newStatus as "pending" | "in_progress" | "completed" | "cancelled" }).eq("id", orderId);
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
     if (selectedOrder?.id === orderId) setSelectedOrder(prev => prev ? { ...prev, status: newStatus } : null);
     toast({ title: `Order updated to ${newStatus.replace(/_/g, " ")}` });
@@ -96,9 +96,9 @@ export default function AdminOrders() {
       priority: newOrder.priority,
       service_category: newOrder.service_category || null,
       notes: newOrder.notes || null,
-    } as any).select().single();
+    }).select().single();
     if (error) { toast({ title: "Error creating order", description: error.message, variant: "destructive" }); }
-    else { setOrders(prev => [data as any, ...prev]); setShowCreate(false); toast({ title: "Order created" }); }
+    else { setOrders(prev => [data, ...prev]); setShowCreate(false); toast({ title: "Order created" }); }
     setCreating(false);
   };
 

@@ -42,7 +42,7 @@ export default function AdminEmbeddableWidgets() {
 ></script>`;
 
   const verificationSnippet = `<a href="${BASE_URL}/verify/{YOUR_SEAL_ID}" target="_blank">
-  <img src="${BASE_URL}/widgets/verification-badge.svg"
+  <img src="${BASE_URL}/widgets/verification-badge.svg" alt="Verification badge"
     alt="Verified by NotaryPrime"
     width="120" height="40" />
 </a>`;

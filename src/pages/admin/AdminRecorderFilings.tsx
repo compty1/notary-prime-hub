@@ -65,7 +65,7 @@ export default function AdminRecorderFilings() {
                   <TableCell className="capitalize">{f.recording_type}</TableCell>
                   <TableCell>{f.recording_number || "—"}</TableCell>
                   <TableCell>{f.fee ? `$${Number(f.fee).toFixed(2)}` : "—"}</TableCell>
-                  <TableCell><Badge variant={statusColors[f.status] as any || "secondary"}>{f.status}</Badge></TableCell>
+                  <TableCell><Badge variant={statusColors[f.status] as "default" | "destructive" | "outline" | "secondary" || "secondary"}>{f.status}</Badge></TableCell>
                   <TableCell>{format(new Date(f.created_at), "MMM d, yyyy")}</TableCell>
                 </TableRow>
               ))}

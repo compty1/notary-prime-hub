@@ -101,7 +101,7 @@ export default function AdminUsers() {
       const { error } = await supabase.from("user_roles").delete().eq("user_id", targetUserId).eq("role", role);
       opError = error;
     } else {
-      const { error } = await supabase.from("user_roles").insert({ user_id: targetUserId, role } as any);
+      const { error } = await supabase.from("user_roles").insert({ user_id: targetUserId, role });
       opError = error;
     }
 

@@ -83,8 +83,8 @@ Deno.serve(async (req) => {
 
         const status = findings.length === 0 ? "pass" : "review";
         results.push({ document_id: docId, file_name: doc.file_name, status, findings });
-      } catch (e: any) {
-        results.push({ document_id: docId, file_name: "Unknown", status: "error", findings: [e.message] });
+      } catch (e: unknown) {
+        results.push({ document_id: docId, file_name: "Unknown", status: "error", findings: [e instanceof Error ? e.message : "Unknown error"] });
       }
     }
 
@@ -98,8 +98,8 @@ Deno.serve(async (req) => {
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), {
+  } catch (err: unknown) {
+    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

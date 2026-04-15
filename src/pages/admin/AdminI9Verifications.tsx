@@ -69,7 +69,7 @@ export default function AdminI9Verifications() {
   };
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from("i9_verifications").update({ status } as any).eq("id", id);
+    await supabase.from("i9_verifications").update({ status } ).eq("id", id);
     setVerifications(prev => prev.map(v => v.id === id ? { ...v, status } : v));
     toast({ title: "Status updated" });
   };
