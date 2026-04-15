@@ -41,7 +41,7 @@ export function SignNowStatusPanel({ appointmentId, compact = false }: SignNowSt
         .select("*")
         .eq("appointment_id", appointmentId)
         .order("created_at", { ascending: false });
-      setDocs((data as Record<string, unknown>[]) || []);
+      setDocs((data as any) || []);
       setLoading(false);
     };
     fetch();

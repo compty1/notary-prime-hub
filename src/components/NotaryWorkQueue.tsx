@@ -26,7 +26,7 @@ export function NotaryWorkQueue() {
         .from("appointments")
         .select("id, service_type, status, scheduled_date, scheduled_time, confirmation_number, notes, admin_notes, notarization_type, signer_count")
         .eq("notary_id", user.id)
-        .in("status", ["scheduled", "in_progress", "confirmed"])
+        .in("status", ["scheduled", "in_progress" as any, "confirmed"])
         .order("scheduled_date", { ascending: true })
         .limit(50);
       if (error) throw error;

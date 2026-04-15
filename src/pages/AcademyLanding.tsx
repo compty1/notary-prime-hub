@@ -44,9 +44,9 @@ function CourseCard({ course, userId }: { course: any; userId?: string }) {
     },
   });
 
-  const tier = ((course as Record<string, unknown>).tier) || 1;
-  const totalHours = ((course as Record<string, unknown>).total_hours) || Math.round(course.duration_minutes / 60);
-  const hasPrereqs = (((course as Record<string, unknown>).prerequisite_course_ids) || []).length > 0;
+  const tier = ((course as any).tier) || 1;
+  const totalHours = ((course as any).total_hours) || Math.round(course.duration_minutes / 60);
+  const hasPrereqs = (((course as any).prerequisite_course_ids) || []).length > 0;
   const isEnrolled = !!enrollment;
 
   return (

@@ -50,7 +50,7 @@ export default function AcademyQuiz() {
     },
   });
 
-  const questions: Question[] = (quiz?.questions as Question[]) || [];
+  const questions: Question[] = (quiz?.questions as unknown as Question[]) || [];
   const isFinal = quiz?.quiz_type === "final";
   const maxAttempts = isFinal ? 3 : Infinity;
   const canAttempt = pastAttempts.length < maxAttempts && !pastAttempts.some((a: any) => a.passed);
@@ -108,7 +108,7 @@ export default function AcademyQuiz() {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
-        <Link to={course ? `/academy/course/${course.slug || course.id}` : "/academy"} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+        <Link to={course ? `/academy/course/${(course as any)?.slug || (course as any)?.id}` : "/academy"} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" /> Back to Course
         </Link>
 
@@ -192,7 +192,7 @@ export default function AcademyQuiz() {
             ))}
 
             <div className="flex gap-3">
-              <Link to={course ? `/academy/course/${course.slug || course.id}` : "/academy"} className="flex-1">
+              <Link to={course ? `/academy/course/${(course as any)?.slug || (course as any)?.id}` : "/academy"} className="flex-1">
                 <Button variant="outline" className="w-full">Back to Course</Button>
               </Link>
               {result.passed && isFinal && (
