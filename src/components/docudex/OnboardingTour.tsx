@@ -1,8 +1,9 @@
 /**
  * P5-006: Interactive onboarding tour (8 steps + contextual tooltips)
+ * Uses react-joyride's useJoyride hook for the newer API
  */
 import { useState, useEffect } from "react";
-import { Joyride, STATUS } from "react-joyride";
+import { Joyride } from "react-joyride";
 import type { Step } from "react-joyride";
 import { safeGetItem, safeSetItem } from "@/lib/safeStorage";
 
@@ -65,24 +66,23 @@ interface OnboardingTourProps {
 }
 
 export function OnboardingTour({ run: forcedRun, onComplete }: OnboardingTourProps) {
-  const [run, setRun] = useState(false);
+  const [shouldRun, setShouldRun] = useState(false);
 
   useEffect(() => {
     if (forcedRun !== undefined) {
-      setRun(forcedRun);
+      setShouldRun(forcedRun);
       return;
     }
     const completed = safeGetItem(TOUR_STORAGE_KEY);
     if (!completed) {
-      const timer = setTimeout(() => setRun(true), 1500);
+      const timer = setTimeout(() => setShouldRun(true), 1500);
       return () => clearTimeout(timer);
     }
   }, [forcedRun]);
 
-  const handleCallback = (data: any) => {
-    const { status } = data;
-    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
-      setRun(false);
+  const handleEvent = (data: any) => {
+    if (data.action === "complete" || data.action === "skip") {
+      setShouldRun(false);
       safeSetItem(TOUR_STORAGE_KEY, "true");
       onComplete?.();
     }
@@ -91,10 +91,10 @@ export function OnboardingTour({ run: forcedRun, onComplete }: OnboardingTourPro
   return (
     <Joyride
       steps={TOUR_STEPS}
-      run={run}
+      run={shouldRun}
       continuous
       scrollToFirstStep
-      callback={handleCallback}
+      onEvent={handleEvent}
       locale={{
         back: "Back",
         close: "Got it",
