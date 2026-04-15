@@ -13,7 +13,8 @@ const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Frida
 
 interface TimeSlot {
   id: string; day_of_week: number; start_time: string; end_time: string;
-  is_active: boolean; max_appointments: number | null;
+  is_available: boolean; specific_date: string | null; created_at: string;
+  [key: string]: unknown;
 }
 
 export default function AdminAvailability() {
