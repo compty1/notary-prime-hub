@@ -151,9 +151,9 @@ export default function BookAppointment() {
         };
         const { data: existing } = await supabase.from("booking_drafts").select("id").eq("user_id", user.id).limit(1).maybeSingle();
         if (existing) {
-          await supabase.from("booking_drafts").update({ draft_data: draftData as Record<string, unknown>, step, updated_at: new Date().toISOString() }).eq("id", existing.id);
+          await supabase.from("booking_drafts").update({ draft_data: JSON.parse(JSON.stringify(draftData)), step, updated_at: new Date().toISOString() }).eq("id", existing.id);
         } else {
-          await supabase.from("booking_drafts").insert({ user_id: user.id, draft_data: draftData as Record<string, unknown>, step });
+          await supabase.from("booking_drafts").insert({ user_id: user.id, draft_data: JSON.parse(JSON.stringify(draftData)), step });
         }
       } catch (e) { console.error("Draft save error:", e); }
     };
@@ -727,13 +727,12 @@ export default function BookAppointment() {
   const handleJoinWaitlist = async () => {
     if (!user || !date || !serviceType) return;
     setJoiningWaitlist(true);
-    const { error } = await supabase.from("waitlist").insert({
-      client_id: user.id,
-      service_id: null,
+    const waitlistEntry: Record<string, string | null> = {
+      user_id: user.id,
       preferred_date: date,
-      preferred_time: time || null,
       status: "waiting",
-    } as Record<string, unknown>);
+    };
+    const { error } = await supabase.from("waitlist").insert(waitlistEntry as never);
     if (error) { toast({ title: "Could not join waitlist", description: error.message, variant: "destructive" }); }
     else { setWaitlistJoined(true); toast({ title: "You're on the waitlist!", description: "We'll notify you when a slot opens." }); }
     setJoiningWaitlist(false);
