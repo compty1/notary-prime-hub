@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,21 +14,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
-import { format } from "date-fns";
+import { format, differenceInDays, addDays } from "date-fns";
+import { Link } from "react-router-dom";
 import {
   Plus, Search, Phone, Mail, Calendar, FileText, DollarSign,
   ArrowRight, User, Building2, Target, TrendingUp, Clock,
-  MessageSquare, BarChart3, Users, Briefcase
+  MessageSquare, BarChart3, Users, Briefcase, AlertTriangle,
+  Download, ArrowUpDown, ExternalLink, RefreshCw
 } from "lucide-react";
 
+// CRM-004: Unified pipeline stages (matching Lead Portal's 7 stages)
 const PIPELINE_STAGES = [
   { key: "new", label: "New", color: "bg-muted" },
-  { key: "contacted", label: "Contacted", color: "bg-info" },
-  { key: "discovery", label: "Discovery", color: "bg-primary/60" },
-  { key: "proposal", label: "Proposal", color: "bg-warning" },
-  { key: "negotiation", label: "Negotiation", color: "bg-accent" },
-  { key: "closed-won", label: "Closed Won", color: "bg-success" },
-  { key: "closed-lost", label: "Closed Lost", color: "bg-destructive" },
+  { key: "contacted", label: "Contacted", color: "bg-blue-500/20" },
+  { key: "qualified", label: "Qualified", color: "bg-primary/40" },
+  { key: "proposal", label: "Proposal", color: "bg-yellow-500/20" },
+  { key: "negotiation", label: "Negotiation", color: "bg-orange-500/20" },
+  { key: "closed-won", label: "Closed Won", color: "bg-green-500/20" },
+  { key: "closed-lost", label: "Closed Lost", color: "bg-destructive/20" },
 ];
 
 const LEAD_STAGES = ["new", "contacted", "qualified", "proposal", "converted", "closed-won", "closed-lost"];
@@ -39,6 +42,7 @@ const ACTIVITY_TYPES = [
   { key: "email", label: "Email", icon: Mail },
   { key: "meeting", label: "Meeting", icon: Calendar },
   { key: "task", label: "Task", icon: Target },
+  { key: "status_change", label: "Status Change", icon: ArrowUpDown },
 ];
 
 type Deal = {
@@ -51,6 +55,7 @@ type Deal = {
   expected_close: string | null;
   assigned_to: string | null;
   notes: string | null;
+  probability?: number;
   created_at: string;
   updated_at: string;
 };
@@ -66,60 +71,96 @@ type Activity = {
   created_at: string;
 };
 
+type Profile = {
+  user_id: string;
+  full_name: string | null;
+  email: string | null;
+  phone: string | null;
+  city: string | null;
+  state: string | null;
+  created_at: string;
+};
+
+type Lead = {
+  id: string;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  business_name: string | null;
+  status: string;
+  source: string;
+  service_needed: string | null;
+  intent_score: string | null;
+  lead_type: string;
+  city: string | null;
+  state: string | null;
+  created_at: string;
+};
+
+// CRM-005: Deal probability by stage
+const STAGE_PROBABILITY: Record<string, number> = {
+  new: 10, contacted: 20, qualified: 40, proposal: 60,
+  negotiation: 75, "closed-won": 100, "closed-lost": 0,
+};
+
 export default function AdminCRM() {
   usePageMeta({ title: "CRM", noIndex: true });
   const { user } = useAuth();
   const qc = useQueryClient();
   const [activeTab, setActiveTab] = useState("pipeline");
   const [search, setSearch] = useState("");
+  const [activityPage, setActivityPage] = useState(0);
+  const ACTIVITY_PAGE_SIZE = 50;
 
   // Fetch leads
-  const { data: leads = [] } = useQuery({
+  const { data: leads = [] } = useQuery<Lead[]>({
     queryKey: ["crm-leads"],
     queryFn: async () => {
       const { data, error } = await supabase.from("leads").select("*").order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      return (data ?? []) as Lead[];
     },
   });
 
   // Fetch deals
-  const { data: deals = [] } = useQuery({
+  const { data: deals = [] } = useQuery<Deal[]>({
     queryKey: ["crm-deals"],
     queryFn: async () => {
       const { data, error } = await supabase.from("deals").select("*").order("created_at", { ascending: false });
       if (error) throw error;
-      return data as Deal[];
+      return (data ?? []) as Deal[];
     },
   });
 
-  // Fetch activities
-  const { data: activities = [] } = useQuery({
-    queryKey: ["crm-activities"],
+  // CRM-001: Fetch activities with pagination
+  const { data: activities = [] } = useQuery<Activity[]>({
+    queryKey: ["crm-activities", activityPage],
     queryFn: async () => {
-      const { data, error } = await supabase.from("crm_activities").select("*").order("created_at", { ascending: false }).limit(200);
+      const from = activityPage * ACTIVITY_PAGE_SIZE;
+      const to = from + ACTIVITY_PAGE_SIZE - 1;
+      const { data, error } = await supabase.from("crm_activities").select("*").order("created_at", { ascending: false }).range(from, to);
       if (error) throw error;
-      return data as Activity[];
+      return (data ?? []) as Activity[];
     },
   });
 
-  // Fetch profiles (contacts/clients)
-  const { data: profiles = [] } = useQuery({
+  // CRM-003: Fetch profiles for unified contacts view
+  const { data: profiles = [] } = useQuery<Profile[]>({
     queryKey: ["crm-profiles"],
     queryFn: async () => {
       const { data, error } = await supabase.from("profiles").select("user_id, full_name, email, phone, city, state, created_at").order("created_at", { ascending: false }).limit(500);
       if (error) throw error;
-      return data;
+      return (data ?? []) as Profile[];
     },
   });
 
-  // Fetch appointments for activity context
+  // Fetch appointments for context
   const { data: appointments = [] } = useQuery({
     queryKey: ["crm-appointments"],
     queryFn: async () => {
       const { data, error } = await supabase.from("appointments").select("id, client_id, service_type, scheduled_date, status, created_at").order("created_at", { ascending: false }).limit(100);
       if (error) throw error;
-      return data;
+      return data ?? [];
     },
   });
 
@@ -174,7 +215,7 @@ export default function AdminCRM() {
 
   // Pipeline stats
   const pipelineStats = useMemo(() => {
-    const byStage: Record<string, typeof leads> = {};
+    const byStage: Record<string, Lead[]> = {};
     LEAD_STAGES.forEach(s => { byStage[s] = leads.filter(l => l.status === s); });
     return byStage;
   }, [leads]);
@@ -185,15 +226,72 @@ export default function AdminCRM() {
     return result;
   }, [deals]);
 
-  const totalPipelineValue = deals.filter(d => !["closed-lost"].includes(d.stage)).reduce((sum, d) => sum + (d.value || 0), 0);
+  // CRM-005: Weighted pipeline value (value × probability)
+  const totalPipelineValue = deals.filter(d => !["closed-lost", "closed-won"].includes(d.stage)).reduce((sum, d) => sum + (d.value || 0), 0);
+  const weightedPipelineValue = deals.filter(d => !["closed-lost", "closed-won"].includes(d.stage)).reduce((sum, d) => sum + (d.value || 0) * ((STAGE_PROBABILITY[d.stage] ?? 50) / 100), 0);
   const wonValue = deals.filter(d => d.stage === "closed-won").reduce((sum, d) => sum + (d.value || 0), 0);
+  const lostValue = deals.filter(d => d.stage === "closed-lost").reduce((sum, d) => sum + (d.value || 0), 0);
+  const winRate = deals.filter(d => ["closed-won", "closed-lost"].includes(d.stage)).length > 0
+    ? Math.round((deals.filter(d => d.stage === "closed-won").length / deals.filter(d => ["closed-won", "closed-lost"].includes(d.stage)).length) * 100)
+    : 0;
 
-  const filteredLeads = leads.filter(l =>
-    !search || [l.name, l.email, l.phone, l.business_name].some(f => f?.toLowerCase().includes(search.toLowerCase()))
+  // CRM-003: Unified contacts search across leads and profiles
+  const unifiedContacts = useMemo(() => {
+    const contactMap = new Map<string, { id: string; name: string; email: string; phone: string; type: string; status: string; source: string; city: string; state: string; created: string }>();
+
+    leads.forEach(l => {
+      contactMap.set(`lead-${l.id}`, {
+        id: l.id, name: l.name || l.business_name || "Unnamed",
+        email: l.email || "", phone: l.phone || "",
+        type: l.lead_type === "business" ? "Business Lead" : "Lead",
+        status: l.status, source: l.source,
+        city: l.city || "", state: l.state || "",
+        created: l.created_at,
+      });
+    });
+
+    profiles.forEach(p => {
+      // Avoid duplicating leads that became clients
+      const existingLead = leads.find(l => l.email && l.email === p.email);
+      if (!existingLead) {
+        contactMap.set(`profile-${p.user_id}`, {
+          id: p.user_id, name: p.full_name || "Unnamed",
+          email: p.email || "", phone: p.phone || "",
+          type: "Client", status: "active", source: "registration",
+          city: p.city || "", state: p.state || "",
+          created: p.created_at,
+        });
+      }
+    });
+
+    return Array.from(contactMap.values());
+  }, [leads, profiles]);
+
+  const filteredContacts = unifiedContacts.filter(c =>
+    !search || [c.name, c.email, c.phone, c.city].some(f => f?.toLowerCase().includes(search.toLowerCase()))
   );
 
+  // CRM-006: Deal aging alerts
+  const agingDeals = useMemo(() => {
+    return deals.filter(d => {
+      if (["closed-won", "closed-lost"].includes(d.stage)) return false;
+      const daysOld = differenceInDays(new Date(), new Date(d.created_at));
+      return daysOld > 30;
+    });
+  }, [deals]);
+
+  // CRM-012: Export
+  const exportCRM = useCallback(() => {
+    const headers = ["Name", "Email", "Phone", "Type", "Status", "Source", "City", "State", "Created"];
+    const rows = filteredContacts.map(c => [c.name, c.email, c.phone, c.type, c.status, c.source, c.city, c.state, c.created].map(v => `"${String(v || "").replace(/"/g, '""')}"`).join(","));
+    const blob = new Blob([headers.join(",") + "\n" + rows.join("\n")], { type: "text/csv" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+    a.download = `crm-contacts-${new Date().toISOString().slice(0, 10)}.csv`; a.click();
+    URL.revokeObjectURL(a.href);
+  }, [filteredContacts]);
+
   // New deal form state
-  const [newDeal, setNewDeal] = useState({ title: "", value: "", lead_id: "", stage: "discovery" });
+  const [newDeal, setNewDeal] = useState({ title: "", value: "", lead_id: "", stage: "qualified", expected_close: "" });
   const [showNewDeal, setShowNewDeal] = useState(false);
 
   // Activity form state
@@ -205,9 +303,12 @@ export default function AdminCRM() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">CRM</h1>
-          <p className="text-sm text-muted-foreground">Manage leads, deals, contacts, and activities</p>
+          <p className="text-sm text-muted-foreground">Unified lead, deal, and contact management</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <Link to="/admin/leads">
+            <Button size="sm" variant="outline"><ExternalLink className="mr-1 h-4 w-4" /> Lead Portal</Button>
+          </Link>
           <Dialog open={showNewDeal} onOpenChange={setShowNewDeal}>
             <DialogTrigger asChild><Button size="sm"><Plus className="mr-1 h-4 w-4" /> New Deal</Button></DialogTrigger>
             <DialogContent>
@@ -236,15 +337,17 @@ export default function AdminCRM() {
                     </SelectContent>
                   </Select>
                 </div>
+                <div><Label>Expected Close</Label><Input type="date" value={newDeal.expected_close} onChange={e => setNewDeal(p => ({ ...p, expected_close: e.target.value }))} /></div>
                 <Button className="w-full" onClick={() => {
                   createDeal.mutate({
                     title: newDeal.title || "Untitled Deal",
                     value: Math.max(0, parseFloat(newDeal.value) || 0),
                     lead_id: newDeal.lead_id === "none" ? null : newDeal.lead_id || null,
                     stage: newDeal.stage,
+                    expected_close: newDeal.expected_close || null,
                   });
                   setShowNewDeal(false);
-                  setNewDeal({ title: "", value: "", lead_id: "", stage: "discovery" });
+                  setNewDeal({ title: "", value: "", lead_id: "", stage: "qualified", expected_close: "" });
                 }}>Create Deal</Button>
               </div>
             </DialogContent>
@@ -294,36 +397,54 @@ export default function AdminCRM() {
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-muted-foreground"><Target className="h-4 w-4" /><span className="text-xs">Total Leads</span></div>
-            <p className="mt-1 text-2xl font-bold">{leads.length}</p>
+      {/* CRM-006: Aging deal alerts */}
+      {agingDeals.length > 0 && (
+        <Card className="border-warning/50 bg-warning/5">
+          <CardContent className="flex items-center gap-3 p-3">
+            <AlertTriangle className="h-5 w-5 text-warning shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm font-medium">{agingDeals.length} deal{agingDeals.length > 1 ? "s" : ""} aging ({">"}30 days without close)</p>
+              <p className="text-xs text-muted-foreground">{agingDeals.map(d => d.title).join(", ")}</p>
+            </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-muted-foreground"><Briefcase className="h-4 w-4" /><span className="text-xs">Open Deals</span></div>
-            <p className="mt-1 text-2xl font-bold">{deals.filter(d => !["closed-won", "closed-lost"].includes(d.stage)).length}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-muted-foreground"><DollarSign className="h-4 w-4" /><span className="text-xs">Pipeline Value</span></div>
-            <p className="mt-1 text-2xl font-bold">${totalPipelineValue.toLocaleString()}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-muted-foreground"><TrendingUp className="h-4 w-4" /><span className="text-xs">Won Revenue</span></div>
-            <p className="mt-1 text-2xl font-bold text-success">${wonValue.toLocaleString()}</p>
-          </CardContent>
-        </Card>
+      )}
+
+      {/* Enhanced KPI Cards — CRM-005, CRM-007, CRM-008 */}
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+        <Card><CardContent className="p-4">
+          <div className="flex items-center gap-2 text-muted-foreground"><Target className="h-4 w-4" /><span className="text-xs">Leads</span></div>
+          <p className="mt-1 text-2xl font-bold">{leads.length}</p>
+          <p className="text-[10px] text-muted-foreground">{leads.filter(l => l.status === "new").length} new</p>
+        </CardContent></Card>
+        <Card><CardContent className="p-4">
+          <div className="flex items-center gap-2 text-muted-foreground"><Users className="h-4 w-4" /><span className="text-xs">Contacts</span></div>
+          <p className="mt-1 text-2xl font-bold">{unifiedContacts.length}</p>
+          <p className="text-[10px] text-muted-foreground">{profiles.length} clients + {leads.length} leads</p>
+        </CardContent></Card>
+        <Card><CardContent className="p-4">
+          <div className="flex items-center gap-2 text-muted-foreground"><Briefcase className="h-4 w-4" /><span className="text-xs">Open Deals</span></div>
+          <p className="mt-1 text-2xl font-bold">{deals.filter(d => !["closed-won", "closed-lost"].includes(d.stage)).length}</p>
+        </CardContent></Card>
+        <Card><CardContent className="p-4">
+          <div className="flex items-center gap-2 text-muted-foreground"><DollarSign className="h-4 w-4" /><span className="text-xs">Pipeline</span></div>
+          <p className="mt-1 text-2xl font-bold">${totalPipelineValue.toLocaleString()}</p>
+          <p className="text-[10px] text-muted-foreground">~${Math.round(weightedPipelineValue).toLocaleString()} weighted</p>
+        </CardContent></Card>
+        <Card><CardContent className="p-4">
+          <div className="flex items-center gap-2 text-muted-foreground"><TrendingUp className="h-4 w-4" /><span className="text-xs">Won</span></div>
+          <p className="mt-1 text-2xl font-bold text-green-600">${wonValue.toLocaleString()}</p>
+          <p className="text-[10px] text-muted-foreground">{winRate}% win rate</p>
+        </CardContent></Card>
+        <Card><CardContent className="p-4">
+          <div className="flex items-center gap-2 text-muted-foreground"><BarChart3 className="h-4 w-4" /><span className="text-xs">Activities</span></div>
+          <p className="mt-1 text-2xl font-bold">{activities.length}</p>
+          <p className="text-[10px] text-muted-foreground">this period</p>
+        </CardContent></Card>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
+        <TabsList className="flex-wrap">
           <TabsTrigger value="pipeline">Pipeline</TabsTrigger>
           <TabsTrigger value="contacts">Contacts</TabsTrigger>
           <TabsTrigger value="deals">Deals</TabsTrigger>
@@ -344,7 +465,7 @@ export default function AdminCRM() {
                 </CardHeader>
                 <CardContent className="max-h-[400px] space-y-2 overflow-y-auto p-2">
                   {(pipelineStats[stage] || []).slice(0, 20).map(lead => (
-                    <div key={lead.id} className="rounded-md border bg-card p-2 text-xs shadow-sm">
+                    <div key={lead.id} className="rounded-md border bg-card p-2 text-xs shadow-sm hover:shadow transition-shadow">
                       <p className="font-medium truncate">{lead.name || lead.email || "Unnamed"}</p>
                       {lead.service_needed && <p className="text-muted-foreground truncate">{lead.service_needed}</p>}
                       <div className="mt-1 flex gap-1">
@@ -365,13 +486,14 @@ export default function AdminCRM() {
           </div>
         </TabsContent>
 
-        {/* CONTACTS TAB */}
+        {/* CRM-003: UNIFIED CONTACTS TAB */}
         <TabsContent value="contacts" className="space-y-4">
-          <div className="flex gap-2">
-            <div className="relative flex-1">
+          <div className="flex gap-2 flex-wrap">
+            <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input className="pl-9" placeholder="Search contacts, leads, businesses..." value={search} onChange={e => setSearch(e.target.value)} />
+              <Input className="pl-9" placeholder="Search all contacts (leads + clients)..." value={search} onChange={e => setSearch(e.target.value)} />
             </div>
+            <Button size="sm" variant="outline" onClick={exportCRM}><Download className="mr-1 h-4 w-4" /> Export CSV</Button>
           </div>
           <Card>
             <Table>
@@ -383,65 +505,92 @@ export default function AdminCRM() {
                   <TableHead>Type</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Source</TableHead>
+                  <TableHead>Location</TableHead>
                   <TableHead>Created</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredLeads.slice(0, 50).map(lead => (
-                  <TableRow key={lead.id}>
-                    <TableCell className="font-medium">{lead.name || "—"}</TableCell>
-                    <TableCell>{lead.email || "—"}</TableCell>
-                    <TableCell>{lead.phone || "—"}</TableCell>
-                    <TableCell><Badge variant="outline">{lead.lead_type}</Badge></TableCell>
-                    <TableCell>
-                      <Select value={lead.status} onValueChange={v => updateLeadStatus.mutate({ id: lead.id, status: v })}>
-                        <SelectTrigger className="h-7 w-[120px] text-xs"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {LEAD_STAGES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                    </TableCell>
-                    <TableCell><Badge variant="secondary" className="text-[10px]">{lead.source}</Badge></TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{format(new Date(lead.created_at), "MMM d, yyyy")}</TableCell>
+                {filteredContacts.slice(0, 100).map(contact => (
+                  <TableRow key={contact.id}>
+                    <TableCell className="font-medium">{contact.name}</TableCell>
+                    <TableCell className="text-xs">{contact.email || "—"}</TableCell>
+                    <TableCell className="text-xs">{contact.phone || "—"}</TableCell>
+                    <TableCell><Badge variant={contact.type === "Client" ? "default" : "outline"} className="text-[10px]">{contact.type}</Badge></TableCell>
+                    <TableCell><Badge variant="secondary" className="text-[10px] capitalize">{contact.status}</Badge></TableCell>
+                    <TableCell><Badge variant="secondary" className="text-[10px]">{contact.source}</Badge></TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{[contact.city, contact.state].filter(Boolean).join(", ") || "—"}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{format(new Date(contact.created), "MMM d, yyyy")}</TableCell>
                   </TableRow>
                 ))}
-                {filteredLeads.length === 0 && (
-                  <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">No contacts found</TableCell></TableRow>
+                {filteredContacts.length === 0 && (
+                  <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-8">No contacts found</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>
+            {filteredContacts.length > 100 && (
+              <div className="p-3 text-center text-xs text-muted-foreground border-t">Showing 100 of {filteredContacts.length} contacts. Use search to narrow results.</div>
+            )}
           </Card>
         </TabsContent>
 
-        {/* DEALS TAB */}
+        {/* CRM-015: DEALS TAB with pipeline value visualization */}
         <TabsContent value="deals" className="space-y-4">
+          {/* CRM-015: Pipeline value bar */}
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm font-medium">Pipeline Value Distribution</span>
+                <span className="text-xs text-muted-foreground ml-auto">${totalPipelineValue.toLocaleString()} total</span>
+              </div>
+              <div className="flex h-6 rounded-full overflow-hidden bg-muted">
+                {PIPELINE_STAGES.filter(s => !["closed-lost"].includes(s.key)).map(stage => {
+                  const stageValue = (dealsByStage[stage.key] || []).reduce((s, d) => s + (d.value || 0), 0);
+                  const pct = totalPipelineValue > 0 ? (stageValue / totalPipelineValue) * 100 : 0;
+                  if (pct === 0) return null;
+                  return (
+                    <div key={stage.key} className={`${stage.color} flex items-center justify-center text-[9px] font-medium transition-all`} style={{ width: `${pct}%` }} title={`${stage.label}: $${stageValue.toLocaleString()}`}>
+                      {pct > 10 ? `${stage.label}` : ""}
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
           <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-5">
             {PIPELINE_STAGES.map(stage => (
               <Card key={stage.key} className="min-h-[180px]">
                 <CardHeader className="p-3 pb-1">
                   <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase">
-                    <span className={`h-2 w-2 rounded-full ${stage.color}`} />
+                    <span className={`h-2 w-2 rounded-full ${stage.color} border`} />
                     {stage.label}
                     <Badge variant="secondary" className="ml-auto text-[10px]">
                       ${(dealsByStage[stage.key] || []).reduce((s, d) => s + (d.value || 0), 0).toLocaleString()}
                     </Badge>
                   </CardTitle>
+                  <p className="text-[10px] text-muted-foreground">{STAGE_PROBABILITY[stage.key]}% probability</p>
                 </CardHeader>
                 <CardContent className="max-h-[350px] space-y-2 overflow-y-auto p-2">
-                  {(dealsByStage[stage.key] || []).map(deal => (
-                    <div key={deal.id} className="rounded-md border bg-card p-2 text-xs shadow-sm">
-                      <p className="font-medium truncate">{deal.title || "Untitled"}</p>
-                      <p className="text-muted-foreground">${(deal.value || 0).toLocaleString()}</p>
-                      {deal.expected_close && <p className="text-muted-foreground">Close: {format(new Date(deal.expected_close), "MMM d")}</p>}
-                      <p className="text-muted-foreground">{Math.floor((Date.now() - new Date(deal.created_at).getTime()) / 86400000)}d in pipeline</p>
-                      <Select value={deal.stage} onValueChange={v => updateDealStage.mutate({ id: deal.id, stage: v })}>
-                        <SelectTrigger className="mt-1 h-6 text-[10px]"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {PIPELINE_STAGES.map(s => <SelectItem key={s.key} value={s.key}>{s.label}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  ))}
+                  {(dealsByStage[stage.key] || []).map(deal => {
+                    const daysInStage = differenceInDays(new Date(), new Date(deal.updated_at || deal.created_at));
+                    return (
+                      <div key={deal.id} className="rounded-md border bg-card p-2 text-xs shadow-sm">
+                        <p className="font-medium truncate">{deal.title || "Untitled"}</p>
+                        <p className="text-muted-foreground">${(deal.value || 0).toLocaleString()}</p>
+                        {deal.expected_close && <p className="text-muted-foreground">Close: {format(new Date(deal.expected_close), "MMM d")}</p>}
+                        <div className="flex items-center gap-1 mt-1">
+                          <Clock className="h-3 w-3 text-muted-foreground" />
+                          <span className={`text-[10px] ${daysInStage > 30 ? "text-destructive" : "text-muted-foreground"}`}>{daysInStage}d</span>
+                        </div>
+                        <Select value={deal.stage} onValueChange={v => updateDealStage.mutate({ id: deal.id, stage: v })}>
+                          <SelectTrigger className="mt-1 h-6 text-[10px]"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {PIPELINE_STAGES.map(s => <SelectItem key={s.key} value={s.key}>{s.label}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    );
+                  })}
                   {(!dealsByStage[stage.key] || dealsByStage[stage.key].length === 0) && (
                     <p className="text-center text-[10px] text-muted-foreground py-4">No deals</p>
                   )}
@@ -451,16 +600,19 @@ export default function AdminCRM() {
           </div>
         </TabsContent>
 
-        {/* ACTIVITIES TAB */}
+        {/* ACTIVITIES TAB — CRM-001: Paginated */}
         <TabsContent value="activities" className="space-y-4">
           <Card>
-            <CardHeader><CardTitle className="text-base">Recent Activity</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base flex items-center justify-between">
+              Recent Activity
+              <Button size="sm" variant="ghost" onClick={() => qc.invalidateQueries({ queryKey: ["crm-activities"] })}><RefreshCw className="h-4 w-4" /></Button>
+            </CardTitle></CardHeader>
             <CardContent>
               {activities.length === 0 ? (
                 <p className="text-center text-sm text-muted-foreground py-8">No activities logged yet. Click "Log Activity" to get started.</p>
               ) : (
                 <div className="space-y-3">
-                  {activities.slice(0, 50).map(a => {
+                  {activities.map(a => {
                     const Icon = ACTIVITY_TYPES.find(t => t.key === a.activity_type)?.icon || FileText;
                     const linkedLead = leads.find(l => l.id === a.contact_id);
                     return (
@@ -482,11 +634,17 @@ export default function AdminCRM() {
                   })}
                 </div>
               )}
+              {/* CRM-001: Pagination controls */}
+              <div className="flex items-center justify-center gap-2 mt-4 pt-3 border-t">
+                <Button size="sm" variant="outline" disabled={activityPage === 0} onClick={() => setActivityPage(p => p - 1)}>Previous</Button>
+                <span className="text-xs text-muted-foreground">Page {activityPage + 1}</span>
+                <Button size="sm" variant="outline" disabled={activities.length < ACTIVITY_PAGE_SIZE} onClick={() => setActivityPage(p => p + 1)}>Next</Button>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* REPORTS TAB */}
+        {/* CRM-011: REPORTS TAB — Enhanced analytics */}
         <TabsContent value="reports" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <Card>
@@ -498,11 +656,17 @@ export default function AdminCRM() {
                 }, {})).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([source, count]) => (
                   <div key={source} className="flex items-center justify-between py-1.5 border-b last:border-0">
                     <span className="text-sm capitalize">{source.replace(/_/g, " ")}</span>
-                    <Badge variant="secondary">{count as number}</Badge>
+                    <div className="flex items-center gap-2">
+                      <div className="w-20 h-1.5 rounded-full bg-muted">
+                        <div className="h-1.5 rounded-full bg-primary" style={{ width: `${Math.min(100, (count / leads.length) * 100)}%` }} />
+                      </div>
+                      <Badge variant="secondary">{count}</Badge>
+                    </div>
                   </div>
                 ))}
               </CardContent>
             </Card>
+
             <Card>
               <CardHeader><CardTitle className="text-base">Conversion Funnel</CardTitle></CardHeader>
               <CardContent>
@@ -515,33 +679,41 @@ export default function AdminCRM() {
                       <div className="flex-1 rounded-full bg-muted h-2">
                         <div className="h-2 rounded-full bg-primary transition-all" style={{ width: `${pct}%` }} />
                       </div>
-                      <span className="w-12 text-right text-xs text-muted-foreground">{count} ({pct}%)</span>
+                      <span className="w-16 text-right text-xs text-muted-foreground">{count} ({pct}%)</span>
                     </div>
                   );
                 })}
               </CardContent>
             </Card>
+
             <Card>
               <CardHeader><CardTitle className="text-base">Deal Pipeline Summary</CardTitle></CardHeader>
               <CardContent>
                 {PIPELINE_STAGES.map(stage => {
                   const stageDeals = dealsByStage[stage.key] || [];
                   const stageValue = stageDeals.reduce((s, d) => s + (d.value || 0), 0);
+                  const weightedValue = stageValue * ((STAGE_PROBABILITY[stage.key] ?? 50) / 100);
                   return (
                     <div key={stage.key} className="flex items-center justify-between py-1.5 border-b last:border-0">
                       <div className="flex items-center gap-2">
-                        <span className={`h-2 w-2 rounded-full ${stage.color}`} />
+                        <span className={`h-2 w-2 rounded-full ${stage.color} border`} />
                         <span className="text-sm">{stage.label}</span>
+                        <span className="text-[10px] text-muted-foreground">({STAGE_PROBABILITY[stage.key]}%)</span>
                       </div>
                       <div className="text-right">
                         <span className="text-sm font-medium">${stageValue.toLocaleString()}</span>
-                        <span className="ml-2 text-xs text-muted-foreground">({stageDeals.length})</span>
+                        <span className="ml-2 text-xs text-muted-foreground">(~${Math.round(weightedValue).toLocaleString()} wtd)</span>
                       </div>
                     </div>
                   );
                 })}
+                <div className="flex items-center justify-between pt-2 mt-2 border-t font-medium">
+                  <span className="text-sm">Win Rate</span>
+                  <span className="text-sm">{winRate}%</span>
+                </div>
               </CardContent>
             </Card>
+
             <Card>
               <CardHeader><CardTitle className="text-base">Recent Appointments</CardTitle></CardHeader>
               <CardContent>
