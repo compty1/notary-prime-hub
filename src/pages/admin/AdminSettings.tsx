@@ -116,11 +116,11 @@ export default function AdminSettings() {
         if (settings[key].setting_value === value) continue;
         changedKeys.push(key);
         beforeValues[key] = settings[key].setting_value;
-        updates.push(supabase.from("platform_settings").update({ setting_value: value, updated_at: new Date().toISOString(), updated_by: user?.id }).eq("setting_key", key));
+        updates.push(supabase.from("platform_settings").update({ setting_value: value, updated_at: new Date().toISOString(), updated_by: user?.id }).eq("setting_key", key).then(r => ({ error: r.error })));
       } else {
         changedKeys.push(key);
         beforeValues[key] = "";
-        updates.push(supabase.from("platform_settings").insert({ setting_key: key, setting_value: value, updated_by: user?.id }));
+        updates.push(supabase.from("platform_settings").insert({ setting_key: key, setting_value: value, updated_by: user?.id }).then(r => ({ error: r.error })));
       }
     }
 
