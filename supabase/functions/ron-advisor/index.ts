@@ -1,30 +1,59 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// EF-308 / AI-008: Added auth check + migrated to Deno.serve + rate limiting
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { rateLimitGuard } from "../_shared/middleware.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
 };
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  const rl = rateLimitGuard(req, 15);
+  if (rl) return rl;
 
   try {
-    const { scenario, result } = await req.json();
+    // Auth check
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    if (!supabaseUrl || !supabaseAnonKey) {
+      return new Response(JSON.stringify({ error: "Server misconfigured" }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const { scenario, result } = await req.json();
     if (!scenario || !result) {
       return new Response(JSON.stringify({ error: "Missing scenario or result" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       return new Response(JSON.stringify({ error: "AI service not configured" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -52,11 +81,11 @@ ${scenario.signer_location_country === "non_us" ? "- Signer Outside US: Yes" : "
 ANALYSIS RESULT:
 - Status: ${result.status} (Risk Level: ${result.risk_level})
 - Headline: ${result.headline}
-- Ohio Analysis: ${result.notary_state_analysis.notes.join("; ")}
-- Receiving State (${result.receiving_state_analysis.state_name}): RON Authorized: ${result.receiving_state_analysis.ron_authorized}, Acceptance: ${result.receiving_state_analysis.acceptance_rating}
-- Risk Reasons: ${result.risk_reasons.join("; ")}
-- Recommended Actions: ${result.recommended_actions.join("; ")}
-- Citations: ${result.citations.join("; ")}
+- Ohio Analysis: ${result.notary_state_analysis?.notes?.join("; ") || "N/A"}
+- Receiving State (${result.receiving_state_analysis?.state_name || "N/A"}): RON Authorized: ${result.receiving_state_analysis?.ron_authorized}, Acceptance: ${result.receiving_state_analysis?.acceptance_rating}
+- Risk Reasons: ${result.risk_reasons?.join("; ") || "None"}
+- Recommended Actions: ${result.recommended_actions?.join("; ") || "None"}
+- Citations: ${result.citations?.join("; ") || "None"}
 
 Please provide a clear, friendly explanation of what this means for the user.`;
 
@@ -79,21 +108,18 @@ Please provide a clear, friendly explanation of what this means for the user.`;
     if (!response.ok) {
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       if (response.status === 402) {
         return new Response(JSON.stringify({ error: "AI credits exhausted." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       const t = await response.text();
       console.error("AI gateway error:", response.status, t);
       return new Response(JSON.stringify({ error: "AI explanation unavailable" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -106,8 +132,7 @@ Please provide a clear, friendly explanation of what this means for the user.`;
   } catch (e) {
     console.error("ron-advisor error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
