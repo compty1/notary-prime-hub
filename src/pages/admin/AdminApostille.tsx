@@ -139,7 +139,7 @@ export default function AdminApostille() {
         <div class="field"><span class="label">Description:</span> ${detailReq.document_description}</div>
         <div class="field"><span class="label">Document Count:</span> ${detailReq.document_count}</div>
         <div class="field"><span class="label">Destination Country:</span> ${detailReq.destination_country || "N/A"}</div>
-        <div class="field"><span class="label">Fee:</span> $${parseFloat(detailReq.fee || "0").toFixed(2)}</div>
+        <div class="field"><span class="label">Fee:</span> $${parseFloat(String(detailReq.fee ?? 0)).toFixed(2)}</div>
       </div>
       <div class="section"><h3>Submission Details</h3>
         <div class="field"><span class="label">Request Date:</span> ${new Date(detailReq.created_at).toLocaleDateString()}</div>
