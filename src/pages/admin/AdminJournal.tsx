@@ -200,7 +200,7 @@ export default function AdminJournal() {
     ];
     const esc = (v: string) => `"${(v || "").replace(/"/g, '""')}"`;
     const rows = filtered.map((e) => [
-      esc(e.journal_number || ""), esc(new Date(e.created_at).toLocaleDateString()),
+      esc(String(e.journal_number ?? "")), esc(new Date(e.created_at).toLocaleDateString()),
       esc(e.entry_time || ""), esc(e.service_performed || ""), esc(e.document_type || ""),
       esc(e.document_date || ""), esc(e.signer_name || ""), esc(e.signer_address || ""),
       esc(e.id_type || ""), esc(e.id_number || ""), esc(e.id_expiration || ""),
@@ -274,7 +274,7 @@ export default function AdminJournal() {
       <td>${e.notarization_type === "ron" ? "RON" : "In-Person"}</td>
       <td>${e.id_type?.replace(/_/g, " ") || "—"}</td>
       <td>${e.id_number || "—"}</td>
-      <td>$${parseFloat(e.fees_charged || 0).toFixed(2)}</td>
+      <td>$${parseFloat(String(e.fees_charged ?? 0)).toFixed(2)}</td>
       <td>${e.oath_administered ? "Yes" : "No"}</td>
       <td>${e.notes || ""}</td>
     </tr>`).join("");
@@ -545,10 +545,10 @@ export default function AdminJournal() {
                         <Badge variant="outline" className="text-xs">{entry.service_performed?.replace(/_/g, " ")}</Badge>
                         <Badge variant="outline" className="text-xs">{entry.notarization_type === "ron" ? "RON" : "In-Person"}</Badge>
                         {entry.oath_administered && <Badge className="bg-purple-100 text-purple-800 text-xs">Oath</Badge>}
-                        {entry.fees_charged && <span className="font-medium text-foreground">${parseFloat(entry.fees_charged).toFixed(2)}</span>}
+                        {entry.fees_charged != null && <span className="font-medium text-foreground">${Number(entry.fees_charged).toFixed(2)}</span>}
                         {entry.net_profit !== null && entry.net_profit !== undefined && (
                           <span className={`font-medium ${entry.net_profit >= 0 ? "text-primary" : "text-destructive"}`}>
-                            Net: ${parseFloat(entry.net_profit).toFixed(2)}
+                            Net: ${Number(entry.net_profit).toFixed(2)}
                           </span>
                         )}
                       </div>
