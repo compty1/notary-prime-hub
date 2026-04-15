@@ -323,11 +323,21 @@ export default function BookAppointment() {
         .eq("is_published", true)
         .maybeSingle();
       if (data) {
-        if (!(data as any).use_platform_booking && (data as any).external_booking_url) {
-          window.location.href = (data as any).external_booking_url;
+        const notaryData = data as { display_name: string; theme_color: string; slug: string; use_platform_booking: boolean; external_booking_url: string | null; user_id: string };
+        if (!notaryData.use_platform_booking && notaryData.external_booking_url) {
+          // PP-041: Validate external URL to prevent open redirect
+          try {
+            const extUrl = new URL(notaryData.external_booking_url);
+            if (extUrl.protocol === "https:" || extUrl.protocol === "http:") {
+              window.location.href = notaryData.external_booking_url;
+              return;
+            }
+          } catch {
+            console.error("Invalid external booking URL");
+          }
           return;
         }
-        setNotaryBranding(data as any);
+        setNotaryBranding(notaryData);
       }
     })();
   }, [searchParams]);
