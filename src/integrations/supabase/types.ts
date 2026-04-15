@@ -390,6 +390,42 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_document_grades: {
+        Row: {
+          compliance_standard: string | null
+          created_at: string
+          document_name: string
+          document_type: string | null
+          findings: Json | null
+          grade_letter: string | null
+          id: string
+          overall_score: number | null
+          user_id: string
+        }
+        Insert: {
+          compliance_standard?: string | null
+          created_at?: string
+          document_name: string
+          document_type?: string | null
+          findings?: Json | null
+          grade_letter?: string | null
+          id?: string
+          overall_score?: number | null
+          user_id: string
+        }
+        Update: {
+          compliance_standard?: string | null
+          created_at?: string
+          document_name?: string
+          document_type?: string | null
+          findings?: Json | null
+          grade_letter?: string | null
+          id?: string
+          overall_score?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       amortized_expenses: {
         Row: {
           annual_amount: number
@@ -873,6 +909,51 @@ export type Database = {
         }
         Relationships: []
       }
+      bulk_dispatch_requests: {
+        Row: {
+          batch_name: string
+          company_name: string | null
+          created_at: string
+          error_log: Json | null
+          failed_rows: number
+          id: string
+          processed_rows: number
+          source_data: Json | null
+          status: string | null
+          total_rows: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          batch_name: string
+          company_name?: string | null
+          created_at?: string
+          error_log?: Json | null
+          failed_rows?: number
+          id?: string
+          processed_rows?: number
+          source_data?: Json | null
+          status?: string | null
+          total_rows?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          batch_name?: string
+          company_name?: string | null
+          created_at?: string
+          error_log?: Json | null
+          failed_rows?: number
+          id?: string
+          processed_rows?: number
+          source_data?: Json | null
+          status?: string | null
+          total_rows?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       business_members: {
         Row: {
           business_id: string
@@ -1034,6 +1115,48 @@ export type Database = {
           read?: boolean | null
           recipient_id?: string | null
           sender_id?: string
+        }
+        Relationships: []
+      }
+      client_brand_kits: {
+        Row: {
+          company_name: string
+          created_at: string
+          font_family: string | null
+          id: string
+          is_default: boolean | null
+          logo_path: string | null
+          primary_color: string | null
+          secondary_color: string | null
+          tagline: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_name: string
+          created_at?: string
+          font_family?: string | null
+          id?: string
+          is_default?: boolean | null
+          logo_path?: string | null
+          primary_color?: string | null
+          secondary_color?: string | null
+          tagline?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          font_family?: string | null
+          id?: string
+          is_default?: boolean | null
+          logo_path?: string | null
+          primary_color?: string | null
+          secondary_color?: string | null
+          tagline?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -1314,6 +1437,54 @@ export type Database = {
           user_agent?: string | null
           user_id?: string
           version?: string | null
+        }
+        Relationships: []
+      }
+      construction_projects: {
+        Row: {
+          contract_amount: number | null
+          created_at: string
+          estimated_completion: string | null
+          general_contractor: string | null
+          id: string
+          notes: string | null
+          owner_name: string | null
+          project_name: string
+          property_address: string | null
+          start_date: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          contract_amount?: number | null
+          created_at?: string
+          estimated_completion?: string | null
+          general_contractor?: string | null
+          id?: string
+          notes?: string | null
+          owner_name?: string | null
+          project_name: string
+          property_address?: string | null
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          contract_amount?: number | null
+          created_at?: string
+          estimated_completion?: string | null
+          general_contractor?: string | null
+          id?: string
+          notes?: string | null
+          owner_name?: string | null
+          project_name?: string
+          property_address?: string | null
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -3785,6 +3956,56 @@ export type Database = {
         }
         Relationships: []
       }
+      lien_waivers: {
+        Row: {
+          amount: number | null
+          claimant_name: string
+          created_at: string
+          document_url: string | null
+          id: string
+          project_id: string | null
+          signed_at: string | null
+          status: string | null
+          through_date: string | null
+          user_id: string
+          waiver_type: string
+        }
+        Insert: {
+          amount?: number | null
+          claimant_name: string
+          created_at?: string
+          document_url?: string | null
+          id?: string
+          project_id?: string | null
+          signed_at?: string | null
+          status?: string | null
+          through_date?: string | null
+          user_id: string
+          waiver_type: string
+        }
+        Update: {
+          amount?: number | null
+          claimant_name?: string
+          created_at?: string
+          document_url?: string | null
+          id?: string
+          project_id?: string | null
+          signed_at?: string | null
+          status?: string | null
+          through_date?: string | null
+          user_id?: string
+          waiver_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lien_waivers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "construction_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       loan_signing_packages: {
         Row: {
           appointment_id: string | null
@@ -4642,6 +4863,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      ofac_sdn_list: {
+        Row: {
+          addresses: Json | null
+          aliases: Json | null
+          entry_id: string | null
+          id: number
+          last_synced_at: string | null
+          program: string | null
+          remarks: string | null
+          sdn_name: string
+          sdn_type: string | null
+          title: string | null
+        }
+        Insert: {
+          addresses?: Json | null
+          aliases?: Json | null
+          entry_id?: string | null
+          id?: number
+          last_synced_at?: string | null
+          program?: string | null
+          remarks?: string | null
+          sdn_name: string
+          sdn_type?: string | null
+          title?: string | null
+        }
+        Update: {
+          addresses?: Json | null
+          aliases?: Json | null
+          entry_id?: string | null
+          id?: number
+          last_synced_at?: string | null
+          program?: string | null
+          remarks?: string | null
+          sdn_name?: string
+          sdn_type?: string | null
+          title?: string | null
+        }
+        Relationships: []
       }
       order_items: {
         Row: {
@@ -7367,6 +7627,98 @@ export type Database = {
         }
         Relationships: []
       }
+      trust_assets: {
+        Row: {
+          account_number: string | null
+          address: string | null
+          category: string
+          created_at: string
+          description: string
+          estimated_value: number | null
+          id: string
+          institution: string | null
+          notes: string | null
+          trust_id: string | null
+          user_id: string
+        }
+        Insert: {
+          account_number?: string | null
+          address?: string | null
+          category: string
+          created_at?: string
+          description: string
+          estimated_value?: number | null
+          id?: string
+          institution?: string | null
+          notes?: string | null
+          trust_id?: string | null
+          user_id: string
+        }
+        Update: {
+          account_number?: string | null
+          address?: string | null
+          category?: string
+          created_at?: string
+          description?: string
+          estimated_value?: number | null
+          id?: string
+          institution?: string | null
+          notes?: string | null
+          trust_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trust_assets_trust_id_fkey"
+            columns: ["trust_id"]
+            isOneToOne: false
+            referencedRelation: "trust_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trust_documents: {
+        Row: {
+          created_at: string
+          date_established: string | null
+          grantor_name: string | null
+          id: string
+          notes: string | null
+          status: string | null
+          trust_name: string
+          trust_type: string | null
+          trustee_name: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date_established?: string | null
+          grantor_name?: string | null
+          id?: string
+          notes?: string | null
+          status?: string | null
+          trust_name: string
+          trust_type?: string | null
+          trustee_name?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date_established?: string | null
+          grantor_name?: string | null
+          id?: string
+          notes?: string | null
+          status?: string | null
+          trust_name?: string
+          trust_type?: string | null
+          trustee_name?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       usage_tracking: {
         Row: {
           created_at: string
@@ -8453,6 +8805,8 @@ export type Database = {
           read_ct: number
         }[]
       }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
       validate_ohio_fee_cap: {
         Args: { p_amount: number; p_notarial_act_count?: number }
         Returns: boolean
