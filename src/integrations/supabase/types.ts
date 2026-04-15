@@ -4409,11 +4409,15 @@ export type Database = {
           appointment_id: string | null
           archived: boolean
           certificate_photos: Json | null
+          communication_technology: string | null
           created_at: string
           created_by: string
           credential_analysis: Json | null
+          credential_analysis_method: string | null
+          document_date: string | null
           document_description: string | null
           document_type: string
+          entry_time: string | null
           fees_charged: number | null
           id: string
           id_expiration: string | null
@@ -4422,6 +4426,7 @@ export type Database = {
           journal_number: number
           net_profit: number | null
           notarization_type: Database["public"]["Enums"]["notarization_type"]
+          notary_commission_number: string | null
           notary_payout: number | null
           notes: string | null
           oath_administered: boolean | null
@@ -4441,11 +4446,15 @@ export type Database = {
           appointment_id?: string | null
           archived?: boolean
           certificate_photos?: Json | null
+          communication_technology?: string | null
           created_at?: string
           created_by: string
           credential_analysis?: Json | null
+          credential_analysis_method?: string | null
+          document_date?: string | null
           document_description?: string | null
           document_type: string
+          entry_time?: string | null
           fees_charged?: number | null
           id?: string
           id_expiration?: string | null
@@ -4454,6 +4463,7 @@ export type Database = {
           journal_number?: number
           net_profit?: number | null
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
+          notary_commission_number?: string | null
           notary_payout?: number | null
           notes?: string | null
           oath_administered?: boolean | null
@@ -4473,11 +4483,15 @@ export type Database = {
           appointment_id?: string | null
           archived?: boolean
           certificate_photos?: Json | null
+          communication_technology?: string | null
           created_at?: string
           created_by?: string
           credential_analysis?: Json | null
+          credential_analysis_method?: string | null
+          document_date?: string | null
           document_description?: string | null
           document_type?: string
+          entry_time?: string | null
           fees_charged?: number | null
           id?: string
           id_expiration?: string | null
@@ -4486,6 +4500,7 @@ export type Database = {
           journal_number?: number
           net_profit?: number | null
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
+          notary_commission_number?: string | null
           notary_payout?: number | null
           notes?: string | null
           oath_administered?: boolean | null
