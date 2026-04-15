@@ -28,13 +28,26 @@ const isPdfFile = (fileName: string) => /\.pdf$/i.test(fileName);
 const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(_, ref) {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [docs, setDocs] = useState<any[]>([]);
-  const [profiles, setProfiles] = useState<any[]>([]);
+  interface DocRecord {
+    id: string; file_name: string; file_path: string; uploaded_by: string;
+    status: string; created_at: string; updated_at: string;
+    appointment_id: string | null; document_type: string | null; notes: string | null;
+  }
+  interface ESealVerification {
+    id: string; document_id: string; appointment_id: string | null;
+    document_name: string | null; signer_name: string | null;
+    notarized_at: string | null; created_by: string | null; status: string;
+    revoked_at: string | null;
+  }
+  interface ProfileSummary { user_id: string; full_name: string | null; email: string | null; }
+
+  const [docs, setDocs] = useState<DocRecord[]>([]);
+  const [profiles, setProfiles] = useState<ProfileSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
-  const [verificationByDoc, setVerificationByDoc] = useState<Record<string, any>>({});
+  const [verificationByDoc, setVerificationByDoc] = useState<Record<string, ESealVerification>>({});
   const [sealingId, setSealingId] = useState<string | null>(null);
-  const [previewDoc, setPreviewDoc] = useState<any>(null);
+  const [previewDoc, setPreviewDoc] = useState<DocRecord | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [sendingId, setSendingId] = useState<string | null>(null);
@@ -63,7 +76,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
     const { data } = await supabase.from("document_tags").select("document_id, tag");
     if (data) {
       const mapped: Record<string, string[]> = {};
-      data.forEach((t: any) => {
+      data.forEach((t) => {
         if (!mapped[t.document_id]) mapped[t.document_id] = [];
         mapped[t.document_id].push(t.tag);
       });
@@ -94,16 +107,16 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
   const fetchDocs = async () => {
     const [docsRes, verificationsRes, profilesRes] = await Promise.all([
       supabase.from("documents").select("*").order("created_at", { ascending: false }),
-      supabase.from("e_seal_verifications" as any).select("*"),
+      supabase.from("e_seal_verifications").select("*"),
       supabase.from("profiles").select("user_id, full_name, email"),
     ]);
 
     if (docsRes.data) {
       setDocs(docsRes.data);
-      const imageFiles = docsRes.data.filter((d: any) => isImageFile(d.file_name));
+      const imageFiles = docsRes.data.filter((d) => isImageFile(d.file_name));
       if (imageFiles.length > 0) {
         const urls: Record<string, string> = {};
-        await Promise.all(imageFiles.slice(0, 50).map(async (d: any) => {
+        await Promise.all(imageFiles.slice(0, 50).map(async (d) => {
           const { data } = await supabase.storage.from("documents").createSignedUrl(d.file_path, 3600);
           if (data?.signedUrl) urls[d.id] = data.signedUrl;
         }));
