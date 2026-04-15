@@ -319,8 +319,8 @@ export default function AdminJournal() {
   });
 
   // Item 323: Summary statistics
-  const totalFees = filtered.reduce((sum, e) => sum + (parseFloat(e.fees_charged) || 0), 0);
-  const totalNet = filtered.reduce((sum, e) => sum + (parseFloat(e.net_profit) || 0), 0);
+  const totalFees = filtered.reduce((sum, e) => sum + (e.fees_charged ?? 0), 0);
+  const totalNet = filtered.reduce((sum, e) => sum + (e.net_profit ?? 0), 0);
 
   // Item 325: Pagination
   const JOURNAL_PAGE_SIZE = 25;
