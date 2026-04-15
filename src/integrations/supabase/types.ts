@@ -7125,6 +7125,7 @@ export type Database = {
       shop_cart_items: {
         Row: {
           created_at: string
+          design_config: Json | null
           id: string
           item_id: string
           item_type: string
@@ -7134,6 +7135,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          design_config?: Json | null
           id?: string
           item_id: string
           item_type: string
@@ -7143,6 +7145,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          design_config?: Json | null
           id?: string
           item_id?: string
           item_type?: string
