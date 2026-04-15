@@ -101,8 +101,8 @@ export default function TodoTab({ items }: { items: TrackerItem[] }) {
     const itemB = todoItems[swapIdx];
     // Batch both updates together
     Promise.all([
-      supabase.from("build_tracker_items").update({ todo_priority: swapIdx } as any).eq("id", itemA.id),
-      supabase.from("build_tracker_items").update({ todo_priority: idx } as any).eq("id", itemB.id),
+      supabase.from("build_tracker_items").update({ todo_priority: swapIdx }).eq("id", itemA.id),
+      supabase.from("build_tracker_items").update({ todo_priority: idx }).eq("id", itemB.id),
     ]).then(() => {
       // Invalidate after both complete
       update.mutate({ id: itemA.id, todo_priority: swapIdx });
