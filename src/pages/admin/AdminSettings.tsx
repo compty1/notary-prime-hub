@@ -225,7 +225,7 @@ export default function AdminSettings() {
         <div className="flex items-center gap-2 flex-wrap">
           <Badge variant="outline" className="text-xs gap-1">
             <Server className="h-3 w-3" />
-            {import.meta.env.VITE_SUPABASE_URL?.includes("localhost") ? "Local" : import.meta.env.DEV ? "Development" : "Production"}
+            {import.meta.env.DEV ? "Development" : "Production"}
           </Badge>
           <Button variant="outline" size="sm" onClick={handleExportSettings}><Download className="mr-1 h-3 w-3" /> Export</Button>
           <label className="cursor-pointer">
