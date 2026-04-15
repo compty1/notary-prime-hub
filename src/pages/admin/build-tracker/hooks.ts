@@ -2,6 +2,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { TrackerItem, TrackerPlan, PlanItem } from "./constants";
+import type { Database } from "@/integrations/supabase/types";
+
+type TrackerInsert = Database["public"]["Tables"]["build_tracker_items"]["Insert"];
+type PlanInsert = Database["public"]["Tables"]["build_tracker_plans"]["Insert"];
 import { autoCategorize, STATUS } from "./constants";
 
 const ALL_KEYS = ["build-tracker-items", "build-tracker-plans"];
