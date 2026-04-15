@@ -154,9 +154,9 @@ export default function AdminAppointments() {
 
   const fetchData = async () => {
     let query = supabase.from("appointments").select("*").order("scheduled_date", { ascending: false }).range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
-    if (filter !== "all") query = query.eq("status", filter);
+    if (filter !== "all") query = query.eq("status", filter as "confirmed" | "scheduled" | "completed" | "cancelled" | "no_show" | "in_session" | "kba_pending" | "id_verification");
     if (serviceTypeFilter !== "all") query = query.eq("service_type", serviceTypeFilter);
-    if (notarizationTypeFilter !== "all") query = query.eq("notarization_type", notarizationTypeFilter);
+    if (notarizationTypeFilter !== "all") query = query.eq("notarization_type", notarizationTypeFilter as "in_person" | "ron");
     const df = getDateFilter();
     if (df) query = query.gte("scheduled_date", df.from).lte("scheduled_date", df.to);
     const [{ data: appts }, { data: profs }, { data: svcs }] = await Promise.all([
@@ -207,7 +207,7 @@ export default function AdminAppointments() {
       return;
     }
     setUpdatingId(id);
-    const { error } = await supabase.from("appointments").update({ status: newStatus }).eq("id", id);
+    const { error } = await supabase.from("appointments").update({ status: newStatus as "confirmed" | "scheduled" | "completed" | "cancelled" }).eq("id", id);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
