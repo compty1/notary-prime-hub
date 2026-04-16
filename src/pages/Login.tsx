@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Eye, EyeOff, Shield } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { logAuditEvent } from "@/lib/auditLog";
+import { isLoginLocked, recordFailedAttempt, clearLockout, getRemainingAttempts } from "@/lib/bruteForceProtection";
 
 export default function Login() {
   const { user, signIn, isAdmin, isNotary, loading } = useAuth();
@@ -59,16 +60,36 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (rateLimitEnd && Date.now() < rateLimitEnd) return;
+
+    // Sprint B (B-41..55): Client-side progressive lockout after 5 failed attempts
+    const lockState = isLoginLocked();
+    if (lockState.locked) {
+      setRateLimitEnd(Date.now() + lockState.remainingSeconds * 1000);
+      toast({
+        title: "Account temporarily locked",
+        description: `Too many failed attempts. Try again in ${lockState.remainingSeconds} seconds.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSubmitting(true);
-
-
     const { error } = await signIn(email, password);
     if (error) {
+      const updated = recordFailedAttempt();
       if (error.message?.includes("Too many login attempts")) {
         setRateLimitEnd(Date.now() + 60_000);
+      } else if (updated.lockedUntil) {
+        setRateLimitEnd(updated.lockedUntil);
       }
-      toast({ title: "Sign in failed", description: error.message, variant: "destructive" });
+      const remaining = getRemainingAttempts();
+      const desc = remaining > 0 && remaining <= 2
+        ? `${error.message} (${remaining} attempt${remaining === 1 ? "" : "s"} remaining)`
+        : error.message;
+      toast({ title: "Sign in failed", description: desc, variant: "destructive" });
       logAuditEvent("login_failed", { entityType: "auth", details: { email, reason: error.message } });
+    } else {
+      clearLockout();
     }
     setSubmitting(false);
   };
