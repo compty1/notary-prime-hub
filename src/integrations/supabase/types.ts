@@ -5365,6 +5365,8 @@ export type Database = {
         Row: {
           adjustment_type: string
           adjustment_value: number
+          after_hours_fee: number | null
+          base_price: number | null
           conditions: Json
           created_at: string
           deprecated_at: string | null
@@ -5372,14 +5374,21 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
+          per_signer_fee: number | null
           priority: number | null
           rule_type: string
+          rush_fee: number | null
+          service_id: string | null
+          service_name: string | null
           tier: string | null
+          travel_fee: number | null
           updated_at: string
         }
         Insert: {
           adjustment_type?: string
           adjustment_value?: number
+          after_hours_fee?: number | null
+          base_price?: number | null
           conditions?: Json
           created_at?: string
           deprecated_at?: string | null
@@ -5387,14 +5396,21 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
+          per_signer_fee?: number | null
           priority?: number | null
           rule_type?: string
+          rush_fee?: number | null
+          service_id?: string | null
+          service_name?: string | null
           tier?: string | null
+          travel_fee?: number | null
           updated_at?: string
         }
         Update: {
           adjustment_type?: string
           adjustment_value?: number
+          after_hours_fee?: number | null
+          base_price?: number | null
           conditions?: Json
           created_at?: string
           deprecated_at?: string | null
@@ -5402,12 +5418,25 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
+          per_signer_fee?: number | null
           priority?: number | null
           rule_type?: string
+          rush_fee?: number | null
+          service_id?: string | null
+          service_name?: string | null
           tier?: string | null
+          travel_fee?: number | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "pricing_rules_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       print_jobs: {
         Row: {
@@ -6425,7 +6454,9 @@ export type Database = {
           client_id: string
           comment: string | null
           created_at: string
+          display_name: string | null
           id: string
+          is_public: boolean
           is_verified: boolean
           notary_id: string | null
           rating: number
@@ -6435,7 +6466,9 @@ export type Database = {
           client_id: string
           comment?: string | null
           created_at?: string
+          display_name?: string | null
           id?: string
+          is_public?: boolean
           is_verified?: boolean
           notary_id?: string | null
           rating: number
@@ -6445,7 +6478,9 @@ export type Database = {
           client_id?: string
           comment?: string | null
           created_at?: string
+          display_name?: string | null
           id?: string
+          is_public?: boolean
           is_verified?: boolean
           notary_id?: string | null
           rating?: number
@@ -8749,19 +8784,25 @@ export type Database = {
           comment: string | null
           created_at: string | null
           id: string | null
+          notary_id: string | null
           rating: number | null
+          reviewer_name: string | null
         }
         Insert: {
           comment?: string | null
           created_at?: string | null
           id?: string | null
+          notary_id?: string | null
           rating?: number | null
+          reviewer_name?: never
         }
         Update: {
           comment?: string | null
           created_at?: string | null
           id?: string | null
+          notary_id?: string | null
           rating?: number | null
+          reviewer_name?: never
         }
         Relationships: []
       }
