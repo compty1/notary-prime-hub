@@ -243,13 +243,19 @@ export default function ClientPortal() {
 
   useEffect(() => {
     const loadStaff = async () => {
-      const { data: roles } = await supabase.from("user_roles").select("user_id, role").in("role", ["admin", "notary"]);
-      if (!roles || roles.length === 0) return;
-      const userIds = [...new Set(roles.map(r => r.user_id))];
-      const { data: profiles } = await supabase.from("profiles").select("user_id, full_name").in("user_id", userIds);
-      const staff = userIds.map(uid => ({ id: uid, name: profiles?.find(p => p.user_id === uid)?.full_name || "", role: roles.find(r => r.user_id === uid)?.role || "admin" }));
-      setStaffUsers(staff);
-      if (staff.length > 0 && !chatRecipient) setChatRecipient(staff[0].id);
+      try {
+        const { data: roles, error: rolesErr } = await supabase.from("user_roles").select("user_id, role").in("role", ["admin", "notary"]);
+        if (rolesErr) { console.error("M-11: Failed to load staff roles:", rolesErr.message); return; }
+        if (!roles || roles.length === 0) return;
+        const userIds = [...new Set(roles.map(r => r.user_id))];
+        const { data: profiles, error: profilesErr } = await supabase.from("profiles").select("user_id, full_name").in("user_id", userIds);
+        if (profilesErr) { console.error("M-11: Failed to load staff profiles:", profilesErr.message); return; }
+        const staff = userIds.map(uid => ({ id: uid, name: profiles?.find(p => p.user_id === uid)?.full_name || "", role: roles.find(r => r.user_id === uid)?.role || "admin" }));
+        setStaffUsers(staff);
+        if (staff.length > 0 && !chatRecipient) setChatRecipient(staff[0].id);
+      } catch (e) {
+        console.error("M-11: Staff loading error:", e);
+      }
     };
     if (user) loadStaff();
   }, [user]);
