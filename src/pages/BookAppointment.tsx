@@ -513,7 +513,7 @@ export default function BookAppointment() {
     // Detect notarial act type from service name
     const svcLower = (data.serviceType || serviceType).toLowerCase();
     let notarialActType: string | null = null;
-    for (const [keyword, actType] of Object.entries(NOTARIAL_ACT_MAP)) {
+    for (const [keyword, actType] of NOTARIAL_ACT_MAP) {
       if (svcLower.includes(keyword)) { notarialActType = actType; break; }
     }
     // B001/B002: Resolve ref slug to user_id for referral tracking
@@ -724,9 +724,16 @@ export default function BookAppointment() {
   const handleJoinWaitlist = async () => {
     if (!user || !date || !serviceType) return;
     setJoiningWaitlist(true);
+    // L-07: Look up service_id from services table for waitlist inserts
+    let serviceId: string | null = null;
+    if (serviceType) {
+      const { data: svcRow } = await supabase.from("services").select("id").ilike("name", serviceType).maybeSingle();
+      serviceId = svcRow?.id ?? null;
+    }
     const waitlistEntry: Record<string, string | null> = {
       user_id: user.id,
       preferred_date: date,
+      service_id: serviceId,
       status: "waiting",
     };
     const { error } = await supabase.from("waitlist").insert(waitlistEntry as never);
