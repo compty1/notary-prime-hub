@@ -30,7 +30,12 @@ export default function Login() {
 
   useEffect(() => {
     if (!loading && user) {
-      if (isAdmin || isNotary) {
+      // M-09: Read returnUrl from query params for post-auth redirect
+      const params = new URLSearchParams(window.location.search);
+      const returnUrl = params.get("returnUrl");
+      if (returnUrl && returnUrl.startsWith("/") && !returnUrl.startsWith("//")) {
+        navigate(returnUrl, { replace: true });
+      } else if (isAdmin || isNotary) {
         navigate("/admin", { replace: true });
       } else {
         navigate("/portal", { replace: true });
