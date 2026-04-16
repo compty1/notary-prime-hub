@@ -29,6 +29,8 @@ function lazyRetry(factory: () => Promise<{ default: React.ComponentType<any> }>
 }
 
 const Index = lazyRetry(() => import("./pages/Index"));
+const AdminShopOrders = lazyRetry(() => import("./pages/admin/AdminShopOrders"));
+const AdminServiceCatalogAudit = lazyRetry(() => import("./pages/admin/AdminServiceCatalogAudit"));
 const ResetPassword = lazyRetry(() => import("./pages/ForgotPassword"));
 const BookAppointment = lazyRetry(() => import("./pages/BookAppointment"));
 const ClientPortal = lazyRetry(() => import("./pages/ClientPortal"));
@@ -553,6 +555,8 @@ function AnimatedRoutes() {
         <Route path="print-pricing" element={<SR msg="Print pricing failed to load"><AdminPrintPricing /></SR>} />
         <Route path="pricing" element={<ProtectedRoute adminOnly><SR msg="Pricing engine failed to load"><AdminPricing /></SR></ProtectedRoute>} />
         <Route path="orders" element={<ProtectedRoute adminOnly><SR msg="Orders failed to load"><AdminOrders /></SR></ProtectedRoute>} />
+        <Route path="shop-orders" element={<ProtectedRoute adminOnly><SR msg="Shop orders failed to load"><AdminShopOrders /></SR></ProtectedRoute>} />
+        <Route path="service-catalog-audit" element={<ProtectedRoute adminOnly><SR msg="Catalog audit failed to load"><AdminServiceCatalogAudit /></SR></ProtectedRoute>} />
         <Route path="analytics" element={<ProtectedRoute adminOnly><SR msg="Analytics failed to load"><AdminAnalytics /></SR></ProtectedRoute>} />
         <Route path="contractors" element={<ProtectedRoute adminOnly><SR msg="Contractors failed to load"><AdminContractors /></SR></ProtectedRoute>} />
         <Route path="accounting" element={<ProtectedRoute adminOnly><SR msg="Accounting failed to load"><AdminAccounting /></SR></ProtectedRoute>} />
