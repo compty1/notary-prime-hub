@@ -1,0 +1,2 @@
+ALTER TABLE public.appointments ADD COLUMN IF NOT EXISTS priority_scheduling boolean NOT NULL DEFAULT false;
+CREATE INDEX IF NOT EXISTS idx_appointments_priority_scheduling ON public.appointments(priority_scheduling) WHERE priority_scheduling = true;
