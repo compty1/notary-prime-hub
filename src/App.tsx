@@ -435,7 +435,7 @@ function AnimatedRoutes() {
       <Route path="/plans" element={<SR msg="Plans failed to load"><SubscriptionPlans /></SR>} />
       <Route path="/dashboard" element={<Navigate to="/portal" replace />} />
       <Route path="/contact" element={<Navigate to="/#contact" replace />} />
-      <Route path="/verify-id" element={<ProtectedRoute><SR msg="Identity verification failed to load"><VerifyIdentity /></SR></ProtectedRoute>} />
+      {/* /verify-id route moved below to use requireVerifiedEmail gate (Sprint B) */}
       <Route path="/mobile-upload" element={<ProtectedRoute><SR msg="Mobile upload failed to load"><MobileUpload /></SR></ProtectedRoute>} />
       <Route path="/builder" element={<ProtectedRoute><SR msg="Document builder failed to load"><DocumentBuilder /></SR></ProtectedRoute>} />
       <Route path="/fee-calculator" element={<SR msg="Fee calculator failed to load"><FeeCalculator /></SR>} />
