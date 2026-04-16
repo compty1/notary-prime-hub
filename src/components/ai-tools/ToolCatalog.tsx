@@ -132,7 +132,7 @@ export function ToolCatalog({
                   <h2 className="text-xl font-bold text-foreground">{group.category}</h2>
                   <Badge variant="secondary" className="text-xs">{group.tools.length}</Badge>
                 </div>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                   {group.tools.map((tool, i) => (
                     <motion.div
                       key={tool.id}
