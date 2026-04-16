@@ -842,11 +842,28 @@ export default function ClientPortal() {
             <Button variant="outline" onClick={() => setEditProfileOpen(false)}>Cancel</Button>
             <Button onClick={saveProfile} disabled={savingProfile} className="">{savingProfile ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />} Save</Button>
           </DialogFooter>
-          <div className="mt-6 border-t border-destructive/20 pt-4">
+         <div className="mt-6 border-t border-destructive/20 pt-4">
             <p className="text-sm font-medium text-destructive mb-1">Close Account</p>
-            <p className="text-xs text-muted-foreground mb-3">This will permanently delete your account and all associated data.</p>
-            <AlertDialog><AlertDialogTrigger asChild><Button variant="outline" size="sm" className="text-destructive border-destructive/30 hover:bg-destructive/10">Close My Account</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle><AlertDialogDescription>This will permanently delete your account, all appointments, documents, and data.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => { if (!user) return; try { const resp = await supabase.functions.invoke("delete-account"); if (resp.error) throw resp.error; toast({ title: "Account closed", description: "Your account and all data have been permanently deleted." }); signOut(); } catch (e: any) { toast({ title: "Error", description: e.message || "Failed to delete account. Please contact support.", variant: "destructive" }); } }}>Yes, close my account</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+            <p className="text-xs text-muted-foreground mb-3">This will permanently delete your account and all associated data. You must re-enter your password to confirm.</p>
+            <Button variant="outline" size="sm" className="text-destructive border-destructive/30 hover:bg-destructive/10" onClick={() => setPasswordConfirmOpen(true)}>Close My Account</Button>
           </div>
+          <PasswordConfirmDialog
+            open={passwordConfirmOpen}
+            onOpenChange={setPasswordConfirmOpen}
+            title="Confirm Account Deletion"
+            description="Re-enter your password to permanently delete your account and all associated data."
+            onConfirmed={async () => {
+              if (!user) return;
+              try {
+                const resp = await supabase.functions.invoke("delete-account");
+                if (resp.error) throw resp.error;
+                toast({ title: "Account closed", description: "Your account and all data have been permanently deleted." });
+                signOut();
+              } catch (e: any) {
+                toast({ title: "Error", description: e.message || "Failed to delete account. Please contact support.", variant: "destructive" });
+              }
+            }}
+          />
         </DialogContent>
       </Dialog>
 
