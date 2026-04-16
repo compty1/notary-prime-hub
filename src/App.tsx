@@ -83,6 +83,8 @@ const ShopLanding = lazyRetry(() => import("./pages/shop/ShopLanding"));
 const ShopPackageDetail = lazyRetry(() => import("./pages/shop/ShopPackageDetail"));
 const ShopAddons = lazyRetry(() => import("./pages/shop/ShopAddons"));
 const ShopCart = lazyRetry(() => import("./pages/shop/ShopCart"));
+const ShopPackages = lazyRetry(() => import("./pages/shop/ShopPackages"));
+const ShopCheckout = lazyRetry(() => import("./pages/shop/ShopCheckout"));
 
 // Service module pages
 const EstatePlanningServices = lazyRetry(() => import("./pages/services/EstatePlanningServices"));
@@ -446,8 +448,10 @@ function AnimatedRoutes() {
       <Route path="/docudex" element={<ProtectedRoute><SR msg="DocuDex failed to load"><DocuDex /></SR></ProtectedRoute>} />
       <Route path="/print-shop" element={<SR msg="Print shop failed to load"><PrintMarketplace /></SR>} />
       <Route path="/shop" element={<SR msg="Shop failed to load"><ShopLanding /></SR>} />
+      <Route path="/shop/packages" element={<SR msg="Packages failed to load"><ShopPackages /></SR>} />
       <Route path="/shop/add-ons" element={<SR msg="Add-ons failed to load"><ShopAddons /></SR>} />
       <Route path="/shop/cart" element={<SR msg="Cart failed to load"><ShopCart /></SR>} />
+      <Route path="/shop/checkout" element={<SR msg="Checkout failed to load"><ShopCheckout /></SR>} />
       <Route path="/shop/:tier" element={<SR msg="Package detail failed to load"><ShopPackageDetail /></SR>} />
       {/* Duplicate /services/estate-planning removed — defined at line 356 */}
       <Route path="/services/business-contracts" element={<SR msg="Business contracts failed to load"><BusinessContractsServices /></SR>} />

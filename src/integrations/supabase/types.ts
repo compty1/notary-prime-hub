@@ -575,6 +575,7 @@ export type Database = {
           notarization_type: Database["public"]["Enums"]["notarization_type"]
           notary_id: string | null
           notes: string | null
+          priority_scheduling: boolean
           recurrence_rule: string | null
           referral_professional_id: string | null
           referral_source: string | null
@@ -612,6 +613,7 @@ export type Database = {
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
           notary_id?: string | null
           notes?: string | null
+          priority_scheduling?: boolean
           recurrence_rule?: string | null
           referral_professional_id?: string | null
           referral_source?: string | null
@@ -649,6 +651,7 @@ export type Database = {
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
           notary_id?: string | null
           notes?: string | null
+          priority_scheduling?: boolean
           recurrence_rule?: string | null
           referral_professional_id?: string | null
           referral_source?: string | null
