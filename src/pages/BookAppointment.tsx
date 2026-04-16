@@ -161,11 +161,8 @@ export default function BookAppointment() {
     return () => clearTimeout(timer);
   }, [user, step, serviceType, date, time, notes, clientAddress, notarizationType]);
 
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(pos => { setUserLat(pos.coords.latitude); setUserLon(pos.coords.longitude); }, () => {}, { timeout: 5000 });
-    }
-  }, []);
+  // L-04: Geolocation deferred — only requested when user clicks "Use my location"
+  // Removed automatic geolocation request on mount
   usePageMeta({ title: notaryBranding ? `Book with ${notaryBranding.display_name}` : "Book a Notary Appointment", description: "Schedule an in-person or remote online notarization appointment with an Ohio-commissioned notary. Same-day availability in Columbus, OH." });
 
   // Bug 33: Use sessionStorage for pending bookings (more secure on shared computers)
@@ -174,7 +171,7 @@ export default function BookAppointment() {
       const raw = sessionStorage.getItem(BOOKING_STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (parsed._savedAt && Date.now() - parsed._savedAt > 24 * 60 * 60 * 1000) {
+        if (parsed._savedAt && Date.now() - parsed._savedAt > BOOKING_DRAFT_EXPIRY_MS) {
           sessionStorage.removeItem(BOOKING_STORAGE_KEY);
         }
       }
@@ -186,7 +183,7 @@ export default function BookAppointment() {
     const handler = (e: BeforeUnloadEvent) => { if (hasData) e.preventDefault(); };
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
-  }, [serviceType, date, time, notes, step]);
+  }, [serviceType, date, time, notes, step, clientAddress]);
 
   const { settings: cachedSettings } = useSettings();
   useEffect(() => {
