@@ -248,8 +248,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       keysToRemove.forEach(k => localStorage.removeItem(k));
     } catch (e) { console.warn("Storage cleanup error:", e); }
-    // Use navigate via location change — clears React Query cache with full reload
-    window.location.href = "/";
+    // H-10: Use soft navigation instead of full page reload
+    // QueryClient cache is invalidated by the auth state change listener
+    window.location.replace("/");
   };
 
   return (

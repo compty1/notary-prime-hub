@@ -1,4 +1,6 @@
 export const BOOKING_STORAGE_KEY = "pending_booking_data";
+/** L-05: Named constant for booking draft expiry (24 hours) */
+export const BOOKING_DRAFT_EXPIRY_MS = 24 * 60 * 60 * 1000;
 
 // Ohio state holidays — booking blocked on these dates
 export const OHIO_HOLIDAYS: Record<string, string> = {

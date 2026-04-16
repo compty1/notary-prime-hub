@@ -118,14 +118,10 @@ export default function Index() {
     });
   }, []);
 
-  const [dbServices, setDbServices] = useState<{ name: string; short_description: string | null; icon: string | null; category: string | null }[]>([]);
+  // C-06: Removed dead dbServices query — services are rendered from static arrays above
   const [dbReviews, setDbReviews] = useState<{ name: string; text: string; rating: number }[]>([]);
 
   useEffect(() => {
-    supabase.from("services").select("name, short_description, icon, category")
-      .eq("is_active", true).order("display_order").limit(6)
-      .then(({ data }) => { if (data && data.length > 0) setDbServices(data); });
-
     supabase.from("reviews").select("rating, comment, created_at, client_id")
       .eq("rating", 5).order("created_at", { ascending: false }).limit(3)
       .then(async ({ data: reviews }) => {

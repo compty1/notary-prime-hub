@@ -42,6 +42,7 @@ import PortalAIToolsTab from "./portal/PortalAIToolsTab";
 import PortalNotaryPageTab from "./portal/PortalNotaryPageTab";
 import PortalEmailsTab from "./portal/PortalEmailsTab";
 import CredentialVault from "@/components/CredentialVault";
+import PasswordConfirmDialog from "@/components/PasswordConfirmDialog";
 import TodoPanel from "@/components/TodoPanel";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 const pipelineSteps = [
@@ -98,6 +99,7 @@ export default function ClientPortal() {
   const [apostilleRequests, setApostilleRequests] = useState<any[]>([]);
   const [apostilleForm, setApostilleForm] = useState({ document_description: "", notes: "", destination_country: "", document_count: "1" });
   const [submittingApostille, setSubmittingApostille] = useState(false);
+  const [passwordConfirmOpen, setPasswordConfirmOpen] = useState(false);
   const [payingPaymentId, setPayingPaymentId] = useState<string | null>(null);
   const { get: getSetting } = useSettings(["zoom_meeting_link"]);
   const zoomLink = getSetting("zoom_meeting_link", "");
@@ -241,13 +243,19 @@ export default function ClientPortal() {
 
   useEffect(() => {
     const loadStaff = async () => {
-      const { data: roles } = await supabase.from("user_roles").select("user_id, role").in("role", ["admin", "notary"]);
-      if (!roles || roles.length === 0) return;
-      const userIds = [...new Set(roles.map(r => r.user_id))];
-      const { data: profiles } = await supabase.from("profiles").select("user_id, full_name").in("user_id", userIds);
-      const staff = userIds.map(uid => ({ id: uid, name: profiles?.find(p => p.user_id === uid)?.full_name || "", role: roles.find(r => r.user_id === uid)?.role || "admin" }));
-      setStaffUsers(staff);
-      if (staff.length > 0 && !chatRecipient) setChatRecipient(staff[0].id);
+      try {
+        const { data: roles, error: rolesErr } = await supabase.from("user_roles").select("user_id, role").in("role", ["admin", "notary"]);
+        if (rolesErr) { console.error("M-11: Failed to load staff roles:", rolesErr.message); return; }
+        if (!roles || roles.length === 0) return;
+        const userIds = [...new Set(roles.map(r => r.user_id))];
+        const { data: profiles, error: profilesErr } = await supabase.from("profiles").select("user_id, full_name").in("user_id", userIds);
+        if (profilesErr) { console.error("M-11: Failed to load staff profiles:", profilesErr.message); return; }
+        const staff = userIds.map(uid => ({ id: uid, name: profiles?.find(p => p.user_id === uid)?.full_name || "", role: roles.find(r => r.user_id === uid)?.role || "admin" }));
+        setStaffUsers(staff);
+        if (staff.length > 0 && !chatRecipient) setChatRecipient(staff[0].id);
+      } catch (e) {
+        console.error("M-11: Staff loading error:", e);
+      }
     };
     if (user) loadStaff();
   }, [user]);
@@ -842,11 +850,28 @@ export default function ClientPortal() {
             <Button variant="outline" onClick={() => setEditProfileOpen(false)}>Cancel</Button>
             <Button onClick={saveProfile} disabled={savingProfile} className="">{savingProfile ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />} Save</Button>
           </DialogFooter>
-          <div className="mt-6 border-t border-destructive/20 pt-4">
+         <div className="mt-6 border-t border-destructive/20 pt-4">
             <p className="text-sm font-medium text-destructive mb-1">Close Account</p>
-            <p className="text-xs text-muted-foreground mb-3">This will permanently delete your account and all associated data.</p>
-            <AlertDialog><AlertDialogTrigger asChild><Button variant="outline" size="sm" className="text-destructive border-destructive/30 hover:bg-destructive/10">Close My Account</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle><AlertDialogDescription>This will permanently delete your account, all appointments, documents, and data.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => { if (!user) return; try { const resp = await supabase.functions.invoke("delete-account"); if (resp.error) throw resp.error; toast({ title: "Account closed", description: "Your account and all data have been permanently deleted." }); signOut(); } catch (e: any) { toast({ title: "Error", description: e.message || "Failed to delete account. Please contact support.", variant: "destructive" }); } }}>Yes, close my account</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+            <p className="text-xs text-muted-foreground mb-3">This will permanently delete your account and all associated data. You must re-enter your password to confirm.</p>
+            <Button variant="outline" size="sm" className="text-destructive border-destructive/30 hover:bg-destructive/10" onClick={() => setPasswordConfirmOpen(true)}>Close My Account</Button>
           </div>
+          <PasswordConfirmDialog
+            open={passwordConfirmOpen}
+            onOpenChange={setPasswordConfirmOpen}
+            title="Confirm Account Deletion"
+            description="Re-enter your password to permanently delete your account and all associated data."
+            onConfirmed={async () => {
+              if (!user) return;
+              try {
+                const resp = await supabase.functions.invoke("delete-account");
+                if (resp.error) throw resp.error;
+                toast({ title: "Account closed", description: "Your account and all data have been permanently deleted." });
+                signOut();
+              } catch (e: any) {
+                toast({ title: "Error", description: e.message || "Failed to delete account. Please contact support.", variant: "destructive" });
+              }
+            }}
+          />
         </DialogContent>
       </Dialog>
 
