@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { formatDate } from "@/lib/utils";
 import { useSettings } from "@/hooks/useSettings";
 import { INTAKE_ONLY_SERVICES, SAAS_LINKS, SUBSCRIPTION_SERVICES as SUBSCRIPTION_SVC_SET, PORTAL_SERVICES as PORTAL_SVC_SET } from "@/lib/serviceConstants";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -129,8 +130,8 @@ export default function ClientPortal() {
     return "Notarize Now";
   };
 
-  const formatDate = (dateStr: string) => new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
-  // Note: local formatDate used here for specific weekday format; shared utils formatDate used elsewhere
+  // M-13: Use shared formatDate from utils
+  const formatDateLocal = (dateStr: string) => formatDate(dateStr, { includeWeekday: true, includeYear: true });
 
   useEffect(() => {
     if (!user) return;

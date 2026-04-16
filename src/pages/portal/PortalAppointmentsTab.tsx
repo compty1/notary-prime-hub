@@ -26,7 +26,9 @@ const statusColors: Record<string, string> = {
 
 export { statusColors };
 
-const formatDate = (dateStr: string) => new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+// M-13: Use shared formatDate from utils
+import { formatDate as sharedFormatDate } from "@/lib/utils";
+const formatDate = (dateStr: string) => sharedFormatDate(dateStr, { includeWeekday: true, includeYear: true });
 const formatTime = (timeStr: string) => {
   const [h, m] = timeStr.split(":");
   const hour = parseInt(h);

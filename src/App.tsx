@@ -340,8 +340,9 @@ function AnimatedRoutes() {
       <Route path="/signup" element={<SignUp />} />
       <Route path="/reset-password" element={<SR><ResetPassword /></SR>} />
       <Route path="/book" element={<SR msg="Booking failed to load"><BookAppointment /></SR>} />
-      <Route path="/booking" element={<SR msg="Booking failed to load"><BookAppointment /></SR>} />
-      <Route path="/schedule" element={<SR msg="Booking failed to load"><BookAppointment /></SR>} />
+      {/* H-02: Consolidate /booking and /schedule to /book */}
+      <Route path="/booking" element={<Navigate to="/book" replace />} />
+      <Route path="/schedule" element={<Navigate to="/book" replace />} />
       <Route path="/notary-guide" element={<SR><NotaryGuide /></SR>} />
       <Route path="/ron-info" element={<SR><RonInfo /></SR>} />
       <Route path="/services" element={<SR msg="Services failed to load"><Services /></SR>} />
@@ -419,7 +420,8 @@ function AnimatedRoutes() {
       <Route path="/solutions/small-business" element={<SR><ForSmallBusiness /></SR>} />
       <Route path="/solutions/individuals" element={<SR><ForIndividuals /></SR>} />
       <Route path="/notaries" element={<SR msg="Notary directory failed to load"><NotaryDirectory /></SR>} />
-      <Route path="/professionals" element={<SR msg="Professional directory failed to load"><NotaryDirectory /></SR>} />
+      {/* H-04: Redirect /professionals to /notaries */}
+      <Route path="/professionals" element={<Navigate to="/notaries" replace />} />
       <Route path="/n/:slug" element={<SR msg="Professional page failed to load"><NotaryPage /></SR>} />
       <Route path="/notary/*" element={<Navigate to="/notaries" replace />} />
       <Route path="/digitize" element={<ProtectedRoute><SR msg="Document digitize failed to load"><DocumentDigitize /></SR></ProtectedRoute>} />
@@ -482,7 +484,8 @@ function AnimatedRoutes() {
         <Route path="availability" element={<SR msg="Availability failed to load"><AdminAvailability /></SR>} />
         <Route path="documents" element={<SR msg="Documents failed to load"><AdminDocuments /></SR>} />
         <Route path="journal" element={<SR msg="Journal failed to load"><AdminJournal /></SR>} />
-        <Route path="revenue" element={<ProtectedRoute adminOnly><SR msg="Revenue failed to load"><AdminRevenue /></SR></ProtectedRoute>} />
+        {/* M-05: Removed redundant ProtectedRoute — parent already gates admin */}
+        <Route path="revenue" element={<SR msg="Revenue failed to load"><AdminRevenue /></SR>} />
         <Route path="templates" element={<SR msg="Templates failed to load"><AdminTemplates /></SR>} />
         <Route path="apostille" element={<SR msg="Apostille failed to load"><AdminApostille /></SR>} />
         <Route path="chat" element={<SR msg="Chat failed to load"><AdminChat /></SR>} />
