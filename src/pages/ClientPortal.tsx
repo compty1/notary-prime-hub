@@ -37,6 +37,8 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { PortalOnboardingChecklist } from "@/components/PortalOnboardingChecklist";
 import { PortalQuickActions } from "@/components/PortalQuickActions";
+import { ShopRecommendationWidget } from "@/components/shop/ShopRecommendationWidget";
+import { PackageStatusWidget } from "@/components/shop/PackageStatusWidget";
 import { DocumentReadinessScore } from "@/components/DocumentReadinessScore";
 import { ReferralPortal } from "@/components/ReferralPortal";
 import PortalAIToolsTab from "./portal/PortalAIToolsTab";
@@ -518,6 +520,8 @@ export default function ClientPortal() {
                 </Card>
 
                 <PortalQuickActions />
+                <PackageStatusWidget />
+                <ShopRecommendationWidget />
               </div>
             </div>
 

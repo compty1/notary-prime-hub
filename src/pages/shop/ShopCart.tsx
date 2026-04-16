@@ -97,9 +97,11 @@ export default function ShopCart() {
                   <div className="flex justify-between text-sm"><span>Subtotal</span><span>${total.toFixed(2)}</span></div>
                   <Separator />
                   <div className="flex justify-between font-black text-lg"><span>Total</span><span>${total.toFixed(2)}</span></div>
-                  <Button className="w-full rounded-full font-bold" size="lg" disabled>
-                    Proceed to Checkout — ${total.toFixed(2)}
-                  </Button>
+                  <Link to="/shop/checkout" className="block">
+                    <Button className="w-full rounded-full font-bold" size="lg" variant="accent">
+                      Proceed to Checkout — ${total.toFixed(2)}
+                    </Button>
+                  </Link>
                   <p className="text-xs text-muted-foreground text-center">Secure checkout powered by Stripe</p>
                   <Button variant="ghost" size="sm" className="w-full text-xs text-destructive"
                     onClick={() => clearCart.mutate()}>

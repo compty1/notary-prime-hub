@@ -69,6 +69,30 @@ Deno.serve(async (req) => {
     }
 
     switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        const meta = session.metadata || {};
+        if (meta.order_type === "shop" && meta.shop_order_id) {
+          // Mark shop order paid + clear cart
+          await supabase.from("shop_orders").update({
+            status: "paid",
+          }).eq("id", meta.shop_order_id);
+          if (meta.supabase_user_id) {
+            await supabase.from("shop_cart_items").delete().eq("user_id", meta.supabase_user_id);
+            // Authority tier perk: set priority_scheduling on user's future appointments
+            const { data: order } = await supabase.from("shop_orders").select("items").eq("id", meta.shop_order_id).maybeSingle();
+            const items = (order?.items as any[]) || [];
+            const hasAuthority = items.some(i => typeof i?.name === "string" && i.name.toLowerCase().includes("authority"));
+            if (hasAuthority) {
+              await supabase.from("appointments")
+                .update({ priority_scheduling: true })
+                .eq("client_id", meta.supabase_user_id)
+                .gte("scheduled_date", new Date().toISOString().slice(0, 10));
+            }
+          }
+        }
+        break;
+      }
       case "payment_intent.succeeded": {
         const pi = event.data.object as Stripe.PaymentIntent;
         const metaParsed = PaymentMetadataSchema.safeParse(pi.metadata || {});
