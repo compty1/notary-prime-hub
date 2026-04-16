@@ -341,6 +341,7 @@ function AnimatedRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/reset-password" element={<SR><ResetPassword /></SR>} />
+      {/* Sprint B (B-01): Allow guest booking but gate verified-only features inside the page */}
       <Route path="/book" element={<SR msg="Booking failed to load"><BookAppointment /></SR>} />
       {/* H-02: Consolidate /booking and /schedule to /book */}
       <Route path="/booking" element={<Navigate to="/book" replace />} />
@@ -477,9 +478,11 @@ function AnimatedRoutes() {
       <Route path="/reschedule/:confirmationNumber" element={<SR msg="Reschedule failed to load"><RescheduleAppointment /></SR>} />
       <Route path="/account-settings" element={<ProtectedRoute><SR msg="Account settings failed to load"><AccountSettings /></SR></ProtectedRoute>} />
       <Route path="/portal" element={<ProtectedRoute><SR msg="Portal failed to load"><ClientPortal /></SR></ProtectedRoute>} />
-      <Route path="/confirmation" element={<ProtectedRoute><SR msg="Confirmation failed to load"><AppointmentConfirmation /></SR></ProtectedRoute>} />
-      <Route path="/ron-session" element={<ProtectedRoute><SR msg="RON session failed to load"><RonSession /></SR></ProtectedRoute>} />
-      <Route path="/business-portal" element={<ProtectedRoute><SR msg="Business portal failed to load"><BusinessPortal /></SR></ProtectedRoute>} />
+      <Route path="/confirmation" element={<ProtectedRoute requireVerifiedEmail gateAction="appointment confirmation"><SR msg="Confirmation failed to load"><AppointmentConfirmation /></SR></ProtectedRoute>} />
+      {/* Sprint B (B-11): /ron-session enforces email verification AND MFA via routeRequiresMFA */}
+      <Route path="/ron-session" element={<ProtectedRoute requireVerifiedEmail gateAction="remote online notarization sessions"><SR msg="RON session failed to load"><RonSession /></SR></ProtectedRoute>} />
+      <Route path="/business-portal" element={<ProtectedRoute requireVerifiedEmail gateAction="the business portal"><SR msg="Business portal failed to load"><BusinessPortal /></SR></ProtectedRoute>} />
+      <Route path="/verify-id" element={<ProtectedRoute requireVerifiedEmail gateAction="identity verification"><SR msg="Identity verification failed to load"><VerifyIdentity /></SR></ProtectedRoute>} />
       {/* Admin routes — parent requireAdmin gate handles auth for all children (ARCH-002) */}
       <Route path="/admin" element={<ProtectedRoute requireAdmin><SR><AdminDashboard /></SR></ProtectedRoute>}>
         <Route index element={<SR msg="Overview failed to load"><AdminOverview /></SR>} />
