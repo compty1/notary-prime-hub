@@ -40,9 +40,9 @@ export default function AdminServiceCatalogAudit() {
       {report && (
         <>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <StatCard label="Registry Entries" value={report.registryCount} icon={<CheckCircle className="h-4 w-4 text-emerald-600" />} />
+            <StatCard label="Registry Entries" value={report.registryCount} icon={<CheckCircle className="h-4 w-4 text-primary" />} />
             <StatCard label="DB Services" value={report.dbCount} icon={<Database className="h-4 w-4 text-primary" />} />
-            <StatCard label="Missing Pricing" value={report.missingPricingRules.length} icon={<AlertTriangle className="h-4 w-4 text-amber-600" />} alert={report.missingPricingRules.length > 0} />
+            <StatCard label="Missing Pricing" value={report.missingPricingRules.length} icon={<AlertTriangle className="h-4 w-4 text-muted-foreground" />} alert={report.missingPricingRules.length > 0} />
             <StatCard label="Orphan DB Rows" value={report.orphanedDbServices.length} icon={<AlertTriangle className="h-4 w-4 text-destructive" />} alert={report.orphanedDbServices.length > 0} />
           </div>
 
@@ -93,7 +93,7 @@ function AuditSection<T>({ title, items, render }: { title: string; items: T[]; 
       <CardContent>
         {items.length === 0 ? (
           <p className="text-xs text-muted-foreground flex items-center gap-1">
-            <CheckCircle className="h-3 w-3 text-emerald-600" /> All clear.
+            <CheckCircle className="h-3 w-3 text-primary" /> All clear.
           </p>
         ) : (
           <ScrollArea className="h-48">
