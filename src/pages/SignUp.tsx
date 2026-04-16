@@ -13,6 +13,8 @@ import { useToast } from "@/hooks/use-toast";
 import { CheckCircle, Eye, EyeOff, Shield, FileText, Lock } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { getPasswordStrength } from "@/lib/utils";
+import { checkPasswordBreach } from "@/lib/hibpCheck";
+import { isDisposableEmail } from "@/lib/security";
 
 const strengthLabels = ["", "Very Weak", "Weak", "Fair", "Strong", "Very Strong"];
 
@@ -57,7 +59,23 @@ export default function SignUp() {
       toast({ title: "Accept Terms", description: "Please accept the Terms of Service to continue.", variant: "destructive" });
       return;
     }
+    // Sprint B (B-46): Block disposable email domains
+    if (isDisposableEmail(email)) {
+      toast({ title: "Disposable email blocked", description: "Please use a permanent email address.", variant: "destructive" });
+      return;
+    }
     setSubmitting(true);
+    // Sprint B (B-46): HIBP breach check (k-anonymity, password never leaves device)
+    const hibp = await checkPasswordBreach(password);
+    if (hibp.breached) {
+      setSubmitting(false);
+      toast({
+        title: "Password found in data breach",
+        description: `This password has appeared in ${hibp.count.toLocaleString()} known breaches. Please choose a different password.`,
+        variant: "destructive",
+      });
+      return;
+    }
     const { error } = await signUp(email, password, fullName);
     if (error) {
       toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
