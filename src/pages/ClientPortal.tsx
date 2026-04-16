@@ -42,6 +42,7 @@ import PortalAIToolsTab from "./portal/PortalAIToolsTab";
 import PortalNotaryPageTab from "./portal/PortalNotaryPageTab";
 import PortalEmailsTab from "./portal/PortalEmailsTab";
 import CredentialVault from "@/components/CredentialVault";
+import PasswordConfirmDialog from "@/components/PasswordConfirmDialog";
 import TodoPanel from "@/components/TodoPanel";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 const pipelineSteps = [
@@ -98,6 +99,7 @@ export default function ClientPortal() {
   const [apostilleRequests, setApostilleRequests] = useState<any[]>([]);
   const [apostilleForm, setApostilleForm] = useState({ document_description: "", notes: "", destination_country: "", document_count: "1" });
   const [submittingApostille, setSubmittingApostille] = useState(false);
+  const [passwordConfirmOpen, setPasswordConfirmOpen] = useState(false);
   const [payingPaymentId, setPayingPaymentId] = useState<string | null>(null);
   const { get: getSetting } = useSettings(["zoom_meeting_link"]);
   const zoomLink = getSetting("zoom_meeting_link", "");
