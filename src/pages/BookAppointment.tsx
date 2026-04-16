@@ -24,7 +24,7 @@ import { calculatePrice, parseSettings, type PricingBreakdown } from "@/lib/pric
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PageShell } from "@/components/PageShell";
 import {
-  BookingStep, NotarizationType, BOOKING_STORAGE_KEY, fallbackServiceTypes,
+  BookingStep, NotarizationType, BOOKING_STORAGE_KEY, BOOKING_DRAFT_EXPIRY_MS, fallbackServiceTypes,
   HAGUE_COUNTRIES, isDigitalOnly, requiresNotarizationType, getStateAbbr, formatTimeSlot,
 } from "./booking/bookingConstants";
 import BookingIntakeFields from "./booking/BookingIntakeFields";
