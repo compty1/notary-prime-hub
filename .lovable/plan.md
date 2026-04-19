@@ -1,144 +1,275 @@
 
+## Theme & Recent Implementations Audit
 
-# Comprehensive Build Audit — 800+ Gaps & Bugs Across Build, Flow, Services, Admin, Backend
+Let me inspect the current theme system and recently created files (Sprints A–L) for gaps and bugs.
+<lov-tool-use id="toolu_vrtx_01E1oqUt5g3rLRPoaepnSHnX" name="code--view" integration-id="code" data="{\"file_path\": \"src/index.css\", \"lines\": \"1-150\"}">
+</lov-tool-use>
 
-## Discovery Summary
+<lov-tool-use id="toolu_vrtx_0141ENe6d1Vk6jiNj5Bwc7SW" name="code--view" integration-id="code" data="{\"file_path\": \"src/components/MFAGate.tsx\"}">
+</lov-tool-use>
 
-- **294 pages, 268 routes, 60 edge functions, 169 services, 188 platform settings**
-- **Critical gaps found:**
-  - `pricing_rules` table is **empty (0 rows)** despite seeding plan — pricing engine has no data
-  - `EmailVerificationGate` component exists but is **never imported/used** anywhere
-  - Shop tables (`shop_packages`, `shop_addons`) only have 5 frontend references — UI not fully wired to DB
-  - **283 of 294 pages** lack `ErrorBoundary` wrappers (only 11 do)
-  - **1144** `: any` type annotations across the codebase
-  - **5 god-files** > 700 LOC: `BookAppointment` (1019), `AdminSettings` (992), `ClientPortal` (892), `AdminCRM` (737), `AdminProcessFlows`
-  - **Security scan: 4 errors/warnings** — Realtime channel auth missing, vendors/vendor_products/pricing_rules over-exposed
-  - **Service registry has 41 entries vs 46 service pages vs 47 routes vs 169 DB rows** — four sources of truth, all out of sync
-  - **23 unit tests total, 0 e2e tests** for a production platform handling Ohio RON compliance
+<lov-tool-use id="toolu_vrtx_01A5PQfg9Qpjw97gJuNAETEM" name="code--view" integration-id="code" data="{\"file_path\": \"src/components/ProtectedRoute.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01LnaBENTyb2i9Thc96Swwfv" name="code--view" integration-id="code" data="{\"file_path\": \"src/lib/hibpCheck.ts\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01CZisB8MnMPYHfGX6qCoEnD" name="code--view" integration-id="code" data="{\"file_path\": \"src/lib/booking/bookingReducer.ts\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01YANGVGaidJBZZYgLk3eXuo" name="code--view" integration-id="code" data="{\"file_path\": \"src/lib/booking/slotReservation.ts\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01WKJH2qDiK8NJhQa9Hdo93r" name="code--view" integration-id="code" data="{\"file_path\": \"src/lib/booking/icsExport.ts\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01HNqDJXTqAC3PC3Wru1vLHd" name="code--view" integration-id="code" data="{\"file_path\": \"src/components/PortalTabErrorBoundary.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01USVhBXBAVDVy5ptcQthvN1" name="code--view" integration-id="code" data="{\"file_path\": \"src/lib/serviceCatalogAudit.ts\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01LokA4JpvrGHvwra5xmry5q" name="code--view" integration-id="code" data="{\"file_path\": \"src/pages/admin/AdminServiceCatalogAudit.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_012szQbZ5tSVNYCo5cxXWR2Z" name="code--view" integration-id="code" data="{\"file_path\": \"src/pages/admin/AdminShopOrders.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01Gs1DPngjzsCpnVbWcUkcma" name="code--view" integration-id="code" data="{\"file_path\": \"src/hooks/usePagedQuery.ts\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01Bv4bRhdvPvSmZMR9qBbgmu" name="code--view" integration-id="code" data="{\"file_path\": \"src/hooks/useRealtimeTable.ts\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_012gtfbY8hfNHGgSTv7StNWw" name="code--view" integration-id="code" data="{\"file_path\": \"src/lib/formatters.ts\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01N5VbTGavUwCyJiBMwv1ogv" name="code--view" integration-id="code" data="{\"file_path\": \"src/components/compliance/KbaAttemptCounter.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01Bwf1ZecCJy57cWjk86f7a4" name="code--view" integration-id="code" data="{\"file_path\": \"src/components/compliance/RecordingConsentGate.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_019A3LVk6QNmfxViN8KRfHST" name="code--view" integration-id="code" data="{\"file_path\": \"src/pages/Login.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01PxkD2wkKSUAkaTF4TexKcM" name="code--view" integration-id="code" data="{\"file_path\": \"src/pages/SignUp.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_019kFBi4ukpaPgtgK2PuiV9v" name="code--view" integration-id="code" data="{\"file_path\": \"src/App.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01U4i8WYuT89TKGXGREq6zg1" name="code--search_files" integration-id="code" data="{\"query\": \"bruteForceProtection|isDisposableEmail\", \"include_patterns\": \"src/**/*.ts,src/**/*.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01Rnw9xdQ6G1QpxU9VmskVGB" name="code--search_files" integration-id="code" data="{\"query\": \"EmailVerificationGate\", \"include_patterns\": \"src/**/*.ts,src/**/*.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_015NLLXjSNEBekBVAMKXUMBJ" name="security--get_scan_results" integration-id="security" data="">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_015RUNuGJeaWuHy8yWGwtWQs" name="supabase--linter" integration-id="supabase" data="">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_013WCLPMHeCiFEdfbt4nmvLM" name="security--get_scan_results" integration-id="security" data="">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_0191NZFhanBnZH1hH5j69BVw" name="supabase--linter" integration-id="supabase" data="">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01HEdaTkACkCZY6ksE98DtAm" name="code--search_files" integration-id="code" data="{\"query\": \"EmailVerificationGate\", \"include_patterns\": \"src/**/*.tsx,src/**/*.ts\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01LwcM7WYsVoWYMAfefWhMJA" name="code--search_files" integration-id="code" data="{\"query\": \"bruteForceProtection|isDisposableEmail\", \"include_patterns\": \"src/**/*.ts,src/**/*.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_014tuTKy5iHsbPjqnLGVzGYt" name="code--view" integration-id="code" data="{\"file_path\": \"src/index.css\", \"lines\": \"1-200\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_012z9tZW1oybxHhnYXTvgPx8" name="code--view" integration-id="code" data="{\"file_path\": \"src/components/ProtectedRoute.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01LPUmmaNu1XgCzxp1zwLjHH" name="code--view" integration-id="code" data="{\"file_path\": \"src/components/MFAGate.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01L4QYjH5aHb8UCvoHkPHaC3" name="code--view" integration-id="code" data="{\"file_path\": \"src/pages/Login.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01Vj9s7LTegpX1YCNaTXUq7J" name="code--view" integration-id="code" data="{\"file_path\": \"src/pages/SignUp.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01BsG55bYhxekid8CyVBzCuS" name="code--view" integration-id="code" data="{\"file_path\": \"src/lib/booking/bookingReducer.ts\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_013LkyTaAJE5Fwys3kqr7bef" name="code--view" integration-id="code" data="{\"file_path\": \"src/pages/admin/AdminShopOrders.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01JdhnQhcmmNxgeC1QzsyaPZ" name="code--view" integration-id="code" data="{\"file_path\": \"src/lib/serviceCatalogAudit.ts\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01UrPSxSnPRKnytSVxstspXi" name="code--view" integration-id="code" data="{\"file_path\": \"src/index.css\", \"lines\": \"200-670\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01FZFpH1X84NKgV1y9wr4yqm" name="code--view" integration-id="code" data="{\"file_path\": \"src/App.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_013nEpoyZbAATTXr2443UL9J" name="code--search_files" integration-id="code" data="{\"include_patterns\": \"src/**/*.tsx\", \"query\": \"PortalTabErrorBoundary|PackageStatusWidget|ShopRecommendationWidget\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01DGzvmJHHherLwXZ88kFUCQ" name="code--search_files" integration-id="code" data="{\"include_patterns\": \"src/**/*.tsx\", \"query\": \"/admin/shop-orders|/admin/service-catalog-audit\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01R4qEhpwFckbbE28WrB6JQ9" name="code--view" integration-id="code" data="{\"file_path\": \"src/components/EmailVerificationGate.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01R6mYMAWwU7gfGPvaS9u5wQ" name="code--view" integration-id="code" data="{\"file_path\": \"src/lib/bruteForceProtection.ts\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_012J7D1ztCrEgvUn9o25odh3" name="code--view" integration-id="code" data="{\"file_path\": \"src/lib/booking/slotReservation.ts\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01HyJg27Ut6qDT9YTQHaX7hx" name="code--view" integration-id="code" data="{\"file_path\": \"src/lib/booking/icsExport.ts\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01YD79bfymamXafSh2hzkKQy" name="code--view" integration-id="code" data="{\"file_path\": \"src/components/PortalTabErrorBoundary.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_0133dwZX6DXaG9gtf38rrCut" name="code--view" integration-id="code" data="{\"file_path\": \"src/lib/formatters.ts\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01XK2iyekJjTsFu1vjmGwSkF" name="code--view" integration-id="code" data="{\"file_path\": \"src/hooks/usePagedQuery.ts\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01CuATVAo1i1VtFbtmhtJgsJ" name="code--view" integration-id="code" data="{\"file_path\": \"src/hooks/useRealtimeTable.ts\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01QJ11o47WaKw7jdXidEaXeA" name="code--view" integration-id="code" data="{\"file_path\": \"src/lib/hibpCheck.ts\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01SzGnChBWsWq8AHvFEivTEW" name="code--view" integration-id="code" data="{\"file_path\": \"src/components/compliance/RecordingConsentGate.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01Xf6kzuJVFRa7nGmqnUrPbF" name="code--view" integration-id="code" data="{\"file_path\": \"src/components/compliance/KbaAttemptCounter.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01Xqa1qmHu9HzonmZ4GmsV52" name="code--view" integration-id="code" data="{\"file_path\": \"src/pages/admin/AdminServiceCatalogAudit.tsx\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01ScKfwuhuMcVwsii6sKB34H" name="code--search_files" integration-id="code" data="{\"include_patterns\": \"src/App.tsx\", \"query\": \"AdminShopOrders|AdminServiceCatalogAudit|shop-orders|service-catalog-audit\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_019bKfkLxw1oUZ2DRDLXVeym" name="code--search_files" integration-id="code" data="{\"include_patterns\": \"src/**/*.tsx\", \"query\": \"RecordingConsentGate|KbaAttemptCounter\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01CU13ZqmrQjF5nopbtJ6Zhn" name="code--search_files" integration-id="code" data="{\"include_patterns\": \"src/**/*.tsx,src/**/*.ts\", \"query\": \"PortalTabErrorBoundary\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01255427EUoERzAvXEDfsrbF" name="code--search_files" integration-id="code" data="{\"include_patterns\": \"src/**/*.tsx,src/**/*.ts\", \"query\": \"bookingReducer|reserveSlot|downloadIcs|buildIcs\"}">
+</lov-tool-use>
+
+<lov-tool-use id="toolu_vrtx_01U5iSL8ZxaqAM8bDb1AeDqN" name="code--search_files" integration-id="code" data="{\"include_patterns\": \"src/**/*.tsx,src/**/*.ts\", \"query\": \"from \\\"@/lib/formatters\\\"|from \\\"@/hooks/usePagedQuery\\\"|from \\\"@/hooks/useRealtimeTable\\\"\"}">
+</lov-tool-use>
+I have enough context. Critical findings:
+
+1. **Sprint infrastructure built but NOT WIRED:**
+   - `PortalTabErrorBoundary` exists but never imported/used (ClientPortal tabs still unprotected)
+   - `bookingReducer`, `reserveSlot`, `icsExport (buildIcs/downloadIcs)` exist but BookAppointment / AppointmentConfirmation still use legacy `generateICS` from `icsGenerator.ts` and old `useState` patterns
+   - `RecordingConsentGate`, `KbaAttemptCounter` exist but NEVER mounted in `RonSession.tsx`
+   - `formatters.ts`, `usePagedQuery`, `useRealtimeTable` exist but ZERO consumers (only test file imports formatters)
+   - `MFAGate` enforces but `Sign Up MFA` link goes to `/account-settings?tab=security` — need to verify
+2. **App.tsx** routes wire `shop-orders` and `service-catalog-audit` correctly ✓ but not surfaced in admin sidebar (no nav link)
+3. **Theme bugs:**
+   - `--warning` is set to same yellow (45 86% 48%) as `--primary` — warnings indistinguishable from primary CTAs
+   - Dark mode `--accent` (30 10% 16%) very dark — accent becomes invisible vs background (30 10% 8%)
+   - Hardcoded `bg-yellow-500/30`, `text-yellow-700` in `EmailVerificationGate`, `ProtectedRoute` — violates semantic theming standard
+   - Login OAuth button has hardcoded SVG fills (#4285F4, etc) — acceptable for Google brand, OK
+   - Hardcoded `bg-card/5` in SignUp dark panel — incorrect on white card
+   - `glass-card` and `glass` use hardcoded HSL `hsla(...)` values not tokens
+   - Two duplicate `@media print` blocks (lines 506-523 + 644-668) — wasteful & conflicting
+   - Duplicate keyframes (`shimmer` 495 vs `skeletonSweep` 435) doing same thing
+   - `bg-card/5` on dark panel = invisible (white card 5% opacity over black = barely visible) — fine actually
+4. **Auth:**
+   - `Login.tsx` "Continue with Google" uses `lovable.auth.signInWithOAuth` — verify this exists
+   - SignUp success card uses `bg-primary text-white` — should be `text-primary-foreground`
+   - SignUp brand panel uses `text-muted-foreground` on dark `bg-foreground` — low contrast
+5. **Booking/RON gaps:** new compliance components & helpers built but not integrated into actual session/booking pages.
+6. **Security finding still open:** `notary_journal.id_number` plaintext, `platform_settings_anon_readable`, `RLS_policy_always_true`.
+7. **`releaseSlot`** in `slotReservation.ts` calls `update appointments status=cancelled` — bypasses state machine, no audit; risky.
+
+<lov-plan>
+
+# Audit Findings + Fix Plan — Theme & Recent Implementations
+
+## Findings (deep audit)
+
+### A. Sprint scaffolding built but NEVER WIRED (dead code)
+1. `PortalTabErrorBoundary` — never imported. ClientPortal tabs still crash whole portal on error.
+2. `RecordingConsentGate` + `KbaAttemptCounter` — never mounted in `RonSession.tsx`. ORC §147.63 / §147.66 enforcement is theoretical only.
+3. `bookingReducer` + `reserveSlot` + `icsExport` — `BookAppointment.tsx` (1019 LOC) still uses 50+ useStates; `AppointmentConfirmation.tsx` still uses legacy `generateICS`. Refactor isn't applied.
+4. `formatters.ts`, `usePagedQuery`, `useRealtimeTable` — zero production consumers. Currency/date/phone are still locally duplicated everywhere.
+5. `AdminShopOrders` + `AdminServiceCatalogAudit` routes exist but NOT in admin sidebar nav — admins can't reach them.
+
+### B. Theme / design-system bugs
+6. `--warning` = `45 86% 48%` (identical to `--primary`). Warning toasts/badges look like CTAs. Change to amber `38 92% 50%`.
+7. Dark `--accent` (`30 10% 16%`) sits on dark `--background` (`30 10% 8%`) — nearly invisible. Lift to `30 12% 22%`.
+8. Hardcoded yellow tokens in `EmailVerificationGate.tsx` (`bg-yellow-500/5`, `text-yellow-700`) and `ProtectedRoute.tsx` (same). Violates semantic-theming-standard mem rule. Replace with `bg-warning/10`, `text-warning-foreground`.
+9. `index.css`: duplicate `@media print` block (lines 506-523 + 644-668) — merge.
+10. Duplicate keyframes `shimmer` vs `skeletonSweep` (identical) — dedupe.
+11. `glass` / `glass-card` use hardcoded `hsla(0,0%,100%,0.92)` etc. Convert to `hsl(var(--card) / 0.92)`.
+12. `SignUp.tsx`: success button uses `bg-primary text-white` — should be `text-primary-foreground` for proper contrast on dark/light themes. Same in left form submit.
+13. `SignUp.tsx` brand panel: `text-muted-foreground` on `bg-foreground` (dark) is low-contrast. Use `text-background/80`.
+
+### C. Security findings still OPEN
+14. `notary_journal.id_number` stored plaintext (warn). Add pgsodium-encrypted column + view; defer if too heavy this round → at minimum mask in admin views.
+15. `platform_settings` anon-readable via fragile pattern allowlist — replace with explicit `key IN (...)` allowlist of public keys (already partially done; verify and tighten).
+16. Supabase scanner: `RLS_policy_always_true` still flagged on at least one INSERT/UPDATE policy — locate + scope.
+
+### D. Booking & RON wiring gaps
+17. `slotReservation.releaseSlot` writes `status='cancelled'` without using appointment-state-machine, no audit log entry, no refund hook.
+18. `RonSession.tsx` start flow has no consent gate or KBA counter.
+
+### E. Auth finishing touches
+19. `MFAGate` "Set Up MFA" routes to `/account-settings?tab=security` — verify tab exists; if not, this gate is a dead-end.
+20. `Login.tsx` Google OAuth uses `lovable.auth.signInWithOAuth` wrapper — confirm provider configured; otherwise show graceful error not toast spam.
 
 ---
 
-## Plan: 800 Items Across 12 Sprints
+## Fix Plan (single sprint, ~20 items)
 
-### Sprint A — Critical Security & Data Integrity (60 items)
-- A-01..04: Fix 4 security scan findings (Realtime channel auth, vendors RLS, vendor_products RLS, pricing_rules RLS, platform_settings anon access)
-- A-05..10: Move `pg_trgm` and other extensions out of `public` schema
-- A-11..15: Replace `USING (true)` permissive policies with scoped checks
-- A-16..30: Audit all 188 `platform_settings` keys for sensitive-by-naming exposure (commission #, seal paths, office coords)
-- A-31..45: Add column-level RLS or views to hide cost/margin/wholesale fields from non-admin reads
-- A-46..60: Seed `pricing_rules` with full price matrix for 169 services (zone × service-type × surcharge)
+**Wiring (highest impact)**
+1. Mount `PortalTabErrorBoundary` around each tab body in `ClientPortal.tsx` (Documents, Chat, Appointments, Correspondence, Overview, Referrals).
+2. Mount `RecordingConsentGate` as the gate for `RonSession` start; mount `KbaAttemptCounter` in the KBA step with `onSessionTerminate` → terminate session + audit.
+3. Refactor `AppointmentConfirmation.tsx` to use `buildIcs/downloadIcs` from `lib/booking/icsExport`; deprecate duplicate `icsGenerator.ts`/`calendarSync.ts` `downloadICS` exports (keep one canonical).
+4. Migrate `BookAppointment.tsx` time-slot booking to `reserveSlot` helper (replaces ad-hoc RPC calls). Defer full reducer migration; introduce reducer for the last 3 steps (review/payment/confirmation) only.
+5. Add `AdminShopOrders` + `AdminServiceCatalogAudit` links to admin sidebar (group: "Operations" / "Catalog").
+6. Replace local `formatCurrency`/`formatDate` duplicates in top 6 admin pages (`AdminFinances`, `AdminRevenue`, `AdminOrders`, `AdminShopOrders`, `AdminAnalytics`, `AdminClients`) with `@/lib/formatters`.
 
-### Sprint B — Auth, Verification & Account Hardening (55 items)
-- B-01..10: Wire `EmailVerificationGate` into `/book`, `/portal/documents`, `/portal/correspondence`, `/ron-session`, `/payment`
-- B-11..20: Add MFA enforcement guards to `/admin/*`, `/ron-session`, financial routes (currently inconsistent)
-- B-21..30: Implement signup verification interstitial + resend logic + grace-period messaging
-- B-31..40: Session timeout warnings (15-min idle), refresh-token rotation status UI, ActiveSessions revoke
-- B-41..55: Password strength meter on all 3 password inputs, breach-check via HIBP k-anon, lockout after 5 failures
+**Theme fixes**
+7. `index.css`: change `--warning` to `38 92% 50%` (light) and `38 92% 60%` (dark). Add `--warning-foreground` `0 0% 10%`.
+8. Lift dark `--accent` to `30 12% 22%`.
+9. Convert `glass` / `glass-card` to use `hsl(var(--card) / X)` tokens.
+10. Dedupe `@media print` blocks — keep merged single block.
+11. Remove duplicate `shimmer`/`skeletonSweep` keyframe (alias one to the other).
+12. `EmailVerificationGate.tsx` + `ProtectedRoute.tsx`: replace hardcoded yellow with `border-warning/30 bg-warning/10 text-warning`.
+13. `SignUp.tsx`: replace `text-white` with `text-primary-foreground` on primary buttons; brand panel paragraph `text-background/70`.
 
-### Sprint C — Booking Engine Refactor & Flow Bugs (75 items)
-- C-01: Refactor `BookAppointment.tsx` (1019 LOC, 50+ useState) into `useReducer` + extracted step components
-- C-02..15: Fix race conditions in slot reservation; unify `check_and_reserve_slot` RPC usage across all entry points
-- C-16..25: Reschedule flow — conflict detector, fee calculation, notify counterparties, calendar resync
-- C-26..35: Cancellation flow — reason capture, refund automation tier, waitlist auto-promote
-- C-36..45: Mobile booking — geolocation opt-in, 50-mile radius enforcement display, distance-based fee preview
-- C-46..55: Multi-signer flow (2-witness gating for Signature-by-Mark per Ohio compliance)
-- C-56..65: Add-on selection during booking (apostille, courier, translation, witness)
-- C-66..75: Confirmation page — calendar export (.ics), SMS opt-in, prep checklist, document upload prompt
+**Security**
+14. Migration: tighten any remaining `USING (true)` INSERT/UPDATE policies (locate via pg_policies query, scope to `auth.uid()` or admin role).
+15. Migration: re-verify `platform_settings` RLS allowlist enumerates only safe keys (site_name, brand_*, business_hours_label, copyright_text, notary_phone, notary_email).
+16. Mask `notary_journal.id_number` in admin/notary views — display only last 4 chars unless explicit reveal action (audit-logged).
 
-### Sprint D — Client Portal Completeness (65 items)
-- D-01: Refactor `ClientPortal.tsx` (892 LOC) — split data fetching into per-tab hooks
-- D-02..10: Per-section error boundaries with retry buttons (currently fails entire portal on one query error)
-- D-11..20: Skeleton loaders for all 9 portal tabs (only ~5 have them)
-- D-21..30: Documents tab — bulk select, ZIP download, share link with expiry, e-sign request
-- D-31..40: Chat tab — typing indicators, read receipts, file attachments, search history
-- D-41..50: Appointments tab — past-session recording playback, journal entry view, certificate download
-- D-51..60: Correspondence tab — formal letter request form, status tracking, PDF generation
-- D-61..65: Mount `PackageStatusWidget` + `ShopRecommendationWidget` on overview tab (already created, not mounted)
+**Booking integrity**
+17. Update `releaseSlot` to call `transition_appointment_status` RPC (state machine) and write `audit_log` entry.
 
-### Sprint E — Admin Suite Completion (90 items)
-- E-01..10: Add `ErrorBoundary` to all 116 admin pages (currently inconsistent)
-- E-11..25: Standardize Block-Shadow design across admin (some pages use plain Card, breaks brand)
-- E-26..40: Admin sidebar — restore drag-drop persistence, add badges for queues, group by domain
-- E-41..50: AdminAppointments — bulk reschedule, kanban view, SLA breach alerts, deadline timer
-- E-51..65: AdminCRM (737 LOC refactor) — split lead/contact/deal modules, fix scoring sync
-- E-66..75: AdminFinances — P&L drill-down, contractor payout batch, refund audit trail
-- E-76..85: AdminAnalytics — funnel viz, cohort retention, service-mix revenue, NPS chart
-- E-86..90: AdminAuditLog — search, filter by action/entity, CSV export, retention policy display
+**Auth polish**
+18. Verify `/account-settings` tab=security renders MFA enrollment; if missing, add the tab + TOTP enrollment widget.
 
-### Sprint F — Service Catalog Consolidation (95 items)
-- F-01..10: Reconcile 4 sources of truth: `services` table (169) ↔ `serviceRegistry.ts` (41) ↔ `/services/*` pages (46) ↔ `App.tsx` routes (47)
-- F-11..30: Audit each of 169 DB services — orphaned (no page), missing intake form, missing pricing rule
-- F-31..50: Add missing intake pages for orphaned services (~25 estimated)
-- F-51..70: Add `ServiceFlowConfig` entries for all 46 service pages (currently incomplete)
-- F-71..85: Add cross-sell rules for 22 services missing recommendations
-- F-86..95: ServiceDetail page — schema markup, reviews aggregate, related services, pricing transparency
+**Tests**
+19. Add Vitest test for `PortalTabErrorBoundary` (catches throw, shows retry).
+20. Add Vitest test for `RecordingConsentGate` (blocks until both checkboxes set, calls `onConsented` after).
 
-### Sprint G — Shop System Wiring (45 items)
-- G-01..10: Wire `ShopLanding` → `shop_packages` DB query (currently hardcoded?)
-- G-11..15: Wire `ShopAddons` → `shop_addons` filter/sort/category tabs
-- G-16..20: `ShopCart` real-time sync via `shop_cart_items` + cross-tab broadcast
-- G-21..25: `ShopCheckout` Stripe session error handling, abandoned-cart recovery, promo codes
-- G-26..30: `stripe-webhook` — receipt email, cart-cleared confirmation, fulfillment trigger
-- G-31..35: Fulfillment dashboard for shop orders (admin-side, currently missing)
-- G-36..40: Add-on attach during booking flow (D-56 wires this back to shop)
-- G-41..45: Authority-tier perk surfacing — priority badge in admin views, "skip the line" indicator for client
-
-### Sprint H — Edge Function Hardening (60 items)
-- H-01..15: Audit all 60 functions for Zod input validation (estimated ~20 missing)
-- H-16..25: Add rate limiting to public endpoints (`submit-lead`, `discover-leads`, `scan-id`)
-- H-26..35: HMAC verify on all webhooks (`signnow-webhook`, `stripe-webhook` already done; audit others)
-- H-36..45: DLQ pattern on all webhook receivers + retry workers
-- H-46..55: Edge function logs surfaced in `AdminPlatformHealth` with error budgets
-- H-56..60: Cold-start optimization — shared imports, KV cache for settings
-
-### Sprint I — Compliance & Ohio RON (55 items)
-- I-01..10: Audit all journal entries for `ORC §147.141` per-document requirement enforcement
-- I-11..20: 10-year retention scheduler — `cron`-style cleanup, deletion audit log, legal hold flag
-- I-21..30: KBA attempt counter UI + 2-attempt hard cap per `ORC §147.66`
-- I-31..40: Recording consent gating — block session start without explicit opt-in capture
-- I-41..50: Refusal log workflow — admin review queue, ORC-cite dropdown, client notification
-- I-51..55: Vital records blocking — bind to `notarial_act_type` enum + audit trail
-
-### Sprint J — UI/UX Polish & Performance (95 items)
-- J-01..30: Skeleton loaders on remaining 137 data-heavy pages
-- J-31..50: Empty-state components with CTA on all list views (currently mixed)
-- J-51..70: Keyboard navigation pass — focus traps in dialogs, escape handling, tab order
-- J-71..80: Mobile responsiveness audit — sidebar collapse, table-to-card transforms, sticky CTAs
-- J-81..90: Image optimization — convert PNGs to WebP, lazy-load below-fold, CDN headers
-- J-91..95: Bundle analysis — code-split routes, tree-shake icons, defer analytics
-
-### Sprint K — Code Quality & Type Safety (80 items)
-- K-01..30: Replace 1144 `any` types with proper interfaces (top 30 hottest files)
-- K-31..50: Eliminate 13 `XXX/HACK/TODO` markers
-- K-51..60: Refactor god-files (`BookAppointment`, `ClientPortal`, `AdminSettings`, `AdminCRM`, `AdminProcessFlows`)
-- K-61..70: Extract repeated patterns into hooks (`usePagedQuery`, `useRealtimeTable`, `useFormDraft`)
-- K-71..80: Standardize `formatDate`, `formatCurrency`, `formatPhone` — eliminate local duplicates
-
-### Sprint L — Testing & Observability (75 items)
-- L-01..15: Vitest unit tests for `pricingEngine`, `bookingEngine`, `ohioCompliance`, `formValidation`
-- L-16..30: Playwright e2e suites — booking happy path, RON session, payment, admin auth
-- L-31..40: Integration tests for edge functions (Deno test runner)
-- L-41..55: Sentry-style error tracking — wire to `audit_log` table + admin dashboard
-- L-56..65: Structured logging in all 60 edge functions with `correlation_id`
-- L-66..75: Synthetic monitoring — `health-check` cron from external poller, status page
-
----
-
-## Implementation Order
-
-| Phase | Sprint | Focus | Items |
-|---|---|---|---|
-| 1 | A + B | Security + Auth (must-fix blockers) | 115 |
-| 2 | I + H | Compliance + Edge function hardening | 115 |
-| 3 | C + D | Booking + Portal flow fixes | 140 |
-| 4 | F + G | Catalog reconciliation + Shop wiring | 140 |
-| 5 | E | Admin suite completion | 90 |
-| 6 | J + K | UX polish + code quality | 175 |
-| 7 | L | Testing + observability | 75 |
-
-**Total: 850 items** (target ≥800)
-
-Each sprint is delivered as a single batch with DB migrations grouped, edge function deploys batched, and a verification report after.
-
-I will start with **Sprint A (Critical Security)** upon approval — fixing the 4 security findings, seeding `pricing_rules`, and tightening RLS — since downstream sprints depend on a clean security baseline.
+### Files touched
+- Edit: `src/index.css`, `src/components/EmailVerificationGate.tsx`, `src/components/ProtectedRoute.tsx`, `src/pages/SignUp.tsx`, `src/pages/ClientPortal.tsx`, `src/pages/RonSession.tsx`, `src/pages/AppointmentConfirmation.tsx`, `src/pages/BookAppointment.tsx`, `src/lib/booking/slotReservation.ts`, admin sidebar nav config, 6 admin pages for formatter swap.
+- Create: 1 SQL migration (RLS tighten + ID number masking view), 2 test files.
+- No deletions of existing services/routes (per layered-enhancement constraint).
 
