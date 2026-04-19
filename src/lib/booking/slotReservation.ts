@@ -43,11 +43,38 @@ export async function reserveSlot(opts: {
   }
 }
 
-/** Release a previously-reserved slot (for cancellation or step-back) */
-export async function releaseSlot(appointmentId: string): Promise<void> {
-  await supabase
+/**
+ * Release a previously-reserved slot (cancellation or step-back).
+ * Writes an audit log entry so the cancellation is traceable per Ohio
+ * RON record-keeping requirements.
+ */
+export async function releaseSlot(
+  appointmentId: string,
+  reason: string = "slot_released"
+): Promise<void> {
+  const { error } = await supabase
     .from("appointments")
-    .update({ status: "cancelled" })
+    .update({
+      status: "cancelled",
+      admin_notes: `Slot released: ${reason}`,
+    } as never)
     .eq("id", appointmentId)
     .eq("status", "scheduled");
+
+  if (error) {
+    console.error("[releaseSlot] failed:", error.message);
+    return;
+  }
+
+  // Best-effort audit log (does not block the release)
+  try {
+    await supabase.rpc("log_audit_event", {
+      _action: "appointment.slot_released",
+      _entity_type: "appointment",
+      _entity_id: appointmentId,
+      _details: { reason } as never,
+    });
+  } catch (e) {
+    console.warn("[releaseSlot] audit log failed:", e);
+  }
 }

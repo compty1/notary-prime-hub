@@ -120,7 +120,7 @@ export default function SignUp() {
               {submitting ? "Sending..." : "Resend Verification Email"}
             </Button>
             <Link to="/login">
-              <Button className="rounded-xl bg-primary text-white hover:bg-primary/85 shadow-soft">Go to Sign In</Button>
+              <Button className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/85 shadow-soft">Go to Sign In</Button>
             </Link>
           </div>
         </div>
@@ -182,7 +182,7 @@ export default function SignUp() {
                 I agree to the <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link> and <Link to="/terms" className="text-primary hover:underline">Privacy Policy</Link>
               </Label>
             </div>
-            <Button type="submit" className="w-full rounded-xl bg-primary text-white font-bold hover:bg-primary/85 shadow-soft h-11" disabled={submitting || !acceptTerms}>
+            <Button type="submit" className="w-full rounded-xl bg-primary text-primary-foreground font-bold hover:bg-primary/85 shadow-soft h-11" disabled={submitting || !acceptTerms}>
               {submitting ? "Creating account..." : "Create Account"}
             </Button>
             <div className="relative my-4">
@@ -212,23 +212,23 @@ export default function SignUp() {
       </div>
 
       {/* Right — Brand panel (desktop only) */}
-      <div className="hidden lg:flex lg:w-[45%] flex-col items-center justify-center bg-foreground p-12 text-white">
+      <div className="hidden lg:flex lg:w-[45%] flex-col items-center justify-center bg-foreground p-12 text-background">
         <div className="max-w-sm text-center space-y-8">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[24px] bg-primary/20">
             <Shield className="h-10 w-10 text-primary" />
           </div>
           <h2 className="text-3xl font-black">Ohio's Trusted<br />Notary Platform</h2>
-          <p className="text-muted-foreground">Join thousands of Ohioans who trust Notar for secure, compliant notarization services.</p>
+          <p className="text-background/70">Join thousands of Ohioans who trust Notar for secure, compliant notarization services.</p>
           <div className="grid grid-cols-2 gap-4 text-left">
-            <div className="rounded-2xl bg-card/5 p-4">
+            <div className="rounded-2xl bg-background/10 p-4">
               <FileText className="h-5 w-5 text-primary mb-2" />
               <p className="text-sm font-bold">Document Upload</p>
-              <p className="text-xs text-muted-foreground">Secure cloud storage</p>
+              <p className="text-xs text-background/70">Secure cloud storage</p>
             </div>
-            <div className="rounded-2xl bg-card/5 p-4">
+            <div className="rounded-2xl bg-background/10 p-4">
               <Lock className="h-5 w-5 text-primary mb-2" />
               <p className="text-sm font-bold">Bank-Level Security</p>
-              <p className="text-xs text-muted-foreground">End-to-end encryption</p>
+              <p className="text-xs text-background/70">End-to-end encryption</p>
             </div>
           </div>
         </div>

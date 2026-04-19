@@ -81,9 +81,9 @@ const ProtectedRoute = ({
   return (
     <>
       {!emailConfirmed && !requireVerifiedEmail && (
-        <Alert className="mx-auto mt-2 max-w-3xl border-yellow-500/30 bg-yellow-500/5">
-          <AlertTriangle className="h-4 w-4 text-yellow-600" />
-          <AlertDescription className="text-sm text-yellow-700 dark:text-yellow-400">
+        <Alert className="mx-auto mt-2 max-w-3xl border-warning/30 bg-warning/10">
+          <AlertTriangle className="h-4 w-4 text-warning" />
+          <AlertDescription className="text-sm text-warning-foreground">
             Your email is not verified. Please check your inbox for a verification link to access all features.
           </AlertDescription>
         </Alert>
