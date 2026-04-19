@@ -48,6 +48,7 @@ import CredentialVault from "@/components/CredentialVault";
 import PasswordConfirmDialog from "@/components/PasswordConfirmDialog";
 import TodoPanel from "@/components/TodoPanel";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { PortalTabErrorBoundary } from "@/components/PortalTabErrorBoundary";
 const pipelineSteps = [
   { key: "uploaded", label: "Intake", icon: Upload },
   { key: "pending_review", label: "Review", icon: FileText },
@@ -530,11 +531,15 @@ export default function ClientPortal() {
           )}
 
           {activeSection === "appointments" && (
-            <PortalAppointmentsTab appointments={appointments} loading={loading} zoomLink={zoomLink} onCancelClick={setCancelDialogId} onTechCheck={() => setTechCheckOpen(true)} />
+            <PortalTabErrorBoundary tabName="Appointments">
+              <PortalAppointmentsTab appointments={appointments} loading={loading} zoomLink={zoomLink} onCancelClick={setCancelDialogId} onTechCheck={() => setTechCheckOpen(true)} />
+            </PortalTabErrorBoundary>
           )}
 
           {activeSection === "documents" && user && (
-            <PortalDocumentsTab userId={user.id} documents={documents} setDocuments={setDocuments} upcomingAppointments={upcoming} onExplainDocument={explainDocument} />
+            <PortalTabErrorBoundary tabName="Documents">
+              <PortalDocumentsTab userId={user.id} documents={documents} setDocuments={setDocuments} upcomingAppointments={upcoming} onExplainDocument={explainDocument} />
+            </PortalTabErrorBoundary>
           )}
 
           {activeSection === "status" && (
