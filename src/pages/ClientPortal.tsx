@@ -48,6 +48,7 @@ import CredentialVault from "@/components/CredentialVault";
 import PasswordConfirmDialog from "@/components/PasswordConfirmDialog";
 import TodoPanel from "@/components/TodoPanel";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { PortalTabErrorBoundary } from "@/components/PortalTabErrorBoundary";
 const pipelineSteps = [
   { key: "uploaded", label: "Intake", icon: Upload },
   { key: "pending_review", label: "Review", icon: FileText },
@@ -530,11 +531,15 @@ export default function ClientPortal() {
           )}
 
           {activeSection === "appointments" && (
-            <PortalAppointmentsTab appointments={appointments} loading={loading} zoomLink={zoomLink} onCancelClick={setCancelDialogId} onTechCheck={() => setTechCheckOpen(true)} />
+            <PortalTabErrorBoundary tabName="Appointments">
+              <PortalAppointmentsTab appointments={appointments} loading={loading} zoomLink={zoomLink} onCancelClick={setCancelDialogId} onTechCheck={() => setTechCheckOpen(true)} />
+            </PortalTabErrorBoundary>
           )}
 
           {activeSection === "documents" && user && (
-            <PortalDocumentsTab userId={user.id} documents={documents} setDocuments={setDocuments} upcomingAppointments={upcoming} onExplainDocument={explainDocument} />
+            <PortalTabErrorBoundary tabName="Documents">
+              <PortalDocumentsTab userId={user.id} documents={documents} setDocuments={setDocuments} upcomingAppointments={upcoming} onExplainDocument={explainDocument} />
+            </PortalTabErrorBoundary>
           )}
 
           {activeSection === "status" && (
@@ -564,11 +569,15 @@ export default function ClientPortal() {
           )}
 
           {activeSection === "chat" && user && (
-            <PortalChatTab userId={user.id} chatMessages={chatMessages} chatInput={chatInput} setChatInput={setChatInput} sendingChat={sendingChat} chatRecipient={chatRecipient} setChatRecipient={setChatRecipient} staffUsers={staffUsers} onSend={sendChatMessage} chatEndRef={chatEndRef as React.RefObject<HTMLDivElement>} />
+            <PortalTabErrorBoundary tabName="Chat">
+              <PortalChatTab userId={user.id} chatMessages={chatMessages} chatInput={chatInput} setChatInput={setChatInput} sendingChat={sendingChat} chatRecipient={chatRecipient} setChatRecipient={setChatRecipient} staffUsers={staffUsers} onSend={sendChatMessage} chatEndRef={chatEndRef as React.RefObject<HTMLDivElement>} />
+            </PortalTabErrorBoundary>
           )}
 
           {activeSection === "correspondence" && user && (
-            <PortalCorrespondenceTab userId={user.id} correspondence={correspondence} setCorrespondence={setCorrespondence} />
+            <PortalTabErrorBoundary tabName="Correspondence">
+              <PortalCorrespondenceTab userId={user.id} correspondence={correspondence} setCorrespondence={setCorrespondence} />
+            </PortalTabErrorBoundary>
           )}
 
           {activeSection === "apostille" && (
@@ -694,7 +703,9 @@ export default function ClientPortal() {
           )}
 
           {activeSection === "requests" && (
-            <PortalServiceRequestsTab serviceRequests={serviceRequests} />
+            <PortalTabErrorBoundary tabName="Service Requests">
+              <PortalServiceRequestsTab serviceRequests={serviceRequests} />
+            </PortalTabErrorBoundary>
           )}
 
           {activeSection === "reminders" && (
@@ -741,7 +752,9 @@ export default function ClientPortal() {
           )}
 
           {activeSection === "ai-tools" && (
-            <PortalAIToolsTab />
+            <PortalTabErrorBoundary tabName="AI Tools">
+              <PortalAIToolsTab />
+            </PortalTabErrorBoundary>
           )}
 
           {activeSection === "referral" && (

@@ -43,12 +43,12 @@ export default function EmailVerificationGate({ children, action = "this feature
 
   return (
     <div className="flex min-h-[400px] items-center justify-center p-6">
-      <Alert className="max-w-lg border-yellow-500/30 bg-yellow-500/5">
-        <ShieldAlert className="h-5 w-5 text-yellow-600" />
-        <AlertTitle className="text-yellow-700 dark:text-yellow-400">Email Verification Required</AlertTitle>
+      <Alert className="max-w-lg border-warning/30 bg-warning/10">
+        <ShieldAlert className="h-5 w-5 text-warning" />
+        <AlertTitle className="text-warning-foreground">Email Verification Required</AlertTitle>
         <AlertDescription className="mt-2 space-y-3">
           <p className="text-sm text-muted-foreground">
-            You must verify your email address before accessing {action}. 
+            You must verify your email address before accessing {action}.
             Please check your inbox for a verification link.
           </p>
           <Button
