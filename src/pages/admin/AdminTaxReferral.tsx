@@ -81,8 +81,8 @@ export default function AdminTaxReferral() {
                   <TableCell>{c.referralCount}</TableCell>
                   <TableCell>
                     <div className="flex gap-1">
-                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() = aria-label="Action"> window.open(`mailto:${c.email}`)}><Mail className="h-3.5 w-3.5" /></Button>
-                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() = aria-label="Action"> window.open(`tel:${c.phone}`)}><Phone className="h-3.5 w-3.5" /></Button>
+                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => window.open(`mailto:${c.email}`)} aria-label="Action"><Mail className="h-3.5 w-3.5" /></Button>
+                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => window.open(`tel:${c.phone}`)} aria-label="Action"><Phone className="h-3.5 w-3.5" /></Button>
                     </div>
                   </TableCell>
                 </TableRow>

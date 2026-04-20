@@ -98,8 +98,8 @@ export default function AdminPromoCodeManager() {
                   <TableCell>{c.times_used || 0}/{c.max_uses || "∞"}</TableCell>
                   <TableCell><Badge variant={c.is_active ? "default" : "secondary"}>{c.is_active ? "Active" : "Inactive"}</Badge></TableCell>
                   <TableCell className="flex gap-1">
-                    <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> openEdit(c)}><Pencil className="h-4 w-4" /></Button>
-                    <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> handleDelete(c.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                    <Button variant="ghost" size="icon" onClick={() => openEdit(c)} aria-label="Action"><Pencil className="h-4 w-4" /></Button>
+                    <Button variant="ghost" size="icon" onClick={() => handleDelete(c.id)} aria-label="Action"><Trash2 className="h-4 w-4 text-destructive" /></Button>
                   </TableCell>
                 </TableRow>
               ))}

@@ -93,7 +93,7 @@ export default function PortalChatTab({ userId, chatMessages, chatInput, setChat
           </div>
           <div className="flex gap-2">
             <input type="file" ref={fileRef} className="hidden" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.webp" onChange={handleFileUpload} />
-            <Button size="icon" variant="ghost" onClick={() = aria-label="Action"> fileRef.current?.click()} aria-label="Attach file">
+            <Button size="icon" variant="ghost" onClick={() => fileRef.current?.click()} aria-label="Action" aria-label="Attach file">
               <Paperclip className="h-4 w-4" />
             </Button>
             <label htmlFor="chat-message-input" className="sr-only">Type a message</label>

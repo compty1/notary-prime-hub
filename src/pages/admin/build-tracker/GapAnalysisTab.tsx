@@ -280,7 +280,7 @@ export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange,
                         <Checkbox checked={item.is_on_todo} onCheckedChange={(v) => update.mutate({ id: item.id, is_on_todo: !!v })} />
                       </TableCell>
                       <TableCell onClick={(e) => e.stopPropagation()}>
-                        <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() = aria-label="Action"> setDeleteIds([item.id])}>
+                        <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => setDeleteIds([item.id])} aria-label="Action">
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </TableCell>

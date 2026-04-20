@@ -93,10 +93,10 @@ export function PaginatedTable<T>({
             <span>per page</span>
           </div>
           <div className="flex items-center gap-1">
-            <Button variant="outline" size="icon" className="h-8 w-8" disabled={page === 0} onClick={() = aria-label="Action"> setPage(0)}>
+            <Button variant="outline" size="icon" className="h-8 w-8" disabled={page === 0} onClick={() => setPage(0)} aria-label="Action">
               <ChevronsLeft className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="icon" className="h-8 w-8" disabled={page === 0} onClick={() = aria-label="Action"> setPage(p => p - 1)}>
+            <Button variant="outline" size="icon" className="h-8 w-8" disabled={page === 0} onClick={() => setPage(p => p - 1)} aria-label="Action">
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <span className="px-3 text-xs font-medium">Page {page + 1} of {totalPages}</span>

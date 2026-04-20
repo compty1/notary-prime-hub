@@ -120,7 +120,7 @@ export function RedactionUI({ documentId, documentName }: RedactionUIProps) {
                   <span className="font-medium">{r.fieldName}</span>
                   <span className="text-muted-foreground ml-2">— {r.reason}</span>
                 </div>
-                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() = aria-label="Action"> removeRedaction(r.id)}>
+                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeRedaction(r.id)} aria-label="Action">
                   <Trash2 className="h-3 w-3 text-destructive" />
                 </Button>
               </div>

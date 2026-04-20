@@ -269,10 +269,10 @@ export default function TodoTab({ items }: { items: TrackerItem[] }) {
                     </div>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <Button size="icon" variant="ghost" className="h-7 w-7" disabled={idx === 0} onClick={() = aria-label="Action"> movePriority(item.id, -1)}>
+                    <Button size="icon" variant="ghost" className="h-7 w-7" disabled={idx === 0} onClick={() => movePriority(item.id, -1)} aria-label="Action">
                       <ArrowUp className="h-3.5 w-3.5" />
                     </Button>
-                    <Button size="icon" variant="ghost" className="h-7 w-7" disabled={idx === todoItems.length - 1} onClick={() = aria-label="Action"> movePriority(item.id, 1)}>
+                    <Button size="icon" variant="ghost" className="h-7 w-7" disabled={idx === todoItems.length - 1} onClick={() => movePriority(item.id, 1)} aria-label="Action">
                       <ArrowDown className="h-3.5 w-3.5" />
                     </Button>
                   </div>
