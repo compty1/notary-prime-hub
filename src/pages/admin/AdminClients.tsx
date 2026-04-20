@@ -424,7 +424,7 @@ export default function AdminClients() {
           <div className="grid gap-3">
             <div className="grid grid-cols-2 gap-3">
               <div><Label className="text-xs">Full Name</Label><Input value={createForm.full_name} onChange={(e) => setCreateForm({ ...createForm, full_name: e.target.value })} /></div>
-              <div><Label className="text-xs">Email</Label><Input type="email" value={createForm.email} onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })} /></div>
+              <div><Label className="text-xs">Email</Label><Input type="email" value={createForm.email} onChange={(e) = autoComplete="email"> setCreateForm({ ...createForm, email: e.target.value })} /></div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div><Label className="text-xs">Phone</Label><Input value={createForm.phone} onChange={(e) => setCreateForm({ ...createForm, phone: e.target.value })} /></div>

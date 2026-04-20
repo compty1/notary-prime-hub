@@ -159,8 +159,8 @@ export default function CredentialVault() {
               <div><Label>Service Name *</Label><Input required value={form.service_name} onChange={(e) => setForm((f) => ({ ...f, service_name: e.target.value }))} placeholder="e.g. Gmail, Stripe" /></div>
               <div><Label>Service URL</Label><Input value={form.service_url} onChange={(e) => setForm((f) => ({ ...f, service_url: e.target.value }))} placeholder="https://mail.google.com" /></div>
               <div><Label>Username</Label><Input value={form.username} onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))} /></div>
-              <div><Label>Email</Label><Input type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} /></div>
-              <div><Label>Password</Label><Input type="password" value={form.encrypted_password} onChange={(e) => setForm((f) => ({ ...f, encrypted_password: e.target.value }))} /></div>
+              <div><Label>Email</Label><Input type="email" value={form.email} onChange={(e) = autoComplete="email"> setForm((f) => ({ ...f, email: e.target.value }))} /></div>
+              <div><Label>Password</Label><Input type="password" value={form.encrypted_password} onChange={(e) = autoComplete="current-password"> setForm((f) => ({ ...f, encrypted_password: e.target.value }))} /></div>
               <div><Label>Notes</Label><Textarea value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} rows={2} /></div>
               <Button type="submit" disabled={upsert.isPending} className="w-full">{editing ? "Update" : "Save"}</Button>
             </form>
@@ -197,8 +197,8 @@ export default function CredentialVault() {
                   )}
                 </div>
                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(c)}><Pencil className="h-3.5 w-3.5" /></Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => remove.mutate(c.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() = aria-label="Action"> openEdit(c)}><Pencil className="h-3.5 w-3.5" /></Button>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() = aria-label="Action"> remove.mutate(c.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
                 </div>
               </CardHeader>
               <CardContent className="space-y-1 text-xs">
@@ -207,7 +207,7 @@ export default function CredentialVault() {
                     <span className="text-muted-foreground">Email:</span>
                     <div className="flex items-center gap-1">
                       <span className="truncate max-w-[160px]">{c.email}</span>
-                      <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => copyToClipboard(c.email!, "Email")}><Copy className="h-3 w-3" /></Button>
+                      <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() = aria-label="Action"> copyToClipboard(c.email!, "Email")}><Copy className="h-3 w-3" /></Button>
                     </div>
                   </div>
                 )}
@@ -216,7 +216,7 @@ export default function CredentialVault() {
                     <span className="text-muted-foreground">Username:</span>
                     <div className="flex items-center gap-1">
                       <span className="truncate max-w-[160px]">{c.username}</span>
-                      <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => copyToClipboard(c.username!, "Username")}><Copy className="h-3 w-3" /></Button>
+                      <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() = aria-label="Action"> copyToClipboard(c.username!, "Username")}><Copy className="h-3 w-3" /></Button>
                     </div>
                   </div>
                 )}
@@ -225,10 +225,10 @@ export default function CredentialVault() {
                     <span className="text-muted-foreground">Password:</span>
                     <div className="flex items-center gap-1">
                       <span className="font-mono">{showPasswords[c.id] ? c.encrypted_password : "••••••••"}</span>
-                      <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => setShowPasswords((p) => ({ ...p, [c.id]: !p[c.id] }))}>
+                      <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() = aria-label="Action"> setShowPasswords((p) => ({ ...p, [c.id]: !p[c.id] }))}>
                         {showPasswords[c.id] ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => copyToClipboard(c.encrypted_password!, "Password")}><Copy className="h-3 w-3" /></Button>
+                      <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() = aria-label="Action"> copyToClipboard(c.encrypted_password!, "Password")}><Copy className="h-3 w-3" /></Button>
                     </div>
                   </div>
                 )}

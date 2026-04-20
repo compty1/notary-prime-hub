@@ -865,7 +865,7 @@ export default function PortalNotaryPageTab() {
                   rows={2} className="text-sm" maxLength={500} />
                 <div className="text-right"><CharCounter current={(svc.description || "").length} max={500} /></div>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => removeService(i)} className="shrink-0">
+              <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> removeService(i)} className="shrink-0">
                 <Trash2 className="h-4 w-4 text-destructive" />
               </Button>
             </div>

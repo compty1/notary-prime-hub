@@ -43,7 +43,7 @@ export function BackToTop() {
               size="icon"
               variant="secondary"
               className="h-10 w-10 rounded-full shadow-lg"
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              onClick={() = aria-label="Action"> window.scrollTo({ top: 0, behavior: "smooth" })}
               aria-label="Back to top"
             >
               <ArrowUp className="h-4 w-4" />

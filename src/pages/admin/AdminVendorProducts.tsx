@@ -257,16 +257,16 @@ export default function AdminVendorProducts() {
                       <div className="flex items-center justify-end gap-1">
                         <Button
                           variant="ghost" size="icon"
-                          onClick={() => enrichProduct(p.id)}
+                          onClick={() = aria-label="Action"> enrichProduct(p.id)}
                           disabled={enrichingId === p.id}
                           title="AI Enrich"
                         >
                           {enrichingId === p.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4 text-amber-500" />}
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => openEdit(p)}>
+                        <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> openEdit(p)}>
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => deleteMutation.mutate(p.id)}>
+                        <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> deleteMutation.mutate(p.id)}>
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>

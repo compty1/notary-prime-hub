@@ -151,7 +151,7 @@ export function ExternalOrderDialog({ open, onOpenChange, onCreated }: ExternalO
           </div>
           <div>
             <Label>Client Email</Label>
-            <Input type="email" value={form.clientEmail} onChange={e => set("clientEmail", e.target.value)} />
+            <Input type="email" value={form.clientEmail} onChange={e = autoComplete="email"> set("clientEmail", e.target.value)} />
           </div>
         </div>
 

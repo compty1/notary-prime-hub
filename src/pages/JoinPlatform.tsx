@@ -230,13 +230,13 @@ export default function JoinPlatform() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="join-email">Email *</Label>
-                      <Input id="join-email" type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} placeholder="you@example.com" maxLength={255} required />
+                      <Input id="join-email" type="email" value={form.email} onChange={e = autoComplete="email"> setForm(p => ({ ...p, email: e.target.value }))} placeholder="you@example.com" maxLength={255} required />
                     </div>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="join-phone">Phone</Label>
-                      <Input id="join-phone" type="tel" value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} placeholder="(614) 000-0000" maxLength={20} />
+                      <Input id="join-phone" type="tel" value={form.phone} onChange={e = autoComplete="tel"> setForm(p => ({ ...p, phone: e.target.value }))} placeholder="(614) 000-0000" maxLength={20} />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="join-commission">Commission Number</Label>

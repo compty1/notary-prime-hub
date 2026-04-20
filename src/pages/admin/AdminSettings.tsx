@@ -259,7 +259,7 @@ export default function AdminSettings() {
               <CardContent className="space-y-4">
                 <div><Label>Site Name</Label><Input value={editValues.site_name || ""} onChange={(e) => updateValue("site_name", e.target.value)} placeholder="Notar" /></div>
                 <div><Label>Tagline / Slogan</Label><Input value={editValues.site_tagline || ""} onChange={(e) => updateValue("site_tagline", e.target.value)} placeholder="Professional Ohio Notary Services" /></div>
-                <div><Label>Support Email</Label><Input type="email" value={editValues.support_email || ""} onChange={(e) => updateValue("support_email", e.target.value)} placeholder="support@notar.com" /></div>
+                <div><Label>Support Email</Label><Input type="email" value={editValues.support_email || ""} onChange={(e) = autoComplete="email"> updateValue("support_email", e.target.value)} placeholder="support@notar.com" /></div>
                 <div><Label>Support Phone</Label><Input value={editValues.support_phone || ""} onChange={(e) => updateValue("support_phone", e.target.value)} placeholder="(614) 300-6890" /></div>
                 <div><Label>Copyright Text</Label><Input value={editValues.copyright_text || ""} onChange={(e) => updateValue("copyright_text", e.target.value)} placeholder="© 2025 Notar. All rights reserved." /></div>
               </CardContent>
@@ -311,7 +311,7 @@ export default function AdminSettings() {
                 ))}
                 <div>
                   <Label>Admin Notification Email</Label>
-                  <Input type="email" value={editValues.admin_notification_email || ""} onChange={(e) => updateValue("admin_notification_email", e.target.value)} placeholder="admin@notar.com" />
+                  <Input type="email" value={editValues.admin_notification_email || ""} onChange={(e) = autoComplete="email"> updateValue("admin_notification_email", e.target.value)} placeholder="admin@notar.com" />
                 </div>
               </CardContent>
             </Card>
@@ -553,7 +553,7 @@ export default function AdminSettings() {
               <CardContent className="space-y-4">
                 <div><Label>Business Name</Label><Input value={editValues.business_name || ""} onChange={(e) => updateValue("business_name", e.target.value)} placeholder="Notar LLC" /></div>
                 <div><Label>Business Phone Number</Label><Input value={editValues.notary_phone || ""} onChange={(e) => updateValue("notary_phone", e.target.value)} placeholder="(614) 300-6890" /></div>
-                <div><Label>Business Email</Label><Input type="email" value={editValues.notary_email || ""} onChange={(e) => updateValue("notary_email", e.target.value)} placeholder="contact@notar.com" /></div>
+                <div><Label>Business Email</Label><Input type="email" value={editValues.notary_email || ""} onChange={(e) = autoComplete="email"> updateValue("notary_email", e.target.value)} placeholder="contact@notar.com" /></div>
                 <div><Label>Notary Base Address</Label><Input value={editValues.notary_base_address || ""} onChange={(e) => updateValue("notary_base_address", e.target.value)} placeholder="Columbus, OH" /></div>
                 <div><Label>Notary Base Zip Code</Label><Input value={editValues.notary_base_zip || ""} onChange={(e) => updateValue("notary_base_zip", e.target.value)} placeholder="43215" maxLength={5} /></div>
                 <div><Label>Business Hours Display</Label><Input value={editValues.business_hours || ""} onChange={(e) => updateValue("business_hours", e.target.value)} placeholder="Mon-Wed 10 AM - 7 PM" /></div>
@@ -783,7 +783,7 @@ export default function AdminSettings() {
                   </div>
                   <Badge className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary text-xs ml-auto flex-shrink-0">Configured</Badge>
                 </div>
-                <div><Label>Reply-To Email</Label><Input type="email" value={editValues.reply_to_email || ""} onChange={(e) => updateValue("reply_to_email", e.target.value)} placeholder="noreply@notar.com" /></div>
+                <div><Label>Reply-To Email</Label><Input type="email" value={editValues.reply_to_email || ""} onChange={(e) = autoComplete="email"> updateValue("reply_to_email", e.target.value)} placeholder="noreply@notar.com" /></div>
                 <div><Label>Sender Display Name</Label><Input value={editValues.email_sender_name || ""} onChange={(e) => updateValue("email_sender_name", e.target.value)} placeholder="Notar" /></div>
               </CardContent>
             </Card>

@@ -115,7 +115,7 @@ export function DesignFileUpload({
               size="icon"
               className="h-7 w-7 text-destructive"
               onClick={onRemove}
-            >
+             aria-label="Action">
               <X className="h-4 w-4" />
             </Button>
           )}

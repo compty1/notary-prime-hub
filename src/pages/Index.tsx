@@ -580,13 +580,13 @@ export default function Index() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="contact-email" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Email *</Label>
-                      <Input id="contact-email" type="email" inputMode="email" placeholder="you@example.com" value={contactForm.email} onChange={(e) => setContactForm((prev) => ({ ...prev, email: e.target.value }))} maxLength={255} required aria-required="true" autoComplete="email" className="bg-muted border-none rounded-xl focus:ring-2 focus:ring-primary" />
+                      <Input id="contact-email" type="email" inputMode="email" placeholder="you@example.com" value={contactForm.email} onChange={(e) = autoComplete="email"> setContactForm((prev) => ({ ...prev, email: e.target.value }))} maxLength={255} required aria-required="true" autoComplete="email" className="bg-muted border-none rounded-xl focus:ring-2 focus:ring-primary" />
                     </div>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="contact-phone" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Phone</Label>
-                      <Input id="contact-phone" type="tel" inputMode="tel" placeholder="(614) 000-0000" value={contactForm.phone} onChange={(e) => setContactForm((prev) => ({ ...prev, phone: e.target.value }))} maxLength={20} autoComplete="tel" className="bg-muted border-none rounded-xl focus:ring-2 focus:ring-primary" />
+                      <Input id="contact-phone" type="tel" inputMode="tel" placeholder="(614) 000-0000" value={contactForm.phone} onChange={(e) = autoComplete="tel"> setContactForm((prev) => ({ ...prev, phone: e.target.value }))} maxLength={20} autoComplete="tel" className="bg-muted border-none rounded-xl focus:ring-2 focus:ring-primary" />
                       <p className="text-xs text-muted-foreground font-medium">Used only for appointment coordination.</p>
                     </div>
                     <div className="space-y-2">

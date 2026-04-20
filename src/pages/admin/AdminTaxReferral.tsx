@@ -81,8 +81,8 @@ export default function AdminTaxReferral() {
                   <TableCell>{c.referralCount}</TableCell>
                   <TableCell>
                     <div className="flex gap-1">
-                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => window.open(`mailto:${c.email}`)}><Mail className="h-3.5 w-3.5" /></Button>
-                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => window.open(`tel:${c.phone}`)}><Phone className="h-3.5 w-3.5" /></Button>
+                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() = aria-label="Action"> window.open(`mailto:${c.email}`)}><Mail className="h-3.5 w-3.5" /></Button>
+                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() = aria-label="Action"> window.open(`tel:${c.phone}`)}><Phone className="h-3.5 w-3.5" /></Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -98,7 +98,7 @@ export default function AdminTaxReferral() {
           <div className="space-y-3">
             <div><Label>Full Name</Label><Input placeholder="John Smith, CPA" /></div>
             <div><Label>Firm Name</Label><Input placeholder="Smith Tax Services" /></div>
-            <div><Label>Email</Label><Input type="email" placeholder="john@smithtax.com" /></div>
+            <div><Label>Email</Label><Input type="email" placeholder="john@smithtax.com"  autoComplete="email"/></div>
             <div><Label>Phone</Label><Input placeholder="(614) 555-0000" /></div>
             <div><Label>Location</Label><Input placeholder="Columbus, OH" /></div>
           </div>

@@ -287,13 +287,13 @@ export default function ThemeExplorerTab({ onPreviewTheme }: { onPreviewTheme?: 
                 <CardTitle className="text-sm">{theme.name}</CardTitle>
                 <div className="flex items-center gap-1">
                   {theme.saved && <Badge variant="secondary" className="text-[10px]">Saved</Badge>}
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => toggleCompare(theme.id)} title="Compare">
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() = aria-label="Action"> toggleCompare(theme.id)} title="Compare">
                     <Eye className="h-3.5 w-3.5" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setExportTheme(theme)} title="Export">
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() = aria-label="Action"> setExportTheme(theme)} title="Export">
                     <Download className="h-3.5 w-3.5" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => deleteTheme(theme.id)} title="Delete">
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() = aria-label="Action"> deleteTheme(theme.id)} title="Delete">
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </div>

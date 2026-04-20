@@ -28,13 +28,13 @@ export function PDFViewer({ url, title, className = "", height = "600px", downlo
           </CardTitle>
           <div className="flex gap-1">
             {downloadable && (
-              <Button variant="ghost" size="icon" asChild>
+              <Button variant="ghost" size="icon" asChild aria-label="Action">
                 <a href={url} download target="_blank" rel="noopener noreferrer">
                   <Download className="h-4 w-4" />
                 </a>
               </Button>
             )}
-            <Button variant="ghost" size="icon" onClick={() => setFullscreen(!fullscreen)}>
+            <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> setFullscreen(!fullscreen)}>
               {fullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
             </Button>
           </div>

@@ -134,7 +134,7 @@ export default function RescheduleAppointment() {
                   <Input
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) = autoComplete="email"> setEmail(e.target.value)}
                     placeholder="Enter the email used for booking"
                   />
                 </div>
