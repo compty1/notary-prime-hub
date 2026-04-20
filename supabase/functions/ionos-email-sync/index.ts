@@ -9,6 +9,40 @@ const corsHeaders = {
   "Referrer-Policy": "strict-origin-when-cross-origin",
 };
 
+// BUG-0603: require authenticated admin caller
+async function requireAdmin(req: Request): Promise<Response | null> {
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const anonClient = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_ANON_KEY")!,
+    { global: { headers: { Authorization: authHeader } } }
+  );
+  const { data: userResp, error: userErr } = await anonClient.auth.getUser();
+  if (userErr || !userResp?.user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const adminClient = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+  );
+  const { data: role } = await adminClient
+    .from("user_roles").select("role")
+    .eq("user_id", userResp.user.id).eq("role", "admin").maybeSingle();
+  if (!role) {
+    return new Response(JSON.stringify({ error: "Admin only" }), {
+      status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  return null;
+}
+
 // --- MIME Decoding Utilities ---
 
 function decodeQuotedPrintable(input: string): string {
