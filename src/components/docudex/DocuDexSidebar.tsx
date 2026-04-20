@@ -492,9 +492,9 @@ export function DocuDexSidebar({
                       className="rounded-lg border border-border p-2.5 text-[10px] hover:border-primary/30 transition-all space-y-1.5"
                     >
                       <div className="flex items-start gap-1.5">
-                        {rec.type === "compliance" && <AlertTriangle className="h-3 w-3 text-amber-500 shrink-0 mt-0.5" />}
-                        {rec.type === "suggestion" && <Lightbulb className="h-3 w-3 text-blue-500 shrink-0 mt-0.5" />}
-                        {rec.type === "improvement" && <CheckCircle className="h-3 w-3 text-emerald-500 shrink-0 mt-0.5" />}
+                        {rec.type === "compliance" && <AlertTriangle className="h-3 w-3 text-warning shrink-0 mt-0.5" />}
+                        {rec.type === "suggestion" && <Lightbulb className="h-3 w-3 text-info shrink-0 mt-0.5" />}
+                        {rec.type === "improvement" && <CheckCircle className="h-3 w-3 text-success shrink-0 mt-0.5" />}
                         <div>
                           <div className="font-medium">{rec.title}</div>
                           <div className="text-muted-foreground mt-0.5">{rec.description}</div>

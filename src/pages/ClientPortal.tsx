@@ -497,9 +497,9 @@ export default function ClientPortal() {
                         <h4 className="font-black text-sm text-foreground flex items-center gap-2 mb-3"><Shield className="h-4 w-4 text-primary" /> Session Prep Checklist</h4>
                         <p className="text-xs text-muted-foreground font-medium mb-3">Your RON session is{" "}{ronAppt ? new Date(ronAppt.scheduled_date + "T" + ronAppt.scheduled_time).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "soon"}.</p>
                         <div className="space-y-2">
-                          <div className="flex items-center gap-2 text-xs">{hasDocuments ? <CheckCircle className="h-3.5 w-3.5 text-emerald-500" /> : <AlertCircle className="h-3.5 w-3.5 text-muted-foreground" />}<span className={hasDocuments ? "text-foreground font-medium" : "text-muted-foreground font-medium"}>Documents uploaded</span></div>
-                          <div className="flex items-center gap-2 text-xs"><CheckCircle className="h-3.5 w-3.5 text-emerald-500" /><span className="text-foreground font-medium">Government photo ID ready</span></div>
-                          <div className="flex items-center gap-2 text-xs"><CheckCircle className="h-3.5 w-3.5 text-emerald-500" /><span className="text-foreground font-medium">Camera & microphone access</span></div>
+                          <div className="flex items-center gap-2 text-xs">{hasDocuments ? <CheckCircle className="h-3.5 w-3.5 text-success" /> : <AlertCircle className="h-3.5 w-3.5 text-muted-foreground" />}<span className={hasDocuments ? "text-foreground font-medium" : "text-muted-foreground font-medium"}>Documents uploaded</span></div>
+                          <div className="flex items-center gap-2 text-xs"><CheckCircle className="h-3.5 w-3.5 text-success" /><span className="text-foreground font-medium">Government photo ID ready</span></div>
+                          <div className="flex items-center gap-2 text-xs"><CheckCircle className="h-3.5 w-3.5 text-success" /><span className="text-foreground font-medium">Camera & microphone access</span></div>
                         </div>
                         <Link to={`/ron-session?id=${ronAppt?.id}`}><Button size="sm" className="w-full mt-3 text-xs rounded-xl font-bold bg-foreground text-background">Go to Session</Button></Link>
                       </CardContent>
@@ -627,7 +627,7 @@ export default function ClientPortal() {
               return (
                 <Card key={req.id} className="rounded-[24px] border-border shadow-sm">
                   <CardContent className="p-4">
-                    <div className="flex items-center justify-between mb-2"><span className="text-sm font-bold text-foreground">{req.document_description}</span><Badge className={`text-[10px] font-black uppercase tracking-wider rounded-lg ${req.status === "delivered" ? "bg-emerald-50 text-emerald-600" : "bg-primary/10 text-primary"}`}>{req.status.replace(/_/g, " ")}</Badge></div>
+                    <div className="flex items-center justify-between mb-2"><span className="text-sm font-bold text-foreground">{req.document_description}</span><Badge className={`text-[10px] font-black uppercase tracking-wider rounded-lg ${req.status === "delivered" ? "bg-success/10 text-success" : "bg-primary/10 text-primary"}`}>{req.status.replace(/_/g, " ")}</Badge></div>
                     <div className="flex items-center gap-1 my-3">{apoSteps.map((s, i) => (<div key={s} className="flex items-center flex-1"><div className={`flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold ${i <= currentIdx ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>{i < currentIdx ? "✓" : i + 1}</div>{i < apoSteps.length - 1 && <div className={`flex-1 h-0.5 mx-1 ${i < currentIdx ? "bg-primary" : "bg-muted"}`} />}</div>))}</div>
                     <div className="flex justify-between text-[9px] font-bold text-muted-foreground mb-2">{apoLabels.map(l => <span key={l}>{l}</span>)}</div>
                     <div className="flex items-center gap-4 text-xs text-muted-foreground font-medium">
@@ -665,7 +665,7 @@ export default function ClientPortal() {
                         </div>
                         <div className="flex items-center gap-2">
                           {p.status === "pending" && <Button size="sm" className="text-xs rounded-xl font-bold bg-foreground text-background" onClick={() => setPayingPaymentId(p.id)}><CreditCard className="mr-1 h-3 w-3" /> Pay Now</Button>}
-                          <Badge className={`text-[10px] font-black uppercase tracking-wider rounded-lg ${p.status === "paid" ? "bg-emerald-50 text-emerald-600" : p.status === "pending" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>{p.status}</Badge>
+                          <Badge className={`text-[10px] font-black uppercase tracking-wider rounded-lg ${p.status === "paid" ? "bg-success/10 text-success" : p.status === "pending" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>{p.status}</Badge>
                           {p.invoice_url && <a href={p.invoice_url} target="_blank" rel="noreferrer"><Button size="sm" variant="outline" className="text-xs rounded-xl font-bold">View Invoice</Button></a>}
                         </div>
                       </CardContent>

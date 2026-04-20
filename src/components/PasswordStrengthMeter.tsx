@@ -27,8 +27,8 @@ export function PasswordStrengthMeter({ password, showChecklist = true }: Passwo
     const levels = [
       { label: "Very Weak", color: "bg-destructive" },
       { label: "Weak", color: "bg-destructive" },
-      { label: "Fair", color: "bg-amber-500" },
-      { label: "Good", color: "bg-amber-500" },
+      { label: "Fair", color: "bg-warning/10" },
+      { label: "Good", color: "bg-warning/10" },
       { label: "Strong", color: "bg-primary" },
       { label: "Very Strong", color: "bg-primary" },
     ];
@@ -48,7 +48,7 @@ export function PasswordStrengthMeter({ password, showChecklist = true }: Passwo
           />
         ))}
       </div>
-      <p className={`text-xs ${score <= 2 ? "text-destructive" : score <= 3 ? "text-amber-600" : "text-primary"}`}>
+      <p className={`text-xs ${score <= 2 ? "text-destructive" : score <= 3 ? "text-warning" : "text-primary"}`}>
         {label}
       </p>
       {/* #3432: Real-time password requirements checklist */}

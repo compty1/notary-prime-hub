@@ -26,9 +26,9 @@ export function AIConfidenceIndicator({ confidence, fieldName, className }: AICo
           variant="outline"
           className={cn(
             "text-[10px] gap-1 cursor-help",
-            isHigh && "border-green-300 text-green-700 dark:border-green-700 dark:text-green-400",
-            isMedium && "border-amber-300 text-amber-700 dark:border-amber-700 dark:text-amber-400",
-            isLow && "border-red-300 text-red-700 dark:border-red-700 dark:text-red-400",
+            isHigh && "border-success/30 text-success",
+            isMedium && "border-warning/30 text-warning",
+            isLow && "border-destructive/30 text-destructive",
             className
           )}
         >

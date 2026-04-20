@@ -130,13 +130,13 @@ export default function TechCheck({ onComplete }: TechCheckProps) {
         ))}
 
         {done && (
-          <div className={`rounded-lg p-3 text-sm font-medium text-center ${allPassed ? "bg-primary/5 text-primary border border-primary/20" : "bg-amber-50 text-amber-800 border border-amber-200"}`}>
+          <div className={`rounded-lg p-3 text-sm font-medium text-center ${allPassed ? "bg-primary/5 text-primary border border-primary/20" : "bg-warning/10 text-warning border border-warning/30"}`}>
             {allPassed ? "✓ All checks passed — you're ready for your session!" : "⚠️ Some checks failed. Please resolve the issues above before your session."}
           </div>
         )}
 
         <div className="flex gap-2">
-          <Button onClick={runCheck} disabled={checking} className="flex-1 ">
+          <Button onClick={runCheck} disabled={checking} className="flex-1">
             {checking ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : done ? <RefreshCw className="mr-1 h-4 w-4" /> : <Wifi className="mr-1 h-4 w-4" />}
             {checking ? "Checking..." : done ? "Re-run Check" : "Start Tech Check"}
           </Button>

@@ -18,9 +18,9 @@ import {
 import { callEdgeFunction } from "@/lib/edgeFunctionAuth";
 
 const statusColors: Record<string, string> = {
-  new: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+  new: "bg-info/10 text-info",
   read: "bg-muted text-muted-foreground",
-  forwarded: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
+  forwarded: "bg-success/10 text-success",
   archived: "bg-muted/50 text-muted-foreground",
 };
 
@@ -180,14 +180,14 @@ export default function VirtualMailroom() {
                         <Badge className="text-[10px] bg-destructive/10 text-destructive">High</Badge>
                       )}
                       {/follow.?up|reminder|pending/i.test(item.subject || "") && !(/urgent|asap/i.test(item.subject || "")) && (
-                        <Badge className="text-[10px] bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">Medium</Badge>
+                        <Badge className="text-[10px] bg-warning/10 text-warning">Medium</Badge>
                       )}
                       {/* Type badge based on sender/subject */}
                       {/law|legal|attorney|court|subpoena/i.test((item.sender || "") + " " + (item.subject || "")) && (
                         <Badge className="text-[10px] bg-primary/10 text-primary">Legal</Badge>
                       )}
                       {/invoice|payment|bill|receipt/i.test((item.sender || "") + " " + (item.subject || "")) && (
-                        <Badge className="text-[10px] bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">Invoice</Badge>
+                        <Badge className="text-[10px] bg-success/10 text-success">Invoice</Badge>
                       )}
                     </div>
                   </button>

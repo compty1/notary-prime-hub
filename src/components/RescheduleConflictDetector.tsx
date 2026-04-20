@@ -24,21 +24,21 @@ interface RescheduleConflictDetectorProps {
 export function RescheduleConflictDetector({ conflict, onSelectAlternative }: RescheduleConflictDetectorProps) {
   if (!conflict.hasConflict) {
     return (
-      <div className="flex items-center gap-2 text-sm text-green-600">
+      <div className="flex items-center gap-2 text-sm text-success">
         <CheckCircle2 className="h-4 w-4" /> Time slot is available
       </div>
     );
   }
 
   return (
-    <Card className="border-amber-300 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-700">
+    <Card className="border-warning/30 bg-warning/10">
       <CardContent className="p-4">
         <div className="flex items-start gap-2 mb-3">
-          <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
+          <AlertTriangle className="h-5 w-5 text-warning mt-0.5" />
           <div>
-            <p className="font-medium text-sm text-amber-800 dark:text-amber-200">Scheduling Conflict</p>
+            <p className="font-medium text-sm text-warning">Scheduling Conflict</p>
             {conflict.conflictingAppointment && (
-              <p className="text-xs text-amber-700 dark:text-amber-300 mt-0.5">
+              <p className="text-xs text-warning mt-0.5">
                 Conflicts with {conflict.conflictingAppointment.serviceType} ({conflict.conflictingAppointment.confirmationNumber})
               </p>
             )}
@@ -47,7 +47,7 @@ export function RescheduleConflictDetector({ conflict, onSelectAlternative }: Re
         
         {conflict.alternativeSlots.length > 0 && (
           <div>
-            <p className="text-xs font-medium text-amber-700 dark:text-amber-300 mb-2">Suggested alternatives:</p>
+            <p className="text-xs font-medium text-warning mb-2">Suggested alternatives:</p>
             <div className="space-y-1.5">
               {conflict.alternativeSlots.slice(0, 3).map((slot, i) => (
                 <Button

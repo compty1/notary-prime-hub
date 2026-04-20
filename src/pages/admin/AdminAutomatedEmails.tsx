@@ -175,10 +175,10 @@ const DEFAULT_MASTER: MasterTemplate = {
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
-  auth: "bg-blue-500/10 text-blue-700",
-  appointment: "bg-green-500/10 text-green-700",
+  auth: "bg-info/10 text-info",
+  appointment: "bg-success/10 text-success",
   notification: "bg-purple-500/10 text-purple-700",
-  lead: "bg-orange-500/10 text-orange-700",
+  lead: "bg-warning/10 text-warning",
 };
 
 /* ═══════════════════════════════════════════
@@ -1061,7 +1061,7 @@ function IntegrationSetupTab() {
                 <div className="flex items-center gap-3 flex-1">
                   <div className={cn(
                     "h-8 w-8 rounded-lg flex items-center justify-center",
-                    allConfigured ? "bg-green-500/10 text-green-600" : "bg-amber-500/10 text-amber-600"
+                    allConfigured ? "bg-success/10 text-success" : "bg-warning/10 text-warning"
                   )}>
                     <Icon className="h-4 w-4" />
                   </div>
@@ -1076,11 +1076,11 @@ function IntegrationSetupTab() {
                   </div>
                   <div className="ml-auto mr-2">
                     {integration.requiredSecrets.length === 0 ? (
-                      <Badge className="bg-blue-500/10 text-blue-700 text-[10px]">Client-side</Badge>
+                      <Badge className="bg-info/10 text-info text-[10px]">Client-side</Badge>
                     ) : allConfigured ? (
-                      <Badge className="bg-green-500/10 text-green-700 text-[10px]"><CheckCircle2 className="h-3 w-3 mr-1" /> Configured</Badge>
+                      <Badge className="bg-success/10 text-success text-[10px]"><CheckCircle2 className="h-3 w-3 mr-1" /> Configured</Badge>
                     ) : (
-                      <Badge className="bg-amber-500/10 text-amber-700 text-[10px]"><AlertCircle className="h-3 w-3 mr-1" /> Check Secrets</Badge>
+                      <Badge className="bg-warning/10 text-warning text-[10px]"><AlertCircle className="h-3 w-3 mr-1" /> Check Secrets</Badge>
                     )}
                   </div>
                 </div>
@@ -1100,9 +1100,9 @@ function IntegrationSetupTab() {
                             <code className="text-[11px] font-mono font-medium">{secret}</code>
                             <span className="text-[10px] text-muted-foreground flex-1">— {integration.secretLabels[secret]}</span>
                             {getSecretStatus(secret) === "configured" ? (
-                              <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
+                              <CheckCircle2 className="h-3.5 w-3.5 text-success" />
                             ) : (
-                              <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
+                              <AlertCircle className="h-3.5 w-3.5 text-warning" />
                             )}
                           </div>
                         ))}
@@ -1148,12 +1148,12 @@ function IntegrationSetupTab() {
 
                   {/* Notes */}
                   {integration.notes && integration.notes.length > 0 && (
-                    <div className="rounded-md bg-blue-500/5 border border-blue-500/10 p-3">
-                      <h4 className="text-xs font-semibold mb-1.5 text-blue-700 dark:text-blue-400">Important Notes</h4>
+                    <div className="rounded-md bg-info/5 border border-info/10 p-3">
+                      <h4 className="text-xs font-semibold mb-1.5 text-info">Important Notes</h4>
                       <ul className="space-y-1">
                         {integration.notes.map((note, i) => (
                           <li key={i} className="text-[11px] text-muted-foreground flex items-start gap-1.5">
-                            <span className="text-blue-500 mt-0.5">•</span>
+                            <span className="text-info mt-0.5">•</span>
                             <span>{note}</span>
                           </li>
                         ))}
@@ -1215,10 +1215,10 @@ function IntegrationSetupTab() {
                     {EMAIL_PIPELINE_MAP.map((row, i) => {
                       const sourceColors: Record<string, string> = {
                         notardex: "bg-primary/10 text-primary",
-                        signnow: "bg-orange-500/10 text-orange-700",
-                        lovable: "bg-blue-500/10 text-blue-700",
+                        signnow: "bg-warning/10 text-warning",
+                        lovable: "bg-info/10 text-info",
                         stripe: "bg-violet-500/10 text-violet-700",
-                        google: "bg-emerald-500/10 text-emerald-700",
+                        google: "bg-success/10 text-success",
                       };
                       const sourceLabels: Record<string, string> = {
                         notardex: "Notar",
@@ -1244,12 +1244,12 @@ function IntegrationSetupTab() {
               </div>
 
               {/* SignNow External Emails Explainer */}
-              <div className="rounded-md bg-orange-500/5 border border-orange-500/10 p-3 space-y-2">
-                <h4 className="text-xs font-semibold text-orange-700 dark:text-orange-400 flex items-center gap-1">
+              <div className="rounded-md bg-warning/5 border border-warning/10 p-3 space-y-2">
+                <h4 className="text-xs font-semibold text-warning flex items-center gap-1">
                   <PenTool className="h-3 w-3" /> SignNow External Emails
                 </h4>
                 <p className="text-[11px] text-muted-foreground">
-                  The emails marked <Badge className="bg-orange-500/10 text-orange-700 text-[8px] font-bold mx-0.5">SignNow</Badge> are
+                  The emails marked <Badge className="bg-warning/10 text-warning text-[8px] font-bold mx-0.5">SignNow</Badge> are
                   sent <strong>directly by SignNow's platform</strong>, not by Notar. Their content, branding, and delivery schedule are
                   controlled in your <a href="https://app.signnow.com" target="_blank" rel="noopener noreferrer" className="underline text-primary">SignNow account settings</a>.
                   Notar receives webhook events for these emails and tracks them in the CRM timeline and <code className="bg-muted px-1 py-0.5 rounded text-[9px]">signnow_documents</code> table.
@@ -1283,12 +1283,12 @@ function IntegrationSetupTab() {
               </div>
 
               {/* Google Calendar External Emails Explainer */}
-              <div className="rounded-md bg-emerald-500/5 border border-emerald-500/10 p-3 space-y-2">
-                <h4 className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
+              <div className="rounded-md bg-success/5 border border-success/10 p-3 space-y-2">
+                <h4 className="text-xs font-semibold text-success flex items-center gap-1">
                   <Calendar className="h-3 w-3" /> Google Calendar Emails
                 </h4>
                 <p className="text-[11px] text-muted-foreground">
-                  The emails marked <Badge className="bg-emerald-500/10 text-emerald-700 text-[8px] font-bold mx-0.5">Google</Badge> are
+                  The emails marked <Badge className="bg-success/10 text-success text-[8px] font-bold mx-0.5">Google</Badge> are
                   sent <strong>directly by Google Calendar</strong> when events are created, updated, or deleted through the calendar sync.
                   Calendar invite formatting and reminder schedules are managed by Google.
                 </p>

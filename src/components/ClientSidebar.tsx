@@ -134,9 +134,9 @@ export function ClientSidebar({ activeSection, onSectionChange, profile, unreadC
       </SidebarContent>
 
       <SidebarFooter className="p-4 border-t border-white/10 space-y-3">
-        <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-500/10">
-          <CheckCircle className="h-4 w-4 text-emerald-400" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Verified Client</span>
+        <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-success/10">
+          <CheckCircle className="h-4 w-4 text-success" />
+          <span className="text-[10px] font-black uppercase tracking-widest text-success">Verified Client</span>
         </div>
         <button
           onClick={onSignOut}

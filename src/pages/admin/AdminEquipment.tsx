@@ -97,10 +97,10 @@ export default function AdminEquipment() {
   });
 
   const conditionColor: Record<string, string> = {
-    new: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
-    good: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-    fair: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
-    poor: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+    new: "bg-success/10 text-success",
+    good: "bg-info/10 text-info",
+    fair: "bg-warning/10 text-warning",
+    poor: "bg-destructive/10 text-destructive",
     retired: "bg-muted text-muted-foreground",
   };
 
@@ -116,8 +116,8 @@ export default function AdminEquipment() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card><CardContent className="pt-4"><Package className="h-5 w-5 text-primary mb-1" /><p className="text-2xl font-bold">{equipment.length}</p><p className="text-xs text-muted-foreground">Total Items</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><CheckCircle className="h-5 w-5 text-green-600 mb-1" /><p className="text-2xl font-bold">{equipment.filter((e: any) => e.is_active).length}</p><p className="text-xs text-muted-foreground">Active</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><AlertTriangle className="h-5 w-5 text-amber-500 mb-1" /><p className="text-2xl font-bold">{needsMaintenance.length}</p><p className="text-xs text-muted-foreground">Needs Maintenance</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><CheckCircle className="h-5 w-5 text-success mb-1" /><p className="text-2xl font-bold">{equipment.filter((e: any) => e.is_active).length}</p><p className="text-xs text-muted-foreground">Active</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><AlertTriangle className="h-5 w-5 text-warning mb-1" /><p className="text-2xl font-bold">{needsMaintenance.length}</p><p className="text-xs text-muted-foreground">Needs Maintenance</p></CardContent></Card>
         <Card><CardContent className="pt-4"><Wrench className="h-5 w-5 text-muted-foreground mb-1" /><p className="text-2xl font-bold">{equipment.filter((e: any) => e.condition === "retired").length}</p><p className="text-xs text-muted-foreground">Retired</p></CardContent></Card>
       </div>
 
@@ -143,7 +143,7 @@ export default function AdminEquipment() {
                     <TableCell><Badge className={conditionColor[e.condition] || ""}>{e.condition}</Badge></TableCell>
                     <TableCell className="text-xs">
                       {e.next_maintenance_date ? (
-                        <span className={differenceInDays(new Date(e.next_maintenance_date), new Date()) <= 14 ? "text-amber-600 font-medium" : ""}>
+                        <span className={differenceInDays(new Date(e.next_maintenance_date), new Date()) <= 14 ? "text-warning font-medium" : ""}>
                           {format(new Date(e.next_maintenance_date), "MMM d, yyyy")}
                         </span>
                       ) : "—"}

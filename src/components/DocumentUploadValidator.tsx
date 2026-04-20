@@ -96,17 +96,17 @@ export function DocumentUploadValidator({ onValidFiles, maxFiles = 10 }: Documen
           <div className="space-y-2">
             {docs.map((doc, i) => (
               <div key={i} className={`flex items-center gap-2 p-2 rounded border text-sm ${
-                doc.status === "invalid" ? "border-red-500/30 bg-red-500/5" : "border-green-500/30 bg-green-500/5"
+                doc.status === "invalid" ? "border-destructive/30 bg-destructive/5" : "border-success/30 bg-success/5"
               }`}>
                 {doc.status === "valid" ? (
-                  <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
+                  <CheckCircle2 className="h-4 w-4 text-success flex-shrink-0" />
                 ) : (
-                  <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0" />
+                  <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0" />
                 )}
                 <FileText className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
                 <span className="flex-1 truncate">{doc.file.name}</span>
                 <span className="text-[10px] text-muted-foreground">{(doc.file.size / 1024 / 1024).toFixed(1)}MB</span>
-                {doc.error && <span className="text-[10px] text-red-500">{doc.error}</span>}
+                {doc.error && <span className="text-[10px] text-destructive">{doc.error}</span>}
                 <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => removeDoc(i)}>×</Button>
               </div>
             ))}

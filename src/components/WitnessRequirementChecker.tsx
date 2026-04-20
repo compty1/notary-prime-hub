@@ -46,12 +46,12 @@ export function WitnessRequirementChecker() {
         </Select>
 
         {rule && (
-          <div className={`rounded-lg border p-4 ${rule.required ? "border-amber-300 bg-amber-50 dark:bg-amber-900/10 dark:border-amber-700" : "border-green-300 bg-green-50 dark:bg-green-900/10 dark:border-green-700"}`}>
+          <div className={`rounded-lg border p-4 ${rule.required ? "border-warning/30 bg-warning/10" : "border-success/30 bg-success/10"}`}>
             <div className="flex items-center gap-2 mb-2">
               {rule.required ? (
-                <AlertTriangle className="h-5 w-5 text-amber-600" />
+                <AlertTriangle className="h-5 w-5 text-warning" />
               ) : (
-                <CheckCircle className="h-5 w-5 text-green-600" />
+                <CheckCircle className="h-5 w-5 text-success" />
               )}
               <span className="font-semibold text-sm">
                 {rule.required ? `${rule.count} Witness${rule.count > 1 ? "es" : ""} Required` : "No Witnesses Required"}

@@ -31,16 +31,16 @@ const ICON_MAP: Record<string, React.ReactNode> = {
 };
 
 const STATUS_COLORS: Record<EntityStatus, string> = {
-  healthy: "text-green-500",
-  partial: "text-yellow-500",
-  needs_attention: "text-orange-500",
+  healthy: "text-success",
+  partial: "text-warning",
+  needs_attention: "text-warning",
   missing: "text-destructive",
 };
 
 const STATUS_ICONS: Record<EntityStatus, React.ReactNode> = {
-  healthy: <CheckCircle2 className="h-4 w-4 text-green-500" />,
-  partial: <MinusCircle className="h-4 w-4 text-yellow-500" />,
-  needs_attention: <AlertTriangle className="h-4 w-4 text-orange-500" />,
+  healthy: <CheckCircle2 className="h-4 w-4 text-success" />,
+  partial: <MinusCircle className="h-4 w-4 text-warning" />,
+  needs_attention: <AlertTriangle className="h-4 w-4 text-warning" />,
   missing: <AlertCircle className="h-4 w-4 text-destructive" />,
 };
 
@@ -157,7 +157,7 @@ export default function PlatformFunctionsTab({ items }: Props) {
                           <span className="flex-1">{sub.name}</span>
                           <span className="text-xs text-muted-foreground max-w-[300px] truncate">{sub.description}</span>
                           {sub.route && <Badge variant="outline" className="text-[10px] font-mono">{sub.route}</Badge>}
-                          {sub.edgeFunction && <Badge variant="outline" className="text-[10px] font-mono bg-blue-500/10">{sub.edgeFunction}</Badge>}
+                          {sub.edgeFunction && <Badge variant="outline" className="text-[10px] font-mono bg-info/10">{sub.edgeFunction}</Badge>}
                         </div>
                       ))}
                     </div>

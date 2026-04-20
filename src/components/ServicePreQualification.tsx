@@ -32,7 +32,7 @@ export function ServicePreQualification({ serviceId, onPass, onFail }: ServicePr
     <Card className="border-2 border-border rounded-2xl">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-bold flex items-center gap-2">
-          <AlertTriangle className="h-5 w-5 text-amber-500" />
+          <AlertTriangle className="h-5 w-5 text-warning" />
           Eligibility Check
         </CardTitle>
         <p className="text-sm text-muted-foreground">

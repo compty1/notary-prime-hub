@@ -17,10 +17,10 @@ interface PrintOrderTrackerProps {
 }
 
 const ORDER_STATUSES = [
-  { key: "pending", label: "Order Placed", icon: Clock, color: "text-yellow-500" },
-  { key: "production", label: "In Production", icon: Package, color: "text-blue-500" },
+  { key: "pending", label: "Order Placed", icon: Clock, color: "text-warning" },
+  { key: "production", label: "In Production", icon: Package, color: "text-info" },
   { key: "shipped", label: "Shipped", icon: Truck, color: "text-purple-500" },
-  { key: "delivered", label: "Delivered", icon: CheckCircle2, color: "text-green-500" },
+  { key: "delivered", label: "Delivered", icon: CheckCircle2, color: "text-success" },
 ];
 
 export function PrintOrderTracker({ cart, onClearCart }: PrintOrderTrackerProps) {

@@ -175,7 +175,7 @@ export function WorkflowAutomationRules() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-sm">{rule.name}</span>
-                  {rule.enabled ? <Play className="h-3 w-3 text-green-500" /> : <Pause className="h-3 w-3 text-muted-foreground" />}
+                  {rule.enabled ? <Play className="h-3 w-3 text-success" /> : <Pause className="h-3 w-3 text-muted-foreground" />}
                 </div>
                 <div className="flex gap-1 mt-1 flex-wrap">
                   <Badge variant="outline" className="text-[10px]">{rule.trigger}</Badge>
@@ -212,7 +212,7 @@ export function WorkflowAutomationRules() {
               <CardContent className="flex items-center justify-between p-3">
                 <div className="flex items-center gap-3">
                   {log.status === "success" ? (
-                    <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
+                    <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
                   ) : log.status === "failed" ? (
                     <XCircle className="h-4 w-4 text-destructive shrink-0" />
                   ) : (

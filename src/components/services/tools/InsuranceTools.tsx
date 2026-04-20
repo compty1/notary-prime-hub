@@ -44,7 +44,7 @@ export function InsuranceTools() {
       </Card>
 
       <Card>
-        <CardHeader><CardTitle className="text-lg flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-amber-500" /> Common Claim Scenarios</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-lg flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-warning" /> Common Claim Scenarios</CardTitle></CardHeader>
         <CardContent>
           <div className="space-y-2">
             {CLAIM_SCENARIOS.map((s, i) => (
@@ -54,9 +54,9 @@ export function InsuranceTools() {
                   <p className="text-xs text-muted-foreground">Coverage: {s.coverage}</p>
                 </div>
                 <Badge className={
-                  s.risk === "high" ? "bg-red-100 text-red-800" :
-                  s.risk === "medium" ? "bg-amber-100 text-amber-800" :
-                  "bg-green-100 text-green-800"
+                  s.risk === "high" ? "bg-destructive/10 text-destructive" :
+                  s.risk === "medium" ? "bg-warning/10 text-warning" :
+                  "bg-success/10 text-success"
                 }>{s.risk}</Badge>
               </div>
             ))}

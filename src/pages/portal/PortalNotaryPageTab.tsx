@@ -448,11 +448,11 @@ export default function PortalNotaryPageTab() {
             </div>
             <div className="text-center">
               <p className="text-xs font-medium uppercase text-muted-foreground">Your Profit</p>
-              <p className="text-2xl font-bold text-green-600">${profitStats.profit.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-success">${profitStats.profit.toFixed(2)}</p>
             </div>
             <div className="text-center">
               <p className="text-xs font-medium uppercase text-muted-foreground">Pending Payout</p>
-              <p className="text-2xl font-bold text-amber-600">${profitStats.pending.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-warning">${profitStats.pending.toFixed(2)}</p>
             </div>
           </div>
           <p className="mt-3 text-xs text-muted-foreground text-center">
@@ -538,7 +538,7 @@ export default function PortalNotaryPageTab() {
                       <TableCell className="text-sm">{txn.created_at ? format(new Date(txn.created_at), "MMM d, yyyy") : "—"}</TableCell>
                       <TableCell>${txn.gross_amount.toFixed(2)}</TableCell>
                       <TableCell className="text-muted-foreground">${txn.platform_fee.toFixed(2)}</TableCell>
-                      <TableCell className="font-semibold text-green-600">${txn.professional_share.toFixed(2)}</TableCell>
+                      <TableCell className="font-semibold text-success">${txn.professional_share.toFixed(2)}</TableCell>
                       <TableCell>
                         <Badge variant={txn.status === "paid" ? "default" : txn.status === "disputed" ? "destructive" : "secondary"}>
                           {txn.status}
@@ -557,8 +557,8 @@ export default function PortalNotaryPageTab() {
       )}
 
       {/* Fee Breakdown Info */}
-      <Card className="border-amber-200 bg-amber-50/50 dark:border-amber-800 dark:bg-amber-950/20">
-        <CardHeader><CardTitle className="flex items-center gap-2 text-sm"><AlertTriangle className="h-4 w-4 text-amber-600" /> Platform Fee Structure</CardTitle></CardHeader>
+      <Card className="border-warning/30 bg-warning/50">
+        <CardHeader><CardTitle className="flex items-center gap-2 text-sm"><AlertTriangle className="h-4 w-4 text-warning" /> Platform Fee Structure</CardTitle></CardHeader>
         <CardContent>
           <div className="grid gap-2 text-sm sm:grid-cols-2">
             <div className="flex justify-between rounded border bg-background px-3 py-2">
@@ -870,10 +870,10 @@ export default function PortalNotaryPageTab() {
               </Button>
             </div>
           ))}
-          <div className="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800 p-3">
+          <div className="rounded-lg border border-warning/30 bg-warning/10 p-3">
             <div className="flex items-start gap-2">
-              <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
-              <div className="text-xs text-amber-800 dark:text-amber-300">
+              <AlertTriangle className="h-4 w-4 text-warning shrink-0 mt-0.5" />
+              <div className="text-xs text-warning">
                 <p className="font-medium">Platform Fee Floors</p>
                 <p>Notarization: $5/act (Ohio ORC §147.08) • RON session: $25 • KBA: $15 • Prices cannot be set below platform minimums.</p>
               </div>

@@ -459,11 +459,11 @@ export default function AdminLeadPortal() {
   // LP-025: Lead aging indicator
   const getLeadAge = useCallback((lead: Lead): { days: number; label: string; color: string } => {
     const days = Math.floor((Date.now() - new Date(lead.created_at).getTime()) / (1000 * 60 * 60 * 24));
-    if (days <= 1) return { days, label: "Today", color: "text-green-600" };
-    if (days <= 3) return { days, label: `${days}d`, color: "text-green-500" };
-    if (days <= 7) return { days, label: `${days}d`, color: "text-yellow-500" };
-    if (days <= 14) return { days, label: `${days}d`, color: "text-orange-500" };
-    if (days <= 30) return { days, label: `${days}d`, color: "text-red-500" };
+    if (days <= 1) return { days, label: "Today", color: "text-success" };
+    if (days <= 3) return { days, label: `${days}d`, color: "text-success" };
+    if (days <= 7) return { days, label: `${days}d`, color: "text-warning" };
+    if (days <= 14) return { days, label: `${days}d`, color: "text-warning" };
+    if (days <= 30) return { days, label: `${days}d`, color: "text-destructive" };
     return { days, label: `${days}d`, color: "text-destructive" };
   }, []);
 

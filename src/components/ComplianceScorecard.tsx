@@ -28,9 +28,9 @@ const CHECKS: ComplianceCheck[] = [
 ];
 
 const STATUS_ICON = {
-  pass: <CheckCircle2 className="h-4 w-4 text-green-500" />,
-  fail: <XCircle className="h-4 w-4 text-red-500" />,
-  warning: <AlertTriangle className="h-4 w-4 text-yellow-500" />,
+  pass: <CheckCircle2 className="h-4 w-4 text-success" />,
+  fail: <XCircle className="h-4 w-4 text-destructive" />,
+  warning: <AlertTriangle className="h-4 w-4 text-warning" />,
 };
 
 const CATEGORY_LABELS: Record<string, string> = {

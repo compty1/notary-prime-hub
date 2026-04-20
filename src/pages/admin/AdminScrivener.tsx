@@ -16,7 +16,7 @@ import { PenLine, Plus, Search, Loader2, AlertTriangle } from "lucide-react";
 import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
-const statusColors: Record<string, string> = { pending: "bg-yellow-100 text-yellow-800", typing: "bg-blue-100 text-blue-800", review: "bg-purple-100 text-purple-800", completed: "bg-emerald-100 text-emerald-800" };
+const statusColors: Record<string, string> = { pending: "bg-warning/10 text-warning", typing: "bg-info/10 text-info", review: "bg-purple-100 text-purple-800", completed: "bg-success/10 text-success" };
 
 export default function AdminScrivener() {
   usePageMeta({ title: "Scrivener / Form Typing", noIndex: true });
@@ -51,9 +51,9 @@ export default function AdminScrivener() {
   return (
     <DashboardEnhancer category="scrivener">
       <div className="space-y-6">
-      <Card className="border-amber-200 bg-amber-50 dark:bg-amber-950/20"><CardContent className="flex items-center gap-3 py-3">
-        <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0" />
-        <p className="text-sm text-amber-800 dark:text-amber-200"><strong>UPL Compliance:</strong> This service provides document typing ONLY. No legal advice, form selection guidance, or content recommendations are permitted.</p>
+      <Card className="border-warning/30 bg-warning/10"><CardContent className="flex items-center gap-3 py-3">
+        <AlertTriangle className="h-5 w-5 text-warning shrink-0" />
+        <p className="text-sm text-warning"><strong>UPL Compliance:</strong> This service provides document typing ONLY. No legal advice, form selection guidance, or content recommendations are permitted.</p>
       </CardContent></Card>
       <div className="flex items-center justify-between">
         <div><h1 className="text-2xl font-black tracking-tight">Scrivener / Form Typing</h1><p className="text-sm text-muted-foreground">UPL-compliant document typing and form completion</p></div>
@@ -87,7 +87,7 @@ export default function AdminScrivener() {
             <div className="grid gap-2"><Label>Pages</Label><Input type="number" min="1" value={form.page_count} onChange={e => setForm(f => ({ ...f, page_count: e.target.value }))} /></div>
             <div className="grid gap-2"><Label>Fee ($)</Label><Input type="number" value={form.fee} onChange={e => setForm(f => ({ ...f, fee: e.target.value }))} /></div>
           </div>
-          <div className="flex items-center gap-3 p-3 border rounded-lg bg-amber-50 dark:bg-amber-950/20">
+          <div className="flex items-center gap-3 p-3 border rounded-lg bg-warning/10">
             <Switch checked={form.upl_acknowledgment} onCheckedChange={v => setForm(f => ({ ...f, upl_acknowledgment: v }))} />
             <Label className="text-sm">I confirm this is typing-only — no legal advice provided</Label>
           </div>

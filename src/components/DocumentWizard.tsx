@@ -129,11 +129,11 @@ export default function DocumentWizard({ onSelectService, onClose }: DocumentWiz
             </ul>
           </div>
 
-          <div className="rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 p-4 space-y-3">
-            <h4 className="text-sm font-semibold flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-amber-600" /> Important Tips</h4>
+          <div className="rounded-lg bg-warning/10 border border-warning/30 p-4 space-y-3">
+            <h4 className="text-sm font-semibold flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-warning" /> Important Tips</h4>
             <ul className="space-y-1">
               {result.tips.map((tip, i) => (
-                <li key={i} className="text-sm text-amber-800 dark:text-amber-200">{tip}</li>
+                <li key={i} className="text-sm text-warning">{tip}</li>
               ))}
             </ul>
           </div>

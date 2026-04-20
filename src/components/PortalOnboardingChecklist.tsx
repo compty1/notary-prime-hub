@@ -58,7 +58,7 @@ export function PortalOnboardingChecklist({ profile, documents, appointments, on
     <Card className="rounded-2xl border-border/50 overflow-hidden">
       <div className="p-6 border-b border-border/50 bg-muted/30 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
+          <div className="p-1.5 rounded-lg bg-warning/10 text-warning">
             <Zap className="h-4 w-4" />
           </div>
           <h3 className="font-bold text-sm text-foreground">Getting Started</h3>
@@ -70,7 +70,7 @@ export function PortalOnboardingChecklist({ profile, documents, appointments, on
       <CardContent className="p-6 space-y-5">
         <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
           <div
-            className="bg-amber-500 h-full transition-all duration-1000 rounded-full"
+            className="bg-warning/10 h-full transition-all duration-1000 rounded-full"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -84,7 +84,7 @@ export function PortalOnboardingChecklist({ profile, documents, appointments, on
             >
               <div className="flex items-center gap-3">
                 {item.done ? (
-                  <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
+                  <CheckCircle2 className="h-5 w-5 text-success shrink-0" />
                 ) : (
                   <div className="w-5 h-5 rounded-full border-2 border-muted-foreground/30 shrink-0" />
                 )}

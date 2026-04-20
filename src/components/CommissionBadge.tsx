@@ -43,14 +43,14 @@ export function CommissionBadge({ expirationDate, className }: CommissionBadgePr
 
   if (daysUntilExpiry <= 90) {
     return (
-      <Badge className={`text-xs gap-1 bg-yellow-500/10 text-yellow-700 border-yellow-500/20 ${className}`}>
+      <Badge className={`text-xs gap-1 bg-warning/10 text-warning border-warning/20 ${className}`}>
         <AlertTriangle className="h-3 w-3" /> Expires in {daysUntilExpiry} days
       </Badge>
     );
   }
 
   return (
-    <Badge variant="outline" className={`text-xs gap-1 text-green-700 border-green-500/30 bg-green-500/5 ${className}`}>
+    <Badge variant="outline" className={`text-xs gap-1 text-success border-success/30 bg-success/5 ${className}`}>
       <CheckCircle2 className="h-3 w-3" /> Active Commission
     </Badge>
   );

@@ -374,7 +374,7 @@ export default function AppointmentConfirmation() {
             </p>
             <p className="text-xs text-muted-foreground mb-3">Your consultation will take place via Zoom. Click below to join when it's time.</p>
             <a href={zoomLink} target="_blank" rel="noopener noreferrer">
-              <Button size="sm" className=" gap-2">
+              <Button size="sm" className="gap-2">
                 <Video className="h-4 w-4" /> Join Zoom Meeting
               </Button>
             </a>

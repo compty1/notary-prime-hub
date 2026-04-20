@@ -524,12 +524,12 @@ const demoJournalEntries = [
 
 function getCircumstanceIcon(name: string) {
   switch (name) {
-    case "users": return <Users className="h-5 w-5 text-blue-500" />;
-    case "fingerprint": return <Fingerprint className="h-5 w-5 text-orange-500" />;
-    case "globe": return <Globe className="h-5 w-5 text-indigo-500" />;
-    case "car": return <Car className="h-5 w-5 text-red-500" />;
-    case "building": return <Building2 className="h-5 w-5 text-emerald-500" />;
-    case "shield": return <ShieldAlert className="h-5 w-5 text-amber-500" />;
+    case "users": return <Users className="h-5 w-5 text-info" />;
+    case "fingerprint": return <Fingerprint className="h-5 w-5 text-warning" />;
+    case "globe": return <Globe className="h-5 w-5 text-info" />;
+    case "car": return <Car className="h-5 w-5 text-destructive" />;
+    case "building": return <Building2 className="h-5 w-5 text-success" />;
+    case "shield": return <ShieldAlert className="h-5 w-5 text-warning" />;
     default: return <AlertTriangle className="h-5 w-5 text-muted-foreground" />;
   }
 }
@@ -748,7 +748,7 @@ export default function AdminResources() {
                       <CardContent className="p-5">
                         <div className="flex justify-between items-start mb-3">
                           <h3 className="font-bold text-foreground">{doc.name}</h3>
-                          <FileCheck className="h-5 w-5 text-muted-foreground/30 group-hover:text-green-500 transition-colors" />
+                          <FileCheck className="h-5 w-5 text-muted-foreground/30 group-hover:text-success transition-colors" />
                         </div>
                         <div className="flex flex-wrap gap-1.5 mb-3">
                           {doc.keyFlags.map((flag, idx) => (
@@ -817,9 +817,9 @@ export default function AdminResources() {
                           </AccordionTrigger>
                           <AccordionContent>
                             <div className="space-y-4 pb-2">
-                              <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 p-3">
-                                <p className="flex items-center gap-1.5 text-xs font-semibold text-blue-800 dark:text-blue-300"><Users className="h-3 w-3" /> Who Must Be Present</p>
-                                <p className="mt-1 text-sm text-blue-700 dark:text-blue-400">{guide.whoPresent}</p>
+                              <div className="rounded-lg bg-info/10 p-3">
+                                <p className="flex items-center gap-1.5 text-xs font-semibold text-info"><Users className="h-3 w-3" /> Who Must Be Present</p>
+                                <p className="mt-1 text-sm text-info">{guide.whoPresent}</p>
                               </div>
                               <div>
                                 <p className="mb-2 text-xs font-semibold text-muted-foreground">Step-by-Step Procedure</p>
@@ -833,12 +833,12 @@ export default function AdminResources() {
                                 </div>
                               </div>
                               {guide.warnings.length > 0 && (
-                                <div className="rounded-lg bg-amber-50 dark:bg-amber-950/30 p-3">
-                                  <p className="flex items-center gap-1.5 text-xs font-semibold text-amber-800 dark:text-amber-300"><AlertTriangle className="h-3 w-3" /> Important Warnings</p>
+                                <div className="rounded-lg bg-warning/10 p-3">
+                                  <p className="flex items-center gap-1.5 text-xs font-semibold text-warning"><AlertTriangle className="h-3 w-3" /> Important Warnings</p>
                                   <ul className="mt-1 space-y-1">
                                     {guide.warnings.map((w, k) => (
-                                      <li key={k} className="flex items-start gap-1.5 text-sm text-amber-700 dark:text-amber-400">
-                                        <span className="mt-1.5 h-1 w-1 flex-shrink-0 rounded-full bg-amber-500" />{w}
+                                      <li key={k} className="flex items-start gap-1.5 text-sm text-warning">
+                                        <span className="mt-1.5 h-1 w-1 flex-shrink-0 rounded-full bg-warning/10" />{w}
                                       </li>
                                     ))}
                                   </ul>
@@ -984,8 +984,8 @@ export default function AdminResources() {
                     {simFeedback ? (
                       <div className={`p-6 rounded-2xl mb-4 border-2 ${
                         simFeedback.type === "success"
-                          ? "bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800 text-green-800 dark:text-green-300"
-                          : "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800 text-red-800 dark:text-red-300"
+                          ? "bg-success/10 border-success/30 text-success"
+                          : "bg-destructive/10 border-destructive/30 text-destructive"
                       }`}>
                         <div className="flex items-center gap-2 mb-2">
                           {simFeedback.type === "success" ? <CheckCircle className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}

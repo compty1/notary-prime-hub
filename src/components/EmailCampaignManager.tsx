@@ -112,7 +112,7 @@ export function EmailCampaignManager() {
                       <Send className="h-3 w-3 mr-1" /> Send
                     </Button>
                   )}
-                  {c.status === "sent" && <CheckCircle2 className="h-4 w-4 text-green-500" />}
+                  {c.status === "sent" && <CheckCircle2 className="h-4 w-4 text-success" />}
                 </div>
               ))}
             </div>

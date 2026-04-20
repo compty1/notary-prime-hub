@@ -334,12 +334,12 @@ export default function NotaryPage() {
                   {creds.ron_certified && <Badge variant="secondary" className="gap-1"><Shield className="h-3 w-3" /> RON Certified</Badge>}
                   {creds.eo_insured && <Badge variant="outline" className="gap-1"><CheckCircle className="h-3 w-3" /> E&O Insured</Badge>}
                   {creds.bonded && <Badge variant="outline" className="gap-1"><CheckCircle className="h-3 w-3" /> Bonded</Badge>}
-                  {page.is_featured && <Badge className="gap-1 bg-amber-500 text-primary-foreground"><Star className="h-3 w-3" /> Featured</Badge>}
+                  {page.is_featured && <Badge className="gap-1 bg-warning/10 text-primary-foreground"><Star className="h-3 w-3" /> Featured</Badge>}
                   <CommissionBadge expirationDate={creds.commission_expiration} />
                 </div>
                 {creds.commissioned_state?.toLowerCase().includes("ohio") && (
                   <div className="mt-2">
-                    <Badge variant="outline" className="gap-1 text-xs border-green-600 text-green-700 dark:text-green-400"><Shield className="h-3 w-3" /> Ohio Compliant — ORC §147</Badge>
+                    <Badge variant="outline" className="gap-1 text-xs border-success/30 text-success"><Shield className="h-3 w-3" /> Ohio Compliant — ORC §147</Badge>
                   </div>
                 )}
                 <div className="mt-6 flex flex-wrap items-center justify-center gap-3 md:justify-start">

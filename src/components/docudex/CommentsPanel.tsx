@@ -154,7 +154,7 @@ function CommentItem({ comment, onToggle }: { comment: Comment; onToggle: (id: s
           title={comment.resolved ? "Reopen" : "Resolve"}
         >
           {comment.resolved
-            ? <CheckCircle className="w-3.5 h-3.5 text-green-500" />
+            ? <CheckCircle className="w-3.5 h-3.5 text-success" />
             : <Circle className="w-3.5 h-3.5 text-muted-foreground" />
           }
         </button>

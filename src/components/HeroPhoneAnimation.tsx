@@ -187,7 +187,7 @@ export default function HeroPhoneAnimation() {
               </p>
               <div className="flex items-center gap-3 mt-2">
                 <div className="w-8 h-1 rounded-full bg-primary" />
-                <div className="w-8 h-1 rounded-full bg-emerald-500" />
+                <div className="w-8 h-1 rounded-full bg-success/10" />
                 <div className="w-8 h-1 rounded-full bg-slate-500" />
               </div>
             </div>

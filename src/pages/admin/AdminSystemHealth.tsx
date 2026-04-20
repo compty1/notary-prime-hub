@@ -77,9 +77,9 @@ export default function AdminSystemHealth() {
       </div>
 
       {checks.length > 0 && (
-        <Card className={overallStatus === "ok" ? "border-green-500/30 bg-green-500/5" : "border-destructive/30 bg-destructive/5"}>
+        <Card className={overallStatus === "ok" ? "border-success/30 bg-success/5" : "border-destructive/30 bg-destructive/5"}>
           <CardContent className="flex items-center gap-3 pt-6">
-            {overallStatus === "ok" ? <CheckCircle className="h-6 w-6 text-green-500" /> : <XCircle className="h-6 w-6 text-destructive" />}
+            {overallStatus === "ok" ? <CheckCircle className="h-6 w-6 text-success" /> : <XCircle className="h-6 w-6 text-destructive" />}
             <div>
               <p className="font-medium">{overallStatus === "ok" ? "All Systems Operational" : "Issues Detected"}</p>
               <p className="text-xs text-muted-foreground">{checks.filter(c => c.status === "ok").length}/{checks.length} services healthy</p>
@@ -103,7 +103,7 @@ export default function AdminSystemHealth() {
                 </div>
                 <div className="flex items-center gap-2">
                   {c.latencyMs !== undefined && <span className="text-xs text-muted-foreground">{c.latencyMs}ms</span>}
-                  <Badge variant={c.status === "ok" ? "default" : "destructive"} className={c.status === "ok" ? "bg-green-500/10 text-green-700 dark:text-green-400" : ""}>
+                  <Badge variant={c.status === "ok" ? "default" : "destructive"} className={c.status === "ok" ? "bg-success/10 text-success" : ""}>
                     {c.status === "ok" ? "Healthy" : "Error"}
                   </Badge>
                 </div>

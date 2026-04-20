@@ -210,7 +210,7 @@ export default function LivePreviewTab({ themeOverlay }: Props) {
         <CardContent className="p-0 flex justify-center bg-muted/20" style={{ minHeight: "500px" }}>
           {loadError ? (
             <div className="flex flex-col items-center justify-center gap-3 p-12 text-center">
-              <AlertTriangle className="h-10 w-10 text-yellow-500" />
+              <AlertTriangle className="h-10 w-10 text-warning" />
               <p className="font-medium">Preview Unavailable</p>
               <p className="text-sm text-muted-foreground max-w-md">
                 The preview couldn't load. This may happen due to iframe restrictions or if the preview server is starting up.

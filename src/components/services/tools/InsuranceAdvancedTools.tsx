@@ -65,7 +65,7 @@ export function InsuranceAdvancedTools() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-amber-500" />
+            <AlertTriangle className="h-5 w-5 text-warning" />
             Claim Prevention Best Practices
           </CardTitle>
         </CardHeader>
@@ -73,7 +73,7 @@ export function InsuranceAdvancedTools() {
           <div className="space-y-2">
             {CLAIM_PREVENTION.map((item, i) => (
               <div key={i} className="flex items-start gap-3 p-2 rounded bg-muted/50">
-                <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                <CheckCircle className="h-4 w-4 text-success mt-0.5 shrink-0" />
                 <span className="text-sm">{item}</span>
               </div>
             ))}

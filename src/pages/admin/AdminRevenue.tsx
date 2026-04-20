@@ -35,9 +35,9 @@ const getDateRange = (range: string) => {
 
 const paymentStatusColors: Record<string, string> = {
   paid: "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary",
-  pending: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
-  cancelled: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
-  failed: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+  pending: "bg-warning/10 text-warning",
+  cancelled: "bg-destructive/10 text-destructive",
+  failed: "bg-destructive/10 text-destructive",
   refunded: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
 };
 
@@ -282,7 +282,7 @@ export default function AdminRevenue() {
   const statCards = [
     { label: "Total Revenue", value: `$${totalRevenue.toFixed(2)}`, icon: DollarSign, color: "text-info" },
     { label: "YTD Revenue", value: `$${ytdRevenue.toFixed(2)}`, icon: Calendar, color: "text-primary" },
-    { label: "Profit Margin", value: `${profitMargin}%`, icon: TrendingUp, color: parseFloat(profitMargin) >= 50 ? "text-primary" : "text-amber-600" },
+    { label: "Profit Margin", value: `${profitMargin}%`, icon: TrendingUp, color: parseFloat(profitMargin) >= 50 ? "text-primary" : "text-warning" },
     { label: "Total Expenses", value: `$${totalExpenses.toFixed(2)}`, icon: TrendingDown, color: "text-destructive" },
     { label: "Net Profit", value: `$${netProfit.toFixed(2)}`, icon: TrendingUp, color: netProfit >= 0 ? "text-primary" : "text-destructive" },
     { label: "Avg Profit/Session", value: `$${avgPerSession.toFixed(2)}`, icon: Receipt, color: "text-primary" },
@@ -473,20 +473,20 @@ export default function AdminRevenue() {
                 return (
                   <div className="space-y-2">
                     {pending.map(p => (
-                      <div key={p.id} className="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50/50 dark:bg-amber-900/10 p-3">
+                      <div key={p.id} className="flex items-center justify-between rounded-lg border border-warning/30 bg-warning/50 p-3">
                         <div>
                           <p className="font-medium text-sm">{profiles[p.client_id] || p.client_id.slice(0, 8)}</p>
                           <p className="text-xs text-muted-foreground">{formatDate(p.created_at)} · {p.notes || "No notes"}</p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <p className="text-lg font-bold text-amber-600">${parseFloat(p.amount).toFixed(2)}</p>
+                          <p className="text-lg font-bold text-warning">${parseFloat(p.amount).toFixed(2)}</p>
                           <Button size="sm" variant="outline" className="text-xs" onClick={() => markPaid(p.id)}>Mark Paid</Button>
                         </div>
                       </div>
                     ))}
                     <div className="mt-3 pt-3 border-t border-border/50 flex justify-between">
                       <p className="text-sm font-medium text-muted-foreground">Total Outstanding</p>
-                      <p className="text-lg font-bold text-amber-600">${totalPending.toFixed(2)}</p>
+                      <p className="text-lg font-bold text-warning">${totalPending.toFixed(2)}</p>
                     </div>
                   </div>
                 );
@@ -505,8 +505,8 @@ export default function AdminRevenue() {
             </Card>
             <Card className="border-border/50">
               <CardContent className="p-4 flex items-center gap-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100"><DollarSign className="h-5 w-5 text-amber-600" /></div>
-                <div><p className="text-2xl font-bold text-amber-600">${totalPending.toFixed(2)}</p><p className="text-xs text-muted-foreground">Pending Collection</p></div>
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-warning/10"><DollarSign className="h-5 w-5 text-warning" /></div>
+                <div><p className="text-2xl font-bold text-warning">${totalPending.toFixed(2)}</p><p className="text-xs text-muted-foreground">Pending Collection</p></div>
               </CardContent>
             </Card>
           </div>

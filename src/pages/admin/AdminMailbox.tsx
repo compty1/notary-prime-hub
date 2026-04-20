@@ -402,7 +402,7 @@ export default function AdminMailbox() {
     <div className="flex flex-col h-[calc(100vh-12rem)]">
       {/* Cached mode banner */}
       {isCachedMode && (
-        <div className="mb-2 flex items-center gap-2 rounded-md border border-amber-300/50 bg-amber-50 dark:bg-amber-950/20 px-3 py-2 text-xs text-amber-700 dark:text-amber-400">
+        <div className="mb-2 flex items-center gap-2 rounded-md border border-warning/50 bg-warning/10 px-3 py-2 text-xs text-warning">
           <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
           Showing cached emails — live connection unavailable. Click Sync to refresh.
         </div>
@@ -508,7 +508,7 @@ export default function AdminMailbox() {
                         {selectedIds.has(email.id) ? <CheckSquare className="h-3.5 w-3.5 text-primary" /> : <Square className="h-3.5 w-3.5 text-muted-foreground" />}
                       </div>
                       <button onClick={e => handleStarToggle(email, e)} className="shrink-0 pt-0.5">
-                        {isStarred ? <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" /> : <Star className="h-3.5 w-3.5 text-muted-foreground/40 hover:text-amber-400" />}
+                        {isStarred ? <Star className="h-3.5 w-3.5 fill-amber-400 text-warning" /> : <Star className="h-3.5 w-3.5 text-muted-foreground/40 hover:text-warning" />}
                       </button>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">

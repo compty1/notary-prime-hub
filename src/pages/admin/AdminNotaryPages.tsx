@@ -637,7 +637,7 @@ export default function AdminNotaryPages() {
             {/* TAB: Photos */}
             <TabsContent value="photos" className="space-y-4 mt-4">
               {!editPage.id && (
-                <div className="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/20 p-3 text-sm text-amber-800 dark:text-amber-300">
+                <div className="rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm text-warning">
                   Save the page first to enable photo uploads.
                 </div>
               )}
@@ -650,7 +650,7 @@ export default function AdminNotaryPages() {
                       editPage.profile_photo_path.startsWith("http") ? (
                         <img src={editPage.profile_photo_path} alt="Profile" className="h-16 w-16 rounded-full object-cover border" />
                       ) : (
-                        <div className="flex h-16 w-16 items-center justify-center rounded-full border bg-green-50 text-xs font-medium text-green-700">
+                        <div className="flex h-16 w-16 items-center justify-center rounded-full border bg-success/10 text-xs font-medium text-success">
                           ✓ Uploaded
                         </div>
                       )
@@ -681,7 +681,7 @@ export default function AdminNotaryPages() {
                     editPage.cover_photo_path.startsWith("http") ? (
                       <img src={editPage.cover_photo_path} alt="Cover" className="h-24 w-full rounded-lg object-cover border" />
                     ) : (
-                      <div className="flex h-24 items-center justify-center rounded-lg border bg-green-50 text-sm font-medium text-green-700">✓ Cover uploaded</div>
+                      <div className="flex h-24 items-center justify-center rounded-lg border bg-success/10 text-sm font-medium text-success">✓ Cover uploaded</div>
                     )
                   ) : (
                     <div className="flex h-24 items-center justify-center rounded-lg border bg-muted text-sm text-muted-foreground">No cover photo</div>
@@ -714,7 +714,7 @@ export default function AdminNotaryPages() {
                       {url.startsWith("http") ? (
                         <img src={url} alt={`Gallery ${i + 1}`} className="h-full w-full object-cover" />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-green-50 text-xs text-green-700">✓ Photo {i + 1}</div>
+                        <div className="flex h-full w-full items-center justify-center bg-success/10 text-xs text-success">✓ Photo {i + 1}</div>
                       )}
                       <button onClick={() => removeGalleryPhoto(i)}
                         className="absolute top-1 right-1 rounded-full bg-destructive/80 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -869,7 +869,7 @@ export default function AdminNotaryPages() {
                     )}
                   </div>
                 </div>
-                {!editPage.id && <p className="text-[10px] text-amber-600 mt-1">Save the page first to enable logo upload.</p>}
+                {!editPage.id && <p className="text-[10px] text-warning mt-1">Save the page first to enable logo upload.</p>}
               </div>
 
               <Separator />

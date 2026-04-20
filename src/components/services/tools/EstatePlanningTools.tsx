@@ -74,7 +74,7 @@ export function EstatePlanningTools() {
           <div className="mt-3 p-2 rounded bg-muted/50">
             <p className="text-xs text-muted-foreground">{checkedCapacity.size}/{CAPACITY_CHECKLIST.length} indicators confirmed</p>
             {checkedCapacity.size < CAPACITY_CHECKLIST.length && checkedCapacity.size > 0 && (
-              <p className="text-xs text-amber-600 mt-1 flex items-center gap-1"><AlertTriangle className="h-3 w-3" /> Incomplete — proceed with caution</p>
+              <p className="text-xs text-warning mt-1 flex items-center gap-1"><AlertTriangle className="h-3 w-3" /> Incomplete — proceed with caution</p>
             )}
           </div>
         </CardContent>

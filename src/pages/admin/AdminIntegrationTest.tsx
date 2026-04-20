@@ -105,8 +105,8 @@ const StatusDot = ({ status }: { status: TestStatus }) => {
   const colors: Record<TestStatus, string> = {
     idle: "bg-muted-foreground/30",
     running: "bg-primary animate-pulse",
-    success: "bg-emerald-500",
-    warning: "bg-amber-500",
+    success: "bg-success/10",
+    warning: "bg-warning/10",
     error: "bg-destructive",
   };
   return <div className={`h-3 w-3 rounded-full ${colors[status]}`} />;
@@ -114,8 +114,8 @@ const StatusDot = ({ status }: { status: TestStatus }) => {
 
 const StatusIcon = ({ status }: { status: TestStatus }) => {
   if (status === "running") return <Loader2 className="h-4 w-4 animate-spin text-primary" />;
-  if (status === "success") return <CheckCircle className="h-4 w-4 text-emerald-500" />;
-  if (status === "warning") return <AlertTriangle className="h-4 w-4 text-amber-500" />;
+  if (status === "success") return <CheckCircle className="h-4 w-4 text-success" />;
+  if (status === "warning") return <AlertTriangle className="h-4 w-4 text-warning" />;
   if (status === "error") return <XCircle className="h-4 w-4 text-destructive" />;
   return <div className="h-4 w-4 rounded-full border-2 border-muted-foreground/30" />;
 };
@@ -126,9 +126,9 @@ const StatusIcon = ({ status }: { status: TestStatus }) => {
 const webhookStatusBadge = (status: string) => {
   switch (status) {
     case "active":
-      return <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20"><CheckCircle className="h-3 w-3 mr-1" />Active</Badge>;
+      return <Badge className="bg-success/10 text-success border-success/20"><CheckCircle className="h-3 w-3 mr-1" />Active</Badge>;
     case "partial":
-      return <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20"><AlertTriangle className="h-3 w-3 mr-1" />Partial</Badge>;
+      return <Badge className="bg-warning/10 text-warning border-warning/20"><AlertTriangle className="h-3 w-3 mr-1" />Partial</Badge>;
     case "failed":
       return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" />Failed</Badge>;
     default:
@@ -509,8 +509,8 @@ export default function AdminIntegrationTest() {
             </Button>
             {allTestsRan && (
               <div className="flex gap-3 text-sm">
-                <span className="flex items-center gap-1 text-emerald-600"><CheckCircle className="h-4 w-4" /> {passCount} passed</span>
-                {warnCount > 0 && <span className="flex items-center gap-1 text-amber-600"><AlertTriangle className="h-4 w-4" /> {warnCount} warnings</span>}
+                <span className="flex items-center gap-1 text-success"><CheckCircle className="h-4 w-4" /> {passCount} passed</span>
+                {warnCount > 0 && <span className="flex items-center gap-1 text-warning"><AlertTriangle className="h-4 w-4" /> {warnCount} warnings</span>}
                 {failCount > 0 && <span className="flex items-center gap-1 text-destructive"><XCircle className="h-4 w-4" /> {failCount} failed</span>}
               </div>
             )}
@@ -674,8 +674,8 @@ export default function AdminIntegrationTest() {
             {allTestsRan && (
               <Card className="px-4 py-2 flex items-center gap-4 border-border/50">
                 <span className="text-sm font-medium">Results:</span>
-                <span className="flex items-center gap-1 text-sm text-emerald-600"><CheckCircle className="h-4 w-4" /> {passCount}</span>
-                {warnCount > 0 && <span className="flex items-center gap-1 text-sm text-amber-600"><AlertTriangle className="h-4 w-4" /> {warnCount}</span>}
+                <span className="flex items-center gap-1 text-sm text-success"><CheckCircle className="h-4 w-4" /> {passCount}</span>
+                {warnCount > 0 && <span className="flex items-center gap-1 text-sm text-warning"><AlertTriangle className="h-4 w-4" /> {warnCount}</span>}
                 {failCount > 0 && <span className="flex items-center gap-1 text-sm text-destructive"><XCircle className="h-4 w-4" /> {failCount}</span>}
                 <span className="text-xs text-muted-foreground">/ {integrations.length} total</span>
               </Card>
@@ -747,8 +747,8 @@ export default function AdminIntegrationTest() {
             <CardContent>
               {webhookSessions.length > 0 && (
                 <div className="flex gap-4 mb-4 flex-wrap">
-                  <div className="flex items-center gap-1.5 text-sm"><CheckCircle className="h-4 w-4 text-emerald-500" /><span className="text-muted-foreground">{activeWebhooks} Active</span></div>
-                  <div className="flex items-center gap-1.5 text-sm"><AlertTriangle className="h-4 w-4 text-amber-500" /><span className="text-muted-foreground">{partialWebhooks} Partial</span></div>
+                  <div className="flex items-center gap-1.5 text-sm"><CheckCircle className="h-4 w-4 text-success" /><span className="text-muted-foreground">{activeWebhooks} Active</span></div>
+                  <div className="flex items-center gap-1.5 text-sm"><AlertTriangle className="h-4 w-4 text-warning" /><span className="text-muted-foreground">{partialWebhooks} Partial</span></div>
                   <div className="flex items-center gap-1.5 text-sm"><XCircle className="h-4 w-4 text-destructive" /><span className="text-muted-foreground">{failedWebhooks} Failed</span></div>
                 </div>
               )}

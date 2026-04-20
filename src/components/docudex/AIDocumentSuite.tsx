@@ -280,17 +280,17 @@ export function AIDocumentSuite({ className }: AIDocumentSuiteProps) {
   const severityColor = (s: string) => {
     switch (s) {
       case "critical": return "text-destructive";
-      case "high": return "text-orange-500";
-      case "medium": return "text-yellow-500";
+      case "high": return "text-warning";
+      case "medium": return "text-warning";
       default: return "text-muted-foreground";
     }
   };
 
   const statusIcon = (s: string) => {
     switch (s) {
-      case "pass": return <CheckCircle2 className="w-4 h-4 text-green-500" />;
+      case "pass": return <CheckCircle2 className="w-4 h-4 text-success" />;
       case "fail": return <XCircle className="w-4 h-4 text-destructive" />;
-      default: return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
+      default: return <AlertTriangle className="w-4 h-4 text-warning" />;
     }
   };
 

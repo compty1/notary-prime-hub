@@ -102,7 +102,7 @@ export function ApostilleAdvancedTools() {
               <div key={i} className="p-3 rounded-lg border">
                 <p className="text-sm font-medium text-destructive">{r.reason}</p>
                 <div className="flex items-center gap-2 mt-1">
-                  <CheckCircle className="h-3.5 w-3.5 text-green-500" />
+                  <CheckCircle className="h-3.5 w-3.5 text-success" />
                   <p className="text-xs text-muted-foreground">{r.fix}</p>
                 </div>
               </div>

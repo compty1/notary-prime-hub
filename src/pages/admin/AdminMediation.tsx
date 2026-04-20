@@ -41,9 +41,9 @@ export default function AdminMediation() {
 
       <div className="grid grid-cols-4 gap-4">
         <Card><CardContent className="pt-4 text-center"><Users className="h-5 w-5 mx-auto mb-1 text-primary" /><div className="text-xl font-bold">{sessions.length}</div><p className="text-xs text-muted-foreground">Total Sessions</p></CardContent></Card>
-        <Card><CardContent className="pt-4 text-center"><Calendar className="h-5 w-5 mx-auto mb-1 text-blue-500" /><div className="text-xl font-bold">{sessions.filter((s: any) => s.status === "pending").length}</div><p className="text-xs text-muted-foreground">Pending</p></CardContent></Card>
-        <Card><CardContent className="pt-4 text-center"><Scale className="h-5 w-5 mx-auto mb-1 text-amber-500" /><div className="text-xl font-bold">{sessions.filter((s: any) => s.status === "in_progress").length}</div><p className="text-xs text-muted-foreground">Active</p></CardContent></Card>
-        <Card><CardContent className="pt-4 text-center"><FileText className="h-5 w-5 mx-auto mb-1 text-green-500" /><div className="text-xl font-bold">{sessions.filter((s: any) => s.status === "completed").length}</div><p className="text-xs text-muted-foreground">Resolved</p></CardContent></Card>
+        <Card><CardContent className="pt-4 text-center"><Calendar className="h-5 w-5 mx-auto mb-1 text-info" /><div className="text-xl font-bold">{sessions.filter((s: any) => s.status === "pending").length}</div><p className="text-xs text-muted-foreground">Pending</p></CardContent></Card>
+        <Card><CardContent className="pt-4 text-center"><Scale className="h-5 w-5 mx-auto mb-1 text-warning" /><div className="text-xl font-bold">{sessions.filter((s: any) => s.status === "in_progress").length}</div><p className="text-xs text-muted-foreground">Active</p></CardContent></Card>
+        <Card><CardContent className="pt-4 text-center"><FileText className="h-5 w-5 mx-auto mb-1 text-success" /><div className="text-xl font-bold">{sessions.filter((s: any) => s.status === "completed").length}</div><p className="text-xs text-muted-foreground">Resolved</p></CardContent></Card>
       </div>
 
       <div className="flex gap-3">

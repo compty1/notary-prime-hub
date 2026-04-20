@@ -58,7 +58,7 @@ export default function ProcessFlowsTab() {
                 {flow.steps.filter(s => s.implemented).length}/{flow.steps.length} steps
               </Badge>
               {flow.steps.some(s => s.issues?.length) && (
-                <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 text-xs rounded-lg font-bold">
+                <Badge className="bg-warning/10 text-warning text-xs rounded-lg font-bold">
                   {flow.steps.filter(s => s.issues?.length).length} issues
                 </Badge>
               )}
@@ -72,9 +72,9 @@ export default function ProcessFlowsTab() {
                   <div className="flex items-start gap-3">
                     <div className="mt-0.5">
                       {step.implemented ? (
-                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                        <CheckCircle2 className="h-4 w-4 text-success" />
                       ) : (
-                        <AlertCircle className="h-4 w-4 text-amber-500" />
+                        <AlertCircle className="h-4 w-4 text-warning" />
                       )}
                     </div>
                     <div>
@@ -92,12 +92,12 @@ export default function ProcessFlowsTab() {
                         </div>
                       )}
                       {step.emailTemplateKey && (
-                        <Badge className="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 text-[10px] mt-1 rounded-md font-bold">
+                        <Badge className="bg-info/10 text-info text-[10px] mt-1 rounded-md font-bold">
                           <Mail className="h-2.5 w-2.5 mr-0.5" /> {step.emailTemplateKey}
                         </Badge>
                       )}
                       {step.issues?.map((issue, ii) => (
-                        <p key={ii} className="text-xs text-amber-600 mt-1 font-semibold">⚠ {issue}</p>
+                        <p key={ii} className="text-xs text-warning mt-1 font-semibold">⚠ {issue}</p>
                       ))}
                     </div>
                   </div>

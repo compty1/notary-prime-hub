@@ -590,7 +590,7 @@ export default function ServiceDetail() {
                    <Clock className="mr-1 h-3 w-3" /> {timeline}
                  </Badge>
                  <Badge variant="outline" className={`text-xs border-white/40 ${
-                  complexity.level === "Simple" ? "text-primary" : complexity.level === "Complex" ? "text-amber-300" : "text-blue-300"
+                  complexity.level === "Simple" ? "text-primary" : complexity.level === "Complex" ? "text-warning" : "text-info"
                 }`}>
                   {complexity.level} · {complexity.duration}
                 </Badge>
@@ -611,9 +611,9 @@ export default function ServiceDetail() {
 
       {/* Phase 3.3: Legal disclaimer */}
       {showDisclaimer && (
-        <div className="border-b border-amber-200 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/30">
+        <div className="border-b border-warning/30 bg-warning/10">
           <div className="container mx-auto max-w-4xl px-4 py-3">
-            <p className="text-xs text-amber-800 dark:text-amber-200 flex items-center gap-2">
+            <p className="text-xs text-warning flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 flex-shrink-0" />
               <strong>Disclaimer:</strong> This service does not constitute legal advice. A notary can administer oaths, witness signatures, and certify copies but cannot provide legal counsel. Consult an attorney for specific legal questions.
             </p>
@@ -711,10 +711,10 @@ export default function ServiceDetail() {
             {/* Partner Services for Estate Planning */}
             {(service.name.toLowerCase().includes("will") || service.name.toLowerCase().includes("estate") || service.name.toLowerCase().includes("trust")) && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.33 }}>
-                <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-800">
+                <Card className="border-info/30 bg-info/50">
                   <CardContent className="p-5 space-y-3">
                     <h3 className="font-sans text-sm font-semibold flex items-center gap-2">
-                      <Briefcase className="h-4 w-4 text-blue-600" /> Partner Services
+                      <Briefcase className="h-4 w-4 text-info" /> Partner Services
                     </h3>
                     <p className="text-xs text-muted-foreground">
                       Complex estate planning documents such as wills, trusts, and advanced directives are drafted in partnership with licensed attorneys. We provide notarization, witnessing, and coordination services.
@@ -757,10 +757,10 @@ export default function ServiceDetail() {
             {/* I-9 Acceptable Documents (List A/B/C) for verification services */}
             {service.category === "verification" && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
-                <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-800">
+                <Card className="border-info/30 bg-info/50">
                   <CardContent className="p-5 space-y-3">
                     <h3 className="font-sans text-sm font-semibold flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-blue-600" /> Acceptable I-9 Documents
+                      <FileText className="h-4 w-4 text-info" /> Acceptable I-9 Documents
                     </h3>
                     <div className="text-xs text-muted-foreground space-y-3">
                       <div>
@@ -802,10 +802,10 @@ export default function ServiceDetail() {
             {/* Immigration-specific content — only for immigration consulting */}
             {service.category === "consulting" && (service.name.toLowerCase().includes("immigration") || service.name.toLowerCase().includes("uscis")) && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
-                <Card className="border-amber-200 bg-amber-50/50">
+                <Card className="border-warning/30 bg-warning/50">
                   <CardContent className="p-5 space-y-3">
                     <h3 className="font-sans text-sm font-semibold flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4 text-amber-600" /> Important: Notary Role Clarification
+                      <AlertTriangle className="h-4 w-4 text-warning" /> Important: Notary Role Clarification
                     </h3>
                     <p className="text-xs text-muted-foreground">
                       A notary can administer oaths, witness signatures, and certify copies. A notary <strong>cannot</strong> provide legal advice, fill out forms for you, or represent you before USCIS. For legal counsel, please consult a licensed immigration attorney.
@@ -860,7 +860,7 @@ export default function ServiceDetail() {
                     if (SAAS_LINKS[service.name]) {
                       return (
                         <Link to={SAAS_LINKS[service.name]} className="block">
-                          <Button className="w-full " size="lg">
+                          <Button className="w-full" size="lg">
                             Use This Service <ChevronRight className="ml-1 h-4 w-4" />
                           </Button>
                         </Link>
@@ -869,7 +869,7 @@ export default function ServiceDetail() {
                     if (INTAKE_ONLY.has(service.name)) {
                       return (
                         <Link to={`/request?service=${encodeURIComponent(service.name)}`} className="block">
-                          <Button className="w-full " size="lg">
+                          <Button className="w-full" size="lg">
                             Get Started <ChevronRight className="ml-1 h-4 w-4" />
                           </Button>
                         </Link>
@@ -878,7 +878,7 @@ export default function ServiceDetail() {
                     if (SUBSCRIPTION.has(service.name)) {
                       return (
                         <Link to="/subscribe" className="block">
-                          <Button className="w-full " size="lg">
+                          <Button className="w-full" size="lg">
                             View Plans <ChevronRight className="ml-1 h-4 w-4" />
                           </Button>
                         </Link>
@@ -886,14 +886,14 @@ export default function ServiceDetail() {
                     }
                     if (PRE_QUALIFY_CATEGORIES.includes(service?.category || "")) {
                       return (
-                        <Button className="w-full " size="lg" onClick={() => setShowPreQualifier(true)}>
+                        <Button className="w-full" size="lg" onClick={() => setShowPreQualifier(true)}>
                           Book This Service <ChevronRight className="ml-1 h-4 w-4" />
                         </Button>
                       );
                     }
                     return (
                       <Link to={bookUrl} className="block">
-                        <Button className="w-full " size="lg">
+                        <Button className="w-full" size="lg">
                           {["notarization", "authentication", "verification"].includes(service.category) ? "Book This Service" : "Get Started"} <ChevronRight className="ml-1 h-4 w-4" />
                         </Button>
                       </Link>

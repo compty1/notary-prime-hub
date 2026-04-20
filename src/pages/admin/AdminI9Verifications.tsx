@@ -17,10 +17,10 @@ import { formatDate } from "@/lib/utils";
 import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 const statusColors: Record<string, string> = {
-  pending: "bg-yellow-100 text-yellow-800",
-  section_2_complete: "bg-blue-100 text-blue-800",
-  completed: "bg-emerald-100 text-emerald-800",
-  rejected: "bg-red-100 text-red-800",
+  pending: "bg-warning/10 text-warning",
+  section_2_complete: "bg-info/10 text-info",
+  completed: "bg-success/10 text-success",
+  rejected: "bg-destructive/10 text-destructive",
 };
 
 export default function AdminI9Verifications() {

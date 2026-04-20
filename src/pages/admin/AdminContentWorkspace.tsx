@@ -21,7 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 const STATUS_COLORS: Record<string, string> = {
   draft: "bg-muted text-muted-foreground",
   published: "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary",
-  archived: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
+  archived: "bg-warning/10 text-warning",
 };
 
 const CATEGORIES = ["blog", "faq", "guide", "announcement", "case-study", "social"];

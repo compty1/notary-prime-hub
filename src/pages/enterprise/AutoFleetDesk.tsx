@@ -58,7 +58,7 @@ const AutoFleetDesk = () => {
                 <Input className="pl-10 font-mono uppercase tracking-widest" placeholder="Enter 17-character VIN..." value={vin} onChange={(e) => setVin(e.target.value.toUpperCase())} maxLength={17} onKeyDown={(e) => e.key === "Enter" && handleDecode()} />
               </div>
               <div className="flex items-center gap-2">
-                <span className={`text-xs font-mono ${vin.length === 17 ? "text-green-500" : "text-muted-foreground"}`}>{vin.length}/17</span>
+                <span className={`text-xs font-mono ${vin.length === 17 ? "text-success" : "text-muted-foreground"}`}>{vin.length}/17</span>
                 <Button onClick={handleDecode} disabled={!isValidVin || decoding} variant="dark">
                   {decoding ? "Decoding..." : "Decode VIN"}
                 </Button>

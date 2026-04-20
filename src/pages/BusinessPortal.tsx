@@ -157,7 +157,7 @@ export default function BusinessPortal() {
               <div className="flex items-center gap-3 mb-1">
                 <Building2 className="h-6 w-6 text-primary" />
                 <h1 className="font-sans text-2xl font-bold">{business.business_name}</h1>
-                <Badge className={business.verification_status === "verified" ? "bg-primary/10 text-primary" : "bg-yellow-100 text-yellow-800"}>
+                <Badge className={business.verification_status === "verified" ? "bg-primary/10 text-primary" : "bg-warning/10 text-warning"}>
                   {business.verification_status}
                 </Badge>
               </div>
@@ -241,7 +241,7 @@ export default function BusinessPortal() {
                   </Card>
                   <Card className="border-border/50">
                     <CardContent className="p-4 text-center">
-                      <DollarSign className="mx-auto mb-1 h-5 w-5 text-amber-500" />
+                      <DollarSign className="mx-auto mb-1 h-5 w-5 text-warning" />
                       <p className="text-xl font-bold text-foreground">${totalPending.toFixed(2)}</p>
                       <p className="text-xs text-muted-foreground">Pending</p>
                     </CardContent>

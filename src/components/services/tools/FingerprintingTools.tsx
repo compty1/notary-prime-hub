@@ -89,7 +89,7 @@ export function FingerprintingTools() {
       </Card>
 
       <Card>
-        <CardHeader><CardTitle className="text-lg flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-amber-500" /> Common FBI/BCI Rejection Reasons</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-lg flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-warning" /> Common FBI/BCI Rejection Reasons</CardTitle></CardHeader>
         <CardContent>
           <div className="space-y-3">
             {COMMON_REJECTIONS.map((r, i) => (

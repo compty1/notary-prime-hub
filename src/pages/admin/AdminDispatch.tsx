@@ -11,16 +11,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MapPin, Clock, AlertTriangle, CheckCircle, Truck, Timer } from "lucide-react";
 
 const STATUS_COLORS: Record<string, string> = {
-  pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
-  dispatched: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+  pending: "bg-warning/10 text-warning",
+  dispatched: "bg-info/10 text-info",
   en_route: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
-  arrived: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-  completed: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400",
-  cancelled: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
+  arrived: "bg-success/10 text-success",
+  completed: "bg-success/10 text-success",
+  cancelled: "bg-destructive/10 text-destructive",
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
-  low: "text-muted-foreground", normal: "text-foreground", high: "text-orange-600", urgent: "text-red-600 font-bold",
+  low: "text-muted-foreground", normal: "text-foreground", high: "text-warning", urgent: "text-destructive font-bold",
 };
 
 export default function AdminDispatch() {
@@ -64,10 +64,10 @@ export default function AdminDispatch() {
       <h1 className="text-2xl font-bold">Dispatch & Routing Engine</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Active Dispatches</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold flex items-center gap-1"><Truck className="h-5 w-5 text-blue-600" />{activeCount}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Pending</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-yellow-600">{dispatches.filter(d => d.dispatch_status === "pending").length}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Urgent</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-red-600 flex items-center gap-1"><AlertTriangle className="h-5 w-5" />{urgentCount}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">SLA Breaches</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-red-500">{breachedSLAs}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Active Dispatches</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold flex items-center gap-1"><Truck className="h-5 w-5 text-info" />{activeCount}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Pending</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-warning">{dispatches.filter(d => d.dispatch_status === "pending").length}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Urgent</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-destructive flex items-center gap-1"><AlertTriangle className="h-5 w-5" />{urgentCount}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">SLA Breaches</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-destructive">{breachedSLAs}</div></CardContent></Card>
       </div>
 
       <Tabs defaultValue="dispatches">
@@ -131,7 +131,7 @@ export default function AdminDispatch() {
                     <td className="p-3 text-muted-foreground">{s.entity_type} #{s.entity_id.slice(0, 8)}</td>
                     <td className="p-3">{new Date(s.deadline_at).toLocaleString()}</td>
                     <td className="p-3 text-center">
-                      {s.breached ? <Badge variant="destructive">Breached</Badge> : s.met_at ? <Badge className="bg-green-100 text-green-700"><CheckCircle className="h-3 w-3 mr-1" />Met</Badge> : <Badge variant="outline">Active</Badge>}
+                      {s.breached ? <Badge variant="destructive">Breached</Badge> : s.met_at ? <Badge className="bg-success/10 text-success"><CheckCircle className="h-3 w-3 mr-1" />Met</Badge> : <Badge variant="outline">Active</Badge>}
                     </td>
                   </tr>
                 ))}</tbody>

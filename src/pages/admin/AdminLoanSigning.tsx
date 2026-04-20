@@ -17,13 +17,13 @@ import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
 const packageStatuses = ["pending", "scheduled", "signing", "scanback_pending", "scanback_shipped", "completed", "cancelled"];
 const statusColors: Record<string, string> = {
-  pending: "bg-yellow-100 text-yellow-800",
-  scheduled: "bg-blue-100 text-blue-800",
+  pending: "bg-warning/10 text-warning",
+  scheduled: "bg-info/10 text-info",
   signing: "bg-purple-100 text-purple-800",
-  scanback_pending: "bg-orange-100 text-orange-800",
-  scanback_shipped: "bg-cyan-100 text-cyan-800",
-  completed: "bg-emerald-100 text-emerald-800",
-  cancelled: "bg-red-100 text-red-800",
+  scanback_pending: "bg-warning/10 text-warning",
+  scanback_shipped: "bg-info/10 text-info",
+  completed: "bg-success/10 text-success",
+  cancelled: "bg-destructive/10 text-destructive",
 };
 
 export default function AdminLoanSigning() {

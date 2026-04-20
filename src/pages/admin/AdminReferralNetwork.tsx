@@ -69,7 +69,7 @@ export default function AdminReferralNetwork() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Partners</p><p className="text-2xl font-bold">{partners.length}</p></CardContent></Card>
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Partner Types</p><p className="text-2xl font-bold text-primary">{PARTNER_TYPES.length}</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Referral Revenue</p><p className="text-2xl font-bold text-green-600">${totalReferralRevenue.toLocaleString()}</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Referral Revenue</p><p className="text-2xl font-bold text-success">${totalReferralRevenue.toLocaleString()}</p></CardContent></Card>
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Partner Payouts</p><p className="text-2xl font-bold">${totalPayouts.toLocaleString()}</p></CardContent></Card>
       </div>
 
@@ -107,7 +107,7 @@ export default function AdminReferralNetwork() {
                       <TableCell className="text-sm">{(p.specializations || []).join(", ") || "—"}</TableCell>
                       <TableCell>{p.commission_rate ? `${p.commission_rate}%` : "Default"}</TableCell>
                       <TableCell>{p.total_jobs || 0}</TableCell>
-                      <TableCell><Badge className={p.is_available ? "bg-green-100 text-green-800" : ""}>{p.is_available ? "Active" : "Inactive"}</Badge></TableCell>
+                      <TableCell><Badge className={p.is_available ? "bg-success/10 text-success" : ""}>{p.is_available ? "Active" : "Inactive"}</Badge></TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -136,7 +136,7 @@ export default function AdminReferralNetwork() {
                     <TableRow key={t.id}>
                       <TableCell className="font-medium">${t.gross_amount?.toFixed(2)}</TableCell>
                       <TableCell>${t.platform_fee?.toFixed(2)}</TableCell>
-                      <TableCell className="text-green-600">${t.professional_share?.toFixed(2)}</TableCell>
+                      <TableCell className="text-success">${t.professional_share?.toFixed(2)}</TableCell>
                       <TableCell><Badge>{t.status}</Badge></TableCell>
                       <TableCell className="text-xs text-muted-foreground">{format(new Date(t.created_at), "MMM d, yyyy")}</TableCell>
                     </TableRow>

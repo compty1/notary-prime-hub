@@ -160,8 +160,8 @@ export default function PlanHistoryTab({ items }: Props) {
   };
 
   const statusIconFn = (s: string) => {
-    if (s === "implemented") return <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />;
-    if (s === "partial") return <Clock className="h-3.5 w-3.5 text-yellow-500" />;
+    if (s === "implemented") return <CheckCircle2 className="h-3.5 w-3.5 text-success" />;
+    if (s === "partial") return <Clock className="h-3.5 w-3.5 text-warning" />;
     return <AlertTriangle className="h-3.5 w-3.5 text-muted-foreground" />;
   };
 

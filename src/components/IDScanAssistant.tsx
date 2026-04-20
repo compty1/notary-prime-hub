@@ -163,7 +163,7 @@ export default function IDScanAssistant({ onCapture, onSkip }: Props) {
               <div
                 className={cn(
                   "w-[75%] h-[55%] rounded-lg border-2 border-dashed transition-colors duration-300",
-                  ready ? "border-primary" : "border-amber-400"
+                  ready ? "border-primary" : "border-warning/30"
                 )}
               />
             </div>
@@ -173,7 +173,7 @@ export default function IDScanAssistant({ onCapture, onSkip }: Props) {
               className={cn(
                 "absolute bottom-0 left-0 right-0 px-4 py-3 flex items-center gap-2 text-sm font-medium",
                 feedback.type === "success" && "bg-primary/90 text-primary-foreground",
-                feedback.type === "warning" && "bg-amber-500/90 text-primary-foreground",
+                feedback.type === "warning" && "bg-warning/90 text-primary-foreground",
                 feedback.type === "info" && "bg-background/90 text-foreground backdrop-blur"
               )}
             >

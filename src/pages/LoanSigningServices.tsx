@@ -270,7 +270,7 @@ export default function LoanSigningServices() {
                     <Label>Additional Details</Label>
                     <Textarea value={form.message} onChange={e => update("message", e.target.value)} placeholder="Any other information about your signing needs..." rows={3} maxLength={500} />
                   </div>
-                  <Button type="submit" className="w-full " size="lg" disabled={submitting}>
+                  <Button type="submit" className="w-full" size="lg" disabled={submitting}>
                     {submitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : <><Send className="mr-2 h-4 w-4" /> Submit Partnership Inquiry</>}
                   </Button>
                 </form>

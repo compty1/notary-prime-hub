@@ -61,7 +61,7 @@ export default function AdminNotaryTraining() {
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Total Courses</p><p className="text-2xl font-bold">{courses.length}</p></CardContent></Card>
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Total Credits</p><p className="text-2xl font-bold text-primary">{totalCredits}</p></CardContent></Card>
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Categories</p><p className="text-2xl font-bold">{COURSE_CATEGORIES.length}</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">With Certificates</p><p className="text-2xl font-bold text-green-600">{courses.filter((c: any) => c.certificate_path).length}</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">With Certificates</p><p className="text-2xl font-bold text-success">{courses.filter((c: any) => c.certificate_path).length}</p></CardContent></Card>
       </div>
 
       <Tabs defaultValue="completed">
@@ -98,7 +98,7 @@ export default function AdminNotaryTraining() {
                       <TableCell className="text-sm">{c.provider || "—"}</TableCell>
                       <TableCell><Badge variant="outline">{c.credits} CE</Badge></TableCell>
                       <TableCell className="text-xs text-muted-foreground">{format(new Date(c.completed_date), "MMM d, yyyy")}</TableCell>
-                      <TableCell>{c.certificate_path ? <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">On File</Badge> : "—"}</TableCell>
+                      <TableCell>{c.certificate_path ? <Badge className="bg-success/10 text-success">On File</Badge> : "—"}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

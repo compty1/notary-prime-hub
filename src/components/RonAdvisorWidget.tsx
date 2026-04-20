@@ -53,7 +53,7 @@ export function RonAdvisorWidget({ compact = false, onResultChange }: Props) {
   };
 
   const iconMap: Record<RiskLevel, typeof CheckCircle> = { low: CheckCircle, medium: AlertTriangle, high: XCircle };
-  const colorMap: Record<RiskLevel, string> = { low: "text-primary", medium: "text-amber-600", high: "text-red-600" };
+  const colorMap: Record<RiskLevel, string> = { low: "text-primary", medium: "text-warning", high: "text-destructive" };
   const labelMap: Record<RiskLevel, string> = { low: "Eligible", medium: "Verify First", high: "Challenges Expected" };
 
   if (result) {

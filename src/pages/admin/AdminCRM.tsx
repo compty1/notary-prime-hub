@@ -26,11 +26,11 @@ import {
 // CRM-004: Unified pipeline stages (matching Lead Portal's 7 stages)
 const PIPELINE_STAGES = [
   { key: "new", label: "New", color: "bg-muted" },
-  { key: "contacted", label: "Contacted", color: "bg-blue-500/20" },
+  { key: "contacted", label: "Contacted", color: "bg-info/20" },
   { key: "qualified", label: "Qualified", color: "bg-primary/40" },
-  { key: "proposal", label: "Proposal", color: "bg-yellow-500/20" },
-  { key: "negotiation", label: "Negotiation", color: "bg-orange-500/20" },
-  { key: "closed-won", label: "Closed Won", color: "bg-green-500/20" },
+  { key: "proposal", label: "Proposal", color: "bg-warning/20" },
+  { key: "negotiation", label: "Negotiation", color: "bg-warning/20" },
+  { key: "closed-won", label: "Closed Won", color: "bg-success/20" },
   { key: "closed-lost", label: "Closed Lost", color: "bg-destructive/20" },
 ];
 
@@ -433,7 +433,7 @@ export default function AdminCRM() {
         </CardContent></Card>
         <Card><CardContent className="p-4">
           <div className="flex items-center gap-2 text-muted-foreground"><TrendingUp className="h-4 w-4" /><span className="text-xs">Won</span></div>
-          <p className="mt-1 text-2xl font-bold text-green-600">${wonValue.toLocaleString()}</p>
+          <p className="mt-1 text-2xl font-bold text-success">${wonValue.toLocaleString()}</p>
           <p className="text-[10px] text-muted-foreground">{winRate}% win rate</p>
         </CardContent></Card>
         <Card><CardContent className="p-4">

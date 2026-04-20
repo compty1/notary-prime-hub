@@ -73,8 +73,8 @@ export default function TrackApostille() {
                   return (
                     <div key={step} className="flex items-start gap-3">
                       <div className="flex flex-col items-center">
-                        <Icon className={`h-5 w-5 ${done ? "text-green-500" : "text-muted-foreground/30"}`} />
-                        {i < STATUS_STEPS.length - 1 && <div className={`h-6 w-0.5 ${done ? "bg-green-500" : "bg-muted-foreground/20"}`} />}
+                        <Icon className={`h-5 w-5 ${done ? "text-success" : "text-muted-foreground/30"}`} />
+                        {i < STATUS_STEPS.length - 1 && <div className={`h-6 w-0.5 ${done ? "bg-success/10" : "bg-muted-foreground/20"}`} />}
                       </div>
                       <span className={`text-sm ${done ? "font-medium" : "text-muted-foreground/50"}`}>{STATUS_LABELS[step]}</span>
                     </div>

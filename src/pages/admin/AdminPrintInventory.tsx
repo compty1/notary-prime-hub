@@ -58,23 +58,23 @@ export default function AdminPrintInventory() {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><Package className="h-5 w-5 text-primary" /><div><p className="text-2xl font-bold">{MOCK_MATERIALS.length}</p><p className="text-xs text-muted-foreground">Material Types</p></div></div></CardContent></Card>
-        <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-orange-500" /><div><p className="text-2xl font-bold">{lowStock.length}</p><p className="text-xs text-muted-foreground">Low Stock Alerts</p></div></div></CardContent></Card>
-        <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><TrendingUp className="h-5 w-5 text-green-500" /><div><p className="text-2xl font-bold">${totalValue.toLocaleString()}</p><p className="text-xs text-muted-foreground">Total Inventory Value</p></div></div></CardContent></Card>
-        <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><Bell className="h-5 w-5 text-yellow-500" /><div><p className="text-2xl font-bold">{categories.length}</p><p className="text-xs text-muted-foreground">Categories</p></div></div></CardContent></Card>
+        <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-warning" /><div><p className="text-2xl font-bold">{lowStock.length}</p><p className="text-xs text-muted-foreground">Low Stock Alerts</p></div></div></CardContent></Card>
+        <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><TrendingUp className="h-5 w-5 text-success" /><div><p className="text-2xl font-bold">${totalValue.toLocaleString()}</p><p className="text-xs text-muted-foreground">Total Inventory Value</p></div></div></CardContent></Card>
+        <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><Bell className="h-5 w-5 text-warning" /><div><p className="text-2xl font-bold">{categories.length}</p><p className="text-xs text-muted-foreground">Categories</p></div></div></CardContent></Card>
       </div>
 
       {/* Low Stock Alerts */}
       {lowStock.length > 0 && (
-        <Card className="border-orange-500/30 bg-orange-500/5">
+        <Card className="border-warning/30 bg-warning/5">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center gap-2 text-orange-700">
+            <CardTitle className="text-sm flex items-center gap-2 text-warning">
               <AlertTriangle className="h-4 w-4" /> Low Stock Alerts
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
               {lowStock.map(m => (
-                <Badge key={m.id} variant="outline" className="border-orange-500/30 text-orange-700">
+                <Badge key={m.id} variant="outline" className="border-warning/30 text-warning">
                   {m.name} — {m.stockLevel} {m.unit} (threshold: {m.reorderThreshold})
                 </Badge>
               ))}
@@ -117,10 +117,10 @@ export default function AdminPrintInventory() {
                   <TableCell><Badge variant="outline" className="text-[10px]">{m.category}</Badge></TableCell>
                   <TableCell className="text-xs">{m.vendor}</TableCell>
                   <TableCell>
-                    <span className={isLow ? "text-orange-600 font-semibold" : ""}>{m.stockLevel} {m.unit}</span>
+                    <span className={isLow ? "text-warning font-semibold" : ""}>{m.stockLevel} {m.unit}</span>
                   </TableCell>
                   <TableCell className="w-32">
-                    <Progress value={pct} className={`h-2 ${isLow ? "[&>div]:bg-orange-500" : ""}`} />
+                    <Progress value={pct} className={`h-2 ${isLow ? "[&>div]:bg-warning/10" : ""}`} />
                   </TableCell>
                   <TableCell>${m.costPerUnit.toFixed(2)}</TableCell>
                   <TableCell className="font-medium">${(m.stockLevel * m.costPerUnit).toFixed(2)}</TableCell>

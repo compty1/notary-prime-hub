@@ -117,7 +117,7 @@ export function CredentialUploadManager() {
                 </TableCell>
                 <TableCell>
                   {c.expires_at ? (
-                    <span className={isExpired(c.expires_at) ? "text-destructive font-medium" : isExpiringSoon(c.expires_at) ? "text-amber-600 font-medium" : ""}>
+                    <span className={isExpired(c.expires_at) ? "text-destructive font-medium" : isExpiringSoon(c.expires_at) ? "text-warning font-medium" : ""}>
                       {isExpired(c.expires_at) && <AlertTriangle className="mr-1 inline h-3 w-3" />}
                       {new Date(c.expires_at).toLocaleDateString()}
                     </span>

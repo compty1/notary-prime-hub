@@ -14,12 +14,12 @@ import { Button } from "@/components/ui/button";
 import { Search, RefreshCw, AlertTriangle, CheckCircle, Clock, Filter, Zap } from "lucide-react";
 import { WorkflowAutomationRules } from "@/components/WorkflowAutomationRules";
 const STATUS_COLORS: Record<string, string> = {
-  scheduled: "bg-blue-500/10 text-blue-700",
-  in_progress: "bg-yellow-500/10 text-yellow-700",
-  completed: "bg-green-500/10 text-green-700",
-  cancelled: "bg-red-500/10 text-red-700",
-  pending: "bg-orange-500/10 text-orange-700",
-  notarized: "bg-emerald-500/10 text-emerald-700",
+  scheduled: "bg-info/10 text-info",
+  in_progress: "bg-warning/10 text-warning",
+  completed: "bg-success/10 text-success",
+  cancelled: "bg-destructive/10 text-destructive",
+  pending: "bg-warning/10 text-warning",
+  notarized: "bg-success/10 text-success",
 };
 
 export default function AdminOperations() {
@@ -207,7 +207,7 @@ export default function AdminOperations() {
             {(webhookIssues || []).length === 0 ? (
               <Card>
                 <CardContent className="py-8 text-center text-muted-foreground">
-                  <CheckCircle className="h-8 w-8 mx-auto mb-2 text-green-500" />
+                  <CheckCircle className="h-8 w-8 mx-auto mb-2 text-success" />
                   No data issues detected
                 </CardContent>
               </Card>

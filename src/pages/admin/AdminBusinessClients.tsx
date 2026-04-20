@@ -11,9 +11,9 @@ import { Building2, CheckCircle, XCircle, Search, Loader2, Users, Mail } from "l
 import { motion } from "framer-motion";
 
 const verificationColors: Record<string, string> = {
-  pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
+  pending: "bg-warning/10 text-warning",
   verified: "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary",
-  rejected: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+  rejected: "bg-destructive/10 text-destructive",
 };
 
 export default function AdminBusinessClients() {

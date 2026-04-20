@@ -187,9 +187,9 @@ export default function AdminVendorProducts() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card><CardContent className="pt-4"><Box className="h-5 w-5 text-primary mb-1" /><p className="text-2xl font-bold">{products.length}</p><p className="text-xs text-muted-foreground">Total Products</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><DollarSign className="h-5 w-5 text-green-600 mb-1" /><p className="text-2xl font-bold">${totalRetail.toFixed(0)}</p><p className="text-xs text-muted-foreground">Total Retail Value</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><TrendingUp className="h-5 w-5 text-blue-600 mb-1" /><p className="text-2xl font-bold">{avgMargin.toFixed(1)}%</p><p className="text-xs text-muted-foreground">Avg Margin</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><Sparkles className="h-5 w-5 text-amber-500 mb-1" /><p className="text-2xl font-bold">{enrichedCount}</p><p className="text-xs text-muted-foreground">AI Enriched</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><DollarSign className="h-5 w-5 text-success mb-1" /><p className="text-2xl font-bold">${totalRetail.toFixed(0)}</p><p className="text-xs text-muted-foreground">Total Retail Value</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><TrendingUp className="h-5 w-5 text-info mb-1" /><p className="text-2xl font-bold">{avgMargin.toFixed(1)}%</p><p className="text-xs text-muted-foreground">Avg Margin</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><Sparkles className="h-5 w-5 text-warning mb-1" /><p className="text-2xl font-bold">{enrichedCount}</p><p className="text-xs text-muted-foreground">AI Enriched</p></CardContent></Card>
       </div>
 
       <div className="flex gap-3">
@@ -241,9 +241,9 @@ export default function AdminVendorProducts() {
                     </TableCell>
                     <TableCell>
                       <Badge className={
-                        (p.margin_percent || 0) >= 40 ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" :
-                        (p.margin_percent || 0) >= 20 ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300" :
-                        "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
+                        (p.margin_percent || 0) >= 40 ? "bg-success/10 text-success" :
+                        (p.margin_percent || 0) >= 20 ? "bg-warning/10 text-warning" :
+                        "bg-destructive/10 text-destructive"
                       }>
                         {(p.margin_percent || 0).toFixed(1)}%
                       </Badge>
@@ -261,7 +261,7 @@ export default function AdminVendorProducts() {
                           disabled={enrichingId === p.id}
                           title="AI Enrich"
                         >
-                          {enrichingId === p.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4 text-amber-500" />}
+                          {enrichingId === p.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4 text-warning" />}
                         </Button>
                         <Button variant="ghost" size="icon" onClick={() => openEdit(p)} aria-label="Action">
                           <Edit className="h-4 w-4" />
@@ -282,7 +282,7 @@ export default function AdminVendorProducts() {
       {/* Enrichment Preview Panel */}
       {products.some((p: any) => p.enriched_at) && (
         <Card>
-          <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Sparkles className="h-5 w-5 text-amber-500" /> Recently Enriched</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Sparkles className="h-5 w-5 text-warning" /> Recently Enriched</CardTitle></CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-2 gap-4">
               {products.filter((p: any) => p.enriched_at).slice(0, 4).map((p: any) => (

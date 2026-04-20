@@ -18,9 +18,9 @@ interface SignNowDocument {
 
 const statusConfig: Record<string, { icon: typeof Clock; label: string; color: string }> = {
   draft: { icon: FileSignature, label: "Draft", color: "bg-muted text-muted-foreground" },
-  pending: { icon: Clock, label: "Pending Signature", color: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400" },
-  viewed: { icon: Eye, label: "Viewed by Signer", color: "bg-blue-500/10 text-blue-700 dark:text-blue-400" },
-  signed: { icon: CheckCircle, label: "Signed", color: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" },
+  pending: { icon: Clock, label: "Pending Signature", color: "bg-warning/10 text-warning" },
+  viewed: { icon: Eye, label: "Viewed by Signer", color: "bg-info/10 text-info" },
+  signed: { icon: CheckCircle, label: "Signed", color: "bg-success/10 text-success" },
   completed: { icon: CheckCircle, label: "Completed", color: "bg-primary/10 text-primary" },
   declined: { icon: XCircle, label: "Declined", color: "bg-destructive/10 text-destructive" },
 };

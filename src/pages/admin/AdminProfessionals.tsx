@@ -232,7 +232,7 @@ export default function AdminProfessionals() {
           <p className="text-xs text-muted-foreground">Professionals</p>
         </CardContent></Card>
         <Card><CardContent className="pt-6 text-center">
-          <AlertTriangle className="mx-auto h-5 w-5 text-amber-500 mb-1" />
+          <AlertTriangle className="mx-auto h-5 w-5 text-warning mb-1" />
           <p className="text-2xl font-bold">{pendingEnrollments}</p>
           <p className="text-xs text-muted-foreground">Pending Enrollments</p>
         </CardContent></Card>
@@ -409,7 +409,7 @@ export default function AdminProfessionals() {
         <TabsContent value="payouts" className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex gap-4">
-              <Card className="px-4 py-2"><p className="text-xs text-muted-foreground">Pending</p><p className="text-lg font-bold text-amber-600">${totalPending.toFixed(2)}</p></Card>
+              <Card className="px-4 py-2"><p className="text-xs text-muted-foreground">Pending</p><p className="text-lg font-bold text-warning">${totalPending.toFixed(2)}</p></Card>
               <Card className="px-4 py-2"><p className="text-xs text-muted-foreground">Paid</p><p className="text-lg font-bold text-success">${totalPaid.toFixed(2)}</p></Card>
             </div>
             <Button variant="outline" size="sm" onClick={exportTransactions} className="gap-1"><Download className="h-3 w-3" /> Export CSV</Button>

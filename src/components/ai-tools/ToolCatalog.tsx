@@ -89,7 +89,7 @@ export function ToolCatalog({
             {favorites.favorites.length > 0 && (
               <Badge
                 variant="outline"
-                className="cursor-pointer gap-1 border-yellow-500/50 text-yellow-600"
+                className="cursor-pointer gap-1 border-warning/50 text-warning"
                 onClick={() => setSearchQuery("")}
               >
                 <Star className="h-3 w-3 fill-yellow-500" /> Favorites ({favorites.favorites.length})
@@ -150,7 +150,7 @@ export function ToolCatalog({
                           onClick={(e) => { e.stopPropagation(); favorites.toggleFavorite(tool.id); }}
                           aria-label={favorites.isFavorite(tool.id) ? "Remove from favorites" : "Add to favorites"}
                         >
-                          <Star className={`h-4 w-4 ${favorites.isFavorite(tool.id) ? "fill-yellow-500 text-yellow-500" : "text-muted-foreground"}`} />
+                          <Star className={`h-4 w-4 ${favorites.isFavorite(tool.id) ? "fill-yellow-500 text-warning" : "text-muted-foreground"}`} />
                         </button>
                         <CardContent className="flex h-full flex-col p-5">
                           <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/15 transition-colors">

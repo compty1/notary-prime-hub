@@ -38,7 +38,7 @@ export function QueuePositionIndicator({ appointmentId, scheduledDate }: QueuePo
       <span>Queue position:</span>
       <Badge variant="secondary">{position} of {total}</Badge>
       {position === 1 && (
-        <Badge className="bg-green-500/10 text-green-600 border-green-500/30">Next</Badge>
+        <Badge className="bg-success/10 text-success border-success/30">Next</Badge>
       )}
     </div>
   );

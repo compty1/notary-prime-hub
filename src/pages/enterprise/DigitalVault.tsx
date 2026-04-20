@@ -156,7 +156,7 @@ const DigitalVault = () => {
                 if (hashResult && verifyHash.toLowerCase() === hashResult.hash.toLowerCase()) setVerifyResult("match");
                 else setVerifyResult("mismatch");
               }}>Verify</Button>
-              {verifyResult === "match" && <div className="flex items-center gap-2 text-sm text-green-600"><CheckCircle className="h-4 w-4" />Hash matches!</div>}
+              {verifyResult === "match" && <div className="flex items-center gap-2 text-sm text-success"><CheckCircle className="h-4 w-4" />Hash matches!</div>}
               {verifyResult === "mismatch" && <div className="flex items-center gap-2 text-sm text-destructive">Hash does not match</div>}
             </CardContent>
           </Card>

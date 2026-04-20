@@ -70,9 +70,9 @@ export function ComplaintTracker() {
   };
 
   const statusColor: Record<string, string> = {
-    open: "bg-red-500/10 text-red-600 border-red-500/30",
-    investigating: "bg-yellow-500/10 text-yellow-700 border-yellow-500/30",
-    resolved: "bg-green-500/10 text-green-600 border-green-500/30",
+    open: "bg-destructive/10 text-destructive border-destructive/30",
+    investigating: "bg-warning/10 text-warning border-warning/30",
+    resolved: "bg-success/10 text-success border-success/30",
     dismissed: "bg-muted text-muted-foreground",
   };
 

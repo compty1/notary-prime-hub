@@ -308,11 +308,11 @@ const faqCategories = [
 
 const quickLinks = [
   { title: "Book an Appointment", desc: "Schedule your notarization online", icon: CalendarCheck, link: "/book", color: "bg-primary/10 text-primary" },
-  { title: "Fee Calculator", desc: "Get an instant price estimate", icon: DollarSign, link: "/fee-calculator", color: "bg-emerald-500/10 text-emerald-600" },
-  { title: "RON Eligibility Check", desc: "See if your document qualifies for RON", icon: Monitor, link: "/ron-check", color: "bg-blue-500/10 text-blue-600" },
-  { title: "Notary Guide", desc: "Step-by-step notarization guide", icon: BookOpen, link: "/notary-guide", color: "bg-amber-500/10 text-amber-600" },
+  { title: "Fee Calculator", desc: "Get an instant price estimate", icon: DollarSign, link: "/fee-calculator", color: "bg-success/10 text-success" },
+  { title: "RON Eligibility Check", desc: "See if your document qualifies for RON", icon: Monitor, link: "/ron-check", color: "bg-info/10 text-info" },
+  { title: "Notary Guide", desc: "Step-by-step notarization guide", icon: BookOpen, link: "/notary-guide", color: "bg-warning/10 text-warning" },
   { title: "Document Templates", desc: "Download common legal forms", icon: FileText, link: "/templates", color: "bg-violet-500/10 text-violet-600" },
-  { title: "RON Info", desc: "Learn about remote online notarization", icon: Shield, link: "/ron-info", color: "bg-rose-500/10 text-rose-600" },
+  { title: "RON Info", desc: "Learn about remote online notarization", icon: Shield, link: "/ron-info", color: "bg-destructive/10 text-destructive" },
 ];
 
 /* ─── Component ───────────────────────────────────────────────── */

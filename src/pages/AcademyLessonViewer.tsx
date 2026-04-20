@@ -87,7 +87,7 @@ export default function AcademyLessonViewer() {
             <h1 className="text-2xl font-bold">{lesson.title}</h1>
             <div className="flex items-center gap-2 mt-1">
               <Badge variant="outline">{lesson.duration_minutes} min</Badge>
-              {isCompleted && <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"><CheckCircle2 className="h-3 w-3 mr-1" />Completed</Badge>}
+              {isCompleted && <Badge className="bg-success/10 text-success"><CheckCircle2 className="h-3 w-3 mr-1" />Completed</Badge>}
             </div>
           </div>
         </div>

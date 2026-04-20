@@ -28,8 +28,8 @@ interface SessionWaitingRoomProps {
 
 const statusConfig: Record<string, { label: string; color: string; icon: typeof Circle }> = {
   connecting: { label: "Connecting…", color: "bg-muted text-muted-foreground", icon: Loader2 },
-  in_lobby: { label: "In Lobby", color: "bg-warning/10 text-warning-foreground dark:bg-amber-900/30 dark:text-amber-300", icon: Circle },
-  ready: { label: "Ready", color: "bg-success/10 text-success dark:bg-emerald-900/30 dark:text-emerald-300", icon: CheckCircle2 },
+  in_lobby: { label: "In Lobby", color: "bg-warning/10 text-warning-foreground", icon: Circle },
+  ready: { label: "Ready", color: "bg-success/10 text-success", icon: CheckCircle2 },
   in_session: { label: "In Session", color: "bg-primary/10 text-primary", icon: CheckCircle2 },
   disconnected: { label: "Disconnected", color: "bg-destructive/10 text-destructive", icon: Circle },
 };

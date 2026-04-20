@@ -63,7 +63,7 @@ export function DocuDexInlineComments({ comments, onAddComment, onResolveComment
         {pageComments.map(c => (
           <div key={c.id} className={`mb-2 p-2 rounded border text-xs ${c.resolved ? "opacity-50 bg-muted/30" : "bg-background"}`}>
             {c.selectedText && (
-              <div className="bg-yellow-100 dark:bg-yellow-900/30 px-1.5 py-0.5 rounded text-[10px] mb-1 italic truncate">
+              <div className="bg-warning/10 px-1.5 py-0.5 rounded text-[10px] mb-1 italic truncate">
                 "{c.selectedText}"
               </div>
             )}
@@ -73,7 +73,7 @@ export function DocuDexInlineComments({ comments, onAddComment, onResolveComment
               <div className="flex gap-0.5">
                 {!c.resolved && (
                   <Button variant="ghost" size="sm" className="h-4 w-4 p-0" onClick={() => onResolveComment(c.id)} title="Resolve">
-                    <CheckCircle className="h-3 w-3 text-green-600" />
+                    <CheckCircle className="h-3 w-3 text-success" />
                   </Button>
                 )}
                 <Button variant="ghost" size="sm" className="h-4 w-4 p-0" onClick={() => onDeleteComment(c.id)} title="Delete">

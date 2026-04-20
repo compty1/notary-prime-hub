@@ -113,7 +113,7 @@ export function PreSessionChecklist({ templateKey = "general_notarization", onCo
           <Badge variant={allRequiredDone ? "default" : "secondary"} className="text-[10px]">
             {completedRequired}/{requiredCount} required
           </Badge>
-          {allRequiredDone && <CheckCircle2 className="h-4 w-4 text-green-500" />}
+          {allRequiredDone && <CheckCircle2 className="h-4 w-4 text-success" />}
         </div>
         <ScrollArea className="h-[280px]">
           <div className="space-y-2">
@@ -121,12 +121,12 @@ export function PreSessionChecklist({ templateKey = "general_notarization", onCo
               <label
                 key={item.id}
                 className={`flex items-start gap-3 p-2 rounded-md border cursor-pointer transition-colors ${
-                  item.completed ? "bg-green-500/5 border-green-500/20" : "hover:bg-muted/50"
+                  item.completed ? "bg-success/5 border-success/20" : "hover:bg-muted/50"
                 }`}
                 onClick={() => toggleItem(item.id)}
               >
                 <div className={`mt-0.5 h-4 w-4 rounded border flex items-center justify-center flex-shrink-0 ${
-                  item.completed ? "bg-green-500 border-green-500 text-primary-foreground" : "border-muted-foreground"
+                  item.completed ? "bg-success/10 border-success/30 text-primary-foreground" : "border-muted-foreground"
                 }`}>
                   {item.completed && <CheckCircle2 className="h-3 w-3" />}
                 </div>

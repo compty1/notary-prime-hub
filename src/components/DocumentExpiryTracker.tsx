@@ -44,7 +44,7 @@ export function DocumentExpiryTracker() {
 
   const urgencyBadge = (days: number) => {
     if (days <= 7) return <Badge variant="destructive" className="text-[10px]">Urgent</Badge>;
-    if (days <= 30) return <Badge className="text-[10px] bg-yellow-500/10 text-yellow-700 border-yellow-500/30">Soon</Badge>;
+    if (days <= 30) return <Badge className="text-[10px] bg-warning/10 text-warning border-warning/30">Soon</Badge>;
     return <Badge variant="outline" className="text-[10px]">OK</Badge>;
   };
 
@@ -63,14 +63,14 @@ export function DocumentExpiryTracker() {
             <div className="space-y-2">
               {expiring.map(doc => (
                 <div key={doc.id} className="flex items-center gap-2 text-sm p-2 rounded border">
-                  {doc.daysLeft <= 7 ? <AlertTriangle className="h-4 w-4 text-red-500" /> : <Clock className="h-4 w-4 text-muted-foreground" />}
+                  {doc.daysLeft <= 7 ? <AlertTriangle className="h-4 w-4 text-destructive" /> : <Clock className="h-4 w-4 text-muted-foreground" />}
                   <div className="flex-1 min-w-0">
                     <p className="truncate text-xs font-medium">{doc.documentId.slice(0, 8)}...</p>
                     <p className="text-[10px] text-muted-foreground">Expires {format(parseISO(doc.expiryDate), "MMM d, yyyy")}</p>
                   </div>
                   {urgencyBadge(doc.daysLeft)}
                   <span className="text-xs font-semibold">{doc.daysLeft}d</span>
-                  {doc.notified && <Bell className="h-3 w-3 text-green-500" />}
+                  {doc.notified && <Bell className="h-3 w-3 text-success" />}
                 </div>
               ))}
             </div>

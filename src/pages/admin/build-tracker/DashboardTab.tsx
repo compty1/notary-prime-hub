@@ -144,9 +144,9 @@ export default function DashboardTab({ items, plans, onJumpToGap, onTabChange, o
       <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
         {[
           { label: "Total Items", value: total, icon: <FileText className="h-4 w-4" /> },
-          { label: "Open", value: open, icon: <AlertTriangle className="h-4 w-4 text-yellow-500" /> },
-          { label: "In Progress", value: inProgress, icon: <Clock className="h-4 w-4 text-blue-500" /> },
-          { label: "Resolved", value: resolved, icon: <CheckCircle2 className="h-4 w-4 text-green-500" /> },
+          { label: "Open", value: open, icon: <AlertTriangle className="h-4 w-4 text-warning" /> },
+          { label: "In Progress", value: inProgress, icon: <Clock className="h-4 w-4 text-info" /> },
+          { label: "Resolved", value: resolved, icon: <CheckCircle2 className="h-4 w-4 text-success" /> },
           { label: "Deferred", value: deferred, icon: <XCircle className="h-4 w-4 text-muted-foreground" /> },
           { label: "Avg Resolve", value: avgTimeToResolve !== null ? `${avgTimeToResolve}d` : "—", icon: <Activity className="h-4 w-4 text-primary" /> },
         ].map((kpi) => (
@@ -270,7 +270,7 @@ export default function DashboardTab({ items, plans, onJumpToGap, onTabChange, o
               <CardHeader className="pb-2 cursor-pointer">
                 <CardTitle className="text-sm flex items-center gap-2">
                   {recentlyFixedOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                  <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  <CheckCircle2 className="h-4 w-4 text-success" />
                   Recently Fixed ({recentlyFixed.length} in last 7 days)
                 </CardTitle>
               </CardHeader>
@@ -281,7 +281,7 @@ export default function DashboardTab({ items, plans, onJumpToGap, onTabChange, o
                   {recentlyFixed.slice(0, 20).map(item => (
                     <div key={item.id} className="flex items-center justify-between text-sm px-2 py-1 rounded hover:bg-muted/50 cursor-pointer" onClick={() => onJumpToGap(item.id)}>
                       <div className="flex items-center gap-2 min-w-0">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                        <CheckCircle2 className="h-3.5 w-3.5 text-success shrink-0" />
                         <span className="truncate">{item.title}</span>
                         <Badge variant="outline" className="text-[10px] shrink-0">{item.category}</Badge>
                       </div>

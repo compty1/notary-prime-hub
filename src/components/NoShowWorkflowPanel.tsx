@@ -58,9 +58,9 @@ export function NoShowWorkflowPanel({ appointmentId, clientId, onComplete }: NoS
           <DialogTitle>Mark as No-Show</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm dark:bg-amber-900/20 dark:border-amber-700">
+          <div className="rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm">
             <div className="flex items-center gap-2 mb-1">
-              <DollarSign className="h-4 w-4 text-amber-600" />
+              <DollarSign className="h-4 w-4 text-warning" />
               <span className="font-medium">No-show fee: ${noShowFee}</span>
             </div>
             <p className="text-xs text-muted-foreground">A ${noShowFee} no-show fee will be noted on the client's record.</p>

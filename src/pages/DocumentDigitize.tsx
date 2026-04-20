@@ -285,7 +285,7 @@ export default function DocumentDigitize() {
                         <span className="text-muted-foreground">{(f.size / 1024).toFixed(0)} KB</span>
                       </div>
                     ))}
-                    <Button onClick={processFiles} className="mt-4 w-full ">
+                    <Button onClick={processFiles} className="mt-4 w-full">
                       <Eye className="mr-2 h-4 w-4" /> Digitize {files.length} Document{files.length > 1 ? "s" : ""}
                     </Button>
                   </div>

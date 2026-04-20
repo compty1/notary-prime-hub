@@ -98,8 +98,8 @@ export default function AdminContractorOnboarding() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Total Contractors</p><p className="text-2xl font-bold">{stats.total}</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Available</p><p className="text-2xl font-bold text-green-600">{stats.available}</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Avg Rating</p><p className="text-2xl font-bold text-amber-600">{stats.avgRating}★</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Available</p><p className="text-2xl font-bold text-success">{stats.available}</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Avg Rating</p><p className="text-2xl font-bold text-warning">{stats.avgRating}★</p></CardContent></Card>
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Total Jobs</p><p className="text-2xl font-bold">{stats.totalJobs}</p></CardContent></Card>
       </div>
 
@@ -155,7 +155,7 @@ export default function AdminContractorOnboarding() {
                           ))}
                         </div>
                       </TableCell>
-                      <TableCell>{c.rating ? <span className="text-amber-600">{c.rating}★</span> : "—"}</TableCell>
+                      <TableCell>{c.rating ? <span className="text-warning">{c.rating}★</span> : "—"}</TableCell>
                       <TableCell>{c.total_jobs || 0}</TableCell>
                       <TableCell>
                         <Button

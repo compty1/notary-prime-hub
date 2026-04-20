@@ -87,7 +87,7 @@ function EmailSettings() {
             {testing ? "Testing..." : "Test Connection"}
           </Button>
           {connectionStatus !== "idle" && (
-            <div className={`flex items-center gap-2 text-sm ${connectionStatus === "success" ? "text-green-600" : "text-destructive"}`}>
+            <div className={`flex items-center gap-2 text-sm ${connectionStatus === "success" ? "text-success" : "text-destructive"}`}>
               {connectionStatus === "success" ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
               {statusMessage}
             </div>
@@ -181,7 +181,7 @@ function DLQViewer() {
 
       {failures.length === 0 ? (
         <Card><CardContent className="py-8 text-center text-muted-foreground">
-          <CheckCircle className="mx-auto mb-2 h-8 w-8 text-green-500" />
+          <CheckCircle className="mx-auto mb-2 h-8 w-8 text-success" />
           No failed messages. All emails delivered successfully.
         </CardContent></Card>
       ) : (

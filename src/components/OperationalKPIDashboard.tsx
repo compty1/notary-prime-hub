@@ -98,7 +98,7 @@ export function OperationalKPIDashboard() {
             <div className="flex items-baseline gap-2">
               <span className="text-xl font-bold">{kpi.value}</span>
               {kpi.change !== undefined && kpi.change !== 0 && (
-                <Badge variant="outline" className={`text-[10px] ${kpi.change > 0 ? "text-green-600" : "text-red-600"}`}>
+                <Badge variant="outline" className={`text-[10px] ${kpi.change > 0 ? "text-success" : "text-destructive"}`}>
                   {kpi.change > 0 ? <TrendingUp className="h-3 w-3 mr-0.5" /> : <TrendingDown className="h-3 w-3 mr-0.5" />}
                   {Math.abs(kpi.change)}%
                 </Badge>

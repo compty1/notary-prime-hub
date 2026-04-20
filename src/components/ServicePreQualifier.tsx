@@ -221,7 +221,7 @@ export default function ServicePreQualifier({ category, serviceName, onComplete,
 
             {/* Hague Convention indicator */}
             {currentStep.field === "destination_country" && answers.destination_country && (
-              <div className={`mt-3 flex items-center gap-2 rounded-lg p-3 text-sm ${isHague ? "bg-primary/5 text-primary border border-primary/20" : "bg-amber-50 text-amber-800 border border-amber-200"}`}>
+              <div className={`mt-3 flex items-center gap-2 rounded-lg p-3 text-sm ${isHague ? "bg-primary/5 text-primary border border-primary/20" : "bg-warning/10 text-warning border border-warning/30"}`}>
                 {isHague ? <CheckCircle className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />}
                 {isHague
                   ? "This country is a Hague Convention member — an apostille will be accepted."
@@ -231,7 +231,7 @@ export default function ServicePreQualifier({ category, serviceName, onComplete,
 
             {/* I-9 timing warning */}
             {currentStep.field === "i9_type" && answers.i9_type === "new_hire" && (
-              <div className="mt-3 flex items-center gap-2 rounded-lg bg-blue-50 border border-blue-200 p-3 text-sm text-blue-800">
+              <div className="mt-3 flex items-center gap-2 rounded-lg bg-info/10 border border-info/30 p-3 text-sm text-info">
                 <Clock className="h-4 w-4" />
                 Remember: Section 2 must be completed within 3 business days of the hire date.
               </div>

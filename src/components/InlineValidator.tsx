@@ -57,13 +57,13 @@ export function ValidatedField({
           maxLength={maxLength}
           className={cn(
             error && touched ? "border-destructive focus-visible:ring-destructive" : "",
-            isValid ? "border-green-500 focus-visible:ring-green-500" : "",
+            isValid ? "border-success/30 focus-visible:ring-green-500" : "",
           )}
           aria-invalid={!!error}
           aria-describedby={error ? `${id}-error` : undefined}
         />
         {isValid && (
-          <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" />
+          <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-success" />
         )}
         {error && touched && (
           <AlertCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-destructive" />

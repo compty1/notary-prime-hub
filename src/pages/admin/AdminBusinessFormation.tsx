@@ -34,13 +34,13 @@ const FORMATION_TYPES = [
 const STATUSES = ["intake", "document_prep", "filing", "pending_state", "approved", "completed", "rejected"] as const;
 
 const statusColors: Record<string, string> = {
-  intake: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-  document_prep: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
+  intake: "bg-info/10 text-info",
+  document_prep: "bg-warning/10 text-warning",
   filing: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
-  pending_state: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300",
-  approved: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
-  completed: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
-  rejected: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+  pending_state: "bg-info/10 text-info",
+  approved: "bg-success/10 text-success",
+  completed: "bg-success/10 text-success",
+  rejected: "bg-destructive/10 text-destructive",
 };
 
 const WIZARD_STEPS = [
@@ -132,7 +132,7 @@ export default function AdminBusinessFormation() {
       <div className="grid grid-cols-3 gap-4">
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Total Filings</p><p className="text-2xl font-bold">{stats.total}</p></CardContent></Card>
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Active</p><p className="text-2xl font-bold text-primary">{stats.active}</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Completed</p><p className="text-2xl font-bold text-green-600">{stats.completed}</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Completed</p><p className="text-2xl font-bold text-success">{stats.completed}</p></CardContent></Card>
       </div>
 
       <div className="flex gap-2">

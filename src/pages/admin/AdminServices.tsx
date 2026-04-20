@@ -441,11 +441,11 @@ export default function AdminServices() {
       </div>
 
       {duplicateWarnings.length > 0 && (
-        <Card className="border-yellow-500/50 bg-yellow-500/5">
+        <Card className="border-warning/50 bg-warning/5">
           <CardContent className="py-3 px-4 flex items-start gap-2">
-            <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5 shrink-0" />
+            <AlertTriangle className="h-4 w-4 text-warning mt-0.5 shrink-0" />
             <div className="text-sm">
-              <span className="font-medium text-yellow-700">Potential duplicates detected:</span>{" "}
+              <span className="font-medium text-warning">Potential duplicates detected:</span>{" "}
               {duplicateWarnings.map((group, i) => (
                 <span key={i}>{i > 0 ? " • " : ""}{group.map(s => s.name).join(" ↔ ")}</span>
               ))}
@@ -462,15 +462,15 @@ export default function AdminServices() {
         const total = missingDesc.length + missingTurnaround.length + missingFaqs.length;
         if (total === 0) return null;
         return (
-          <Card className="border-amber-500/30 bg-amber-50/50 dark:bg-amber-900/10">
+          <Card className="border-warning/30 bg-warning/50">
             <CardContent className="py-3 px-4 flex items-start gap-2">
-              <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
-              <div className="text-sm text-amber-800 dark:text-amber-200">
+              <AlertTriangle className="h-4 w-4 text-warning mt-0.5 shrink-0" />
+              <div className="text-sm text-warning">
                 <span className="font-medium">Content gaps detected:</span>{" "}
                 {missingDesc.length > 0 && <span>{missingDesc.length} services missing descriptions. </span>}
                 {missingTurnaround.length > 0 && <span>{missingTurnaround.length} missing turnaround estimates. </span>}
                 {missingFaqs.length > 0 && <span>{missingFaqs.length} missing FAQs. </span>}
-                <span className="text-amber-600 dark:text-amber-300">Complete these for better SEO and client experience.</span>
+                <span className="text-warning">Complete these for better SEO and client experience.</span>
               </div>
             </CardContent>
           </Card>
@@ -540,7 +540,7 @@ export default function AdminServices() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {s.is_popular && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />}
+                      {s.is_popular && <Star className="h-4 w-4 text-warning fill-yellow-500" />}
                     </TableCell>
                     <TableCell>
                       <Switch checked={s.is_active} onCheckedChange={() => toggleActive(s)} />

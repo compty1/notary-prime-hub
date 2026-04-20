@@ -215,8 +215,8 @@ export default function DocumentBuilder() {
         <div className="mb-6 text-center">
           <h1 className="font-sans text-3xl font-bold mb-2">Guided Document Builder</h1>
           <p className="text-muted-foreground">Fill in the blanks step-by-step — we'll build the document for you</p>
-          <div className="mt-2 mx-auto max-w-md rounded-lg bg-amber-50 border border-amber-200 p-2">
-            <p className="flex items-center justify-center gap-1 text-xs text-amber-800"><AlertTriangle className="h-3 w-3" /> Generic templates only — not legal advice</p>
+          <div className="mt-2 mx-auto max-w-md rounded-lg bg-warning/10 border border-warning/30 p-2">
+            <p className="flex items-center justify-center gap-1 text-xs text-warning"><AlertTriangle className="h-3 w-3" /> Generic templates only — not legal advice</p>
           </div>
         </div>
 

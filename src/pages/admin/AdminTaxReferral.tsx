@@ -50,7 +50,7 @@ export default function AdminTaxReferral() {
       <div className="grid grid-cols-3 gap-4">
         <Card><CardContent className="pt-4 text-center"><div className="text-2xl font-bold">{cpas.length}</div><p className="text-xs text-muted-foreground">Partners</p></CardContent></Card>
         <Card><CardContent className="pt-4 text-center"><div className="text-2xl font-bold">{cpas.reduce((s, c) => s + c.referralCount, 0)}</div><p className="text-xs text-muted-foreground">Total Referrals</p></CardContent></Card>
-        <Card><CardContent className="pt-4 text-center"><div className="text-2xl font-bold text-green-600">Active</div><p className="text-xs text-muted-foreground">Network Status</p></CardContent></Card>
+        <Card><CardContent className="pt-4 text-center"><div className="text-2xl font-bold text-success">Active</div><p className="text-xs text-muted-foreground">Network Status</p></CardContent></Card>
       </div>
 
       <div className="relative">

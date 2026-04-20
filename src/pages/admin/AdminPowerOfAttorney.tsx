@@ -39,9 +39,9 @@ const MOCK_REQUESTS: PoaRequest[] = [
 
 const statusColors: Record<string, string> = {
   draft: "bg-muted text-muted-foreground",
-  review: "bg-yellow-500/20 text-yellow-700",
-  notarized: "bg-green-500/20 text-green-700",
-  delivered: "bg-blue-500/20 text-blue-700",
+  review: "bg-warning/20 text-warning",
+  notarized: "bg-success/20 text-success",
+  delivered: "bg-info/20 text-info",
 };
 
 export default function AdminPowerOfAttorney() {
@@ -70,8 +70,8 @@ export default function AdminPowerOfAttorney() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card><CardContent className="pt-4 text-center"><div className="text-2xl font-bold">{requests.length}</div><p className="text-xs text-muted-foreground">Total Requests</p></CardContent></Card>
-        <Card><CardContent className="pt-4 text-center"><div className="text-2xl font-bold text-green-600">{requests.filter(r => r.status === "notarized").length}</div><p className="text-xs text-muted-foreground">Notarized</p></CardContent></Card>
-        <Card><CardContent className="pt-4 text-center"><div className="text-2xl font-bold text-yellow-600">{requests.filter(r => r.status === "review").length}</div><p className="text-xs text-muted-foreground">In Review</p></CardContent></Card>
+        <Card><CardContent className="pt-4 text-center"><div className="text-2xl font-bold text-success">{requests.filter(r => r.status === "notarized").length}</div><p className="text-xs text-muted-foreground">Notarized</p></CardContent></Card>
+        <Card><CardContent className="pt-4 text-center"><div className="text-2xl font-bold text-warning">{requests.filter(r => r.status === "review").length}</div><p className="text-xs text-muted-foreground">In Review</p></CardContent></Card>
         <Card><CardContent className="pt-4 text-center"><div className="text-2xl font-bold text-muted-foreground">{requests.filter(r => r.status === "draft").length}</div><p className="text-xs text-muted-foreground">Drafts</p></CardContent></Card>
       </div>
 
@@ -123,9 +123,9 @@ export default function AdminPowerOfAttorney() {
             <div><Label>Principal Name</Label><Input placeholder="Person granting power" /></div>
             <div><Label>Agent Name</Label><Input placeholder="Person receiving power" /></div>
             <div><Label>Powers Granted</Label><Textarea placeholder="Describe the specific powers being granted..." /></div>
-            <div className="rounded-lg bg-yellow-500/5 border border-yellow-500/20 p-3 flex items-start gap-2">
-              <Shield className="h-4 w-4 text-yellow-600 mt-0.5" />
-              <p className="text-xs text-yellow-700">Ohio Revised Code §1337.12: This document will require notarization. The principal must sign in the presence of a notary public.</p>
+            <div className="rounded-lg bg-warning/5 border border-warning/20 p-3 flex items-start gap-2">
+              <Shield className="h-4 w-4 text-warning mt-0.5" />
+              <p className="text-xs text-warning">Ohio Revised Code §1337.12: This document will require notarization. The principal must sign in the presence of a notary public.</p>
             </div>
           </div>
           <DialogFooter>

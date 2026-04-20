@@ -15,7 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Fingerprint, Plus, Search, Loader2 } from "lucide-react";
 import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 
-const statusColors: Record<string, string> = { scheduled: "bg-blue-100 text-blue-800", in_progress: "bg-purple-100 text-purple-800", completed: "bg-emerald-100 text-emerald-800", cancelled: "bg-red-100 text-red-800" };
+const statusColors: Record<string, string> = { scheduled: "bg-info/10 text-info", in_progress: "bg-purple-100 text-purple-800", completed: "bg-success/10 text-success", cancelled: "bg-destructive/10 text-destructive" };
 
 export default function AdminFingerprinting() {
   usePageMeta({ title: "Fingerprinting Sessions", noIndex: true });

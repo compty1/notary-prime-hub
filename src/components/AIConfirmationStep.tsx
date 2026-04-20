@@ -32,7 +32,7 @@ export function AIConfirmationStep({ fields, onConfirm, onEdit, title = "Review 
           <Bot className="h-5 w-5 text-primary" /> {title}
         </CardTitle>
         {lowConfidenceCount > 0 && (
-          <p className="text-xs text-amber-600 flex items-center gap-1">
+          <p className="text-xs text-warning flex items-center gap-1">
             <AlertTriangle className="h-3 w-3" />
             {lowConfidenceCount} field(s) need your attention (low confidence)
           </p>
@@ -44,7 +44,7 @@ export function AIConfirmationStep({ fields, onConfirm, onEdit, title = "Review 
             key={i}
             className={`flex items-center justify-between rounded border p-3 ${
               field.confidence < 0.8
-                ? "border-amber-300 bg-amber-50 dark:bg-amber-900/20"
+                ? "border-warning/30 bg-warning/10"
                 : "border-border"
             }`}
           >
@@ -56,10 +56,10 @@ export function AIConfirmationStep({ fields, onConfirm, onEdit, title = "Review 
                   variant="outline"
                   className={`text-[10px] ${
                     field.confidence >= 0.9
-                      ? "text-green-600 border-green-300"
+                      ? "text-success border-success/30"
                       : field.confidence >= 0.7
-                      ? "text-amber-600 border-amber-300"
-                      : "text-red-600 border-red-300"
+                      ? "text-warning border-warning/30"
+                      : "text-destructive border-destructive/30"
                   }`}
                 >
                   {Math.round(field.confidence * 100)}% confidence

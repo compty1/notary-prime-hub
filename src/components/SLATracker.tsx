@@ -57,19 +57,19 @@ export function SLATracker({ items }: SLATrackerProps) {
         <Progress value={complianceRate} className="h-2" />
 
         <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="p-2 rounded-md bg-green-500/10">
-            <CheckCircle2 className="h-4 w-4 mx-auto text-green-600 mb-1" />
-            <div className="text-lg font-semibold text-green-600">{stats.met}</div>
+          <div className="p-2 rounded-md bg-success/10">
+            <CheckCircle2 className="h-4 w-4 mx-auto text-success mb-1" />
+            <div className="text-lg font-semibold text-success">{stats.met}</div>
             <div className="text-[10px] text-muted-foreground">Met</div>
           </div>
-          <div className="p-2 rounded-md bg-yellow-500/10">
-            <AlertTriangle className="h-4 w-4 mx-auto text-yellow-600 mb-1" />
-            <div className="text-lg font-semibold text-yellow-600">{stats.atRisk}</div>
+          <div className="p-2 rounded-md bg-warning/10">
+            <AlertTriangle className="h-4 w-4 mx-auto text-warning mb-1" />
+            <div className="text-lg font-semibold text-warning">{stats.atRisk}</div>
             <div className="text-[10px] text-muted-foreground">At Risk</div>
           </div>
-          <div className="p-2 rounded-md bg-red-500/10">
-            <AlertTriangle className="h-4 w-4 mx-auto text-red-600 mb-1" />
-            <div className="text-lg font-semibold text-red-600">{stats.breached}</div>
+          <div className="p-2 rounded-md bg-destructive/10">
+            <AlertTriangle className="h-4 w-4 mx-auto text-destructive mb-1" />
+            <div className="text-lg font-semibold text-destructive">{stats.breached}</div>
             <div className="text-[10px] text-muted-foreground">Breached</div>
           </div>
         </div>
