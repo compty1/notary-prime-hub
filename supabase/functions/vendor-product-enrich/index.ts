@@ -1,41 +1,43 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { corsHeaders, handleCorsOptions, errorResponse, jsonResponse, rateLimitGuard, structuredLog, checkBodySize } from "../_shared/middleware.ts";
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return handleCorsOptions(req);
+
+  // Rate limit (item BUG-0584 group)
+  const rl = rateLimitGuard(req, 20);
+  if (rl) return rl;
 
   try {
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
+    if (!authHeader?.startsWith("Bearer ")) {
+      return errorResponse(req, 401, "Unauthorized", "Missing bearer token");
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Verify admin role
+    // Verify admin role using validated user session
     const anonClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!);
     const { data: { user }, error: authError } = await anonClient.auth.getUser(authHeader.replace("Bearer ", ""));
     if (authError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
+      return errorResponse(req, 401, "Unauthorized", "Invalid session");
     }
 
     const { data: roleCheck } = await supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin").maybeSingle();
     if (!roleCheck) {
-      return new Response(JSON.stringify({ error: "Admin only" }), { status: 403, headers: corsHeaders });
+      return errorResponse(req, 403, "Forbidden", "Admin only");
     }
 
-    const { product_id, product_name, product_type, vendor_name, description } = await req.json();
+    const rawBody = await req.text();
+    if (!checkBodySize(rawBody)) {
+      return errorResponse(req, 413, "Payload Too Large", "Body exceeds 1 MB limit");
+    }
+    const { product_id, product_name, product_type, vendor_name, description } = JSON.parse(rawBody);
 
     if (!product_id || !product_name) {
-      return new Response(JSON.stringify({ error: "product_id and product_name required" }), { status: 400, headers: corsHeaders });
+      return errorResponse(req, 400, "Bad Request", "product_id and product_name required");
     }
 
     // Use Lovable AI to enrich product details
