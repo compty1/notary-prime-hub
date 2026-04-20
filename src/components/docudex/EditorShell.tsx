@@ -271,7 +271,7 @@ export function EditorShell({ className, onSave, onExport }: EditorShellProps) {
             <span className="text-xs text-muted-foreground">
               Page {activePageIndex + 1} of {pages.length}
             </span>
-            <Button size="icon" variant="ghost" className="h-7 w-7" disabled={activePageIndex  aria-label="Action">= pages.length - 1} onClick={() => pages[activePageIndex + 1] && setActivePage(pages[activePageIndex + 1].id)}>
+            <Button size="icon" variant="ghost" className="h-7 w-7" disabled={activePageIndex >= pages.length - 1} aria-label="Action" onClick={() => pages[activePageIndex + 1] && setActivePage(pages[activePageIndex + 1].id)}>
               <ChevronRight className="w-3.5 h-3.5" />
             </Button>
             <Button size="sm" variant="ghost" className="h-7 text-xs gap-1" onClick={() => addPage()}>

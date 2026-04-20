@@ -100,10 +100,10 @@ export function PaginatedTable<T>({
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <span className="px-3 text-xs font-medium">Page {page + 1} of {totalPages}</span>
-            <Button variant="outline" size="icon" className="h-8 w-8" disabled={page  aria-label="Action">= totalPages - 1} onClick={() => setPage(p => p + 1)}>
+            <Button variant="outline" size="icon" className="h-8 w-8" disabled={page >= totalPages - 1} aria-label="Action" onClick={() => setPage(p => p + 1)}>
               <ChevronRight className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="icon" className="h-8 w-8" disabled={page  aria-label="Action">= totalPages - 1} onClick={() => setPage(totalPages - 1)}>
+            <Button variant="outline" size="icon" className="h-8 w-8" disabled={page >= totalPages - 1} aria-label="Action" onClick={() => setPage(totalPages - 1)}>
               <ChevronsRight className="h-4 w-4" />
             </Button>
           </div>
