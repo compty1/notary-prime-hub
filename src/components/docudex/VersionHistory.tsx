@@ -82,7 +82,7 @@ export function VersionHistory({ documentId, className }: VersionHistoryProps) {
                 size="icon"
                 variant="ghost"
                 className="h-6 w-6"
-                onClick={() = aria-label="Action"> restoreVersion(v)}
+                onClick={() => restoreVersion(v)}
                 title="Restore this version"
               >
                 <RotateCcw className="w-3 h-3" />

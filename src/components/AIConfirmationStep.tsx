@@ -68,7 +68,7 @@ export function AIConfirmationStep({ fields, onConfirm, onEdit, title = "Review 
               </div>
             </div>
             {field.editable !== false && (
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() = aria-label="Action"> onEdit(i)}>
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onEdit(i)}>
                 <Edit3 className="h-3.5 w-3.5" />
               </Button>
             )}

@@ -107,8 +107,8 @@ function ModulesTab({ courseId }: { courseId: string }) {
                 <TableCell>{m.duration_minutes}m</TableCell>
                 <TableCell><Badge variant={m.is_published ? "default" : "secondary"}>{m.is_published ? "Yes" : "No"}</Badge></TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> { setEditId(m.id); setForm({ title: m.title, description: m.description || "", sort_order: String(m.sort_order), duration_minutes: String(m.duration_minutes), is_published: m.is_published }); setShowDialog(true); }}><Edit className="h-4 w-4" /></Button>
-                  <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> del.mutate(m.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                  <Button variant="ghost" size="icon" onClick={() => { setEditId(m.id); setForm({ title: m.title, description: m.description || "", sort_order: String(m.sort_order), duration_minutes: String(m.duration_minutes), is_published: m.is_published }); setShowDialog(true); }}><Edit className="h-4 w-4" /></Button>
+                  <Button variant="ghost" size="icon" onClick={() => del.mutate(m.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -204,8 +204,8 @@ function LessonsTab({ courseId }: { courseId: string }) {
                 <TableCell>{l.duration_minutes}m</TableCell>
                 <TableCell><Badge variant={l.content_html ? "default" : "secondary"}>{l.content_html ? "Has content" : "Empty"}</Badge></TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> { setEditId(l.id); setForm({ module_id: l.module_id, title: l.title, content_html: l.content_html || "", sort_order: String(l.sort_order), duration_minutes: String(l.duration_minutes), is_published: l.is_published }); setShowDialog(true); }}><Edit className="h-4 w-4" /></Button>
-                  <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> del.mutate(l.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                  <Button variant="ghost" size="icon" onClick={() => { setEditId(l.id); setForm({ module_id: l.module_id, title: l.title, content_html: l.content_html || "", sort_order: String(l.sort_order), duration_minutes: String(l.duration_minutes), is_published: l.is_published }); setShowDialog(true); }}><Edit className="h-4 w-4" /></Button>
+                  <Button variant="ghost" size="icon" onClick={() => del.mutate(l.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -292,8 +292,8 @@ function QuizzesTab({ courseId }: { courseId: string }) {
                 <TableCell>{q.passing_score}%</TableCell>
                 <TableCell>{Array.isArray(q.questions) ? q.questions.length : 0}</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> { setEditId(q.id); setForm({ title: q.title, quiz_type: q.quiz_type, module_id: q.module_id || "", passing_score: String(q.passing_score), sort_order: String(q.sort_order), questions: JSON.stringify(q.questions, null, 2) }); setShowDialog(true); }}><Edit className="h-4 w-4" /></Button>
-                  <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> del.mutate(q.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                  <Button variant="ghost" size="icon" onClick={() => { setEditId(q.id); setForm({ title: q.title, quiz_type: q.quiz_type, module_id: q.module_id || "", passing_score: String(q.passing_score), sort_order: String(q.sort_order), questions: JSON.stringify(q.questions, null, 2) }); setShowDialog(true); }}><Edit className="h-4 w-4" /></Button>
+                  <Button variant="ghost" size="icon" onClick={() => del.mutate(q.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                 </TableCell>
               </TableRow>
             ))}

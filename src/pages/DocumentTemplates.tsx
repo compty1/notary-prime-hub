@@ -1189,14 +1189,14 @@ export default function DocumentTemplates() {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) = aria-label="Action"> { e.stopPropagation(); setQuickPreviewTemplate(t); }}>
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); setQuickPreviewTemplate(t); }}>
                               <Eye className="h-4 w-4 text-muted-foreground" />
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>Quick preview with sample data</TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) = aria-label="Action"> toggleFavorite(e, t.id)}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => toggleFavorite(e, t.id)}>
                         <Heart className={`h-4 w-4 transition-colors ${favorites.has(t.id) ? "fill-destructive text-destructive" : "text-muted-foreground"}`} />
                       </Button>
                     </div>

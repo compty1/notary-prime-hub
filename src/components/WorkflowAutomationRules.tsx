@@ -187,7 +187,7 @@ export function WorkflowAutomationRules() {
               <Button variant="ghost" size="sm" className="text-xs" onClick={() => testRule(rule)}>
                 <Play className="h-3 w-3 mr-1" /> Test
               </Button>
-              <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> deleteRule(rule.id)}>
+              <Button variant="ghost" size="icon" onClick={() => deleteRule(rule.id)}>
                 <Trash2 className="h-4 w-4 text-destructive" />
               </Button>
             </CardContent>

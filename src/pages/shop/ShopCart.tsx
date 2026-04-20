@@ -82,7 +82,7 @@ export default function ShopCart() {
                         <div className="flex items-center gap-3">
                           <span className="font-bold">${(details.price * item.quantity).toFixed(2)}</span>
                           <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive"
-                            onClick={() = aria-label="Action"> removeFromCart.mutate(item.id)}>
+                            onClick={() => removeFromCart.mutate(item.id)}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>

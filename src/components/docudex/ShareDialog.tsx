@@ -64,7 +64,7 @@ export function ShareDialog({ open, onOpenChange, shares, onShare, onRevoke }: S
                 <SelectItem value="viewer">Can view</SelectItem>
               </SelectContent>
             </Select>
-            <Button onClick={handleShare} disabled={!email.trim()} size="icon" aria-label="Action">
+            <Button onClick={handleShare} disabled={!email.trim()} size="icon">
               <Send className="w-4 h-4" />
             </Button>
           </div>
@@ -90,7 +90,7 @@ export function ShareDialog({ open, onOpenChange, shares, onShare, onRevoke }: S
                     size="icon"
                     variant="ghost"
                     className="h-7 w-7 text-destructive"
-                    onClick={() = aria-label="Action"> onRevoke(s.id)}
+                    onClick={() => onRevoke(s.id)}
                   >
                     <Trash2 className="w-3 h-3" />
                   </Button>

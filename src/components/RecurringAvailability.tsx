@@ -50,7 +50,7 @@ export function RecurringAvailability({ blocks, onChange }: RecurringAvailabilit
             <Input type="time" value={block.start} onChange={e => updateBlock(idx, { start: e.target.value })} className="w-[110px]" />
             <span className="text-muted-foreground text-sm">to</span>
             <Input type="time" value={block.end} onChange={e => updateBlock(idx, { end: e.target.value })} className="w-[110px]" />
-            <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> removeBlock(idx)}>
+            <Button variant="ghost" size="icon" onClick={() => removeBlock(idx)}>
               <Trash2 className="h-3 w-3 text-destructive" />
             </Button>
           </div>

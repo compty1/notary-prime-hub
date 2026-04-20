@@ -160,7 +160,7 @@ export default function AdminOrders() {
                     <TableCell><Badge className={`text-xs ${PRIORITY_COLORS[o.priority] || ""}`}>{o.priority}</Badge></TableCell>
                     <TableCell className="text-right font-medium">${o.total.toFixed(2)}</TableCell>
                     <TableCell className="text-xs text-muted-foreground">{o.due_date || "—"}</TableCell>
-                    <TableCell><Button variant="ghost" size="icon" aria-label="Action"><EyeIcon className="h-4 w-4" /></Button></TableCell>
+                    <TableCell><Button variant="ghost" size="icon"><EyeIcon className="h-4 w-4" /></Button></TableCell>
                   </TableRow>
                 ))}
               </TableBody>
