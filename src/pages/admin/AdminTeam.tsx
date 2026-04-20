@@ -295,7 +295,7 @@ export default function AdminTeam() {
             </p>
             <div className="flex gap-2">
               <div className="flex-1">
-                <Input type="email" value={inviteEmail} onChange={(e) = autoComplete="email"> setInviteEmail(e.target.value)} placeholder="notary@example.com" onKeyDown={(e) => e.key === "Enter" && sendInvite()} />
+                <Input type="email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} autoComplete="email" placeholder="notary@example.com" onKeyDown={(e) => e.key === "Enter" && sendInvite()} />
               </div>
               <Button onClick={sendInvite} disabled={sending || !inviteEmail.trim()}>
                 {sending ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Mail className="mr-1 h-4 w-4" />} Invite
@@ -529,8 +529,8 @@ export default function AdminTeam() {
 
             <TabsContent value="account" className="space-y-3">
               <div><Label className="text-xs">Full Name *</Label><Input value={addForm.full_name} onChange={(e) => setAddForm({ ...addForm, full_name: e.target.value })} placeholder="John Smith" /></div>
-              <div><Label className="text-xs">Email *</Label><Input type="email" value={addForm.email} onChange={(e) = autoComplete="email"> setAddForm({ ...addForm, email: e.target.value })} placeholder="notary@example.com" /></div>
-              <div><Label className="text-xs">Temporary Password *</Label><Input type="password" value={addForm.password} onChange={(e) = autoComplete="current-password"> setAddForm({ ...addForm, password: e.target.value })} placeholder="Min 8 chars, 1 uppercase, 1 number" /></div>
+              <div><Label className="text-xs">Email *</Label><Input type="email" value={addForm.email} onChange={(e) => setAddForm({ ...addForm, email: e.target.value })} autoComplete="email" placeholder="notary@example.com" /></div>
+              <div><Label className="text-xs">Temporary Password *</Label><Input type="password" value={addForm.password} onChange={(e) => setAddForm({ ...addForm, password: e.target.value })} autoComplete="current-password" placeholder="Min 8 chars, 1 uppercase, 1 number" /></div>
               <p className="text-xs text-muted-foreground">The notary can change their password after first login. You can later connect an email to this account.</p>
             </TabsContent>
 

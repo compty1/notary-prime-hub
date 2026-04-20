@@ -37,7 +37,7 @@ export function SMSConsentManager({ phone, onPhoneChange, smsOptIn, onSmsOptInCh
           id="sms-phone"
           type="tel"
           value={phone}
-          onChange={e = autoComplete="tel"> onPhoneChange(e.target.value)}
+          onChange={(e) => onPhoneChange(e.target.value)} autoComplete="tel"
           placeholder="(555) 123-4567"
           maxLength={14}
         />

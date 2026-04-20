@@ -120,7 +120,7 @@ export default function ContractorRegistration() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div><Label>Full Name *</Label><Input value={form.full_name} onChange={e => update("full_name", e.target.value)} placeholder="Jane Smith" /></div>
-              <div><Label>Email *</Label><Input type="email" value={form.email} onChange={e = autoComplete="email"> update("email", e.target.value)} placeholder="jane@example.com" /></div>
+              <div><Label>Email *</Label><Input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} autoComplete="email" placeholder="jane@example.com" /></div>
               <div><Label>Phone *</Label><Input value={form.phone} onChange={e => update("phone", e.target.value)} placeholder="(614) 555-0000" /></div>
               <div><Label>Service Area</Label><Input value={form.location} onChange={e => update("location", e.target.value)} placeholder="Columbus, OH" /></div>
             </div>

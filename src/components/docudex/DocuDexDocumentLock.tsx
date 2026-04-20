@@ -60,7 +60,7 @@ export function DocuDexDocumentLock({ open, onOpenChange, isLocked, onToggleLock
             {usePassword && (
               <div>
                 <Label className="text-xs">Password</Label>
-                <Input type="password" value={password} onChange={e = autoComplete="current-password"> setPassword(e.target.value)} placeholder="Enter lock password" />
+                <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" placeholder="Enter lock password" />
               </div>
             )}
             <div className="rounded-lg bg-muted/50 p-3 flex items-center gap-2">

@@ -1613,7 +1613,7 @@ export default function RonSession() {
                   </div>
                   <div>
                     <Label className="text-xs mb-1 block">Signer Email <span className="text-muted-foreground">(optional)</span></Label>
-                    <Input className="h-8 text-xs" type="email" placeholder="signer@example.com" value={signerEmail} onChange={e = autoComplete="email"> setSignerEmail(e.target.value)} />
+                    <Input className="h-8 text-xs" type="email" placeholder="signer@example.com" value={signerEmail} onChange={(e) => setSignerEmail(e.target.value)} autoComplete="email" />
                   </div>
                 </div>
 

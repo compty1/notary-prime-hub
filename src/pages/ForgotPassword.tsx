@@ -151,7 +151,7 @@ export default function ResetPassword() {
             <form onSubmit={handleRequestReset} className="space-y-4">
               <div>
                 <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Email Address</Label>
-                <Input id="email" type="email" value={email} onChange={(e) = autoComplete="email"> setEmail(e.target.value)} required placeholder="you@example.com" autoComplete="email" className="mt-1 rounded-xl border-border bg-card" />
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required placeholder="you@example.com" autoComplete="email" className="mt-1 rounded-xl border-border bg-card" />
               </div>
               <Button type="submit" className="w-full rounded-xl bg-primary text-primary-foreground font-bold hover:bg-primary/85 shadow-soft h-11" disabled={submitting || cooldown > 0}>
                 {submitting ? "Sending..." : cooldown > 0 ? `Wait ${cooldown}s` : "Send Reset Link"}

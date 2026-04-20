@@ -91,7 +91,7 @@ export default function ComingSoon() {
                 type="email"
                 placeholder="Enter your email for launch updates"
                 value={email}
-                onChange={(e) = autoComplete="email"> setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)} autoComplete="email"
                 required
                 className="h-11 flex-1 border-border bg-card"
               />

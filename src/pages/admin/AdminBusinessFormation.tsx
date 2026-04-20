@@ -285,7 +285,7 @@ function FormationWizard({ onSubmit, loading, onCancel }: { onSubmit: (data: any
           <div><Label>Business Address</Label><Input value={form.address} onChange={e => update("address", e.target.value)} placeholder="123 Main St, Columbus, OH 43215" /></div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div><Label>Organizer Name</Label><Input value={form.organizer_name} onChange={e => update("organizer_name", e.target.value)} /></div>
-            <div><Label>Organizer Email</Label><Input type="email" value={form.organizer_email} onChange={e = autoComplete="email"> update("organizer_email", e.target.value)} /></div>
+            <div><Label>Organizer Email</Label><Input type="email" value={form.organizer_email} onChange={(e) => update("organizer_email", e.target.value)} autoComplete="email" /></div>
           </div>
         </div>
       )}
