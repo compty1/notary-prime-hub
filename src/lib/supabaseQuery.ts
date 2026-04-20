@@ -38,7 +38,7 @@ export function withSafetyLimit<T extends { limit: (n: number) => unknown }>(
 
 /** Convenience: returns count + window for offset pagination UIs. */
 export async function paged<Row>(
-  builder: PostgrestFilterBuilder<any, Row, Row[]>,
+  builder: PostgrestFilterBuilder<any, any, Row, Row[], string, any, any>,
   page: number,
   pageSize = DEFAULT_PAGE_SIZE
 ): Promise<{ rows: Row[]; total: number; page: number; pageSize: number }> {
