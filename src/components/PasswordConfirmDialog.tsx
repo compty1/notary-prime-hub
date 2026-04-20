@@ -75,10 +75,10 @@ export default function PasswordConfirmDialog({
  id="confirm-password"
  type="password"
  value={password}
- onChange={(e) => setPassword(e.target.value)} autoComplete="current-password"
- onKeyDown={(e) => e.key === "Enter" && handleVerify()}
- placeholder="Enter your password"
- autoComplete="current-password"
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleVerify()}
+            placeholder="Enter your password"
+            autoComplete="current-password"
  />
  {error && <p className="text-sm text-destructive">{error}</p>}
  </div>
