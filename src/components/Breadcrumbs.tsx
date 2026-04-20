@@ -1,11 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import { ChevronRight, Home } from "lucide-react";
-import { useEffect } from "react";
+import { forwardRef, useEffect } from "react";
 import { BREADCRUMB_LABELS } from "@/lib/breadcrumbLabels";
 
 const labelMap = BREADCRUMB_LABELS;
 
-export function Breadcrumbs() {
+/** forwardRef so framer-motion / Slot wrappers can pass refs without warning. */
+export const Breadcrumbs = forwardRef<HTMLElement>((_props, ref) => {
   const { pathname } = useLocation();
   const segments = pathname.split("/").filter(Boolean);
 
@@ -41,7 +42,7 @@ export function Breadcrumbs() {
   if (segments.length === 0) return null;
 
   return (
-    <nav aria-label="Breadcrumb" className="mb-4">
+    <nav ref={ref} aria-label="Breadcrumb" className="mb-4">
       <ol className="flex items-center gap-1 text-sm text-muted-foreground">
         <li>
           <Link to="/" className="hover:text-foreground transition-colors" aria-label="Home">
@@ -63,4 +64,5 @@ export function Breadcrumbs() {
       </ol>
     </nav>
   );
-}
+});
+Breadcrumbs.displayName = "Breadcrumbs";
