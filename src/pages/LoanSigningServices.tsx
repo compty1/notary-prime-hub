@@ -230,11 +230,11 @@ export default function LoanSigningServices() {
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
                       <Label>Email *</Label>
-                      <Input type="email" value={form.email} onChange={e => update("email", e.target.value)} placeholder="you@company.com" maxLength={255} required />
+                      <Input type="email" value={form.email} onChange={e = autoComplete="email"> update("email", e.target.value)} placeholder="you@company.com" maxLength={255} required />
                     </div>
                     <div className="space-y-2">
                       <Label>Phone</Label>
-                      <Input type="tel" value={form.phone} onChange={e => update("phone", e.target.value)} placeholder="(614) 000-0000" maxLength={20} />
+                      <Input type="tel" value={form.phone} onChange={e = autoComplete="tel"> update("phone", e.target.value)} placeholder="(614) 000-0000" maxLength={20} />
                     </div>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">

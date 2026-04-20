@@ -144,10 +144,10 @@ export function AdminContentManager() {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-1">
-                    <Button variant="ghost" size="icon" onClick={() => togglePublish(post)}>
+                    <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> togglePublish(post)}>
                       {post.status === "published" ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => openEdit(post)}>
+                    <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> openEdit(post)}>
                       <Pencil className="h-4 w-4" />
                     </Button>
                   </div>

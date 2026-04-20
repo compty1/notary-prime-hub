@@ -25,7 +25,7 @@ const TIER_COLORS: Record<number, string> = {
   3: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
   4: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
   5: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
-  6: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300",
+  6: "bg-muted text-gray-800 dark:bg-gray-900/30 dark:text-gray-300",
 };
 
 function CourseCard({ course, userId }: { course: any; userId?: string }) {

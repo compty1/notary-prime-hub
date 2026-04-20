@@ -392,7 +392,7 @@ export default function AdminOverview() {
         <Link to="/admin/availability"><Button size="sm" variant="outline"><Clock className="mr-1 h-3 w-3" /> Set Availability</Button></Link>
         {appointments.filter(a => a.notarization_type === "ron" && ["kba_pending", "in_session"].includes(a.status)).length > 0 && (
           <Link to={`/ron-session?id=${appointments.find(a => a.notarization_type === "ron" && ["kba_pending", "in_session"].includes(a.status))?.id}`}>
-            <Button size="sm" className="bg-purple-600 text-white hover:bg-purple-700"><Video className="mr-1 h-3 w-3" /> Launch RON Session</Button>
+            <Button size="sm" className="bg-purple-600 text-primary-foreground hover:bg-purple-700"><Video className="mr-1 h-3 w-3" /> Launch RON Session</Button>
           </Link>
         )}
       </div>

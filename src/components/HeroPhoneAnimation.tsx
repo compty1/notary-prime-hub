@@ -71,7 +71,7 @@ export default function HeroPhoneAnimation() {
         >
           {/* Header */}
           <div className="flex items-center justify-between px-5 pt-12 pb-3">
-            <span className="font-heading text-base font-bold text-white tracking-tight">
+            <span className="font-heading text-base font-bold text-primary-foreground tracking-tight">
               Notar<span className="text-primary">.com</span>
             </span>
             <Lock className="w-3.5 h-3.5 text-primary" />
@@ -81,7 +81,7 @@ export default function HeroPhoneAnimation() {
           {step === 0 && (
             <div className="animate-float-up flex-1 flex flex-col items-center justify-center gap-4 px-6">
               <div className="w-10 h-10 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-              <p className="text-xs text-white/60 font-body">Establishing Secure Session...</p>
+              <p className="text-xs text-primary-foreground/60 font-body">Establishing Secure Session...</p>
             </div>
           )}
 
@@ -91,8 +91,8 @@ export default function HeroPhoneAnimation() {
               <div className="flex items-center gap-3">
                 <ScanFace className="w-5 h-5 text-primary" />
                 <div>
-                  <p className="text-sm font-heading font-bold text-white">ID Verification</p>
-                  <p className="text-[10px] text-white/50 font-body">Scanning official document</p>
+                  <p className="text-sm font-heading font-bold text-primary-foreground">ID Verification</p>
+                  <p className="text-[10px] text-primary-foreground/50 font-body">Scanning official document</p>
                 </div>
               </div>
 
@@ -103,9 +103,9 @@ export default function HeroPhoneAnimation() {
                     <Fingerprint className="w-5 h-5 text-primary" />
                   </div>
                   <div className="flex-1 space-y-1.5 pt-1">
-                    <div className="h-2 w-3/4 rounded-full bg-white/15" />
-                    <div className="h-2 w-1/2 rounded-full bg-white/10" />
-                    <div className="h-2 w-2/3 rounded-full bg-white/10" />
+                    <div className="h-2 w-3/4 rounded-full bg-background/15" />
+                    <div className="h-2 w-1/2 rounded-full bg-background/10" />
+                    <div className="h-2 w-2/3 rounded-full bg-background/10" />
                   </div>
                 </div>
 
@@ -121,7 +121,7 @@ export default function HeroPhoneAnimation() {
               </div>
 
               <div className="text-center mt-2">
-                <span className={`text-xs font-body font-medium ${step === 2 ? "text-primary" : "text-white/40"}`}>
+                <span className={`text-xs font-body font-medium ${step === 2 ? "text-primary" : "text-primary-foreground/40"}`}>
                   {step === 2 ? "ID Confirmed ✓" : "Align ID in frame..."}
                 </span>
               </div>
@@ -136,40 +136,40 @@ export default function HeroPhoneAnimation() {
                   <ListChecks className="w-4 h-4 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm font-heading font-bold text-white">Knowledge-Based Auth</p>
-                  <p className="text-[10px] text-white/50 font-body">Please answer security questions</p>
+                  <p className="text-sm font-heading font-bold text-primary-foreground">Knowledge-Based Auth</p>
+                  <p className="text-[10px] text-primary-foreground/50 font-body">Please answer security questions</p>
                 </div>
               </div>
 
-              <div className="rounded-lg bg-white/5 p-3 mt-1">
-                <p className="text-[11px] text-white/80 font-body leading-relaxed">
+              <div className="rounded-lg bg-background/5 p-3 mt-1">
+                <p className="text-[11px] text-primary-foreground/80 font-body leading-relaxed">
                   Which of the following addresses have you previously lived at?
                 </p>
               </div>
 
               <div className="space-y-2 mt-1">
-                <div className="flex items-center gap-2.5 rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 cursor-pointer">
+                <div className="flex items-center gap-2.5 rounded-lg border border-white/10 bg-background/5 px-3 py-2.5 cursor-pointer">
                   <div className="w-4 h-4 rounded-full border-2 border-white/20 shrink-0" />
-                  <span className="text-[11px] text-white/70 font-body">1423 Maple Street Apt 4B</span>
+                  <span className="text-[11px] text-primary-foreground/70 font-body">1423 Maple Street Apt 4B</span>
                 </div>
 
                 <div
                   className={`flex items-center gap-2.5 rounded-lg border px-3 py-2.5 cursor-pointer transition-all duration-500 ${
                     step === 4
                       ? "border-primary bg-primary/10"
-                      : "border-white/10 bg-white/5"
+                      : "border-white/10 bg-background/5"
                   }`}
                 >
                   <div className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors duration-500 ${step === 4 ? "border-primary bg-primary" : "border-white/20"}`}>
                     {step === 4 && <CheckCircle2 className="w-2.5 h-2.5 text-slate-900" />}
                   </div>
-                  <span className="text-[11px] text-white/70 font-body flex-1">7800 Westheimer Rd</span>
+                  <span className="text-[11px] text-primary-foreground/70 font-body flex-1">7800 Westheimer Rd</span>
                   {step === 4 && <CheckCircle2 className="w-4 h-4 text-primary" />}
                 </div>
 
-                <div className="flex items-center gap-2.5 rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 cursor-pointer">
+                <div className="flex items-center gap-2.5 rounded-lg border border-white/10 bg-background/5 px-3 py-2.5 cursor-pointer">
                   <div className="w-4 h-4 rounded-full border-2 border-white/20 shrink-0" />
-                  <span className="text-[11px] text-white/70 font-body">None of the above</span>
+                  <span className="text-[11px] text-primary-foreground/70 font-body">None of the above</span>
                 </div>
               </div>
             </div>
@@ -181,8 +181,8 @@ export default function HeroPhoneAnimation() {
               <div className="animate-shield w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
                 <ShieldCheck className="w-10 h-10 text-primary" />
               </div>
-              <p className="text-xl font-heading font-bold text-white">Verified!</p>
-              <p className="text-xs text-white/50 font-body text-center leading-relaxed">
+              <p className="text-xl font-heading font-bold text-primary-foreground">Verified!</p>
+              <p className="text-xs text-primary-foreground/50 font-body text-center leading-relaxed">
                 Identity confirmed and secured for notarization.
               </p>
               <div className="flex items-center gap-3 mt-2">

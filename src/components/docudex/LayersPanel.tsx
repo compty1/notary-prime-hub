@@ -66,16 +66,16 @@ export function LayersPanel() {
       </div>
       {selectedElementIds.length === 1 && (
         <div className="px-3 py-2 border-t border-border flex gap-1 justify-center">
-          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => activePageId && reorderElement(activePageId, selectedElementIds[0], "top")} title="Bring to front">
+          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() = aria-label="Action"> activePageId && reorderElement(activePageId, selectedElementIds[0], "top")} title="Bring to front">
             <ChevronsUp className="w-3.5 h-3.5" />
           </Button>
-          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => activePageId && reorderElement(activePageId, selectedElementIds[0], "up")} title="Move up">
+          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() = aria-label="Action"> activePageId && reorderElement(activePageId, selectedElementIds[0], "up")} title="Move up">
             <ChevronUp className="w-3.5 h-3.5" />
           </Button>
-          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => activePageId && reorderElement(activePageId, selectedElementIds[0], "down")} title="Move down">
+          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() = aria-label="Action"> activePageId && reorderElement(activePageId, selectedElementIds[0], "down")} title="Move down">
             <ChevronDown className="w-3.5 h-3.5" />
           </Button>
-          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => activePageId && reorderElement(activePageId, selectedElementIds[0], "bottom")} title="Send to back">
+          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() = aria-label="Action"> activePageId && reorderElement(activePageId, selectedElementIds[0], "bottom")} title="Send to back">
             <ChevronsDown className="w-3.5 h-3.5" />
           </Button>
         </div>

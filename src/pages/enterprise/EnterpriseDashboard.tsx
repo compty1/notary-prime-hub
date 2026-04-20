@@ -15,7 +15,7 @@ const tools = [
   { title: "Lien Center", description: "Construction lien & waiver management", icon: Hammer, path: "/admin/enterprise/lien-center", color: "text-rose-500" },
   { title: "Trust Scheduler", description: "Estate trust assets & Schedule A", icon: ScrollText, path: "/admin/enterprise/trust-scheduler", color: "text-indigo-500" },
   { title: "B2B Dispatch", description: "Bulk CSV signing requests", icon: Package, path: "/admin/enterprise/b2b-dispatch", color: "text-teal-500" },
-  { title: "BOI/Compliance", description: "Corporate entity search & BOI reports", icon: Building2, path: "/admin/enterprise/corporate-compliance", color: "text-slate-500" },
+  { title: "BOI/Compliance", description: "Corporate entity search & BOI reports", icon: Building2, path: "/admin/enterprise/corporate-compliance", color: "text-muted-foreground" },
   { title: "Immigration Hub", description: "Visa bulletin & translation affidavits", icon: Globe, path: "/admin/enterprise/immigration-hub", color: "text-emerald-500" },
   { title: "Apostille Matrix", description: "50-state apostille reference & fees", icon: Scale, path: "/admin/enterprise/apostille-matrix", color: "text-violet-500" },
   { title: "Brand Kits", description: "White-label document branding", icon: Palette, path: "/admin/enterprise/brand-settings", color: "text-pink-500" },

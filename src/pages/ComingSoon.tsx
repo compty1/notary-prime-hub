@@ -75,12 +75,12 @@ export default function ComingSoon() {
           </div>
 
           {/* Headline */}
-          <h1 className="font-heading text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl">
+          <h1 className="font-heading text-4xl font-extrabold tracking-tight text-primary-foreground sm:text-5xl md:text-6xl">
             Professional Notary.{" "}
             <span className="text-gradient-primary">Launching Soon.</span>
           </h1>
 
-          <p className="mx-auto mt-5 max-w-lg text-lg text-white/70">
+          <p className="mx-auto mt-5 max-w-lg text-lg text-primary-foreground/70">
             Ohio's modern notary & document services platform. In-person, mobile, and Remote Online Notarization — all in one place.
           </p>
 
@@ -91,7 +91,7 @@ export default function ComingSoon() {
                 type="email"
                 placeholder="Enter your email for launch updates"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) = autoComplete="email"> setEmail(e.target.value)}
                 required
                 className="h-11 flex-1 border-border bg-card"
               />
@@ -137,7 +137,7 @@ export default function ComingSoon() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-white/10 py-6 text-center text-xs text-white/50">
+      <footer className="relative z-10 border-t border-white/10 py-6 text-center text-xs text-primary-foreground/50">
         <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-6">
           <a href="tel:6143006890" className="flex items-center gap-1.5 transition-colors hover:text-primary">
             <Phone className="h-3.5 w-3.5" /> (614) 300-6890
@@ -160,8 +160,8 @@ function FeatureCard({ icon, title, desc }: { icon: React.ReactNode; title: stri
       <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
         {icon}
       </div>
-      <h3 className="font-heading text-sm font-semibold text-white">{title}</h3>
-      <p className="mt-1 text-xs text-white/60">{desc}</p>
+      <h3 className="font-heading text-sm font-semibold text-primary-foreground">{title}</h3>
+      <p className="mt-1 text-xs text-primary-foreground/60">{desc}</p>
     </div>
   );
 }

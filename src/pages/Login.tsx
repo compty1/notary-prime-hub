@@ -133,7 +133,7 @@ export default function Login() {
             <form onSubmit={handleForgotPassword} className="space-y-4">
               <div>
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Email</Label>
-                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className="bg-muted border-none rounded-xl mt-1" />
+                <Input id="email" type="email" value={email} onChange={(e) = autoComplete="email"> setEmail(e.target.value)} required autoComplete="email" className="bg-muted border-none rounded-xl mt-1" />
               </div>
               {!resetSent && (
                 <Button type="submit" className="w-full rounded-2xl font-bold bg-foreground text-background shadow-soft hover:bg-foreground/90 hover:-translate-y-0.5 active:translate-y-0 active:shadow-soft transition-all" disabled={submitting}>
@@ -169,7 +169,7 @@ export default function Login() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Email</Label>
-                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className="bg-muted border-none rounded-xl mt-1" />
+                  <Input id="email" type="email" value={email} onChange={(e) = autoComplete="email"> setEmail(e.target.value)} required autoComplete="email" className="bg-muted border-none rounded-xl mt-1" />
                 </div>
                 <div>
                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Password</Label>
@@ -204,7 +204,7 @@ export default function Login() {
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
             <Shield className="h-8 w-8 text-primary" />
           </div>
-          <h2 className="mb-3 text-2xl font-black text-white">Secure Document Services</h2>
+          <h2 className="mb-3 text-2xl font-black text-primary-foreground">Secure Document Services</h2>
           <p className="text-muted-foreground font-medium">In-person and remote online notarization, fully compliant with Ohio Revised Code §147.</p>
         </div>
       </div>

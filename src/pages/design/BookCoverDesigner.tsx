@@ -56,7 +56,7 @@ export default function BookCoverDesigner() {
                       <div><p className="text-lg font-bold leading-tight" style={{ color: form.textColor }}>{form.title || "Book Title"}</p>{form.subtitle && <p className="text-xs mt-1 opacity-70" style={{ color: form.textColor }}>{form.subtitle}</p>}</div>
                       <p className="text-sm font-medium" style={{ color: form.textColor }}>{form.author || "Author Name"}</p>
                     </div>
-                    {form.includeBarcode && <div className="absolute bottom-3 right-3 w-12 h-8 bg-white rounded flex items-center justify-center"><div className="space-y-0.5">{[...Array(5)].map((_, i) => <div key={i} className="h-0.5 bg-black" style={{ width: `${8 + Math.random() * 8}px` }} />)}</div></div>}
+                    {form.includeBarcode && <div className="absolute bottom-3 right-3 w-12 h-8 bg-background rounded flex items-center justify-center"><div className="space-y-0.5">{[...Array(5)].map((_, i) => <div key={i} className="h-0.5 bg-black" style={{ width: `${8 + Math.random() * 8}px` }} />)}</div></div>}
                     {/* Bleed area */}
                     <div className="absolute inset-0 border-2 border-dashed border-red-500/15 pointer-events-none m-0.5" />
                   </div>

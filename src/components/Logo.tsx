@@ -20,7 +20,7 @@ const sizeMap = {
 export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
   ({ size = "md", showText = false, subtitle, theme, className }, ref) => {
     const s = sizeMap[size];
-    const textColor = theme === "dark" ? "text-white" : "text-foreground";
+    const textColor = theme === "dark" ? "text-primary-foreground" : "text-foreground";
 
     return (
       <div

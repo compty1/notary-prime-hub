@@ -240,8 +240,8 @@ function AdminSidebar() {
                     >
                       <SidebarMenuButton asChild>
                         <NavLink to={item.url} end={item.url === "/admin"}
-                          className="text-muted-foreground hover:text-white hover:bg-white/5 rounded-xl transition-all"
-                          activeClassName="bg-primary text-white shadow-lg shadow-primary/20 font-bold">
+                          className="text-muted-foreground hover:text-primary-foreground hover:bg-background/5 rounded-xl transition-all"
+                          activeClassName="bg-primary text-primary-foreground shadow-lg shadow-primary/20 font-bold">
                           <item.icon className="mr-2 h-4 w-4" />
                           {!collapsed && <span className="text-sm">{item.title}</span>}
                         </NavLink>
@@ -260,18 +260,18 @@ function AdminSidebar() {
               variant="ghost"
               size="sm"
               onClick={resetOrder}
-              className="w-full justify-start text-muted-foreground hover:text-white hover:bg-white/5 rounded-xl mb-2"
+              className="w-full justify-start text-muted-foreground hover:text-primary-foreground hover:bg-background/5 rounded-xl mb-2"
               title="Reset menu order to default"
             >
               <RotateCcw className="mr-2 h-4 w-4" />Reset Menu Order
             </Button>
           )}
           <Link to="/portal" className="mb-2 block">
-            <Button variant="ghost" size="sm" className="w-full justify-start text-muted-foreground hover:text-white hover:bg-white/5 rounded-xl">
+            <Button variant="ghost" size="sm" className="w-full justify-start text-muted-foreground hover:text-primary-foreground hover:bg-background/5 rounded-xl">
               <Eye className="mr-2 h-4 w-4" />{!collapsed && "Client View"}
             </Button>
           </Link>
-          <Button variant="ghost" size="sm" onClick={signOut} className="w-full justify-start text-muted-foreground hover:text-white hover:bg-white/5 rounded-xl">
+          <Button variant="ghost" size="sm" onClick={signOut} className="w-full justify-start text-muted-foreground hover:text-primary-foreground hover:bg-background/5 rounded-xl">
             <LogOut className="mr-2 h-4 w-4" />{!collapsed && "Sign Out"}
           </Button>
         </div>

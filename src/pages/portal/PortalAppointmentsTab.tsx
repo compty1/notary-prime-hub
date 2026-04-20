@@ -156,7 +156,7 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900/50"><Video className="h-5 w-5 text-purple-600 dark:text-purple-300" /></div>
                   <div><p className="font-medium">{appt.service_type}</p><p className="text-sm text-muted-foreground">Session in progress</p></div>
                 </div>
-                <Link to={`/ron-session?id=${appt.id}`}><Button className="bg-purple-600 text-white hover:bg-purple-700"><Video className="mr-1 h-4 w-4" /> Rejoin</Button></Link>
+                <Link to={`/ron-session?id=${appt.id}`}><Button className="bg-purple-600 text-primary-foreground hover:bg-purple-700"><Video className="mr-1 h-4 w-4" /> Rejoin</Button></Link>
               </CardContent>
             </Card>
           ))}
@@ -180,7 +180,7 @@ export default function PortalAppointmentsTab({ appointments, loading, zoomLink,
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {appt.notarization_type === "ron" && isSessionNear(appt) && <Link to={`/ron-session?id=${appt.id}`}><Button size="sm" className="bg-primary text-white hover:bg-primary/90"><Video className="mr-1 h-3 w-3" /> Join</Button></Link>}
+                    {appt.notarization_type === "ron" && isSessionNear(appt) && <Link to={`/ron-session?id=${appt.id}`}><Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90"><Video className="mr-1 h-3 w-3" /> Join</Button></Link>}
                     {appt.notarization_type === "ron" && !isSessionNear(appt) && <Button size="sm" variant="outline" className="text-xs" onClick={onTechCheck}><Wifi className="mr-1 h-3 w-3" /> Tech Check</Button>}
                     {zoomLink && (appt.service_type || "").toLowerCase().includes("consult") && (
                       <a href={zoomLink} target="_blank" rel="noopener noreferrer"><Button size="sm" variant="outline" className="text-xs"><Video className="mr-1 h-3 w-3" /> Zoom</Button></a>

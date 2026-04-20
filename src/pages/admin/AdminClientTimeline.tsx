@@ -130,7 +130,7 @@ export default function AdminClientTimeline() {
                     return (
                       <div key={event.id} className="relative flex items-start gap-3">
                         <div className={`absolute -left-4 w-4 h-4 rounded-full ${color} flex items-center justify-center`}>
-                          <Icon className="h-2.5 w-2.5 text-white" />
+                          <Icon className="h-2.5 w-2.5 text-primary-foreground" />
                         </div>
                         <div className="flex-1 ml-2">
                           <div className="flex items-center gap-2">

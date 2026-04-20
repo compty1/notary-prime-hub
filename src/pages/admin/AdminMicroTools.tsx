@@ -23,7 +23,7 @@ function SignatureGenerator() {
           <div><Label>Style</Label><Select value={style} onValueChange={v => setStyle(v as "cursive")}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="cursive">Cursive</SelectItem><SelectItem value="serif">Serif</SelectItem><SelectItem value="mono">Monospace</SelectItem></SelectContent></Select></div>
         </div>
         {name && (
-          <div className="border-2 border-dashed rounded-lg p-6 text-center bg-white dark:bg-background">
+          <div className="border-2 border-dashed rounded-lg p-6 text-center bg-background dark:bg-background">
             <p style={{ fontFamily: fonts[style], fontSize: "2rem", lineHeight: 1.2 }}>{name}</p>
             <div className="w-48 mx-auto border-b border-foreground/30 mt-1" />
           </div>
@@ -48,7 +48,7 @@ function StampPreview() {
           <div><Label>County</Label><Input value={county} onChange={e => setCounty(e.target.value)} /></div>
           <div><Label>Expiry Date</Label><Input type="date" value={expiry} onChange={e => setExpiry(e.target.value)} /></div>
         </div>
-        <div className="border-2 border-primary rounded-lg p-6 text-center max-w-xs mx-auto bg-white dark:bg-background">
+        <div className="border-2 border-primary rounded-lg p-6 text-center max-w-xs mx-auto bg-background dark:bg-background">
           <p className="text-[10px] font-bold uppercase tracking-widest text-primary">State of Ohio</p>
           <p className="text-base font-bold mt-1">{notaryName || "Your Name"}</p>
           <p className="text-xs text-muted-foreground">Notary Public</p>
@@ -99,7 +99,7 @@ function QRCodeGenerator() {
       <CardContent className="space-y-4">
         <div><Label>URL or Text</Label><Input value={url} onChange={e => setUrl(e.target.value)} placeholder="https://..." /></div>
         {url && (
-          <div className="flex justify-center p-4 bg-white rounded-lg">
+          <div className="flex justify-center p-4 bg-background rounded-lg">
             <QRCodeSVG value={url} size={180} />
           </div>
         )}

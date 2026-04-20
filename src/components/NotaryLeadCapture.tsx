@@ -130,7 +130,7 @@ export function NotaryLeadCapture({ notarySlug, notaryName, notaryUserId, servic
               <FormField control={form.control} name="email" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email *</FormLabel>
-                  <FormControl><Input type="email" placeholder="john@example.com" {...field} /></FormControl>
+                  <FormControl><Input type="email" placeholder="john@example.com" {...field}  autoComplete="email"/></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
@@ -139,7 +139,7 @@ export function NotaryLeadCapture({ notarySlug, notaryName, notaryUserId, servic
               <FormField control={form.control} name="phone" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Phone</FormLabel>
-                  <FormControl><Input type="tel" placeholder="(555) 555-5555" {...field} /></FormControl>
+                  <FormControl><Input type="tel" placeholder="(555) 555-5555" {...field}  autoComplete="tel"/></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />

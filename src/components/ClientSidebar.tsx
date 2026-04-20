@@ -80,7 +80,7 @@ export function ClientSidebar({ activeSection, onSectionChange, profile, unreadC
         </Link>
         {profile && (
           <div className="mt-4">
-            <p className="text-sm font-black text-white truncate">{profile.full_name || "Client"}</p>
+            <p className="text-sm font-black text-primary-foreground truncate">{profile.full_name || "Client"}</p>
             <p className="text-[10px] font-black uppercase tracking-widest text-sidebar-foreground/50 mt-0.5">Client Portal</p>
           </div>
         )}
@@ -112,14 +112,14 @@ export function ClientSidebar({ activeSection, onSectionChange, profile, unreadC
                         }}
                         className={`rounded-xl transition-all ${
                           isActive
-                            ? "bg-primary text-white shadow-lg shadow-primary/20 font-bold"
-                            : "text-sidebar-foreground/60 hover:text-white hover:bg-white/5"
+                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 font-bold"
+                            : "text-sidebar-foreground/60 hover:text-primary-foreground hover:bg-background/5"
                         }`}
                       >
                         <item.icon className="h-4 w-4" />
                         <span className="text-sm">{item.label}</span>
                         {showBadge && (
-                          <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white">
+                          <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-primary-foreground">
                             {unreadCount}
                           </span>
                         )}
@@ -140,7 +140,7 @@ export function ClientSidebar({ activeSection, onSectionChange, profile, unreadC
         </div>
         <button
           onClick={onSignOut}
-          className="flex items-center gap-2 px-3 py-2 w-full rounded-xl text-sidebar-foreground/60 hover:text-white hover:bg-white/5 transition-colors text-sm"
+          className="flex items-center gap-2 px-3 py-2 w-full rounded-xl text-sidebar-foreground/60 hover:text-primary-foreground hover:bg-background/5 transition-colors text-sm"
         >
           <LogOut className="h-4 w-4" />
           <span>Sign Out</span>

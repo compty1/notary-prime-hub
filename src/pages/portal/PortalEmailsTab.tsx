@@ -571,7 +571,7 @@ export default function PortalEmailsTab() {
             </CardHeader>
             <CardContent>
               <Input type="email" value={settings.reply_to_email}
-                onChange={e => setSettings(prev => ({ ...prev, reply_to_email: e.target.value }))}
+                onChange={e = autoComplete="email"> setSettings(prev => ({ ...prev, reply_to_email: e.target.value }))}
                 placeholder="your.email@gmail.com" />
               {settings.gmail_connected && (
                 <p className="mt-1 text-xs text-muted-foreground">Currently using your connected Gmail: {settings.gmail_email}</p>

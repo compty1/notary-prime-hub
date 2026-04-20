@@ -84,7 +84,7 @@ export default function BusinessCardDesigner() {
               <CardContent>
                 <div className="relative w-full aspect-[3.5/2] rounded-lg border border-border shadow-xl overflow-hidden" style={{ background: side === "front" ? form.primaryColor : "#ffffff" }}>
                   {side === "front" ? (
-                    <div className="absolute inset-0 p-6 flex flex-col justify-between text-white">
+                    <div className="absolute inset-0 p-6 flex flex-col justify-between text-primary-foreground">
                       <div>
                         <p className="text-xl font-bold">{form.name || "Your Name"}</p>
                         <p className="text-sm opacity-80">{form.title || "Your Title"}</p>

@@ -118,7 +118,7 @@ const CertificateGenerator = () => {
             <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-muted-foreground">
               <Eye className="h-4 w-4" />Live Preview
             </div>
-            <div className="rounded-[12px] border bg-white p-6 text-sm" style={{ fontFamily: "serif" }}>
+            <div className="rounded-[12px] border bg-background p-6 text-sm" style={{ fontFamily: "serif" }}>
               <h3 className="text-center text-lg font-bold mb-4">{CERT_TYPES.find(t => t.id === certType)?.label?.toUpperCase()}</h3>
               <p><strong>STATE OF {state.toUpperCase()}</strong></p>
               <p><strong>COUNTY OF {county.toUpperCase() || "___________"}</strong></p>

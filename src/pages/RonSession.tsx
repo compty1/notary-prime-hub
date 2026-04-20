@@ -1213,13 +1213,13 @@ export default function RonSession() {
                   </div>
                 </div>
                 <div className="flex items-center justify-center gap-3 p-3">
-                  <Button variant="outline" size="icon" className="rounded-full h-9 w-9">
+                  <Button variant="outline" size="icon" className="rounded-full h-9 w-9" aria-label="Action">
                     <Mic className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="icon" className="rounded-full h-9 w-9">
+                  <Button variant="outline" size="icon" className="rounded-full h-9 w-9" aria-label="Action">
                     <Video className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="icon" className="rounded-full h-9 w-9">
+                  <Button variant="outline" size="icon" className="rounded-full h-9 w-9" aria-label="Action">
                     <Monitor className="h-4 w-4" />
                   </Button>
                 </div>
@@ -1613,7 +1613,7 @@ export default function RonSession() {
                   </div>
                   <div>
                     <Label className="text-xs mb-1 block">Signer Email <span className="text-muted-foreground">(optional)</span></Label>
-                    <Input className="h-8 text-xs" type="email" placeholder="signer@example.com" value={signerEmail} onChange={e => setSignerEmail(e.target.value)} />
+                    <Input className="h-8 text-xs" type="email" placeholder="signer@example.com" value={signerEmail} onChange={e = autoComplete="email"> setSignerEmail(e.target.value)} />
                   </div>
                 </div>
 

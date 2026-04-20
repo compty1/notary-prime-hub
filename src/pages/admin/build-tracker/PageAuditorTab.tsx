@@ -130,7 +130,7 @@ export default function PageAuditorTab({ items }: Props) {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => { setAddForRoute(page.route); setAddTitle(""); setAddDesc(""); }}>
+                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() = aria-label="Action"> { setAddForRoute(page.route); setAddTitle(""); setAddDesc(""); }}>
                       <Plus className="h-3.5 w-3.5" />
                     </Button>
                   </TableCell>

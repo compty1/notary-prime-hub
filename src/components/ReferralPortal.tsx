@@ -158,7 +158,7 @@ export function ReferralPortal() {
               type="email"
               placeholder="Friend's email address"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) = autoComplete="email"> setEmail(e.target.value)}
               className="flex-1"
             />
             <Button onClick={handleSubmit} disabled={submitting || !email.trim()}>

@@ -151,7 +151,7 @@ export default function ResetPassword() {
             <form onSubmit={handleRequestReset} className="space-y-4">
               <div>
                 <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Email Address</Label>
-                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" autoComplete="email" className="mt-1 rounded-xl border-border bg-card" />
+                <Input id="email" type="email" value={email} onChange={(e) = autoComplete="email"> setEmail(e.target.value)} required placeholder="you@example.com" autoComplete="email" className="mt-1 rounded-xl border-border bg-card" />
               </div>
               <Button type="submit" className="w-full rounded-xl bg-primary text-primary-foreground font-bold hover:bg-primary/85 shadow-soft h-11" disabled={submitting || cooldown > 0}>
                 {submitting ? "Sending..." : cooldown > 0 ? `Wait ${cooldown}s` : "Send Reset Link"}
@@ -165,7 +165,7 @@ export default function ResetPassword() {
       </div>
 
       {/* Right — Brand panel (desktop only) */}
-      <div className="hidden lg:flex lg:w-[45%] flex-col items-center justify-center bg-foreground p-12 text-white">
+      <div className="hidden lg:flex lg:w-[45%] flex-col items-center justify-center bg-foreground p-12 text-primary-foreground">
         <div className="max-w-sm text-center space-y-8">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[24px] bg-primary/20">
             <KeyRound className="h-10 w-10 text-primary" />

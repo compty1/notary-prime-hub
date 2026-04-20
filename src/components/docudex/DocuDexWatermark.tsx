@@ -91,7 +91,7 @@ export function DocuDexWatermark({ open, onOpenChange, onApply, current }: Props
           </div>
 
           {/* Preview */}
-          <div className="relative h-24 border rounded bg-white overflow-hidden flex items-center justify-center">
+          <div className="relative h-24 border rounded bg-background overflow-hidden flex items-center justify-center">
             <span style={{ color: config.color, opacity: config.opacity / 100, fontSize: Math.min(config.fontSize, 32), transform: `rotate(${config.angle}deg)`, fontWeight: 700 }} className="select-none">
               {config.text}
             </span>

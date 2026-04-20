@@ -169,11 +169,11 @@ export function AILeadChatbot() {
                 </div>
                 <div>
                   <Label className="text-[10px]">Email *</Label>
-                  <Input className="h-7 text-xs" type="email" placeholder="you@example.com" value={captureData.email} onChange={e => setCaptureData(p => ({ ...p, email: e.target.value }))} />
+                  <Input className="h-7 text-xs" type="email" placeholder="you@example.com" value={captureData.email} onChange={e = autoComplete="email"> setCaptureData(p => ({ ...p, email: e.target.value }))} />
                 </div>
                 <div>
                   <Label className="text-[10px]">Phone</Label>
-                  <Input className="h-7 text-xs" type="tel" placeholder="(614) 555-1234" value={captureData.phone} onChange={e => setCaptureData(p => ({ ...p, phone: e.target.value }))} />
+                  <Input className="h-7 text-xs" type="tel" placeholder="(614) 555-1234" value={captureData.phone} onChange={e = autoComplete="tel"> setCaptureData(p => ({ ...p, phone: e.target.value }))} />
                 </div>
               </div>
               <div className="flex gap-2">

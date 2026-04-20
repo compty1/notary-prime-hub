@@ -54,11 +54,11 @@ export default function NotebookConfigurator() {
                 <div className="relative w-40 h-56 rounded-r-lg shadow-xl overflow-hidden" style={{ backgroundColor: config.coverColor, transform: "rotateY(-8deg)" }}>
                   <div className="absolute inset-y-0 left-0 w-3 bg-black/20" />
                   <div className="absolute top-8 left-6 right-4 space-y-2">
-                    <div className="h-3 bg-white/30 rounded w-3/4" />
-                    <div className="h-2 bg-white/20 rounded w-1/2" />
+                    <div className="h-3 bg-background/30 rounded w-3/4" />
+                    <div className="h-2 bg-background/20 rounded w-1/2" />
                   </div>
                   {config.ribbonBookmark && <div className="absolute bottom-0 right-6 w-2 h-12 bg-red-500/80 rounded-b" />}
-                  <div className="absolute bottom-4 left-6 text-white/60 text-xs font-medium">{config.title || "Untitled"}</div>
+                  <div className="absolute bottom-4 left-6 text-primary-foreground/60 text-xs font-medium">{config.title || "Untitled"}</div>
                 </div>
               </CardContent>
             </Card>

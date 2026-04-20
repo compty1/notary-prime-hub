@@ -30,8 +30,8 @@ const actionColors: Record<string, string> = {
   verification_revoked: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
   client_profile_updated: "bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-300",
   business_verification_changed: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
-  admin_document_view: "bg-slate-100 text-slate-800 dark:bg-slate-900/30 dark:text-slate-300",
-  admin_document_download: "bg-slate-100 text-slate-800 dark:bg-slate-900/30 dark:text-slate-300",
+  admin_document_view: "bg-muted text-slate-800 dark:bg-slate-900/30 dark:text-slate-300",
+  admin_document_download: "bg-muted text-slate-800 dark:bg-slate-900/30 dark:text-slate-300",
 };
 
 const allActions = [

@@ -320,7 +320,7 @@ export function CanvasViewport({ className }: CanvasViewportProps) {
       >
         <canvas
           ref={canvasRef}
-          className="shadow-card rounded-sm bg-white cursor-crosshair"
+          className="shadow-card rounded-sm bg-background cursor-crosshair"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}

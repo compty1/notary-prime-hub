@@ -54,7 +54,7 @@ export function RescheduleConflictDetector({ conflict, onSelectAlternative }: Re
                   key={i}
                   variant="outline"
                   size="sm"
-                  className="w-full justify-start text-xs bg-white dark:bg-background"
+                  className="w-full justify-start text-xs bg-background dark:bg-background"
                   onClick={() => onSelectAlternative(slot.date, slot.time)}
                 >
                   <Calendar className="mr-2 h-3 w-3" />

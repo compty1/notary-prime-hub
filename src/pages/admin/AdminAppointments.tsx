@@ -648,7 +648,7 @@ export default function AdminAppointments() {
                   </Button>
                   {appt.notarization_type === "ron" && ["kba_pending", "in_session"].includes(appt.status) && (
                     <Link to={`/ron-session?id=${appt.id}`}>
-                      <Button size="sm" className="bg-purple-600 text-white hover:bg-purple-700 text-xs">
+                      <Button size="sm" className="bg-purple-600 text-primary-foreground hover:bg-purple-700 text-xs">
                         <Video className="mr-1 h-3 w-3" /> Launch Session
                       </Button>
                     </Link>

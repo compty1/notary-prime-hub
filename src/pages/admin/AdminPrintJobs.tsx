@@ -14,7 +14,7 @@ const statusColors: Record<string, string> = {
   queued: "bg-yellow-100 text-yellow-800",
   printing: "bg-blue-100 text-blue-800",
   ready: "bg-emerald-100 text-emerald-800",
-  picked_up: "bg-gray-100 text-gray-800",
+  picked_up: "bg-muted text-gray-800",
   cancelled: "bg-red-100 text-red-800",
 };
 
