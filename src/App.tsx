@@ -11,11 +11,8 @@ import ScrollToTop from "@/components/ScrollToTop";
 import { CommandPalette } from "@/components/CommandPalette";
 // CookieConsent and OfflineIndicator are rendered by PageShell — not duplicated here
 
-// Eager load critical pages
+// Eager load critical landing page only — auth pages and 404 are lazy for perf
 import ComingSoon from "./pages/ComingSoon";
-import Login from "./pages/Login";
-import SignUp from "./pages/SignUp";
-import NotFound from "./pages/NotFound";
 
 // Lazy load everything else with retry
 function lazyRetry(factory: () => Promise<{ default: React.ComponentType<any> }>) {
