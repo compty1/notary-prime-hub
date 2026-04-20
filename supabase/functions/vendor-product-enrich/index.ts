@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
     // Use Lovable AI to enrich product details
     const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
     if (!lovableApiKey) {
-      return new Response(JSON.stringify({ error: "AI API key not configured" }), { status: 500, headers: corsHeaders });
+      return errorResponse(req, 500, "Configuration Error", "AI API key not configured");
     }
 
     const prompt = `You are a product catalog enrichment AI for a notary and document services business platform. Given the following product information, generate enriched product data.
@@ -109,13 +109,9 @@ Return ONLY valid JSON, no markdown.`;
 
     if (updateError) throw updateError;
 
-    return new Response(JSON.stringify({ success: true, enrichment: enrichmentData }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse(req, { success: true, enrichment: enrichmentData });
   } catch (error: any) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    structuredLog("error", "vendor-product-enrich", "Enrichment failed", { error: error?.message });
+    return errorResponse(req, 500, "Internal Server Error", error?.message || "Unknown error");
   }
 });
