@@ -144,8 +144,8 @@ export default function AdminECourses() {
                       <TableCell>{c.is_free ? <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">Free</Badge> : `$${c.price}`}</TableCell>
                       <TableCell><Badge variant={c.is_published ? "default" : "secondary"}>{c.is_published ? "Published" : "Draft"}</Badge></TableCell>
                       <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" onClick={() => openEdit(c)}><Edit className="h-4 w-4" /></Button>
-                        <Button variant="ghost" size="icon" onClick={() => deleteMutation.mutate(c.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                        <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> openEdit(c)}><Edit className="h-4 w-4" /></Button>
+                        <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> deleteMutation.mutate(c.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                       </TableCell>
                     </TableRow>
                   ))}

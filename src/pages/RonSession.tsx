@@ -1213,13 +1213,13 @@ export default function RonSession() {
                   </div>
                 </div>
                 <div className="flex items-center justify-center gap-3 p-3">
-                  <Button variant="outline" size="icon" className="rounded-full h-9 w-9">
+                  <Button variant="outline" size="icon" className="rounded-full h-9 w-9" aria-label="Action">
                     <Mic className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="icon" className="rounded-full h-9 w-9">
+                  <Button variant="outline" size="icon" className="rounded-full h-9 w-9" aria-label="Action">
                     <Video className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="icon" className="rounded-full h-9 w-9">
+                  <Button variant="outline" size="icon" className="rounded-full h-9 w-9" aria-label="Action">
                     <Monitor className="h-4 w-4" />
                   </Button>
                 </div>

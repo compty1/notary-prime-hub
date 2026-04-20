@@ -146,7 +146,7 @@ export function PortalMessages() {
             onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
             disabled={sending}
           />
-          <Button size="icon" onClick={sendMessage} disabled={sending || !newMessage.trim()}>
+          <Button size="icon" onClick={sendMessage} disabled={sending || !newMessage.trim()} aria-label="Action">
             <Send className="h-4 w-4" />
           </Button>
         </div>

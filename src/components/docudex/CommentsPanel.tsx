@@ -131,7 +131,7 @@ export function CommentsPanel({ documentId, className }: CommentsPanelProps) {
             placeholder="Add comment..."
             className="h-8 text-xs"
           />
-          <Button size="icon" className="h-8 w-8 shrink-0" onClick={addComment} disabled={!newComment.trim()}>
+          <Button size="icon" className="h-8 w-8 shrink-0" onClick={addComment} disabled={!newComment.trim()} aria-label="Action">
             <Send className="w-3.5 h-3.5" />
           </Button>
         </div>

@@ -85,10 +85,10 @@ export function DocuDexBrandKit({ open, onOpenChange, onApply }: BrandKitProps) 
                   <p className="text-xs text-muted-foreground">{kit.fontHeading} / {kit.fontBody}</p>
                 </div>
                 <Button size="sm" variant="outline" onClick={() => onApply(kit)}>Apply</Button>
-                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => { setEditing(kit); setShowEditor(true); }}>
+                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() = aria-label="Action"> { setEditing(kit); setShowEditor(true); }}>
                   <Palette className="h-3.5 w-3.5" />
                 </Button>
-                <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => deleteKit(kit.name)}>
+                <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() = aria-label="Action"> deleteKit(kit.name)}>
                   <X className="h-3.5 w-3.5" />
                 </Button>
               </div>

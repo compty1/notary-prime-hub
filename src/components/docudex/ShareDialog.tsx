@@ -64,7 +64,7 @@ export function ShareDialog({ open, onOpenChange, shares, onShare, onRevoke }: S
                 <SelectItem value="viewer">Can view</SelectItem>
               </SelectContent>
             </Select>
-            <Button onClick={handleShare} disabled={!email.trim()} size="icon">
+            <Button onClick={handleShare} disabled={!email.trim()} size="icon" aria-label="Action">
               <Send className="w-4 h-4" />
             </Button>
           </div>

@@ -89,7 +89,7 @@ export function DataIssuesPanel() {
           <AlertTriangle className="h-5 w-5 text-amber-500" /> Data Issues
           {!loading && <Badge variant="secondary">{issues.length}</Badge>}
         </CardTitle>
-        <Button variant="ghost" size="icon" onClick={scanForIssues} disabled={loading}>
+        <Button variant="ghost" size="icon" onClick={scanForIssues} disabled={loading} aria-label="Action">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
         </Button>
       </CardHeader>

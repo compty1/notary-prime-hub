@@ -145,7 +145,7 @@ export default function TodoPanel() {
                 onCheckedChange={() => toggleTodo.mutate({ id: t.id, completed: true })}
               />
               <span className="flex-1 text-sm">{t.title}</span>
-              <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 text-destructive" onClick={() => deleteTodo.mutate(t.id)}>
+              <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 text-destructive" onClick={() = aria-label="Action"> deleteTodo.mutate(t.id)}>
                 <Trash2 className="h-3.5 w-3.5" />
               </Button>
             </div>
@@ -160,7 +160,7 @@ export default function TodoPanel() {
                     onCheckedChange={() => toggleTodo.mutate({ id: t.id, completed: false })}
                   />
                   <span className="flex-1 text-sm line-through text-muted-foreground">{t.title}</span>
-                  <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 text-destructive" onClick={() => deleteTodo.mutate(t.id)}>
+                  <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 text-destructive" onClick={() = aria-label="Action"> deleteTodo.mutate(t.id)}>
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </div>
