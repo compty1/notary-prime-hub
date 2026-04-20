@@ -48,7 +48,7 @@ export function IdentityVerified({ trigger = false, onComplete, className }: Ide
         </svg>
         {phase === "badge" && (
           <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-success flex items-center justify-center animate-[badgePop_0.4s_var(--bounce-easing)_forwards]">
-            <svg viewBox="0 0 16 16" className="w-3 h-3 text-white">
+            <svg viewBox="0 0 16 16" className="w-3 h-3 text-primary-foreground">
               <path d="M4 8l3 3 5-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </div>

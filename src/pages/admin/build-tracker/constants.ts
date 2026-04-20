@@ -59,9 +59,9 @@ export const SEV_RANK: Record<string, number> = { critical: 0, high: 1, medium: 
 
 export const severityColor: Record<string, string> = {
   critical: "bg-destructive text-destructive-foreground",
-  high: "bg-orange-500/90 text-white",
-  medium: "bg-yellow-600/90 text-white",
-  low: "bg-blue-500/80 text-white",
+  high: "bg-orange-500/90 text-primary-foreground",
+  medium: "bg-yellow-600/90 text-primary-foreground",
+  low: "bg-blue-500/80 text-primary-foreground",
   info: "bg-muted text-muted-foreground",
 };
 

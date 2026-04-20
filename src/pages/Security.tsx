@@ -123,7 +123,7 @@ export default function Security() {
       </div>
 
       {/* Hero */}
-      <section className="bg-sidebar-background text-white py-16">
+      <section className="bg-sidebar-background text-primary-foreground py-16">
         <div className="container mx-auto max-w-4xl px-4">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="flex-1">

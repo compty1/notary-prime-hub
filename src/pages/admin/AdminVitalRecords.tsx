@@ -15,7 +15,7 @@ import { ScrollText, Plus, Search, Loader2 } from "lucide-react";
 import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
-const statusColors: Record<string, string> = { intake: "bg-yellow-100 text-yellow-800", submitted: "bg-blue-100 text-blue-800", processing: "bg-purple-100 text-purple-800", received: "bg-emerald-100 text-emerald-800", delivered: "bg-gray-100 text-gray-800" };
+const statusColors: Record<string, string> = { intake: "bg-yellow-100 text-yellow-800", submitted: "bg-blue-100 text-blue-800", processing: "bg-purple-100 text-purple-800", received: "bg-emerald-100 text-emerald-800", delivered: "bg-muted text-gray-800" };
 const recordTypes = ["birth_certificate", "death_certificate", "marriage_certificate", "divorce_decree", "adoption_record"];
 
 export default function AdminVitalRecords() {

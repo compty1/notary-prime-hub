@@ -1497,7 +1497,7 @@ export function DocuDexEditor({
               {pages.map((page, i) => (
                 <div
                   key={page.id}
-                  className="bg-white text-black shadow-md mx-auto border relative"
+                  className="bg-background text-foreground shadow-md mx-auto border relative"
                   style={{
                     width: currentPageSize.width * 0.7,
                     minHeight: currentPageSize.height * 0.7,
@@ -1517,14 +1517,14 @@ export function DocuDexEditor({
                   )}
                   {/* Header in preview */}
                   {headerHtml && (
-                    <div className="text-[8px] text-gray-400 mb-2 border-b pb-1" dangerouslySetInnerHTML={{ __html: sanitizeHtml(headerHtml.replace("{{page}}", String(i + 1)).replace("{{total}}", String(pages.length))) }} />
+                    <div className="text-[8px] text-muted-foreground mb-2 border-b pb-1" dangerouslySetInnerHTML={{ __html: sanitizeHtml(headerHtml.replace("{{page}}", String(i + 1)).replace("{{total}}", String(pages.length))) }} />
                   )}
                   <div className="prose prose-xs max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.html) }} />
                   {/* Footer in preview */}
                   {footerHtml ? (
-                    <div className="text-[8px] text-gray-400 mt-4 pt-2 border-t" dangerouslySetInnerHTML={{ __html: sanitizeHtml(footerHtml.replace("{{page}}", String(i + 1)).replace("{{total}}", String(pages.length))) }} />
+                    <div className="text-[8px] text-muted-foreground mt-4 pt-2 border-t" dangerouslySetInnerHTML={{ __html: sanitizeHtml(footerHtml.replace("{{page}}", String(i + 1)).replace("{{total}}", String(pages.length))) }} />
                   ) : (
-                    <div className="text-center text-[8px] text-gray-400 mt-4 pt-2 border-t">
+                    <div className="text-center text-[8px] text-muted-foreground mt-4 pt-2 border-t">
                       Page {i + 1} of {pages.length}
                     </div>
                   )}

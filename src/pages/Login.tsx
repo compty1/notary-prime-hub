@@ -204,7 +204,7 @@ export default function Login() {
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
             <Shield className="h-8 w-8 text-primary" />
           </div>
-          <h2 className="mb-3 text-2xl font-black text-white">Secure Document Services</h2>
+          <h2 className="mb-3 text-2xl font-black text-primary-foreground">Secure Document Services</h2>
           <p className="text-muted-foreground font-medium">In-person and remote online notarization, fully compliant with Ohio Revised Code §147.</p>
         </div>
       </div>

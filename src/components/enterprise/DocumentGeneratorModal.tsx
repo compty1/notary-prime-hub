@@ -198,7 +198,7 @@ const DocumentGeneratorModal: React.FC<DocumentGeneratorModalProps> = ({
           </div>
 
           {/* Right: Preview */}
-          <div className="flex-1 overflow-y-auto rounded-[16px] border bg-white p-6">
+          <div className="flex-1 overflow-y-auto rounded-[16px] border bg-background p-6">
             <div ref={previewRef} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderedHtml) }} />
           </div>
         </div>

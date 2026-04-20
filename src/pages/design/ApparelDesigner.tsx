@@ -60,7 +60,7 @@ export default function ApparelDesigner() {
                     <div className="absolute top-1/4 left-1/2 -translate-x-1/2 text-center">
                       {form.position === "Left Chest" ? (
                         <div className="absolute top-0 left-2 w-8 h-8 border border-dashed border-white/40 rounded flex items-center justify-center">
-                          <span className="text-[6px] text-white/60">LOGO</span>
+                          <span className="text-[6px] text-primary-foreground/60">LOGO</span>
                         </div>
                       ) : (
                         <div className="w-24 h-16 border border-dashed border-white/40 rounded flex items-center justify-center">

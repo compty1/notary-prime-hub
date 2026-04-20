@@ -165,7 +165,7 @@ export default function ResetPassword() {
       </div>
 
       {/* Right — Brand panel (desktop only) */}
-      <div className="hidden lg:flex lg:w-[45%] flex-col items-center justify-center bg-foreground p-12 text-white">
+      <div className="hidden lg:flex lg:w-[45%] flex-col items-center justify-center bg-foreground p-12 text-primary-foreground">
         <div className="max-w-sm text-center space-y-8">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[24px] bg-primary/20">
             <KeyRound className="h-10 w-10 text-primary" />

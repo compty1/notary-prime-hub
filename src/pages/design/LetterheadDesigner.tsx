@@ -49,7 +49,7 @@ export default function LetterheadDesigner() {
             <Card>
               <CardHeader><CardTitle>Preview</CardTitle></CardHeader>
               <CardContent className="flex items-center justify-center min-h-[400px]">
-                <div className="w-56 h-72 bg-white rounded shadow-xl border border-border overflow-hidden relative">
+                <div className="w-56 h-72 bg-background rounded shadow-xl border border-border overflow-hidden relative">
                   <div className="h-2 w-full" style={{ backgroundColor: form.accentColor }} />
                   <div className="p-4">
                     <p className="text-sm font-bold" style={{ color: form.primaryColor }}>{form.companyName || "Company Name"}</p>

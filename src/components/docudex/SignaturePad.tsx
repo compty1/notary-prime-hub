@@ -100,7 +100,7 @@ export function SignaturePad({ onSave, onCancel, className }: SignaturePadProps)
         </TabsList>
 
         <TabsContent value="draw" className="space-y-3">
-          <div className="border border-border rounded-lg bg-white relative">
+          <div className="border border-border rounded-lg bg-background relative">
             <canvas
               ref={canvasRef}
               className="w-full h-28 cursor-crosshair"
@@ -137,7 +137,7 @@ export function SignaturePad({ onSave, onCancel, className }: SignaturePadProps)
             ))}
           </div>
           {typedName && (
-            <div className="border border-border rounded-lg bg-white p-4 text-center">
+            <div className="border border-border rounded-lg bg-background p-4 text-center">
               <span style={{ fontFamily: typedFont, fontSize: "32px", fontStyle: "italic" }}>
                 {typedName}
               </span>

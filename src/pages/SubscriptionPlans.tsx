@@ -126,7 +126,7 @@ export default function SubscriptionPlans() {
       <PageShell>
         <section className="bg-sidebar-background py-16">
           <div className="container mx-auto px-4 text-center">
-            <h1 className="mb-4 font-sans text-4xl font-bold text-white">{selectedPlan.name} Plan</h1>
+            <h1 className="mb-4 font-sans text-4xl font-bold text-primary-foreground">{selectedPlan.name} Plan</h1>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">Complete your subscription payment below.</p>
           </div>
         </section>
@@ -145,7 +145,7 @@ export default function SubscriptionPlans() {
   return (
     <PageShell>
       {/* Hero */}
-      <section className="bg-sidebar-background py-16 text-white">
+      <section className="bg-sidebar-background py-16 text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
           <Breadcrumbs />
           <h1 className="mb-4 font-sans text-4xl font-bold">Transparent Pricing</h1>

@@ -722,7 +722,7 @@ export default function PortalNotaryPageTab() {
                   <img src={url} alt={`Gallery ${i + 1}`} className="h-full w-full object-cover" />
                   <button onClick={() => removeGalleryPhoto(i)}
                     className="absolute top-1 right-1 rounded-full bg-destructive/80 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Trash2 className="h-3 w-3 text-white" />
+                    <Trash2 className="h-3 w-3 text-primary-foreground" />
                   </button>
                 </div>
               ))}
