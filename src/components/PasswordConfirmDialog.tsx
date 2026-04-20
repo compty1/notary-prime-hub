@@ -75,7 +75,7 @@ export default function PasswordConfirmDialog({
             id="confirm-password"
             type="password"
             value={password}
-            onChange={(e) = autoComplete="current-password"> setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)} autoComplete="current-password"
             onKeyDown={(e) => e.key === "Enter" && handleVerify()}
             placeholder="Enter your password"
             autoComplete="current-password"

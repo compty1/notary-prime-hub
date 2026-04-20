@@ -127,11 +127,11 @@ export default function MobileUpload() {
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
                 <Label>Email</Label>
-                <Input type="email" value={email} onChange={(e) = autoComplete="email"> setEmail(e.target.value)} placeholder="you@example.com" required autoComplete="email" />
+                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" placeholder="you@example.com" required autoComplete="email" />
               </div>
               <div>
                 <Label>Password</Label>
-                <Input type="password" value={password} onChange={(e) = autoComplete="current-password"> setPassword(e.target.value)} placeholder="••••••••" required autoComplete="current-password" />
+                <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" placeholder="••••••••" required autoComplete="current-password" />
               </div>
               <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-accent/90" disabled={loginLoading}>
                 {loginLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}

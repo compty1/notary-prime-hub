@@ -146,7 +146,7 @@ export default function SignUp() {
             </div>
             <div>
               <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Email</Label>
-              <Input id="email" type="email" value={email} onChange={(e) = autoComplete="email"> setEmail(e.target.value)} required autoComplete="email" className="mt-1 rounded-xl border-border bg-card" />
+              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required autoComplete="email" className="mt-1 rounded-xl border-border bg-card" />
             </div>
             <div>
               <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Password</Label>

@@ -157,7 +157,7 @@ export default function AdminContractors() {
           </DialogHeader>
           <div className="space-y-4">
             <div><Label>Full Name</Label><Input value={inviteName} onChange={e => setInviteName(e.target.value)} /></div>
-            <div><Label>Email</Label><Input type="email" value={inviteEmail} onChange={e = autoComplete="email"> setInviteEmail(e.target.value)} /></div>
+            <div><Label>Email</Label><Input type="email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} autoComplete="email" /></div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowInvite(false)}>Cancel</Button>

@@ -99,7 +99,7 @@ export function AppointmentWaitlist({ serviceType, requestedDate, requestedTime,
             type="email"
             placeholder="Email address"
             value={email}
-            onChange={e = autoComplete="email"> setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)} autoComplete="email"
             required
             className="rounded-xl"
           />
@@ -107,7 +107,7 @@ export function AppointmentWaitlist({ serviceType, requestedDate, requestedTime,
             type="tel"
             placeholder="Phone (optional)"
             value={phone}
-            onChange={e = autoComplete="tel"> setPhone(e.target.value)}
+            onChange={(e) => setPhone(e.target.value)} autoComplete="tel"
             className="rounded-xl"
           />
           <Button type="submit" disabled={submitting} className="w-full rounded-xl gap-2">

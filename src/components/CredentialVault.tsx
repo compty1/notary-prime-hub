@@ -159,8 +159,8 @@ export default function CredentialVault() {
               <div><Label>Service Name *</Label><Input required value={form.service_name} onChange={(e) => setForm((f) => ({ ...f, service_name: e.target.value }))} placeholder="e.g. Gmail, Stripe" /></div>
               <div><Label>Service URL</Label><Input value={form.service_url} onChange={(e) => setForm((f) => ({ ...f, service_url: e.target.value }))} placeholder="https://mail.google.com" /></div>
               <div><Label>Username</Label><Input value={form.username} onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))} /></div>
-              <div><Label>Email</Label><Input type="email" value={form.email} onChange={(e) = autoComplete="email"> setForm((f) => ({ ...f, email: e.target.value }))} /></div>
-              <div><Label>Password</Label><Input type="password" value={form.encrypted_password} onChange={(e) = autoComplete="current-password"> setForm((f) => ({ ...f, encrypted_password: e.target.value }))} /></div>
+              <div><Label>Email</Label><Input type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} autoComplete="email" /></div>
+              <div><Label>Password</Label><Input type="password" value={form.encrypted_password} onChange={(e) => setForm((f) => ({ ...f, encrypted_password: e.target.value }))} autoComplete="current-password" /></div>
               <div><Label>Notes</Label><Textarea value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} rows={2} /></div>
               <Button type="submit" disabled={upsert.isPending} className="w-full">{editing ? "Update" : "Save"}</Button>
             </form>
