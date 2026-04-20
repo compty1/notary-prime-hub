@@ -158,11 +158,11 @@ export function EditorShell({ className, onSave, onExport }: EditorShellProps) {
 
             {/* Zoom */}
             <div data-tour="zoom-controls" className="flex items-center gap-0.5">
-              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() = aria-label="Action"> setZoom(zoom - 0.1)}>
+              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setZoom(zoom - 0.1)} aria-label="Action">
                 <Minus className="w-3.5 h-3.5" />
               </Button>
               <Badge variant="outline" className="text-xs min-w-[3rem] justify-center">{Math.round(zoom * 100)}%</Badge>
-              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() = aria-label="Action"> setZoom(zoom + 0.1)}>
+              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setZoom(zoom + 0.1)} aria-label="Action">
                 <Plus className="w-3.5 h-3.5" />
               </Button>
             </div>
@@ -179,23 +179,23 @@ export function EditorShell({ className, onSave, onExport }: EditorShellProps) {
             <Button size="icon" variant={showLayers ? "secondary" : "ghost"} className="h-8 w-8" onClick={toggleLayers} title="Toggle Layers" data-tour="layers-toggle" aria-label="Action">
               <Layers className="w-4 h-4" />
             </Button>
-            <Button size="icon" variant={showComments ? "secondary" : "ghost"} className="h-8 w-8" onClick={() = aria-label="Action"> setShowComments(!showComments)} title="Comments">
+            <Button size="icon" variant={showComments ? "secondary" : "ghost"} className="h-8 w-8" onClick={() => setShowComments(!showComments)} aria-label="Action" title="Comments">
               <MessageSquare className="w-4 h-4" />
             </Button>
-            <Button size="icon" variant={showVersions ? "secondary" : "ghost"} className="h-8 w-8" onClick={() = aria-label="Action"> setShowVersions(!showVersions)} title="Version History">
+            <Button size="icon" variant={showVersions ? "secondary" : "ghost"} className="h-8 w-8" onClick={() => setShowVersions(!showVersions)} aria-label="Action" title="Version History">
               <History className="w-4 h-4" />
             </Button>
-            <Button size="icon" variant={showAI ? "secondary" : "ghost"} className="h-8 w-8" onClick={() = aria-label="Action"> setShowAI(!showAI)} title="AI Assistant">
+            <Button size="icon" variant={showAI ? "secondary" : "ghost"} className="h-8 w-8" onClick={() => setShowAI(!showAI)} aria-label="Action" title="AI Assistant">
               <Sparkles className="w-4 h-4" />
             </Button>
 
             <div className="w-px h-6 bg-border mx-1" />
 
-            <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() = aria-label="Action"> setShowShareDialog(true)} title="Share">
+            <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setShowShareDialog(true)} aria-label="Action" title="Share">
               <Users className="w-4 h-4" />
             </Button>
             <LocaleSwitcher />
-            <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() = aria-label="Action"> setShowTour(true)} title="Help Tour">
+            <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setShowTour(true)} aria-label="Action" title="Help Tour">
               <HelpCircle className="w-4 h-4" />
             </Button>
 
@@ -265,13 +265,13 @@ export function EditorShell({ className, onSave, onExport }: EditorShellProps) {
 
           {/* Bottom bar — page navigation */}
           <div data-tour="page-nav" className="flex items-center gap-2 px-4 py-1.5 border-t border-border bg-card">
-            <Button size="icon" variant="ghost" className="h-7 w-7" disabled={activePageIndex <= 0} onClick={() = aria-label="Action"> pages[activePageIndex - 1] && setActivePage(pages[activePageIndex - 1].id)}>
+            <Button size="icon" variant="ghost" className="h-7 w-7" disabled={activePageIndex <= 0} onClick={() => pages[activePageIndex - 1] && setActivePage(pages[activePageIndex - 1].id)} aria-label="Action">
               <ChevronLeft className="w-3.5 h-3.5" />
             </Button>
             <span className="text-xs text-muted-foreground">
               Page {activePageIndex + 1} of {pages.length}
             </span>
-            <Button size="icon" variant="ghost" className="h-7 w-7" disabled={activePageIndex  aria-label="Action">= pages.length - 1} onClick={() => pages[activePageIndex + 1] && setActivePage(pages[activePageIndex + 1].id)}>
+            <Button size="icon" variant="ghost" className="h-7 w-7" disabled={activePageIndex >= pages.length - 1} aria-label="Action" onClick={() => pages[activePageIndex + 1] && setActivePage(pages[activePageIndex + 1].id)}>
               <ChevronRight className="w-3.5 h-3.5" />
             </Button>
             <Button size="sm" variant="ghost" className="h-7 text-xs gap-1" onClick={() => addPage()}>

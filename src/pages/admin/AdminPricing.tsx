@@ -285,7 +285,7 @@ export default function AdminPricing() {
                       <CardContent className="pt-4 space-y-3">
                         <div className="flex justify-between items-start">
                           <Input value={rule.name} onChange={e => updateRule(rule.id, { name: e.target.value })} className="font-semibold" />
-                          <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> deleteRule(rule.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                          <Button variant="ghost" size="icon" onClick={() => deleteRule(rule.id)} aria-label="Action"><Trash2 className="h-4 w-4 text-destructive" /></Button>
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                           <div><Label className="text-xs">Discount %</Label><Input type="number" value={rule.adjustment_value || 0} onChange={e => updateRule(rule.id, { adjustment_value: parseFloat(e.target.value) })} /></div>

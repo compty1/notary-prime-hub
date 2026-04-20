@@ -221,7 +221,7 @@ export function ServiceIntakeForm({
                     {(uploadedFiles[field.name] || []).map((f, i) => (
                       <div key={i} className="flex items-center justify-between text-xs bg-muted/50 rounded px-3 py-1.5">
                         <span className="truncate">{f.name}</span>
-                        <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() = aria-label="Action"> removeFile(field.name, i)}>
+                        <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => removeFile(field.name, i)} aria-label="Action">
                           <X className="h-3 w-3" />
                         </Button>
                       </div>

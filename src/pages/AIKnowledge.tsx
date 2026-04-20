@@ -204,7 +204,7 @@ export default function AIKnowledge() {
                       <span className="truncate">{doc.name}</span>
                       <Badge variant="outline" className="text-[10px] shrink-0">{(doc.text.length / 1000).toFixed(1)}k</Badge>
                     </div>
-                    <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={() = aria-label="Action"> removeDoc(i)}>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={() => removeDoc(i)} aria-label="Action">
                       <X className="h-3 w-3" />
                     </Button>
                   </div>

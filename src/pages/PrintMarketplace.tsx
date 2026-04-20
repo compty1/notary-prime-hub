@@ -167,11 +167,11 @@ export default function PrintMarketplace() {
                 <div className="space-y-1">
                   <label className="text-xs font-medium">Quantity (min {selectedProduct.min_quantity})</label>
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() = aria-label="Action"> setSelectedQty(q => Math.max(selectedProduct.min_quantity, q - selectedProduct.min_quantity))}>
+                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setSelectedQty(q => Math.max(selectedProduct.min_quantity, q - selectedProduct.min_quantity))} aria-label="Action">
                       <Minus className="h-3 w-3" />
                     </Button>
                     <Input type="number" value={selectedQty} onChange={e => setSelectedQty(Math.max(selectedProduct.min_quantity, Number(e.target.value)))} className="w-24 h-8 text-center" />
-                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() = aria-label="Action"> setSelectedQty(q => q + selectedProduct.min_quantity)}>
+                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setSelectedQty(q => q + selectedProduct.min_quantity)} aria-label="Action">
                       <Plus className="h-3 w-3" />
                     </Button>
                   </div>

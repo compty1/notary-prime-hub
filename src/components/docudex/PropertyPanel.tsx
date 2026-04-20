@@ -62,16 +62,16 @@ export function PropertyPanel() {
             {selectedElement.type}
           </span>
           <div className="flex gap-1">
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() = aria-label="Action"> update({ locked: !selectedElement.locked })}>
+            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => update({ locked: !selectedElement.locked })} aria-label="Action">
               {selectedElement.locked ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
             </Button>
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() = aria-label="Action"> update({ visible: !selectedElement.visible })}>
+            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => update({ visible: !selectedElement.visible })} aria-label="Action">
               {selectedElement.visible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
             </Button>
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() = aria-label="Action"> activePageId && duplicateElement(activePageId, selectedElement.id)}>
+            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => activePageId && duplicateElement(activePageId, selectedElement.id)} aria-label="Action">
               <Copy className="w-3.5 h-3.5" />
             </Button>
-            <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() = aria-label="Action"> activePageId && removeElement(activePageId, selectedElement.id)}>
+            <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => activePageId && removeElement(activePageId, selectedElement.id)} aria-label="Action">
               <Trash2 className="w-3.5 h-3.5" />
             </Button>
           </div>
@@ -110,7 +110,7 @@ export function PropertyPanel() {
             <div className="flex gap-2 items-center">
               <Slider value={[selectedElement.rotation]} min={0} max={360} step={1} onValueChange={([v]) => update({ rotation: v })} className="flex-1" />
               <span className="text-xs w-8 text-right">{selectedElement.rotation}°</span>
-              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() = aria-label="Action"> update({ rotation: 0 })}>
+              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => update({ rotation: 0 })} aria-label="Action">
                 <RotateCcw className="w-3 h-3" />
               </Button>
             </div>

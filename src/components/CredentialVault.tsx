@@ -197,8 +197,8 @@ export default function CredentialVault() {
                   )}
                 </div>
                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() = aria-label="Action"> openEdit(c)}><Pencil className="h-3.5 w-3.5" /></Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() = aria-label="Action"> remove.mutate(c.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(c)} aria-label="Action"><Pencil className="h-3.5 w-3.5" /></Button>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => remove.mutate(c.id)} aria-label="Action"><Trash2 className="h-3.5 w-3.5" /></Button>
                 </div>
               </CardHeader>
               <CardContent className="space-y-1 text-xs">
@@ -207,7 +207,7 @@ export default function CredentialVault() {
                     <span className="text-muted-foreground">Email:</span>
                     <div className="flex items-center gap-1">
                       <span className="truncate max-w-[160px]">{c.email}</span>
-                      <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() = aria-label="Action"> copyToClipboard(c.email!, "Email")}><Copy className="h-3 w-3" /></Button>
+                      <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => copyToClipboard(c.email!, "Email")} aria-label="Action"><Copy className="h-3 w-3" /></Button>
                     </div>
                   </div>
                 )}
@@ -216,7 +216,7 @@ export default function CredentialVault() {
                     <span className="text-muted-foreground">Username:</span>
                     <div className="flex items-center gap-1">
                       <span className="truncate max-w-[160px]">{c.username}</span>
-                      <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() = aria-label="Action"> copyToClipboard(c.username!, "Username")}><Copy className="h-3 w-3" /></Button>
+                      <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => copyToClipboard(c.username!, "Username")} aria-label="Action"><Copy className="h-3 w-3" /></Button>
                     </div>
                   </div>
                 )}
@@ -225,10 +225,10 @@ export default function CredentialVault() {
                     <span className="text-muted-foreground">Password:</span>
                     <div className="flex items-center gap-1">
                       <span className="font-mono">{showPasswords[c.id] ? c.encrypted_password : "••••••••"}</span>
-                      <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() = aria-label="Action"> setShowPasswords((p) => ({ ...p, [c.id]: !p[c.id] }))}>
+                      <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => setShowPasswords((p) => ({ ...p, [c.id]: !p[c.id] }))} aria-label="Action">
                         {showPasswords[c.id] ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() = aria-label="Action"> copyToClipboard(c.encrypted_password!, "Password")}><Copy className="h-3 w-3" /></Button>
+                      <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => copyToClipboard(c.encrypted_password!, "Password")} aria-label="Action"><Copy className="h-3 w-3" /></Button>
                     </div>
                   </div>
                 )}

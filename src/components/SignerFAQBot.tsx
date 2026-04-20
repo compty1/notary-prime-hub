@@ -106,7 +106,7 @@ export function SignerFAQBot() {
           <Bot className="h-5 w-5" />
           <span className="font-semibold text-sm">Notary Assistant</span>
         </div>
-        <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> setOpen(false)} className="h-7 w-7 text-primary-foreground hover:text-primary-foreground/80">
+        <Button variant="ghost" size="icon" onClick={() => setOpen(false)} aria-label="Action" className="h-7 w-7 text-primary-foreground hover:text-primary-foreground/80">
           <X className="h-4 w-4" />
         </Button>
       </div>

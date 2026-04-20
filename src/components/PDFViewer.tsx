@@ -34,7 +34,7 @@ export function PDFViewer({ url, title, className = "", height = "600px", downlo
                 </a>
               </Button>
             )}
-            <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> setFullscreen(!fullscreen)}>
+            <Button variant="ghost" size="icon" onClick={() => setFullscreen(!fullscreen)} aria-label="Action">
               {fullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
             </Button>
           </div>

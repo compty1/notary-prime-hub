@@ -488,10 +488,10 @@ export default function AdminNotaryPages() {
                    <TableCell><Switch checked={p.is_featured} onCheckedChange={() => toggleFeatured(p)} /></TableCell>
                    <TableCell className="text-right">
                      <div className="flex items-center justify-end gap-1">
-                       <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> window.open(`/n/${p.slug}`, "_blank")}><Eye className="h-4 w-4" /></Button>
-                       <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> { navigator.clipboard.writeText(`${window.location.origin}/n/${p.slug}`); toast({ title: "Link copied!" }); }}><Copy className="h-4 w-4" /></Button>
-                       <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> openEditDialog(p)}><Pencil className="h-4 w-4" /></Button>
-                       <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> setDeleteId(p.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                       <Button variant="ghost" size="icon" onClick={() => window.open(`/n/${p.slug}`, "_blank")} aria-label="Action"><Eye className="h-4 w-4" /></Button>
+                       <Button variant="ghost" size="icon" onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/n/${p.slug}`); toast({ title: "Link copied!" }); }} aria-label="Action"><Copy className="h-4 w-4" /></Button>
+                       <Button variant="ghost" size="icon" onClick={() => openEditDialog(p)} aria-label="Action"><Pencil className="h-4 w-4" /></Button>
+                       <Button variant="ghost" size="icon" onClick={() => setDeleteId(p.id)} aria-label="Action"><Trash2 className="h-4 w-4 text-destructive" /></Button>
                      </div>
                    </TableCell>
                  </TableRow>
@@ -759,7 +759,7 @@ export default function AdminNotaryPages() {
                       </div>
                       <Textarea placeholder="Description" value={svc.description || ""} onChange={e => updateService(i, "description", e.target.value)} rows={2} className="text-sm" />
                     </div>
-                    <Button variant="ghost" size="icon" onClick={() = aria-label="Action"> removeService(i)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                    <Button variant="ghost" size="icon" onClick={() => removeService(i)} aria-label="Action"><Trash2 className="h-4 w-4 text-destructive" /></Button>
                   </div>
                 ))}
               </div>
