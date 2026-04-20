@@ -25,6 +25,11 @@ function lazyRetry(factory: () => Promise<{ default: React.ComponentType<any> }>
   );
 }
 
+// BUG-0581/0582/0583: lazy-load auth pages + 404 (previously eager)
+const Login = lazyRetry(() => import("./pages/Login"));
+const SignUp = lazyRetry(() => import("./pages/SignUp"));
+const NotFound = lazyRetry(() => import("./pages/NotFound"));
+
 const Index = lazyRetry(() => import("./pages/Index"));
 const AdminShopOrders = lazyRetry(() => import("./pages/admin/AdminShopOrders"));
 const AdminServiceCatalogAudit = lazyRetry(() => import("./pages/admin/AdminServiceCatalogAudit"));
