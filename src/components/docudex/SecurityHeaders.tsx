@@ -67,16 +67,18 @@ export class RateLimiter {
   }
 }
 
-/** Sanitize HTML to prevent XSS in user-provided content */
-export function sanitizeEditorContent(html: string): string {
-  const dangerous = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
-  const onEvents = /\s+on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi;
-  const iframes = /<iframe\b[^>]*>.*?<\/iframe>/gi;
-  const objects = /<(?:object|embed|applet)\b[^>]*>.*?<\/(?:object|embed|applet)>/gi;
+import DOMPurify from "isomorphic-dompurify";
 
-  return html
-    .replace(dangerous, "")
-    .replace(onEvents, "")
-    .replace(iframes, "")
-    .replace(objects, "");
+/**
+ * Sanitize HTML to prevent XSS in user-provided editor content.
+ * BUG-0793: Replaced fragile regex implementation with DOMPurify (industry standard).
+ */
+export function sanitizeEditorContent(html: string): string {
+  if (typeof html !== "string") return "";
+  return DOMPurify.sanitize(html, {
+    USE_PROFILES: { html: true },
+    FORBID_TAGS: ["script", "iframe", "object", "embed", "applet", "form", "meta", "link"],
+    FORBID_ATTR: ["onerror", "onload", "onclick", "onmouseover", "onfocus", "onblur", "formaction", "srcdoc"],
+    ALLOW_DATA_ATTR: false,
+  });
 }
