@@ -22,9 +22,21 @@ export async function getEdgeFunctionHeaders(): Promise<Record<string, string>> 
     }
   }
 
-  // Only use anon key if there truly is no session (item 2532)
-  const token = accessToken || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-  
+  // BUG-0789: Throw instead of silently falling back to anon key for protected calls.
+  if (!accessToken) {
+    throw new Error("UNAUTHENTICATED: No active session for edge function call");
+  }
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${accessToken}`,
+    apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+  };
+}
+
+/** Variant for endpoints that legitimately accept unauthenticated callers (public landing pages, lead capture). */
+export async function getPublicEdgeFunctionHeaders(): Promise<Record<string, string>> {
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
   return {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
