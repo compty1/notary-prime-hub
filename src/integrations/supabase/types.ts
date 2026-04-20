@@ -8633,6 +8633,144 @@ export type Database = {
           },
         ]
       }
+      notary_journal_masked: {
+        Row: {
+          appointment_id: string | null
+          archived: boolean | null
+          certificate_photos: Json | null
+          communication_technology: string | null
+          created_at: string | null
+          created_by: string | null
+          credential_analysis: Json | null
+          credential_analysis_method: string | null
+          document_date: string | null
+          document_description: string | null
+          document_type: string | null
+          entry_time: string | null
+          fees_charged: number | null
+          id: string | null
+          id_expiration: string | null
+          id_number: string | null
+          id_number_masked: string | null
+          id_type: string | null
+          journal_number: number | null
+          net_profit: number | null
+          notarization_type:
+            | Database["public"]["Enums"]["notarization_type"]
+            | null
+          notary_commission_number: string | null
+          notary_payout: number | null
+          notes: string | null
+          oath_administered: boolean | null
+          oath_timestamp: string | null
+          platform_fee: number | null
+          platform_markup: number | null
+          recording_url: string | null
+          service_performed: string | null
+          signer_address: string | null
+          signer_location_attestation: string | null
+          signer_name: string | null
+          travel_fee: number | null
+          updated_at: string | null
+          witnesses_present: number | null
+        }
+        Insert: {
+          appointment_id?: string | null
+          archived?: boolean | null
+          certificate_photos?: Json | null
+          communication_technology?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          credential_analysis?: Json | null
+          credential_analysis_method?: string | null
+          document_date?: string | null
+          document_description?: string | null
+          document_type?: string | null
+          entry_time?: string | null
+          fees_charged?: number | null
+          id?: string | null
+          id_expiration?: string | null
+          id_number?: string | null
+          id_number_masked?: never
+          id_type?: string | null
+          journal_number?: number | null
+          net_profit?: number | null
+          notarization_type?:
+            | Database["public"]["Enums"]["notarization_type"]
+            | null
+          notary_commission_number?: string | null
+          notary_payout?: number | null
+          notes?: string | null
+          oath_administered?: boolean | null
+          oath_timestamp?: string | null
+          platform_fee?: number | null
+          platform_markup?: number | null
+          recording_url?: string | null
+          service_performed?: string | null
+          signer_address?: string | null
+          signer_location_attestation?: string | null
+          signer_name?: string | null
+          travel_fee?: number | null
+          updated_at?: string | null
+          witnesses_present?: number | null
+        }
+        Update: {
+          appointment_id?: string | null
+          archived?: boolean | null
+          certificate_photos?: Json | null
+          communication_technology?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          credential_analysis?: Json | null
+          credential_analysis_method?: string | null
+          document_date?: string | null
+          document_description?: string | null
+          document_type?: string | null
+          entry_time?: string | null
+          fees_charged?: number | null
+          id?: string | null
+          id_expiration?: string | null
+          id_number?: string | null
+          id_number_masked?: never
+          id_type?: string | null
+          journal_number?: number | null
+          net_profit?: number | null
+          notarization_type?:
+            | Database["public"]["Enums"]["notarization_type"]
+            | null
+          notary_commission_number?: string | null
+          notary_payout?: number | null
+          notes?: string | null
+          oath_administered?: boolean | null
+          oath_timestamp?: string | null
+          platform_fee?: number | null
+          platform_markup?: number | null
+          recording_url?: string | null
+          service_performed?: string | null
+          signer_address?: string | null
+          signer_location_attestation?: string | null
+          signer_name?: string | null
+          travel_fee?: number | null
+          updated_at?: string | null
+          witnesses_present?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notary_journal_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notary_journal_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       notary_pages_public: {
         Row: {
           accent_color: string | null
@@ -8878,6 +9016,10 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      reveal_notary_journal_id: {
+        Args: { _journal_id: string }
+        Returns: string
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
