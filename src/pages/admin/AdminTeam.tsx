@@ -372,7 +372,7 @@ export default function AdminTeam() {
                 {invites.map((inv) => (
                   <div key={inv.id} className="flex items-center justify-between rounded-lg border border-border/50 p-3">
                     <div className="flex items-center gap-3">
-                      {inv.status === "pending" ? <Clock className="h-4 w-4 text-amber-500" /> : inv.status === "accepted" ? <CheckCircle className="h-4 w-4 text-primary" /> : <XCircle className="h-4 w-4 text-destructive" />}
+                      {inv.status === "pending" ? <Clock className="h-4 w-4 text-warning" /> : inv.status === "accepted" ? <CheckCircle className="h-4 w-4 text-primary" /> : <XCircle className="h-4 w-4 text-destructive" />}
                       <div>
                         <p className="text-sm font-medium">{inv.email}</p>
                         <p className="text-xs text-muted-foreground">

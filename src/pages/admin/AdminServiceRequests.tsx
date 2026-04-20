@@ -20,17 +20,17 @@ const STATUS_OPTIONS = ["submitted", "in_progress", "awaiting_client", "complete
 const PRIORITY_OPTIONS = ["low", "normal", "high", "urgent"];
 
 const statusColors: Record<string, string> = {
-  submitted: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
-  in_progress: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
-  awaiting_client: "bg-orange-500/10 text-orange-700 dark:text-orange-400",
+  submitted: "bg-info/10 text-info",
+  in_progress: "bg-warning/10 text-warning",
+  awaiting_client: "bg-warning/10 text-warning",
   completed: "bg-primary/10 text-primary dark:text-primary",
   cancelled: "bg-muted text-muted-foreground",
 };
 
 const priorityColors: Record<string, string> = {
   low: "bg-muted text-muted-foreground",
-  normal: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
-  high: "bg-orange-500/10 text-orange-700 dark:text-orange-400",
+  normal: "bg-info/10 text-info",
+  high: "bg-warning/10 text-warning",
   urgent: "bg-destructive/10 text-destructive",
 };
 
@@ -202,8 +202,8 @@ export default function AdminServiceRequests() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { label: "Total", value: stats.total, icon: FileText, color: "text-foreground" },
-          { label: "New", value: stats.submitted, icon: AlertTriangle, color: "text-blue-500" },
-          { label: "In Progress", value: stats.inProgress, icon: Clock, color: "text-yellow-500" },
+          { label: "New", value: stats.submitted, icon: AlertTriangle, color: "text-info" },
+          { label: "In Progress", value: stats.inProgress, icon: Clock, color: "text-warning" },
           { label: "Completed", value: stats.completed, icon: CheckCircle, color: "text-primary" },
         ].map(s => (
           <Card key={s.label} className="border-border/50">

@@ -371,10 +371,10 @@ export default function PlatformScanButton() {
 
   const sevBadge = (sev: string) => {
     const colors: Record<string, string> = {
-      critical: "bg-red-500/10 text-red-600 border-red-500/30",
-      high: "bg-orange-500/10 text-orange-600 border-orange-500/30",
-      medium: "bg-yellow-500/10 text-yellow-700 border-yellow-500/30",
-      low: "bg-blue-500/10 text-blue-600 border-blue-500/30",
+      critical: "bg-destructive/10 text-destructive border-destructive/30",
+      high: "bg-warning/10 text-warning border-warning/30",
+      medium: "bg-warning/10 text-warning border-warning/30",
+      low: "bg-info/10 text-info border-info/30",
     };
     return <Badge variant="outline" className={`text-[10px] ${colors[sev] || ""}`}>{sev}</Badge>;
   };
@@ -469,7 +469,7 @@ export default function PlatformScanButton() {
 
               {!scanning && allFindings.length === 0 && (
                 <div className="flex flex-col items-center gap-2 py-8">
-                  <CheckCircle2 className="h-8 w-8 text-green-500" />
+                  <CheckCircle2 className="h-8 w-8 text-success" />
                   <p className="text-muted-foreground">No new issues found. Platform looks healthy!</p>
                 </div>
               )}

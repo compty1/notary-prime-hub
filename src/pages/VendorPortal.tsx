@@ -10,10 +10,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Package, Truck, MessageSquare, Clock, CheckCircle2, AlertTriangle } from "lucide-react";
 
 const STATUS_COLORS: Record<string, string> = {
-  received: "bg-blue-500/20 text-blue-700", design_review: "bg-yellow-500/20 text-yellow-700",
-  sent_to_vendor: "bg-purple-500/20 text-purple-700", in_production: "bg-orange-500/20 text-orange-700",
-  quality_check: "bg-cyan-500/20 text-cyan-700", shipped: "bg-green-500/20 text-green-700",
-  delivered: "bg-emerald-500/20 text-emerald-700", cancelled: "bg-destructive/20 text-destructive",
+  received: "bg-info/20 text-info", design_review: "bg-warning/20 text-warning",
+  sent_to_vendor: "bg-purple-500/20 text-purple-700", in_production: "bg-warning/20 text-warning",
+  quality_check: "bg-info/20 text-info", shipped: "bg-success/20 text-success",
+  delivered: "bg-success/20 text-success", cancelled: "bg-destructive/20 text-destructive",
 };
 
 export default function VendorPortal() {
@@ -37,10 +37,10 @@ export default function VendorPortal() {
       <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
         <div className="flex items-center gap-3 mb-6"><Package className="h-6 w-6 text-primary" /><h1 className="text-2xl font-bold text-foreground">Vendor Portal</h1></div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-orange-500" /><div><p className="text-2xl font-bold">{activeOrders.length}</p><p className="text-xs text-muted-foreground">Active Orders</p></div></div></CardContent></Card>
-          <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><Clock className="h-5 w-5 text-blue-500" /><div><p className="text-2xl font-bold">{orders.filter((o: any) => o.status === "in_production").length}</p><p className="text-xs text-muted-foreground">In Production</p></div></div></CardContent></Card>
-          <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><Truck className="h-5 w-5 text-green-500" /><div><p className="text-2xl font-bold">{orders.filter((o: any) => o.status === "shipped").length}</p><p className="text-xs text-muted-foreground">Shipped</p></div></div></CardContent></Card>
-          <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><CheckCircle2 className="h-5 w-5 text-emerald-500" /><div><p className="text-2xl font-bold">{completedOrders.length}</p><p className="text-xs text-muted-foreground">Completed</p></div></div></CardContent></Card>
+          <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-warning" /><div><p className="text-2xl font-bold">{activeOrders.length}</p><p className="text-xs text-muted-foreground">Active Orders</p></div></div></CardContent></Card>
+          <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><Clock className="h-5 w-5 text-info" /><div><p className="text-2xl font-bold">{orders.filter((o: any) => o.status === "in_production").length}</p><p className="text-xs text-muted-foreground">In Production</p></div></div></CardContent></Card>
+          <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><Truck className="h-5 w-5 text-success" /><div><p className="text-2xl font-bold">{orders.filter((o: any) => o.status === "shipped").length}</p><p className="text-xs text-muted-foreground">Shipped</p></div></div></CardContent></Card>
+          <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><CheckCircle2 className="h-5 w-5 text-success" /><div><p className="text-2xl font-bold">{completedOrders.length}</p><p className="text-xs text-muted-foreground">Completed</p></div></div></CardContent></Card>
         </div>
         <Tabs defaultValue="active">
           <TabsList><TabsTrigger value="active">Active Orders</TabsTrigger><TabsTrigger value="completed">Completed</TabsTrigger><TabsTrigger value="messages">Messages</TabsTrigger></TabsList>

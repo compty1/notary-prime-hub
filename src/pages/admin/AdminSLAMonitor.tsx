@@ -84,16 +84,16 @@ export default function AdminSLAMonitor() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className={overallCompliance >= 95 ? "border-emerald-500/30" : overallCompliance >= 80 ? "border-amber-500/30" : "border-red-500/30"}>
+        <Card className={overallCompliance >= 95 ? "border-success/30" : overallCompliance >= 80 ? "border-warning/30" : "border-destructive/30"}>
           <CardContent className="pt-4">
             <div className="flex items-center gap-2">
-              {overallCompliance >= 95 ? <CheckCircle2 className="h-5 w-5 text-emerald-500" /> : <AlertTriangle className="h-5 w-5 text-amber-500" />}
+              {overallCompliance >= 95 ? <CheckCircle2 className="h-5 w-5 text-success" /> : <AlertTriangle className="h-5 w-5 text-warning" />}
               <div><p className="text-2xl font-bold">{overallCompliance}%</p><p className="text-xs text-muted-foreground">Overall SLA Compliance</p></div>
             </div>
           </CardContent>
         </Card>
-        <Card><CardContent className="pt-4"><p className="text-2xl font-bold text-emerald-600">{totalMet}</p><p className="text-xs text-muted-foreground">SLAs Met</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><p className="text-2xl font-bold text-red-600">{totalBreaches}</p><p className="text-xs text-muted-foreground">SLA Breaches</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-2xl font-bold text-success">{totalMet}</p><p className="text-xs text-muted-foreground">SLAs Met</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-2xl font-bold text-destructive">{totalBreaches}</p><p className="text-xs text-muted-foreground">SLA Breaches</p></CardContent></Card>
         <Card><CardContent className="pt-4"><p className="text-2xl font-bold">{Object.keys(SLA_TARGETS).length}</p><p className="text-xs text-muted-foreground">Tracked Services</p></CardContent></Card>
       </div>
 
@@ -118,13 +118,13 @@ export default function AdminSLAMonitor() {
                   <TableCell className="font-medium text-xs">{m.service}</TableCell>
                   <TableCell><Badge variant="outline" className="text-[10px]">{m.label}</Badge></TableCell>
                   <TableCell className="text-xs">{m.total}</TableCell>
-                  <TableCell className="text-xs text-emerald-600 font-medium">{m.met}</TableCell>
-                  <TableCell className="text-xs text-red-600 font-medium">{m.breached}</TableCell>
+                  <TableCell className="text-xs text-success font-medium">{m.met}</TableCell>
+                  <TableCell className="text-xs text-destructive font-medium">{m.breached}</TableCell>
                   <TableCell className="text-xs">{m.pending}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Progress value={m.compliance} className="w-16 h-2" />
-                      <Badge className={m.compliance >= 95 ? "bg-emerald-500/10 text-emerald-600" : m.compliance >= 80 ? "bg-amber-500/10 text-amber-600" : "bg-red-500/10 text-red-600"} variant="outline">
+                      <Badge className={m.compliance >= 95 ? "bg-success/10 text-success" : m.compliance >= 80 ? "bg-warning/10 text-warning" : "bg-destructive/10 text-destructive"} variant="outline">
                         {m.compliance}%
                       </Badge>
                     </div>

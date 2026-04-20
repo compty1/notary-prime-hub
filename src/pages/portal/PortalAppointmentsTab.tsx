@@ -14,13 +14,13 @@ import { useAuth } from "@/contexts/AuthContext";
 const FullCalendarView = lazy(() => import("@/components/FullCalendarView"));
 
 const statusColors: Record<string, string> = {
-  scheduled: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-  confirmed: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
-  id_verification: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
-  kba_pending: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
+  scheduled: "bg-info/10 text-info",
+  confirmed: "bg-success/10 text-success",
+  id_verification: "bg-warning/10 text-warning",
+  kba_pending: "bg-warning/10 text-warning",
   in_session: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
   completed: "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary",
-  cancelled: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+  cancelled: "bg-destructive/10 text-destructive",
   no_show: "bg-muted text-muted-foreground",
 };
 

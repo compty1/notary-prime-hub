@@ -37,10 +37,10 @@ const MOCK_APPS: ContractorApp[] = [
 ];
 
 const statusConfig: Record<string, { color: string; icon: typeof Clock }> = {
-  pending: { color: "bg-yellow-500/20 text-yellow-700", icon: Clock },
-  under_review: { color: "bg-blue-500/20 text-blue-700", icon: ShieldCheck },
-  approved: { color: "bg-green-500/20 text-green-700", icon: CheckCircle2 },
-  rejected: { color: "bg-red-500/20 text-red-700", icon: XCircle },
+  pending: { color: "bg-warning/20 text-warning", icon: Clock },
+  under_review: { color: "bg-info/20 text-info", icon: ShieldCheck },
+  approved: { color: "bg-success/20 text-success", icon: CheckCircle2 },
+  rejected: { color: "bg-destructive/20 text-destructive", icon: XCircle },
 };
 
 export default function AdminContractorRegistration() {
@@ -146,8 +146,8 @@ export default function AdminContractorRegistration() {
                     <TableCell>
                       <div className="flex items-center gap-1">
                         {passedCount === checks.length
-                          ? <CheckCircle2 className="h-4 w-4 text-green-500" />
-                          : <AlertTriangle className="h-4 w-4 text-yellow-500" />}
+                          ? <CheckCircle2 className="h-4 w-4 text-success" />
+                          : <AlertTriangle className="h-4 w-4 text-warning" />}
                         <span className="text-xs">{passedCount}/{checks.length}</span>
                       </div>
                     </TableCell>
@@ -187,7 +187,7 @@ export default function AdminContractorRegistration() {
                 <div className="space-y-2 mt-2">
                   {credentialCheck(selected).map(check => (
                     <div key={check.label} className="flex items-center gap-2">
-                      {check.ok ? <CheckCircle2 className="h-4 w-4 text-green-500" /> : <XCircle className="h-4 w-4 text-red-400" />}
+                      {check.ok ? <CheckCircle2 className="h-4 w-4 text-success" /> : <XCircle className="h-4 w-4 text-destructive" />}
                       <span className="text-sm">{check.label}</span>
                       <Badge variant={check.ok ? "default" : "destructive"} className="text-[10px] ml-auto">{check.ok ? "Verified" : "Pending"}</Badge>
                     </div>

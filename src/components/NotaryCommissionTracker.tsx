@@ -82,9 +82,9 @@ export function NotaryCommissionTracker() {
 
   const statusBadge = (s: CommissionStatus["status"]) => {
     const map = {
-      active: "bg-green-500/10 text-green-600 border-green-500/30",
-      expiring: "bg-yellow-500/10 text-yellow-700 border-yellow-500/30",
-      expired: "bg-red-500/10 text-red-600 border-red-500/30",
+      active: "bg-success/10 text-success border-success/30",
+      expiring: "bg-warning/10 text-warning border-warning/30",
+      expired: "bg-destructive/10 text-destructive border-destructive/30",
     };
     return <Badge variant="outline" className={`text-[10px] ${map[s]}`}>{s}</Badge>;
   };

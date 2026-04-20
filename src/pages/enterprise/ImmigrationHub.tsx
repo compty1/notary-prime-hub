@@ -26,7 +26,7 @@ const ImmigrationHub = () => {
   });
 
   const getDateBadge = (val: string) => {
-    if (val === "Current") return <Badge className="bg-green-500/10 text-green-600 border-green-500/30">Current</Badge>;
+    if (val === "Current") return <Badge className="bg-success/10 text-success border-success/30">Current</Badge>;
     return <Badge variant="outline">{val}</Badge>;
   };
 

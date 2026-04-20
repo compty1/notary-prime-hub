@@ -108,9 +108,9 @@ export default function AdminECourses() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card><CardContent className="pt-4"><BookOpen className="h-5 w-5 text-primary mb-1" /><p className="text-2xl font-bold">{courses.length}</p><p className="text-xs text-muted-foreground">Total Courses</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><Star className="h-5 w-5 text-amber-500 mb-1" /><p className="text-2xl font-bold">{courses.filter((c: any) => c.is_published).length}</p><p className="text-xs text-muted-foreground">Published</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><Users className="h-5 w-5 text-blue-600 mb-1" /><p className="text-2xl font-bold">{totalEnrollments}</p><p className="text-xs text-muted-foreground">Enrollments</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><GraduationCap className="h-5 w-5 text-green-600 mb-1" /><p className="text-2xl font-bold">{completedEnrollments}</p><p className="text-xs text-muted-foreground">Completed</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><Star className="h-5 w-5 text-warning mb-1" /><p className="text-2xl font-bold">{courses.filter((c: any) => c.is_published).length}</p><p className="text-xs text-muted-foreground">Published</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><Users className="h-5 w-5 text-info mb-1" /><p className="text-2xl font-bold">{totalEnrollments}</p><p className="text-xs text-muted-foreground">Enrollments</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><GraduationCap className="h-5 w-5 text-success mb-1" /><p className="text-2xl font-bold">{completedEnrollments}</p><p className="text-xs text-muted-foreground">Completed</p></CardContent></Card>
       </div>
 
       <Tabs defaultValue="courses">
@@ -141,7 +141,7 @@ export default function AdminECourses() {
                       </TableCell>
                       <TableCell><Badge variant="outline">{c.category.replace(/_/g, " ")}</Badge></TableCell>
                       <TableCell className="text-sm">{c.duration_minutes}m</TableCell>
-                      <TableCell>{c.is_free ? <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">Free</Badge> : `$${c.price}`}</TableCell>
+                      <TableCell>{c.is_free ? <Badge className="bg-success/10 text-success">Free</Badge> : `$${c.price}`}</TableCell>
                       <TableCell><Badge variant={c.is_published ? "default" : "secondary"}>{c.is_published ? "Published" : "Draft"}</Badge></TableCell>
                       <TableCell className="text-right">
                         <Button variant="ghost" size="icon" onClick={() => openEdit(c)} aria-label="Action"><Edit className="h-4 w-4" /></Button>

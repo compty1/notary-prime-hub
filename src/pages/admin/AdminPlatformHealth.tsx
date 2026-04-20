@@ -64,7 +64,7 @@ export default function AdminPlatformHealth() {
   const overallStatus = healthChecks.length === 0 ? "checking" : allHealthy ? "operational" : "issues";
   const avgLatency = healthChecks.length > 0 ? Math.round(healthChecks.reduce((s: number, h: any) => s + h.latency, 0) / healthChecks.length) : 0;
 
-  const statusIcon = (s: string) => s === "healthy" ? <CheckCircle2 className="h-4 w-4 text-emerald-500" /> : s === "degraded" ? <AlertTriangle className="h-4 w-4 text-amber-500" /> : <XCircle className="h-4 w-4 text-red-500" />;
+  const statusIcon = (s: string) => s === "healthy" ? <CheckCircle2 className="h-4 w-4 text-success" /> : s === "degraded" ? <AlertTriangle className="h-4 w-4 text-warning" /> : <XCircle className="h-4 w-4 text-destructive" />;
 
   return (
     <div className="space-y-6">
@@ -77,9 +77,9 @@ export default function AdminPlatformHealth() {
       </div>
 
       {/* Overall Status Banner */}
-      <Card className={overallStatus === "operational" ? "border-emerald-500/30 bg-emerald-500/5" : "border-amber-500/30 bg-amber-500/5"}>
+      <Card className={overallStatus === "operational" ? "border-success/30 bg-success/5" : "border-warning/30 bg-warning/5"}>
         <CardContent className="py-4 flex items-center gap-3">
-          {overallStatus === "operational" ? <CheckCircle2 className="h-6 w-6 text-emerald-500" /> : <AlertTriangle className="h-6 w-6 text-amber-500" />}
+          {overallStatus === "operational" ? <CheckCircle2 className="h-6 w-6 text-success" /> : <AlertTriangle className="h-6 w-6 text-warning" />}
           <div>
             <p className="font-bold">{overallStatus === "operational" ? "All Systems Operational" : overallStatus === "checking" ? "Checking..." : "Some Issues Detected"}</p>
             <p className="text-xs text-muted-foreground">Avg response: {avgLatency}ms • Last check: {format(new Date(), "h:mm:ss a")}</p>
@@ -90,9 +90,9 @@ export default function AdminPlatformHealth() {
       {/* KPI Row */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><Server className="h-5 w-5 text-primary" /><div><p className="text-2xl font-bold">{healthChecks.filter((h: any) => h.status === "healthy").length}/{healthChecks.length}</p><p className="text-xs text-muted-foreground">Services Healthy</p></div></div></CardContent></Card>
-        <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><Zap className="h-5 w-5 text-amber-500" /><div><p className="text-2xl font-bold">{avgLatency}ms</p><p className="text-xs text-muted-foreground">Avg Latency</p></div></div></CardContent></Card>
-        <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><Database className="h-5 w-5 text-blue-500" /><div><p className="text-2xl font-bold">{stats?.users || 0}</p><p className="text-xs text-muted-foreground">Total Users</p></div></div></CardContent></Card>
-        <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><Shield className="h-5 w-5 text-emerald-500" /><div><p className="text-2xl font-bold">{stats?.appointments || 0}</p><p className="text-xs text-muted-foreground">Total Appointments</p></div></div></CardContent></Card>
+        <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><Zap className="h-5 w-5 text-warning" /><div><p className="text-2xl font-bold">{avgLatency}ms</p><p className="text-xs text-muted-foreground">Avg Latency</p></div></div></CardContent></Card>
+        <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><Database className="h-5 w-5 text-info" /><div><p className="text-2xl font-bold">{stats?.users || 0}</p><p className="text-xs text-muted-foreground">Total Users</p></div></div></CardContent></Card>
+        <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><Shield className="h-5 w-5 text-success" /><div><p className="text-2xl font-bold">{stats?.appointments || 0}</p><p className="text-xs text-muted-foreground">Total Appointments</p></div></div></CardContent></Card>
       </div>
 
       {/* Service Status Table */}
@@ -105,7 +105,7 @@ export default function AdminPlatformHealth() {
               {healthChecks.map((h: any) => (
                 <TableRow key={h.name}>
                   <TableCell className="font-medium">{h.name}</TableCell>
-                  <TableCell><div className="flex items-center gap-1">{statusIcon(h.status)}<Badge variant={h.status === "healthy" ? "default" : "destructive"} className={h.status === "healthy" ? "bg-emerald-500/10 text-emerald-600" : ""}>{h.status}</Badge></div></TableCell>
+                  <TableCell><div className="flex items-center gap-1">{statusIcon(h.status)}<Badge variant={h.status === "healthy" ? "default" : "destructive"} className={h.status === "healthy" ? "bg-success/10 text-success" : ""}>{h.status}</Badge></div></TableCell>
                   <TableCell className="font-mono text-xs">{h.latency}ms</TableCell>
                   <TableCell><Progress value={h.status === "healthy" ? 99.9 : h.status === "degraded" ? 95 : 0} className="w-24 h-2" /></TableCell>
                 </TableRow>

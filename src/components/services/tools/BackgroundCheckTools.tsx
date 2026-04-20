@@ -50,12 +50,12 @@ export function BackgroundCheckTools() {
       </Card>
 
       <Card>
-        <CardHeader><CardTitle className="text-lg flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-amber-500" /> FCRA & Compliance Requirements</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-lg flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-warning" /> FCRA & Compliance Requirements</CardTitle></CardHeader>
         <CardContent>
           <div className="space-y-2">
             {COMPLIANCE_RULES.map((r, i) => (
               <div key={i} className="flex items-center gap-2 text-sm">
-                <FileText className={`h-4 w-4 shrink-0 ${r.critical ? "text-red-500" : "text-muted-foreground"}`} />
+                <FileText className={`h-4 w-4 shrink-0 ${r.critical ? "text-destructive" : "text-muted-foreground"}`} />
                 <span className="flex-1">{r.rule}</span>
                 <Badge variant="outline" className="text-[10px]">{r.regulation}</Badge>
                 {r.critical && <Badge variant="destructive" className="text-[10px] px-1">Required</Badge>}

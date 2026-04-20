@@ -88,7 +88,7 @@ export function ContentAdvancedTools() {
             <Textarea rows={4} value={socialContent} onChange={e => setSocialContent(e.target.value)} placeholder={`Write your ${socialPlatform} post...`} maxLength={platform.maxLen} />
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span>{platform.style}</span>
-              <span className={socialContent.length > platform.maxLen * 0.9 ? "text-amber-500 font-medium" : ""}>{socialContent.length}/{platform.maxLen}</span>
+              <span className={socialContent.length > platform.maxLen * 0.9 ? "text-warning font-medium" : ""}>{socialContent.length}/{platform.maxLen}</span>
             </div>
           </CardContent>
         </Card>

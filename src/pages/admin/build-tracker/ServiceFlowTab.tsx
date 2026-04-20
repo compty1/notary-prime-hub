@@ -110,7 +110,7 @@ export default function ServiceFlowTab({ items }: Props) {
                   </div>
                   <div className="flex items-center gap-3">
                     {flow.issueCount > 0 && (
-                      <Badge variant="outline" className="text-xs text-yellow-600">
+                      <Badge variant="outline" className="text-xs text-warning">
                         <AlertTriangle className="h-3 w-3 mr-1" /> {flow.issueCount} issues
                       </Badge>
                     )}
@@ -132,9 +132,9 @@ export default function ServiceFlowTab({ items }: Props) {
                       <CollapsibleTrigger asChild>
                         <div className="flex items-center gap-2 p-2 rounded-md hover:bg-muted/50 cursor-pointer transition-colors">
                           {step.implemented && (!step.issues || step.issues.length === 0) ? (
-                            <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
+                            <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
                           ) : step.implemented && step.issues && step.issues.length > 0 ? (
-                            <AlertTriangle className="h-4 w-4 text-yellow-500 shrink-0" />
+                            <AlertTriangle className="h-4 w-4 text-warning shrink-0" />
                           ) : (
                             <XCircle className="h-4 w-4 text-destructive shrink-0" />
                           )}
@@ -147,7 +147,7 @@ export default function ServiceFlowTab({ items }: Props) {
                         <div className="ml-8 p-2 text-sm text-muted-foreground border-l-2 border-muted">
                           <p>{step.description}</p>
                           {step.issues && step.issues.map((issue, j) => (
-                            <p key={j} className="text-yellow-600 mt-1">⚠ {issue}</p>
+                            <p key={j} className="text-warning mt-1">⚠ {issue}</p>
                           ))}
                         </div>
                       </CollapsibleContent>

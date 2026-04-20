@@ -18,18 +18,18 @@ import { Plus, Search, List, LayoutGrid, Package, Clock, CheckCircle, Truck, Eye
 
 const ORDER_STATUSES = ["pending", "assigned", "in_progress", "under_review", "delivered", "completed", "cancelled"] as const;
 const STATUS_COLORS: Record<string, string> = {
-  pending: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
-  assigned: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+  pending: "bg-warning/10 text-warning",
+  assigned: "bg-info/10 text-info",
   in_progress: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
-  under_review: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
+  under_review: "bg-warning/10 text-warning",
   delivered: "bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300",
   completed: "bg-primary/10 text-primary",
   cancelled: "bg-destructive/10 text-destructive",
 };
 const PRIORITY_COLORS: Record<string, string> = {
   standard: "bg-muted text-muted-foreground",
-  priority: "bg-blue-100 text-blue-800",
-  rush: "bg-amber-100 text-amber-800",
+  priority: "bg-info/10 text-info",
+  rush: "bg-warning/10 text-warning",
   emergency: "bg-destructive/10 text-destructive",
 };
 

@@ -15,7 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Truck, Plus, Search, Loader2, MapPin, Navigation } from "lucide-react";
 import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 
-const statusColors: Record<string, string> = { pending: "bg-yellow-100 text-yellow-800", picked_up: "bg-blue-100 text-blue-800", in_transit: "bg-purple-100 text-purple-800", delivered: "bg-emerald-100 text-emerald-800", failed: "bg-red-100 text-red-800" };
+const statusColors: Record<string, string> = { pending: "bg-warning/10 text-warning", picked_up: "bg-info/10 text-info", in_transit: "bg-purple-100 text-purple-800", delivered: "bg-success/10 text-success", failed: "bg-destructive/10 text-destructive" };
 
 interface CourierJob {
   id: string; client_id: string; pickup_address: string; dropoff_address: string;

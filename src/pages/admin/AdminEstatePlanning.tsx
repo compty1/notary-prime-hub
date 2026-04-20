@@ -89,7 +89,7 @@ export default function AdminEstatePlanning() {
       <div className="grid grid-cols-3 gap-4">
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Total</p><p className="text-2xl font-bold">{requests.length}</p></CardContent></Card>
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">In Progress</p><p className="text-2xl font-bold text-primary">{requests.filter((r: any) => !["notarized", "filed"].includes(r.status)).length}</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Completed</p><p className="text-2xl font-bold text-green-600">{requests.filter((r: any) => ["notarized", "filed"].includes(r.status)).length}</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Completed</p><p className="text-2xl font-bold text-success">{requests.filter((r: any) => ["notarized", "filed"].includes(r.status)).length}</p></CardContent></Card>
       </div>
 
       <div className="relative">

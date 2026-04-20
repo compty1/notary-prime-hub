@@ -107,7 +107,7 @@ export default function BusinessCardDesigner() {
                     </div>
                   )}
                   {/* Bleed lines */}
-                  <div className="absolute inset-0 border-2 border-dashed border-red-500/20 pointer-events-none m-1" />
+                  <div className="absolute inset-0 border-2 border-dashed border-destructive/20 pointer-events-none m-1" />
                 </div>
               </CardContent>
             </Card>

@@ -127,7 +127,7 @@ export function RealEstateAdvancedTools() {
                 {filteredCounties.map(c => (
                   <TableRow key={c.county}>
                     <TableCell className="font-medium text-xs">{c.county}</TableCell>
-                    <TableCell><Badge className={c.status === "Active" ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"} variant="outline">{c.status}</Badge></TableCell>
+                    <TableCell><Badge className={c.status === "Active" ? "bg-success/10 text-success" : "bg-warning/10 text-warning"} variant="outline">{c.status}</Badge></TableCell>
                     <TableCell className="text-xs">{c.portal}</TableCell>
                   </TableRow>
                 ))}

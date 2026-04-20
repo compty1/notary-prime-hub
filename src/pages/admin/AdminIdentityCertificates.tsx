@@ -15,7 +15,7 @@ import { Award, Plus, Search, Loader2, ShieldCheck } from "lucide-react";
 import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
-const statusColors: Record<string, string> = { active: "bg-emerald-100 text-emerald-800", expired: "bg-yellow-100 text-yellow-800", revoked: "bg-red-100 text-red-800", pending: "bg-blue-100 text-blue-800" };
+const statusColors: Record<string, string> = { active: "bg-success/10 text-success", expired: "bg-warning/10 text-warning", revoked: "bg-destructive/10 text-destructive", pending: "bg-info/10 text-info" };
 
 export default function AdminIdentityCertificates() {
   usePageMeta({ title: "Identity Certificates", noIndex: true });

@@ -41,10 +41,10 @@ type ClientProfile = {
 };
 
 const statusConfig: Record<string, { label: string; color: string; icon: any }> = {
-  pending: { label: "Pending", color: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400", icon: Clock },
-  replied: { label: "Replied", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: CheckCircle },
+  pending: { label: "Pending", color: "bg-warning/10 text-warning", icon: Clock },
+  replied: { label: "Replied", color: "bg-success/10 text-success", icon: CheckCircle },
   archived: { label: "Archived", color: "bg-muted text-muted-foreground", icon: MailOpen },
-  flagged: { label: "Flagged", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: AlertCircle },
+  flagged: { label: "Flagged", color: "bg-destructive/10 text-destructive", icon: AlertCircle },
 };
 
 export default function AdminClientEmails() {
@@ -152,9 +152,9 @@ export default function AdminClientEmails() {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {[
           { label: "Total", value: stats.total, icon: Mail, color: "text-primary" },
-          { label: "Pending", value: stats.pending, icon: Clock, color: "text-amber-500" },
-          { label: "Replied", value: stats.replied, icon: CheckCircle, color: "text-green-500" },
-          { label: "Inbound", value: stats.inbound, icon: ArrowDownLeft, color: "text-blue-500" },
+          { label: "Pending", value: stats.pending, icon: Clock, color: "text-warning" },
+          { label: "Replied", value: stats.replied, icon: CheckCircle, color: "text-success" },
+          { label: "Inbound", value: stats.inbound, icon: ArrowDownLeft, color: "text-info" },
           { label: "Outbound", value: stats.outbound, icon: ArrowUpRight, color: "text-violet-500" },
         ].map(stat => (
           <Card key={stat.label} className="border-border/50">
@@ -222,10 +222,10 @@ export default function AdminClientEmails() {
                       className="flex w-full items-center gap-4 px-4 py-3 text-left hover:bg-muted/50 transition-colors"
                     >
                       <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                        item.direction === "inbound" ? "bg-blue-100 dark:bg-blue-900/30" : "bg-violet-100 dark:bg-violet-900/30"
+                        item.direction === "inbound" ? "bg-info/10" : "bg-violet-100 dark:bg-violet-900/30"
                       }`}>
                         {item.direction === "inbound"
-                          ? <ArrowDownLeft className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                          ? <ArrowDownLeft className="h-4 w-4 text-info" />
                           : <ArrowUpRight className="h-4 w-4 text-violet-600 dark:text-violet-400" />}
                       </div>
                       <div className="min-w-0 flex-1">

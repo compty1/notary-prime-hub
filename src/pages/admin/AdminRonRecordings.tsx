@@ -84,7 +84,7 @@ export default function AdminRonRecordings() {
                 </div>
                 <div className="flex items-center gap-2">
                   {rec.consent_verified ? (
-                    <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-200">Consent ✓</Badge>
+                    <Badge className="bg-success/10 text-success border-success/30">Consent ✓</Badge>
                   ) : (
                     <Badge variant="destructive">No Consent</Badge>
                   )}

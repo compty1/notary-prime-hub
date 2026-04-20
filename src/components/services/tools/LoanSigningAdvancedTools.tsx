@@ -50,7 +50,7 @@ export function LoanSigningAdvancedTools() {
             {LOAN_PACKAGE_DOCS.map((d) => (
               <div key={d.doc} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                 <div className="flex items-center gap-2">
-                  {d.critical && <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />}
+                  {d.critical && <AlertTriangle className="h-3.5 w-3.5 text-warning" />}
                   <span className="text-sm font-medium">{d.doc}</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -77,7 +77,7 @@ export function LoanSigningAdvancedTools() {
                 <p className="text-sm font-medium text-destructive">{e.error}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">Impact: {e.impact}</p>
                 <div className="flex items-center gap-2 mt-1">
-                  <CheckCircle className="h-3.5 w-3.5 text-green-500" />
+                  <CheckCircle className="h-3.5 w-3.5 text-success" />
                   <p className="text-xs">{e.prevention}</p>
                 </div>
               </div>
@@ -97,7 +97,7 @@ export function LoanSigningAdvancedTools() {
           <div className="space-y-2">
             {BEST_PRACTICES.map((bp, i) => (
               <div key={i} className="flex items-start gap-3 p-2 rounded bg-muted/50">
-                <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                <CheckCircle className="h-4 w-4 text-success mt-0.5 shrink-0" />
                 <span className="text-sm">{bp}</span>
               </div>
             ))}

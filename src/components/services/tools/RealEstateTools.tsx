@@ -160,7 +160,7 @@ export function RealEstateTools() {
               <div key={c.county} className="flex items-center justify-between text-sm p-2 rounded border">
                 <span>{c.county}</span>
                 <div className="flex items-center gap-1.5">
-                  <Badge className={c.eRecording ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" : "bg-muted text-muted-foreground"}>
+                  <Badge className={c.eRecording ? "bg-success/10 text-success" : "bg-muted text-muted-foreground"}>
                     {c.eRecording ? "Available" : "Manual"}
                   </Badge>
                   {c.eRecording && <span className="text-xs text-muted-foreground">{c.vendor}</span>}

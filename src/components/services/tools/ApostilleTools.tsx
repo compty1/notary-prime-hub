@@ -78,7 +78,7 @@ export function ApostilleTools() {
           {req && (
             <div className="space-y-3">
               <div className="flex flex-wrap gap-2">
-                <Badge className={req.hague ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" : "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"}>
+                <Badge className={req.hague ? "bg-success/10 text-success" : "bg-warning/10 text-warning"}>
                   {req.hague ? "Hague Convention ✓" : "Non-Hague — Full Authentication"}
                 </Badge>
                 <Badge variant="outline" className="gap-1"><Clock className="h-3 w-3" /> ~{req.estDays} days</Badge>

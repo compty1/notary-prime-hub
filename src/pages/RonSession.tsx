@@ -1352,8 +1352,8 @@ export default function RonSession() {
                   <div className="flex items-center gap-6">
                     {recordingConsent && sessionStatus === "in_session" && (
                       <div className="flex items-center gap-2">
-                        <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.7)]" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-red-400">REC</span>
+                        <div className="w-2.5 h-2.5 rounded-full bg-destructive/10 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.7)]" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-destructive">REC</span>
                       </div>
                     )}
                     <div className="flex items-center gap-2">
@@ -1478,7 +1478,7 @@ export default function RonSession() {
         <div className="mb-4 flex items-center gap-3 rounded-[16px] border border-border bg-card px-5 py-3 text-xs flex-wrap">
           {sessionUniqueId && <span className="font-mono text-muted-foreground">Session: <strong className="text-foreground">{sessionUniqueId}</strong></span>}
           <span className="text-border">•</span>
-          <span className="flex items-center gap-1 text-emerald-600"><Shield className="h-3 w-3" /> AES-256 Encrypted</span>
+          <span className="flex items-center gap-1 text-success"><Shield className="h-3 w-3" /> AES-256 Encrypted</span>
           <span className="text-border">•</span>
           <span>Provider: <strong>{SIGNING_PLATFORMS.find(p => p.value === signingPlatform)?.label || signingPlatform}</strong></span>
           <span className="text-border">•</span>
@@ -1650,7 +1650,7 @@ export default function RonSession() {
                   <div className={cn(
                     "mt-4 rounded-lg border p-3",
                     webhookStatus === "active" ? "bg-primary/5 border-primary/20" :
-                    webhookStatus === "partial" ? "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800" :
+                    webhookStatus === "partial" ? "bg-warning/10 border-warning/30" :
                     webhookStatus === "failed" ? "bg-destructive/5 border-destructive/20" :
                     "bg-muted/50 border-border"
                   )}>
@@ -1668,7 +1668,7 @@ export default function RonSession() {
                             Webhook Status: {" "}
                             <span className={cn(
                               webhookStatus === "active" && "text-primary",
-                              webhookStatus === "partial" && "text-amber-600 dark:text-amber-400",
+                              webhookStatus === "partial" && "text-warning",
                               webhookStatus === "failed" && "text-destructive",
                               !webhookStatus && "text-muted-foreground",
                             )}>
@@ -1710,28 +1710,28 @@ export default function RonSession() {
                 <h2 className="mb-4 font-sans text-xl font-semibold">Verification Checklist</h2>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
-                    {participantLink ? <CheckCircle className="mt-0.5 h-5 w-5 text-primary" /> : <AlertCircle className="mt-0.5 h-5 w-5 text-amber-500" />}
+                    {participantLink ? <CheckCircle className="mt-0.5 h-5 w-5 text-primary" /> : <AlertCircle className="mt-0.5 h-5 w-5 text-warning" />}
                     <div>
                       <p className="font-medium">Session Link {participantLink ? "✓ Active" : "— Paste above"}</p>
                       <p className="text-sm text-muted-foreground">Signing link shared with client</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    {idVerified ? <CheckCircle className="mt-0.5 h-5 w-5 text-primary" /> : <AlertCircle className="mt-0.5 h-5 w-5 text-amber-500" />}
+                    {idVerified ? <CheckCircle className="mt-0.5 h-5 w-5 text-primary" /> : <AlertCircle className="mt-0.5 h-5 w-5 text-warning" />}
                     <div>
                       <p className="font-medium">Government-Issued Photo ID {idVerified ? "✓ Verified" : "— Pending"}</p>
                       <p className="text-sm text-muted-foreground">Driver's license, passport, or state ID</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    {kbaCompleted ? <CheckCircle className="mt-0.5 h-5 w-5 text-primary" /> : <AlertCircle className="mt-0.5 h-5 w-5 text-amber-500" />}
+                    {kbaCompleted ? <CheckCircle className="mt-0.5 h-5 w-5 text-primary" /> : <AlertCircle className="mt-0.5 h-5 w-5 text-warning" />}
                     <div>
                       <p className="font-medium">Knowledge-Based Authentication (KBA) {kbaCompleted ? "✓ Passed" : "— Pending"}</p>
                       <p className="text-sm text-muted-foreground">Required under Ohio law (ORC §147.66). 5 identity questions via MISMO-compliant provider.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    {oathAdministered ? <CheckCircle className="mt-0.5 h-5 w-5 text-primary" /> : <AlertCircle className="mt-0.5 h-5 w-5 text-amber-500" />}
+                    {oathAdministered ? <CheckCircle className="mt-0.5 h-5 w-5 text-primary" /> : <AlertCircle className="mt-0.5 h-5 w-5 text-warning" />}
                     <div>
                       <p className="font-medium">Oath / Affirmation {oathAdministered ? "✓ Administered" : "— Pending"}</p>
                       <p className="text-sm text-muted-foreground">Administer the appropriate oath using the sidebar panel</p>
@@ -1787,7 +1787,7 @@ export default function RonSession() {
                   </div>
                   <div className="flex items-center justify-between rounded-md border border-border p-2">
                     <span className="text-[10px] text-muted-foreground">Liveness Detection</span>
-                    <Badge variant="secondary" className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 text-[10px]">
+                    <Badge variant="secondary" className="bg-info/10 text-info text-[10px]">
                       <Monitor className="mr-1 h-3 w-3" /> Via {SIGNING_PLATFORMS.find(p => p.value === signingPlatform)?.label || "Platform"}
                     </Badge>
                   </div>
@@ -1826,10 +1826,10 @@ export default function RonSession() {
 
                 {/* SignNow native KBA guidance */}
                 {hasNativeKba && (
-                  <div className="mb-3 rounded-md bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-2.5">
+                  <div className="mb-3 rounded-md bg-info/10 border border-info/30 p-2.5">
                     <div className="flex items-start gap-2">
-                      <Info className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
-                      <p className="text-[10px] text-blue-700 dark:text-blue-300 leading-relaxed">
+                      <Info className="h-3.5 w-3.5 text-info mt-0.5 shrink-0" />
+                      <p className="text-[10px] text-info leading-relaxed">
                         <strong>{SIGNING_PLATFORMS.find(p => p.value === signingPlatform)?.label}</strong> handles ID verification and KBA natively within its signing flow (MISMO-compliant per ORC §147.66). Toggle these after the signer completes the session.
                       </p>
                     </div>
@@ -1885,10 +1885,10 @@ export default function RonSession() {
                 </h3>
 
                 {hasNativeKba && (
-                  <div className="mb-3 rounded-md bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-2.5">
+                  <div className="mb-3 rounded-md bg-info/10 border border-info/30 p-2.5">
                     <div className="flex items-start gap-2">
-                      <Info className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
-                      <p className="text-[10px] text-blue-700 dark:text-blue-300 leading-relaxed">
+                      <Info className="h-3.5 w-3.5 text-info mt-0.5 shrink-0" />
+                      <p className="text-[10px] text-info leading-relaxed">
                         KBA is performed within the {SIGNING_PLATFORMS.find(p => p.value === signingPlatform)?.label} platform. Toggle this once the signer completes signing — the platform verifies identity before allowing the signature.
                       </p>
                     </div>
@@ -2111,19 +2111,19 @@ export default function RonSession() {
                 </h3>
                 <ul className="space-y-1.5 text-[11px] text-muted-foreground">
                   <li className="flex items-start gap-1.5">
-                    {recordingConsent ? <CheckCircle className="h-3 w-3 text-primary mt-0.5 shrink-0" /> : <AlertCircle className="h-3 w-3 text-amber-500 mt-0.5 shrink-0" />}
+                    {recordingConsent ? <CheckCircle className="h-3 w-3 text-primary mt-0.5 shrink-0" /> : <AlertCircle className="h-3 w-3 text-warning mt-0.5 shrink-0" />}
                     <span>Audio/video recording consent obtained (ORC §147.66)</span>
                   </li>
                   <li className="flex items-start gap-1.5">
-                    {idVerified ? <CheckCircle className="h-3 w-3 text-primary mt-0.5 shrink-0" /> : <AlertCircle className="h-3 w-3 text-amber-500 mt-0.5 shrink-0" />}
+                    {idVerified ? <CheckCircle className="h-3 w-3 text-primary mt-0.5 shrink-0" /> : <AlertCircle className="h-3 w-3 text-warning mt-0.5 shrink-0" />}
                     <span>Government-issued photo ID verified</span>
                   </li>
                   <li className="flex items-start gap-1.5">
-                    {kbaCompleted ? <CheckCircle className="h-3 w-3 text-primary mt-0.5 shrink-0" /> : <AlertCircle className="h-3 w-3 text-amber-500 mt-0.5 shrink-0" />}
+                    {kbaCompleted ? <CheckCircle className="h-3 w-3 text-primary mt-0.5 shrink-0" /> : <AlertCircle className="h-3 w-3 text-warning mt-0.5 shrink-0" />}
                     <span>MISMO-compliant KBA completed (ORC §147.66)</span>
                   </li>
                   <li className="flex items-start gap-1.5">
-                    {oathAdministered ? <CheckCircle className="h-3 w-3 text-primary mt-0.5 shrink-0" /> : <AlertCircle className="h-3 w-3 text-amber-500 mt-0.5 shrink-0" />}
+                    {oathAdministered ? <CheckCircle className="h-3 w-3 text-primary mt-0.5 shrink-0" /> : <AlertCircle className="h-3 w-3 text-warning mt-0.5 shrink-0" />}
                     <span>Oath/affirmation administered where required</span>
                   </li>
                   <li className="flex items-start gap-1.5">
@@ -2234,19 +2234,19 @@ export default function RonSession() {
                     </div>
                   )}
                   {recordingConsent && recordingConsentAt && (
-                    <div className="flex items-start gap-2 text-emerald-600 dark:text-emerald-400">
+                    <div className="flex items-start gap-2 text-success">
                       <span className="font-mono shrink-0">{new Date(recordingConsentAt).toLocaleTimeString()}</span>
                       <span>Recording consent granted</span>
                     </div>
                   )}
                   {idVerified && (
-                    <div className="flex items-start gap-2 text-emerald-600 dark:text-emerald-400">
+                    <div className="flex items-start gap-2 text-success">
                       <span className="font-mono shrink-0">{new Date().toLocaleTimeString()}</span>
                       <span>ID verified — {idType || "Government ID"}</span>
                     </div>
                   )}
                   {kbaCompleted && (
-                    <div className="flex items-start gap-2 text-emerald-600 dark:text-emerald-400">
+                    <div className="flex items-start gap-2 text-success">
                       <span className="font-mono shrink-0">{new Date().toLocaleTimeString()}</span>
                       <span>KBA passed (attempt {kbaAttempts}/2)</span>
                     </div>

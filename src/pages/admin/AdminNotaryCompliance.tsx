@@ -103,17 +103,17 @@ export default function AdminNotaryCompliance() {
           <p className="text-xs text-muted-foreground">Compliance Score</p>
         </CardContent></Card>
         <Card><CardContent className="pt-6 text-center">
-          <BookOpen className="mx-auto mb-2 h-8 w-8 text-blue-500" />
+          <BookOpen className="mx-auto mb-2 h-8 w-8 text-info" />
           <div className="text-2xl font-bold">{stats.journalCount}</div>
           <p className="text-xs text-muted-foreground">Journal Entries</p>
         </CardContent></Card>
         <Card><CardContent className="pt-6 text-center">
-          <Video className="mx-auto mb-2 h-8 w-8 text-green-500" />
+          <Video className="mx-auto mb-2 h-8 w-8 text-success" />
           <div className="text-2xl font-bold">{stats.sessionsThisMonth}</div>
           <p className="text-xs text-muted-foreground">Sessions This Month</p>
         </CardContent></Card>
         <Card><CardContent className="pt-6 text-center">
-          <Award className="mx-auto mb-2 h-8 w-8 text-amber-500" />
+          <Award className="mx-auto mb-2 h-8 w-8 text-warning" />
           <div className="text-2xl font-bold">{stats.ceCredits}/{stats.ceRequired}</div>
           <p className="text-xs text-muted-foreground">CE Credits</p>
         </CardContent></Card>
@@ -132,9 +132,9 @@ export default function AdminNotaryCompliance() {
               <div key={item.key} className="flex items-center justify-between rounded-lg border border-border/50 p-3">
                 <div className="flex items-center gap-3">
                   {checklist[item.key] ? (
-                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <CheckCircle className="h-5 w-5 text-success" />
                   ) : (
-                    <AlertTriangle className="h-5 w-5 text-amber-500" />
+                    <AlertTriangle className="h-5 w-5 text-warning" />
                   )}
                   <span className="text-sm font-medium">{item.label}</span>
                 </div>
@@ -144,7 +144,7 @@ export default function AdminNotaryCompliance() {
                       ORC {item.statute} <ExternalLink className="h-3 w-3" />
                     </a>
                   )}
-                  <Badge variant={checklist[item.key] ? "default" : "secondary"} className={checklist[item.key] ? "bg-green-500/10 text-green-700 dark:text-green-400" : "bg-amber-500/10 text-amber-700 dark:text-amber-400"}>
+                  <Badge variant={checklist[item.key] ? "default" : "secondary"} className={checklist[item.key] ? "bg-success/10 text-success" : "bg-warning/10 text-warning"}>
                     {checklist[item.key] ? "Compliant" : "Action Needed"}
                   </Badge>
                 </div>

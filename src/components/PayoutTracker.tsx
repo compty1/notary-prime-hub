@@ -28,7 +28,7 @@ export function PayoutTracker() {
         </CardContent></Card>
         <Card><CardContent className="pt-4">
           <p className="text-sm text-muted-foreground">Pending</p>
-          <p className="text-2xl font-bold text-amber-600">${totalPending.toFixed(2)}</p>
+          <p className="text-2xl font-bold text-warning">${totalPending.toFixed(2)}</p>
         </CardContent></Card>
         <Card><CardContent className="pt-4">
           <p className="text-sm text-muted-foreground">Paid Out</p>

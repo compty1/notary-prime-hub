@@ -76,7 +76,7 @@ export function LoanSigningTools() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-mono">{l.avgFee}</span>
-                  {l.rescission && <Badge className="bg-amber-100 text-amber-800 text-[10px]">3-day Rescission</Badge>}
+                  {l.rescission && <Badge className="bg-warning/10 text-warning text-[10px]">3-day Rescission</Badge>}
                 </div>
               </div>
             ))}
@@ -85,7 +85,7 @@ export function LoanSigningTools() {
       </Card>
 
       <Card>
-        <CardHeader><CardTitle className="text-lg flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-amber-500" /> Common Signing Errors</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-lg flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-warning" /> Common Signing Errors</CardTitle></CardHeader>
         <CardContent>
           <div className="space-y-2">
             {COMMON_ERRORS.map((e, i) => (

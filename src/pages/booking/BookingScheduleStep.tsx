@@ -83,7 +83,7 @@ export default function BookingScheduleStep(props: ScheduleStepProps) {
       </div>
 
       {holidayName && (
-        <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800 flex items-center gap-2 dark:bg-amber-900/20 dark:border-amber-700 dark:text-amber-300">
+        <div className="rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm text-warning flex items-center gap-2">
           <CalendarOff className="h-4 w-4 flex-shrink-0" /> <strong>{holidayName}</strong> — We may have limited availability on this holiday. Consider an alternate date.
         </div>
       )}
@@ -151,7 +151,7 @@ export default function BookingScheduleStep(props: ScheduleStepProps) {
       )}
 
       {props.leadTimeWarning && (
-        <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800 flex items-center gap-2">
+        <div className="rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm text-warning flex items-center gap-2">
           <AlertTriangle className="h-4 w-4 flex-shrink-0" /> {props.leadTimeWarning}
         </div>
       )}

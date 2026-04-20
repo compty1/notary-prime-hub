@@ -122,22 +122,22 @@ export default function AcademyQuiz() {
         </div>
 
         {alreadyPassed && !submitted && (
-          <Card className="border-green-300 bg-green-50 dark:bg-green-900/20">
+          <Card className="border-success/30 bg-success/10">
             <CardContent className="pt-4 flex items-center gap-3">
-              <Award className="h-6 w-6 text-green-600" />
+              <Award className="h-6 w-6 text-success" />
               <div>
-                <p className="font-medium text-green-800 dark:text-green-300">You've already passed this quiz!</p>
-                <p className="text-sm text-green-700 dark:text-green-400">Best score: {Math.max(...pastAttempts.map((a: any) => a.score))}%</p>
+                <p className="font-medium text-success">You've already passed this quiz!</p>
+                <p className="text-sm text-success">Best score: {Math.max(...pastAttempts.map((a: any) => a.score))}%</p>
               </div>
             </CardContent>
           </Card>
         )}
 
         {isLockedOut && (
-          <Card className="border-red-300 bg-red-50 dark:bg-red-900/20">
+          <Card className="border-destructive/30 bg-destructive/10">
             <CardContent className="pt-4">
-              <p className="text-red-800 dark:text-red-300 font-medium">48-hour lockout active</p>
-              <p className="text-sm text-red-700 dark:text-red-400">You can retry after {lockoutUntil!.toLocaleString()}</p>
+              <p className="text-destructive font-medium">48-hour lockout active</p>
+              <p className="text-sm text-destructive">You can retry after {lockoutUntil!.toLocaleString()}</p>
             </CardContent>
           </Card>
         )}
@@ -170,9 +170,9 @@ export default function AcademyQuiz() {
         {/* Results */}
         {submitted && result && (
           <div className="space-y-6">
-            <Card className={result.passed ? "border-green-300 bg-green-50 dark:bg-green-900/20" : "border-red-300 bg-red-50 dark:bg-red-900/20"}>
+            <Card className={result.passed ? "border-success/30 bg-success/10" : "border-destructive/30 bg-destructive/10"}>
               <CardContent className="pt-6 text-center space-y-2">
-                {result.passed ? <CheckCircle2 className="h-12 w-12 text-green-600 mx-auto" /> : <XCircle className="h-12 w-12 text-red-500 mx-auto" />}
+                {result.passed ? <CheckCircle2 className="h-12 w-12 text-success mx-auto" /> : <XCircle className="h-12 w-12 text-destructive mx-auto" />}
                 <p className="text-2xl font-bold">{result.score}%</p>
                 <p className="text-lg font-medium">{result.passed ? "You Passed!" : "Not Passed"}</p>
                 {result.passed && isFinal && <p className="text-sm text-muted-foreground">Your certificate has been generated.</p>}
@@ -181,11 +181,11 @@ export default function AcademyQuiz() {
 
             {/* Show correct answers */}
             {questions.map((q, qi) => (
-              <Card key={qi} className={answers[qi] === q.correct ? "border-green-200" : "border-red-200"}>
+              <Card key={qi} className={answers[qi] === q.correct ? "border-success/30" : "border-destructive/30"}>
                 <CardContent className="pt-4">
                   <p className="font-medium text-sm mb-2">{qi + 1}. {q.question}</p>
-                  <p className="text-sm">Your answer: <span className={answers[qi] === q.correct ? "text-green-600 font-medium" : "text-red-500 line-through"}>{q.options[answers[qi]]}</span></p>
-                  {answers[qi] !== q.correct && <p className="text-sm text-green-600">Correct: {q.options[q.correct]}</p>}
+                  <p className="text-sm">Your answer: <span className={answers[qi] === q.correct ? "text-success font-medium" : "text-destructive line-through"}>{q.options[answers[qi]]}</span></p>
+                  {answers[qi] !== q.correct && <p className="text-sm text-success">Correct: {q.options[q.correct]}</p>}
                   {q.explanation && <p className="text-xs text-muted-foreground mt-1">{q.explanation}</p>}
                 </CardContent>
               </Card>

@@ -162,14 +162,14 @@ export default function VerifyIdentity() {
 
               {idData && !idData.error && (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-                  <div className={`rounded-lg border p-4 ${idData.is_expired ? "border-amber-300 bg-amber-50" : "border-primary/30 bg-primary/5"}`}>
+                  <div className={`rounded-lg border p-4 ${idData.is_expired ? "border-warning/30 bg-warning/10" : "border-primary/30 bg-primary/5"}`}>
                     <div className="flex items-center gap-2 mb-3">
                       {idData.is_expired ? (
-                        <AlertTriangle className="h-5 w-5 text-amber-600" />
+                        <AlertTriangle className="h-5 w-5 text-warning" />
                       ) : (
                         <CheckCircle className="h-5 w-5 text-primary" />
                       )}
-                      <span className={`text-sm font-semibold ${idData.is_expired ? "text-amber-800" : "text-primary"}`}>
+                      <span className={`text-sm font-semibold ${idData.is_expired ? "text-warning" : "text-primary"}`}>
                         {idData.is_expired ? "Expired ID Detected" : "ID Verified Successfully"}
                       </span>
                     </div>

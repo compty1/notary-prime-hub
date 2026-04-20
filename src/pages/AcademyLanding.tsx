@@ -20,11 +20,11 @@ const TIER_LABELS: Record<number, string> = {
 };
 
 const TIER_COLORS: Record<number, string> = {
-  1: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-  2: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
+  1: "bg-info/10 text-info",
+  2: "bg-success/10 text-success",
   3: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
-  4: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
-  5: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+  4: "bg-warning/10 text-warning",
+  5: "bg-destructive/10 text-destructive",
   6: "bg-muted text-gray-800 dark:bg-gray-900/30 dark:text-gray-300",
 };
 
@@ -54,7 +54,7 @@ function CourseCard({ course, userId }: { course: any; userId?: string }) {
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
           <Badge className={TIER_COLORS[tier] || TIER_COLORS[1]}>{TIER_LABELS[tier] || `Tier ${tier}`}</Badge>
-          {course.is_free && <Badge variant="outline" className="text-green-600 border-green-300">Free</Badge>}
+          {course.is_free && <Badge variant="outline" className="text-success border-success/30">Free</Badge>}
           {hasPrereqs && !isEnrolled && <Lock className="h-4 w-4 text-muted-foreground" />}
         </div>
         <CardTitle className="text-lg leading-tight mt-2">{course.title}</CardTitle>

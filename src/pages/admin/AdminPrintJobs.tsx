@@ -11,11 +11,11 @@ import { Printer, Search, FileText, Loader2, Palette, BookOpen } from "lucide-re
 import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 
 const statusColors: Record<string, string> = {
-  queued: "bg-yellow-100 text-yellow-800",
-  printing: "bg-blue-100 text-blue-800",
-  ready: "bg-emerald-100 text-emerald-800",
+  queued: "bg-warning/10 text-warning",
+  printing: "bg-info/10 text-info",
+  ready: "bg-success/10 text-success",
   picked_up: "bg-muted text-gray-800",
-  cancelled: "bg-red-100 text-red-800",
+  cancelled: "bg-destructive/10 text-destructive",
 };
 
 export default function AdminPrintJobs() {
@@ -56,9 +56,9 @@ export default function AdminPrintJobs() {
           <p className="text-sm text-muted-foreground">Manage print, copy, and binding jobs</p>
         </div>
         <div className="flex gap-2">
-          <Badge variant="outline" className="gap-1 bg-yellow-50">{stats.queued} Queued</Badge>
-          <Badge variant="outline" className="gap-1 bg-blue-50">{stats.printing} Printing</Badge>
-          <Badge variant="outline" className="gap-1 bg-emerald-50">{stats.ready} Ready</Badge>
+          <Badge variant="outline" className="gap-1 bg-warning/10">{stats.queued} Queued</Badge>
+          <Badge variant="outline" className="gap-1 bg-info/10">{stats.printing} Printing</Badge>
+          <Badge variant="outline" className="gap-1 bg-success/10">{stats.ready} Ready</Badge>
         </div>
       </div>
 

@@ -42,7 +42,7 @@ export function DocuDexRulerGuides({ pageWidth, pageHeight, zoom }: Props) {
           </div>
         ))}
         {guides.filter(g => g.axis === "x").map(g => (
-          <div key={g.id} className="absolute top-0 h-full w-px bg-blue-500 cursor-pointer z-10" style={{ left: g.position * zoom }} onClick={() => removeGuide(g.id)} title="Click to remove" />
+          <div key={g.id} className="absolute top-0 h-full w-px bg-info/10 cursor-pointer z-10" style={{ left: g.position * zoom }} onClick={() => removeGuide(g.id)} title="Click to remove" />
         ))}
       </div>
 
@@ -75,7 +75,7 @@ export function DocuDexRulerGuides({ pageWidth, pageHeight, zoom }: Props) {
 
       {/* Vertical guides overlay */}
       {guides.filter(g => g.axis === "y").map(g => (
-        <div key={g.id} className="absolute left-0 w-full h-px bg-blue-500 cursor-pointer z-10 pointer-events-auto" style={{ top: g.position * zoom }} onClick={() => removeGuide(g.id)} title="Click to remove" />
+        <div key={g.id} className="absolute left-0 w-full h-px bg-info/10 cursor-pointer z-10 pointer-events-auto" style={{ top: g.position * zoom }} onClick={() => removeGuide(g.id)} title="Click to remove" />
       ))}
     </>
   );

@@ -1144,11 +1144,11 @@ export default function DocumentTemplates() {
 
         {/* Legal Disclaimer */}
         <div className="mb-8 space-y-3">
-          <div className="rounded-lg bg-amber-50 border border-amber-200 p-4 dark:bg-amber-950/30 dark:border-amber-800">
-            <h3 className="flex items-center gap-2 font-sans text-sm font-semibold text-amber-900 dark:text-amber-200 mb-2">
+          <div className="rounded-lg bg-warning/10 border border-warning/30 p-4">
+            <h3 className="flex items-center gap-2 font-sans text-sm font-semibold text-warning mb-2">
               <AlertTriangle className="h-4 w-4" /> Important: Read Before Using These Templates
             </h3>
-            <div className="text-sm text-amber-800 dark:text-amber-300 space-y-2">
+            <div className="text-sm text-warning space-y-2">
               <p><strong>You CAN use these templates for:</strong> General informational starting points, standard notarial certificates (acknowledgments, jurats), routine personal documents (travel consent, general affidavits), and common business documents (bill of sale, basic contracts).</p>
               <p><strong>You MAY need attorney review for:</strong> Estate planning documents (wills, trusts, healthcare directives), real property transfers (deeds, mortgages), court filings, power of attorney documents with specific legal powers, and any document with significant legal or financial consequences.</p>
               <p><strong>Always check with your local officials:</strong> County recorders, courts, and government agencies may have specific form requirements.</p>
@@ -1433,7 +1433,7 @@ export default function DocumentTemplates() {
             <Button variant="outline" onClick={handleSaveToVault} disabled={saving || !user} className="gap-1">
               {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />} Save to Vault
             </Button>
-            <Button onClick={handlePrint} className=" gap-1"><Printer className="h-3 w-3" /> Print / PDF</Button>
+            <Button onClick={handlePrint} className="gap-1"><Printer className="h-3 w-3" /> Print / PDF</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

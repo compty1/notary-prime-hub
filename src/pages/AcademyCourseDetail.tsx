@@ -128,12 +128,12 @@ export default function AcademyCourseDetail() {
           <p className="text-muted-foreground">{course.description}</p>
 
           {isLocked && (
-            <Card className="border-amber-300 bg-amber-50 dark:bg-amber-900/20">
+            <Card className="border-warning/30 bg-warning/10">
               <CardContent className="pt-4 flex items-start gap-3">
-                <Lock className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                <Lock className="h-5 w-5 text-warning shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-medium text-amber-800 dark:text-amber-300">Prerequisites Required</p>
-                  <p className="text-sm text-amber-700 dark:text-amber-400">Complete these courses first: {prereq!.missing.join(", ")}</p>
+                  <p className="font-medium text-warning">Prerequisites Required</p>
+                  <p className="text-sm text-warning">Complete these courses first: {prereq!.missing.join(", ")}</p>
                 </div>
               </CardContent>
             </Card>
@@ -180,7 +180,7 @@ export default function AcademyCourseDetail() {
                       const done = completedSet.has(lesson.id);
                       return (
                         <Link key={lesson.id} to={isEnrolled ? `/academy/lesson/${lesson.id}` : "#"} className={`flex items-center gap-3 px-6 py-2.5 text-sm hover:bg-muted/30 transition-colors ${!isEnrolled ? "opacity-60 pointer-events-none" : ""}`}>
-                          {done ? <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" /> : <Play className="h-4 w-4 text-muted-foreground shrink-0" />}
+                          {done ? <CheckCircle2 className="h-4 w-4 text-success shrink-0" /> : <Play className="h-4 w-4 text-muted-foreground shrink-0" />}
                           <span className={done ? "text-muted-foreground line-through" : ""}>{lesson.title}</span>
                           <span className="ml-auto text-xs text-muted-foreground">{lesson.duration_minutes}m</span>
                         </Link>

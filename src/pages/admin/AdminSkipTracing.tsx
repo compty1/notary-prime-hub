@@ -15,7 +15,7 @@ import { Crosshair, Plus, Search, Loader2, MapPin, Phone, Mail } from "lucide-re
 import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
-const statusColors: Record<string, string> = { pending: "bg-yellow-100 text-yellow-800", searching: "bg-blue-100 text-blue-800", found: "bg-emerald-100 text-emerald-800", not_found: "bg-red-100 text-red-800" };
+const statusColors: Record<string, string> = { pending: "bg-warning/10 text-warning", searching: "bg-info/10 text-info", found: "bg-success/10 text-success", not_found: "bg-destructive/10 text-destructive" };
 
 export default function AdminSkipTracing() {
   usePageMeta({ title: "Skip Tracing", noIndex: true });

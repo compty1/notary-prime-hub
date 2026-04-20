@@ -51,11 +51,11 @@ export default function AdminSecurityCenter() {
         </Card>
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">MFA Status</CardTitle></CardHeader>
-          <CardContent><p className="text-sm font-medium text-green-600">Enforced for admin routes</p></CardContent>
+          <CardContent><p className="text-sm font-medium text-success">Enforced for admin routes</p></CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">RLS Coverage</CardTitle></CardHeader>
-          <CardContent><p className="text-sm font-medium text-green-600">All tables protected</p></CardContent>
+          <CardContent><p className="text-sm font-medium text-success">All tables protected</p></CardContent>
         </Card>
       </div>
 
@@ -115,7 +115,7 @@ export default function AdminSecurityCenter() {
                       <div>
                         <p className="font-medium text-sm">User: {req.user_id.slice(0, 8)}…</p>
                         <p className="text-xs text-muted-foreground">{req.reason || "No reason provided"}</p>
-                        <p className="text-xs text-muted-foreground">Status: <span className={req.status === "pending" ? "text-amber-600" : "text-green-600"}>{req.status}</span></p>
+                        <p className="text-xs text-muted-foreground">Status: <span className={req.status === "pending" ? "text-warning" : "text-success"}>{req.status}</span></p>
                       </div>
                       {req.status === "pending" && (
                         <div className="flex gap-2">

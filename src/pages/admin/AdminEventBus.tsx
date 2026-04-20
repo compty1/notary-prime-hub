@@ -51,8 +51,8 @@ export default function AdminEventBus() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><Zap className="h-5 w-5 text-primary" /><div><p className="text-2xl font-bold">{events.length}</p><p className="text-xs text-muted-foreground">Total Events</p></div></div></CardContent></Card>
-        <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><Clock className="h-5 w-5 text-amber-500" /><div><p className="text-2xl font-bold">{unprocessed}</p><p className="text-xs text-muted-foreground">Pending</p></div></div></CardContent></Card>
-        <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><CheckCircle2 className="h-5 w-5 text-emerald-500" /><div><p className="text-2xl font-bold">{events.length - unprocessed}</p><p className="text-xs text-muted-foreground">Processed</p></div></div></CardContent></Card>
+        <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><Clock className="h-5 w-5 text-warning" /><div><p className="text-2xl font-bold">{unprocessed}</p><p className="text-xs text-muted-foreground">Pending</p></div></div></CardContent></Card>
+        <Card><CardContent className="pt-4"><div className="flex items-center gap-2"><CheckCircle2 className="h-5 w-5 text-success" /><div><p className="text-2xl font-bold">{events.length - unprocessed}</p><p className="text-xs text-muted-foreground">Processed</p></div></div></CardContent></Card>
       </div>
 
       <div className="flex gap-3 items-center">
@@ -86,7 +86,7 @@ export default function AdminEventBus() {
                     <TableCell className="text-xs font-mono">{format(new Date(e.created_at), "MMM d, HH:mm:ss")}</TableCell>
                     <TableCell><Badge variant="outline" className="font-mono text-xs">{e.event_type}</Badge></TableCell>
                     <TableCell className="text-xs">{e.entity_type ? `${e.entity_type}/${String(e.entity_id).slice(0, 8)}` : "—"}</TableCell>
-                    <TableCell>{e.processed ? <Badge className="bg-emerald-500/10 text-emerald-600 text-xs">Processed</Badge> : <Badge variant="secondary" className="text-xs">Pending</Badge>}</TableCell>
+                    <TableCell>{e.processed ? <Badge className="bg-success/10 text-success text-xs">Processed</Badge> : <Badge variant="secondary" className="text-xs">Pending</Badge>}</TableCell>
                     <TableCell>{!e.processed && <Button size="sm" variant="ghost" onClick={() => markProcessed(e.id)}>Mark Done</Button>}</TableCell>
                   </TableRow>
                 ))}

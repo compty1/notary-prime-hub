@@ -208,7 +208,7 @@ export default function NotaryDirectory() {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <h3 className="font-bold text-foreground truncate">{pro.display_name}</h3>
-                                {pro.is_featured && <Star className="h-4 w-4 shrink-0 text-amber-500 fill-amber-500" />}
+                                {pro.is_featured && <Star className="h-4 w-4 shrink-0 text-warning fill-amber-500" />}
                               </div>
                               {pro.title && <p className="text-sm" style={{ color: themeColor }}>{pro.title}</p>}
                               <Badge variant="outline" className="mt-1 text-xs">{typeLabel}</Badge>

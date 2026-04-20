@@ -101,7 +101,7 @@ export default function AdminPerformance() {
                     </div>
                     <div>
                       <div className="text-lg font-bold flex items-center justify-center gap-1">
-                        <Star className="h-3.5 w-3.5 text-yellow-500" /> {card.avgRating}
+                        <Star className="h-3.5 w-3.5 text-warning" /> {card.avgRating}
                       </div>
                       <div className="text-xs text-muted-foreground">{card.ratingCount} reviews</div>
                     </div>

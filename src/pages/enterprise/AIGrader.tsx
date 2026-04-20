@@ -81,10 +81,10 @@ const AIGrader = () => {
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 90) return "text-green-500";
-    if (score >= 80) return "text-blue-500";
-    if (score >= 70) return "text-yellow-500";
-    if (score >= 60) return "text-orange-500";
+    if (score >= 90) return "text-success";
+    if (score >= 80) return "text-info";
+    if (score >= 70) return "text-warning";
+    if (score >= 60) return "text-warning";
     return "text-destructive";
   };
 

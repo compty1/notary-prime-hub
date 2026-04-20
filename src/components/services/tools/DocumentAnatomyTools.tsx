@@ -122,7 +122,7 @@ export function DocumentAnatomyTools() {
                 <ul className="space-y-2">
                   {mistakes.map((m, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm">
-                      <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+                      <AlertTriangle className="h-4 w-4 text-warning mt-0.5 shrink-0" />
                       <span>{m}</span>
                     </li>
                   ))}
@@ -151,7 +151,7 @@ export function DocumentAnatomyTools() {
               ))}
               <div className="flex gap-2 pt-2">
                 {!showResults ? <Button size="sm" onClick={checkQuiz} disabled={Object.keys(quizAnswers).length < quiz.length}>Check Answers</Button>
-                  : <><Badge className={score === quiz.length ? "bg-emerald-500" : "bg-amber-500"}>{score}/{quiz.length} correct</Badge><Button size="sm" variant="outline" onClick={resetQuiz}>Retry</Button></>}
+                  : <><Badge className={score === quiz.length ? "bg-success/10" : "bg-warning/10"}>{score}/{quiz.length} correct</Badge><Button size="sm" variant="outline" onClick={resetQuiz}>Retry</Button></>}
               </div>
             </CardContent>
           </Card>

@@ -77,16 +77,16 @@ export function DataIssuesPanel() {
   useEffect(() => { scanForIssues(); }, []);
 
   const severityColor = {
-    low: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-    medium: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
-    high: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+    low: "bg-info/10 text-info",
+    medium: "bg-warning/10 text-warning",
+    high: "bg-destructive/10 text-destructive",
   };
 
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between">
         <CardTitle className="text-base flex items-center gap-2">
-          <AlertTriangle className="h-5 w-5 text-amber-500" /> Data Issues
+          <AlertTriangle className="h-5 w-5 text-warning" /> Data Issues
           {!loading && <Badge variant="secondary">{issues.length}</Badge>}
         </CardTitle>
         <Button variant="ghost" size="icon" onClick={scanForIssues} disabled={loading} aria-label="Action">

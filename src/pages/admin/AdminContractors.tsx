@@ -109,7 +109,7 @@ export default function AdminContractors() {
                   </TableCell>
                   <TableCell><div className="flex flex-wrap gap-1">{c.specializations.slice(0, 3).map(s => <Badge key={s} variant="outline" className="text-[10px]">{s}</Badge>)}</div></TableCell>
                   <TableCell>{c.hourly_rate ? `$${c.hourly_rate}/hr` : "—"}</TableCell>
-                  <TableCell>{c.rating ? <span className="flex items-center gap-1"><Star className="h-3 w-3 text-amber-500 fill-amber-500" />{c.rating.toFixed(1)}</span> : "—"}</TableCell>
+                  <TableCell>{c.rating ? <span className="flex items-center gap-1"><Star className="h-3 w-3 text-warning fill-amber-500" />{c.rating.toFixed(1)}</span> : "—"}</TableCell>
                   <TableCell>{c.total_jobs}</TableCell>
                   <TableCell><Switch checked={c.is_available} onCheckedChange={v => toggleAvailability(c.id, v)} /></TableCell>
                 </TableRow>
@@ -136,7 +136,7 @@ export default function AdminContractors() {
                 <div><Label>Hourly Rate</Label><p className="text-lg font-bold">{selectedContractor.hourly_rate ? `$${selectedContractor.hourly_rate}` : "Not set"}</p></div>
                 <div><Label>Commission Rate</Label><p className="text-lg font-bold">{selectedContractor.commission_rate}%</p></div>
                 <div><Label>Total Jobs</Label><p className="text-lg font-bold">{selectedContractor.total_jobs}</p></div>
-                <div><Label>Rating</Label><p className="text-lg font-bold flex items-center gap-1">{selectedContractor.rating ? <><Star className="h-4 w-4 text-amber-500 fill-amber-500" />{selectedContractor.rating.toFixed(1)}</> : "No ratings"}</p></div>
+                <div><Label>Rating</Label><p className="text-lg font-bold flex items-center gap-1">{selectedContractor.rating ? <><Star className="h-4 w-4 text-warning fill-amber-500" />{selectedContractor.rating.toFixed(1)}</> : "No ratings"}</p></div>
               </div>
               <div className="flex items-center gap-3">
                 <Switch checked={selectedContractor.is_available} onCheckedChange={v => toggleAvailability(selectedContractor.id, v)} />

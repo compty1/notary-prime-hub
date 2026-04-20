@@ -15,7 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Scale, Plus, Search, Loader2, MapPin, Calendar, Gavel } from "lucide-react";
 import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 
-const statusColors: Record<string, string> = { pending: "bg-yellow-100 text-yellow-800", assigned: "bg-blue-100 text-blue-800", attempted: "bg-orange-100 text-orange-800", served: "bg-emerald-100 text-emerald-800", failed: "bg-red-100 text-red-800", affidavit_filed: "bg-purple-100 text-purple-800" };
+const statusColors: Record<string, string> = { pending: "bg-warning/10 text-warning", assigned: "bg-info/10 text-info", attempted: "bg-warning/10 text-warning", served: "bg-success/10 text-success", failed: "bg-destructive/10 text-destructive", affidavit_filed: "bg-purple-100 text-purple-800" };
 
 export default function AdminProcessServing() {
   usePageMeta({ title: "Process Serving", noIndex: true });

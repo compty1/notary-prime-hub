@@ -77,9 +77,9 @@ export function FeeOverridePanel({
         {isOverridden && (
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground flex items-center gap-1">
-              <AlertTriangle className="h-3 w-3 text-amber-500" /> Override Applied
+              <AlertTriangle className="h-3 w-3 text-warning" /> Override Applied
             </span>
-            <Badge variant="outline" className="text-amber-600">${currentFee?.toFixed(2)}</Badge>
+            <Badge variant="outline" className="text-warning">${currentFee?.toFixed(2)}</Badge>
           </div>
         )}
         

@@ -68,8 +68,8 @@ export default function NotaryProcessGuide() {
                   <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> Place near (not on) the notary's signature</li>
                   <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> Do NOT cover any text or signatures</li>
                   <li className="flex items-start gap-2"><CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" /> Apply on the same page as the notarial certificate</li>
-                  <li className="flex items-start gap-2"><AlertTriangle className="h-4 w-4 mt-0.5 text-amber-500 flex-shrink-0" /> For acknowledgments: seal on the acknowledgment certificate</li>
-                  <li className="flex items-start gap-2"><AlertTriangle className="h-4 w-4 mt-0.5 text-amber-500 flex-shrink-0" /> For jurats: seal on the jurat certificate below the oath</li>
+                  <li className="flex items-start gap-2"><AlertTriangle className="h-4 w-4 mt-0.5 text-warning flex-shrink-0" /> For acknowledgments: seal on the acknowledgment certificate</li>
+                  <li className="flex items-start gap-2"><AlertTriangle className="h-4 w-4 mt-0.5 text-warning flex-shrink-0" /> For jurats: seal on the jurat certificate below the oath</li>
                 </ul>
               </CardContent>
             </Card>

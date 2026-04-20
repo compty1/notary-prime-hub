@@ -33,8 +33,8 @@ const documentCategories = [
     icon: Home,
     icon3d: FEATURE_3D_ICON.realEstate,
     title: "Real Estate Documents",
-    color: "text-blue-600",
-    bgColor: "bg-blue-50",
+    color: "text-info",
+    bgColor: "bg-info/10",
     documents: [
       {
         name: "Deeds (Warranty, Quit Claim, Transfer on Death)",
@@ -117,8 +117,8 @@ const documentCategories = [
     icon: Heart,
     icon3d: FEATURE_3D_ICON.wills,
     title: "Estate Planning Documents",
-    color: "text-rose-600",
-    bgColor: "bg-rose-50",
+    color: "text-destructive",
+    bgColor: "bg-destructive/10",
     documents: [
       {
         name: "Last Will & Testament",
@@ -159,8 +159,8 @@ const documentCategories = [
     icon: Briefcase,
     icon3d: FEATURE_3D_ICON.corporate,
     title: "Business Documents",
-    color: "text-amber-600",
-    bgColor: "bg-amber-50",
+    color: "text-warning",
+    bgColor: "bg-warning/10",
     documents: [
       {
         name: "Articles of Incorporation / Organization",
@@ -294,7 +294,7 @@ export default function NotaryGuide() {
               </Card>
             ))}
           </div>
-          <div className="mt-4 flex items-start gap-2 rounded-lg bg-amber-50 dark:bg-amber-900/30 p-3 text-sm text-amber-800 dark:text-amber-200">
+          <div className="mt-4 flex items-start gap-2 rounded-lg bg-warning/10 p-3 text-sm text-warning">
             <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0" />
             <span>ID must be <strong>current and unexpired</strong>. Expired IDs are not acceptable for notarization.</span>
           </div>
@@ -567,7 +567,7 @@ export default function NotaryGuide() {
             <Card className="border-border/50">
               <CardContent className="p-6">
                 <h3 className="mb-2 font-sans text-lg font-semibold flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5 text-amber-500" /> Receiving Entity Requirements
+                  <AlertTriangle className="h-5 w-5 text-warning" /> Receiving Entity Requirements
                 </h3>
                 <p className="text-sm text-muted-foreground">
                   While RON is legally valid nationwide, some receiving entities (county recorders, banks, government agencies) 

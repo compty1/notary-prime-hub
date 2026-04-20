@@ -194,13 +194,13 @@ export default function BookingIntakeFields(props: IntakeFieldsProps) {
         <>
           <div><Label>Employer Name *</Label><Input value={props.employerName} onChange={e => props.setEmployerName(e.target.value)} onBlur={() => markTouched("employerName")} placeholder="Hiring company name" />{showError("employerName", props.employerName)}</div>
           <div><Label>New Hire Start Date *</Label><Input type="date" value={props.hireStartDate} onChange={e => props.setHireStartDate(e.target.value)} onBlur={() => markTouched("hireStartDate")} />{showError("hireStartDate", props.hireStartDate)}</div>
-          <div className="rounded-lg border border-blue-200 bg-blue-50/50 p-3 space-y-2">
-            <p className="text-xs font-semibold text-blue-900 flex items-center gap-1"><Info className="h-3 w-3" /> Acceptable I-9 Documents — Bring ONE of the following:</p>
-            <div className="text-xs text-blue-800 space-y-2">
-              <div><p className="font-semibold">List A — Proves Identity AND Work Authorization (need ONE):</p><ul className="ml-4 list-disc text-blue-700"><li>U.S. Passport or Passport Card</li><li>Permanent Resident Card (Green Card)</li><li>Employment Authorization Document (EAD / I-766)</li><li>Foreign passport with I-94 and endorsement</li></ul></div>
-              <p className="font-semibold text-blue-900">— OR bring BOTH —</p>
-              <div><p className="font-semibold">List B — Proves Identity (need ONE):</p><ul className="ml-4 list-disc text-blue-700"><li>Driver's license or state-issued ID</li><li>School ID with photo</li><li>Voter registration card</li><li>U.S. military card or draft record</li></ul></div>
-              <div><p className="font-semibold">PLUS List C — Proves Work Authorization (need ONE):</p><ul className="ml-4 list-disc text-blue-700"><li>Social Security card (unrestricted)</li><li>U.S. birth certificate</li><li>Certification of Birth Abroad (FS-545 or DS-1350)</li></ul></div>
+          <div className="rounded-lg border border-info/30 bg-info/50 p-3 space-y-2">
+            <p className="text-xs font-semibold text-info flex items-center gap-1"><Info className="h-3 w-3" /> Acceptable I-9 Documents — Bring ONE of the following:</p>
+            <div className="text-xs text-info space-y-2">
+              <div><p className="font-semibold">List A — Proves Identity AND Work Authorization (need ONE):</p><ul className="ml-4 list-disc text-info"><li>U.S. Passport or Passport Card</li><li>Permanent Resident Card (Green Card)</li><li>Employment Authorization Document (EAD / I-766)</li><li>Foreign passport with I-94 and endorsement</li></ul></div>
+              <p className="font-semibold text-info">— OR bring BOTH —</p>
+              <div><p className="font-semibold">List B — Proves Identity (need ONE):</p><ul className="ml-4 list-disc text-info"><li>Driver's license or state-issued ID</li><li>School ID with photo</li><li>Voter registration card</li><li>U.S. military card or draft record</li></ul></div>
+              <div><p className="font-semibold">PLUS List C — Proves Work Authorization (need ONE):</p><ul className="ml-4 list-disc text-info"><li>Social Security card (unrestricted)</li><li>U.S. birth certificate</li><li>Certification of Birth Abroad (FS-545 or DS-1350)</li></ul></div>
             </div>
           </div>
         </>
@@ -451,11 +451,11 @@ export default function BookingIntakeFields(props: IntakeFieldsProps) {
           {props.signerDob && (() => {
             const age = Math.floor((Date.now() - new Date(props.signerDob).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
             if (age < 18) return (
-              <div className="mt-2 rounded-lg border border-amber-300 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-700 p-3 text-xs">
-                <p className="font-medium text-amber-800 dark:text-amber-300 flex items-center gap-1">
+              <div className="mt-2 rounded-lg border border-warning/30 bg-warning/10 p-3 text-xs">
+                <p className="font-medium text-warning flex items-center gap-1">
                   <Info className="h-3.5 w-3.5" /> Minor Signer Detected (Age {age})
                 </p>
-                <p className="text-amber-700 dark:text-amber-400 mt-1">A parent or legal guardian must be present as a co-signer. They will need to provide their own valid ID.</p>
+                <p className="text-warning mt-1">A parent or legal guardian must be present as a co-signer. They will need to provide their own valid ID.</p>
               </div>
             );
             return null;

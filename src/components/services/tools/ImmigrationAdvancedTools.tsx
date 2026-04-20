@@ -44,8 +44,8 @@ export function ImmigrationAdvancedTools() {
                   <li key={i} className="flex items-center gap-2 text-sm"><FileText className="h-3 w-3 text-muted-foreground" />{d}</li>
                 ))}
               </ul>
-              <div className="flex items-start gap-2 text-xs bg-amber-500/10 p-2 rounded-lg">
-                <AlertCircle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2 text-xs bg-warning/10 p-2 rounded-lg">
+                <AlertCircle className="h-4 w-4 text-warning shrink-0 mt-0.5" />
                 <span>{matrix.notes}</span>
               </div>
             </>

@@ -17,11 +17,11 @@ interface ServicePipelineProps {
 }
 
 const DEFAULT_STAGES: PipelineStage[] = [
-  { id: "inquiry", label: "Inquiry", count: 0, color: "bg-blue-500" },
-  { id: "scheduled", label: "Scheduled", count: 0, color: "bg-yellow-500" },
-  { id: "in_progress", label: "In Progress", count: 0, color: "bg-orange-500" },
-  { id: "completed", label: "Completed", count: 0, color: "bg-green-500" },
-  { id: "cancelled", label: "Cancelled", count: 0, color: "bg-red-500" },
+  { id: "inquiry", label: "Inquiry", count: 0, color: "bg-info/10" },
+  { id: "scheduled", label: "Scheduled", count: 0, color: "bg-warning/10" },
+  { id: "in_progress", label: "In Progress", count: 0, color: "bg-warning/10" },
+  { id: "completed", label: "Completed", count: 0, color: "bg-success/10" },
+  { id: "cancelled", label: "Cancelled", count: 0, color: "bg-destructive/10" },
 ];
 
 export function ServicePipeline({ stages = DEFAULT_STAGES, title = "Service Pipeline" }: ServicePipelineProps) {

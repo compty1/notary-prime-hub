@@ -23,7 +23,7 @@ export function CPNCalculator({ totalExpenses = 0, totalNotarizations = 0 }: { t
         <div className="rounded-lg bg-muted p-4 text-center">
           <p className="text-sm text-muted-foreground">Cost Per Notarization</p>
           <p className="text-3xl font-bold">${cpn.toFixed(2)}</p>
-          {cpn > 0 && cpn < 5 && <Badge className="mt-2 bg-green-500/10 text-green-700">Below Ohio $5 fee cap ✓</Badge>}
+          {cpn > 0 && cpn < 5 && <Badge className="mt-2 bg-success/10 text-success">Below Ohio $5 fee cap ✓</Badge>}
           {cpn >= 5 && <Badge className="mt-2" variant="destructive">Above Ohio $5 fee cap — consider reducing overhead</Badge>}
         </div>
       </CardContent>

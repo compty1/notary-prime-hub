@@ -112,7 +112,7 @@ export default function AdminEmbeddableWidgets() {
                 <div className="grid grid-cols-7 gap-1 max-w-xs mx-auto mb-3">
                   {["M","T","W","T","F","S","S"].map((d, i) => <div key={i} className="text-xs font-medium text-muted-foreground p-1">{d}</div>)}
                   {Array.from({ length: 28 }, (_, i) => (
-                    <div key={i} className={`text-xs p-1 rounded ${[3,7,10,14,17,21].includes(i) ? "bg-green-100 text-green-700 dark:bg-green-900/30" : "text-muted-foreground"}`}>{i + 1}</div>
+                    <div key={i} className={`text-xs p-1 rounded ${[3,7,10,14,17,21].includes(i) ? "bg-success/10 text-success" : "text-muted-foreground"}`}>{i + 1}</div>
                   ))}
                 </div>
                 <p className="text-xs text-muted-foreground">Green = Available slots</p>
@@ -125,14 +125,14 @@ export default function AdminEmbeddableWidgets() {
         <TabsContent value="verification" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-600" />Verification Badge</CardTitle>
+              <CardTitle className="text-base flex items-center gap-2"><CheckCircle className="h-5 w-5 text-success" />Verification Badge</CardTitle>
               <CardDescription>Add a verification badge that links to your seal verification page</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="bg-muted/30 border-2 border-dashed rounded-lg p-8 text-center">
-                <div className="inline-flex items-center gap-2 border-2 border-green-500 rounded-full px-4 py-2 bg-green-50 dark:bg-green-950">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                  <span className="text-sm font-semibold text-green-700 dark:text-green-400">Verified by NotaryPrime</span>
+                <div className="inline-flex items-center gap-2 border-2 border-success/30 rounded-full px-4 py-2 bg-success/10">
+                  <CheckCircle className="h-5 w-5 text-success" />
+                  <span className="text-sm font-semibold text-success">Verified by NotaryPrime</span>
                 </div>
               </div>
               <div><Label className="text-sm font-medium">Embed Code</Label><CodeBlock code={verificationSnippet} /></div>

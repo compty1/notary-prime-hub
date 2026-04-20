@@ -95,13 +95,13 @@ export function ESealVerificationPortal() {
         </div>
 
         {searched && result !== null && (
-          <div className={`p-4 rounded-lg border ${result.found ? "bg-green-500/5 border-green-500/20" : "bg-red-500/5 border-red-500/20"}`}>
+          <div className={`p-4 rounded-lg border ${result.found ? "bg-success/5 border-success/20" : "bg-destructive/5 border-destructive/20"}`}>
             {result.found ? (
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-green-500" />
+                  <CheckCircle2 className="h-5 w-5 text-success" />
                   <span className="font-semibold">Document Verified</span>
-                  <Badge className="bg-green-500/10 text-green-600 border-green-500/30">{result.status}</Badge>
+                  <Badge className="bg-success/10 text-success border-success/30">{result.status}</Badge>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div><Label className="text-xs text-muted-foreground">Document</Label><p>{result.documentName}</p></div>
@@ -112,7 +112,7 @@ export function ESealVerificationPortal() {
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <XCircle className="h-5 w-5 text-red-500" />
+                <XCircle className="h-5 w-5 text-destructive" />
                 <span className="font-semibold">No Record Found</span>
                 <p className="text-sm text-muted-foreground">This document could not be verified in our system.</p>
               </div>

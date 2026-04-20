@@ -78,11 +78,11 @@ const KYCSearch = () => {
 
         {/* Results */}
         {searched && results.length === 0 && (
-          <Card className="border-green-500/30 bg-green-500/5">
+          <Card className="border-success/30 bg-success/5">
             <CardContent className="flex items-center gap-4 p-6">
-              <CheckCircle className="h-10 w-10 text-green-500" />
+              <CheckCircle className="h-10 w-10 text-success" />
               <div>
-                <h3 className="text-lg font-black text-green-700 dark:text-green-400">No Matches Found</h3>
+                <h3 className="text-lg font-black text-success">No Matches Found</h3>
                 <p className="text-sm text-muted-foreground">"{query}" does not appear on the OFAC SDN list. This is a preliminary screening only.</p>
               </div>
             </CardContent>

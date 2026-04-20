@@ -62,7 +62,7 @@ export function BackgroundCheckAdvancedTools() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-amber-500" />
+            <AlertTriangle className="h-5 w-5 text-warning" />
             FCRA Compliance Requirements
           </CardTitle>
         </CardHeader>
@@ -92,7 +92,7 @@ export function BackgroundCheckAdvancedTools() {
           <div className="space-y-2">
             {OHIO_SPECIFIC_RULES.map((r, i) => (
               <div key={i} className="flex items-start gap-3 p-2 rounded bg-muted/50">
-                <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                <CheckCircle className="h-4 w-4 text-success mt-0.5 shrink-0" />
                 <span className="text-sm">{r}</span>
               </div>
             ))}

@@ -101,8 +101,8 @@ export default function RonEligibilityChecker({ mode = "public" }: Props) {
 
   const levelConfig: Record<RiskLevel, { icon: typeof CheckCircle; color: string; bg: string; badge: string; badgeLabel: string }> = {
     low: { icon: CheckCircle, color: "text-primary", bg: "bg-primary/5 border-primary/20", badge: "bg-primary/10 text-primary", badgeLabel: "Widely Accepted" },
-    medium: { icon: AlertTriangle, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800", badge: "bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300", badgeLabel: "Verify First" },
-    high: { icon: XCircle, color: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800", badge: "bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300", badgeLabel: "Challenges Expected" },
+    medium: { icon: AlertTriangle, color: "text-warning", bg: "bg-warning/10 border-warning/30", badge: "bg-warning/10 text-warning", badgeLabel: "Verify First" },
+    high: { icon: XCircle, color: "text-destructive", bg: "bg-destructive/10 border-destructive/30", badge: "bg-destructive/10 text-destructive", badgeLabel: "Challenges Expected" },
   };
 
   return (
@@ -310,7 +310,7 @@ export default function RonEligibilityChecker({ mode = "public" }: Props) {
                               <ul className="space-y-1">
                                 {result.risk_reasons.map((r, i) => (
                                   <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                                    <AlertTriangle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-amber-500" />
+                                    <AlertTriangle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-warning" />
                                     <span>{r}</span>
                                   </li>
                                 ))}

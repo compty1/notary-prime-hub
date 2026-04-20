@@ -94,9 +94,9 @@ export default function AdminReportsCenter() {
       {reportType === "revenue" && (
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card><CardContent className="pt-4"><p className="text-2xl font-bold text-emerald-600">${totalRevenue.toFixed(2)}</p><p className="text-xs text-muted-foreground">Total Revenue (Paid)</p></CardContent></Card>
+            <Card><CardContent className="pt-4"><p className="text-2xl font-bold text-success">${totalRevenue.toFixed(2)}</p><p className="text-xs text-muted-foreground">Total Revenue (Paid)</p></CardContent></Card>
             <Card><CardContent className="pt-4"><p className="text-2xl font-bold">{paidCount}</p><p className="text-xs text-muted-foreground">Transactions</p></CardContent></Card>
-            <Card><CardContent className="pt-4"><p className="text-2xl font-bold text-amber-600">${pendingRevenue.toFixed(2)}</p><p className="text-xs text-muted-foreground">Pending/Unpaid</p></CardContent></Card>
+            <Card><CardContent className="pt-4"><p className="text-2xl font-bold text-warning">${pendingRevenue.toFixed(2)}</p><p className="text-xs text-muted-foreground">Pending/Unpaid</p></CardContent></Card>
           </div>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between"><CardTitle className="text-base">Revenue Details</CardTitle><Button size="sm" variant="outline" onClick={() => exportCSV(revenueData, "revenue_report")}><Download className="h-3 w-3 mr-1" /> Export CSV</Button></CardHeader>
@@ -108,7 +108,7 @@ export default function AdminReportsCenter() {
                     <TableRow key={p.created_at + p.amount}>
                       <TableCell className="text-xs">{format(new Date(p.created_at), "MMM d, yyyy")}</TableCell>
                       <TableCell className="font-mono text-xs">${Number(p.amount).toFixed(2)}</TableCell>
-                      <TableCell><Badge className={p.status === "paid" ? "bg-emerald-500/10 text-emerald-600" : ""} variant="outline">{p.status}</Badge></TableCell>
+                      <TableCell><Badge className={p.status === "paid" ? "bg-success/10 text-success" : ""} variant="outline">{p.status}</Badge></TableCell>
                       <TableCell className="text-xs">{p.method || "—"}</TableCell>
                     </TableRow>
                   ))}
@@ -149,8 +149,8 @@ export default function AdminReportsCenter() {
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card><CardContent className="pt-4"><p className="text-2xl font-bold">{totalAppts}</p><p className="text-xs text-muted-foreground">Total Appointments</p></CardContent></Card>
-            <Card><CardContent className="pt-4"><p className="text-2xl font-bold text-emerald-600">{completedAppts}</p><p className="text-xs text-muted-foreground">Completed</p></CardContent></Card>
-            <Card><CardContent className="pt-4"><p className="text-2xl font-bold text-red-600">{cancelledAppts}</p><p className="text-xs text-muted-foreground">Cancelled</p></CardContent></Card>
+            <Card><CardContent className="pt-4"><p className="text-2xl font-bold text-success">{completedAppts}</p><p className="text-xs text-muted-foreground">Completed</p></CardContent></Card>
+            <Card><CardContent className="pt-4"><p className="text-2xl font-bold text-destructive">{cancelledAppts}</p><p className="text-xs text-muted-foreground">Cancelled</p></CardContent></Card>
           </div>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between"><CardTitle className="text-base">Operations Details</CardTitle><Button size="sm" variant="outline" onClick={() => exportCSV(operationsData, "operations_report")}><Download className="h-3 w-3 mr-1" /> Export CSV</Button></CardHeader>

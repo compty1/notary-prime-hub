@@ -39,11 +39,11 @@ const I9_STEPS = [
 export function I9VerificationTools() {
   return (
     <div className="space-y-6">
-      <Card className="border-amber-200 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800">
+      <Card className="border-warning/30 bg-warning/50">
         <CardContent className="pt-4">
           <div className="flex items-start gap-2">
-            <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0" />
-            <p className="text-sm text-amber-800 dark:text-amber-200">
+            <AlertTriangle className="h-5 w-5 text-warning shrink-0" />
+            <p className="text-sm text-warning">
               <strong>Important:</strong> As an authorized representative completing I-9 Section 2, you are NOT acting as a notary. Do NOT affix your notary seal. You are verifying identity documents on behalf of the employer.
             </p>
           </div>

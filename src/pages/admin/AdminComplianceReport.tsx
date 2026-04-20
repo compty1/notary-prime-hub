@@ -192,14 +192,14 @@ export default function AdminComplianceReport() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <CheckCircle2 className="mx-auto mb-2 h-6 w-6 text-green-600" />
+            <CheckCircle2 className="mx-auto mb-2 h-6 w-6 text-success" />
             <div className="text-2xl font-bold">{report.completed}</div>
             <div className="text-xs text-muted-foreground">Completed</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <Shield className="mx-auto mb-2 h-6 w-6 text-blue-600" />
+            <Shield className="mx-auto mb-2 h-6 w-6 text-info" />
             <div className="text-2xl font-bold">{report.withRecording}</div>
             <div className="text-xs text-muted-foreground">With Recordings</div>
           </CardContent>
@@ -211,9 +211,9 @@ export default function AdminComplianceReport() {
             <div className="text-xs text-muted-foreground">Avg Duration</div>
           </CardContent>
         </Card>
-        <Card className={report.complianceScore >= 90 ? "border-green-500/30" : report.complianceScore >= 70 ? "border-yellow-500/30" : "border-red-500/30"}>
+        <Card className={report.complianceScore >= 90 ? "border-success/30" : report.complianceScore >= 70 ? "border-warning/30" : "border-destructive/30"}>
           <CardContent className="p-4 text-center">
-            <Shield className={`mx-auto mb-2 h-6 w-6 ${report.complianceScore >= 90 ? "text-green-600" : report.complianceScore >= 70 ? "text-yellow-600" : "text-red-600"}`} />
+            <Shield className={`mx-auto mb-2 h-6 w-6 ${report.complianceScore >= 90 ? "text-success" : report.complianceScore >= 70 ? "text-warning" : "text-destructive"}`} />
             <div className="text-2xl font-bold">{report.complianceScore}%</div>
             <div className="text-xs text-muted-foreground">Compliance Score</div>
           </CardContent>
@@ -222,9 +222,9 @@ export default function AdminComplianceReport() {
 
       {/* Compliance Gaps */}
       {report.gaps.length > 0 && (
-        <Card className="border-yellow-500/30">
+        <Card className="border-warning/30">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2 text-yellow-600">
+            <CardTitle className="text-lg flex items-center gap-2 text-warning">
               <AlertTriangle className="h-5 w-5" /> Compliance Gaps ({report.gaps.length})
             </CardTitle>
           </CardHeader>
@@ -235,7 +235,7 @@ export default function AdminComplianceReport() {
                   {gap.severity === "critical" ? (
                     <XCircle className="mt-0.5 h-4 w-4 text-destructive shrink-0" />
                   ) : (
-                    <AlertTriangle className="mt-0.5 h-4 w-4 text-yellow-500 shrink-0" />
+                    <AlertTriangle className="mt-0.5 h-4 w-4 text-warning shrink-0" />
                   )}
                   <span>{gap.message}</span>
                   <Badge variant={gap.severity === "critical" ? "destructive" : "secondary"} className="ml-auto text-xs">{gap.severity}</Badge>
@@ -247,9 +247,9 @@ export default function AdminComplianceReport() {
       )}
 
       {report.gaps.length === 0 && report.total > 0 && (
-        <Card className="border-green-500/30">
+        <Card className="border-success/30">
           <CardContent className="p-6 text-center">
-            <CheckCircle2 className="mx-auto mb-3 h-12 w-12 text-green-600" />
+            <CheckCircle2 className="mx-auto mb-3 h-12 w-12 text-success" />
             <h3 className="font-semibold text-foreground">Fully Compliant</h3>
             <p className="text-sm text-muted-foreground">No compliance gaps detected for {selectedMonth}.</p>
           </CardContent>
@@ -329,15 +329,15 @@ export default function AdminComplianceReport() {
                   return (
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        {audit.hasRecording ? <CheckCircle2 className="h-4 w-4 text-green-600" /> : <XCircle className="h-4 w-4 text-destructive" />}
+                        {audit.hasRecording ? <CheckCircle2 className="h-4 w-4 text-success" /> : <XCircle className="h-4 w-4 text-destructive" />}
                         <span>Session Recording (ORC §147.66)</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        {audit.hasJournal ? <CheckCircle2 className="h-4 w-4 text-green-600" /> : <XCircle className="h-4 w-4 text-destructive" />}
+                        {audit.hasJournal ? <CheckCircle2 className="h-4 w-4 text-success" /> : <XCircle className="h-4 w-4 text-destructive" />}
                         <span>Journal Entry (ORC §147.551)</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        {audit.hasSeal ? <CheckCircle2 className="h-4 w-4 text-green-600" /> : <AlertTriangle className="h-4 w-4 text-yellow-500" />}
+                        {audit.hasSeal ? <CheckCircle2 className="h-4 w-4 text-success" /> : <AlertTriangle className="h-4 w-4 text-warning" />}
                         <span>E-Seal Verification</span>
                       </div>
                     </div>

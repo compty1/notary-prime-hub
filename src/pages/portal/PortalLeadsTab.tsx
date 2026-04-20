@@ -77,7 +77,7 @@ export default function PortalLeadsTab({ userId }: PortalLeadsTabProps) {
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-1">
                 <span className="font-medium text-sm">{lead.business_name || lead.contact_name || "Unknown"}</span>
-                <Badge className={lead.status === "converted" ? "bg-primary/10 text-primary" : lead.status === "contacted" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" : "bg-muted text-muted-foreground"}>
+                <Badge className={lead.status === "converted" ? "bg-primary/10 text-primary" : lead.status === "contacted" ? "bg-info/10 text-info" : "bg-muted text-muted-foreground"}>
                   {lead.status}
                 </Badge>
               </div>
@@ -95,7 +95,7 @@ export default function PortalLeadsTab({ userId }: PortalLeadsTabProps) {
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-medium text-sm">{req.service_name}</span>
-                <Badge className={req.status === "completed" || req.status === "delivered" ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" : "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"}>
+                <Badge className={req.status === "completed" || req.status === "delivered" ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" : "bg-warning/10 text-warning"}>
                   {req.client_visible_status || req.status}
                 </Badge>
               </div>

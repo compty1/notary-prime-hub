@@ -48,7 +48,7 @@ export function IdentityCertificateTools() {
                 <div className="space-y-1">
                   {m.accepted.map((a) => (
                     <div key={a} className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <CheckCircle className="h-3 w-3 text-green-500" /> {a}
+                      <CheckCircle className="h-3 w-3 text-success" /> {a}
                     </div>
                   ))}
                 </div>

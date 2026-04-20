@@ -16,7 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Languages, Plus, Search, Loader2, FileText, Award } from "lucide-react";
 import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 
-const statusColors: Record<string, string> = { pending: "bg-yellow-100 text-yellow-800", assigned: "bg-blue-100 text-blue-800", translating: "bg-purple-100 text-purple-800", review: "bg-cyan-100 text-cyan-800", completed: "bg-emerald-100 text-emerald-800" };
+const statusColors: Record<string, string> = { pending: "bg-warning/10 text-warning", assigned: "bg-info/10 text-info", translating: "bg-purple-100 text-purple-800", review: "bg-info/10 text-info", completed: "bg-success/10 text-success" };
 
 export default function AdminTranslations() {
   usePageMeta({ title: "Translation Requests", noIndex: true });

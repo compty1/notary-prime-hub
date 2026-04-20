@@ -42,11 +42,11 @@ const PACKAGES = [
 ];
 
 const statusColors: Record<string, string> = {
-  intake: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-  scoping: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
+  intake: "bg-info/10 text-info",
+  scoping: "bg-warning/10 text-warning",
   in_progress: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
-  review: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300",
-  delivered: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
+  review: "bg-info/10 text-info",
+  delivered: "bg-success/10 text-success",
   closed: "bg-muted text-muted-foreground",
 };
 
@@ -154,7 +154,7 @@ export default function AdminUXConsulting() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Total Projects</p><p className="text-2xl font-bold">{stats.total}</p></CardContent></Card>
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Active</p><p className="text-2xl font-bold text-primary">{stats.active}</p></CardContent></Card>
-        <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Delivered</p><p className="text-2xl font-bold text-green-600">{stats.delivered}</p></CardContent></Card>
+        <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Delivered</p><p className="text-2xl font-bold text-success">{stats.delivered}</p></CardContent></Card>
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Revenue Pipeline</p><p className="text-2xl font-bold">${stats.revenue.toLocaleString()}</p></CardContent></Card>
       </div>
 

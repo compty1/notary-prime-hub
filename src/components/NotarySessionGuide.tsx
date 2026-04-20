@@ -64,9 +64,9 @@ export function NotarySessionGuide({
         <CollapsibleContent>
           <CardContent className="pt-0 px-4 pb-4 space-y-2">
             {guide.warnings.length > 0 && (
-              <div className="rounded-md bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-2 space-y-1">
+              <div className="rounded-md bg-warning/10 border border-warning/30 p-2 space-y-1">
                 {guide.warnings.map((w, i) => (
-                  <p key={i} className="text-[10px] text-amber-700 dark:text-amber-300 flex items-start gap-1.5">
+                  <p key={i} className="text-[10px] text-warning flex items-start gap-1.5">
                     <AlertTriangle className="h-3 w-3 mt-0.5 shrink-0" /> {w}
                   </p>
                 ))}
@@ -91,7 +91,7 @@ export function NotarySessionGuide({
                   className={cn(
                     "w-full text-left rounded-md border p-2.5 transition-all",
                     done ? "bg-primary/5 border-primary/20 dark:bg-primary/10 dark:border-primary/30" : "border-border hover:border-primary/20",
-                    step.critical && !done && "border-amber-300 dark:border-amber-700"
+                    step.critical && !done && "border-warning/30"
                   )}
                 >
                   <div className="flex items-start gap-2">

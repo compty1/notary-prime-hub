@@ -57,7 +57,7 @@ export default function NotebookConfigurator() {
                     <div className="h-3 bg-background/30 rounded w-3/4" />
                     <div className="h-2 bg-background/20 rounded w-1/2" />
                   </div>
-                  {config.ribbonBookmark && <div className="absolute bottom-0 right-6 w-2 h-12 bg-red-500/80 rounded-b" />}
+                  {config.ribbonBookmark && <div className="absolute bottom-0 right-6 w-2 h-12 bg-destructive/80 rounded-b" />}
                   <div className="absolute bottom-4 left-6 text-primary-foreground/60 text-xs font-medium">{config.title || "Untitled"}</div>
                 </div>
               </CardContent>

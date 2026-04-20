@@ -88,11 +88,11 @@ export function ComplianceChecklist({ onComplete, readOnly, initialChecks }: Com
         {!readOnly && (
           <div className="pt-2">
             {allRequiredPassed ? (
-              <p className="text-sm text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+              <p className="text-sm text-success flex items-center gap-1">
                 <CheckCircle2 className="h-4 w-4" /> All required items verified
               </p>
             ) : (
-              <p className="text-sm text-amber-600 dark:text-amber-400 flex items-center gap-1">
+              <p className="text-sm text-warning flex items-center gap-1">
                 <AlertTriangle className="h-4 w-4" /> {requiredItems.filter(i => !checks[i.id]).length} required item(s) remaining
               </p>
             )}

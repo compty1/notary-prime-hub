@@ -854,7 +854,7 @@ export default function AdminAppointments() {
                 <Label>Admin Notes (internal)</Label>
                 <Textarea value={editAdminNotes} onChange={(e) => setEditAdminNotes(e.target.value)} rows={3} placeholder="Internal notes, session observations..." />
               </div>
-              <Button onClick={saveNotes} disabled={savingNotes} className="w-full ">
+              <Button onClick={saveNotes} disabled={savingNotes} className="w-full">
                 {savingNotes ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}
                 Save Notes
               </Button>

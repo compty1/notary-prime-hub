@@ -15,10 +15,10 @@ type ActivityItem = {
 };
 
 const ICONS: Record<string, React.ReactNode> = {
-  appointment: <Calendar className="h-4 w-4 text-blue-500" />,
-  document: <FileText className="h-4 w-4 text-green-500" />,
+  appointment: <Calendar className="h-4 w-4 text-info" />,
+  document: <FileText className="h-4 w-4 text-success" />,
   payment: <CreditCard className="h-4 w-4 text-purple-500" />,
-  message: <MessageSquare className="h-4 w-4 text-orange-500" />,
+  message: <MessageSquare className="h-4 w-4 text-warning" />,
   login: <UserCheck className="h-4 w-4 text-muted-foreground" />,
 };
 

@@ -162,7 +162,7 @@ function DocumentChecklist() {
             </label>
           ))}
         </div>
-        {checked.size === items.length && items.length > 0 && <Badge className="bg-green-100 text-green-700">✓ All checks passed</Badge>}
+        {checked.size === items.length && items.length > 0 && <Badge className="bg-success/10 text-success">✓ All checks passed</Badge>}
       </CardContent>
     </Card>
   );

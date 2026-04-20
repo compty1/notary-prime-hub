@@ -43,7 +43,7 @@ export function SignerIDVerificationLog({ kbaAttempts = 0, kbaCompleted, idType,
   const StatusIcon = ({ status }: { status: string }) => {
     if (status === "passed") return <CheckCircle className="h-4 w-4 text-primary" />;
     if (status === "failed") return <XCircle className="h-4 w-4 text-destructive" />;
-    return <AlertTriangle className="h-4 w-4 text-amber-500" />;
+    return <AlertTriangle className="h-4 w-4 text-warning" />;
   };
 
   return (

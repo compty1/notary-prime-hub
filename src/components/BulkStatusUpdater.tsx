@@ -76,7 +76,7 @@ export function BulkStatusUpdater({ target, selectedIds, onComplete }: BulkStatu
 
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-yellow-500" />
+              <AlertTriangle className="h-4 w-4 text-warning" />
               <span className="text-sm text-muted-foreground">
                 This will update <Badge variant="secondary">{selectedIds.length}</Badge> {target}
               </span>

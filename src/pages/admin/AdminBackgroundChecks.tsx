@@ -16,7 +16,7 @@ import { ShieldCheck, Plus, Search, Loader2, Fingerprint } from "lucide-react";
 import { CardListSkeleton } from "@/components/AdminLoadingSkeleton";
 import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
 
-const statusColors: Record<string, string> = { pending: "bg-yellow-100 text-yellow-800", submitted: "bg-blue-100 text-blue-800", processing: "bg-purple-100 text-purple-800", completed: "bg-emerald-100 text-emerald-800", rejected: "bg-red-100 text-red-800" };
+const statusColors: Record<string, string> = { pending: "bg-warning/10 text-warning", submitted: "bg-info/10 text-info", processing: "bg-purple-100 text-purple-800", completed: "bg-success/10 text-success", rejected: "bg-destructive/10 text-destructive" };
 
 interface BGCheck {
   id: string; client_id: string; subject_name: string; check_type: string;

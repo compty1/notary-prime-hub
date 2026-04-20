@@ -24,10 +24,10 @@ export function DraftRecoveryBanner({ formKey, onRestore }: DraftRecoveryBannerP
   if (!draft || dismissed) return null;
 
   return (
-    <div className="rounded-lg border border-amber-300 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-700 p-3 flex items-center justify-between gap-3">
+    <div className="rounded-lg border border-warning/30 bg-warning/10 p-3 flex items-center justify-between gap-3">
       <div className="flex items-center gap-2 text-sm">
-        <AlertTriangle className="h-4 w-4 text-amber-600 flex-shrink-0" />
-        <span className="text-amber-800 dark:text-amber-300">You have an unsaved booking draft. Would you like to restore it?</span>
+        <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0" />
+        <span className="text-warning">You have an unsaved booking draft. Would you like to restore it?</span>
       </div>
       <div className="flex gap-2 flex-shrink-0">
         <Button

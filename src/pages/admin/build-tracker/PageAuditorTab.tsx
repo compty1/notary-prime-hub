@@ -51,9 +51,9 @@ export default function PageAuditorTab({ items }: Props) {
   }, [search, protFilter, issueFilter, issuesByRoute]);
 
   const protIcon = (p: string) => {
-    if (p === "public") return <Globe className="h-3.5 w-3.5 text-green-500" />;
-    if (p === "auth") return <Lock className="h-3.5 w-3.5 text-blue-500" />;
-    return <Shield className="h-3.5 w-3.5 text-orange-500" />;
+    if (p === "public") return <Globe className="h-3.5 w-3.5 text-success" />;
+    if (p === "auth") return <Lock className="h-3.5 w-3.5 text-info" />;
+    return <Shield className="h-3.5 w-3.5 text-warning" />;
   };
 
   const handleAdd = () => {
@@ -124,7 +124,7 @@ export default function PageAuditorTab({ items }: Props) {
                     {openIssues.length > 0 ? (
                       <Badge className="bg-destructive text-destructive-foreground text-xs">{openIssues.length}</Badge>
                     ) : issues.length > 0 ? (
-                      <Badge variant="outline" className="text-xs text-green-600">{issues.length} ✓</Badge>
+                      <Badge variant="outline" className="text-xs text-success">{issues.length} ✓</Badge>
                     ) : (
                       <span className="text-xs text-muted-foreground">—</span>
                     )}

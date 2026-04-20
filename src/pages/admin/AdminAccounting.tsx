@@ -100,10 +100,10 @@ export default function AdminAccounting() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Total Income</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-green-600 flex items-center gap-1"><TrendingUp className="h-5 w-5" />${totalIncome.toFixed(2)}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Total Expenses</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-red-500 flex items-center gap-1"><TrendingDown className="h-5 w-5" />${totalExpenses.toFixed(2)}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Total Income</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-success flex items-center gap-1"><TrendingUp className="h-5 w-5" />${totalIncome.toFixed(2)}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Total Expenses</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-destructive flex items-center gap-1"><TrendingDown className="h-5 w-5" />${totalExpenses.toFixed(2)}</div></CardContent></Card>
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Net Profit</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">${(totalIncome - totalExpenses).toFixed(2)}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Mileage Deduction</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-blue-600 flex items-center gap-1"><Car className="h-5 w-5" />${totalMileDeduction.toFixed(2)}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Mileage Deduction</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-info flex items-center gap-1"><Car className="h-5 w-5" />${totalMileDeduction.toFixed(2)}</div></CardContent></Card>
       </div>
 
       <Tabs defaultValue="transactions">
@@ -141,7 +141,7 @@ export default function AdminAccounting() {
                   <td className="p-3">{t.transaction_date}</td>
                   <td className="p-3">{t.description}</td>
                   <td className="p-3 capitalize">{t.category?.replace(/_/g, " ")}</td>
-                  <td className={`p-3 text-right font-medium ${t.transaction_type === "income" ? "text-green-600" : "text-red-500"}`}>{t.transaction_type === "income" ? "+" : "-"}${Number(t.amount).toFixed(2)}</td>
+                  <td className={`p-3 text-right font-medium ${t.transaction_type === "income" ? "text-success" : "text-destructive"}`}>{t.transaction_type === "income" ? "+" : "-"}${Number(t.amount).toFixed(2)}</td>
                   <td className="p-3 text-center">{t.tax_deductible && <Badge variant="secondary">Deductible</Badge>}</td>
                 </tr>
               ))}</tbody>
@@ -177,7 +177,7 @@ export default function AdminAccounting() {
                   <td className="p-3 truncate max-w-[150px]">{m.start_address}</td>
                   <td className="p-3 truncate max-w-[150px]">{m.end_address}</td>
                   <td className="p-3 text-right">{Number(m.miles).toFixed(1)}</td>
-                  <td className="p-3 text-right text-blue-600">${Number(m.deduction_amount || 0).toFixed(2)}</td>
+                  <td className="p-3 text-right text-info">${Number(m.deduction_amount || 0).toFixed(2)}</td>
                   <td className="p-3">{m.purpose}</td>
                 </tr>
               ))}</tbody>

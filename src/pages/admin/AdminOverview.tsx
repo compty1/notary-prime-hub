@@ -201,7 +201,7 @@ export default function AdminOverview() {
           return null;
         };
         const commResult = checkExpiry(s.commission_expiration_date, parseInt(s.commission_renewal_reminder_days || "90"));
-        if (commResult) setCommissionAlert({ tone: commResult.tone === "destructive" ? "border-destructive bg-destructive/10 text-destructive" : "border-amber-500 bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-300", text: `Commission: ${commResult.text}` });
+        if (commResult) setCommissionAlert({ tone: commResult.tone === "destructive" ? "border-destructive bg-destructive/10 text-destructive" : "border-warning/30 bg-warning/10 text-warning", text: `Commission: ${commResult.text}` });
         const eoResult = checkExpiry(s.eo_expiration_date, 60);
         if (eoResult) setEoAlert(`E&O Insurance: ${eoResult.text}`);
         const bondResult = checkExpiry(s.bond_expiration_date, 60);
@@ -322,12 +322,12 @@ export default function AdminOverview() {
 
   const extendedStatCards = [
     { label: "Revenue Today", value: `$${revenueToday.toFixed(2)}`, icon: DollarSign, color: "text-primary", link: "/admin/revenue", trend: revenueTodayTrend },
-    { label: "Active Orders", value: activeOrders, icon: ShoppingCart, color: "text-blue-600", link: "/admin/orders" },
-    { label: "Upcoming", value: stats.upcoming, icon: Clock, color: "text-amber-600", link: "/admin/appointments?status=scheduled" },
-    { label: "Pending Assignments", value: pendingAssignments, icon: UserCheck, color: "text-orange-600", link: "/admin/orders?status=pending" },
+    { label: "Active Orders", value: activeOrders, icon: ShoppingCart, color: "text-info", link: "/admin/orders" },
+    { label: "Upcoming", value: stats.upcoming, icon: Clock, color: "text-warning", link: "/admin/appointments?status=scheduled" },
+    { label: "Pending Assignments", value: pendingAssignments, icon: UserCheck, color: "text-warning", link: "/admin/orders?status=pending" },
     { label: "Completed", value: stats.completed, icon: CheckCircle, color: "text-primary", link: "/admin/appointments?status=completed" },
     { label: "Clients", value: stats.clients, icon: Users, color: "text-purple-600", link: "/admin/clients" },
-    { label: "Satisfaction", value: avgSatisfaction !== null ? `${avgSatisfaction}/5` : "—", icon: Star, color: "text-amber-500", link: "/admin/clients" },
+    { label: "Satisfaction", value: avgSatisfaction !== null ? `${avgSatisfaction}/5` : "—", icon: Star, color: "text-warning", link: "/admin/clients" },
     { label: "Contractor Util.", value: contractorUtilization !== null ? `${contractorUtilization}%` : "—", icon: Activity, color: "text-primary", link: "/admin/contractors" },
   ];
 
@@ -351,13 +351,13 @@ export default function AdminOverview() {
             </div>
           )}
           {unassignedOrders > 0 && (
-            <div className="flex items-center gap-2 rounded-lg border border-amber-500 bg-amber-50 dark:bg-amber-900/20 p-3 text-sm font-medium text-amber-800 dark:text-amber-300">
+            <div className="flex items-center gap-2 rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm font-medium text-warning">
               <Bell className="h-4 w-4 flex-shrink-0" /> {unassignedOrders} unassigned order{unassignedOrders > 1 ? "s" : ""} awaiting assignment
               <Link to="/admin/orders?status=pending" className="ml-auto"><Button size="sm" variant="outline" className="text-xs">Assign</Button></Link>
             </div>
           )}
           {lowAvailability > 0 && (
-            <div className="flex items-center gap-2 rounded-lg border border-amber-500 bg-amber-50 dark:bg-amber-900/20 p-3 text-sm font-medium text-amber-800 dark:text-amber-300">
+            <div className="flex items-center gap-2 rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm font-medium text-warning">
               <Users className="h-4 w-4 flex-shrink-0" /> {lowAvailability} contractor{lowAvailability > 1 ? "s" : ""} marked unavailable
               <Link to="/admin/contractors" className="ml-auto"><Button size="sm" variant="outline" className="text-xs">Manage</Button></Link>
             </div>
@@ -369,12 +369,12 @@ export default function AdminOverview() {
             </div>
           )}
           {eoAlert && (
-            <div className="flex items-center gap-2 rounded-lg border border-amber-500 bg-amber-50 dark:bg-amber-900/20 p-3 text-sm font-medium text-amber-800 dark:text-amber-300">
+            <div className="flex items-center gap-2 rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm font-medium text-warning">
               <AlertTriangle className="h-4 w-4 flex-shrink-0" /> {eoAlert}
             </div>
           )}
           {bondAlert && (
-            <div className="flex items-center gap-2 rounded-lg border border-amber-500 bg-amber-50 dark:bg-amber-900/20 p-3 text-sm font-medium text-amber-800 dark:text-amber-300">
+            <div className="flex items-center gap-2 rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm font-medium text-warning">
               <AlertTriangle className="h-4 w-4 flex-shrink-0" /> {bondAlert}
             </div>
           )}
@@ -432,7 +432,7 @@ export default function AdminOverview() {
                         </div>
                       ))}
                       {dayGcal.map((e, i) => (
-                        <div key={i} className="rounded bg-blue-100 dark:bg-blue-900/30 px-1.5 py-0.5 text-[10px] text-blue-700 dark:text-blue-300 truncate" title={e.summary}>
+                        <div key={i} className="rounded bg-info/10 px-1.5 py-0.5 text-[10px] text-info truncate" title={e.summary}>
                           {e.start?.dateTime ? new Date(e.start.dateTime).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "All day"} {e.summary?.slice(0,12)}
                         </div>
                       ))}
@@ -561,7 +561,7 @@ export default function AdminOverview() {
         return todayAppts.length > 0 ? (
           <div className="mb-8">
             <h2 className="mb-4 text-lg font-black text-foreground flex items-center gap-2">
-              <Clock className="h-5 w-5 text-amber-500" /> Today's Schedule ({todayAppts.length})
+              <Clock className="h-5 w-5 text-warning" /> Today's Schedule ({todayAppts.length})
             </h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {todayAppts.sort((a, b) => (a.scheduled_time || "").localeCompare(b.scheduled_time || "")).map((a) => (

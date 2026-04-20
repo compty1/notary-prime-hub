@@ -75,7 +75,7 @@ export function FeedbackAnalytics() {
             <div className="text-3xl font-bold">{data.avgRating.toFixed(1)}</div>
             <div className="flex gap-0.5 justify-center">
               {[1, 2, 3, 4, 5].map(i => (
-                <Star key={i} className={`h-3 w-3 ${i <= Math.round(data.avgRating) ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground"}`} />
+                <Star key={i} className={`h-3 w-3 ${i <= Math.round(data.avgRating) ? "text-warning fill-yellow-500" : "text-muted-foreground"}`} />
               ))}
             </div>
             <span className="text-[10px] text-muted-foreground">{data.totalCount} reviews</span>
@@ -83,7 +83,7 @@ export function FeedbackAnalytics() {
 
           {data.npsScore !== null && (
             <div className="text-center">
-              <div className={`text-2xl font-bold ${data.npsScore >= 50 ? "text-green-600" : data.npsScore >= 0 ? "text-yellow-600" : "text-red-600"}`}>
+              <div className={`text-2xl font-bold ${data.npsScore >= 50 ? "text-success" : data.npsScore >= 0 ? "text-warning" : "text-destructive"}`}>
                 {data.npsScore > 0 ? "+" : ""}{data.npsScore}
               </div>
               <span className="text-[10px] text-muted-foreground">NPS Score</span>
@@ -96,7 +96,7 @@ export function FeedbackAnalytics() {
                 <span className="w-3">{rating}</span>
                 <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-yellow-500 rounded-full"
+                    className="h-full bg-warning/10 rounded-full"
                     style={{ width: `${(data.distribution[rating - 1] / maxDist) * 100}%` }}
                   />
                 </div>
@@ -113,7 +113,7 @@ export function FeedbackAnalytics() {
                 <div key={i} className="text-xs p-2 bg-muted/50 rounded">
                   <div className="flex gap-0.5 mb-1">
                     {[1, 2, 3, 4, 5].map(s => (
-                      <Star key={s} className={`h-2.5 w-2.5 ${s <= c.rating ? "text-yellow-500 fill-yellow-500" : "text-muted"}`} />
+                      <Star key={s} className={`h-2.5 w-2.5 ${s <= c.rating ? "text-warning fill-yellow-500" : "text-muted"}`} />
                     ))}
                   </div>
                   <p className="text-muted-foreground">{c.comment}</p>

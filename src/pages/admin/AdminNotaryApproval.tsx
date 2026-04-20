@@ -30,9 +30,9 @@ interface PendingNotary {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
-  active: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
-  suspended: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+  pending: "bg-warning/10 text-warning",
+  active: "bg-success/10 text-success",
+  suspended: "bg-destructive/10 text-destructive",
 };
 
 export default function AdminNotaryApproval() {
@@ -123,7 +123,7 @@ export default function AdminNotaryApproval() {
       ) : filtered.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center py-12 text-center">
-            <CheckCircle className="h-12 w-12 text-green-500 mb-3" />
+            <CheckCircle className="h-12 w-12 text-success mb-3" />
             <p className="font-medium">No {filter === "all" ? "" : filter} notary pages to review</p>
           </CardContent>
         </Card>

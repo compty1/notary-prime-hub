@@ -134,9 +134,9 @@ export default function AdminProcessFlows() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
           { label: "Service Flows", value: SERVICE_FLOWS.length, color: "text-foreground" },
-          { label: "Steps Implemented", value: `${implementedSteps}/${totalSteps}`, color: "text-emerald-600" },
+          { label: "Steps Implemented", value: `${implementedSteps}/${totalSteps}`, color: "text-success" },
           { label: "Automated Steps", value: automatedSteps, color: "text-primary" },
-          { label: "Email Templates", value: totalEmailTemplates, color: "text-amber-600" },
+          { label: "Email Templates", value: totalEmailTemplates, color: "text-warning" },
         ].map((stat) => (
           <Card key={stat.label} className="rounded-[24px] border-2 border-border shadow-md">
             <CardContent className="p-4 text-center">

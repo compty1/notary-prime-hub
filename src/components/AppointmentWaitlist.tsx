@@ -79,7 +79,7 @@ export function AppointmentWaitlist({ serviceType, requestedDate, requestedTime,
     <Card className="rounded-2xl border-2 border-border">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base font-bold">
-          <Clock className="h-5 w-5 text-amber-500" />
+          <Clock className="h-5 w-5 text-warning" />
           This time slot is full
         </CardTitle>
         <p className="text-sm text-muted-foreground">

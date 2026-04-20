@@ -41,8 +41,8 @@ const ApostilleMatrix = () => {
                         <TableCell className="font-bold">{s.state} <span className="text-muted-foreground">({s.abbreviation})</span></TableCell>
                         <TableCell>${s.fee}</TableCell>
                         <TableCell>{s.processingDays} days</TableCell>
-                        <TableCell>{s.acceptsElectronic ? <Badge className="bg-green-500/10 text-green-600 border-green-500/30">Yes</Badge> : <Badge variant="outline">No</Badge>}</TableCell>
-                        <TableCell>{s.walkInAvailable ? <Badge className="bg-green-500/10 text-green-600 border-green-500/30">Yes</Badge> : <Badge variant="outline">No</Badge>}</TableCell>
+                        <TableCell>{s.acceptsElectronic ? <Badge className="bg-success/10 text-success border-success/30">Yes</Badge> : <Badge variant="outline">No</Badge>}</TableCell>
+                        <TableCell>{s.walkInAvailable ? <Badge className="bg-success/10 text-success border-success/30">Yes</Badge> : <Badge variant="outline">No</Badge>}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

@@ -332,20 +332,20 @@ export default function AdminJournal() {
     <div>
       {/* Compliance Warning Banner */}
       {missingJournalCount > 0 && (
-        <div className="mb-4 flex items-center gap-3 rounded-lg border border-amber-500 bg-amber-50 dark:bg-amber-900/20 p-3 text-sm">
-          <Shield className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+        <div className="mb-4 flex items-center gap-3 rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm">
+          <Shield className="h-5 w-5 text-warning flex-shrink-0" />
           <div className="flex-1">
-            <p className="font-medium text-amber-800 dark:text-amber-300">
+            <p className="font-medium text-warning">
               {missingJournalCount} completed appointment{missingJournalCount > 1 ? "s" : ""} without journal entries
             </p>
-            <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">
+            <p className="text-xs text-warning mt-0.5">
               Ohio ORC §147.551 requires a journal entry for every notarial act. Create entries for all completed appointments.
             </p>
           </div>
           <Button
             size="sm"
             variant="outline"
-            className="border-amber-500 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40"
+            className="border-warning/30 text-warning hover:bg-warning/10 dark:hover:bg-warning/40"
             onClick={() => { setDialogOpen(true); }}
           >
             <Plus className="mr-1 h-3 w-3" /> Create Entry
@@ -473,7 +473,7 @@ export default function AdminJournal() {
                   }} className="text-xs" />
                   <p className="mt-1 text-xs text-muted-foreground">Upload photos of certificates, stamps, or seals for this notarization</p>
                 </div>
-                <Button onClick={handleSubmit} className="w-full ">
+                <Button onClick={handleSubmit} className="w-full">
                   {editingEntry ? "Update Entry" : "Save Journal Entry"}
                 </Button>
               </div>

@@ -19,13 +19,13 @@ import {
 } from "lucide-react";
 
 const LIFECYCLE_STAGES = [
-  { key: "received", label: "Received", icon: Package, color: "bg-blue-500/20 text-blue-700" },
-  { key: "design_review", label: "Design Review", icon: Eye, color: "bg-yellow-500/20 text-yellow-700" },
+  { key: "received", label: "Received", icon: Package, color: "bg-info/20 text-info" },
+  { key: "design_review", label: "Design Review", icon: Eye, color: "bg-warning/20 text-warning" },
   { key: "sent_to_vendor", label: "Sent to Vendor", icon: Send, color: "bg-purple-500/20 text-purple-700" },
-  { key: "in_production", label: "In Production", icon: Factory, color: "bg-orange-500/20 text-orange-700" },
-  { key: "quality_check", label: "Quality Check", icon: FileCheck, color: "bg-cyan-500/20 text-cyan-700" },
-  { key: "shipped", label: "Shipped", icon: Truck, color: "bg-green-500/20 text-green-700" },
-  { key: "delivered", label: "Delivered", icon: CheckCircle2, color: "bg-emerald-500/20 text-emerald-700" },
+  { key: "in_production", label: "In Production", icon: Factory, color: "bg-warning/20 text-warning" },
+  { key: "quality_check", label: "Quality Check", icon: FileCheck, color: "bg-info/20 text-info" },
+  { key: "shipped", label: "Shipped", icon: Truck, color: "bg-success/20 text-success" },
+  { key: "delivered", label: "Delivered", icon: CheckCircle2, color: "bg-success/20 text-success" },
 ];
 
 const STATUS_COLOR: Record<string, string> = Object.fromEntries(LIFECYCLE_STAGES.map(s => [s.key, s.color]));
@@ -300,7 +300,7 @@ export default function AdminPrintOrders() {
                   {comms.length === 0 ? (
                     <p className="text-xs text-muted-foreground text-center py-4">No messages yet</p>
                   ) : comms.map((c: any) => (
-                    <div key={c.id} className={`text-xs p-2 rounded ${c.sender_type === "admin" ? "bg-primary/10 ml-4" : c.sender_type === "vendor" ? "bg-blue-500/10 mr-4" : "bg-muted"}`}>
+                    <div key={c.id} className={`text-xs p-2 rounded ${c.sender_type === "admin" ? "bg-primary/10 ml-4" : c.sender_type === "vendor" ? "bg-info/10 mr-4" : "bg-muted"}`}>
                       <span className="font-semibold capitalize">{c.sender_type}:</span> {c.message}
                       <span className="text-muted-foreground ml-2">{format(new Date(c.created_at), "MMM d HH:mm")}</span>
                     </div>

@@ -111,7 +111,7 @@ export default function PortalCorrespondenceTab({ userId, correspondence, setCor
                 {c.direction === "inbound" ? <Mail className="h-4 w-4 text-primary" /> : <Send className="h-4 w-4 text-primary" />}
                 <span className="text-sm font-medium">{c.subject}</span>
               </div>
-              <Badge className={c.status === "replied" ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" : "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"}>
+              <Badge className={c.status === "replied" ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" : "bg-warning/10 text-warning"}>
                 {c.status}
               </Badge>
             </div>

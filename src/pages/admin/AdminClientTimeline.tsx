@@ -18,10 +18,10 @@ const EVENT_ICONS: Record<string, any> = {
 };
 
 const EVENT_COLORS: Record<string, string> = {
-  appointment: "bg-blue-500",
-  payment: "bg-emerald-500",
+  appointment: "bg-info/10",
+  payment: "bg-success/10",
   document: "bg-purple-500",
-  communication: "bg-amber-500",
+  communication: "bg-warning/10",
   default: "bg-gray-500",
 };
 

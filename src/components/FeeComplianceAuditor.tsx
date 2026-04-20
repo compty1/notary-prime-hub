@@ -41,15 +41,15 @@ export function FeeComplianceAuditor({ lines }: FeeComplianceAuditorProps) {
           <div key={i} className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-2">
               {line.overMax ? (
-                <AlertTriangle className="h-4 w-4 text-red-500" />
+                <AlertTriangle className="h-4 w-4 text-destructive" />
               ) : (
-                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                <CheckCircle2 className="h-4 w-4 text-success" />
               )}
               <span>{line.description}</span>
               {line.statute && <Badge variant="outline" className="text-[9px]">{line.statute}</Badge>}
             </div>
             <div className="flex items-center gap-2">
-              <span className={line.overMax ? "text-red-600 font-semibold" : ""}>${line.amount.toFixed(2)}</span>
+              <span className={line.overMax ? "text-destructive font-semibold" : ""}>${line.amount.toFixed(2)}</span>
               {line.maxAllowed !== undefined && (
                 <span className="text-[10px] text-muted-foreground">max ${line.maxAllowed.toFixed(2)}</span>
               )}
@@ -62,7 +62,7 @@ export function FeeComplianceAuditor({ lines }: FeeComplianceAuditorProps) {
           <span>${total.toFixed(2)}</span>
         </div>
         {hasViolation && (
-          <div className="flex items-center gap-2 p-2 bg-red-500/10 rounded text-xs text-red-600">
+          <div className="flex items-center gap-2 p-2 bg-destructive/10 rounded text-xs text-destructive">
             <AlertTriangle className="h-4 w-4" />
             One or more fees exceed Ohio statutory limits. Review required before charging.
           </div>

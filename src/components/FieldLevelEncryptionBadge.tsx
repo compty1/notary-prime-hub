@@ -20,7 +20,7 @@ export function FieldLevelEncryptionBadge({ fieldName, encrypted = true, classNa
       </TooltipTrigger>
       <TooltipContent>
         <div className="flex items-center gap-2 text-xs">
-          <ShieldCheck className="h-4 w-4 text-green-500" />
+          <ShieldCheck className="h-4 w-4 text-success" />
           <span>"{fieldName}" is encrypted at rest (AES-256-GCM)</span>
         </div>
       </TooltipContent>

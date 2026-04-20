@@ -74,8 +74,8 @@ function contrastRatio(hex1: string, hex2: string): number {
 }
 
 function wcagLevel(ratio: number): { level: string; color: string } {
-  if (ratio >= 7) return { level: "AAA", color: "text-green-600 dark:text-green-400" };
-  if (ratio >= 4.5) return { level: "AA", color: "text-yellow-600 dark:text-yellow-400" };
+  if (ratio >= 7) return { level: "AAA", color: "text-success" };
+  if (ratio >= 4.5) return { level: "AA", color: "text-warning" };
   return { level: "Fail", color: "text-destructive" };
 }
 

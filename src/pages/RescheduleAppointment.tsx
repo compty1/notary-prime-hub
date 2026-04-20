@@ -115,7 +115,7 @@ export default function RescheduleAppointment() {
           {rescheduled ? (
             <Card>
               <CardContent className="p-8 text-center">
-                <CheckCircle2 className="mx-auto mb-4 h-12 w-12 text-green-600" />
+                <CheckCircle2 className="mx-auto mb-4 h-12 w-12 text-success" />
                 <h2 className="text-xl font-semibold text-foreground">Rescheduled Successfully</h2>
                 <p className="mt-2 text-muted-foreground">
                   Your new appointment is on {newDate} at {newTime}. You'll receive a confirmation email shortly.

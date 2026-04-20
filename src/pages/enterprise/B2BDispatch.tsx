@@ -91,7 +91,7 @@ const B2BDispatch = () => {
                   <TableBody>
                     {rows.slice(0, 50).map((row, i) => (
                       <TableRow key={i}>
-                        <TableCell>{errors[i] ? <XCircle className="h-4 w-4 text-destructive" /> : <CheckCircle className="h-4 w-4 text-green-500" />}</TableCell>
+                        <TableCell>{errors[i] ? <XCircle className="h-4 w-4 text-destructive" /> : <CheckCircle className="h-4 w-4 text-success" />}</TableCell>
                         {REQUIRED_COLS.map(c => <TableCell key={c} className="text-sm">{row[c] || <span className="text-destructive">—</span>}</TableCell>)}
                       </TableRow>
                     ))}

@@ -12,8 +12,8 @@ export type ApprovalStatus = "draft" | "review" | "approved" | "signed" | "rejec
 
 const STATUS_CONFIG: Record<ApprovalStatus, { label: string; icon: React.ReactNode; color: string }> = {
   draft: { label: "Draft", icon: <Clock className="w-3.5 h-3.5" />, color: "bg-muted text-muted-foreground" },
-  review: { label: "In Review", icon: <Send className="w-3.5 h-3.5" />, color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200" },
-  approved: { label: "Approved", icon: <CheckCircle className="w-3.5 h-3.5" />, color: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" },
+  review: { label: "In Review", icon: <Send className="w-3.5 h-3.5" />, color: "bg-info/10 text-info" },
+  approved: { label: "Approved", icon: <CheckCircle className="w-3.5 h-3.5" />, color: "bg-success/10 text-success" },
   signed: { label: "Signed", icon: <PenTool className="w-3.5 h-3.5" />, color: "bg-primary/10 text-primary" },
   rejected: { label: "Rejected", icon: <AlertCircle className="w-3.5 h-3.5" />, color: "bg-destructive/10 text-destructive" },
 };
@@ -51,13 +51,13 @@ export function ApprovalWorkflow({ status, onStatusChange, isOwner = false, clas
             <div key={step} className="flex items-center gap-1 flex-1">
               <div className={cn(
                 "flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-medium transition-all",
-                isActive ? sc.color : isPast ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-muted/50 text-muted-foreground"
+                isActive ? sc.color : isPast ? "bg-success/10 text-success" : "bg-muted/50 text-muted-foreground"
               )}>
                 {sc.icon}
                 <span className="hidden sm:inline">{sc.label}</span>
               </div>
               {i < steps.length - 1 && (
-                <div className={cn("h-px flex-1", isPast ? "bg-green-400" : "bg-border")} />
+                <div className={cn("h-px flex-1", isPast ? "bg-success/10" : "bg-border")} />
               )}
             </div>
           );

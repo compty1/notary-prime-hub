@@ -55,7 +55,7 @@ export function DocumentReadinessScore({ serviceType, uploadedDocuments }: Docum
     return { score: calculatedScore, metItems: met, missingItems: missing };
   }, [requirements, uploadedDocuments]);
 
-  const color = score >= 80 ? "text-emerald-600 dark:text-emerald-400" : score >= 50 ? "text-primary" : "text-destructive";
+  const color = score >= 80 ? "text-success" : score >= 50 ? "text-primary" : "text-destructive";
 
   return (
     <Card className="rounded-2xl border-border/50">
@@ -80,7 +80,7 @@ export function DocumentReadinessScore({ serviceType, uploadedDocuments }: Docum
         <ul className="space-y-3">
           {uploadedDocuments.length > 0 && (
             <li className="flex items-center gap-3">
-              <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+              <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
               <span className="text-sm text-foreground font-medium">{uploadedDocuments.length} document(s) uploaded</span>
             </li>
           )}
