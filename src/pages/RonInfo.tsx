@@ -13,6 +13,8 @@ import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
+import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
+import { RonAdvisorWidget } from "@/components/RonAdvisorWidget";
 
 import { fadeUp } from "@/lib/animations";
 
@@ -145,8 +147,11 @@ export default function RonInfo() {
               RON: The Future of Notarization
             </motion.h1>
             <motion.p variants={fadeUp} custom={2} className="mx-auto max-w-2xl text-muted-foreground">
-              More secure than traditional notarization, accepted in all 50 states, and available from anywhere. Learn why RON is the smarter choice. Notar uses <strong>SignNow</strong> as our certified RON platform — including built-in MISMO-compliant KBA.
+              More secure than traditional notarization, accepted in all 50 states, and available from anywhere. Learn why RON is the smarter choice. We use <strong>SignNow</strong> as our certified RON platform — including built-in MISMO-compliant KBA.
             </motion.p>
+            <motion.div variants={fadeUp} custom={3} className="mx-auto mt-8 max-w-md text-left">
+              <RonAdvisorWidget />
+            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -386,6 +391,9 @@ export default function RonInfo() {
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link to="/book"><Button size="lg" className="">Schedule RON Session <ChevronRight className="ml-1 h-4 w-4" /></Button></Link>
             <Link to="/services"><Button size="lg" variant="outline">View All Services</Button></Link>
+          </div>
+          <div className="mx-auto mt-10 max-w-2xl">
+            <ZoomConsultCTA />
           </div>
         </div>
       </section>

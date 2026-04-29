@@ -7,6 +7,7 @@ import { PageShell } from "@/components/PageShell";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
+import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 
 const features = [
   { icon3d: FEATURE_3D_ICON.ron, title: "Remote Online Notarization", desc: "Conduct RON sessions with any signing platform — SignNow, DocuSign, Pavaso, and more." },
@@ -29,7 +30,7 @@ const complianceItems = [
 ];
 
 export default function ForNotaries() {
-  usePageMeta({ title: "For Notaries — Platform & Tools", description: "Join the Notar notary network. Access RON technology, client management tools, and commission-based signing opportunities in Ohio." });
+  usePageMeta({ title: "For Notaries — Platform & Tools", description: "Join our notary network. Access RON technology, client management tools, and commission-based signing opportunities in Ohio." });
 
   return (
     <PageShell>
@@ -97,7 +98,13 @@ export default function ForNotaries() {
         </div>
       </section>
 
-      <section className="py-16">
+      <section className="py-12">
+        <div className="container mx-auto max-w-2xl px-4">
+          <ZoomConsultCTA />
+        </div>
+      </section>
+
+            <section className="py-16">
         <div className="container mx-auto px-4 text-center">
           <Icon3D src={FEATURE_3D_ICON.verified} alt="Join the platform" className="mx-auto mb-4 h-[147px] w-[147px]" />
           <h2 className="mb-4 font-sans text-3xl font-bold text-foreground">Ready to Modernize Your Practice?</h2>

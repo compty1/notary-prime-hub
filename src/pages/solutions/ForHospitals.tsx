@@ -7,6 +7,7 @@ import { PageShell } from "@/components/PageShell";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle, Phone } from "lucide-react";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
+import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 
 const features = [
   { icon3d: FEATURE_3D_ICON.bedside, title: "Bedside & ICU Notarization", desc: "Mobile notary services directly at the patient's bedside — including ICU, emergency, and recovery rooms. No patient transport required." },
@@ -147,7 +148,13 @@ export default function ForHospitals() {
         </div>
       </section>
 
-      <section className="py-16">
+      <section className="py-12">
+        <div className="container mx-auto max-w-2xl px-4">
+          <ZoomConsultCTA />
+        </div>
+      </section>
+
+            <section className="py-16">
         <div className="container mx-auto px-4 text-center">
           <Icon3D src={FEATURE_3D_ICON.bedside} alt="Bedside notarization" className="mx-auto mb-4 h-[147px] w-[147px]" />
           <h2 className="mb-4 font-sans text-3xl font-bold text-foreground">Need a Notary at Your Facility?</h2>
