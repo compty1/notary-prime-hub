@@ -19,6 +19,7 @@ import {
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 
 import { SERVICE_ICON_MAP as iconMap, PRICING_SUFFIXES, NOTARY_CATEGORIES } from "@/lib/serviceConstants";
 
@@ -731,28 +732,7 @@ export default function ServiceDetail() {
             )}
 
             {/* Zoom consultation CTA on ALL service pages */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.34 }}>
-              <Card className="border-primary/20 bg-primary/5">
-                <CardContent className="p-5 space-y-3">
-                  <h3 className="font-sans text-sm font-semibold flex items-center gap-2">
-                    <Monitor className="h-4 w-4 text-primary" /> Have Questions?
-                  </h3>
-                  <p className="text-xs text-muted-foreground">
-                    Schedule a free Zoom consultation to discuss this service and get personalized guidance.
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Or message us for a response within 24 hours — we typically respond within 2 hours during business hours.
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    You can also <Link to="/digitize" className="text-primary underline">upload your document</Link> for instant AI-powered answers about what's needed.
-                  </p>
-                  <div className="flex gap-2 flex-wrap">
-                    <Link to="/book?service=Consultation"><Button size="sm" className=""><Monitor className="mr-1 h-3 w-3" /> Schedule Zoom</Button></Link>
-                    <Link to="/notary-guide"><Button size="sm" variant="outline">Browse Guides</Button></Link>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+            <ZoomConsultCTA />
 
             {/* I-9 Acceptable Documents (List A/B/C) for verification services */}
             {service.category === "verification" && (
