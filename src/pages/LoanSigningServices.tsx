@@ -19,6 +19,9 @@ import {
   Clock, Phone, Mail, Briefcase, Building2, ChevronRight, ArrowRight
 } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
+import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
+import { RonAdvisorWidget } from "@/components/RonAdvisorWidget";
+import { BRAND } from "@/lib/brand";
 
 const capabilities = [
   { icon: Shield, title: "Certified NSA", desc: "NNA-certified Notary Signing Agent with background screening and E&O insurance coverage." },
@@ -177,7 +180,7 @@ export default function LoanSigningServices() {
                         <a href="tel:6143006890" className="hover:text-primary">(614) 300-6890</a>
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        <a href="mailto:contact@notar.com" className="hover:text-primary">contact@notar.com</a>
+                        <a href={`mailto:${BRAND.defaultEmail}`} className="hover:text-primary">{BRAND.defaultEmail}</a>
                       </p>
                     </div>
                   </div>
@@ -290,6 +293,20 @@ export default function LoanSigningServices() {
           <div className="flex justify-center gap-3">
             <Link to="/services"><Button size="lg" variant="outline">View All Services <ArrowRight className="ml-1 h-4 w-4" /></Button></Link>
             <Link to="/ron-check"><Button size="lg" variant="outline">RON Eligibility Checker <ArrowRight className="ml-1 h-4 w-4" /></Button></Link>
+          </div>
+        </div>
+      </section>
+
+      {/* RON Advisor + Zoom Consult */}
+      <section className="bg-muted/20 py-12">
+        <div className="container mx-auto grid max-w-5xl gap-6 px-4 md:grid-cols-2">
+          <div>
+            <h3 className="mb-3 font-sans text-lg font-bold">Will RON work for your closing?</h3>
+            <RonAdvisorWidget />
+          </div>
+          <div>
+            <h3 className="mb-3 font-sans text-lg font-bold">Prefer to talk it through?</h3>
+            <ZoomConsultCTA />
           </div>
         </div>
       </section>
