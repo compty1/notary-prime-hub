@@ -26,6 +26,8 @@ import { PageShell } from "@/components/PageShell";
 import { fadeUp, blurIn, scaleReveal } from "@/lib/animations";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 import Hero3DAnimation from "@/components/Hero3DAnimation";
+import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
+import { RonAdvisorWidget } from "@/components/RonAdvisorWidget";
 import aboutIllustration from "@/assets/about-3d-illustration.png";
 
 const primaryServices = [
