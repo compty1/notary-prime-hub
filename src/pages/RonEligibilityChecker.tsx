@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, AlertTriangle, XCircle, Shield, ChevronRight, ArrowRight, Globe, FileText, Briefcase, Scale, Sparkles, Loader2, RotateCcw, BookOpen } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
+import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 import { useRonAdvisor } from "@/hooks/useRonAdvisor";
 import { US_STATES, DOCUMENT_CATEGORIES, NOTARIAL_ACT_TYPES, RECIPIENT_TYPES } from "@/lib/ronStateData";
 import type { AdvisorInput, SimpleInput, RiskLevel } from "@/lib/ronLegalityEngine";
@@ -419,6 +420,9 @@ export default function RonEligibilityChecker({ mode = "public" }: Props) {
               <Link to="/services"><Button variant="outline" size="sm" className="w-full">View Services <ArrowRight className="ml-1 h-3 w-3" /></Button></Link>
             </CardContent>
           </Card>
+        </div>
+        <div className="mx-auto mt-10 max-w-2xl">
+          <ZoomConsultCTA title="Not sure about your scenario?" />
         </div>
       </div>
     </PageShell>
