@@ -671,7 +671,26 @@ export default function Index() {
  <div className="mt-6 text-center">
  <Link to="/services" className="text-sm text-primary font-bold hover:underline">View all our professional notary and document services →</Link>
  </div>
- </div>
+  </div>
+ </section>
+
+ {/* RON Quick-Check + Zoom Consult */}
+ <section className="bg-muted/20 py-16">
+   <div className="mx-auto grid max-w-5xl gap-8 px-4 md:grid-cols-2">
+     <div>
+       <h2 className="mb-2 font-sans text-2xl font-bold text-foreground">Will RON work for your document?</h2>
+       <p className="mb-4 text-sm text-muted-foreground">Quick eligibility check based on Ohio RON law (ORC §147.60–.66) and 50-state acceptance data.</p>
+       <RonAdvisorWidget />
+       <div className="mt-3">
+         <Link to="/ron-info" className="text-sm font-semibold text-primary hover:underline">Learn more about RON →</Link>
+       </div>
+     </div>
+     <div>
+       <h2 className="mb-2 font-sans text-2xl font-bold text-foreground">Have questions?</h2>
+       <p className="mb-4 text-sm text-muted-foreground">Free 15-minute Zoom consultation — get personalized guidance for your situation.</p>
+       <ZoomConsultCTA />
+     </div>
+   </div>
  </section>
  </PageShell>
  );
