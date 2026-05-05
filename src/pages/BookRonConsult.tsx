@@ -198,16 +198,6 @@ export default function BookRonConsult() {
     setStep((s) => Math.min(3, (s + 1) as Step));
   };
 
-  const submit = async () => {
-    const err = validateStep(2);
-    if (err) {
-      toast({ title: "Please fix the form", description: err, variant: "destructive" });
-      return;
-    }
-    setSubmitting true; // eslint-disable-line
-  };
-  // ^^ defensive guard removed below — real handler:
-
   const submitConsult = async () => {
     const err = validateStep(2);
     if (err) {
