@@ -21,6 +21,8 @@ import {
 import { PageShell } from "@/components/PageShell";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 import { RonAdvisorWidget } from "@/components/RonAdvisorWidget";
+import { ServiceFAQAccordion } from "@/components/ServiceFAQAccordion";
+import { LOAN_SIGNING_FAQS } from "@/lib/serviceFaqs";
 import { BRAND } from "@/lib/brand";
 
 const capabilities = [
@@ -294,6 +296,13 @@ export default function LoanSigningServices() {
             <Link to="/services"><Button size="lg" variant="outline">View All Services <ArrowRight className="ml-1 h-4 w-4" /></Button></Link>
             <Link to="/ron-check"><Button size="lg" variant="outline">RON Eligibility Checker <ArrowRight className="ml-1 h-4 w-4" /></Button></Link>
           </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="bg-muted/30 py-12">
+        <div className="container mx-auto max-w-3xl px-4">
+          <ServiceFAQAccordion items={LOAN_SIGNING_FAQS} title="Loan Signing FAQ" slug="loan-signing" />
         </div>
       </section>
 

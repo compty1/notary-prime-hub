@@ -20,6 +20,7 @@ import KBAVerification from "@/components/KBAVerification";
 import { lazy, Suspense } from "react";
 
 const FullCalendarView = lazy(() => import("@/components/FullCalendarView"));
+import { AppointmentStatusTimeline } from "@/components/AppointmentStatusTimeline";
 import { isValidStatusTransition } from "@/lib/ohioCompliance";
 
 const PAGE_SIZE = 20;
@@ -795,6 +796,9 @@ export default function AdminAppointments() {
                 {detailAppt.estimated_price && <div className="flex justify-between"><span className="text-muted-foreground">Est. Price</span><span className="font-medium">${parseFloat(detailAppt.estimated_price).toFixed(2)}</span></div>}
                 <div className="flex justify-between"><span className="text-muted-foreground">Status</span><Badge className={statusColors[detailAppt.status]}>{detailAppt.status.replace(/_/g, " ")}</Badge></div>
               </div>
+
+              {/* Status timeline */}
+              <AppointmentStatusTimeline appointmentId={detailAppt.id} />
 
               {/* Mark as Paid */}
               {detailAppt.status === "completed" && (

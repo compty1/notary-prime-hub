@@ -15,6 +15,8 @@ import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 import { RonAdvisorWidget } from "@/components/RonAdvisorWidget";
+import { ServiceFAQAccordion } from "@/components/ServiceFAQAccordion";
+import { RON_FAQS } from "@/lib/serviceFaqs";
 
 import { fadeUp } from "@/lib/animations";
 
@@ -270,15 +272,7 @@ export default function RonInfo() {
       {/* FAQ */}
       <section className="bg-muted/30 py-12">
         <div className="container mx-auto max-w-3xl px-4">
-          <h2 className="mb-8 text-center font-sans text-2xl font-bold text-foreground">RON FAQ</h2>
-          <Accordion type="single" collapsible className="space-y-2">
-            {ronFaqs.map((faq, i) => (
-              <AccordionItem key={i} value={`faq-${i}`} className="rounded-lg border border-border/50 bg-card px-4">
-                <AccordionTrigger className="text-left text-sm font-medium">{faq.q}</AccordionTrigger>
-                <AccordionContent className="text-sm text-muted-foreground">{faq.a}</AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+          <ServiceFAQAccordion items={RON_FAQS} title="RON FAQ — Ohio Compliance" slug="ron" />
         </div>
       </section>
 

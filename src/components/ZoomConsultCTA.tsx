@@ -23,7 +23,7 @@ export function ZoomConsultCTA({
   compact = false,
   className,
   title = "Have Questions?",
-  bookHref = "/book?service=Consultation",
+  bookHref = "/ron-consult",
 }: ZoomConsultCTAProps) {
   return (
     <motion.div

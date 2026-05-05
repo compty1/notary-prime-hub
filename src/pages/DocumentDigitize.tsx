@@ -27,6 +27,8 @@ import TiptapUnderline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
+import { ServiceFAQAccordion } from "@/components/ServiceFAQAccordion";
+import { DIGITIZE_FAQS } from "@/lib/serviceFaqs";
 
 const LANGUAGES = ["English","Spanish","French","German","Chinese","Japanese","Korean","Arabic","Russian","Vietnamese","Tagalog","Portuguese","Italian","Hindi","Polish","Dutch"];
 
@@ -443,6 +445,10 @@ export default function DocumentDigitize() {
             </Card>
           </motion.div>
         )}
+        {/* FAQ */}
+        <div className="mt-10">
+          <ServiceFAQAccordion items={DIGITIZE_FAQS} title="Document Digitize FAQ" slug="digitize" />
+        </div>
       </div>
 
     </PageShell>
