@@ -39,6 +39,7 @@ const ClientPortal = lazyRetry(() => import("./pages/ClientPortal"));
 const RonSession = lazyRetry(() => import("./pages/RonSession"));
 const NotaryGuide = lazyRetry(() => import("./pages/NotaryGuide"));
 const RonInfo = lazyRetry(() => import("./pages/RonInfo"));
+const BookRonConsult = lazyRetry(() => import("./pages/BookRonConsult"));
 const DocumentTemplates = lazyRetry(() => import("./pages/DocumentTemplates"));
 const DocumentBuilder = lazyRetry(() => import("./pages/DocumentBuilder"));
 const FeeCalculator = lazyRetry(() => import("./pages/FeeCalculator"));
@@ -355,6 +356,7 @@ function AnimatedRoutes() {
       <Route path="/services" element={<SR msg="Services failed to load"><Services /></SR>} />
       <Route path="/services/:serviceId" element={<SR msg="Service details failed to load"><ServiceDetail /></SR>} />
       <Route path="/ron-check" element={<SR><RonEligibilityChecker /></SR>} />
+      <Route path="/ron-consult" element={<SR msg="Consult booking failed to load"><BookRonConsult /></SR>} />
       <Route path="/loan-signing" element={<SR><LoanSigningServices /></SR>} />
       <Route path="/verify/:id" element={<SR msg="Verification failed to load"><VerifySeal /></SR>} />
       <Route path="/terms" element={<SR><TermsPrivacy /></SR>} />
