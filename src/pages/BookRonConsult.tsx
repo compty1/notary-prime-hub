@@ -195,7 +195,7 @@ export default function BookRonConsult() {
       toast({ title: "Please fix the form", description: err, variant: "destructive" });
       return;
     }
-    setStep((s) => Math.min(3, (s + 1) as Step));
+    setStep((s) => (Math.min(3, s + 1) as Step));
   };
 
   const submitConsult = async () => {
@@ -559,7 +559,7 @@ export default function BookRonConsult() {
             <div className="mt-6 flex justify-between">
               <Button
                 variant="ghost"
-                onClick={() => setStep((s) => Math.max(0, (s - 1) as Step))}
+                onClick={() => setStep((s) => (Math.max(0, s - 1) as Step))}
                 disabled={step === 0 || submitting}
               >
                 <ArrowLeft className="mr-1 h-4 w-4" /> Back
