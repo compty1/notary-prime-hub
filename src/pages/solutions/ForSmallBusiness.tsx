@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
+import { OrcChip, NotaryOnCall } from "@/components/trust";
 
 const features = [
   { icon3d: FEATURE_3D_ICON.corporate, title: "Corporate Resolutions & Minutes", desc: "Board resolutions, meeting minutes, and corporate governance documents notarized for official filing." },
