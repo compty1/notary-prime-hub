@@ -26,6 +26,7 @@ import { PageShell } from "@/components/PageShell";
 import { fadeUp, blurIn, scaleReveal } from "@/lib/animations";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 import Hero3DAnimation from "@/components/Hero3DAnimation";
+import heroNotarize from "@/assets/hero-notarize.jpg";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 import { RonAdvisorWidget } from "@/components/RonAdvisorWidget";
 import aboutIllustration from "@/assets/about-3d-illustration.png";
@@ -268,15 +269,21 @@ export default function Index() {
  </motion.div>
  </motion.div>
 
- {/* Hero Interactive Animation — GAP-0001: visible on all breakpoints */}
- <motion.div
- initial={{ opacity: 0, scale: 0.95 }}
- animate={{ opacity: 1, scale: 1 }}
- transition={{ duration: 0.7, delay: 0.2 }}
- className="relative flex items-center justify-center min-h-[320px] md:min-h-[400px] lg:min-h-[480px]"
- >
- <Hero3DAnimation />
- </motion.div>
+          {/* Hero Image — Notarize Now editorial illustration */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="relative flex items-center justify-center"
+          >
+            <img
+              src={heroNotarize}
+              alt="Notar — legal online notarization"
+              width={1600}
+              height={1024}
+              className="w-full h-auto rounded-[7px] border-2 border-foreground shadow-block-lg"
+            />
+          </motion.div>
  </div>
  </div>
 
