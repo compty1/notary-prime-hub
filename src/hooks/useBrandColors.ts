@@ -60,11 +60,7 @@ export function useBrandColors() {
       }
     }
 
-    return () => {
-      // Cleanup on unmount
-      root.style.removeProperty("--primary");
-      root.style.removeProperty("--accent");
-      root.style.removeProperty("--font-body");
-    };
+    // Do NOT remove tokens on cleanup — that would wipe the global theme on
+    // navigation/HMR. Defaults live in index.css and are reapplied if a setting changes.
   }, [get]);
 }

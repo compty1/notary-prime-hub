@@ -19,53 +19,54 @@
     --transition-slow: 300ms;
     --bounce-easing: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-    --background: 48 100% 97%;
-    --foreground: 0 0% 10%;
+    /* Notarize Now playful palette */
+    --background: 230 90% 75%;
+    --foreground: 225 40% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
+    --card-foreground: 225 40% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
+    --popover-foreground: 225 40% 12%;
 
-    --primary: 45 86% 48%;
-    --primary-foreground: 0 0% 10%;
+    --primary: 330 80% 82%;
+    --primary-foreground: 225 40% 12%;
 
-    --secondary: 44 22% 90%;
-    --secondary-foreground: 0 0% 15%;
+    --secondary: 45 95% 55%;
+    --secondary-foreground: 225 40% 12%;
 
-    --muted: 45 40% 95%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 230 50% 92%;
+    --muted-foreground: 225 20% 35%;
 
-    --accent: 45 100% 90%;
-    --accent-foreground: 0 0% 10%;
+    --accent: 75 90% 70%;
+    --accent-foreground: 225 40% 12%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 44 22% 90%;
-    --input: 45 20% 92%;
-    --ring: 45 86% 48%;
+    --border: 225 40% 12%;
+    --input: 230 30% 88%;
+    --ring: 330 80% 70%;
 
-    --radius: 0.75rem;
+    --radius: 1.25rem;
 
-    --primary-glow: 45 86% 58%;
-    --primary-light: 48 100% 95%;
-    --mint: 48 60% 85%;
+    --primary-glow: 330 80% 88%;
+    --primary-light: 330 80% 95%;
+    --mint: 75 90% 80%;
     --surface-elevated: 0 0% 100%;
-    --light-gray: 45 20% 96%;
+    --light-gray: 230 40% 95%;
 
-    --sidebar-background: 0 0% 10%;
-    --sidebar-foreground: 45 20% 85%;
-    --sidebar-primary: 45 86% 48%;
-    --sidebar-primary-foreground: 0 0% 10%;
-    --sidebar-accent: 0 0% 16%;
-    --sidebar-accent-foreground: 45 20% 85%;
-    --sidebar-border: 0 0% 18%;
-    --sidebar-ring: 45 86% 48%;
+    --sidebar-background: 225 50% 10%;
+    --sidebar-foreground: 45 30% 92%;
+    --sidebar-primary: 330 80% 82%;
+    --sidebar-primary-foreground: 225 40% 12%;
+    --sidebar-accent: 225 40% 18%;
+    --sidebar-accent-foreground: 45 30% 92%;
+    --sidebar-border: 225 40% 22%;
+    --sidebar-ring: 330 80% 70%;
 
-    --accent-warm: 45 86% 48%;
-    --accent-warm-foreground: 0 0% 10%;
+    --accent-warm: 45 95% 55%;
+    --accent-warm-foreground: 225 40% 12%;
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
@@ -75,52 +76,52 @@
   }
 
   .dark {
-    /* Notar Brand v2.0: Dark mode — Warm charcoal base */
-    --background: 30 10% 8%;
-    --foreground: 45 20% 95%;
+    /* Notarize Now — deep navy night */
+    --background: 225 50% 10%;
+    --foreground: 45 30% 95%;
 
-    --card: 30 10% 12%;
-    --card-foreground: 45 20% 95%;
+    --card: 225 40% 14%;
+    --card-foreground: 45 30% 95%;
 
-    --popover: 30 10% 12%;
-    --popover-foreground: 45 20% 95%;
+    --popover: 225 40% 14%;
+    --popover-foreground: 45 30% 95%;
 
-    --primary: 45 86% 48%;
-    --primary-foreground: 0 0% 10%;
+    --primary: 330 80% 78%;
+    --primary-foreground: 225 40% 12%;
 
-    --secondary: 30 10% 20%;
-    --secondary-foreground: 45 20% 95%;
+    --secondary: 45 95% 55%;
+    --secondary-foreground: 225 40% 12%;
 
-    --muted: 30 10% 16%;
-    --muted-foreground: 45 10% 55%;
+    --muted: 225 30% 20%;
+    --muted-foreground: 230 20% 70%;
 
-    --accent: 30 12% 22%;
-    --accent-foreground: 45 20% 95%;
+    --accent: 75 90% 65%;
+    --accent-foreground: 225 40% 12%;
 
-    --destructive: 0 62% 35%;
+    --destructive: 0 62% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 30 10% 20%;
-    --input: 30 10% 20%;
-    --ring: 45 86% 48%;
+    --border: 225 30% 28%;
+    --input: 225 30% 22%;
+    --ring: 330 80% 70%;
 
-    --primary-glow: 45 86% 58%;
-    --primary-light: 48 40% 18%;
-    --mint: 48 40% 30%;
-    --surface-elevated: 30 10% 14%;
-    --light-gray: 30 10% 12%;
+    --primary-glow: 330 80% 85%;
+    --primary-light: 330 40% 25%;
+    --mint: 75 60% 30%;
+    --surface-elevated: 225 40% 16%;
+    --light-gray: 225 30% 18%;
 
-    --sidebar-background: 30 10% 5%;
-    --sidebar-foreground: 45 20% 85%;
-    --sidebar-primary: 45 86% 48%;
-    --sidebar-primary-foreground: 0 0% 10%;
-    --sidebar-accent: 30 10% 14%;
-    --sidebar-accent-foreground: 45 20% 85%;
-    --sidebar-border: 30 10% 14%;
-    --sidebar-ring: 45 86% 48%;
+    --sidebar-background: 225 60% 7%;
+    --sidebar-foreground: 45 30% 92%;
+    --sidebar-primary: 330 80% 78%;
+    --sidebar-primary-foreground: 225 40% 12%;
+    --sidebar-accent: 225 40% 14%;
+    --sidebar-accent-foreground: 45 30% 92%;
+    --sidebar-border: 225 30% 20%;
+    --sidebar-ring: 330 80% 70%;
 
-    --accent-warm: 45 86% 48%;
-    --accent-warm-foreground: 0 0% 10%;
+    --accent-warm: 45 95% 55%;
+    --accent-warm-foreground: 225 40% 12%;
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 60%;
@@ -272,6 +273,22 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Notarize Now: signature components */
+  .tag-chip {
+    @apply inline-flex items-center rounded-2xl border-2 border-foreground bg-accent px-4 py-2 text-xs font-black uppercase tracking-widest text-accent-foreground;
+    box-shadow: 4px 4px 0 0 hsl(var(--foreground));
+  }
+  .block-card {
+    @apply rounded-[28px] border-2 border-foreground bg-card text-card-foreground;
+    box-shadow: 6px 6px 0 0 hsl(var(--foreground));
+  }
+  .btn-block {
+    @apply rounded-2xl border-2 border-foreground font-black uppercase tracking-wider transition-transform;
+    box-shadow: 4px 4px 0 0 hsl(var(--foreground));
+  }
+  .btn-block:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 0 hsl(var(--foreground)); }
+  .btn-block:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 0 hsl(var(--foreground)); }
 }
 
 /* GAP-0025: Smooth scroll behavior */
