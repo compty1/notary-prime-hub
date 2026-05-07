@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
+import { OrcChip, NotaryOnCall } from "@/components/trust";
 
 const features = [
   { icon3d: FEATURE_3D_ICON.affidavit, title: "Affidavits & Depositions", desc: "Sworn statements, affidavits, and deposition transcripts notarized with proper jurat or acknowledgment certificates." },
@@ -53,6 +54,12 @@ export default function ForLawFirms() {
                 <Link to="/services">
                   <Button size="lg" variant="outline">Explore Services</Button>
                 </Link>
+              </div>
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                <OrcChip code="147" label="Notary statute" />
+                <OrcChip code="2319.02" label="Oaths" />
+                <OrcChip code="1337.60" label="POA" />
+                <NotaryOnCall />
               </div>
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">

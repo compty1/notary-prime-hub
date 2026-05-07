@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Shield, Monitor, MapPin, CheckCircle, XCircle, ChevronRight, Globe, Lock, Clock, FileText, Scale, Zap, Search } from "lucide-react";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
+import { NotarMark, NotarMarkBadge } from "@/components/icons/NotarMark";
+import { OrcChip, NotaryOnCall } from "@/components/trust";
 import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
@@ -151,7 +153,12 @@ export default function RonInfo() {
             <motion.p variants={fadeUp} custom={2} className="mx-auto max-w-2xl text-muted-foreground">
               More secure than traditional notarization, accepted in all 50 states, and available from anywhere. Learn why RON is the smarter choice. We use <strong>SignNow</strong> as our certified RON platform — including built-in MISMO-compliant KBA.
             </motion.p>
-            <motion.div variants={fadeUp} custom={3} className="mx-auto mt-8 max-w-md text-left">
+            <motion.div variants={fadeUp} custom={3} className="mx-auto mt-6 flex flex-wrap items-center justify-center gap-2">
+              <OrcChip code="147.65" label="RON authority" description="Ohio's RON authorization statute" />
+              <OrcChip code="147.66" label="10-year retention" description="Recording retention requirement" />
+              <NotaryOnCall />
+            </motion.div>
+            <motion.div variants={fadeUp} custom={4} className="mx-auto mt-8 max-w-md text-left">
               <RonAdvisorWidget />
             </motion.div>
           </motion.div>
@@ -159,30 +166,23 @@ export default function RonInfo() {
       </section>
 
       {/* Legal Foundation */}
-      <section className="border-b border-border/50 py-12">
+      <section className="border-b border-border-subtle py-12">
         <div className="container mx-auto max-w-4xl px-4">
           <div className="grid gap-6 md:grid-cols-3">
-            <Card className="border-border/50 bg-primary/5">
-              <CardContent className="flex flex-col items-center p-6 text-center">
-                <Icon3D src={FEATURE_3D_ICON.compliance} alt="Ohio Law" className="h-[129px] w-[129px] mb-3" />
-                <h3 className="mb-1 font-sans text-lg font-semibold">Ohio Law</h3>
-                <p className="text-sm text-muted-foreground">Authorized under ORC §147.65-.66</p>
-              </CardContent>
-            </Card>
-            <Card className="border-border/50 bg-primary/5">
-              <CardContent className="flex flex-col items-center p-6 text-center">
-                <Icon3D src={FEATURE_3D_ICON.security} alt="Multi-Factor Security" className="h-[129px] w-[129px] mb-3" />
-                <h3 className="mb-1 font-sans text-lg font-semibold">Multi-Factor Security</h3>
-                <p className="text-sm text-muted-foreground">ID scan + KBA + live video + recording</p>
-              </CardContent>
-            </Card>
-            <Card className="border-border/50 bg-primary/5">
-              <CardContent className="flex flex-col items-center p-6 text-center">
-                <Icon3D src={FEATURE_3D_ICON.apostille} alt="50-State Recognition" className="h-[129px] w-[129px] mb-3" />
-                <h3 className="mb-1 font-sans text-lg font-semibold">50-State Recognition</h3>
-                <p className="text-sm text-muted-foreground">Full Faith & Credit Clause</p>
-              </CardContent>
-            </Card>
+            {[
+              { mark: "compliance" as const, title: "Ohio Law", desc: "Authorized under ORC §147.65-.66", chip: "147.65" },
+              { mark: "security" as const, title: "Multi-Factor Security", desc: "ID scan + KBA + live video + recording", chip: null },
+              { mark: "globe" as const, title: "50-State Recognition", desc: "Full Faith & Credit Clause", chip: null },
+            ].map((item) => (
+              <Card key={item.title} variant="quiet" className="border-border-subtle">
+                <CardContent className="flex flex-col items-center p-6 text-center">
+                  <NotarMarkBadge name={item.mark} size={72} className="mb-4" />
+                  <h3 className="mb-1 font-sans text-lg font-semibold">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground">{item.desc}</p>
+                  {item.chip && <div className="mt-3"><OrcChip code={item.chip} /></div>}
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>

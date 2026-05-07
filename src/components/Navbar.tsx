@@ -8,6 +8,7 @@ import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
+import { NotaryOnCall } from "@/components/trust";
 
 const serviceCategories = [
   { key: "notarization", label: "Core Notarization", desc: "RON, in-person, witness services" },
@@ -173,6 +174,7 @@ export function Navbar() {
           </Link>
 
           <div className="ml-4 flex items-center gap-2">
+            <NotaryOnCall compact className="hidden lg:inline-flex" />
             <DarkModeToggle className="text-muted-foreground" />
             {user ? (
               <Link to={portalLink}>

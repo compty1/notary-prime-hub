@@ -9,6 +9,7 @@ import { MobileFAB } from "@/components/MobileFAB";
 import { AILeadChatbot } from "@/components/AILeadChatbot";
 import LegalGlossaryProvider from "@/components/LegalGlossaryProvider";
 import { PrintStylesheet } from "@/components/PrintStylesheet";
+import { TrustBar } from "@/components/trust";
 import { useSettings } from "@/hooks/useSettings";
 import { useBrandColors } from "@/hooks/useBrandColors";
 import { useAuth } from "@/contexts/AuthContext";
@@ -48,6 +49,7 @@ export function PageShell({ children, hideNav = false, hideFooter = false, isSta
         Skip to main content
       </a>
       {!hideNav && <Navbar />}
+      {!hideNav && !isInternalRoute && !isStandalonePage && pathname !== "/" && <TrustBar />}
       <AnimatePresence mode="wait">
         <motion.main id="main-content" key={pathname} {...pageTransition}>
           <LegalGlossaryProvider>

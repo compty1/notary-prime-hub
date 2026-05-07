@@ -19,17 +19,19 @@ import {
   Clock, Phone, Mail, Briefcase, Building2, ChevronRight, ArrowRight
 } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
+import { OrcChip, NotaryOnCall } from "@/components/trust";
+import { NotarMark } from "@/components/icons/NotarMark";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 import { RonAdvisorWidget } from "@/components/RonAdvisorWidget";
 import { ServiceFAQAccordion } from "@/components/ServiceFAQAccordion";
 import { LOAN_SIGNING_FAQS } from "@/lib/serviceFaqs";
 import { BRAND } from "@/lib/brand";
 
-const capabilities = [
-  { icon: Shield, title: "Certified NSA", desc: "NNA-certified Notary Signing Agent with background screening and E&O insurance coverage." },
-  { icon: Monitor, title: "RON-Capable", desc: "Ohio-authorized Remote Online Notarization for closings anywhere, fully compliant with ORC §147.65-.66." },
-  { icon: FileText, title: "All Document Types", desc: "Purchase, refinance, reverse mortgage, HELOC, seller packages, and loan modifications." },
-  { icon: Clock, title: "Flexible Scheduling", desc: "Mon–Fri 9 AM – 7 PM ET | Sat 10 AM – 4 PM ET | Sun by appointment, with extended hours by arrangement." },
+const capabilities: { mark: any; title: string; desc: string }[] = [
+  { mark: "certified", title: "Certified NSA", desc: "NNA-certified Notary Signing Agent with background screening and E&O insurance coverage." },
+  { mark: "ron", title: "RON-Capable", desc: "Ohio-authorized Remote Online Notarization for closings anywhere, fully compliant with ORC §147.65-.66." },
+  { mark: "scroll", title: "All Document Types", desc: "Purchase, refinance, reverse mortgage, HELOC, seller packages, and loan modifications." },
+  { mark: "clock", title: "Flexible Scheduling", desc: "Mon–Fri 9 AM – 7 PM ET | Sat 10 AM – 4 PM ET | Sun by appointment, with extended hours by arrangement." },
 ];
 
 const signingTypes = [
@@ -116,6 +118,11 @@ export default function LoanSigningServices() {
             Reliable, certified loan signing services for title companies, lenders, and signing services in the Columbus, Ohio area 
             and nationwide via RON.
           </p>
+          <div className="mx-auto mt-6 flex flex-wrap items-center justify-center gap-2">
+            <OrcChip code="147.65" label="Ohio RON" />
+            <OrcChip code="147.541" label="NSA fees" />
+            <NotaryOnCall />
+          </div>
         </div>
       </section>
 
@@ -127,7 +134,7 @@ export default function LoanSigningServices() {
               <motion.div key={cap.title} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
                 <Card className="h-full border-border/50">
                   <CardContent className="p-5">
-                    <cap.icon className="mb-3 h-8 w-8 text-primary" />
+                    <NotarMark name={cap.mark} size={36} className="mb-3 text-primary" />
                     <h3 className="mb-1 font-sans text-base font-semibold">{cap.title}</h3>
                     <p className="text-sm text-muted-foreground">{cap.desc}</p>
                   </CardContent>
