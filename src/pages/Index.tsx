@@ -230,11 +230,16 @@ export default function Index() {
 
  return (
  <PageShell>
+ <TrustBar />
  {/* ===== HERO ===== */}
  <section className="relative bg-gradient-hero overflow-hidden pb-20">
- <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 relative z-10">
+ <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-12 relative z-10">
  <div className="grid lg:grid-cols-2 gap-12 items-center">
  <motion.div initial="hidden" animate="visible">
+ <div className="mb-5 flex flex-wrap items-center gap-2">
+ <NotaryOnCall compact />
+ <OrcChip code="147.65" label="Ohio RON authorized" description="Ohio Revised Code §147.65 — Remote online notarization is fully legal and binding in Ohio." />
+ </div>
  <motion.h1
  variants={blurIn}
  custom={0}
