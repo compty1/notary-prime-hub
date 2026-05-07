@@ -16,7 +16,7 @@ export default {
       fontFamily: {
         sans: ['"Montserrat"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
         heading: ['"Montserrat"', 'system-ui', 'sans-serif'],
-        display: ['"Montserrat"', 'Georgia', 'serif'],
+        display: ['"Fraunces"', 'Georgia', 'serif'],
         body: ['"Montserrat"', 'system-ui', 'sans-serif'],
         mono: ['"DM Mono"', 'monospace'],
       },
@@ -71,8 +71,15 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         surface: {
+          DEFAULT: "hsl(var(--surface))",
+          foreground: "hsl(var(--surface-foreground))",
+          muted: "hsl(var(--surface-muted))",
+          raised: "hsl(var(--surface-raised))",
           elevated: "hsl(var(--surface-elevated))",
         },
+        "border-subtle": "hsl(var(--border-subtle))",
+        "marketing-bg": "hsl(var(--marketing-bg))",
+        "app-bg": "hsl(var(--app-bg))",
         mint: "hsl(var(--mint))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
