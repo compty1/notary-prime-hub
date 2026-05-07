@@ -46,6 +46,12 @@ export default function ForIndividuals() {
                 <Link to="/book"><Button size="lg" className="rounded-full px-8">Book Appointment <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
                 <Link to="/ron-check"><Button size="lg" variant="outline">Check RON Eligibility</Button></Link>
               </div>
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                <OrcChip code="147.65" label="Ohio RON" />
+                <OrcChip code="2107" label="Wills" />
+                <OrcChip code="4505" label="Vehicle title" />
+                <NotaryOnCall />
+              </div>
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">
               <div className="relative rounded-2xl border border-border bg-card p-8 shadow-lg">
