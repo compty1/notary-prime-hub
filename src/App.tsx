@@ -171,6 +171,7 @@ const AdminEmbeddableWidgets = lazyRetry(() => import("./pages/admin/AdminEmbedd
 const AdminDispatch = lazyRetry(() => import("./pages/admin/AdminDispatch"));
 const AdminMessagingHub = lazyRetry(() => import("./pages/admin/AdminMessagingHub"));
 const AdminMicroTools = lazyRetry(() => import("./pages/admin/AdminMicroTools"));
+const AdminAnimations = lazyRetry(() => import("./pages/admin/AdminAnimations"));
 const AdminEventBus = lazyRetry(() => import("./pages/admin/AdminEventBus"));
 const AdminBusinessGrowth = lazyRetry(() => import("./pages/admin/AdminBusinessGrowth"));
 const AdminClientTimeline = lazyRetry(() => import("./pages/admin/AdminClientTimeline"));
@@ -569,6 +570,7 @@ function AnimatedRoutes() {
         <Route path="dispatch" element={<ProtectedRoute adminOnly><SR msg="Dispatch failed to load"><AdminDispatch /></SR></ProtectedRoute>} />
         <Route path="messaging-hub" element={<ProtectedRoute adminOnly><SR msg="Messaging hub failed to load"><AdminMessagingHub /></SR></ProtectedRoute>} />
         <Route path="micro-tools" element={<ProtectedRoute adminOnly><SR msg="Micro-tools failed to load"><AdminMicroTools /></SR></ProtectedRoute>} />
+        <Route path="animations" element={<ProtectedRoute adminOnly><SR msg="Animations failed to load"><AdminAnimations /></SR></ProtectedRoute>} />
         <Route path="print-inventory" element={<ProtectedRoute adminOnly><SR msg="Print inventory failed to load"><AdminPrintInventory /></SR></ProtectedRoute>} />
         <Route path="ux-consulting" element={<ProtectedRoute adminOnly><SR msg="UX consulting failed to load"><AdminUXConsulting /></SR></ProtectedRoute>} />
         <Route path="business-formation" element={<ProtectedRoute adminOnly><SR msg="Business formation failed to load"><AdminBusinessFormation /></SR></ProtectedRoute>} />

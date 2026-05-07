@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug, TrendingUp, ShieldCheck, Webhook, FileEdit, Workflow, Globe, Video, Printer, UserCheck, Fingerprint, Scale, Crosshair, Heart, PenLine, Languages, Truck, Award, Home, FileCheck, CalendarCheck, BarChart3, Palette, Camera, Calculator, KeyRound, CheckSquare, Wrench, Receipt, FolderOpen, Code, Navigation, Bell, Hammer, Zap, Activity, HeartPulse, Timer, RotateCcw } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Clock, FileText, ScrollText, BookOpen, Bot, BookMarked, LogOut, Shield, Settings, DollarSign, Eye, FileSignature, Package, MessageSquare, Building2, ShoppingBag, Mail, UserPlus, Target, GraduationCap, Plug, ClipboardList, PenTool, ListChecks, Handshake, Bug, TrendingUp, ShieldCheck, Webhook, FileEdit, Workflow, Globe, Video, Printer, UserCheck, Fingerprint, Scale, Crosshair, Heart, PenLine, Languages, Truck, Award, Home, FileCheck, CalendarCheck, BarChart3, Palette, Camera, Calculator, KeyRound, CheckSquare, Wrench, Receipt, FolderOpen, Code, Navigation, Bell, Hammer, Zap, Activity, HeartPulse, Timer, RotateCcw, Sparkles } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { AdminNotificationCenter } from "@/components/AdminNotificationCenter";
 import { Logo } from "@/components/Logo";
@@ -158,6 +158,7 @@ const sidebarGroups = [
       { title: "Doc Collaboration", url: "/admin/doc-collaboration", icon: FolderOpen, adminOnly: true },
       { title: "Embeddable Widgets", url: "/admin/embeddable-widgets", icon: Code, adminOnly: true },
       { title: "Micro-Tools", url: "/admin/micro-tools", icon: Hammer, adminOnly: false },
+      { title: "Animations", url: "/admin/animations", icon: Sparkles, adminOnly: true },
       { title: "Team & Invites", url: "/admin/team", icon: UserPlus, adminOnly: true },
       { title: "Webhooks", url: "/admin/webhooks", icon: Webhook, adminOnly: true },
       { title: "Integration Testing", url: "/admin/integrations", icon: Plug, adminOnly: true },
