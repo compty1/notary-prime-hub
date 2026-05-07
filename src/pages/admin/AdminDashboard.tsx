@@ -158,6 +158,7 @@ const sidebarGroups = [
       { title: "Doc Collaboration", url: "/admin/doc-collaboration", icon: FolderOpen, adminOnly: true },
       { title: "Embeddable Widgets", url: "/admin/embeddable-widgets", icon: Code, adminOnly: true },
       { title: "Micro-Tools", url: "/admin/micro-tools", icon: Hammer, adminOnly: false },
+      { title: "Animations", url: "/admin/animations", icon: Sparkles, adminOnly: true },
       { title: "Team & Invites", url: "/admin/team", icon: UserPlus, adminOnly: true },
       { title: "Webhooks", url: "/admin/webhooks", icon: Webhook, adminOnly: true },
       { title: "Integration Testing", url: "/admin/integrations", icon: Plug, adminOnly: true },
