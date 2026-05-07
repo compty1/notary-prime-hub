@@ -93,12 +93,12 @@ export default {
         "card-lg": "32px",
       },
       boxShadow: {
-        block: "0 2px 8px -2px hsl(45 86% 48% / 0.15)",
-        "block-lg": "0 8px 24px -6px hsl(45 86% 48% / 0.18)",
-        "block-active": "0 1px 4px -1px hsl(45 86% 48% / 0.1)",
-        soft: "0 2px 12px -4px hsl(0 0% 0% / 0.06)",
-        card: "0 4px 20px -6px hsl(0 0% 0% / 0.08)",
-        "card-hover": "0 12px 32px -8px hsl(45 86% 48% / 0.15)",
+        block: "4px 4px 0 0 hsl(var(--foreground))",
+        "block-lg": "6px 6px 0 0 hsl(var(--foreground))",
+        "block-active": "2px 2px 0 0 hsl(var(--foreground))",
+        soft: "0 2px 12px -4px hsl(0 0% 0% / 0.08)",
+        card: "4px 4px 0 0 hsl(var(--foreground))",
+        "card-hover": "6px 6px 0 0 hsl(var(--foreground))",
       },
       fontSize: {
         label: ["10px", { letterSpacing: "0.1em", fontWeight: "700" }],
