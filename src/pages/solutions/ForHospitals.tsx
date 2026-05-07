@@ -69,6 +69,12 @@ export default function ForHospitals() {
                   <Button size="lg" variant="outline">View All Services</Button>
                 </Link>
               </div>
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                <OrcChip code="147" label="Notary statute" />
+                <OrcChip code="2133.02" label="Advance directives" />
+                <OrcChip code="1337.12" label="Healthcare POA" />
+                <NotaryOnCall />
+              </div>
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">
               <div className="relative rounded-2xl border border-border bg-card p-8 shadow-lg">
