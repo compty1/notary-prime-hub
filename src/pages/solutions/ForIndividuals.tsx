@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
+import { OrcChip, NotaryOnCall } from "@/components/trust";
 
 const features = [
   { icon3d: FEATURE_3D_ICON.wills, title: "Wills & Estate Planning", desc: "Last wills, trusts, healthcare directives, and beneficiary designations notarized with proper witness coordination per Ohio law." },
@@ -44,6 +45,12 @@ export default function ForIndividuals() {
               <div className="flex flex-wrap gap-3">
                 <Link to="/book"><Button size="lg" className="rounded-full px-8">Book Appointment <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
                 <Link to="/ron-check"><Button size="lg" variant="outline">Check RON Eligibility</Button></Link>
+              </div>
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                <OrcChip code="147.65" label="Ohio RON" />
+                <OrcChip code="2107" label="Wills" />
+                <OrcChip code="4505" label="Vehicle title" />
+                <NotaryOnCall />
               </div>
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">

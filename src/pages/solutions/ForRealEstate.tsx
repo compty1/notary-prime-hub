@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
+import { OrcChip, NotaryOnCall } from "@/components/trust";
 
 const features = [
   { icon3d: FEATURE_3D_ICON.closing, title: "Closing Documents", desc: "Deeds, mortgages, settlement statements, and all closing documents notarized on-site or via RON for seamless transactions." },
@@ -44,6 +45,12 @@ export default function ForRealEstate() {
               <div className="flex flex-wrap gap-3">
                 <Link to="/book"><Button size="lg" className="rounded-full px-8">Schedule a Closing <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
                 <Link to="/loan-signing"><Button size="lg" variant="outline">Loan Signing Services</Button></Link>
+              </div>
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                <OrcChip code="147.541" label="NSA fees" />
+                <OrcChip code="5301.01" label="Deeds" />
+                <OrcChip code="147.65" label="Ohio RON" />
+                <NotaryOnCall />
               </div>
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">

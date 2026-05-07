@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle, Phone } from "lucide-react";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
+import { OrcChip, NotaryOnCall } from "@/components/trust";
 
 const features = [
   { icon3d: FEATURE_3D_ICON.bedside, title: "Bedside & ICU Notarization", desc: "Mobile notary services directly at the patient's bedside — including ICU, emergency, and recovery rooms. No patient transport required." },
@@ -67,6 +68,12 @@ export default function ForHospitals() {
                 <Link to="/services">
                   <Button size="lg" variant="outline">View All Services</Button>
                 </Link>
+              </div>
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                <OrcChip code="147" label="Notary statute" />
+                <OrcChip code="2133.02" label="Advance directives" />
+                <OrcChip code="1337.12" label="Healthcare POA" />
+                <NotaryOnCall />
               </div>
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">
