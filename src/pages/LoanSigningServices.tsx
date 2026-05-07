@@ -118,6 +118,11 @@ export default function LoanSigningServices() {
             Reliable, certified loan signing services for title companies, lenders, and signing services in the Columbus, Ohio area 
             and nationwide via RON.
           </p>
+          <div className="mx-auto mt-6 flex flex-wrap items-center justify-center gap-2">
+            <OrcChip code="147.65" label="Ohio RON" />
+            <OrcChip code="147.541" label="NSA fees" />
+            <NotaryOnCall />
+          </div>
         </div>
       </section>
 
