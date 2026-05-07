@@ -134,7 +134,7 @@ export default function LoanSigningServices() {
               <motion.div key={cap.title} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
                 <Card className="h-full border-border/50">
                   <CardContent className="p-5">
-                    <cap.icon className="mb-3 h-8 w-8 text-primary" />
+                    <NotarMark name={cap.mark} size={36} className="mb-3 text-primary" />
                     <h3 className="mb-1 font-sans text-base font-semibold">{cap.title}</h3>
                     <p className="text-sm text-muted-foreground">{cap.desc}</p>
                   </CardContent>
