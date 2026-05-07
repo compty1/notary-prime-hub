@@ -173,6 +173,7 @@ export function Navbar() {
           </Link>
 
           <div className="ml-4 flex items-center gap-2">
+            <NotaryOnCall compact className="hidden lg:inline-flex" />
             <DarkModeToggle className="text-muted-foreground" />
             {user ? (
               <Link to={portalLink}>
