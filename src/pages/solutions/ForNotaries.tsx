@@ -46,6 +46,12 @@ export default function ForNotaries() {
                 <Link to="/join"><Button size="lg" className="rounded-full px-8">Join the Platform <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
                 <Link to="/services"><Button size="lg" variant="outline">Explore Services</Button></Link>
               </div>
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                <OrcChip code="147.55" label="RON authority" />
+                <OrcChip code="147.04" label="Journal" />
+                <OrcChip code="147.66" label="10-yr retention" />
+                <NotaryOnCall />
+              </div>
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">
               <div className="relative">
