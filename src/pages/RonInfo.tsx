@@ -153,12 +153,18 @@ export default function RonInfo() {
             <motion.p variants={fadeUp} custom={2} className="mx-auto max-w-2xl text-muted-foreground">
               More secure than traditional notarization, accepted in all 50 states, and available from anywhere. Learn why RON is the smarter choice. We use <strong>SignNow</strong> as our certified RON platform — including built-in MISMO-compliant KBA.
             </motion.p>
-            <motion.div variants={fadeUp} custom={3} className="mx-auto mt-8 max-w-md text-left">
+            <motion.div variants={fadeUp} custom={3} className="mx-auto mt-6 flex flex-wrap items-center justify-center gap-2">
+              <OrcChip code="147.65" label="RON authority" description="Ohio's RON authorization statute" />
+              <OrcChip code="147.66" label="10-year retention" description="Recording retention requirement" />
+              <NotaryOnCall />
+            </motion.div>
+            <motion.div variants={fadeUp} custom={4} className="mx-auto mt-8 max-w-md text-left">
               <RonAdvisorWidget />
             </motion.div>
           </motion.div>
         </div>
       </section>
+{/* CLEANUP_RONINFO_HERO_TAIL */}
 
       {/* Legal Foundation */}
       <section className="border-b border-border/50 py-12">
