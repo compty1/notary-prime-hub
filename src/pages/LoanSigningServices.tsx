@@ -19,6 +19,8 @@ import {
   Clock, Phone, Mail, Briefcase, Building2, ChevronRight, ArrowRight
 } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
+import { OrcChip, NotaryOnCall } from "@/components/trust";
+import { NotarMark } from "@/components/icons/NotarMark";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 import { RonAdvisorWidget } from "@/components/RonAdvisorWidget";
 import { ServiceFAQAccordion } from "@/components/ServiceFAQAccordion";
