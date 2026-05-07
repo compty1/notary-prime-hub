@@ -8,6 +8,7 @@ import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
+import { NotaryOnCall } from "@/components/trust";
 
 const serviceCategories = [
   { key: "notarization", label: "Core Notarization", desc: "RON, in-person, witness services" },
