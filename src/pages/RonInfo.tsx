@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Shield, Monitor, MapPin, CheckCircle, XCircle, ChevronRight, Globe, Lock, Clock, FileText, Scale, Zap, Search } from "lucide-react";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
+import { NotarMark, NotarMarkBadge } from "@/components/icons/NotarMark";
+import { OrcChip, NotaryOnCall } from "@/components/trust";
 import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
