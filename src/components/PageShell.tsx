@@ -49,6 +49,7 @@ export function PageShell({ children, hideNav = false, hideFooter = false, isSta
         Skip to main content
       </a>
       {!hideNav && <Navbar />}
+      {!hideNav && !isInternalRoute && !isStandalonePage && pathname !== "/" && <TrustBar />}
       <AnimatePresence mode="wait">
         <motion.main id="main-content" key={pathname} {...pageTransition}>
           <LegalGlossaryProvider>
