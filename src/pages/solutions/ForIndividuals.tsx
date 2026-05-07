@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
+import { OrcChip, NotaryOnCall } from "@/components/trust";
 
 const features = [
   { icon3d: FEATURE_3D_ICON.wills, title: "Wills & Estate Planning", desc: "Last wills, trusts, healthcare directives, and beneficiary designations notarized with proper witness coordination per Ohio law." },
