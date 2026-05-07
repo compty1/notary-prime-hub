@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle, Phone } from "lucide-react";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
+import { OrcChip, NotaryOnCall } from "@/components/trust";
 
 const features = [
   { icon3d: FEATURE_3D_ICON.bedside, title: "Bedside & ICU Notarization", desc: "Mobile notary services directly at the patient's bedside — including ICU, emergency, and recovery rooms. No patient transport required." },
