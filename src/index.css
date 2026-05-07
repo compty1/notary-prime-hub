@@ -273,6 +273,22 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Notarize Now: signature components */
+  .tag-chip {
+    @apply inline-flex items-center rounded-2xl border-2 border-foreground bg-accent px-4 py-2 text-xs font-black uppercase tracking-widest text-accent-foreground;
+    box-shadow: 4px 4px 0 0 hsl(var(--foreground));
+  }
+  .block-card {
+    @apply rounded-[28px] border-2 border-foreground bg-card text-card-foreground;
+    box-shadow: 6px 6px 0 0 hsl(var(--foreground));
+  }
+  .btn-block {
+    @apply rounded-2xl border-2 border-foreground font-black uppercase tracking-wider transition-transform;
+    box-shadow: 4px 4px 0 0 hsl(var(--foreground));
+  }
+  .btn-block:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 0 hsl(var(--foreground)); }
+  .btn-block:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 0 hsl(var(--foreground)); }
 }
 
 /* GAP-0025: Smooth scroll behavior */
