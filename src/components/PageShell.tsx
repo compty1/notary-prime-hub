@@ -9,6 +9,7 @@ import { MobileFAB } from "@/components/MobileFAB";
 import { AILeadChatbot } from "@/components/AILeadChatbot";
 import LegalGlossaryProvider from "@/components/LegalGlossaryProvider";
 import { PrintStylesheet } from "@/components/PrintStylesheet";
+import { TrustBar } from "@/components/trust";
 import { useSettings } from "@/hooks/useSettings";
 import { useBrandColors } from "@/hooks/useBrandColors";
 import { useAuth } from "@/contexts/AuthContext";
