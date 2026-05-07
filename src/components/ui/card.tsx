@@ -2,8 +2,21 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("rounded-[7px] border-2 border-foreground bg-card text-card-foreground shadow-block transition-all duration-200", className)} {...props} />
+type CardVariant = "block" | "quiet" | "raised" | "ghost";
+
+const variantClass: Record<CardVariant, string> = {
+  block: "rounded-[7px] border-2 border-foreground bg-card text-card-foreground shadow-block",
+  quiet: "rounded-[7px] border border-border-subtle bg-surface text-surface-foreground shadow-soft",
+  raised: "rounded-[7px] border border-border-subtle bg-surface-raised text-surface-foreground shadow-card",
+  ghost: "rounded-[7px] bg-transparent text-foreground",
+};
+
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: CardVariant;
+}
+
+const Card = React.forwardRef<HTMLDivElement, CardProps>(({ className, variant = "block", ...props }, ref) => (
+  <div ref={ref} className={cn(variantClass[variant], "transition-all duration-200", className)} {...props} />
 ));
 Card.displayName = "Card";
 
