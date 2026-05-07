@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&family=DM+Mono:wght@400;500&display=swap&font-display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=DM+Mono:wght@400;500&display=swap&font-display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,10 +6,20 @@
 
 @layer base {
   :root {
-    /* Notar Brand v3.0: Montserrat + Brand animation tokens */
+    /* Notar Brand v3.1: Montserrat (UI) + Fraunces (display, legal authority) */
     --font-heading: 'Montserrat', system-ui, sans-serif;
     --font-body: 'Montserrat', system-ui, sans-serif;
+    --font-display: 'Fraunces', Georgia, serif;
     --font-mono: 'DM Mono', monospace;
+
+    /* Dual-surface palette: marketing (periwinkle) vs. app (off-white) */
+    --marketing-bg: 230 90% 75%;
+    --app-bg: 230 35% 97%;
+    --surface: 0 0% 100%;
+    --surface-muted: 230 30% 95%;
+    --surface-raised: 0 0% 100%;
+    --surface-foreground: 225 40% 12%;
+    --border-subtle: 225 22% 82%;
 
     /* Brand animation tokens */
     --notar-yellow: 45 86% 48%;
