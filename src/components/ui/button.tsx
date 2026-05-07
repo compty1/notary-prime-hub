@@ -9,14 +9,14 @@ const buttonVariants = cva(
   {
     variants: {
         variant: {
-          default: "bg-foreground text-background shadow-soft hover:bg-foreground/90 hover:-translate-y-0.5",
-          destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-          outline: "border border-border bg-background hover:bg-muted hover:text-foreground",
-          secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-          ghost: "hover:bg-muted hover:text-foreground",
-          link: "text-primary underline-offset-4 hover:underline",
-          accent: "bg-primary text-primary-foreground shadow-soft hover:bg-primary/90 hover:-translate-y-0.5",
-          dark: "bg-foreground text-background shadow-soft hover:bg-foreground/90 hover:-translate-y-0.5 active:translate-y-0 transition-all",
+          default: "bg-primary text-primary-foreground rounded-2xl border-2 border-foreground shadow-block hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-block-lg",
+          destructive: "bg-destructive text-destructive-foreground rounded-2xl border-2 border-foreground shadow-block hover:-translate-x-0.5 hover:-translate-y-0.5",
+          outline: "border-2 border-foreground bg-card text-foreground rounded-2xl shadow-block hover:-translate-x-0.5 hover:-translate-y-0.5",
+          secondary: "bg-secondary text-secondary-foreground rounded-2xl border-2 border-foreground shadow-block hover:-translate-x-0.5 hover:-translate-y-0.5",
+          ghost: "rounded-2xl hover:bg-muted hover:text-foreground",
+          link: "text-foreground underline-offset-4 hover:underline",
+          accent: "bg-accent text-accent-foreground rounded-2xl border-2 border-foreground shadow-block hover:-translate-x-0.5 hover:-translate-y-0.5",
+          dark: "bg-foreground text-background rounded-2xl border-2 border-foreground shadow-block hover:-translate-x-0.5 hover:-translate-y-0.5",
         },
       size: {
         default: "h-10 px-5 py-2",
