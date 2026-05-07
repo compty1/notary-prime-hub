@@ -46,6 +46,12 @@ export default function ForSmallBusiness() {
                 <Link to="/book"><Button size="lg" className="rounded-full px-8">Book Appointment <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
                 <Link to="/services?category=business"><Button size="lg" variant="outline">Business Services</Button></Link>
               </div>
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                <OrcChip code="147" label="Notary statute" />
+                <OrcChip code="1705" label="LLC Act" />
+                <OrcChip code="1701" label="Corporations" />
+                <NotaryOnCall />
+              </div>
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">
               <div className="relative rounded-2xl border border-border bg-card p-8 shadow-lg">
