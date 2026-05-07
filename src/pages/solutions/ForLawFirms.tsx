@@ -55,6 +55,12 @@ export default function ForLawFirms() {
                   <Button size="lg" variant="outline">Explore Services</Button>
                 </Link>
               </div>
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                <OrcChip code="147" label="Notary statute" />
+                <OrcChip code="2319.02" label="Oaths" />
+                <OrcChip code="1337.60" label="POA" />
+                <NotaryOnCall />
+              </div>
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">
               <div className="relative rounded-2xl border border-border bg-card p-8 shadow-lg">
