@@ -4478,6 +4478,8 @@ export type Database = {
           id: string
           id_expiration: string | null
           id_number: string | null
+          id_number_encrypted: string | null
+          id_number_last4: string | null
           id_type: string | null
           journal_number: number
           net_profit: number | null
@@ -4515,6 +4517,8 @@ export type Database = {
           id?: string
           id_expiration?: string | null
           id_number?: string | null
+          id_number_encrypted?: string | null
+          id_number_last4?: string | null
           id_type?: string | null
           journal_number?: number
           net_profit?: number | null
@@ -4552,6 +4556,8 @@ export type Database = {
           id?: string
           id_expiration?: string | null
           id_number?: string | null
+          id_number_encrypted?: string | null
+          id_number_last4?: string | null
           id_type?: string | null
           journal_number?: number
           net_profit?: number | null
