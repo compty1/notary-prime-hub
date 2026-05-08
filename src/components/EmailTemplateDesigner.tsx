@@ -116,7 +116,7 @@ export default function EmailTemplateDesigner({ settings, onSave }: EmailTemplat
     return `
       <div style="background:${c.body_bg};font-family:${c.font_family};max-width:600px;margin:0 auto;border-radius:${r};overflow:hidden;border:1px solid #e5e5e5;">
         <div style="background:${c.header_bg};padding:${p};text-align:center;">
-          ${c.logo_url ? `<img src="${c.logo_url}" alt="Logo" style="max-height:48px;margin-bottom:12px;" />` : ""}
+          ${c.logo_url ? `<img loading="lazy" decoding="async" src="${c.logo_url}" alt="Logo" style="max-height:48px;margin-bottom:12px;" />` : ""}
           <h1 style="color:${c.header_text};font-size:20px;margin:0;">${sampleData[previewTemplate].subject}</h1>
         </div>
         <div style="padding:${p};color:${c.body_text};font-size:14px;line-height:1.6;">
@@ -143,7 +143,7 @@ export default function EmailTemplateDesigner({ settings, onSave }: EmailTemplat
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center gap-3">
-              {config.logo_url && <img src={config.logo_url} alt="Email logo" className="h-10 rounded border border-border" />}
+              {config.logo_url && <img loading="lazy" decoding="async" src={config.logo_url} alt="Email logo" className="h-10 rounded border border-border" />}
               <label className="cursor-pointer">
                 <input type="file" accept=".png,.jpg,.jpeg,.svg" className="hidden" onChange={handleLogoUpload} />
                 <Button variant="outline" size="sm" asChild disabled={uploading}>

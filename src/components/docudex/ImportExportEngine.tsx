@@ -73,7 +73,7 @@ export function ImportExportEngine({ open, onOpenChange, mode }: ImportExportEng
           case "shape":
             return `<div style="${style}background:${el.styles.fill || "#E4AC0F"};border-radius:${el.styles.borderRadius || 0}px;border:${el.styles.strokeWidth || 0}px solid ${el.styles.stroke || "transparent"};"></div>`;
           case "image":
-            return `<img style="${style}object-fit:cover;" src="${el.content?.src || ""}" alt="" />`;
+            return `<img loading="lazy" decoding="async" style="${style}object-fit:cover;" src="${el.content?.src || ""}" alt="" />`;
           default:
             return `<div style="${style}background:#eee;"></div>`;
         }

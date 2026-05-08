@@ -28,7 +28,7 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
         className={cn("group flex items-center", s.gap, className)}
         aria-label="Notar logo"
       >
-        <img
+        <img loading="lazy" decoding="async"
           src={notarLogo}
           alt="Notar"
           className={cn(s.icon, "object-contain transition-transform group-hover:-translate-y-0.5")}

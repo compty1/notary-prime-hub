@@ -532,7 +532,7 @@ export function DocuDexEditor({
     // Generate a real QR code as an SVG data URI using qrcode.react rendering
     // We insert an img tag with a placeholder that triggers client-side QR rendering
     const encodedValue = encodeURIComponent(qrValue.trim());
-    const qrHtml = `<div style="text-align:center;padding:16px;margin:16px 0;" data-qr-value="${encodedValue}" data-qr-size="${qrSize}"><img src="https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodedValue}" alt="QR Code: ${qrValue.trim()}" width="${qrSize}" height="${qrSize}" style="display:inline-block;" /><p style="font-size:10px;color:#666;margin-top:4px;">${qrValue.trim().length > 50 ? qrValue.trim().slice(0, 50) + '...' : qrValue.trim()}</p></div>`;
+    const qrHtml = `<div style="text-align:center;padding:16px;margin:16px 0;" data-qr-value="${encodedValue}" data-qr-size="${qrSize}"><img loading="lazy" decoding="async" src="https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodedValue}" alt="QR Code: ${qrValue.trim()}" width="${qrSize}" height="${qrSize}" style="display:inline-block;" /><p style="font-size:10px;color:#666;margin-top:4px;">${qrValue.trim().length > 50 ? qrValue.trim().slice(0, 50) + '...' : qrValue.trim()}</p></div>`;
     editor.chain().focus().insertContent(qrHtml).run();
     announce("QR Code inserted");
     setShowQrDialog(false);
@@ -1610,7 +1610,7 @@ export function DocuDexEditor({
               </div>
               {qrValue.trim() && (
                 <div className="flex justify-center p-4 bg-muted rounded-lg">
-                  <img
+                  <img loading="lazy" decoding="async"
                     src={`https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(qrValue.trim())}`}
                     alt="QR Preview"
                     width={Math.min(qrSize, 200)}

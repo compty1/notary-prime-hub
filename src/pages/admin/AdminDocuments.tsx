@@ -426,7 +426,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
                   <div className="flex items-center gap-3 min-w-0">
                     <Checkbox checked={selectedDocs.has(doc.id)} onCheckedChange={() => toggleDocSelection(doc.id)} aria-label={`Select ${doc.file_name}`} />
                     {thumb ? (
-                      <img src={thumb} alt={doc.file_name} className="h-10 w-10 rounded object-cover flex-shrink-0 border border-border" />
+                      <img loading="lazy" decoding="async" src={thumb} alt={doc.file_name} className="h-10 w-10 rounded object-cover flex-shrink-0 border border-border" />
                     ) : isPdfFile(doc.file_name) ? (
                       <div className="flex h-10 w-10 items-center justify-center rounded bg-destructive/10 flex-shrink-0">
                         <FileText className="h-5 w-5 text-destructive" />
@@ -535,7 +535,7 @@ const AdminDocuments = React.forwardRef<HTMLDivElement>(function AdminDocuments(
           <DialogHeader><DialogTitle className="font-sans">{previewDoc?.file_name}</DialogTitle></DialogHeader>
           {previewUrl ? (
             previewDoc?.file_name?.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-              <img src={previewUrl} alt={previewDoc.file_name} className="max-h-[65vh] w-full object-contain rounded" />
+              <img loading="lazy" decoding="async" src={previewUrl} alt={previewDoc.file_name} className="max-h-[65vh] w-full object-contain rounded" />
             ) : (
               <iframe src={previewUrl} className="w-full h-[65vh] rounded border border-border" title="Document Preview" />
             )

@@ -534,7 +534,7 @@ export default function AdminSettings() {
                     </label>
                     {sealPreviewUrl && (
                       <div className="h-12 w-12 rounded border border-border overflow-hidden">
-                        <img src={sealPreviewUrl} alt="Seal preview" className="h-full w-full object-contain" />
+                        <img loading="lazy" decoding="async" src={sealPreviewUrl} alt="Seal preview" className="h-full w-full object-contain" />
                       </div>
                     )}
                     {editValues.seal_image_path && !sealPreviewUrl && <span className="text-xs text-muted-foreground">✓ Uploaded</span>}

@@ -55,7 +55,7 @@ export default function ForNotaries() {
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">
               <div className="relative">
-                <img src="/images/notary-seal.png" alt="Ohio Notary Public Seal" className="w-72 h-72 object-contain rounded-2xl shadow-lg" />
+                <img loading="lazy" decoding="async" src="/images/notary-seal.png" alt="Ohio Notary Public Seal" className="w-72 h-72 object-contain rounded-2xl shadow-lg" />
                 <div className="absolute -bottom-3 -right-3 rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-lg">Ohio Commissioned</div>
               </div>
             </motion.div>

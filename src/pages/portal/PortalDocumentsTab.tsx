@@ -191,7 +191,7 @@ export default function PortalDocumentsTab({ userId, documents, setDocuments, up
             <Card key={doc.id} className="border-2 border-primary/20 bg-primary/5">
               <CardContent className="flex items-center justify-between p-4">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <img src="/images/notary-seal.png" alt="Notary Seal" className="h-10 w-10 rounded-full object-contain border border-primary/20 bg-background p-0.5" />
+                  <img loading="lazy" decoding="async" src="/images/notary-seal.png" alt="Notary Seal" className="h-10 w-10 rounded-full object-contain border border-primary/20 bg-background p-0.5" />
                   <div className="min-w-0">
                     <p className="font-medium text-sm truncate">{doc.file_name}</p>
                     <p className="text-xs text-muted-foreground">

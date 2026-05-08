@@ -282,7 +282,7 @@ export default function Index() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="relative flex items-center justify-center"
           >
-            <img
+            <img loading="lazy" decoding="async"
               src={heroNotarize}
               alt="Notar — legal online notarization"
               width={1600}
@@ -303,7 +303,7 @@ export default function Index() {
  transition={{ duration: 0.6 }}
  className="flex items-center justify-center"
  >
- <img
+ <img loading="lazy" decoding="async"
  src={aboutIllustration}
  alt="3D illustration of document folders"
  className="w-full max-w-sm mx-auto object-contain"

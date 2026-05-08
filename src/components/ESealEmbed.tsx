@@ -20,7 +20,7 @@ export function ESealEmbed({
   return (
     <div className="inline-flex flex-col items-center gap-2 rounded-xl border-2 border-primary/30 bg-primary/5 p-4 text-center">
       <div className="flex items-center gap-3">
-        <img
+        <img loading="lazy" decoding="async"
           src="/images/notary-seal.png"
           alt={`${notaryName} — Notary Seal`}
           className="h-16 w-16 rounded-full object-contain border border-primary/20 bg-background p-1"

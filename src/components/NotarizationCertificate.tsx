@@ -57,7 +57,7 @@ export function NotarizationCertificate({
       <body>
         <div class="cert-border">
           <div class="header">
-            <img src="/images/notary-seal.png" class="seal-img" alt="Notary Seal" />
+            <img loading="lazy" decoding="async" src="/images/notary-seal.png" class="seal-img" alt="Notary Seal" />
             <p class="title">Certificate of Notarization</p>
             <p class="subtitle">State of ${commissionState} — County of ${county}</p>
           </div>
@@ -130,7 +130,7 @@ ${verificationUrl ? `Verify: ${verificationUrl}` : ""}
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <img src="/images/notary-seal.png" alt="Notary Seal" className="h-10 w-10 rounded-full object-contain" />
+            <img loading="lazy" decoding="async" src="/images/notary-seal.png" alt="Notary Seal" className="h-10 w-10 rounded-full object-contain" />
             <div>
               <h3 className="font-sans text-lg font-bold">Certificate of Notarization</h3>
               <p className="text-xs text-muted-foreground">State of {commissionState} — County of {county}</p>

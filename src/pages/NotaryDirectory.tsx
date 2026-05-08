@@ -198,7 +198,7 @@ export default function NotaryDirectory() {
                               style={{ borderColor: themeColor, background: `${themeColor}15` }}
                             >
                               {pro.profile_photo_path?.startsWith("http") ? (
-                                <img src={pro.profile_photo_path} alt={pro.display_name} className="h-full w-full rounded-full object-cover" />
+                                <img loading="lazy" decoding="async" src={pro.profile_photo_path} alt={pro.display_name} className="h-full w-full rounded-full object-cover" />
                               ) : (
                                 <span className="text-xl font-black" style={{ color: themeColor }}>
                                   {pro.display_name?.charAt(0)?.toUpperCase() || "P"}
