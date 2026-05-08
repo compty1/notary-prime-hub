@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useShopAddons, useCart } from "@/hooks/useShop";
 import { ShoppingCart, ArrowLeft } from "lucide-react";
 import { PageErrorBoundary } from "@/components/PageErrorBoundary";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const CATEGORIES = [
   { key: "all", label: "All" },
@@ -20,6 +21,7 @@ const CATEGORIES = [
 ];
 
 export default function ShopAddons() {
+  usePageMeta({ title: "Shop Addons" });
   const [category, setCategory] = useState("all");
   const { data: addons, isLoading } = useShopAddons(category);
   const { addToCart } = useCart();

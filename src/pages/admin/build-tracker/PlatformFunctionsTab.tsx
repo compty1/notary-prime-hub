@@ -13,6 +13,7 @@ import {
 import { PLATFORM_ENTITIES, getEntityHealth } from "./platformEntities";
 import type { PlatformEntity, EntityStatus, SubComponent } from "./platformEntities";
 import type { TrackerItem } from "./constants";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   Mail: <Mail className="h-4 w-4" />,
@@ -47,6 +48,7 @@ const STATUS_ICONS: Record<EntityStatus, React.ReactNode> = {
 type Props = { items: TrackerItem[] };
 
 export default function PlatformFunctionsTab({ items }: Props) {
+  usePageMeta({ title: "Platform Functions Tab", noIndex: true });
   const [expanded, setExpanded] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [domainFilter, setDomainFilter] = useState<string>("all");

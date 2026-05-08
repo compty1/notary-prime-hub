@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Send, Loader2, MessageSquare, Paperclip, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 interface ChatMessage {
  id: string;
@@ -33,6 +34,7 @@ interface Props {
 }
 
 export default function PortalChatTab({ userId, chatMessages, chatInput, setChatInput, sendingChat, chatRecipient, setChatRecipient, staffUsers, onSend, chatEndRef }: Props) {
+  usePageMeta({ title: "Portal Chat Tab" });
  const { toast } = useToast();
  const fileRef = useRef<HTMLInputElement>(null);
 

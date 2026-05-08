@@ -16,6 +16,7 @@ import { ChevronDown, ChevronRight, CheckCircle2, Clock, AlertTriangle, Plus, Lo
 import type { TrackerPlan, PlanItem, TrackerItem } from "./constants";
 import { autoCategorize } from "./constants";
 import { usePlans, useUpdatePlan, useBulkInsert, useInsertPlan, useDeletePlan } from "./hooks";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 type Props = {
   items: TrackerItem[];
@@ -75,6 +76,7 @@ function crossReferenceItems(planItems: PlanItem[], trackerItems: TrackerItem[])
 }
 
 export default function PlanHistoryTab({ items }: Props) {
+  usePageMeta({ title: "Plan History Tab", noIndex: true });
   const { data: plans = [], isLoading } = usePlans();
   const updatePlan = useUpdatePlan();
   const bulkInsert = useBulkInsert();

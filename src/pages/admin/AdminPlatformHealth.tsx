@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Activity, CheckCircle2, AlertTriangle, XCircle, RefreshCw, Server, Database, Zap, Shield } from "lucide-react";
 import { format } from "date-fns";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const SERVICES = [
   { name: "Authentication", check: async () => { const { error } = await supabase.auth.getSession(); return !error; } },
@@ -16,6 +17,7 @@ const SERVICES = [
 ];
 
 export default function AdminPlatformHealth() {
+  usePageMeta({ title: "Admin Platform Health", noIndex: true });
   const { data: healthChecks = [], isLoading, refetch } = useQuery({
     queryKey: ["platform-health"],
     queryFn: async () => {

@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import BulkDocumentUpload from "@/components/BulkDocumentUpload";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const docStatusColors: Record<string, string> = {
   uploaded: "bg-info/10 text-info",
@@ -33,6 +34,7 @@ interface Props {
 }
 
 export default function PortalDocumentsTab({ userId, documents, setDocuments, upcomingAppointments, onExplainDocument }: Props) {
+  usePageMeta({ title: "Portal Documents Tab" });
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);

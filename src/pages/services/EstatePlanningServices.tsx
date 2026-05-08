@@ -11,6 +11,7 @@ import { PageShell } from "@/components/PageShell";
 import { PageErrorBoundary } from "@/components/PageErrorBoundary";
 import { ProductCalloutCard } from "@/components/shop/ProductCalloutCard";
 import { Shield, Clock, FileText, CheckCircle, Scale, ArrowRight } from "lucide-react";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const ESTATE_SERVICES = [
   { num: 1, name: "Power of Attorney (POA)", orc: "ORC §1337.12", time: "30 min", price: "$25", desc: "Durable and limited POA preparation and notarization. Grants authority to act on behalf of another person." },
@@ -22,6 +23,7 @@ const ESTATE_SERVICES = [
 ];
 
 export default function EstatePlanningServices() {
+  usePageMeta({ title: "Estate Planning Services" });
   return (
     <PageErrorBoundary pageName="Estate Planning">
       <PageShell>

@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Info, Globe } from "lucide-react";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import {
   HAGUE_COUNTRIES, USCIS_FORMS, COMMON_LANGUAGES, TRANSLATION_DOC_TYPES,
   DIGITAL_ONLY_SERVICES,
@@ -89,6 +90,7 @@ interface IntakeFieldsProps {
 }
 
 export default function BookingIntakeFields(props: IntakeFieldsProps) {
+  usePageMeta({ title: "Booking Intake Fields" });
   const { serviceType, currentCategory: cat, serviceCategories } = props;
   const { markTouched, showError } = useFieldValidation();
   if (!serviceType) return null;

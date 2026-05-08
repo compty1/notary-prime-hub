@@ -8,6 +8,7 @@ import { Calendar, Clock, Loader2, AlertTriangle, LocateFixed, CalendarOff, Info
 import { CharCounter } from "@/components/CharCounter";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { formatTimeSlot, isDigitalOnly, requiresNotarizationType, US_STATES, getHolidaysForYear, MINIMUM_ADVANCE_HOURS } from "./bookingConstants";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 interface ScheduleStepProps {
   date: string; setDate: (v: string) => void;
@@ -38,6 +39,7 @@ interface ScheduleStepProps {
 }
 
 export default function BookingScheduleStep(props: ScheduleStepProps) {
+  usePageMeta({ title: "Booking Schedule Step" });
   const { date, setDate, time, setTime, serviceType, notarizationType, serviceCategories } = props;
 
   // Holiday detection

@@ -9,8 +9,10 @@ import { useCart, useShopPackages, useShopAddons } from "@/hooks/useShop";
 import { Trash2, ArrowLeft, ShoppingCart, Package } from "lucide-react";
 import { PageErrorBoundary } from "@/components/PageErrorBoundary";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 export default function ShopCart() {
+  usePageMeta({ title: "Shop Cart" });
   const { user } = useAuth();
   const { cart, isLoading, removeFromCart, clearCart } = useCart();
   const { data: packages } = useShopPackages();

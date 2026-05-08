@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Clock, CheckCircle2, AlertTriangle, XCircle, Timer } from "lucide-react";
 import { differenceInHours, differenceInMinutes, parseISO } from "date-fns";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const SLA_TARGETS: Record<string, { target_hours: number; label: string }> = {
   "Mobile Notary": { target_hours: 4, label: "4h response" },
@@ -21,6 +22,7 @@ const SLA_TARGETS: Record<string, { target_hours: number; label: string }> = {
 };
 
 export default function AdminSLAMonitor() {
+  usePageMeta({ title: "Admin S L A Monitor", noIndex: true });
   const { data: appointments = [] } = useQuery({
     queryKey: ["sla-appointments"],
     queryFn: async () => {

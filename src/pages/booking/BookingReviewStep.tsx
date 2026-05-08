@@ -9,6 +9,7 @@ import { MapPin, Monitor, Calendar, Shield, DollarSign, AlertTriangle, Clock, Ey
 import { formatTimeSlot, isDigitalOnly, HAGUE_COUNTRIES } from "./bookingConstants";
 import { OhioComplianceNotice } from "@/components/OhioComplianceNotice";
 import { SignerChecklist } from "@/components/SignerChecklist";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 interface ReviewStepProps {
  isNonNotarial: boolean;
@@ -45,6 +46,7 @@ interface ReviewStepProps {
 }
 
 export default function BookingReviewStep(props: ReviewStepProps) {
+  usePageMeta({ title: "Booking Review Step" });
  const [showGuestPassword, setShowGuestPassword] = useState(false);
  const { notarizationType, serviceType, serviceCategories, date, time, estimatedPrice, pricingSettings, urgencyLevel, documentCount } = props;
 

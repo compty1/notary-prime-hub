@@ -9,8 +9,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart3, FileText, Shield, DollarSign, Calendar, Download, TrendingUp } from "lucide-react";
 import { format, subDays, startOfMonth, endOfMonth } from "date-fns";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 export default function AdminReportsCenter() {
+  usePageMeta({ title: "Admin Reports Center", noIndex: true });
   const [reportType, setReportType] = useState("revenue");
   const [period, setPeriod] = useState("30");
 

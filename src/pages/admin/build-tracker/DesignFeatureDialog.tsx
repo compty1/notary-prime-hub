@@ -9,6 +9,7 @@ import { Loader2, Sparkles, Copy, ListChecks } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useBulkInsert } from "./hooks";
 import { useSSEStream, safeClipboardWrite } from "./useSSEStream";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 type Props = {
   open: boolean;
@@ -31,6 +32,7 @@ Provide:
 Format the steps clearly so they can be added to a to-do list.`;
 
 export default function DesignFeatureDialog({ open, onClose }: Props) {
+  usePageMeta({ title: "Design Feature Dialog", noIndex: true });
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const bulkInsert = useBulkInsert();

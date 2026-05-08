@@ -9,6 +9,7 @@ import { PageShell } from "@/components/PageShell";
 import { PageErrorBoundary } from "@/components/PageErrorBoundary";
 import { ProductCalloutCard } from "@/components/shop/ProductCalloutCard";
 import { Briefcase, Clock, Shield, ArrowRight } from "lucide-react";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const BUSINESS_SERVICES = [
   { num: 1, name: "Articles of Incorporation", time: "30 min", price: "$25", desc: "Notarization of corporate formation documents for Ohio Secretary of State filing." },
@@ -20,6 +21,7 @@ const BUSINESS_SERVICES = [
 ];
 
 export default function BusinessContractsServices() {
+  usePageMeta({ title: "Business Contracts Services" });
   return (
     <PageErrorBoundary pageName="Business Contracts">
       <PageShell>

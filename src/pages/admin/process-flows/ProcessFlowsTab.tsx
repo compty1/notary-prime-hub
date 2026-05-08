@@ -3,11 +3,13 @@ import { SERVICE_FLOWS } from "@/pages/admin/build-tracker/serviceFlows";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import {
   CheckCircle2, AlertCircle, Zap, Search, ChevronDown, ChevronRight, Mail
 } from "lucide-react";
 
 export default function ProcessFlowsTab() {
+  usePageMeta({ title: "Process Flows Tab", noIndex: true });
   const [expandedFlows, setExpandedFlows] = useState<Set<string>>(new Set(["booking"]));
   const [searchQuery, setSearchQuery] = useState("");
 

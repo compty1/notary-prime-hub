@@ -4,12 +4,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Target, Download, Loader2, Users, TrendingUp } from "lucide-react";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 interface PortalLeadsTabProps {
   userId: string;
 }
 
 export default function PortalLeadsTab({ userId }: PortalLeadsTabProps) {
+  usePageMeta({ title: "Portal Leads Tab" });
   const [leads, setLeads] = useState<any[]>([]);
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

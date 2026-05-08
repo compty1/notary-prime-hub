@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { ALLOWED_IMAGE_MIMES } from "@/lib/fileValidation";
 import { ensureHex } from "@/lib/colorUtils";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 interface ServiceItem {
   name: string;
@@ -79,6 +80,7 @@ const PROFESSIONAL_TYPES = [
 ];
 
 export default function PortalNotaryPageTab() {
+  usePageMeta({ title: "Portal Notary Page Tab" });
   const { user } = useAuth();
   const { get: getSetting } = useSettings();
   const { toast } = useToast();

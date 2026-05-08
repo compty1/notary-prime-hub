@@ -5,8 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2, Users, Star, Clock, CheckCircle2, TrendingUp } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 export default function AdminPerformance() {
+  usePageMeta({ title: "Admin Performance", noIndex: true });
   const [appointments, setAppointments] = useState<Record<string, any>[]>([]);
   const [feedback, setFeedback] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);

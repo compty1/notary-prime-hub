@@ -17,6 +17,7 @@ import { PAGE_REGISTRY } from "./pageRegistry";
 import { PLATFORM_ENTITIES, getEntityHealth } from "./platformEntities";
 import { useBulkUpdate } from "./hooks";
 import VerifyFixesButton from "./VerifyFixesButton";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 type Props = {
   items: TrackerItem[];
@@ -27,6 +28,7 @@ type Props = {
 };
 
 export default function DashboardTab({ items, plans, onJumpToGap, onTabChange, onOpenFeatureGen }: Props) {
+  usePageMeta({ title: "Dashboard Tab", noIndex: true });
   const total = items.length;
   const open = items.filter((i) => i.status === "open").length;
   const inProgress = items.filter((i) => i.status === "in_progress").length;

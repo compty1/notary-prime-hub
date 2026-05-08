@@ -11,6 +11,7 @@ import { PLATFORM_ENTITIES, getEntityHealth } from "./platformEntities";
 import { SERVICE_FLOWS } from "./serviceFlows";
 import { useInsertPlan } from "./hooks";
 import { useSSEStream, safeClipboardWrite } from "./useSSEStream";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -30,6 +31,7 @@ const QUICK_PROMPTS = [
 ];
 
 export default function AIAnalystTab({ items, plans }: Props) {
+  usePageMeta({ title: "A I Analyst Tab", noIndex: true });
   const [messages, setMessages] = useState<Message[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);

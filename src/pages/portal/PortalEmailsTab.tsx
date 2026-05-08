@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import {
   Loader2, Save, Mail, MailCheck, Clock, CheckCircle2, Eye,
   Tag, Palette, Settings, ExternalLink, AlertCircle, RefreshCw,
@@ -143,6 +144,7 @@ const EMAIL_TYPES = [
 /* ═══════ MAIN COMPONENT ═══════ */
 
 export default function PortalEmailsTab() {
+  usePageMeta({ title: "Portal Emails Tab" });
   const { user } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);

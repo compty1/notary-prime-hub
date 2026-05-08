@@ -15,8 +15,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Edit, Trash2, Loader2, BookOpen, FileQuestion, Award, Layers } from "lucide-react";
 import { format } from "date-fns";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 export default function AdminAcademyManager() {
+  usePageMeta({ title: "Admin Academy Manager", noIndex: true });
   const qc = useQueryClient();
   const [selectedCourseId, setSelectedCourseId] = useState<string>("");
 

@@ -12,10 +12,12 @@ import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, DollarSign, Edit, Trash2 } from "lucide-react";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const TIERS = ["basic", "standard", "premium"];
 
 export default function AdminPrintPricing() {
+  usePageMeta({ title: "Admin Print Pricing", noIndex: true });
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [showAdd, setShowAdd] = useState(false);

@@ -11,10 +11,12 @@ import { useShopPackages, useShopAddons, useCart } from "@/hooks/useShop";
 import { CheckCircle, ShoppingCart, ArrowLeft, Package } from "lucide-react";
 import { PageErrorBoundary } from "@/components/PageErrorBoundary";
 import { Skeleton } from "@/components/ui/skeleton";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 type Variation = "physical" | "digital" | "complete";
 
 export default function ShopPackageDetail() {
+  usePageMeta({ title: "Shop Package Detail" });
   const { tier } = useParams<{ tier: string }>();
   const { data: packages, isLoading } = useShopPackages();
   const { data: addons } = useShopAddons();
