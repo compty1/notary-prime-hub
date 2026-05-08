@@ -63,7 +63,7 @@ export default function StickerDesigner() {
                   style={{ backgroundColor: state.bgColor, clipPath }}
                 >
                   {state.artworkUrl ? (
-                    <img src={state.artworkUrl} alt="Artwork" className="w-full h-full object-cover" />
+                    <img loading="lazy" decoding="async" src={state.artworkUrl} alt="Artwork" className="w-full h-full object-cover" />
                   ) : (
                     <div className="text-center p-4">
                       {state.text ? (

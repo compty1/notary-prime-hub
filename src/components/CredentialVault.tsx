@@ -182,7 +182,7 @@ export default function CredentialVault() {
           {filtered.map((c) => (
             <Card key={c.id} className="group relative">
               <CardHeader className="pb-2 flex-row items-center gap-3">
-                <img
+                <img loading="lazy" decoding="async"
                   src={c.service_logo_url || getLogoUrl(c.service_url, c.service_name)}
                   alt="Credential document preview"
                   className="h-8 w-8 rounded"

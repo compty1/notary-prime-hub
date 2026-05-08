@@ -276,7 +276,7 @@ export default function NotaryPage() {
         <nav className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" aria-label="Professional page navigation">
           <div className="mx-auto max-w-6xl flex items-center gap-1 overflow-x-auto px-4 py-2">
             {logoUrl && (
-              <img src={logoUrl} alt={`${page.display_name} logo`} className="h-8 w-auto max-w-[100px] object-contain mr-2 shrink-0" />
+              <img loading="lazy" decoding="async" src={logoUrl} alt={`${page.display_name} logo`} className="h-8 w-auto max-w-[100px] object-contain mr-2 shrink-0" />
             )}
             <button onClick={() => scrollToSection("about")} className="whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-muted">About</button>
             {services.length > 0 && (
@@ -319,7 +319,7 @@ export default function NotaryPage() {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex flex-col items-center gap-6 text-center md:flex-row md:text-left">
               <div className="flex h-32 w-32 items-center justify-center rounded-full border-4 shadow-xl sm:h-40 sm:w-40" style={{ borderColor: themeColor, background: `${themeColor}15` }}>
                 {profilePhotoUrl ? (
-                  <img src={profilePhotoUrl} alt={`${page.display_name} profile photo`} className="h-full w-full rounded-full object-cover" />
+                  <img loading="lazy" decoding="async" src={profilePhotoUrl} alt={`${page.display_name} profile photo`} className="h-full w-full rounded-full object-cover" />
                 ) : (
                   <span className="text-4xl font-black" style={{ color: themeColor }}>{page.display_name?.charAt(0)?.toUpperCase() || "N"}</span>
                 )}
@@ -713,7 +713,7 @@ export default function NotaryPage() {
           <div className="mx-auto max-w-6xl px-4 py-8">
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
               <div className="flex items-center gap-3 text-center sm:text-left">
-                {logoUrl && <img src={logoUrl} alt={`${page.display_name} logo`} className="h-10 w-auto max-w-[80px] object-contain" />}
+                {logoUrl && <img loading="lazy" decoding="async" src={logoUrl} alt={`${page.display_name} logo`} className="h-10 w-auto max-w-[80px] object-contain" />}
                 <div>
                   <p className="text-sm font-semibold text-foreground">{page.display_name}</p>
                   <p className="text-xs text-muted-foreground">{professionalLabel} — {creds.commissioned_state || "Ohio"}</p>

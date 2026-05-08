@@ -465,7 +465,7 @@ export default function AdminNotaryPages() {
                    <TableCell>
                      <div className="flex items-center gap-2">
                        {p.profile_photo_path?.startsWith("http") ? (
-                         <img src={p.profile_photo_path} alt={`${p.display_name || "Notary"} profile`} className="h-8 w-8 rounded-full object-cover border" />
+                         <img loading="lazy" decoding="async" src={p.profile_photo_path} alt={`${p.display_name || "Notary"} profile`} className="h-8 w-8 rounded-full object-cover border" />
                        ) : (
                          <div className="flex h-8 w-8 items-center justify-center rounded-full border bg-muted text-xs font-bold">
                            {p.display_name?.charAt(0)?.toUpperCase() || "?"}
@@ -648,7 +648,7 @@ export default function AdminNotaryPages() {
                   <div className="flex items-center gap-3 mt-1">
                     {editPage.profile_photo_path ? (
                       editPage.profile_photo_path.startsWith("http") ? (
-                        <img src={editPage.profile_photo_path} alt="Profile" className="h-16 w-16 rounded-full object-cover border" />
+                        <img loading="lazy" decoding="async" src={editPage.profile_photo_path} alt="Profile" className="h-16 w-16 rounded-full object-cover border" />
                       ) : (
                         <div className="flex h-16 w-16 items-center justify-center rounded-full border bg-success/10 text-xs font-medium text-success">
                           ✓ Uploaded
@@ -679,7 +679,7 @@ export default function AdminNotaryPages() {
                   <p className="text-xs text-muted-foreground mb-1">Recommended 1200×400px landscape</p>
                   {editPage.cover_photo_path ? (
                     editPage.cover_photo_path.startsWith("http") ? (
-                      <img src={editPage.cover_photo_path} alt="Cover" className="h-24 w-full rounded-lg object-cover border" />
+                      <img loading="lazy" decoding="async" src={editPage.cover_photo_path} alt="Cover" className="h-24 w-full rounded-lg object-cover border" />
                     ) : (
                       <div className="flex h-24 items-center justify-center rounded-lg border bg-success/10 text-sm font-medium text-success">✓ Cover uploaded</div>
                     )
@@ -712,7 +712,7 @@ export default function AdminNotaryPages() {
                   {(Array.isArray(editPage.gallery_photos) ? editPage.gallery_photos : []).map((url: string, i: number) => (
                     <div key={i} className="group relative aspect-square rounded-lg border overflow-hidden">
                       {url.startsWith("http") ? (
-                        <img src={url} alt={`Gallery ${i + 1}`} className="h-full w-full object-cover" />
+                        <img loading="lazy" decoding="async" src={url} alt={`Gallery ${i + 1}`} className="h-full w-full object-cover" />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center bg-success/10 text-xs text-success">✓ Photo {i + 1}</div>
                       )}
@@ -846,7 +846,7 @@ export default function AdminNotaryPages() {
                 <p className="text-[10px] text-muted-foreground mb-2">Upload your business/operations logo. Displayed in the header of your public page. PNG/SVG recommended, transparent background preferred.</p>
                 <div className="flex items-center gap-3">
                   {editPage.logo_path ? (
-                    <img
+                    <img loading="lazy" decoding="async"
                       src={editPage.logo_path?.startsWith("http") ? editPage.logo_path : undefined}
                       alt="Business Logo"
                       className="h-16 w-auto max-w-[140px] rounded-lg object-contain border p-1 bg-background"
@@ -905,7 +905,7 @@ export default function AdminNotaryPages() {
                 <div className="flex items-center gap-3">
                   {editPage.logo_path ? (
                     <div className="h-12 w-auto max-w-[80px] flex items-center">
-                      <img src={editPage.logo_path} alt="Logo preview" className="max-h-12 w-auto object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                      <img loading="lazy" decoding="async" src={editPage.logo_path} alt="Logo preview" className="max-h-12 w-auto object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                     </div>
                   ) : (
                     <div className="h-12 w-12 rounded-full border-2" style={{ borderColor: ensureHex(editPage.theme_color), background: `${ensureHex(editPage.theme_color)}15` }}>

@@ -2,6 +2,8 @@
  * Dynamic Service Intake Form with file upload, cross-sell, packages, add-ons, FAQ, checklist, and timeline.
  */
 import { useState, useRef } from "react";
+import { z } from "zod";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -117,16 +119,54 @@ export function ServiceIntakeForm({
 
   const canSubmit = allRequiredFilled && allRequiredConsents && !submitting && !!user;
 
+  const buildSchema = () => {
+    const shape: Record<string, z.ZodTypeAny> = {};
+    for (const f of fields) {
+      let s: z.ZodTypeAny;
+      switch (f.type) {
+        case "email":
+          s = z.string().trim().email("Invalid email address").max(255);
+          break;
+        case "tel":
+          s = z.string().trim().min(7, "Phone too short").max(20);
+          break;
+        case "number":
+          s = z.coerce.number().finite();
+          break;
+        case "textarea":
+          s = z.string().trim().max(5000);
+          break;
+        case "file":
+          s = z.array(z.string()).max(20);
+          break;
+        default:
+          s = z.string().trim().max(1000);
+      }
+      shape[f.name] = f.required ? s : s.optional().or(z.literal(""));
+    }
+    return z.object(shape).passthrough();
+  };
+
   const handleSubmit = async () => {
     if (!canSubmit) return;
-    setSubmitting(true);
     const payload = {
       ...formData,
+      ...Object.fromEntries(Object.entries(uploadedFiles).map(([k, v]) => [k, v.map(f => f.path)])),
+    };
+    const parsed = buildSchema().safeParse(payload);
+    if (!parsed.success) {
+      const first = Object.values(parsed.error.flatten().fieldErrors)[0]?.[0];
+      toast.error(first ?? "Please review your inputs.");
+      return;
+    }
+    setSubmitting(true);
+    const fullPayload = {
+      ...parsed.data,
       consents,
       ...(selectedPackage && { selected_package: selectedPackage }),
       ...(selectedAddOns.length && { add_ons: selectedAddOns }),
     };
-    const result = await submitRequest(payload, notes || undefined);
+    const result = await submitRequest(fullPayload, notes || undefined);
     setSubmitting(false);
     if (result) {
       setSubmitted(true);

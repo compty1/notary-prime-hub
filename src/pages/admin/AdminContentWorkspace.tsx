@@ -436,7 +436,7 @@ export default function AdminContentWorkspace() {
                   <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
                 </label>
               </div>
-              {form.hero_image_url && <img src={form.hero_image_url} alt="Hero" className="h-24 rounded border border-border object-cover" />}
+              {form.hero_image_url && <img loading="lazy" decoding="async" src={form.hero_image_url} alt="Hero" className="h-24 rounded border border-border object-cover" />}
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -511,7 +511,7 @@ export default function AdminContentWorkspace() {
           <DialogHeader>
             <DialogTitle>{editingPost?.title}</DialogTitle>
           </DialogHeader>
-          {editingPost?.hero_image_url && <img src={editingPost.hero_image_url} alt="Hero" className="w-full h-48 object-cover rounded-lg" />}
+          {editingPost?.hero_image_url && <img loading="lazy" decoding="async" src={editingPost.hero_image_url} alt="Hero" className="w-full h-48 object-cover rounded-lg" />}
           <div className="flex gap-2 mb-4">
             <Badge className={STATUS_COLORS[editingPost?.status] || "bg-muted"}>{editingPost?.status}</Badge>
             <Badge variant="outline">{editingPost?.category}</Badge>

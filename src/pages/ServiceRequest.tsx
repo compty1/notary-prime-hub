@@ -519,7 +519,7 @@ export default function ServiceRequest() {
                       return (
                         <div key={i} className="flex items-center justify-between rounded border border-border/50 px-2 py-1.5 text-sm gap-2">
                           {isImage ? (
-                            <img
+                            <img loading="lazy" decoding="async"
                               src={URL.createObjectURL(f)}
                               alt={f.name}
                               className="h-10 w-10 rounded object-cover flex-shrink-0"

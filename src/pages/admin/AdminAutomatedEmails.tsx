@@ -233,7 +233,7 @@ function renderPreview(bodyHtml: string, sampleData: Record<string, string>, mas
       </div>
       <div style="background:${master.bodyBg};">
         <div style="background:${master.headerColor};padding:${p};text-align:center;">
-          ${master.logoUrl ? `<img src="${master.logoUrl}" alt="Logo" style="max-height:48px;margin-bottom:12px;" />` : ""}
+          ${master.logoUrl ? `<img loading="lazy" decoding="async" src="${master.logoUrl}" alt="Logo" style="max-height:48px;margin-bottom:12px;" />` : ""}
           <h1 style="color:${master.accentColor};margin:0;font-size:20px;">NotaryDex</h1>
         </div>
         <div style="padding:${p};">${html}</div>
@@ -285,7 +285,7 @@ function MasterBrandingTab({ master, setMaster, onSave, saving, uploading, setUp
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-3">
-              {master.logoUrl && <img src={master.logoUrl} alt="Email logo" className="h-10 rounded border border-border" />}
+              {master.logoUrl && <img loading="lazy" decoding="async" src={master.logoUrl} alt="Email logo" className="h-10 rounded border border-border" />}
               <label className="cursor-pointer">
                 <input type="file" accept=".png,.jpg,.jpeg,.svg" className="hidden" onChange={handleLogoUpload} />
                 <Button variant="outline" size="sm" asChild disabled={uploading}>

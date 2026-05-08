@@ -683,7 +683,7 @@ export default function AdminServices() {
                   <Label className="flex items-center gap-1"><Image className="h-3.5 w-3.5" /> Hero Image URL</Label>
                   <Input value={form.hero_image_url} onChange={e => setForm({ ...form, hero_image_url: e.target.value })} placeholder="https://..." />
                   {form.hero_image_url && (
-                    <img src={form.hero_image_url} alt="Hero preview" className="mt-2 rounded-md max-h-32 object-cover border" onError={e => (e.currentTarget.style.display = "none")} />
+                    <img loading="lazy" decoding="async" src={form.hero_image_url} alt="Hero preview" className="mt-2 rounded-md max-h-32 object-cover border" onError={e => (e.currentTarget.style.display = "none")} />
                   )}
                 </div>
                 <div>

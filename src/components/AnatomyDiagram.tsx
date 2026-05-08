@@ -40,7 +40,7 @@ export function AnatomyDiagram({ imageSrc, title, callouts }: AnatomyDiagramProp
         @media print { body { padding: 0; } }
       </style></head><body>
         <h1>${title} — Document Anatomy</h1>
-        <img src="${imageSrc}" alt="${title}" />
+        <img loading="lazy" decoding="async" src="${imageSrc}" alt="${title}" />
         <ul class="callout-list">
           ${callouts.map(c => `<li><span class="callout-num">${c.id}.</span><strong>${c.label}</strong>${c.orc ? ` <span class="orc">(${c.orc})</span>` : ""} — ${c.description}</li>`).join("")}
         </ul>
@@ -121,7 +121,7 @@ export function AnatomyDiagram({ imageSrc, title, callouts }: AnatomyDiagramProp
             <DialogDescription>Annotated diagram showing the key elements of this Ohio notarial document.</DialogDescription>
           </DialogHeader>
           <div className="relative">
-            <img src={imageSrc} alt={title} className="w-full rounded" />
+            <img loading="lazy" decoding="async" src={imageSrc} alt={title} className="w-full rounded" />
             {callouts.map(c => (
               <button
                 key={c.id}

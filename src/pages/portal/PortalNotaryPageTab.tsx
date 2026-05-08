@@ -639,7 +639,7 @@ export default function PortalNotaryPageTab() {
             <p className="text-[10px] text-muted-foreground mb-1">Upload your business logo. Displayed in the header of your public page. PNG/SVG recommended, transparent background preferred.</p>
             <div className="mt-1 flex items-center gap-3">
               {resolvedLogoUrl || page.logo_path ? (
-                <img src={resolvedLogoUrl || page.logo_path} alt="Logo" className="h-16 w-auto max-w-[120px] rounded-lg object-contain border p-1" />
+                <img loading="lazy" decoding="async" src={resolvedLogoUrl || page.logo_path} alt="Logo" className="h-16 w-auto max-w-[120px] rounded-lg object-contain border p-1" />
               ) : (
                 <div className="flex h-16 w-24 items-center justify-center rounded-lg border-2 border-dashed bg-muted text-xs text-muted-foreground">No logo</div>
               )}
@@ -667,7 +667,7 @@ export default function PortalNotaryPageTab() {
               <p className="text-[10px] text-muted-foreground mb-1">Square image, min 200×200px. JPG/PNG/WebP.</p>
               <div className="mt-1 flex items-center gap-3">
                 {resolvedProfileUrl || page.profile_photo_path ? (
-                  <img src={resolvedProfileUrl || page.profile_photo_path} alt="Profile" className="h-16 w-16 rounded-full object-cover border" />
+                  <img loading="lazy" decoding="async" src={resolvedProfileUrl || page.profile_photo_path} alt="Profile" className="h-16 w-16 rounded-full object-cover border" />
                 ) : (
                   <div className="flex h-16 w-16 items-center justify-center rounded-full border bg-muted text-xl font-bold text-muted-foreground">
                     {page.display_name?.charAt(0)?.toUpperCase() || "N"}
@@ -693,7 +693,7 @@ export default function PortalNotaryPageTab() {
               <p className="text-[10px] text-muted-foreground mb-1">Recommended 1200×400px landscape. JPG/PNG/WebP.</p>
               <div className="mt-1">
                 {resolvedCoverUrl || page.cover_photo_path ? (
-                  <img src={resolvedCoverUrl || page.cover_photo_path} alt="Cover" className="h-24 w-full rounded-lg object-cover border" />
+                  <img loading="lazy" decoding="async" src={resolvedCoverUrl || page.cover_photo_path} alt="Cover" className="h-24 w-full rounded-lg object-cover border" />
                 ) : (
                   <div className="flex h-24 items-center justify-center rounded-lg border bg-muted text-sm text-muted-foreground">No cover photo</div>
                 )}
@@ -721,7 +721,7 @@ export default function PortalNotaryPageTab() {
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
               {resolvedGalleryUrls.map((url: string, i: number) => (
                 <div key={i} className="group relative aspect-square rounded-lg border overflow-hidden">
-                  <img src={url} alt={`Gallery ${i + 1}`} className="h-full w-full object-cover" />
+                  <img loading="lazy" decoding="async" src={url} alt={`Gallery ${i + 1}`} className="h-full w-full object-cover" />
                   <button onClick={() => removeGalleryPhoto(i)}
                     className="absolute top-1 right-1 rounded-full bg-destructive/80 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Trash2 className="h-3 w-3 text-primary-foreground" />
