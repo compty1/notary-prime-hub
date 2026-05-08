@@ -4,6 +4,7 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { UPLGuard } from "@/components/services/UPLGuard";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "service_type", label: "Service Needed", type: "select", required: true, options: [
@@ -23,6 +24,7 @@ const FIELDS: IntakeField[] = [
 ];
 
 export default function EstatePlanningService() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Estate Planning Service", description: "Estate Planning Service — Notarized and processed by Notar in Ohio.", slug: "estate-planning-service" }) });
   usePageMeta({ title: "Estate Planning Support" });
   return (
     <div className="container max-w-5xl py-8">

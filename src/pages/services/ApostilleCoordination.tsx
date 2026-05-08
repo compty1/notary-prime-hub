@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "doc_type", label: "Document Type", type: "select", required: true, options: [
@@ -58,6 +59,7 @@ const TIMELINE = {
 };
 
 export default function ApostilleCoordination() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Apostille Coordination", description: "Apostille Coordination — Notarized and processed by Notar in Ohio.", slug: "apostille-coordination" }) });
   usePageMeta({ title: "Apostille Services" });
   return (
     <div className="container max-w-5xl py-8">

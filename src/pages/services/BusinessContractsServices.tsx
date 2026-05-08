@@ -10,6 +10,7 @@ import { PageErrorBoundary } from "@/components/PageErrorBoundary";
 import { ProductCalloutCard } from "@/components/shop/ProductCalloutCard";
 import { Briefcase, Clock, Shield, ArrowRight } from "lucide-react";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const BUSINESS_SERVICES = [
   { num: 1, name: "Articles of Incorporation", time: "30 min", price: "$25", desc: "Notarization of corporate formation documents for Ohio Secretary of State filing." },
@@ -21,6 +22,7 @@ const BUSINESS_SERVICES = [
 ];
 
 export default function BusinessContractsServices() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Business Contracts Services", description: "Business Contracts Services — Notarized and processed by Notar in Ohio.", slug: "business-contracts-services" }) });
   usePageMeta({ title: "Business Contracts Services" });
   return (
     <PageErrorBoundary pageName="Business Contracts">

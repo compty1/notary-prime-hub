@@ -1,6 +1,7 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { UPLGuard } from "@/components/services/UPLGuard";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "form_type", label: "Court Form Type", type: "select", required: true, options: [
@@ -52,6 +53,7 @@ const TIMELINE = {
 };
 
 export default function CourtFormPreparation() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Court Form Preparation", description: "Court Form Preparation — Notarized and processed by Notar in Ohio.", slug: "court-form-preparation" }) });
   usePageMeta({ title: "Court Form Preparation" });
   return (
     <div className="container max-w-5xl py-8">

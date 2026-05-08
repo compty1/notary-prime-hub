@@ -1,6 +1,7 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { UPLGuard } from "@/components/services/UPLGuard";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "document_type", label: "Document Type", type: "select", required: true, options: [
@@ -36,6 +37,7 @@ const FAQ = [
 ];
 
 export default function ClericalDocPrep() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Clerical Doc Prep", description: "Clerical Doc Prep — Notarized and processed by Notar in Ohio.", slug: "clerical-doc-prep" }) });
   usePageMeta({ title: "Clerical Document Preparation" });
   return (
     <div className="container max-w-5xl py-8">

@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "country_standard", label: "Country Standard", type: "select", required: true, options: [
@@ -31,6 +32,7 @@ const FAQ = [
 ];
 
 export default function PassportPhoto() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Passport Photo", description: "Passport Photo — Notarized and processed by Notar in Ohio.", slug: "passport-photo" }) });
   usePageMeta({ title: "Passport Photo Service" });
   return (
     <div className="container max-w-5xl py-8">

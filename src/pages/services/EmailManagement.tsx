@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "email_volume", label: "Daily Email Volume", type: "select", required: true, options: [
@@ -32,6 +33,7 @@ const FAQ = [
 ];
 
 export default function EmailManagement() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Email Management", description: "Email Management — Notarized and processed by Notar in Ohio.", slug: "email-management" }) });
   usePageMeta({ title: "Email Management" });
   return (
     <div className="container max-w-5xl py-8">

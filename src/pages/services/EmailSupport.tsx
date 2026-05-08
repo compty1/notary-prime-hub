@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "business_name", label: "Business Name", type: "text", required: true },
@@ -41,6 +42,7 @@ const TIMELINE = {
 };
 
 export default function EmailSupport() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Email Support", description: "Email Support — Notarized and processed by Notar in Ohio.", slug: "email-support" }) });
   usePageMeta({ title: "Email Support" });
   return (
     <div className="container max-w-5xl py-8">

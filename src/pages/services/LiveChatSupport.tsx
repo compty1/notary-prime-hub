@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "business_name", label: "Business Name", type: "text", required: true },
@@ -31,6 +32,7 @@ const FAQ = [
 ];
 
 export default function LiveChatSupport() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Live Chat Support", description: "Live Chat Support — Notarized and processed by Notar in Ohio.", slug: "live-chat-support" }) });
   usePageMeta({ title: "Live Chat Support" });
   return (
     <div className="container max-w-5xl py-8">

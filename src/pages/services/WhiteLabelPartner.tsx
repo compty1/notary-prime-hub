@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "company_name", label: "Company Name", type: "text", required: true },
@@ -42,6 +43,7 @@ const TIMELINE = {
 };
 
 export default function WhiteLabelPartner() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "White Label Partner", description: "White Label Partner — Notarized and processed by Notar in Ohio.", slug: "white-label-partner" }) });
   usePageMeta({ title: "White-Label Partnership" });
   return (
     <div className="container max-w-5xl py-8">

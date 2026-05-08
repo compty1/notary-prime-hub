@@ -1,6 +1,7 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { UPLGuard } from "@/components/services/UPLGuard";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "entity_type", label: "Entity Type", type: "select", required: true, options: [
@@ -57,6 +58,7 @@ const TIMELINE = {
 };
 
 export default function BusinessFormationService() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Business Formation Service", description: "Business Formation Service — Notarized and processed by Notar in Ohio.", slug: "business-formation-service" }) });
   usePageMeta({ title: "Business Formation" });
   return (
     <div className="container max-w-5xl py-8">

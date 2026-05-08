@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "credential_type", label: "Credential Type", type: "select", required: true, options: [
@@ -58,6 +59,7 @@ const TIMELINE = {
 };
 
 export default function CredentialEvaluation() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Credential Evaluation", description: "Credential Evaluation — Notarized and processed by Notar in Ohio.", slug: "credential-evaluation" }) });
   usePageMeta({ title: "Credential Evaluation" });
   return (
     <div className="container max-w-5xl py-8">

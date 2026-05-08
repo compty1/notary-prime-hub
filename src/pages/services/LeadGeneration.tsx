@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "target_market", label: "Target Market", type: "text", required: true, placeholder: "e.g. real estate agents in Columbus, OH" },
@@ -37,6 +38,7 @@ const FAQ = [
 ];
 
 export default function LeadGeneration() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Lead Generation", description: "Lead Generation — Notarized and processed by Notar in Ohio.", slug: "lead-generation" }) });
   usePageMeta({ title: "Lead Generation" });
   return (
     <div className="container max-w-5xl py-8">

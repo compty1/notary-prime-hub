@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "print_type", label: "Fingerprint Type", type: "select", required: true, options: [
@@ -61,6 +62,7 @@ const TIMELINE = {
 };
 
 export default function Fingerprinting() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Fingerprinting", description: "Fingerprinting — Notarized and processed by Notar in Ohio.", slug: "fingerprinting" }) });
   usePageMeta({ title: "Fingerprinting Services" });
   return (
     <div className="container max-w-5xl py-8">

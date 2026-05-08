@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "business_name", label: "Business / Practice Name", type: "text", required: true },
@@ -37,6 +38,7 @@ const TIMELINE = {
 };
 
 export default function WorkflowAudit() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Workflow Audit", description: "Workflow Audit — Notarized and processed by Notar in Ohio.", slug: "workflow-audit" }) });
   usePageMeta({ title: "Workflow Audit" });
   return (
     <div className="container max-w-5xl py-8">

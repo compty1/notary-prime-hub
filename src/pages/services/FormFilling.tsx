@@ -1,6 +1,7 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { UPLGuard } from "@/components/services/UPLGuard";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "form_type", label: "Form Type", type: "select", required: true, options: [
@@ -37,6 +38,7 @@ const FAQ = [
 ];
 
 export default function FormFilling() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Form Filling", description: "Form Filling — Notarized and processed by Notar in Ohio.", slug: "form-filling" }) });
   usePageMeta({ title: "Form Filling Assistance" });
   return (
     <div className="container max-w-5xl py-8">

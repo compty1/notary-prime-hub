@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "current_status", label: "Current Notary Status", type: "select", required: true, options: [
@@ -42,6 +43,7 @@ const TIMELINE = {
 };
 
 export default function RonOnboardingConsulting() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Ron Onboarding Consulting", description: "Ron Onboarding Consulting — Notarized and processed by Notar in Ohio.", slug: "ron-onboarding-consulting" }) });
   usePageMeta({ title: "RON Onboarding Consulting" });
   return (
     <div className="container max-w-5xl py-8">

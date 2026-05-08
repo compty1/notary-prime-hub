@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "language_from", label: "From Language", type: "select", required: true, options: [
@@ -36,6 +37,7 @@ const FAQ = [
 ];
 
 export default function InterpreterServices() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Interpreter Services", description: "Interpreter Services — Notarized and processed by Notar in Ohio.", slug: "interpreter-services" }) });
   usePageMeta({ title: "Interpreter Services" });
   return (
     <div className="container max-w-5xl py-8">

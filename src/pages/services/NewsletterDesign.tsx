@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "frequency", label: "Newsletter Frequency", type: "select", required: true, options: [
@@ -37,6 +38,7 @@ const TIMELINE = {
 };
 
 export default function NewsletterDesign() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Newsletter Design", description: "Newsletter Design — Notarized and processed by Notar in Ohio.", slug: "newsletter-design" }) });
   usePageMeta({ title: "Newsletter Design" });
   return (
     <div className="container max-w-5xl py-8">

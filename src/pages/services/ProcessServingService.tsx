@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "serve_type", label: "Service Type", type: "select", required: true, options: [
@@ -58,6 +59,7 @@ const TIMELINE = {
 };
 
 export default function ProcessServingService() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Process Serving Service", description: "Process Serving Service — Notarized and processed by Notar in Ohio.", slug: "process-serving-service" }) });
   usePageMeta({ title: "Process Serving" });
   return (
     <div className="container max-w-5xl py-8">

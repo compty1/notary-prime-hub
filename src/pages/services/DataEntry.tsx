@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "data_type", label: "Type of Data", type: "select", required: true, options: [
@@ -34,6 +35,7 @@ const FAQ = [
 ];
 
 export default function DataEntry() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Data Entry", description: "Data Entry — Notarized and processed by Notar in Ohio.", slug: "data-entry" }) });
   usePageMeta({ title: "Data Entry Services" });
   return (
     <div className="container max-w-5xl py-8">

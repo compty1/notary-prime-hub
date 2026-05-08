@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "website_url", label: "Website / App URL", type: "text", required: true },
@@ -40,6 +41,7 @@ const TIMELINE = {
 };
 
 export default function UxAudit() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Ux Audit", description: "Ux Audit — Notarized and processed by Notar in Ohio.", slug: "ux-audit" }) });
   usePageMeta({ title: "UX Audit & Heuristic Review" });
   return (
     <div className="container max-w-5xl py-8">

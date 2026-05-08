@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "source_language", label: "Source Language", type: "text", required: true, placeholder: "e.g. Spanish" },
@@ -37,6 +38,7 @@ const FAQ = [
 ];
 
 export default function StandardTranslation() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Standard Translation", description: "Standard Translation — Notarized and processed by Notar in Ohio.", slug: "standard-translation" }) });
   usePageMeta({ title: "Standard Translation Services" });
   return (
     <div className="container max-w-5xl py-8">

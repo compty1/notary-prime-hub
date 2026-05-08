@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "check_type", label: "Background Check Type", type: "select", required: true, options: [
@@ -56,6 +57,7 @@ const TIMELINE = {
 };
 
 export default function BackgroundCheck() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Background Check", description: "Background Check — Notarized and processed by Notar in Ohio.", slug: "background-check" }) });
   usePageMeta({ title: "Background Check Services" });
   return (
     <div className="container max-w-5xl py-8">

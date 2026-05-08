@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "service", label: "PDF Service", type: "select", required: true, options: [
@@ -31,6 +32,7 @@ const FAQ = [
 ];
 
 export default function PdfServices() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Pdf Services", description: "Pdf Services — Notarized and processed by Notar in Ohio.", slug: "pdf-services" }) });
   usePageMeta({ title: "PDF Services" });
   return (
     <div className="container max-w-5xl py-8">

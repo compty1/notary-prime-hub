@@ -1,6 +1,7 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { UPLGuard } from "@/components/services/UPLGuard";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "agency_name", label: "Agency / Firm Name", type: "text", required: true },
@@ -40,6 +41,7 @@ const CHECKLIST = [
 ];
 
 export default function CertifiedDocPrepAgencies() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Certified Doc Prep Agencies", description: "Certified Doc Prep Agencies — Notarized and processed by Notar in Ohio.", slug: "certified-doc-prep-agencies" }) });
   usePageMeta({ title: "Certified Document Prep for Agencies" });
   return (
     <div className="container max-w-5xl py-8">
