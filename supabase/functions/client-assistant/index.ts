@@ -98,7 +98,8 @@ Deno.serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    let systemPrompt = SYSTEM_PROMPT;
+    const { UPL_GUARDRAIL } = await import("../_shared/uplGuardrail.ts");
+    let systemPrompt = UPL_GUARDRAIL + "\n\n" + SYSTEM_PROMPT;
     if (template_context) {
       systemPrompt += `\n\nCurrent template context:\nTemplate: ${template_context.title}\nCategory: ${template_context.category}\nDescription: ${template_context.description}\nFilled fields: ${JSON.stringify(template_context.fields || {})}\n\nAnswer questions specifically about this template and the user's situation.`;
     }
