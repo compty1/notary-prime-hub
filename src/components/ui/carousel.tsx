@@ -183,6 +183,7 @@ const CarouselPrevious = React.forwardRef<HTMLButtonElement, React.ComponentProp
         )}
         disabled={!canScrollPrev}
         onClick={scrollPrev}
+        aria-label="Previous slide"
         {...props}
       >
         <ArrowLeft className="h-4 w-4" />
