@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Search } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const GLOSSARY: { term: string; definition: string; orc?: string }[] = [
   { term: "Acknowledgment", definition: "A notarial act where the signer personally appears before a notary and acknowledges that they voluntarily signed the document.", orc: "ORC §147.53" },
@@ -32,6 +33,7 @@ const GLOSSARY: { term: string; definition: string; orc?: string }[] = [
 ];
 
 export default function NotaryGlossary() {
+  usePageMeta({ title: "Notary Glossary" });
   const [search, setSearch] = useState("");
   const filtered = GLOSSARY.filter(
     g => g.term.toLowerCase().includes(search.toLowerCase()) || g.definition.toLowerCase().includes(search.toLowerCase())

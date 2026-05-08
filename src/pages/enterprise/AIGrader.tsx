@@ -12,8 +12,10 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import EnterpriseLayout from "@/components/enterprise/EnterpriseLayout";
 import { validateFile, ALLOWED_DOCUMENT_MIMES } from "@/lib/fileValidation";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const AIGrader = () => {
+  usePageMeta({ title: "A I Grader" });
   const { user } = useAuth();
   const [file, setFile] = useState<File | null>(null);
   const [grading, setGrading] = useState(false);

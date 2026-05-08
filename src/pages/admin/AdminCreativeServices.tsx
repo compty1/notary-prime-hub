@@ -1,6 +1,8 @@
 import { ServiceAdminDashboard } from "@/components/admin/ServiceAdminDashboard";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 export default function AdminCreativeServices() {
+  usePageMeta({ title: "Admin Creative Services", noIndex: true });
   return (
     <ServiceAdminDashboard
       serviceType="creative"

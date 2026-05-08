@@ -12,12 +12,14 @@ import { PAGE_REGISTRY, type PageEntry } from "./pageRegistry";
 import type { TrackerItem } from "./constants";
 import { CATEGORIES, SEVERITIES } from "./constants";
 import { useInsertItem } from "./hooks";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 type Props = {
   items: TrackerItem[];
 };
 
 export default function PageAuditorTab({ items }: Props) {
+  usePageMeta({ title: "Page Auditor Tab", noIndex: true });
   const [search, setSearch] = useState("");
   const [protFilter, setProtFilter] = useState("all");
   const [issueFilter, setIssueFilter] = useState("all");

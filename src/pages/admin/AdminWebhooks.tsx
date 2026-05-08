@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Eye, AlertCircle, CheckCircle2, Webhook, Plus, Trash2, Copy, Send } from "lucide-react";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const AVAILABLE_EVENTS = [
   "appointment.created", "appointment.completed", "appointment.cancelled",
@@ -246,6 +247,7 @@ function OutboundTab() {
 }
 
 export default function AdminWebhooks() {
+  usePageMeta({ title: "Admin Webhooks", noIndex: true });
   return (
     <div className="space-y-6">
       <div>

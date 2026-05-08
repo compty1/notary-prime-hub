@@ -3,6 +3,7 @@ import { Rocket, FileCheck, ShieldCheck, Globe, Award, FileEdit, FolderOpen, Tru
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import EnterpriseLayout from "@/components/enterprise/EnterpriseLayout";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const tools = [
   { title: "AI Document Grader", description: "AI compliance analysis against ORC §147", icon: FileCheck, path: "/admin/enterprise/ai-grader", color: "text-info" },
@@ -22,6 +23,7 @@ const tools = [
 ];
 
 const EnterpriseDashboard = () => {
+  usePageMeta({ title: "Enterprise Dashboard" });
   return (
     <EnterpriseLayout title="Enterprise Tools" icon={Rocket} description="Professional-grade tools for notary and legal operations">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

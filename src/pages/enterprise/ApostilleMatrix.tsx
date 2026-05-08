@@ -9,8 +9,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { apostilleStateData } from "@/lib/apostilleStateData";
 import EnterpriseLayout from "@/components/enterprise/EnterpriseLayout";
 import DocumentGeneratorModal from "@/components/enterprise/DocumentGeneratorModal";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const ApostilleMatrix = () => {
+  usePageMeta({ title: "Apostille Matrix" });
   const [search, setSearch] = useState("");
   const [selectedState, setSelectedState] = useState<any>(null);
   const [docCount, setDocCount] = useState(1);

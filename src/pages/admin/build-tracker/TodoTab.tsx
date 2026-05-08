@@ -13,8 +13,10 @@ import { Plus, CheckCircle2, ArrowUp, ArrowDown, StickyNote, Download, Search, F
 import type { TrackerItem } from "./constants";
 import { CATEGORIES, SEVERITIES, STATUSES, severityColor, statusIcon, exportCSV } from "./constants";
 import { useUpdateItem, useBulkUpdate } from "./hooks";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 export default function TodoTab({ items }: { items: TrackerItem[] }) {
+  usePageMeta({ title: "Todo Tab", noIndex: true });
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [editingNotes, setEditingNotes] = useState<Record<string, string>>({});
   const [todoCatFilter, setTodoCatFilter] = useState("all");

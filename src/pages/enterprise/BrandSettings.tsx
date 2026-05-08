@@ -12,10 +12,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import EnterpriseLayout from "@/components/enterprise/EnterpriseLayout";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const FONTS = ["Inter", "Roboto", "Open Sans", "Playfair Display", "Merriweather", "Lato"];
 
 const BrandSettings = () => {
+  usePageMeta({ title: "Brand Settings" });
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);

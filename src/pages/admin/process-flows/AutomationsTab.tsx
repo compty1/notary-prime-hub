@@ -1,12 +1,14 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Zap } from "lucide-react";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 interface AutomationsTabProps {
   automations: Record<string, { name: string; description: string; triggers: string[] }>;
 }
 
 export default function AutomationsTab({ automations }: AutomationsTabProps) {
+  usePageMeta({ title: "Automations Tab", noIndex: true });
   return (
     <div className="space-y-4">
       {Object.entries(automations).map(([fnName, auto]) => (

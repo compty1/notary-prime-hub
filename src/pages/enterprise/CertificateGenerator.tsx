@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import EnterpriseLayout from "@/components/enterprise/EnterpriseLayout";
 import DocumentGeneratorModal from "@/components/enterprise/DocumentGeneratorModal";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const CERT_TYPES = [
   { id: "acknowledgment", label: "Acknowledgment", icon: "✍️" },
@@ -18,6 +19,7 @@ const CERT_TYPES = [
 const US_STATES = ["Ohio","Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"];
 
 const CertificateGenerator = () => {
+  usePageMeta({ title: "Certificate Generator" });
   const [certType, setCertType] = useState("acknowledgment");
   const [state, setState] = useState("Ohio");
   const [county, setCounty] = useState("");

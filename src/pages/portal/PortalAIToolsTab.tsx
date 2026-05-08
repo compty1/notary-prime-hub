@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkles, Search, Clock, ExternalLink, ChevronDown, ChevronRight, AlertCircle } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { getToolById, AI_TOOLS, type ToolCategory, CATEGORY_ICONS } from "@/lib/aiToolsRegistry";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 interface Generation {
   id: string;
@@ -21,6 +22,7 @@ interface Generation {
 }
 
 export default function PortalAIToolsTab() {
+  usePageMeta({ title: "Portal A I Tools Tab" });
   const { user } = useAuth();
   const [generations, setGenerations] = useState<Generation[]>([]);
   const [loading, setLoading] = useState(true);

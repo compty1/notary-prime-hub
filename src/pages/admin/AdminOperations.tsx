@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Search, RefreshCw, AlertTriangle, CheckCircle, Clock, Filter, Zap } from "lucide-react";
 import { WorkflowAutomationRules } from "@/components/WorkflowAutomationRules";
+import { usePageMeta } from "@/hooks/usePageMeta";
 const STATUS_COLORS: Record<string, string> = {
   scheduled: "bg-info/10 text-info",
   in_progress: "bg-warning/10 text-warning",
@@ -23,6 +24,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function AdminOperations() {
+  usePageMeta({ title: "Admin Operations", noIndex: true });
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 

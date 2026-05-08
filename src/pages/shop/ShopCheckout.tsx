@@ -13,8 +13,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import { PageErrorBoundary } from "@/components/PageErrorBoundary";
 import { toast } from "sonner";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 export default function ShopCheckout() {
+  usePageMeta({ title: "Shop Checkout" });
   const { user } = useAuth();
   const navigate = useNavigate();
   const { cart, isLoading } = useCart();

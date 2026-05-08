@@ -10,10 +10,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Activity, Zap, Filter, RefreshCw, CheckCircle2, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const EVENT_TYPES = ["appointment.created", "appointment.completed", "payment.received", "order.created", "order.fulfilled", "document.uploaded", "user.registered", "session.started", "session.completed"];
 
 export default function AdminEventBus() {
+  usePageMeta({ title: "Admin Event Bus", noIndex: true });
   const { toast } = useToast();
   const [typeFilter, setTypeFilter] = useState("all");
   const [search, setSearch] = useState("");

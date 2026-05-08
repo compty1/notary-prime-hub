@@ -1,6 +1,8 @@
 import { ServiceAdminDashboard } from "@/components/admin/ServiceAdminDashboard";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 export default function AdminFinancialServices() {
+  usePageMeta({ title: "Admin Financial Services", noIndex: true });
   return (
     <ServiceAdminDashboard
       serviceType="financial"

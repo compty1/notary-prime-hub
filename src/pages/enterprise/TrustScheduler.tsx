@@ -14,11 +14,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import EnterpriseLayout from "@/components/enterprise/EnterpriseLayout";
 import DocumentGeneratorModal from "@/components/enterprise/DocumentGeneratorModal";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const CATEGORIES = ["real_property", "financial", "personal_property", "business_interest", "insurance", "other"];
 const TRUST_TYPES = ["revocable", "irrevocable", "living", "testamentary"];
 
 const TrustScheduler = () => {
+  usePageMeta({ title: "Trust Scheduler" });
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [selectedTrust, setSelectedTrust] = useState<any>(null);

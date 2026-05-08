@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from "@/components/ui/label";
 import { TrendingUp, BookOpen, FileText, CheckSquare, Plus, Users, Briefcase, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const RESOURCE_TYPES = ["guide", "template", "checklist", "tool"];
 const AUDIENCES = ["notary", "professional", "both"];
@@ -44,6 +45,7 @@ const GUIDES = [
 ];
 
 export default function AdminBusinessGrowth() {
+  usePageMeta({ title: "Admin Business Growth", noIndex: true });
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [tab, setTab] = useState("all");

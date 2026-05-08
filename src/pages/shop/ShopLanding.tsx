@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useShopPackages, useCart } from "@/hooks/useShop";
 import { ShoppingCart, Star, Shield, Truck, CheckCircle, Package } from "lucide-react";
 import { PageErrorBoundary } from "@/components/PageErrorBoundary";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 type Variation = "physical" | "digital" | "complete";
 
@@ -21,6 +22,7 @@ const VARIATION_LABELS: Record<Variation, string> = {
 };
 
 export default function ShopLanding() {
+  usePageMeta({ title: "Shop Landing" });
   const { data: packages, isLoading } = useShopPackages();
   const { addToCart } = useCart();
   const [variation, setVariation] = useState<Variation>("complete");

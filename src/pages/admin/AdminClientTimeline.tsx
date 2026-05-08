@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Clock, User, Calendar, FileText, DollarSign, Activity, Search } from "lucide-react";
 import { format } from "date-fns";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const EVENT_ICONS: Record<string, any> = {
   appointment: Calendar,
@@ -26,6 +27,7 @@ const EVENT_COLORS: Record<string, string> = {
 };
 
 export default function AdminClientTimeline() {
+  usePageMeta({ title: "Admin Client Timeline", noIndex: true });
   const [clientSearch, setClientSearch] = useState("");
   const [selectedClient, setSelectedClient] = useState<string | null>(null);
   const [eventFilter, setEventFilter] = useState("all");

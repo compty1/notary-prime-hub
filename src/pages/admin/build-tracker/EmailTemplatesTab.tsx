@@ -2,12 +2,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 /**
  * Email Templates are now centrally managed in Email Management → Automated Emails.
  * This tab redirects there.
  */
 export default function EmailTemplatesTab() {
+  usePageMeta({ title: "Email Templates Tab", noIndex: true });
   const navigate = useNavigate();
 
   return (

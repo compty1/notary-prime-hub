@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
 import { AUTH_TEMPLATES } from "../AdminProcessFlows";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 interface EmailTemplatesTabProps {
   globalTemplates: Record<string, string>;
@@ -11,6 +12,7 @@ interface EmailTemplatesTabProps {
 }
 
 export default function EmailTemplatesTab({ globalTemplates, services, onEdit }: EmailTemplatesTabProps) {
+  usePageMeta({ title: "Email Templates Tab", noIndex: true });
   return (
     <div className="space-y-6">
       <h3 className="font-black text-sm text-foreground uppercase tracking-widest">Global Email Templates</h3>

@@ -8,6 +8,7 @@ import { Loader2, ShieldCheck, CheckCircle2, AlertTriangle, XCircle } from "luci
 import type { TrackerItem } from "./constants";
 import { useBulkUpdate } from "./hooks";
 import { useSSEStream, extractJSON } from "./useSSEStream";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 type Props = {
   items: TrackerItem[];
@@ -22,6 +23,7 @@ type VerifyResult = {
 };
 
 export default function VerifyFixesButton({ items, variant = "outline", size = "sm" }: Props) {
+  usePageMeta({ title: "Verify Fixes Button", noIndex: true });
   const [result, setResult] = useState<VerifyResult | null>(null);
   const [showDialog, setShowDialog] = useState(false);
   const bulkUpdate = useBulkUpdate();

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Loader2, Sparkles, Palette, Type, Users, TrendingUp, AlertTriangle, Eye } from "lucide-react";
 import { useSSEStream, extractJSON } from "./useSSEStream";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const STORAGE_KEY = "build-tracker-brand-analysis";
 
@@ -141,6 +142,7 @@ function BrandColorPreview() {
 }
 
 export default function BrandAnalysisTab() {
+  usePageMeta({ title: "Brand Analysis Tab", noIndex: true });
   const [analysis, setAnalysis] = useState<BrandAnalysis | null>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);

@@ -9,8 +9,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import EnterpriseLayout from "@/components/enterprise/EnterpriseLayout";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const KYCSearch = () => {
+  usePageMeta({ title: "K Y C Search" });
   const { user, isAdmin } = useAuth();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);

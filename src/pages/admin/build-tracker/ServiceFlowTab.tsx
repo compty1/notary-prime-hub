@@ -10,12 +10,14 @@ import { CheckCircle2, XCircle, ChevronDown, ChevronRight, Plus, AlertTriangle, 
 import { SERVICE_FLOWS, type ServiceFlow, type FlowStep } from "./serviceFlows";
 import type { TrackerItem } from "./constants";
 import { useBulkInsert } from "./hooks";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 type Props = {
   items: TrackerItem[];
 };
 
 export default function ServiceFlowTab({ items }: Props) {
+  usePageMeta({ title: "Service Flow Tab", noIndex: true });
   const [expandedFlow, setExpandedFlow] = useState<string | null>(null);
   const [expandedStep, setExpandedStep] = useState<string | null>(null);
   const [search, setSearch] = useState("");

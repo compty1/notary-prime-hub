@@ -28,6 +28,7 @@ export { statusColors };
 
 // M-13: Use shared formatDate from utils
 import { formatDate as sharedFormatDate } from "@/lib/utils";
+import { usePageMeta } from "@/hooks/usePageMeta";
 const formatDate = (dateStr: string) => sharedFormatDate(dateStr, { includeWeekday: true, includeYear: true });
 const formatTime = (timeStr: string) => {
   const [h, m] = timeStr.split(":");
@@ -60,6 +61,7 @@ interface Props {
 }
 
 export default function PortalAppointmentsTab({ appointments, loading, zoomLink, onCancelClick, onTechCheck }: Props) {
+  usePageMeta({ title: "Portal Appointments Tab" });
   const { user } = useAuth();
   // ID 403: Status filter for appointments
   const [statusFilter, setStatusFilter] = useState("all");

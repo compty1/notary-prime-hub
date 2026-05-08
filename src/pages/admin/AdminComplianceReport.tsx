@@ -10,8 +10,10 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Shield, CheckCircle2, AlertTriangle, Download, FileText, Eye, Save, XCircle } from "lucide-react";
 import { exportToCSV } from "@/lib/csvExport";
 import { formatDate, formatTime } from "@/lib/utils";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 export default function AdminComplianceReport() {
+  usePageMeta({ title: "Admin Compliance Report", noIndex: true });
   const { user } = useAuth();
   const { toast } = useToast();
   const [appointments, setAppointments] = useState<Record<string, any>[]>([]);

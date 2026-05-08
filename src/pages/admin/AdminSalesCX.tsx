@@ -1,6 +1,8 @@
 import { ServiceAdminDashboard } from "@/components/admin/ServiceAdminDashboard";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 export default function AdminSalesCX() {
+  usePageMeta({ title: "Admin Sales C X", noIndex: true });
   return (
     <ServiceAdminDashboard
       serviceType="sales_cx"

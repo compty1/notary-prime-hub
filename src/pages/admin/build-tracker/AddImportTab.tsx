@@ -9,8 +9,10 @@ import { toast } from "sonner";
 import { CATEGORIES, SEVERITIES, autoCategorize } from "./constants";
 import type { PlanItem, TrackerItem } from "./constants";
 import { useInsertItem, useBulkInsert, useInsertPlan, useTrackerItems } from "./hooks";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 export default function AddImportTab() {
+  usePageMeta({ title: "Add Import Tab", noIndex: true });
   const insert = useInsertItem();
   const bulkInsert = useBulkInsert();
   const insertPlan = useInsertPlan();

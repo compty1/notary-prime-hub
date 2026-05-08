@@ -11,8 +11,10 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import EnterpriseLayout from "@/components/enterprise/EnterpriseLayout";
 import DocumentGeneratorModal from "@/components/enterprise/DocumentGeneratorModal";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const ImmigrationHub = () => {
+  usePageMeta({ title: "Immigration Hub" });
   const [showDocModal, setShowDocModal] = useState(false);
   const [affidavitData, setAffidavitData] = useState({ translator_name: "", language: "", document_description: "" });
 

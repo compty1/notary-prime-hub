@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Monitor, Tablet, Smartphone, RefreshCw, ExternalLink, AlertTriangle, Navigation } from "lucide-react";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const PUBLISHED_URL = "https://notardex.com";
 const PREVIEW_URL = PUBLISHED_URL;
@@ -71,6 +72,7 @@ const QUICK_ROUTES = [
 ];
 
 export default function LivePreviewTab({ themeOverlay }: Props) {
+  usePageMeta({ title: "Live Preview Tab", noIndex: true });
   const [viewport, setViewport] = useState(0);
   const [loadError, setLoadError] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);

@@ -25,6 +25,7 @@ import { useUpdateItem, useBulkUpdate, useDeleteItems } from "./hooks";
 import BulkActionBar from "./BulkActionBar";
 import VerifyFixesButton from "./VerifyFixesButton";
 import { useSSEStream, safeClipboardWrite } from "./useSSEStream";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 function SortIcon({ field, current, dir }: { field: SortField; current: SortField | null; dir: SortDir }) {
   if (current !== field) return <ArrowUpDown className="h-3 w-3 opacity-30" />;
@@ -39,6 +40,7 @@ type Props = {
 };
 
 export default function GapAnalysisTab({ items, jumpToId, onFilteredCountChange, onJumpConsumed }: Props) {
+  usePageMeta({ title: "Gap Analysis Tab", noIndex: true });
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState("all");
   const [sevFilter, setSevFilter] = useState("all");

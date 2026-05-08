@@ -11,8 +11,10 @@ import { useShopPackages } from "@/hooks/useShop";
 import { Check, ArrowLeft, Crown } from "lucide-react";
 import { PageErrorBoundary } from "@/components/PageErrorBoundary";
 import { Skeleton } from "@/components/ui/skeleton";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 export default function ShopPackages() {
+  usePageMeta({ title: "Shop Packages" });
   const { data: packages, isLoading } = useShopPackages();
 
   return (

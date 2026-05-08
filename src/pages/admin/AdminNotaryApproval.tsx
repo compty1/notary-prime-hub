@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { CheckCircle, XCircle, Eye, Search, Clock, User, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 interface PendingNotary {
   id: string;
@@ -36,6 +37,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function AdminNotaryApproval() {
+  usePageMeta({ title: "Admin Notary Approval", noIndex: true });
   const [notaries, setNotaries] = useState<PendingNotary[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("pending");

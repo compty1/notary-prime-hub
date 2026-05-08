@@ -29,6 +29,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 /* ═══════════════════════════════════════════
    SHARED TYPES & CONSTANTS
@@ -1325,6 +1326,7 @@ function IntegrationSetupTab() {
    ═══════════════════════════════════════════ */
 
 export default function AdminAutomatedEmails() {
+  usePageMeta({ title: "Admin Automated Emails", noIndex: true });
   const { toast } = useToast();
   const { data: savedSettings, isLoading: settingsLoading, save: saveSettings } = useGlobalEmailSettings();
   const [master, setMaster] = useState<MasterTemplate>(DEFAULT_MASTER);

@@ -8,6 +8,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { FileText, Clock, CheckCircle, AlertTriangle, Download, Search, ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
 import { ProgressTimeline } from "@/components/ProgressTimeline";
 import { supabase } from "@/integrations/supabase/client";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const statusColors: Record<string, string> = {
   submitted: "bg-info/10 text-info",
@@ -30,6 +31,7 @@ interface Props {
 }
 
 export default function PortalServiceRequestsTab({ serviceRequests: initialRequests }: Props) {
+  usePageMeta({ title: "Portal Service Requests Tab" });
   const [statusFilter, setStatusFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);

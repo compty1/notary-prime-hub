@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, Send, Loader2, Plus } from "lucide-react";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 interface PortalCorrespondenceTabProps {
   userId: string;
@@ -16,6 +17,7 @@ interface PortalCorrespondenceTabProps {
 }
 
 export default function PortalCorrespondenceTab({ userId, correspondence, setCorrespondence }: PortalCorrespondenceTabProps) {
+  usePageMeta({ title: "Portal Correspondence Tab" });
   const { toast } = useToast();
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");

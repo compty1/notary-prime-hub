@@ -12,10 +12,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Building2, Star, Clock, TrendingUp, Edit, Trash2 } from "lucide-react";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const TIERS = ["white_label", "co_branded", "referral", "production"];
 
 export default function AdminVendors() {
+  usePageMeta({ title: "Admin Vendors", noIndex: true });
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [showAdd, setShowAdd] = useState(false);
