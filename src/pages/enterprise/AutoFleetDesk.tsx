@@ -8,8 +8,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import EnterpriseLayout from "@/components/enterprise/EnterpriseLayout";
 import DocumentGeneratorModal from "@/components/enterprise/DocumentGeneratorModal";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const AutoFleetDesk = () => {
+  usePageMeta({ title: "Auto Fleet Desk" });
   const [vin, setVin] = useState("");
   const [result, setResult] = useState<any>(null);
   const [decoding, setDecoding] = useState(false);

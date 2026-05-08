@@ -7,8 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import EnterpriseLayout from "@/components/enterprise/EnterpriseLayout";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const IPHub = () => {
+  usePageMeta({ title: "I P Hub" });
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const [total, setTotal] = useState(0);

@@ -10,8 +10,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import EnterpriseLayout from "@/components/enterprise/EnterpriseLayout";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const DigitalVault = () => {
+  usePageMeta({ title: "Digital Vault" });
   const { user } = useAuth();
   const [verifyHash, setVerifyHash] = useState("");
   const [verifyResult, setVerifyResult] = useState<"match" | "mismatch" | null>(null);

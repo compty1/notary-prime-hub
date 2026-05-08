@@ -7,6 +7,7 @@ import type { TrackerItem } from "./constants";
 import { CATEGORIES, SEVERITIES, exportCSV } from "./constants";
 import { useBulkUpdate } from "./hooks";
 import { safeClipboardWrite } from "./useSSEStream";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 type Props = {
   selectedIds: Set<string>;
@@ -16,6 +17,7 @@ type Props = {
 
 const BulkActionBar = React.forwardRef<HTMLDivElement, Props>(
   function BulkActionBar({ selectedIds, items, onClear }, ref) {
+  usePageMeta({ title: "Bulk Action Bar", noIndex: true });
     const bulk = useBulkUpdate();
     const selectedItems = items.filter(i => selectedIds.has(i.id));
     const ids = [...selectedIds];

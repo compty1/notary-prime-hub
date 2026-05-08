@@ -10,11 +10,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import EnterpriseLayout from "@/components/enterprise/EnterpriseLayout";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const REQUIRED_COLS = ["signer_name", "signer_email", "document_type", "address", "date"];
 const TEMPLATE_CSV = "signer_name,signer_email,document_type,address,date\nJohn Doe,john@example.com,Acknowledgment,123 Main St,2025-01-15";
 
 const B2BDispatch = () => {
+  usePageMeta({ title: "B2 B Dispatch" });
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [rows, setRows] = useState<any[]>([]);

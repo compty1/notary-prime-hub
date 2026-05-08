@@ -14,6 +14,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import EnterpriseLayout from "@/components/enterprise/EnterpriseLayout";
 import DocumentGeneratorModal from "@/components/enterprise/DocumentGeneratorModal";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const WAIVER_TYPES = [
   { id: "conditional_partial", label: "Conditional Partial" },
@@ -23,6 +24,7 @@ const WAIVER_TYPES = [
 ];
 
 const LienCommandCenter = () => {
+  usePageMeta({ title: "Lien Command Center" });
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [selectedProject, setSelectedProject] = useState<any>(null);

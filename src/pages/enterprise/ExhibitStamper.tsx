@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
 import EnterpriseLayout from "@/components/enterprise/EnterpriseLayout";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const POSITIONS = [
   { id: "top-right", label: "Top Right" },
@@ -23,6 +24,7 @@ const COLORS = [
 ];
 
 const ExhibitStamper = () => {
+  usePageMeta({ title: "Exhibit Stamper" });
   const [files, setFiles] = useState<File[]>([]);
   const [stampText, setStampText] = useState("EXHIBIT");
   const [startLabel, setStartLabel] = useState("A");
