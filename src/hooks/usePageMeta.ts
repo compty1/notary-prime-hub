@@ -84,9 +84,30 @@ export function usePageMeta(
     // JSON-LD schema (item 456)
     const cleanupSchema = opts.schema ? injectJsonLd(opts.schema) : () => {};
 
+    // A11y/SEO: ensure every page has at least one <h1>. If the page already
+    // renders one, do nothing. Otherwise inject a visually-hidden fallback so
+    // landmark structure and SEO ranking are preserved without disturbing the
+    // visual design.
+    let injectedH1: HTMLHeadingElement | null = null;
+    const ensureH1 = () => {
+      if (document.querySelector("h1")) return;
+      const h1 = document.createElement("h1");
+      h1.textContent = opts.title || BASE_TITLE;
+      h1.setAttribute("data-auto-h1", "true");
+      // sr-only equivalent (no Tailwind dependency at runtime)
+      h1.style.cssText =
+        "position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;";
+      document.body.prepend(h1);
+      injectedH1 = h1;
+    };
+    // defer a tick so the page tree mounts first
+    const t = window.setTimeout(ensureH1, 0);
+
     return () => {
       document.title = BASE_TITLE;
       cleanupSchema();
+      window.clearTimeout(t);
+      if (injectedH1 && injectedH1.parentNode) injectedH1.parentNode.removeChild(injectedH1);
     };
   }, [opts.title, opts.description, opts.noIndex, opts.ogImage, opts.schema, pathname]);
 }
