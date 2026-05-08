@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "platforms", label: "Platforms", type: "textarea", required: true, placeholder: "e.g. Facebook, Instagram, LinkedIn" },
@@ -34,6 +35,7 @@ const FAQ = [
 ];
 
 export default function SocialMediaContent() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Social Media Content", description: "Social Media Content — Notarized and processed by Notar in Ohio.", slug: "social-media-content" }) });
   usePageMeta({ title: "Social Media Content" });
   return (
     <div className="container max-w-5xl py-8">

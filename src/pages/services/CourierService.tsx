@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "pickup_address", label: "Pickup Address", type: "textarea", required: true },
@@ -42,6 +43,7 @@ const TIMELINE = {
 };
 
 export default function CourierService() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Courier Service", description: "Courier Service — Notarized and processed by Notar in Ohio.", slug: "courier-service" }) });
   usePageMeta({ title: "Courier Services" });
   return (
     <div className="container max-w-5xl py-8">

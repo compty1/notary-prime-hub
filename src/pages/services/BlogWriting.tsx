@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "topic", label: "Blog Topic / Title", type: "text", required: true },
@@ -51,6 +52,7 @@ const TIMELINE = {
 };
 
 export default function BlogWriting() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Blog Writing", description: "Blog Writing — Notarized and processed by Notar in Ohio.", slug: "blog-writing" }) });
   usePageMeta({ title: "Blog Post Writing" });
   return (
     <div className="container max-w-5xl py-8">

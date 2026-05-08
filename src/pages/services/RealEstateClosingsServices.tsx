@@ -10,6 +10,7 @@ import { PageErrorBoundary } from "@/components/PageErrorBoundary";
 import { ProductCalloutCard } from "@/components/shop/ProductCalloutCard";
 import { Home, Clock, MapPin, Shield, ArrowRight, Phone, FileSearch, Car, CheckCircle } from "lucide-react";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const PROCESS_STEPS = [
   { num: 1, icon: Phone, title: "Title Company Contact", desc: "Title company or lender contacts us to schedule the signing appointment." },
@@ -30,6 +31,7 @@ const SERVICES = [
 const COVERAGE = ["Franklin", "Delaware", "Madison", "Pickaway", "Union", "Fayette", "Clark"];
 
 export default function RealEstateClosingsServices() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Real Estate Closings Services", description: "Real Estate Closings Services — Notarized and processed by Notar in Ohio.", slug: "real-estate-closings-services" }) });
   usePageMeta({ title: "Real Estate Closings Services" });
   return (
     <PageErrorBoundary pageName="Real Estate Closings">

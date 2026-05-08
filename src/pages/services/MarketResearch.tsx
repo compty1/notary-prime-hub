@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "industry", label: "Industry / Market", type: "text", required: true },
@@ -38,6 +39,7 @@ const TIMELINE = {
 };
 
 export default function MarketResearch() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Market Research", description: "Market Research — Notarized and processed by Notar in Ohio.", slug: "market-research" }) });
   usePageMeta({ title: "Market Research" });
   return (
     <div className="container max-w-5xl py-8">

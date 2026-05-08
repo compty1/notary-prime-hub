@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "source_language", label: "Source Language", type: "select", required: true, options: [
@@ -58,6 +59,7 @@ const TIMELINE = {
 };
 
 export default function DocumentTranslation() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Document Translation", description: "Document Translation — Notarized and processed by Notar in Ohio.", slug: "document-translation" }) });
   usePageMeta({ title: "Document Translation" });
   return (
     <div className="container max-w-5xl py-8">

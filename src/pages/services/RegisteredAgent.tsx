@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "business_name", label: "Business Name", type: "text", required: true },
@@ -52,6 +53,7 @@ const TIMELINE = {
 };
 
 export default function RegisteredAgent() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Registered Agent", description: "Registered Agent — Notarized and processed by Notar in Ohio.", slug: "registered-agent" }) });
   usePageMeta({ title: "Registered Agent Services" });
   return (
     <div className="container max-w-5xl py-8">

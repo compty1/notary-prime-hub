@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "website_url", label: "Website URL", type: "text", required: true },
@@ -36,6 +37,7 @@ const FAQ = [
 ];
 
 export default function WebsiteContentUpdates() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Website Content Updates", description: "Website Content Updates — Notarized and processed by Notar in Ohio.", slug: "website-content-updates" }) });
   usePageMeta({ title: "Website Content Updates" });
   return (
     <div className="container max-w-5xl py-8">

@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "source_language", label: "Source Language", type: "text", required: true, placeholder: "e.g. Spanish, Arabic, Mandarin" },
@@ -53,6 +54,7 @@ const TIMELINE = {
 };
 
 export default function CertifiedTranslation() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Certified Translation", description: "Certified Translation — Notarized and processed by Notar in Ohio.", slug: "certified-translation" }) });
   usePageMeta({ title: "Certified Translation Services" });
   return (
     <div className="container max-w-5xl py-8">

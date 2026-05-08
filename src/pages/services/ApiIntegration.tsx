@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "company_name", label: "Company Name", type: "text", required: true },
@@ -39,6 +40,7 @@ const TIMELINE = {
 };
 
 export default function ApiIntegration() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Api Integration", description: "Api Integration — Notarized and processed by Notar in Ohio.", slug: "api-integration" }) });
   usePageMeta({ title: "API Integration" });
   return (
     <div className="container max-w-5xl py-8">

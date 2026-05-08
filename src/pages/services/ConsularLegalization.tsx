@@ -1,5 +1,6 @@
 import { ServiceIntakeForm, IntakeField } from "@/components/services/ServiceIntakeForm";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { buildServiceJsonLd } from "@/lib/jsonLdBuilders";
 
 const FIELDS: IntakeField[] = [
   { name: "destination_country", label: "Destination Country", type: "text", required: true, placeholder: "e.g., China, UAE, Saudi Arabia" },
@@ -61,6 +62,7 @@ const TIMELINE = {
 };
 
 export default function ConsularLegalization() {
+  usePageMeta({ schema: buildServiceJsonLd({ name: "Consular Legalization", description: "Consular Legalization — Notarized and processed by Notar in Ohio.", slug: "consular-legalization" }) });
   usePageMeta({ title: "Consular Legalization Prep" });
   return (
     <div className="container max-w-5xl py-8">
