@@ -10,6 +10,7 @@ import {
   Key, Globe, Bug, ShieldCheck, CheckCircle2
 } from "lucide-react";
 import securityBadge from "@/assets/security-compliance-badge.jpg";
+import { OrcChip, NotaryOnCall } from "@/components/trust";
 
 const securityDomains = [
   {
@@ -135,6 +136,11 @@ export default function Security() {
                 Notar employs enterprise-grade security measures to protect your documents,
                 identity information, and notarial records at every layer.
               </p>
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                <OrcChip code="147.66" label="10-yr retention" />
+                <OrcChip code="1347" label="Ohio data privacy" />
+                <NotaryOnCall compact />
+              </div>
             </div>
             <div className="flex-shrink-0">
               <img
