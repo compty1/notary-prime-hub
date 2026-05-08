@@ -3,6 +3,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { Card, CardContent } from "@/components/ui/card";
 import { Shield, CheckCircle, Scale, Eye, Phone, UserX, Monitor, Clock } from "lucide-react";
+import { OrcChip, NotaryOnCall } from "@/components/trust";
 
 const rights = [
   { icon: UserX, title: "Right to Refuse", desc: "You may refuse to proceed with notarization at any time without penalty. No notary can compel you to sign a document." },
@@ -34,6 +35,11 @@ export default function SignerRights() {
             As a signer, you are protected by Ohio notary law and professional ethics standards. 
             Here are your rights during any notarization — in-person or remote.
           </p>
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+            <OrcChip code="147" label="Notary statute" />
+            <OrcChip code="147.66" label="RON requirements" />
+            <NotaryOnCall compact />
+          </div>
         </div>
 
         <div className="space-y-4">

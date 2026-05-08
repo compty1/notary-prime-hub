@@ -11,6 +11,7 @@ import {
   Eye, BookOpen, Scale, Award, CheckCircle2, ExternalLink
 } from "lucide-react";
 import securityBadge from "@/assets/security-compliance-badge.jpg";
+import { OrcChip, NotaryOnCall } from "@/components/trust";
 
 const complianceSections = [
   {
@@ -106,6 +107,13 @@ export default function Compliance() {
                 Notar is fully compliant with Ohio Revised Code §147.60–147.66 and maintains
                 the highest standards of identity verification, data security, and notarial recordkeeping.
               </p>
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                <OrcChip code="147.60" label="RON definitions" />
+                <OrcChip code="147.63" label="RON authorization" />
+                <OrcChip code="147.66" label="RON requirements" />
+                <OrcChip code="147.08" label="Fee caps" />
+                <NotaryOnCall compact />
+              </div>
             </div>
             <div className="flex-shrink-0">
               <img

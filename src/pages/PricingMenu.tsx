@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SERVICE_PRICING, PRICING_CATEGORIES } from "@/lib/servicePricing";
 import { Search, Star, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { OrcChip, NotaryOnCall } from "@/components/trust";
 
 export default function PricingMenu() {
   usePageMeta({
@@ -40,6 +41,12 @@ export default function PricingMenu() {
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Transparent, competitive pricing for all our services. Ohio-compliant notarization rates per ORC §147.08.
           </p>
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+            <OrcChip code="147.08" label="$5 act cap" />
+            <OrcChip code="147.541" label="NSA fees" />
+            <OrcChip code="147.65" label="RON tech fee" />
+            <NotaryOnCall compact />
+          </div>
         </div>
 
         {/* Popular Services */}
