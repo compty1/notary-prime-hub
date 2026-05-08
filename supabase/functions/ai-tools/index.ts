@@ -133,10 +133,11 @@ Deno.serve(async (req) => {
       .map(([k, v]) => `**${k}**: ${v}`)
       .join("\n");
 
+    const { UPL_GUARDRAIL } = await import("../_shared/uplGuardrail.ts");
     const messages: Array<{ role: string; content: string }> = [
       {
         role: "system",
-        content: systemPrompt + "\n\nIMPORTANT: Output ONLY in markdown format. Use proper markdown tables, headers, bold, italic, lists, code blocks, and blockquotes. Ensure all tables are properly formatted with headers and alignment. Be thorough and complete — do not truncate or abbreviate sections.",
+        content: UPL_GUARDRAIL + "\n\n" + systemPrompt + "\n\nIMPORTANT: Output ONLY in markdown format. Use proper markdown tables, headers, bold, italic, lists, code blocks, and blockquotes. Ensure all tables are properly formatted with headers and alignment. Be thorough and complete — do not truncate or abbreviate sections.",
       },
       {
         role: "user",
