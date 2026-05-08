@@ -420,9 +420,9 @@ export function DocuDexEditor({
       toast({ title: "Upload failed", description: error.message, variant: "destructive" });
       return;
     }
-    const { data: urlData } = supabase.storage.from("documents").getPublicUrl(path);
-    if (editor && urlData?.publicUrl) {
-      editor.chain().focus().setImage({ src: urlData.publicUrl, alt: alt || file.name }).run();
+    const { data: urlData } = await supabase.storage.from("documents").createSignedUrl(path, 3600);
+    if (editor && urlData?.signedUrl) {
+      editor.chain().focus().setImage({ src: urlData.signedUrl, alt: alt || file.name }).run();
       announce("Image inserted");
     }
   }, [editor, user, toast, announce]);

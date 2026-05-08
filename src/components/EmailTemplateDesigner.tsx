@@ -64,12 +64,9 @@ export default function EmailTemplateDesigner({ settings, onSave }: EmailTemplat
       setUploading(false);
       return;
     }
-    const { data } = await supabase.storage.from("documents").getPublicUrl(path);
-    if (data?.publicUrl) {
-      update("logo_url", data.publicUrl);
-    } else {
-      const { data: signed } = await supabase.storage.from("documents").createSignedUrl(path, 31536000);
-      if (signed?.signedUrl) update("logo_url", signed.signedUrl);
+    const { data: signed } = await supabase.storage.from("documents").createSignedUrl(path, 31536000);
+    if (signed?.signedUrl) {
+      update("logo_url", signed.signedUrl);
     }
     toast({ title: "Logo uploaded" });
     setUploading(false);

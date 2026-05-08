@@ -61,6 +61,34 @@ Deno.serve(async (req) => {
     }
     const { items, subtotal, tax, total } = parsed.data;
 
+    // Server-side total re-validation (NOTAR-0644 / NOTAR-0591)
+    const computedSubtotal = items.reduce((s, i) => s + i.price * i.quantity, 0);
+    if (Math.abs(computedSubtotal - subtotal) > 0.01) {
+      return new Response(JSON.stringify({ error: "Subtotal mismatch" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const computedTotal = Math.round((computedSubtotal + tax) * 100) / 100;
+    if (Math.abs(computedTotal - total) > 0.01) {
+      return new Response(JSON.stringify({ error: "Total mismatch" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    // Ohio statutory caps re-applied per line (defensive — packages are bundles, not per-act fees,
+    // but any item explicitly named as a notarial act must respect $5/$30 caps)
+    for (const it of items) {
+      const lower = it.name.toLowerCase();
+      if (/per[- ]act|notarial act/.test(lower)) {
+        const isRon = /ron|remote/.test(lower);
+        const cap = isRon ? 30 : 5;
+        if (it.price > cap) {
+          return new Response(JSON.stringify({
+            error: `Line item "${it.name}" exceeds Ohio statutory cap of $${cap} per act (ORC §147.${isRon ? "63" : "08"}).`,
+          }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        }
+      }
+    }
+
     // Service-role for inserts
     const adminClient = createClient(
       Deno.env.get("SUPABASE_URL")!,
