@@ -219,8 +219,8 @@ export default function AdminContentWorkspace() {
     const path = `content/${Date.now()}_${file.name}`;
     const { error } = await supabase.storage.from("documents").upload(path, file);
     if (!error) {
-      const { data: urlData } = supabase.storage.from("documents").getPublicUrl(path);
-      setForm(prev => ({ ...prev, hero_image_url: urlData.publicUrl }));
+      const { data: urlData } = await supabase.storage.from("documents").createSignedUrl(path, 3600);
+      setForm(prev => ({ ...prev, hero_image_url: urlData?.signedUrl || "" }));
       toast({ title: "Image uploaded" });
     }
   };
