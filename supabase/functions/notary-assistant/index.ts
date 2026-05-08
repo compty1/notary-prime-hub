@@ -129,7 +129,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         model: "google/gemini-3-flash-preview",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: (await import("../_shared/uplGuardrail.ts")).UPL_GUARDRAIL + "\n\n" + SYSTEM_PROMPT },
           ...messages,
         ],
         stream: streaming,
