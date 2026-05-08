@@ -212,6 +212,7 @@ const CarouselNext = React.forwardRef<HTMLButtonElement, React.ComponentProps<ty
         )}
         disabled={!canScrollNext}
         onClick={scrollNext}
+        aria-label="Next slide"
         {...props}
       >
         <ArrowRight className="h-4 w-4" />
