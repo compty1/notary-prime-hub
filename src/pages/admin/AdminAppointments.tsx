@@ -867,6 +867,11 @@ export default function AdminAppointments() {
               <Button variant="outline" className="w-full" onClick={() => { setDetailAppt(null); openMessageDialog(detailAppt); }}>
                 <Mail className="mr-1 h-4 w-4" /> Message Client
               </Button>
+              {detailAppt.status !== "completed" && detailAppt.status !== "cancelled" && (
+                <Button variant="outline" className="w-full" onClick={() => { setRescheduleAppt(detailAppt); }}>
+                  <Calendar className="mr-1 h-4 w-4" /> Reschedule
+                </Button>
+              )}
 
               {/* Service-Specific Forms */}
               {(() => {
