@@ -208,6 +208,8 @@ const AdminSystemHealth = lazyRetry(() => import("./pages/admin/AdminSystemHealt
 const TrackApostille = lazyRetry(() => import("./pages/TrackApostille"));
 const AdminRecordingArchive = lazyRetry(() => import("./pages/admin/AdminRecordingArchive"));
 const AdminRonDashboard = lazyRetry(() => import("./pages/admin/AdminRonDashboard"));
+const AdminRonTestFlow = lazyRetry(() => import("./pages/admin/AdminRonTestFlow"));
+const AdminRonHashVerification = lazyRetry(() => import("./pages/admin/AdminRonHashVerification"));
 const AdminOathAdministration = lazyRetry(() => import("./pages/admin/AdminOathAdministration"));
 const AdminCertifiedCopies = lazyRetry(() => import("./pages/admin/AdminCertifiedCopies"));
 const AdminTravelZones = lazyRetry(() => import("./pages/admin/AdminTravelZones"));
