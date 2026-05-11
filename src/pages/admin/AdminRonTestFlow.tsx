@@ -78,13 +78,19 @@ export default function AdminRonTestFlow() {
   const provision = async () => {
     setBusy("provision");
     try {
-      const { data: user } = await supabase.auth.getUser();
+      const { data: appt } = await supabase
+        .from("appointments")
+        .select("id")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!appt) throw new Error("No appointment available to attach test session to.");
       const { data, error } = await supabase
         .from("notarization_sessions")
         .insert({
-          status: "draft",
-          notary_id: user.user?.id,
-          
+          appointment_id: appt.id,
+          session_mode: "test",
+          session_type: "ron",
           signer_email: "qa+ron@notardex.com",
           recording_consent: false,
         } as never)
