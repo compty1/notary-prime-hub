@@ -84,6 +84,7 @@ export default function RescheduleAppointment() {
     setLoading(true);
 
     try {
+      const before = { scheduled_date: appointment.scheduled_date, scheduled_time: appointment.scheduled_time, status: appointment.status };
       const { error } = await supabase
         .from("appointments")
         .update({
@@ -95,6 +96,17 @@ export default function RescheduleAppointment() {
         .eq("id", appointment.id);
 
       if (error) throw error;
+
+      try {
+        const { recordAppointmentEvent } = await import("@/lib/bookingLifecycle");
+        await recordAppointmentEvent({
+          type: "appointment_rescheduled",
+          appointmentId: appointment.id,
+          before,
+          after: { scheduled_date: newDate, scheduled_time: newTime, status: "scheduled" },
+          actor: "client",
+        });
+      } catch (e) { console.warn("Lifecycle event failed:", e); }
 
       setRescheduled(true);
       toast({ title: "Rescheduled!", description: `Your appointment has been moved to ${newDate} at ${newTime}.` });
