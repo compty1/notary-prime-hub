@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Search, Filter, Clock, CheckCircle, AlertTriangle, Loader2, User, FileText, Upload, Download, PlusCircle, Globe } from "lucide-react";
 import { logAuditEvent } from "@/lib/auditLog";
 import { ExternalOrderDialog } from "@/components/ExternalOrderDialog";
+import { RequestActivityHistory } from "@/components/admin/RequestActivityHistory";
 
 const STATUS_OPTIONS = ["submitted", "in_progress", "awaiting_client", "completed", "cancelled"];
 const PRIORITY_OPTIONS = ["low", "normal", "high", "urgent"];
