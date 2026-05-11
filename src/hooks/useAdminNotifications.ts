@@ -109,7 +109,12 @@ export function useAdminNotifications() {
 function formatNotificationTitle(action: string): string {
   const titles: Record<string, string> = {
     user_signup: "New User Signup",
+    appointment_booked: "New Booking",
+    appointment_rescheduled: "Appointment Rescheduled",
     appointment_cancelled: "Appointment Cancelled",
+    appointment_confirmed: "Appointment Confirmed",
+    appointment_completed: "Appointment Completed",
+    appointment_no_show: "Client No-Show",
     payment_failed: "Payment Failed",
     document_uploaded: "Document Uploaded",
     notary_page_pending_review: "Notary Page Review Needed",
