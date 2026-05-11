@@ -166,7 +166,21 @@ export default function AdminServiceRequests() {
     setUpdating(false);
   };
 
-  const filtered = requests.filter(r => {
+  const inlineReassign = async (id: string, newAssignee: string) => {
+    const value = newAssignee === "__unassigned__" ? null : newAssignee;
+    const { error } = await supabase.from("service_requests").update({ assigned_to: value }).eq("id", id);
+    if (error) {
+      toast({ title: "Reassign failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    setRequests(prev => prev.map(r => r.id === id ? { ...r, assigned_to: value } : r));
+    await logAuditEvent("service_request_reassigned", {
+      entityType: "service_request",
+      entityId: id,
+      details: { assigned_to: value },
+    });
+    toast({ title: "Reassigned" });
+  };
     if (statusFilter !== "all" && r.status !== statusFilter) return false;
     if (priorityFilter !== "all" && r.priority !== priorityFilter) return false;
     if (assignedFilter === "unassigned" && r.assigned_to) return false;
