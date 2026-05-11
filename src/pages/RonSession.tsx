@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { callEdgeFunction } from "@/lib/edgeFunctionAuth";
 import { cn } from "@/lib/utils";
 import { logAuditEvent } from "@/lib/auditLog";
+import { appendHashChainByAppointment } from "@/lib/ronSessionHashChain";
 import type { Json } from "@/integrations/supabase/types";
 import { NotarySessionGuide } from "@/components/NotarySessionGuide";
 import { NotaryAttestationPanel } from "@/components/NotaryAttestationPanel";
@@ -446,6 +447,7 @@ export default function RonSession() {
       recording_consent: true,
       recording_consent_at: recordingConsentAt,
     } as never).eq("appointment_id", appointmentId).then(() => {}, () => {});
+    void appendHashChainByAppointment(appointmentId, "consent_recorded", { at: recordingConsentAt });
   }, [recordingConsent, recordingConsentAt, appointmentId]);
 
   const toggleVoice = () => {
@@ -683,6 +685,12 @@ export default function RonSession() {
       recording_url: recordingUrl || null,
     } as never).eq("appointment_id", appointmentId);
     await supabase.from("documents").update({ status: "notarized" }).eq("appointment_id", appointmentId);
+    void appendHashChainByAppointment(appointmentId, "session_completed", {
+      id_verified: true,
+      kba_completed: true,
+      signer_state: signerLocationState,
+      recording: !!recordingUrl,
+    });
 
     const fee = appointment.estimated_price || 5;
     const platformLabel = SIGNING_PLATFORMS.find(p => p.value === signingPlatform)?.label || signingPlatform;

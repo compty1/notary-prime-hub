@@ -131,3 +131,22 @@ export async function verifyHashChain(
   }
   return { valid: true, brokenAt: null, entries };
 }
+
+/**
+ * Convenience: resolve session_id from an appointment_id and append a step.
+ * Silently no-ops if no session exists yet.
+ */
+export async function appendHashChainByAppointment(
+  appointmentId: string,
+  step: HashChainStep,
+  payload: Record<string, unknown> = {},
+) {
+  const { data } = await supabase
+    .from("notarization_sessions")
+    .select("id")
+    .eq("appointment_id", appointmentId)
+    .maybeSingle();
+  const sid = (data as { id?: string } | null)?.id;
+  if (!sid) return null;
+  return appendHashChainStep(sid, step, payload);
+}
