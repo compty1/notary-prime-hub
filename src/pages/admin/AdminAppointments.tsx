@@ -1130,6 +1130,13 @@ export default function AdminAppointments() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AppointmentRescheduleDialog
+        appointment={rescheduleAppt}
+        open={!!rescheduleAppt}
+        onOpenChange={(o) => { if (!o) setRescheduleAppt(null); }}
+        onRescheduled={() => { fetchAppointments(); setDetailAppt(null); }}
+      />
     </div>
   );
 }
