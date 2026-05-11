@@ -1,10 +1,11 @@
 /**
- * AP-004+: Hook to manage appointment pipeline status changes
- * with proper notifications and audit logging.
+ * Appointment lifecycle hook. Captures before/after snapshots and routes
+ * every state change through `recordAppointmentEvent` so audit + email +
+ * admin notifications stay in sync.
  */
 import { supabase } from "@/integrations/supabase/client";
-import { logAdminAction } from "@/lib/auditLogger";
 import { useToast } from "@/hooks/use-toast";
+import { recordAppointmentEvent, type AppointmentEventType } from "@/lib/bookingLifecycle";
 
 export type AppointmentAction = "confirm" | "complete" | "cancel" | "reschedule" | "reassign" | "no_show";
 
@@ -17,9 +18,18 @@ const STATUS_MAP: Record<AppointmentAction, string> = {
   confirm: "confirmed",
   complete: "completed",
   cancel: "cancelled",
-  reschedule: "rescheduled",
+  reschedule: "scheduled",
   reassign: "confirmed",
   no_show: "no_show",
+};
+
+const EVENT_TYPE_MAP: Record<AppointmentAction, AppointmentEventType> = {
+  confirm: "appointment_confirmed",
+  complete: "appointment_completed",
+  cancel: "appointment_cancelled",
+  reschedule: "appointment_rescheduled",
+  reassign: "appointment_reassigned",
+  no_show: "appointment_no_show",
 };
 
 export function useAppointmentActions() {
@@ -31,6 +41,13 @@ export function useAppointmentActions() {
     metadata?: Record<string, unknown>
   ): Promise<ActionResult> => {
     try {
+      // Capture "before" snapshot for the audit trail
+      const { data: before } = await supabase
+        .from("appointments")
+        .select("status, scheduled_date, scheduled_time, notary_id, admin_notes")
+        .eq("id", appointmentId)
+        .maybeSingle();
+
       const newStatus = STATUS_MAP[action];
       const updateData: Record<string, unknown> = {
         status: newStatus,
@@ -40,11 +57,9 @@ export function useAppointmentActions() {
       if (action === "reassign" && metadata?.notaryId) {
         updateData.notary_id = metadata.notaryId;
       }
-
       if (action === "cancel" && metadata?.reason) {
         updateData.admin_notes = metadata.reason;
       }
-
       if (action === "reschedule") {
         updateData.rescheduled_from = appointmentId;
         if (metadata?.newDate) updateData.scheduled_date = metadata.newDate;
@@ -58,26 +73,14 @@ export function useAppointmentActions() {
 
       if (error) throw error;
 
-      // Audit log
-      await logAdminAction({
-        action: `appointment_${action}`,
-        entityType: "appointment",
-        entityId: appointmentId,
-        details: { newStatus, ...metadata },
+      await recordAppointmentEvent({
+        type: EVENT_TYPE_MAP[action],
+        appointmentId,
+        before: before ?? null,
+        after: { ...before, ...updateData },
+        reason: (metadata?.reason as string) ?? undefined,
+        actor: "admin",
       });
-
-      // Trigger email notification via edge function
-      try {
-        await supabase.functions.invoke("send-appointment-emails", {
-          body: {
-            appointment_id: appointmentId,
-            email_type: `status_${newStatus}`,
-          },
-        });
-      } catch {
-        // Email failure shouldn't block the action
-        console.warn("Failed to send appointment email notification");
-      }
 
       toast({
         title: `Appointment ${action}ed`,
@@ -85,13 +88,10 @@ export function useAppointmentActions() {
       });
 
       return { success: true };
-    } catch (err: any) {
-      toast({
-        title: "Action failed",
-        description: err.message,
-        variant: "destructive",
-      });
-      return { success: false, error: err.message };
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Action failed";
+      toast({ title: "Action failed", description: message, variant: "destructive" });
+      return { success: false, error: message };
     }
   };
 

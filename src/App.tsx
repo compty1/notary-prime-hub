@@ -208,6 +208,8 @@ const AdminSystemHealth = lazyRetry(() => import("./pages/admin/AdminSystemHealt
 const TrackApostille = lazyRetry(() => import("./pages/TrackApostille"));
 const AdminRecordingArchive = lazyRetry(() => import("./pages/admin/AdminRecordingArchive"));
 const AdminRonDashboard = lazyRetry(() => import("./pages/admin/AdminRonDashboard"));
+const AdminRonTestFlow = lazyRetry(() => import("./pages/admin/AdminRonTestFlow"));
+const AdminRonHashVerification = lazyRetry(() => import("./pages/admin/AdminRonHashVerification"));
 const AdminOathAdministration = lazyRetry(() => import("./pages/admin/AdminOathAdministration"));
 const AdminCertifiedCopies = lazyRetry(() => import("./pages/admin/AdminCertifiedCopies"));
 const AdminTravelZones = lazyRetry(() => import("./pages/admin/AdminTravelZones"));
@@ -604,6 +606,8 @@ function AnimatedRoutes() {
         <Route path="reports" element={<ProtectedRoute adminOnly><SR msg="Reports failed to load"><AdminReportsCenter /></SR></ProtectedRoute>} />
         <Route path="sla-monitor" element={<ProtectedRoute adminOnly><SR msg="SLA monitor failed to load"><AdminSLAMonitor /></SR></ProtectedRoute>} />
         <Route path="ron-dashboard" element={<ProtectedRoute adminOnly><SR msg="RON dashboard failed to load"><AdminRonDashboard /></SR></ProtectedRoute>} />
+        <Route path="ron-test" element={<ProtectedRoute adminOnly><SR msg="RON test flow failed to load"><AdminRonTestFlow /></SR></ProtectedRoute>} />
+        <Route path="ron-verification" element={<ProtectedRoute adminOnly><SR msg="RON verification failed to load"><AdminRonHashVerification /></SR></ProtectedRoute>} />
         <Route path="oath-administration" element={<ProtectedRoute adminOnly><SR msg="Oath administration failed to load"><AdminOathAdministration /></SR></ProtectedRoute>} />
         <Route path="certified-copies" element={<ProtectedRoute adminOnly><SR msg="Certified copies failed to load"><AdminCertifiedCopies /></SR></ProtectedRoute>} />
         <Route path="travel-zones" element={<ProtectedRoute adminOnly><SR msg="Travel zones failed to load"><AdminTravelZones /></SR></ProtectedRoute>} />

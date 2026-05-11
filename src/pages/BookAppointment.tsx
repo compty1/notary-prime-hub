@@ -575,6 +575,16 @@ export default function BookAppointment() {
     }
     sessionStorage.removeItem(BOOKING_STORAGE_KEY);
     try { await supabase.functions.invoke("send-appointment-emails", { body: { appointmentId: appointmentResultId, emailType: "confirmation" } }); } catch (e) { console.error("Email error:", e); }
+    try {
+      const { recordAppointmentEvent } = await import("@/lib/bookingLifecycle");
+      await recordAppointmentEvent({
+        type: rebookingId ? "appointment_rescheduled" : "appointment_booked",
+        appointmentId: appointmentResultId,
+        after: { scheduled_date: payload.scheduled_date, scheduled_time: payload.scheduled_time, service_type: payload.service_type },
+        actor: "client",
+        sendEmail: false, // client-confirmation already invoked above
+      });
+    } catch (e) { console.warn("Lifecycle event failed:", e); }
     if (user?.email && !rebookingId) { try { await supabase.from("leads").update({ status: "converted" }).ilike("email", user.email).in("status", ["new", "contacted", "qualified"]); } catch (e) { console.error("Lead conversion error:", e); } }
 
     // 3.6 Wire send-welcome-sequence for first-time bookers

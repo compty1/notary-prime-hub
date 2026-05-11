@@ -131,6 +131,14 @@ function buildDefaultEmailHtml(clientName: string, appt: Appointment, type: stri
       heading = "Appointment Cancelled";
       body = `<p>Hello ${clientName},</p><p>Your appointment for <strong>${appt.service_type}</strong> on <strong>${dateFormatted}</strong> has been cancelled.</p><p>If you'd like to reschedule, please visit our booking page or contact us.</p>`;
       break;
+    case "status_rescheduled":
+      heading = "Appointment Rescheduled";
+      body = `<p>Hello ${clientName},</p><p>Your appointment for <strong>${appt.service_type}</strong> has been moved to <strong>${dateFormatted}</strong> at <strong>${timeFormatted}</strong>.</p><p>If this time no longer works, please contact us.</p>`;
+      break;
+    case "status_scheduled":
+      heading = "Booking Received";
+      body = `<p>Hello ${clientName},</p><p>We've received your booking request for <strong>${appt.service_type}</strong> on <strong>${dateFormatted}</strong> at <strong>${timeFormatted}</strong>. You'll get a confirmation shortly once a notary is assigned.</p>`;
+      break;
     case "completion":
       heading = "Your Notarized Document is Ready";
       body = `<p>Hello ${clientName},</p><p>Great news! Your notarization session for <strong>${appt.service_type}</strong> on <strong>${dateFormatted}</strong> has been completed.</p><p>Your notarized documents and certificate of notarization are now available for download in your client portal.</p><p style="margin:20px 0;"><a href="https://notardex.com/portal" style="display:inline-block;padding:14px 28px;background-color:#1a2744;color:#e8d5a3;text-decoration:none;border-radius:6px;font-weight:600;font-family:Georgia,serif;">Access Your Documents</a></p><p><strong>What's included:</strong></p><ul style="margin:8px 0 16px 20px;"><li>Notarized document(s)</li><li>Certificate of Notarization</li><li>Digital e-seal verification</li></ul><p style="font-size:13px;color:#6b7280;">Per Ohio ORC §147.542, your electronic notarization carries the same legal validity as a traditional wet-ink notarization.</p>`;
@@ -262,25 +270,51 @@ Deno.serve(async (req) => {
       results.skipped_no_key = true;
     }
 
-    // Handle status change notification
-    if (body.appointment_id && body.status_change) {
-      const { data: appt } = await supabase.from("appointments").select("*").eq("id", body.appointment_id).single();
+    // Handle status change notification — accept legacy `status_change` or new `email_type`
+    const explicitEmailType: string | undefined = body.email_type || body.emailType;
+    const statusChange: string | undefined = body.status_change;
+    const apptId: string | undefined = body.appointment_id || body.appointmentId;
+    if (apptId && (explicitEmailType || statusChange)) {
+      const { data: appt } = await supabase.from("appointments").select("*").eq("id", apptId).single();
       if (appt) {
         const { data: profile } = await supabase.from("profiles").select("user_id, full_name").eq("user_id", appt.client_id).single();
         const { data: userData } = await supabase.auth.admin.getUserById(appt.client_id);
         const clientEmail = userData?.user?.email;
         const clientName = profile?.full_name || "Client";
-        if (clientEmail) {
-          const statusMap: Record<string, string> = { confirmed: "status_confirmed", in_session: "status_in_session", completed: "status_completed", cancelled: "status_cancelled" };
-          const emailType = statusMap[body.status_change];
-          if (emailType) {
-            const dateFormatted = formatDate(appt.scheduled_date);
-            const subject = `Appointment Update — ${dateFormatted}`;
-            const customHtml = await getCustomTemplate(supabase, emailType, clientName, appt as Appointment);
-            const html = customHtml || buildDefaultEmailHtml(clientName, appt as Appointment, emailType);
-            await sendEmail(clientEmail, subject, html);
-            await supabase.from("appointment_emails").insert({ appointment_id: appt.id, email_type: emailType });
-            results.status_change++;
+        const statusMap: Record<string, string> = {
+          confirmed: "status_confirmed",
+          in_session: "status_in_session",
+          completed: "status_completed",
+          cancelled: "status_cancelled",
+          rescheduled: "status_rescheduled",
+          scheduled: "status_scheduled",
+        };
+        const emailType = explicitEmailType || (statusChange ? statusMap[statusChange] : undefined);
+        if (emailType && clientEmail) {
+          const dateFormatted = formatDate(appt.scheduled_date);
+          const subject = `Appointment Update — ${dateFormatted}`;
+          const customHtml = await getCustomTemplate(supabase, emailType, clientName, appt as Appointment);
+          const html = customHtml || buildDefaultEmailHtml(clientName, appt as Appointment, emailType);
+          await sendEmail(clientEmail, subject, html);
+          await supabase.from("appointment_emails").insert({ appointment_id: appt.id, email_type: emailType });
+          results.status_change++;
+
+          // Optional admin BCC notification
+          if (body.notify_admin !== false) {
+            try {
+              const { data: adminSetting } = await supabase
+                .from("platform_settings")
+                .select("setting_value")
+                .eq("setting_key", "admin_email")
+                .maybeSingle();
+              const adminEmail = adminSetting?.setting_value;
+              if (adminEmail) {
+                const adminHtml = `<p><strong>Admin notice:</strong> ${emailType.replace(/^status_/, "")} for client <em>${clientName}</em> (${clientEmail}).</p>${html}`;
+                await sendEmail(adminEmail, `[Admin] ${subject}`, adminHtml);
+              }
+            } catch (e) {
+              console.warn("Admin BCC failed:", (e as Error).message);
+            }
           }
         }
       }
