@@ -84,7 +84,7 @@ export default function AdminRonTestFlow() {
         .insert({
           status: "draft",
           notary_id: user.user?.id,
-          signer_name: "Test Signer (RON QA)",
+          
           signer_email: "qa+ron@notardex.com",
           recording_consent: false,
         } as never)
