@@ -30,7 +30,12 @@ export function useAdminNotifications() {
       .select("*")
       .in("action", [
         "user_signup",
+        "appointment_booked",
+        "appointment_rescheduled",
         "appointment_cancelled",
+        "appointment_confirmed",
+        "appointment_completed",
+        "appointment_no_show",
         "payment_failed",
         "document_uploaded",
         "notary_page_pending_review",
