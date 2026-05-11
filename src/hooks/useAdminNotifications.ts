@@ -130,8 +130,18 @@ function formatNotificationMessage(action: string, details: any): string {
   switch (action) {
     case "user_signup":
       return `New user: ${details.email || "Unknown"}`;
+    case "appointment_booked":
+      return `New booking${details?.after?.scheduled_date ? ` for ${details.after.scheduled_date}` : ""}.`;
+    case "appointment_rescheduled":
+      return `Moved from ${details?.before?.scheduled_date || "?"} ${details?.before?.scheduled_time || ""} → ${details?.after?.scheduled_date || "?"} ${details?.after?.scheduled_time || ""}.`;
     case "appointment_cancelled":
-      return `Appointment ${details.confirmationNumber || ""} was cancelled. ${details.reason || ""}`;
+      return `Appointment cancelled${details?.reason ? `: ${details.reason}` : ""}.`;
+    case "appointment_confirmed":
+      return `Appointment confirmed.`;
+    case "appointment_completed":
+      return `Appointment marked completed.`;
+    case "appointment_no_show":
+      return `Client did not show up.`;
     case "payment_failed":
       return `Payment of $${details.amount || "?"} failed for ${details.clientEmail || "unknown client"}.`;
     case "document_uploaded":
