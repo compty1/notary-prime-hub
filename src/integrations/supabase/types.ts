@@ -6686,6 +6686,42 @@ export type Database = {
           },
         ]
       }
+      ron_session_hash_chain: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          previous_hash: string | null
+          sequence_no: number
+          session_id: string
+          step_hash: string
+          step_name: string
+          step_payload: Json
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          previous_hash?: string | null
+          sequence_no: number
+          session_id: string
+          step_hash: string
+          step_name: string
+          step_payload?: Json
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          previous_hash?: string | null
+          sequence_no?: number
+          session_id?: string
+          step_hash?: string
+          step_name?: string
+          step_payload?: Json
+        }
+        Relationships: []
+      }
       scanback_tracking: {
         Row: {
           created_at: string
