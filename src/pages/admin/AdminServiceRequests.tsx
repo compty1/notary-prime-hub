@@ -317,6 +317,17 @@ export default function AdminServiceRequests() {
                   </TableCell>
                   <TableCell><Badge className={statusColors[req.status] || ""}>{req.status.replace(/_/g, " ")}</Badge></TableCell>
                   <TableCell><Badge variant="outline" className={priorityColors[req.priority] || ""}>{req.priority}</Badge></TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
+                    <Select value={req.assigned_to || "__unassigned__"} onValueChange={(v) => inlineReassign(req.id, v)}>
+                      <SelectTrigger className="h-8 w-[150px] text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__unassigned__">Unassigned</SelectItem>
+                        {teamProfiles.map(p => (
+                          <SelectItem key={p.user_id} value={p.user_id}>{p.full_name || p.email}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {new Date(req.created_at).toLocaleDateString()}
                     {req.sla_deadline && new Date(req.sla_deadline) < new Date() && req.status !== "completed" && req.status !== "cancelled" && (
