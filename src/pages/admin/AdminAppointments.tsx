@@ -79,6 +79,7 @@ export default function AdminAppointments() {
   const [refuseAppt, setRefuseAppt] = useState<Record<string, any> | null>(null);
   const [refusalReason, setRefusalReason] = useState("");
   const [refusingAppt, setRefusingAppt] = useState(false);
+  const [rescheduleAppt, setRescheduleAppt] = useState<Record<string, any> | null>(null);
   const [cancelConfirm, setCancelConfirm] = useState<{ id: string; name: string } | null>(null);
   const [newAppt, setNewAppt] = useState({
     client_id: "",
