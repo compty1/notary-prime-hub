@@ -1,42 +1,78 @@
 /**
- * SVC-452: Booking lifecycle timestamp tracker
- * Tracks key moments: scheduled, started, completed.
+ * Booking lifecycle helper.
+ * Centralizes audit + email + admin-notification side effects for every
+ * appointment event (booked, rescheduled, cancelled, confirmed, completed,
+ * no_show). One call per state change keeps the audit trail consistent.
  */
+import { supabase } from "@/integrations/supabase/client";
+import { logAdminAction } from "@/lib/auditLogger";
 
-export interface BookingLifecycle {
-  scheduledAt: string;
-  confirmedAt?: string;
-  startedAt?: string;
-  completedAt?: string;
-  cancelledAt?: string;
-  noShowAt?: string;
+export type AppointmentEventType =
+  | "appointment_booked"
+  | "appointment_rescheduled"
+  | "appointment_cancelled"
+  | "appointment_confirmed"
+  | "appointment_completed"
+  | "appointment_no_show"
+  | "appointment_reassigned";
+
+interface RecordEventArgs {
+  type: AppointmentEventType;
+  appointmentId: string;
+  before?: Record<string, unknown> | null;
+  after?: Record<string, unknown> | null;
+  reason?: string;
+  actor?: "client" | "admin" | "notary" | "system";
+  /** When false, skip the email side-effect (use for silent admin edits). */
+  sendEmail?: boolean;
 }
 
-export function getBookingDuration(lifecycle: BookingLifecycle): number | null {
-  if (!lifecycle.startedAt || !lifecycle.completedAt) return null;
-  const start = new Date(lifecycle.startedAt).getTime();
-  const end = new Date(lifecycle.completedAt).getTime();
-  return Math.round((end - start) / 60000); // minutes
-}
+const EMAIL_TYPE_MAP: Record<AppointmentEventType, string | null> = {
+  appointment_booked: "status_scheduled",
+  appointment_rescheduled: "status_rescheduled",
+  appointment_cancelled: "status_cancelled",
+  appointment_confirmed: "status_confirmed",
+  appointment_completed: "status_completed",
+  appointment_no_show: null,
+  appointment_reassigned: null,
+};
 
-export function getBookingLeadTime(lifecycle: BookingLifecycle): number {
-  const scheduled = new Date(lifecycle.scheduledAt).getTime();
-  const created = lifecycle.confirmedAt ? new Date(lifecycle.confirmedAt).getTime() : Date.now();
-  return Math.round((scheduled - created) / 3600000); // hours
-}
+/**
+ * Record an appointment lifecycle event:
+ *  - audit_log row (visible to admin notifications)
+ *  - send-appointment-emails edge function invocation (best-effort)
+ */
+export async function recordAppointmentEvent(args: RecordEventArgs): Promise<void> {
+  const { type, appointmentId, before, after, reason, actor = "system", sendEmail = true } = args;
 
-export function formatLifecycleTimeline(lifecycle: BookingLifecycle): { label: string; time: string; status: "completed" | "pending" | "skipped" }[] {
-  const steps = [
-    { label: "Scheduled", time: lifecycle.scheduledAt, status: "completed" as const },
-    { label: "Confirmed", time: lifecycle.confirmedAt || "", status: lifecycle.confirmedAt ? "completed" as const : "pending" as const },
-    { label: "Started", time: lifecycle.startedAt || "", status: lifecycle.startedAt ? "completed" as const : "pending" as const },
-    { label: "Completed", time: lifecycle.completedAt || "", status: lifecycle.completedAt ? "completed" as const : lifecycle.cancelledAt ? "skipped" as const : "pending" as const },
-  ];
-  if (lifecycle.cancelledAt) {
-    steps.push({ label: "Cancelled", time: lifecycle.cancelledAt, status: "completed" });
+  // 1. Structured audit entry (also surfaces in useAdminNotifications)
+  await logAdminAction({
+    action: type,
+    entityType: "appointment",
+    entityId: appointmentId,
+    details: {
+      actor,
+      reason: reason ?? null,
+      before: before ?? null,
+      after: after ?? null,
+      at: new Date().toISOString(),
+    },
+  });
+
+  // 2. Email notification (client + admin BCC handled server-side)
+  const emailType = EMAIL_TYPE_MAP[type];
+  if (sendEmail && emailType) {
+    try {
+      await supabase.functions.invoke("send-appointment-emails", {
+        body: {
+          appointment_id: appointmentId,
+          email_type: emailType,
+          status_change: emailType.replace(/^status_/, ""),
+          notify_admin: true,
+        },
+      });
+    } catch (err) {
+      console.warn("[bookingLifecycle] email dispatch failed", err);
+    }
   }
-  if (lifecycle.noShowAt) {
-    steps.push({ label: "No-Show", time: lifecycle.noShowAt, status: "completed" });
-  }
-  return steps;
 }
