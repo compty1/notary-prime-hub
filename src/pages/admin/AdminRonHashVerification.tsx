@@ -22,7 +22,7 @@ interface SessionRow {
   id: string;
   appointment_id: string | null;
   status: string | null;
-  signer_name: string | null;
+  signer_email: string | null;
   started_at: string | null;
   created_at: string;
   steps?: number;
