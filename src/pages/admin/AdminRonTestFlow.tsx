@@ -117,12 +117,15 @@ export default function AdminRonTestFlow() {
     try {
       // Update session row for milestones that map to columns
       const patch: Record<string, unknown> = {};
-      if (step.key === "consent_recorded") patch.recording_consent = true;
+      if (step.key === "consent_recorded") {
+        patch.recording_consent = true;
+        patch.recording_consent_at = new Date().toISOString();
+      }
       if (step.key === "kba_passed") {
-        patch.kba_status = "passed";
+        patch.kba_completed = true;
         patch.kba_attempts = 1;
       }
-      if (step.key === "session_completed") patch.status = "completed";
+      if (step.key === "session_completed") patch.completed_at = new Date().toISOString();
       if (Object.keys(patch).length) {
         await supabase.from("notarization_sessions").update(patch as never).eq("id", sessionId);
       }
