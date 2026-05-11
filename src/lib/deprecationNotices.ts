@@ -25,3 +25,17 @@ export function getActiveDeprecations(): DeprecationNotice[] {
 export function isDeprecated(featureName: string): DeprecationNotice | null {
   return ACTIVE_DEPRECATIONS.find((d) => d.feature === featureName) || null;
 }
+
+/** Surface deprecation warnings to the console (dev-only — silent in production builds). */
+export function warnIfDeprecated(featureName: string): void {
+  if (!import.meta.env.DEV) return;
+  const notice = isDeprecated(featureName);
+  if (notice) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[DEPRECATED] "${notice.feature}" — removal scheduled for ${notice.removalDate}.` +
+        (notice.replacement ? ` Use "${notice.replacement}" instead.` : "") +
+        (notice.migrationGuide ? ` Migration: ${notice.migrationGuide}` : ""),
+    );
+  }
+}
