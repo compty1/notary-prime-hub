@@ -21,6 +21,7 @@ import { lazy, Suspense } from "react";
 
 const FullCalendarView = lazy(() => import("@/components/FullCalendarView"));
 import { AppointmentStatusTimeline } from "@/components/AppointmentStatusTimeline";
+import { AppointmentRescheduleDialog } from "@/components/admin/AppointmentRescheduleDialog";
 import { isValidStatusTransition } from "@/lib/ohioCompliance";
 
 const PAGE_SIZE = 20;
