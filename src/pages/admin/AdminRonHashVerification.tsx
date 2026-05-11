@@ -23,7 +23,7 @@ interface SessionRow {
   appointment_id: string | null;
   status: string | null;
   signer_email: string | null;
-  started_at: string | null;
+  last_activity_at: string | null;
   created_at: string;
   steps?: number;
   result?: "pass" | "fail" | "empty" | "pending";
@@ -45,7 +45,7 @@ export default function AdminRonHashVerification() {
     setLoading(true);
     const { data } = await supabase
       .from("notarization_sessions")
-      .select("id, appointment_id, status, signer_name, started_at, created_at")
+      .select("id, appointment_id, status, signer_email, last_activity_at, created_at")
       .order("created_at", { ascending: false })
       .limit(100);
     const baseRows = ((data as SessionRow[]) || []).map((r) => ({ ...r, result: "pending" as const }));
@@ -147,7 +147,7 @@ export default function AdminRonHashVerification() {
         (r) =>
           !search ||
           r.id.includes(search) ||
-          (r.signer_name || "").toLowerCase().includes(search.toLowerCase()),
+          (r.signer_email || "").toLowerCase().includes(search.toLowerCase()),
       ),
     [rows, search],
   );
@@ -236,9 +236,9 @@ export default function AdminRonHashVerification() {
                   {filtered.map((r) => (
                     <tr key={r.id} className="border-t hover:bg-muted/50">
                       <td className="p-2 font-mono text-xs">{r.id.slice(0, 8)}…</td>
-                      <td className="p-2">{r.signer_name || "—"}</td>
+                      <td className="p-2">{r.signer_email || "—"}</td>
                       <td className="p-2">{r.status || "—"}</td>
-                      <td className="p-2">{r.started_at ? new Date(r.started_at).toLocaleString() : "—"}</td>
+                      <td className="p-2">{r.last_activity_at ? new Date(r.last_activity_at).toLocaleString() : "—"}</td>
                       <td className="p-2">{r.steps ?? 0}</td>
                       <td className="p-2">{badgeFor(r)}</td>
                       <td className="p-2 flex gap-2">
