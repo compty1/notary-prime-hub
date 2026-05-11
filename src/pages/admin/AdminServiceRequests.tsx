@@ -181,7 +181,8 @@ export default function AdminServiceRequests() {
     });
     toast({ title: "Reassigned" });
   };
-    if (statusFilter !== "all" && r.status !== statusFilter) return false;
+
+  const filtered = requests.filter(r => {
     if (priorityFilter !== "all" && r.priority !== priorityFilter) return false;
     if (assignedFilter === "unassigned" && r.assigned_to) return false;
     if (assignedFilter !== "all" && assignedFilter !== "unassigned" && r.assigned_to !== assignedFilter) return false;
