@@ -21,6 +21,7 @@ import { lazy, Suspense } from "react";
 
 const FullCalendarView = lazy(() => import("@/components/FullCalendarView"));
 import { AppointmentStatusTimeline } from "@/components/AppointmentStatusTimeline";
+import { AppointmentRescheduleDialog } from "@/components/admin/AppointmentRescheduleDialog";
 import { isValidStatusTransition } from "@/lib/ohioCompliance";
 
 const PAGE_SIZE = 20;
@@ -78,6 +79,7 @@ export default function AdminAppointments() {
   const [refuseAppt, setRefuseAppt] = useState<Record<string, any> | null>(null);
   const [refusalReason, setRefusalReason] = useState("");
   const [refusingAppt, setRefusingAppt] = useState(false);
+  const [rescheduleAppt, setRescheduleAppt] = useState<Record<string, any> | null>(null);
   const [cancelConfirm, setCancelConfirm] = useState<{ id: string; name: string } | null>(null);
   const [newAppt, setNewAppt] = useState({
     client_id: "",
@@ -865,6 +867,11 @@ export default function AdminAppointments() {
               <Button variant="outline" className="w-full" onClick={() => { setDetailAppt(null); openMessageDialog(detailAppt); }}>
                 <Mail className="mr-1 h-4 w-4" /> Message Client
               </Button>
+              {detailAppt.status !== "completed" && detailAppt.status !== "cancelled" && (
+                <Button variant="outline" className="w-full" onClick={() => { setRescheduleAppt(detailAppt); }}>
+                  <Calendar className="mr-1 h-4 w-4" /> Reschedule
+                </Button>
+              )}
 
               {/* Service-Specific Forms */}
               {(() => {
@@ -1123,6 +1130,13 @@ export default function AdminAppointments() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AppointmentRescheduleDialog
+        appointment={rescheduleAppt as { id: string; scheduled_date?: string; scheduled_time?: string } | null}
+        open={!!rescheduleAppt}
+        onOpenChange={(o) => { if (!o) setRescheduleAppt(null); }}
+        onRescheduled={() => { fetchData(); setDetailAppt(null); }}
+      />
     </div>
   );
 }

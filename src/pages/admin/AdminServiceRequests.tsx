@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Search, Filter, Clock, CheckCircle, AlertTriangle, Loader2, User, FileText, Upload, Download, PlusCircle, Globe } from "lucide-react";
 import { logAuditEvent } from "@/lib/auditLog";
 import { ExternalOrderDialog } from "@/components/ExternalOrderDialog";
+import { RequestActivityHistory } from "@/components/admin/RequestActivityHistory";
 
 const STATUS_OPTIONS = ["submitted", "in_progress", "awaiting_client", "completed", "cancelled"];
 const PRIORITY_OPTIONS = ["low", "normal", "high", "urgent"];
@@ -165,6 +166,22 @@ export default function AdminServiceRequests() {
     setUpdating(false);
   };
 
+  const inlineReassign = async (id: string, newAssignee: string) => {
+    const value = newAssignee === "__unassigned__" ? null : newAssignee;
+    const { error } = await supabase.from("service_requests").update({ assigned_to: value }).eq("id", id);
+    if (error) {
+      toast({ title: "Reassign failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    setRequests(prev => prev.map(r => r.id === id ? { ...r, assigned_to: value } : r));
+    await logAuditEvent("service_request_reassigned", {
+      entityType: "service_request",
+      entityId: id,
+      details: { assigned_to: value },
+    });
+    toast({ title: "Reassigned" });
+  };
+
   const filtered = requests.filter(r => {
     if (statusFilter !== "all" && r.status !== statusFilter) return false;
     if (priorityFilter !== "all" && r.priority !== priorityFilter) return false;
@@ -276,6 +293,7 @@ export default function AdminServiceRequests() {
                 <TableHead>Client</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Priority</TableHead>
+                <TableHead>Assigned</TableHead>
                 <TableHead>Created</TableHead>
                 <TableHead className="text-right">Action</TableHead>
               </TableRow>
@@ -299,6 +317,17 @@ export default function AdminServiceRequests() {
                   </TableCell>
                   <TableCell><Badge className={statusColors[req.status] || ""}>{req.status.replace(/_/g, " ")}</Badge></TableCell>
                   <TableCell><Badge variant="outline" className={priorityColors[req.priority] || ""}>{req.priority}</Badge></TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
+                    <Select value={req.assigned_to || "__unassigned__"} onValueChange={(v) => inlineReassign(req.id, v)}>
+                      <SelectTrigger className="h-8 w-[150px] text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__unassigned__">Unassigned</SelectItem>
+                        {teamProfiles.map(p => (
+                          <SelectItem key={p.user_id} value={p.user_id}>{p.full_name || p.email}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {new Date(req.created_at).toLocaleDateString()}
                     {req.sla_deadline && new Date(req.sla_deadline) < new Date() && req.status !== "completed" && req.status !== "cancelled" && (
@@ -400,6 +429,8 @@ export default function AdminServiceRequests() {
                   <p className="text-xs text-muted-foreground">SLA Deadline: {new Date(selectedRequest.sla_deadline).toLocaleString()}</p>
                 </div>
               )}
+
+              <RequestActivityHistory entityType="service_request" entityId={selectedRequest.id} />
             </div>
           )}
           <DialogFooter>
