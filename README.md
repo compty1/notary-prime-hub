@@ -123,6 +123,43 @@ Managed automatically by Lovable Cloud. The `.env` file is auto-generated:
 - `VITE_SUPABASE_PUBLISHABLE_KEY` — Public API key
 - `VITE_SUPABASE_PROJECT_ID` — Project identifier
 
+## Operator Runbook (On-Call)
+
+This section is the on-call playbook for production incidents.
+
+### Severity Triage
+
+| Sev | Examples | Response |
+| --- | --- | --- |
+| **SEV-1** | RON sessions failing platform-wide; auth login broken; payments not processing; data leak | Page on-call immediately. Begin incident channel within 15 min. |
+| **SEV-2** | One service degraded (e.g., apostille intake); slow queries; webhook backlog growing | Acknowledge within 1h during business hours. |
+| **SEV-3** | Cosmetic, single-user reports, non-blocking warnings | Triage in next standup. |
+
+### First-Look Checklist
+
+1. **Cloud status** — Use `supabase--cloud_status` (or check Lovable Cloud dashboard). If anything other than `ACTIVE_HEALTHY`, wait/escalate before further action.
+2. **Edge function logs** — Tail recent invocations of the suspect function (`signnow-webhook`, `stripe-webhook`, `process-ron-session`).
+3. **DB linter** — Run `supabase--linter` to surface RLS/permission regressions.
+4. **Browser console & network** — Reproduce the failing flow; capture HAR.
+5. **Audit log** — Query `audit_log` for the last 1h of the affected entity type.
+
+### Common Playbooks
+
+- **Webhook DLQ growing** → See `mem://tech/webhook-resilience-inbound`. Inspect `webhook_dead_letters`, replay with `replay-dead-letter` function after fixing root cause.
+- **RON session won't finalize** → Check `notarization_sessions.status`, KBA attempts (max 2 per ORC §147.66), recording consent flag. See `enforce_recording_consent` + `enforce_kba_limit` triggers.
+- **Stripe payment stuck `pending`** → Confirm webhook signature secret matches; replay the event from Stripe dashboard. Server-side `stripe-webhook` is the single source of truth — never patch payment status manually.
+- **Booking double-booked** → Should be impossible (DB trigger `prevent_double_booking` + `check_and_reserve_slot` SELECT FOR UPDATE). If observed, file SEV-1 — the lock is broken.
+- **Email queue backlog** → `pgmq.read('emails', ...)`; check `ionos-email-sync` function; verify IONOS SMTP secret rotation.
+
+### Compliance Escalation
+
+Any suspected ORC §147 violation (act-fee cap exceeded, retention deletion, KBA bypass, unauthorized RON in another state) is **SEV-1**. Preserve `audit_log` and `ron_recordings` rows — never delete during the 10-year retention window.
+
+### Contacts
+
+- Compliance Officer: contact@notar.com
+- Ohio Secretary of State Notary Division: notary@OhioSoS.gov
+
 ## License
 
 Proprietary — All rights reserved.
