@@ -270,25 +270,51 @@ Deno.serve(async (req) => {
       results.skipped_no_key = true;
     }
 
-    // Handle status change notification
-    if (body.appointment_id && body.status_change) {
-      const { data: appt } = await supabase.from("appointments").select("*").eq("id", body.appointment_id).single();
+    // Handle status change notification — accept legacy `status_change` or new `email_type`
+    const explicitEmailType: string | undefined = body.email_type || body.emailType;
+    const statusChange: string | undefined = body.status_change;
+    const apptId: string | undefined = body.appointment_id || body.appointmentId;
+    if (apptId && (explicitEmailType || statusChange)) {
+      const { data: appt } = await supabase.from("appointments").select("*").eq("id", apptId).single();
       if (appt) {
         const { data: profile } = await supabase.from("profiles").select("user_id, full_name").eq("user_id", appt.client_id).single();
         const { data: userData } = await supabase.auth.admin.getUserById(appt.client_id);
         const clientEmail = userData?.user?.email;
         const clientName = profile?.full_name || "Client";
-        if (clientEmail) {
-          const statusMap: Record<string, string> = { confirmed: "status_confirmed", in_session: "status_in_session", completed: "status_completed", cancelled: "status_cancelled" };
-          const emailType = statusMap[body.status_change];
-          if (emailType) {
-            const dateFormatted = formatDate(appt.scheduled_date);
-            const subject = `Appointment Update — ${dateFormatted}`;
-            const customHtml = await getCustomTemplate(supabase, emailType, clientName, appt as Appointment);
-            const html = customHtml || buildDefaultEmailHtml(clientName, appt as Appointment, emailType);
-            await sendEmail(clientEmail, subject, html);
-            await supabase.from("appointment_emails").insert({ appointment_id: appt.id, email_type: emailType });
-            results.status_change++;
+        const statusMap: Record<string, string> = {
+          confirmed: "status_confirmed",
+          in_session: "status_in_session",
+          completed: "status_completed",
+          cancelled: "status_cancelled",
+          rescheduled: "status_rescheduled",
+          scheduled: "status_scheduled",
+        };
+        const emailType = explicitEmailType || (statusChange ? statusMap[statusChange] : undefined);
+        if (emailType && clientEmail) {
+          const dateFormatted = formatDate(appt.scheduled_date);
+          const subject = `Appointment Update — ${dateFormatted}`;
+          const customHtml = await getCustomTemplate(supabase, emailType, clientName, appt as Appointment);
+          const html = customHtml || buildDefaultEmailHtml(clientName, appt as Appointment, emailType);
+          await sendEmail(clientEmail, subject, html);
+          await supabase.from("appointment_emails").insert({ appointment_id: appt.id, email_type: emailType });
+          results.status_change++;
+
+          // Optional admin BCC notification
+          if (body.notify_admin !== false) {
+            try {
+              const { data: adminSetting } = await supabase
+                .from("platform_settings")
+                .select("setting_value")
+                .eq("setting_key", "admin_email")
+                .maybeSingle();
+              const adminEmail = adminSetting?.setting_value;
+              if (adminEmail) {
+                const adminHtml = `<p><strong>Admin notice:</strong> ${emailType.replace(/^status_/, "")} for client <em>${clientName}</em> (${clientEmail}).</p>${html}`;
+                await sendEmail(adminEmail, `[Admin] ${subject}`, adminHtml);
+              }
+            } catch (e) {
+              console.warn("Admin BCC failed:", (e as Error).message);
+            }
           }
         }
       }
