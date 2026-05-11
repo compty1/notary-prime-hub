@@ -429,6 +429,8 @@ export default function AdminServiceRequests() {
                   <p className="text-xs text-muted-foreground">SLA Deadline: {new Date(selectedRequest.sla_deadline).toLocaleString()}</p>
                 </div>
               )}
+
+              <RequestActivityHistory entityType="service_request" entityId={selectedRequest.id} />
             </div>
           )}
           <DialogFooter>
