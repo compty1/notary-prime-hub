@@ -210,6 +210,8 @@ const AdminRecordingArchive = lazyRetry(() => import("./pages/admin/AdminRecordi
 const AdminRonDashboard = lazyRetry(() => import("./pages/admin/AdminRonDashboard"));
 const AdminRonTestFlow = lazyRetry(() => import("./pages/admin/AdminRonTestFlow"));
 const AdminRonHashVerification = lazyRetry(() => import("./pages/admin/AdminRonHashVerification"));
+const AdminPublishReadiness = lazyRetry(() => import("./pages/admin/AdminPublishReadiness"));
+const BookingHistory = lazyRetry(() => import("./pages/BookingHistory"));
 const AdminOathAdministration = lazyRetry(() => import("./pages/admin/AdminOathAdministration"));
 const AdminCertifiedCopies = lazyRetry(() => import("./pages/admin/AdminCertifiedCopies"));
 const AdminTravelZones = lazyRetry(() => import("./pages/admin/AdminTravelZones"));
@@ -487,6 +489,7 @@ function AnimatedRoutes() {
       <Route path="/reschedule/:confirmationNumber" element={<SR msg="Reschedule failed to load"><RescheduleAppointment /></SR>} />
       <Route path="/account-settings" element={<ProtectedRoute><SR msg="Account settings failed to load"><AccountSettings /></SR></ProtectedRoute>} />
       <Route path="/portal" element={<ProtectedRoute><SR msg="Portal failed to load"><ClientPortal /></SR></ProtectedRoute>} />
+      <Route path="/booking-history" element={<ProtectedRoute><SR msg="Booking history failed to load"><BookingHistory /></SR></ProtectedRoute>} />
       <Route path="/confirmation" element={<ProtectedRoute requireVerifiedEmail gateAction="appointment confirmation"><SR msg="Confirmation failed to load"><AppointmentConfirmation /></SR></ProtectedRoute>} />
       {/* Sprint B (B-11): /ron-session enforces email verification AND MFA via routeRequiresMFA */}
       <Route path="/ron-session" element={<ProtectedRoute requireVerifiedEmail gateAction="remote online notarization sessions"><SR msg="RON session failed to load"><RonSession /></SR></ProtectedRoute>} />
@@ -608,6 +611,7 @@ function AnimatedRoutes() {
         <Route path="ron-dashboard" element={<ProtectedRoute adminOnly><SR msg="RON dashboard failed to load"><AdminRonDashboard /></SR></ProtectedRoute>} />
         <Route path="ron-test" element={<ProtectedRoute adminOnly><SR msg="RON test flow failed to load"><AdminRonTestFlow /></SR></ProtectedRoute>} />
         <Route path="ron-verification" element={<ProtectedRoute adminOnly><SR msg="RON verification failed to load"><AdminRonHashVerification /></SR></ProtectedRoute>} />
+        <Route path="publish-readiness" element={<ProtectedRoute adminOnly><SR msg="Publish readiness failed to load"><AdminPublishReadiness /></SR></ProtectedRoute>} />
         <Route path="oath-administration" element={<ProtectedRoute adminOnly><SR msg="Oath administration failed to load"><AdminOathAdministration /></SR></ProtectedRoute>} />
         <Route path="certified-copies" element={<ProtectedRoute adminOnly><SR msg="Certified copies failed to load"><AdminCertifiedCopies /></SR></ProtectedRoute>} />
         <Route path="travel-zones" element={<ProtectedRoute adminOnly><SR msg="Travel zones failed to load"><AdminTravelZones /></SR></ProtectedRoute>} />
