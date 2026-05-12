@@ -11,12 +11,12 @@ interface FooterProps {
 
 export function Footer({ phone = BRAND.defaultPhone, email = BRAND.defaultEmail, copyrightText }: FooterProps) {
   return (
-    <footer className="border-t border-sidebar-border bg-sidebar text-sidebar-foreground/60 print:hidden" role="contentinfo" aria-label="Site footer">
+    <footer className="border-t border-sidebar-border bg-sidebar text-sidebar-foreground/80 print:hidden" role="contentinfo" aria-label="Site footer">
       <div className="container mx-auto px-4 py-12">
         <div className="grid gap-8 md:grid-cols-5">
           <div className="md:col-span-1">
             <Logo size="sm" showText subtitle="Notary & Document Services" theme="dark" />
-            <p className="mt-3 text-sm text-sidebar-foreground/40">
+            <p className="mt-3 text-sm text-sidebar-foreground/70">
               Safe, secure, and legally binding remote online notarization services available 24/7. Your trusted digital partner.
             </p>
           </div>
@@ -70,18 +70,18 @@ export function Footer({ phone = BRAND.defaultPhone, email = BRAND.defaultEmail,
         </div>
 
         {/* UPL Disclaimer */}
-        <div className="mt-8 border-t border-sidebar-border pt-6 text-center text-xs text-sidebar-foreground/40 max-w-2xl mx-auto" role="note" aria-label="Legal disclaimer">
+        <div className="mt-8 border-t border-sidebar-border pt-6 text-center text-xs text-sidebar-foreground/70 max-w-2xl mx-auto" role="note" aria-label="Legal disclaimer">
           <p>Notar is not a law firm. Our notaries are not attorneys and cannot provide legal advice, draft legal documents, or advise on the content of any document. (ORC §147.01)</p>
         </div>
-        <div className="mt-2 text-center text-xs text-sidebar-foreground/40 max-w-2xl mx-auto" role="note" aria-label="Insurance information">
+        <div className="mt-2 text-center text-xs text-sidebar-foreground/70 max-w-2xl mx-auto" role="note" aria-label="Insurance information">
           <p>$25,000 surety bond &amp; E&amp;O insurance maintained. All notaries are background-checked and Ohio-commissioned.</p>
         </div>
 
         <div className="mt-6 border-t border-sidebar-border pt-4 text-center text-sm flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sidebar-foreground/50">{copyrightText || BRAND.footerText(new Date().getFullYear())}</p>
+          <p className="text-sidebar-foreground/75">{copyrightText || BRAND.footerText(new Date().getFullYear())}</p>
           <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1 text-xs text-sidebar-foreground/50"><ShieldCheck className="w-4 h-4 text-success" /> SOC 2 Aligned</span>
-            <span className="flex items-center gap-1 text-xs text-sidebar-foreground/50"><Lock className="w-4 h-4 text-success" /> AES-256 / TLS 1.2+</span>
+            <span className="flex items-center gap-1 text-xs text-sidebar-foreground/75"><ShieldCheck className="w-4 h-4 text-success" /> SOC 2 Aligned</span>
+            <span className="flex items-center gap-1 text-xs text-sidebar-foreground/75"><Lock className="w-4 h-4 text-success" /> AES-256 / TLS 1.2+</span>
           </div>
         </div>
       </div>
