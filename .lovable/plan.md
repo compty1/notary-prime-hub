@@ -1,110 +1,79 @@
-# Theme Migration: Notar Yellow + Dark Navy / Outfit + DM Sans
 
-Replace the current pink/periwinkle "Notarize Now" palette with the attached yellow + dark navy theme, and switch typography from Montserrat/Fraunces to **Outfit** (headings) + **DM Sans** (body).
+## Goal
 
-## Reference palette (from uploaded mockup)
+Apply the new Notar visual identity (yellow `#FBBF24` + dark navy `#0F172A` + Outfit/DM Sans + clean rounded cards with subtle paper-style illustrations as in the mockups) **globally and universally** across the entire site — pages, components, and illustrations — not just the homepage.
 
-| Brand role | Hex | HSL token value |
-|---|---|---|
-| Yellow (primary CTA) | `#FBBF24` | `45 96% 56%` |
-| Yellow hover | `#F59E0B` | `38 92% 50%` |
-| Dark (foreground / dark sections) | `#0F172A` | `222 47% 11%` |
-| Slate (body text) | `#475569` | `215 25% 31%` |
-| Light (page bg) | `#F8FAFC` | `210 40% 98%` |
-| Border | `#E2E8F0` | `214 32% 91%` |
-| Blue accent | `#3B82F6` | `217 91% 60%` |
+## Scope (everything in)
 
-## Token map (`src/index.css`)
+### A. Landing page composition (`src/pages/Index.tsx`)
+Rebuild to match the two reference screenshots:
+1. **Hero** — full-width navy section, eyebrow chip, H1 "Legal Online **Notarization**" with yellow underline swash, subhead, yellow rounded "Start Notarizing Now" + dark "Contact Sales" CTAs, decorative blue/yellow circles + dot pattern, paper-document illustration on the right, trust strip below CTAs.
+2. **"How can we help you today?"** — 3 service cards (Mobile Notary, Remote Online [highlighted "Most Popular"], Remote Apostille).
+3. **How It Works** — 3 steps (Upload Document → Verify & Connect → Sign & Download), Step pills, paper-style icons.
+4. **Trusted by Ohioans** — 3 testimonial cards with 5 yellow stars, quote-mark icon, circular avatars + city.
+5. **Legal expertise meets modern convenience** — phone mockup with floating stat cards on the left, headline + 4 dark pill badges on the right.
+6. **Final CTA** — navy strip with yellow + dark outline buttons.
 
-Light:
-- `--background 210 40% 98%` (was periwinkle)
-- `--foreground 222 47% 11%`
-- `--card 0 0% 100%`, `--card-foreground 222 47% 11%`
-- `--primary 45 96% 56%`, `--primary-foreground 222 47% 11%`
-- `--primary-glow 38 92% 50%`, `--primary-light 48 100% 92%`
-- `--secondary 222 47% 11%`, `--secondary-foreground 0 0% 100%`
-- `--accent 217 91% 60%`, `--accent-foreground 0 0% 100%`
-- `--accent-warm 45 96% 56%`
-- `--muted 210 40% 96%`, `--muted-foreground 215 25% 31%`
-- `--border 214 32% 91%`, `--input 214 32% 91%`, `--ring 45 96% 56%`
-- `--marketing-bg 222 47% 11%` (dark hero like mockup)
-- `--app-bg 210 40% 98%`
-- `--surface 0 0% 100%`, `--surface-muted 210 40% 96%`, `--border-subtle 214 32% 91%`
-- `--mint 142 71% 45%` (kept for success accents)
-- Sidebar: dark navy `222 47% 11%` bg, `0 0% 100%` fg, yellow primary, slate-700 accents.
+### B. Universal site-wide theme audit
+For **every** page and component on the site (marketing, auth, portal, admin, services, design studio chrome, enterprise, solutions, shop, academy, etc.):
 
-Dark:
-- `--background 222 47% 11%`
-- `--foreground 210 40% 98%`
-- `--card 217 33% 17%`
-- `--primary 45 96% 56%` (yellow stays)
-- `--accent 217 91% 60%`
-- `--muted 217 33% 17%`, `--muted-foreground 215 20% 65%`
-- `--border 217 33% 24%`, `--input 217 33% 20%`, `--ring 45 96% 56%`
-- Sidebar: deeper navy `222 47% 6%`.
+- Replace all hardcoded `bg-[#…]`, `text-[#…]`, `border-[#…]`, raw hex/HSL color literals with semantic tokens (`bg-primary`, `text-foreground`, `border-border`, `bg-secondary`, `bg-accent`, `bg-muted`, etc.).
+- Standardize button styles to the new system (yellow primary rounded-full, dark secondary rounded-full, ghost outline).
+- Standardize card styles (white surface, subtle border, soft shadow, `rounded-card` token).
+- Standardize section eyebrow chips (small uppercase pill with light primary tint).
+- Standardize headings to `font-heading` (Outfit) and body to `font-body` (DM Sans) wherever an inline font-family override exists.
+- Verify dark-mode tokens render correctly on each touched surface.
 
-Keep success/warning/info/destructive untouched. Keep `--radius: 7px` (existing block-shadow motif).
+**Exclusions** — these are user-customizable artifact templates and must keep their literal colors so end-users can change them:
+- `src/components/docudex/**` (DocuDex visual editor — user designs)
+- `src/pages/design/**` (Print Design Studio configurators — user designs)
+- `src/components/InvoicePDFExport.tsx`, `NotarizationCertificate.tsx`, `PrintStylesheet.tsx`, `EmailTemplateDesigner.tsx`, `SignatureGenerator.tsx`, `PaymentForm.tsx` Stripe Elements skin (PDF/email/Stripe artifacts — fixed by spec)
+- `src/components/RevenueByServiceChart.tsx` chart palette (uses semantic tokens already; only adjust if hardcoded)
+- `AdminNotaryPages.tsx` / `AdminAutomatedEmails.tsx` / `PortalNotaryPageTab.tsx` color-picker **defaults** stay literal but seeded to the new brand (`#FBBF24` / `#0F172A` / `#3B82F6`).
 
-## Typography
+In-scope chrome files for hex → token sweep include: `Hero3DAnimation.tsx`, `ProcessGuide.tsx`, `AnatomyDiagram.tsx`, `NotaryPage.tsx`, `Login.tsx`, `SignUp.tsx`, `PortalEmailsTab.tsx`, `ai-tools/ToolRunner.tsx`, `design/ProductScene3D.tsx` (3D scene clear color/lighting only), and any remaining page/component flagged by `rg`.
 
-`src/index.css`:
-- Replace Google Fonts import line with Outfit (500/600/700/800) + DM Sans (400/500/600/700).
-- `--font-heading: 'Outfit', system-ui, sans-serif`
-- `--font-body: 'DM Sans', system-ui, sans-serif`
-- `--font-display: 'Outfit', system-ui, sans-serif` (alias so existing references resolve; drop Fraunces)
-- Update `body { font-family: ... DM Sans }`, headings `Outfit`, `.font-heading/.font-body/.font-display` utility classes.
+### C. Illustrations & graphics — unified style
+The mockups use a **flat paper-card style with soft drop shadows, subtle yellow + blue accents, and rounded corners**. Replace the existing mismatched 3D rendered illustrations (current `hero-3d-illustration.png`, `about-3d-illustration.png`, etc.) with this consistent set:
 
-`tailwind.config.ts`:
-- `sans: ['"DM Sans"', ...]`
-- `heading: ['"Outfit"', ...]`
-- `display: ['"Outfit"', ...]`
-- `body: ['"DM Sans"', ...]`
-- `mono` unchanged.
+1. `src/assets/hero-document-card.png` — paper document with signature + yellow check seal (used in hero right column).
+2. `src/assets/step-upload.png` — paper card with upload arrow.
+3. `src/assets/step-verify.png` — paper card with ID + check.
+4. `src/assets/step-sign.png` — paper card with signature line + downward arrow check.
+5. `src/assets/feature-phone-mockup.png` — phone showing notary app with floating stat cards.
+6. `src/assets/about-credentials.png` — replacement for `about-3d-illustration` matching the new flat style.
 
-`index.html`:
-- Replace existing Plus Jakarta / Space Grotesk / Lato `<link>` with Outfit + DM Sans stylesheet.
-- Keep preconnects to `fonts.googleapis.com` / `fonts.gstatic.com`.
+Generate via `imagegen` at premium quality, transparent background where appropriate. Keep file slots in `src/assets/` so other pages that import the existing names continue to work; old files are replaced in place where the new style fits, otherwise added alongside and old imports updated.
 
-`src/lib/brand.ts` / `src/lib/brandConfig.ts`:
-- Update `fonts.heading/body` to Outfit / DM Sans (mono unchanged).
+### D. Shared chrome
+- **Header / Nav** — confirm logo lockup, link colors, and "Start Notarizing" CTA match new brand (yellow rounded-full).
+- **Footer** — confirm navy bg, yellow link hover, semantic tokens.
+- **Auth pages** (`Login.tsx`, `SignUp.tsx`, `ForgotPassword.tsx`) — apply paper-card form on light background, yellow primary submit.
+- **NotFound / Maintenance / ComingSoon / Accessibility / Compliance / Security / SignerRights** — one-pass theme alignment.
+- **Client Portal & Admin shells** — sidebar navy + yellow active state already configured; verify content surfaces use `surface-card` / `bg-card` rather than raw whites.
 
-`src/hooks/useBrandColors.ts`: no logic change — defaults flow from CSS vars.
+## Files touched (high-level)
 
-## Hardcoded color audit (chrome only)
+- `src/pages/Index.tsx` (full rebuild of 6 sections)
+- ~30–45 component & page files in scope-A list above (token sweep + small style normalizations only — **no logic changes**)
+- `src/assets/*.png` (6 new illustrations)
+- `src/components/Hero3DAnimation.tsx` (palette already updated; verify)
+- `src/components/Header.tsx`, `Footer.tsx`, `PageShell.tsx` (nav/footer alignment if hex literals found)
 
-Touch only files that render app/marketing chrome. Do **not** modify design-studio / docudex / signature-generator / pdf-export modules — those colors belong to user-generated artifacts:
+## Process
 
-In-scope (replace `#xxxxxx`, `bg-[#…]`, inline `style={{color:'#…'}}` with semantic tokens like `bg-primary`, `text-foreground`, `bg-secondary`, `border-border`):
-- `src/components/Hero3DAnimation.tsx`
-- `src/components/ProcessGuide.tsx`
-- `src/pages/admin/AdminNotaryPages.tsx`
-- `src/pages/admin/AdminAutomatedEmails.tsx`
-- `src/pages/admin/AdminSettings.tsx`
-- `src/pages/admin/AdminDocuments.tsx`
-- Any remaining `bg-[#…]` / `text-[#…]` hits inside `src/components/**` and `src/pages/**` (ripgrep sweep) excluding the out-of-scope list.
-
-Out of scope (kept as-is — emit user/brand artifacts, not theme):
-- `src/components/docudex/**`, `src/components/EmailTemplateDesigner.tsx`, `src/components/DocuDexEditor.tsx`, `src/components/InvoicePDFExport.tsx`, `src/components/NotarizationCertificate.tsx`, `src/components/SignatureGenerator.tsx`, `src/lib/emailTemplates.ts`, `src/lib/receiptGenerator.ts`, `src/pages/design/**`, `src/pages/enterprise/ExhibitStamper.tsx`, `src/components/design/ProductScene3D.tsx`, `src/components/ai-tools/ToolRunner.tsx`.
-
-`src/lib/themeColors.ts` already reads CSS vars — auto-updates with new palette.
-
-## Files changed (summary)
-
-- `src/index.css` — palette + fonts (light + dark)
-- `tailwind.config.ts` — fontFamily
-- `index.html` — Google Fonts links + preload cleanup
-- `src/lib/brand.ts`, `src/lib/brandConfig.ts` — font references
-- ~6 chrome components/pages — swap hex → semantic tokens
-
-## Verification
-
-1. `npx tsc --noEmit` clean (auto build).
-2. Spot-check Home, `/fee-calculator`, `/admin`, `/booking`, `/portal` in light + dark.
-3. Confirm primary CTAs render yellow with dark text; hero/dark sections render navy `#0F172A`; sidebar dark navy with yellow active state; body uses DM Sans, headings Outfit.
-4. Re-run `rg '#[0-9a-fA-F]{6}' src/components src/pages` excluding out-of-scope list — expect zero hits.
+Work in 4 passes so the user can see incremental progress:
+1. **Pass 1 — Homepage rebuild** (Index.tsx + new hero/step/feature illustrations).
+2. **Pass 2 — Universal hex → token sweep** across all in-scope chrome pages/components.
+3. **Pass 3 — Auth + utility pages + nav/footer** style alignment.
+4. **Pass 4 — Verification**: `npx tsc --noEmit`, `rg '#[0-9a-fA-F]{6}'` on in-scope files (zero hits expected), spot-check key pages at desktop + mobile.
 
 ## Out of scope
+- Backend, business logic, routing, RLS, edge functions.
+- User-customizable artifact templates (DocuDex, Print Design Studio, PDF/email templates, Stripe Elements skin).
+- New features.
 
-- Re-rendering design-studio swatches, PDF/email artifact colors, 3D scene materials.
-- Layout, spacing, or component restructure — colors + fonts only.
-- Logo SVG asset replacement (existing logo retained).
+## Verification
+- TypeScript clean.
+- Zero hardcoded hex in in-scope files.
+- Visual diff vs. mockup screenshots on home, login, portal dashboard, admin dashboard, one services page, one solutions page.

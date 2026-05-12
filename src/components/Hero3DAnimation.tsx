@@ -137,7 +137,7 @@ export default function Hero3DAnimation() {
         ctx.fill();
       }
 
-      ctx.fillStyle = "#e2e8f0";
+      ctx.fillStyle = "#E2E8F0";
       const lineY = -h / 2 + 34;
       for (let i = 0; i < 6; i++) {
         const lw = w * (0.35 + Math.random() * 0.45);
@@ -148,7 +148,7 @@ export default function Hero3DAnimation() {
       ctx.beginPath();
       ctx.arc(w / 2 - 18, h / 2 - 18, 14, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = "#D4A80A";
+      ctx.strokeStyle = "#F59E0B";
       ctx.lineWidth = 1.5;
       ctx.stroke();
 

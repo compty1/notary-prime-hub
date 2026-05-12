@@ -216,7 +216,7 @@ export default function NotaryPage() {
   const services = (page.services_offered || []) as Array<{ name: string; description?: string; price?: number | string }>;
   const areas = (page.service_areas || []) as string[];
   const themeColor = ensureHex(page.theme_color);
-  const accentColor = ensureHex(page.accent_color, "#1e40af");
+  const accentColor = ensureHex(page.accent_color, "#3B82F6");
   const fontFamily = page.font_family || "Inter";
   const navServices = Array.isArray(page.nav_services) ? page.nav_services : [];
   const professionalType = page.professional_type || "notary";
