@@ -116,14 +116,44 @@ export async function mirrorAppointmentToCalendar(
   const endTime = new Date(new Date(startDate).getTime() + 60 * 60 * 1000).toISOString();
   const tag = type === "appointment_rescheduled" ? "(Rescheduled)" : "";
 
-  await supabase.functions.invoke("google-calendar-sync", {
-    body: {
-      action: "create_event",
-      summary: `Notarization: ${appt.service_type} ${tag} (${appt.confirmation_number || appt.id.slice(0, 8)})`,
-      description: `Service: ${appt.service_type}\nStatus: ${appt.status}\n${appt.notes || ""}`,
-      start: startDate,
-      end: endTime,
-      location: appt.location || "Remote (RON)",
-    },
-  });
+  // Mark pending so admins can see in-flight syncs even if the call fails.
+  await supabase
+    .from("appointments")
+    .update({ calendar_sync_status: "pending" } as never)
+    .eq("id", appointmentId);
+
+  try {
+    const { data, error } = await supabase.functions.invoke("google-calendar-sync", {
+      body: {
+        action: "create_event",
+        summary: `Notarization: ${appt.service_type} ${tag} (${appt.confirmation_number || appt.id.slice(0, 8)})`,
+        description: `Service: ${appt.service_type}\nStatus: ${appt.status}\n${appt.notes || ""}`,
+        start: startDate,
+        end: endTime,
+        location: appt.location || "Remote (RON)",
+      },
+    });
+    if (error) throw error;
+    const event = (data as { event?: { id?: string; htmlLink?: string; organizer?: { email?: string } } } | null)?.event;
+    await supabase
+      .from("appointments")
+      .update({
+        google_event_id: event?.id ?? null,
+        calendar_html_link: event?.htmlLink ?? null,
+        gcal_calendar_id: event?.organizer?.email ?? "primary",
+        calendar_synced_at: new Date().toISOString(),
+        calendar_sync_status: event?.id ? "synced" : "failed",
+        calendar_sync_error: event?.id ? null : "No event id returned",
+      } as never)
+      .eq("id", appointmentId);
+  } catch (err) {
+    await supabase
+      .from("appointments")
+      .update({
+        calendar_sync_status: "failed",
+        calendar_sync_error: err instanceof Error ? err.message : String(err),
+      } as never)
+      .eq("id", appointmentId);
+    throw err;
+  }
 }
