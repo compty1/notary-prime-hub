@@ -623,6 +623,10 @@ export type Database = {
           after_hours_fee: number | null
           appointment_duration_actual: number | null
           booking_source: string | null
+          calendar_html_link: string | null
+          calendar_sync_error: string | null
+          calendar_sync_status: string | null
+          calendar_synced_at: string | null
           client_address: string | null
           client_id: string
           confirmation_number: string | null
@@ -632,6 +636,8 @@ export type Database = {
           facility_contact: string | null
           facility_name: string | null
           facility_room: string | null
+          gcal_calendar_id: string | null
+          google_event_id: string | null
           id: string
           location: string | null
           notarization_type: Database["public"]["Enums"]["notarization_type"]
@@ -661,6 +667,10 @@ export type Database = {
           after_hours_fee?: number | null
           appointment_duration_actual?: number | null
           booking_source?: string | null
+          calendar_html_link?: string | null
+          calendar_sync_error?: string | null
+          calendar_sync_status?: string | null
+          calendar_synced_at?: string | null
           client_address?: string | null
           client_id: string
           confirmation_number?: string | null
@@ -670,6 +680,8 @@ export type Database = {
           facility_contact?: string | null
           facility_name?: string | null
           facility_room?: string | null
+          gcal_calendar_id?: string | null
+          google_event_id?: string | null
           id?: string
           location?: string | null
           notarization_type?: Database["public"]["Enums"]["notarization_type"]
@@ -699,6 +711,10 @@ export type Database = {
           after_hours_fee?: number | null
           appointment_duration_actual?: number | null
           booking_source?: string | null
+          calendar_html_link?: string | null
+          calendar_sync_error?: string | null
+          calendar_sync_status?: string | null
+          calendar_synced_at?: string | null
           client_address?: string | null
           client_id?: string
           confirmation_number?: string | null
@@ -708,6 +724,8 @@ export type Database = {
           facility_contact?: string | null
           facility_name?: string | null
           facility_room?: string | null
+          gcal_calendar_id?: string | null
+          google_event_id?: string | null
           id?: string
           location?: string | null
           notarization_type?: Database["public"]["Enums"]["notarization_type"]

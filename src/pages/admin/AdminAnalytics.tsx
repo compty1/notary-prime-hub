@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { DollarSign, TrendingUp, Users, Package, MapPin } from "lucide-react";
 
-const COLORS = ["hsl(224, 63%, 28%)", "hsl(168, 75%, 36%)", "hsl(42, 78%, 55%)", "hsl(0, 85%, 55%)", "hsl(261, 50%, 51%)", "hsl(190, 95%, 39%)"];
+const COLORS = ["hsl(var(--chart-1))", "hsl(var(--chart-4))", "hsl(var(--chart-2))", "hsl(var(--chart-6))", "hsl(var(--chart-5))", "hsl(var(--chart-3))"];
 
 interface PaymentRow { amount: number | null; status: string; created_at: string; method: string | null; }
 interface AppointmentRow { scheduled_date: string; status: string; service_type: string; notarization_type: string; travel_distance_miles: number | null; client_id?: string; }
@@ -136,7 +136,7 @@ export default function AdminAnalytics() {
               <CardHeader><CardTitle className="text-sm">Revenue Over Time</CardTitle></CardHeader>
               <CardContent className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={revenueByMonth}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="month" tick={{ fontSize: 12 }} /><YAxis tick={{ fontSize: 12 }} /><Tooltip formatter={(v: number) => `$${v.toFixed(2)}`} /><Line type="monotone" dataKey="revenue" stroke="hsl(224, 63%, 28%)" strokeWidth={2} /></LineChart>
+                  <LineChart data={revenueByMonth}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="month" tick={{ fontSize: 12 }} /><YAxis tick={{ fontSize: 12 }} /><Tooltip formatter={(v: number) => `$${v.toFixed(2)}`} /><Line type="monotone" dataKey="revenue" stroke="hsl(var(--chart-1))" strokeWidth={2} /></LineChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
@@ -158,7 +158,7 @@ export default function AdminAnalytics() {
             <CardHeader><CardTitle className="text-sm">Orders by Service Type</CardTitle></CardHeader>
             <CardContent className="h-[400px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={serviceBreakdown} layout="vertical"><CartesianGrid strokeDasharray="3 3" /><XAxis type="number" /><YAxis dataKey="name" type="category" width={150} tick={{ fontSize: 11 }} /><Tooltip /><Bar dataKey="value" fill="hsl(224, 63%, 28%)" radius={[0, 4, 4, 0]} /></BarChart>
+                <BarChart data={serviceBreakdown} layout="vertical"><CartesianGrid strokeDasharray="3 3" /><XAxis type="number" /><YAxis dataKey="name" type="category" width={150} tick={{ fontSize: 11 }} /><Tooltip /><Bar dataKey="value" fill="hsl(var(--chart-1))" radius={[0, 4, 4, 0]} /></BarChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
@@ -170,7 +170,7 @@ export default function AdminAnalytics() {
               <CardHeader><CardTitle className="text-sm">New Clients Per Month</CardTitle></CardHeader>
               <CardContent className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={newClientsPerMonth}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="month" /><YAxis /><Tooltip /><Bar dataKey="clients" fill="hsl(168, 75%, 36%)" radius={[4, 4, 0, 0]} /></BarChart>
+                  <BarChart data={newClientsPerMonth}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="month" /><YAxis /><Tooltip /><Bar dataKey="clients" fill="hsl(var(--chart-4))" radius={[4, 4, 0, 0]} /></BarChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
