@@ -178,11 +178,11 @@ export function Navbar() {
             <DarkModeToggle className="text-muted-foreground" />
             {user ? (
               <Link to={portalLink}>
-                <Button variant="ghost" size="sm" className="text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted">{portalLabel}</Button>
+                <Button variant="ghost" size="sm" className="text-sm font-semibold text-foreground hover:text-foreground hover:bg-muted">{portalLabel}</Button>
               </Link>
             ) : (
               <Link to="/login">
-                <Button size="sm" variant="ghost" className="text-sm font-semibold text-muted-foreground hover:text-foreground">Sign In</Button>
+                <Button size="sm" variant="ghost" className="text-sm font-semibold text-foreground hover:text-foreground hover:bg-muted">Sign In</Button>
               </Link>
             )}
             <Link to="/book">
