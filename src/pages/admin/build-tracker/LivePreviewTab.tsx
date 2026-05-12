@@ -123,9 +123,10 @@ export default function LivePreviewTab({ themeOverlay }: Props) {
       if (val) cssVars[`--${key}`] = hexToHSL(val);
     });
     try {
+      // Same-origin preview iframe — scope to our own origin to avoid wildcard warnings.
       iframeRef.current.contentWindow?.postMessage(
         { type: "THEME_OVERRIDE", cssVars },
-        "*"
+        window.location.origin
       );
     } catch (e) { console.warn("Theme overlay postMessage failed:", e); }
   }, [themeOverlay, isLoading]);
