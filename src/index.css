@@ -83,6 +83,14 @@
     --warning-foreground: 0 0% 10%;
     --info: 217 91% 60%;
     --info-foreground: 0 0% 100%;
+
+    /* Chart palette — used by admin analytics & dashboard charts */
+    --chart-1: 222 47% 11%;   /* navy */
+    --chart-2: 45 96% 56%;    /* gold */
+    --chart-3: 217 91% 60%;   /* blue */
+    --chart-4: 168 75% 36%;   /* teal */
+    --chart-5: 261 50% 51%;   /* violet */
+    --chart-6: 0 72% 51%;     /* red */
   }
 
   .dark {
