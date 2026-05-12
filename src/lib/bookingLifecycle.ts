@@ -75,4 +75,55 @@ export async function recordAppointmentEvent(args: RecordEventArgs): Promise<voi
       console.warn("[bookingLifecycle] email dispatch failed", err);
     }
   }
+
+  // 3. Google Calendar mirror (best-effort; only succeeds for admin/notary actors
+  // because google-calendar-sync enforces role check). Client-initiated events
+  // are mirrored later by admin via the GoogleCalendarWidget bulk sync.
+  if (
+    type === "appointment_booked" ||
+    type === "appointment_rescheduled" ||
+    type === "appointment_cancelled"
+  ) {
+    try {
+      await mirrorAppointmentToCalendar(appointmentId, type);
+    } catch (err) {
+      console.warn("[bookingLifecycle] calendar mirror skipped", err);
+    }
+  }
+}
+
+/**
+ * Mirror an appointment change to the connected Google Calendar.
+ * No-op when caller lacks admin/notary role (edge function returns 403).
+ */
+export async function mirrorAppointmentToCalendar(
+  appointmentId: string,
+  type: AppointmentEventType,
+): Promise<void> {
+  const { data: appt } = await supabase
+    .from("appointments")
+    .select("id, scheduled_date, scheduled_time, service_type, location, notes, status, confirmation_number")
+    .eq("id", appointmentId)
+    .maybeSingle();
+  if (!appt) return;
+
+  if (type === "appointment_cancelled") {
+    // Cancellation: log only — deleting individual events requires stored gcal event_id.
+    return;
+  }
+
+  const startDate = `${appt.scheduled_date}T${appt.scheduled_time}:00`;
+  const endTime = new Date(new Date(startDate).getTime() + 60 * 60 * 1000).toISOString();
+  const tag = type === "appointment_rescheduled" ? "(Rescheduled)" : "";
+
+  await supabase.functions.invoke("google-calendar-sync", {
+    body: {
+      action: "create_event",
+      summary: `Notarization: ${appt.service_type} ${tag} (${appt.confirmation_number || appt.id.slice(0, 8)})`,
+      description: `Service: ${appt.service_type}\nStatus: ${appt.status}\n${appt.notes || ""}`,
+      start: startDate,
+      end: endTime,
+      location: appt.location || "Remote (RON)",
+    },
+  });
 }
