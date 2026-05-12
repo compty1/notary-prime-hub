@@ -56,7 +56,7 @@ export default function ForNotaries() {
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">
               <div className="relative">
-                <img src={heroNotaries} alt="Ohio commissioned notary — paper-card illustration" width={1024} height={1024} className="mx-auto h-auto w-full max-w-[420px] drop-shadow-xl" />
+                <img src={heroNotaries} alt="Ohio commissioned notary — paper-card illustration" fetchPriority="high" decoding="async" sizes="(max-width: 768px) 90vw, 420px" width={1024} height={1024} className="mx-auto h-auto w-full max-w-[420px] drop-shadow-xl" />
                 <div className="absolute -bottom-1 -right-1 rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-lg">Ohio Commissioned</div>
               </div>
             </motion.div>

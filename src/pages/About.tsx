@@ -66,7 +66,7 @@ export default function About() {
         <div className="container relative mx-auto max-w-4xl px-4">
           <motion.div initial="hidden" animate="visible" className="flex flex-col md:flex-row items-center gap-8">
             <motion.div variants={fadeUp} custom={0} className="flex-shrink-0">
-              <img src={heroAbout} alt="Notar — Ohio commissioned notary illustration" width={1024} height={1024} className="h-auto w-full max-w-[280px] md:max-w-[320px] drop-shadow-xl" />
+              <img src={heroAbout} alt="Notar — Ohio commissioned notary illustration" fetchPriority="high" decoding="async" sizes="(max-width: 768px) 70vw, 320px" width={1024} height={1024} className="h-auto w-full max-w-[280px] md:max-w-[320px] drop-shadow-xl" />
             </motion.div>
             <motion.div variants={fadeUp} custom={1}>
               <Badge className="mb-3 bg-primary/10 text-primary border-primary/20 rounded-lg font-bold">

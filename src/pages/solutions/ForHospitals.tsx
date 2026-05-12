@@ -79,7 +79,7 @@ export default function ForHospitals() {
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">
               <div className="relative">
-                <img src={heroHospitals} alt="Healthcare notarization — paper-card illustration" width={1024} height={1024} className="mx-auto h-auto w-full max-w-[420px] drop-shadow-xl" />
+                <img src={heroHospitals} alt="Healthcare notarization — paper-card illustration" fetchPriority="high" decoding="async" sizes="(max-width: 768px) 90vw, 420px" width={1024} height={1024} className="mx-auto h-auto w-full max-w-[420px] drop-shadow-xl" />
                 <p className="mt-4 text-center text-lg font-semibold text-foreground">Compassionate. Professional. Compliant.</p>
                 <p className="mt-1 text-center text-sm text-muted-foreground">Serving Columbus & Franklin County hospitals</p>
                 <div className="absolute -bottom-1 -right-1 rounded-full bg-accent px-4 py-2 text-xs font-bold text-accent-foreground shadow-lg">
