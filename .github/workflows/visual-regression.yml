@@ -34,16 +34,23 @@ jobs:
         run: bunx playwright install --with-deps chromium
 
       # Bootstrap baselines on the very first run (or when manually requested).
-      # When no PNGs exist yet under tests/visual/landing-snapshots.spec.ts-snapshots/,
-      # we generate them and push them back to the branch so subsequent runs compare.
+      # We treat each snapshot dir that contains *no PNG files* (only .gitkeep
+      # bootstrap markers) as "missing" so the workflow regenerates baselines.
       - name: Detect missing baselines
         id: baselines
         run: |
-          if [ -z "$(ls -A tests/visual/landing-snapshots.spec.ts-snapshots 2>/dev/null)" ] || [ "${{ github.event.inputs.update_snapshots }}" = "true" ]; then
-            echo "missing=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "missing=false" >> "$GITHUB_OUTPUT"
+          missing=false
+          for dir in tests/visual/landing-snapshots.spec.ts-snapshots tests/visual/booking-funnel.spec.ts-snapshots; do
+            png_count=$(find "$dir" -maxdepth 1 -name '*.png' 2>/dev/null | wc -l)
+            if [ "$png_count" = "0" ]; then
+              echo "Snapshot dir empty (no PNGs): $dir"
+              missing=true
+            fi
+          done
+          if [ "${{ github.event.inputs.update_snapshots }}" = "true" ]; then
+            missing=true
           fi
+          echo "missing=$missing" >> "$GITHUB_OUTPUT"
 
       - name: Generate baselines (first run / manual)
         if: steps.baselines.outputs.missing == 'true'
@@ -54,11 +61,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tests/visual/landing-snapshots.spec.ts-snapshots
+          git add tests/visual/landing-snapshots.spec.ts-snapshots tests/visual/booking-funnel.spec.ts-snapshots
           if git diff --cached --quiet; then
             echo "No baseline changes to commit."
           else
-            git commit -m "chore(visual): bootstrap landing-route snapshots [skip ci]"
+            git commit -m "chore(visual): bootstrap landing + booking-funnel snapshots [skip ci]"
             git push
           fi
 
