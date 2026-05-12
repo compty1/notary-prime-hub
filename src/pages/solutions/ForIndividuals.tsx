@@ -7,6 +7,7 @@ import { PageShell } from "@/components/PageShell";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
+import heroIndividuals from "@/assets/hero-solutions-individuals.png";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 import { OrcChip, NotaryOnCall } from "@/components/trust";
 
@@ -54,11 +55,11 @@ export default function ForIndividuals() {
               </div>
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">
-              <div className="relative rounded-2xl border border-border bg-card p-8 shadow-lg">
-                <Icon3D src={FEATURE_3D_ICON.identity} alt="Personal notarization" className="mx-auto mb-4 h-[184px] w-[184px]" />
-                <p className="text-center text-lg font-semibold text-foreground">Fast & Affordable</p>
-                <p className="mt-2 text-center text-sm text-muted-foreground">Starting at $5 per notarization</p>
-                <div className="absolute -bottom-3 -right-3 rounded-full bg-accent px-4 py-2 text-xs font-bold text-accent-foreground shadow-lg">In-Person & RON</div>
+              <div className="relative">
+                <img src={heroIndividuals} alt="Personal notarization — paper-card illustration" width={1024} height={1024} className="mx-auto h-auto w-full max-w-[420px] drop-shadow-xl" />
+                <p className="mt-4 text-center text-lg font-semibold text-foreground">Fast & Affordable</p>
+                <p className="mt-1 text-center text-sm text-muted-foreground">Starting at $5 per notarization</p>
+                <div className="absolute -bottom-1 -right-1 rounded-full bg-accent px-4 py-2 text-xs font-bold text-accent-foreground shadow-lg">In-Person & RON</div>
               </div>
             </motion.div>
           </div>
