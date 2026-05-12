@@ -16,12 +16,12 @@ import { test, expect } from "@playwright/test";
 const ROUTES = [
   { name: "home", path: "/" },
   { name: "about", path: "/about" },
-  { name: "solutions-real-estate", path: "/solutions/for-real-estate" },
-  { name: "solutions-law-firms", path: "/solutions/for-law-firms" },
-  { name: "solutions-hospitals", path: "/solutions/for-hospitals" },
-  { name: "solutions-individuals", path: "/solutions/for-individuals" },
-  { name: "solutions-small-business", path: "/solutions/for-small-business" },
-  { name: "solutions-notaries", path: "/solutions/for-notaries" },
+  { name: "solutions-real-estate", path: "/solutions/real-estate" },
+  { name: "solutions-law-firms", path: "/solutions/law-firms" },
+  { name: "solutions-hospitals", path: "/solutions/hospitals" },
+  { name: "solutions-individuals", path: "/solutions/individuals" },
+  { name: "solutions-small-business", path: "/solutions/small-business" },
+  { name: "solutions-notaries", path: "/solutions/notaries" },
 ];
 
 const BREAKPOINTS = [
