@@ -25,12 +25,14 @@ import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
 import { fadeUp, blurIn, scaleReveal } from "@/lib/animations";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
-import Hero3DAnimation from "@/components/Hero3DAnimation";
-import heroNotarize from "@/assets/hero-notar-product.jpg";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 import { RonAdvisorWidget } from "@/components/RonAdvisorWidget";
-import { TrustBar, NotaryOnCall, OrcChip } from "@/components/trust";
-import aboutIllustration from "@/assets/about-3d-illustration.png";
+import { TrustBar } from "@/components/trust";
+import heroDocumentCard from "@/assets/hero-document-card.png";
+import stepUpload from "@/assets/step-upload.png";
+import stepVerify from "@/assets/step-verify.png";
+import stepSign from "@/assets/step-sign.png";
+import featurePhoneMockup from "@/assets/feature-phone-mockup.png";
 
 const primaryServices = [
  {
