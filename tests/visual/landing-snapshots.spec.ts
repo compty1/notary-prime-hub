@@ -22,6 +22,8 @@ const ROUTES = [
   { name: "solutions-individuals", path: "/solutions/individuals" },
   { name: "solutions-small-business", path: "/solutions/small-business" },
   { name: "solutions-notaries", path: "/solutions/notaries" },
+  { name: "book", path: "/book" },
+  { name: "services", path: "/services" },
 ];
 
 const BREAKPOINTS = [
