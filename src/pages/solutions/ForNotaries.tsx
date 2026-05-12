@@ -7,6 +7,7 @@ import { PageShell } from "@/components/PageShell";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
+import heroNotaries from "@/assets/hero-solutions-notaries.png";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 import { OrcChip, NotaryOnCall } from "@/components/trust";
 
@@ -55,8 +56,8 @@ export default function ForNotaries() {
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">
               <div className="relative">
-                <img loading="lazy" decoding="async" src="/images/notary-seal.png" alt="Ohio Notary Public Seal" className="w-72 h-72 object-contain rounded-2xl shadow-lg" />
-                <div className="absolute -bottom-3 -right-3 rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-lg">Ohio Commissioned</div>
+                <img src={heroNotaries} alt="Ohio commissioned notary — paper-card illustration" width={1024} height={1024} className="mx-auto h-auto w-full max-w-[420px] drop-shadow-xl" />
+                <div className="absolute -bottom-1 -right-1 rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-lg">Ohio Commissioned</div>
               </div>
             </motion.div>
           </div>

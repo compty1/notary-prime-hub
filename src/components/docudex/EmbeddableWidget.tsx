@@ -23,15 +23,30 @@ export function useEmbeddableAPI(config?: EmbeddableConfig) {
   const configRef = useRef(config);
   configRef.current = config;
 
+  // Track the parent origin learned from the host's first handshake message.
+  // Using a precise targetOrigin avoids "Failed to execute 'postMessage' ... target origin
+  // provided does not match recipient window's origin" warnings that appear when "*" is used
+  // against a sandboxed/cross-origin iframe.
+  const parentOriginRef = useRef<string | null>(null);
+
   const sendMessage = useCallback((type: string, payload: any) => {
-    if (window.parent !== window) {
-      window.parent.postMessage({ source: "docudex", type, payload }, "*");
+    if (window.parent === window) return;
+    const target = parentOriginRef.current;
+    if (!target) return; // wait until host introduces itself
+    try {
+      window.parent.postMessage({ source: "docudex", type, payload }, target);
+    } catch (err) {
+      console.warn("[docudex] postMessage to parent failed", err);
     }
   }, []);
 
   useEffect(() => {
     const handler = (event: MessageEvent) => {
       if (event.data?.source !== "docudex-host") return;
+      // Lock onto the first host origin we hear from.
+      if (!parentOriginRef.current && event.origin && event.origin !== "null") {
+        parentOriginRef.current = event.origin;
+      }
       const { type, payload } = event.data;
 
       switch (type) {
@@ -82,7 +97,13 @@ export function useEmbeddableAPI(config?: EmbeddableConfig) {
 
     window.addEventListener("message", handler);
 
-    // Announce ready
+    // Announce ready to a known parent origin if available (document.referrer fallback);
+    // otherwise wait for the host's first handshake before responding.
+    try {
+      if (!parentOriginRef.current && document.referrer) {
+        parentOriginRef.current = new URL(document.referrer).origin;
+      }
+    } catch { /* ignore */ }
     sendMessage("ready", {
       version: "1.0.0",
       features: ["load", "export", "add-element", "read-only"],
