@@ -233,331 +233,367 @@ export default function Index() {
  return (
  <PageShell>
  <TrustBar />
- {/* ===== HERO ===== */}
- <section className="relative bg-gradient-hero overflow-hidden pb-20">
- <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-12 relative z-10">
- <div className="grid lg:grid-cols-2 gap-12 items-center">
- <motion.div initial="hidden" animate="visible">
- <div className="mb-5 flex flex-wrap items-center gap-2">
- <NotaryOnCall compact />
- <OrcChip code="147.65" label="Ohio RON authorized" description="Ohio Revised Code §147.65 — Remote online notarization is fully legal and binding in Ohio." />
- </div>
- <motion.h1
- variants={blurIn}
- custom={0}
- className="text-5xl md:text-6xl lg:text-7xl font-display font-bold tracking-tight leading-[1.08] text-foreground mb-6"
- >
- Legal Online<br />
- Notarization
- </motion.h1>
+      {/* ===== HERO — Navy with yellow underline accent ===== */}
+      <section className="relative bg-secondary text-secondary-foreground overflow-hidden">
+        {/* Decorative background: yellow ring + blue ring + dot pattern */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.18]">
+          <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full border-[24px] border-primary/40" />
+          <div className="absolute top-1/3 right-10 h-32 w-32 rounded-full border-[10px] border-accent/60" />
+          <div className="absolute bottom-10 left-1/3 h-3 w-3 rounded-full bg-primary" />
+          <div className="absolute top-20 right-1/4 h-2 w-2 rounded-full bg-accent" />
+          <div className="absolute inset-0 dot-pattern opacity-30" />
+        </div>
 
- <motion.p
- variants={blurIn}
- custom={1}
- className="text-base md:text-lg text-muted-foreground font-medium mb-8 max-w-md leading-relaxed"
- >
- We are a team of passionate certified notaries specializing in secure document authentication.
- </motion.p>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 lg:pt-24 lg:pb-28">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div initial="hidden" animate="visible">
+              <motion.div variants={fadeUp} custom={0} className="mb-6">
+                <span className="inline-flex items-center gap-2 rounded-full bg-primary/15 text-primary px-3 py-1 text-[10px] font-bold uppercase tracking-widest">
+                  Online · Trusted Nationally
+                </span>
+              </motion.div>
 
- <motion.div variants={fadeUp} custom={2} className="flex flex-row gap-4 items-center">
- <Link to="/book?type=ron">
- <Button
- size="lg"
- variant="dark"
- className="rounded-full px-8 py-3 font-bold text-base"
- >
- Notarize Now
- </Button>
- </Link>
- <Link to="/ron-info">
- <Button variant="outline" size="lg" className="rounded-full px-8 py-3 font-bold text-base border-foreground/20 text-foreground hover:bg-foreground/5">
- More Info
- </Button>
- </Link>
- </motion.div>
- </motion.div>
+              <motion.h1
+                variants={blurIn}
+                custom={1}
+                className="font-display font-bold tracking-tight leading-[1.05] text-secondary-foreground mb-6 text-5xl md:text-6xl lg:text-7xl"
+              >
+                Legal Online<br />
+                <span className="relative inline-block">
+                  Notarization
+                  <span aria-hidden className="absolute left-0 right-0 -bottom-2 h-3 bg-primary rounded-full" />
+                </span>
+              </motion.h1>
 
-          {/* Hero Image — Notarize Now editorial illustration */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="relative flex items-center justify-center"
-          >
-            <img loading="lazy" decoding="async"
-              src={heroNotarize}
-              alt="Notar — legal online notarization"
-              width={1600}
-              height={1024}
-              className="w-full h-auto rounded-[7px] border-2 border-foreground shadow-block-lg"
-            />
-          </motion.div>
- </div>
- </div>
+              <motion.p
+                variants={fadeUp}
+                custom={2}
+                className="text-base md:text-lg text-secondary-foreground/70 font-medium mb-8 max-w-md leading-relaxed"
+              >
+                We are a team of passionate certified notaries specializing in secure, accessible, and modern document authentication.
+              </motion.p>
 
- {/* About Us — inside same gradient */}
- <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
- <div className="grid lg:grid-cols-2 gap-12 items-center">
- <motion.div
- initial={{ opacity: 0, x: -30 }}
- whileInView={{ opacity: 1, x: 0 }}
- viewport={{ once: true }}
- transition={{ duration: 0.6 }}
- className="flex items-center justify-center"
- >
- <img loading="lazy" decoding="async"
- src={aboutIllustration}
- alt="3D illustration of document folders"
- className="w-full max-w-sm mx-auto object-contain"
- />
- </motion.div>
- <motion.div
- initial={{ opacity: 0, x: 30 }}
- whileInView={{ opacity: 1, x: 0 }}
- viewport={{ once: true }}
- transition={{ duration: 0.6, delay: 0.15 }}
- >
- <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-6">About us</h2>
- <p className="text-lg text-muted-foreground font-medium leading-relaxed max-w-lg">
- We are a team of Ohio-commissioned notary professionals dedicated to making document authentication simple, secure, and accessible. From remote online notarization to mobile signings across Central Ohio, we combine legal expertise with modern technology to deliver fast, compliant services you can trust.
- </p>
- </motion.div>
- </div>
- </div>
- </section>
+              <motion.div variants={fadeUp} custom={3} className="flex flex-wrap gap-3 items-center mb-10">
+                <Link to="/book?type=ron">
+                  <Button size="lg" className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 px-7 py-6 font-bold text-base">
+                    Start Notarizing Now
+                  </Button>
+                </Link>
+                <Link to="/contact">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="rounded-full px-7 py-6 font-bold text-base border-secondary-foreground/30 bg-transparent text-secondary-foreground hover:bg-secondary-foreground/10"
+                  >
+                    Contact Sales
+                  </Button>
+                </Link>
+              </motion.div>
 
- {/* ===== 4-Step Process ===== */}
- <section id="how-it-works" className="section-padding bg-background">
- <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
- <div className="text-center mb-12">
- <p className="text-label font-bold uppercase tracking-widest text-muted-foreground mb-3">How It Works</p>
- <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-4">The 4-Step Process</h2>
- <p className="text-lg text-muted-foreground font-medium max-w-2xl mx-auto">Complete your notarization online quickly and securely from anywhere in the world.</p>
- </div>
+              <motion.div variants={fadeUp} custom={4} className="flex flex-wrap gap-x-6 gap-y-3 text-[11px] font-bold uppercase tracking-widest text-secondary-foreground/60">
+                {[
+                  { icon: FileCheck2, label: "Free Quotes" },
+                  { icon: ShieldCheck, label: "Commissioned Notaries" },
+                  { icon: Globe, label: "All 50 States" },
+                  { icon: Scale, label: "ABA Approved" },
+                  { icon: Lock, label: "EU Trust Seal" },
+                ].map((b) => (
+                  <span key={b.label} className="inline-flex items-center gap-1.5">
+                    <b.icon className="h-3.5 w-3.5 text-primary" /> {b.label}
+                  </span>
+                ))}
+              </motion.div>
+            </motion.div>
 
- <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
- <div className="hidden lg:block absolute top-1/2 left-[12.5%] right-[12.5%] border-t-2 border-dashed border-border -translate-y-1/2 z-0" />
+            {/* Hero illustration — paper document card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="relative flex items-center justify-center"
+            >
+              <div className="absolute inset-0 -m-8 rounded-[40px] bg-primary/10 blur-3xl" aria-hidden />
+              <img
+                src={heroDocumentCard}
+                alt="Notarized document with signature and verified seal"
+                width={1024}
+                height={1024}
+                className="relative w-full max-w-md h-auto drop-shadow-[0_30px_50px_rgba(0,0,0,0.35)]"
+              />
+            </motion.div>
+          </div>
+        </div>
+      </section>
 
- {howItWorksSteps.map((step, idx) => (
- <motion.div
- key={step.num}
- initial={{ opacity: 0, y: 20 }}
- whileInView={{ opacity: 1, y: 0 }}
- viewport={{ once: true }}
- transition={{ delay: idx * 0.1 }}
- className="relative z-10 group"
- >
- <div className="bg-card rounded-card border border-border p-6 shadow-card interactive-card">
- <div className="w-[129px] h-[129px] rounded-xl flex items-center justify-center mb-5">
- <Icon3D src={step.icon3d} alt={step.title} className="w-[110px] h-[110px]" />
- </div>
- <h3 className="text-xl font-bold text-foreground mb-2">{step.title}</h3>
- <p className="text-sm text-muted-foreground font-medium leading-relaxed">{step.desc}</p>
- </div>
- </motion.div>
- ))}
- </div>
- </div>
- </section>
+      {/* ===== How can we help you today? — 3 service cards ===== */}
+      <section id="services" className="section-padding bg-background">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <span className="inline-flex items-center gap-2 rounded-full bg-primary/15 text-primary-accessible px-3 py-1 text-[10px] font-bold uppercase tracking-widest mb-4">
+              Choose your service
+            </span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-4">
+              How can we help you today?
+            </h2>
+            <p className="text-base md:text-lg text-muted-foreground font-medium max-w-2xl mx-auto">
+              Select the notarization service that best fits your location and document requirements.
+            </p>
+          </div>
 
- {/* ===== Key Benefits ===== */}
- <section id="benefits" className="section-padding bg-sidebar text-sidebar-foreground">
- <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
- <div className="text-center mb-16">
- <p className="text-label font-bold uppercase tracking-widest text-sidebar-foreground/50 mb-3">Why Notar</p>
- <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-sidebar-foreground mb-4">Key Benefits</h2>
- <div className="w-16 h-1 bg-primary mx-auto rounded-full" />
- </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                icon: Smartphone,
+                title: "Mobile Notary",
+                badge: "Trusted Mobile Notary",
+                desc: "We travel directly to your home, office, or local coffee shop for convenient, in-person notarization.",
+                cta: "/book?type=in_person",
+                ctaLabel: "Book Mobile Notary",
+                highlight: false,
+              },
+              {
+                icon: Video,
+                title: "Remote Online",
+                badge: "Most Popular",
+                desc: "Secure, fast, and completely online. Connect instantly with an Ohio-commissioned notary from any computer.",
+                cta: "/book?type=ron",
+                ctaLabel: "Start Online Session",
+                highlight: true,
+              },
+              {
+                icon: Globe,
+                title: "Remote Apostille",
+                badge: "Legal Treaty Facilitation",
+                desc: "Expedited international document authentication for participation in the Hague Convention.",
+                cta: "/services?category=authentication",
+                ctaLabel: "Request Apostille",
+                highlight: false,
+              },
+            ].map((s, i) => (
+              <motion.div
+                key={s.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <Card
+                  className={`group h-full relative rounded-3xl shadow-soft transition-all hover:-translate-y-1 ${
+                    s.highlight
+                      ? "border-2 border-primary bg-card shadow-lg ring-4 ring-primary/10"
+                      : "border border-border bg-card"
+                  }`}
+                >
+                  {s.highlight && (
+                    <span className="absolute -top-3 left-6 inline-flex items-center rounded-full bg-accent text-accent-foreground px-3 py-1 text-[10px] font-bold uppercase tracking-widest shadow-md">
+                      Most Popular
+                    </span>
+                  )}
+                  <CardContent className="p-7">
+                    <div className={`mb-5 inline-flex items-center justify-center h-12 w-12 rounded-2xl ${s.highlight ? "bg-primary text-primary-foreground" : "bg-primary/10 text-primary-accessible"}`}>
+                      <s.icon className="h-6 w-6" />
+                    </div>
+                    <h3 className="text-xl font-bold text-foreground mb-1">{s.title}</h3>
+                    <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
+                      {s.badge}
+                    </p>
+                    <p className="text-sm text-muted-foreground font-medium leading-relaxed mb-6 min-h-[60px]">
+                      {s.desc}
+                    </p>
+                    <Link to={s.cta}>
+                      <Button
+                        className={`w-full rounded-full font-bold ${
+                          s.highlight
+                            ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                            : "bg-secondary text-secondary-foreground hover:bg-secondary/90"
+                        }`}
+                      >
+                        {s.ctaLabel} <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
- <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
- {[
- { icon3d: FEATURE_3D_ICON.lockShield, title: "Secure & Tamper-Evident", desc: "Advanced cryptographic seals ensure document integrity." },
- { icon3d: FEATURE_3D_ICON.clockFast, title: "Convenient & Fast", desc: "Connect with a notary 24/7 in just a few minutes." },
- { icon3d: FEATURE_3D_ICON.legalDoc, title: "Legally Binding", desc: "Accepted Nationwide. Full legal validity guaranteed." },
- { icon3d: FEATURE_3D_ICON.encryption, title: "Audit Trail & Encryption", desc: "Comprehensive session logs and military-grade encryption." },
- ].map((benefit, idx) => (
- <motion.div
- key={benefit.title}
- initial={{ opacity: 0, y: 20 }}
- whileInView={{ opacity: 1, y: 0 }}
- viewport={{ once: true }}
- transition={{ delay: idx * 0.1 }}
- className="bg-sidebar-accent/50 backdrop-blur-sm p-8 rounded-card border border-sidebar-border text-center interactive-card group"
- >
- <div className="w-20 h-20 flex items-center justify-center mx-auto mb-6">
- <Icon3D src={benefit.icon3d} alt={benefit.title} className="w-20 h-20" />
- </div>
- <h3 className="text-lg font-bold mb-2 text-sidebar-foreground">{benefit.title}</h3>
- <p className="text-sm text-sidebar-foreground/50 font-medium">{benefit.desc}</p>
- </motion.div>
- ))}
- </div>
- </div>
- </section>
+      {/* ===== How It Works — 3 steps with paper-card illustrations ===== */}
+      <section id="how-it-works" className="section-padding bg-muted/40">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-4">
+              How It Works
+            </h2>
+            <p className="text-base md:text-lg text-muted-foreground font-medium max-w-2xl mx-auto">
+              Complete your notarization securely and legally in three simple, guided steps.
+            </p>
+          </div>
 
- {/* ===== Notary Services ===== */}
- <section id="services" className="section-padding bg-background">
- <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
- <motion.h2
- initial={{ opacity: 0, y: 20 }}
- whileInView={{ opacity: 1, y: 0 }}
- viewport={{ once: true }}
- className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-12"
- >
- Notary Services
- </motion.h2>
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+            {[
+              { num: "Step 1", title: "Upload Document", desc: "Upload your PDF. Our platform ensures it meets legal requirements immediately.", img: stepUpload },
+              { num: "Step 2", title: "Verify & Connect", desc: "Verify your identity (KBA) and connect with a live Ohio notary via secure video.", img: stepVerify },
+              { num: "Step 3", title: "Sign & Download", desc: "Sign electronically. Your fully legalized, tamper-proof document is ready.", img: stepSign },
+            ].map((step, i) => (
+              <motion.div
+                key={step.title}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.12 }}
+                className="bg-card rounded-3xl border border-border p-7 shadow-soft text-center"
+              >
+                <div className="mx-auto mb-5 flex h-40 w-40 items-center justify-center">
+                  <img src={step.img} alt={step.title} loading="lazy" width={512} height={512} className="h-full w-full object-contain" />
+                </div>
+                <span className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
+                  {step.num}
+                </span>
+                <h3 className="text-xl font-bold text-foreground mb-2">{step.title}</h3>
+                <p className="text-sm text-muted-foreground font-medium leading-relaxed">{step.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
- {/* Primary Services */}
- <div className="grid md:grid-cols-2 gap-6 mb-12">
- {primaryServices.map((s, i) => (
- <motion.div key={s.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
- <Card className="group h-full rounded-card border-border interactive-card shadow-sm">
- <CardContent className="p-6">
- <div className="flex items-start gap-4">
- <div className="flex-shrink-0 h-[80px] w-[80px] flex items-center justify-center">
- <Icon3D src={s.icon3d} alt={s.title} className="h-[72px] w-[72px]" />
- </div>
- <div className="flex-1 min-w-0">
- <div className="flex items-center gap-2 mb-1">
- <h3 className="text-base font-bold text-foreground">{s.title}</h3>
- <Badge className="text-[9px] font-bold uppercase tracking-wider bg-muted text-muted-foreground border-border">{s.badge}</Badge>
- </div>
- <p className="text-sm text-muted-foreground font-medium leading-relaxed mb-3">{s.desc}</p>
- <Link to={s.cta}>
- <Button variant="dark" size="sm" className="font-bold rounded-full">
- {s.ctaLabel} <ArrowRight className="ml-2 h-3 w-3" />
- </Button>
- </Link>
- </div>
- </div>
- </CardContent>
- </Card>
- </motion.div>
- ))}
- </div>
+      {/* ===== Trusted by Ohioans — Testimonials ===== */}
+      <section className="section-padding bg-background">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <span className="inline-flex items-center gap-2 rounded-full bg-primary/15 text-primary-accessible px-3 py-1 text-[10px] font-bold uppercase tracking-widest mb-4">
+              Word on the street
+            </span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-4">
+              Trusted by Ohioans
+            </h2>
+            <p className="text-base md:text-lg text-muted-foreground font-medium max-w-2xl mx-auto">
+              Don't just take our word for it. See what clients have to say about the Notar experience.
+            </p>
+          </div>
 
- {/* Other Services Grid */}
- <div className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:gap-6">
- {otherServices.map((service) => (
- <Link key={service.title} to={service.to}>
- <div className="bg-card p-5 rounded-card border border-border shadow-sm flex items-start gap-4 interactive-card cursor-pointer group">
- <div className="w-[64px] h-[64px] flex-shrink-0 flex items-center justify-center">
- <Icon3D src={service.icon3d} alt={service.title} className="w-[56px] h-[56px]" />
- </div>
- <div>
- <h3 className="font-bold text-foreground text-sm">{service.title}</h3>
- <p className="text-xs text-muted-foreground font-medium mt-1">{service.desc}</p>
- </div>
- </div>
- </Link>
- ))}
- </div>
- </div>
- </section>
+          <div className="grid md:grid-cols-3 gap-6">
+            {testimonials.map((t, i) => {
+              const cities = ["Columbus, OH", "Dublin, OH", "Westerville, OH"];
+              return (
+                <motion.div
+                  key={t.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="relative bg-card rounded-3xl border border-border p-7 shadow-soft"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex gap-0.5">
+                      {Array.from({ length: 5 }).map((_, j) => (
+                        <Star key={j} className="h-4 w-4 fill-primary text-primary" />
+                      ))}
+                    </div>
+                    <span className="text-3xl font-display font-bold leading-none text-primary/40" aria-hidden>"</span>
+                  </div>
+                  <p className="text-sm text-foreground font-medium leading-relaxed mb-6 min-h-[80px]">
+                    {t.text}
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-primary/15 text-primary-accessible flex items-center justify-center font-bold text-sm">
+                      {t.name.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-foreground">{t.name}</p>
+                      <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{cities[i % 3]}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
- {/* ===== Admin Services ===== */}
- <section className="section-padding bg-accent">
- <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
- <motion.h2
- initial={{ opacity: 0, y: 20 }}
- whileInView={{ opacity: 1, y: 0 }}
- viewport={{ once: true }}
- className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-12"
- >
- Admin<br />Services
- </motion.h2>
+      {/* ===== Legal expertise meets modern convenience ===== */}
+      <section className="section-padding bg-muted/40">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <span className="inline-flex items-center gap-2 rounded-full bg-primary/15 text-primary-accessible px-3 py-1 text-[10px] font-bold uppercase tracking-widest">
+              Why we are
+            </span>
+          </div>
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="relative flex items-center justify-center"
+            >
+              <img
+                src={featurePhoneMockup}
+                alt="Notar mobile app showing notarization in progress"
+                loading="lazy"
+                width={1024}
+                height={1024}
+                className="w-full max-w-md h-auto"
+              />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+            >
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-6 leading-[1.1]">
+                Legal expertise meets modern convenience.
+              </h2>
+              <p className="text-base md:text-lg text-muted-foreground font-medium leading-relaxed mb-8 max-w-lg">
+                We are a team of Ohio-commissioned notary professionals dedicated to making document authentication simple, secure, and accessible. From remote online notarization (RON) to mobile signings across Central Ohio, we combine legal expertise with modern technology to deliver fast, compliant services you can trust.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {["Ohio-Commissioned", "Background Checked", "Insured & Bonded", "NNA Certified"].map((label) => (
+                  <span key={label} className="inline-flex items-center rounded-full bg-secondary text-secondary-foreground px-4 py-2 text-xs font-bold">
+                    {label}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
 
- <div className="grid md:grid-cols-2 gap-6">
- {[
- { icon3d: FEATURE_3D_ICON.email, title: "Email Management & Correspondence", desc: "Professional email management, drafting, and correspondence handling." },
- { icon3d: FEATURE_3D_ICON.checklist, title: "Certified Document Prep", desc: "Bulk document preparation for government agencies, HR departments, and legal firms. Standardized formatting, quality control, and compliance verification." },
- { icon3d: FEATURE_3D_ICON.newsletter, title: "Company/Organization Newsletters", desc: "Professional newsletter creation and distribution for businesses and organizations." },
- { icon3d: FEATURE_3D_ICON.taskList, title: "Data Entry & Records Management", desc: "Accurate data entry, database management, and record keeping services." },
- ].map((service, i) => (
- <motion.div
- key={service.title}
- initial={{ opacity: 0, y: 20 }}
- whileInView={{ opacity: 1, y: 0 }}
- viewport={{ once: true }}
- transition={{ delay: i * 0.08 }}
- >
- <div className="bg-card p-5 rounded-card border border-border shadow-sm flex items-start gap-4 interactive-card">
- <div className="w-[64px] h-[64px] flex-shrink-0 flex items-center justify-center">
- <Icon3D src={service.icon3d} alt={service.title} className="w-[56px] h-[56px]" />
- </div>
- <div>
- <h3 className="font-bold text-foreground text-sm mb-1">{service.title}</h3>
- <p className="text-xs text-muted-foreground font-medium leading-relaxed">{service.desc}</p>
- </div>
- </div>
- </motion.div>
- ))}
- </div>
- </div>
- </section>
-
- {/* AI Helper */}
- <WhatDoINeed />
-
- {/* ===== Trust Badges ===== */}
- <section className="py-12 bg-muted border-t border-border">
- <div className="max-w-5xl mx-auto px-4">
- <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
- {[
- { label: "Ohio Commissioned", icon: ShieldCheck },
- { label: "NNA Certified", icon: FileCheck2 },
- { label: "RON Authorized", icon: Globe },
- { label: "MISMO Compliant", icon: Lock },
- { label: "10-Year Retention", icon: Clock },
- ].map(badge => (
- <div key={badge.label} className="flex items-center gap-2 text-muted-foreground">
- <badge.icon className="h-5 w-5" />
- <span className="text-xs font-bold uppercase tracking-widest">{badge.label}</span>
- </div>
- ))}
- </div>
- </div>
- </section>
-
- {/* ===== Testimonials ===== */}
- <section className="section-padding bg-card">
- <div className="container mx-auto px-4">
- <div className="mx-auto mb-12 max-w-2xl text-center">
- <p className="text-label font-bold uppercase tracking-widest text-muted-foreground mb-3">Testimonials</p>
- <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">What Clients Say</h2>
- </div>
- <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-3">
- {testimonials.map((t, i) => (
- <motion.div key={t.name} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
- <Card className="h-full rounded-card border-border shadow-sm interactive-card">
- <CardContent className="p-6">
- <div className="mb-3 flex gap-0.5">
- {Array.from({ length: t.rating }).map((_, j) => (
- <Star key={j} className="h-4 w-4 fill-primary text-primary" />
- ))}
- </div>
- <p className="mb-4 text-sm text-muted-foreground font-medium">{t.text}</p>
- <p className="text-sm font-bold text-foreground">{t.name}</p>
- </CardContent>
- </Card>
- </motion.div>
- ))}
- </div>
- </div>
- </section>
-
- {/* ===== CTA Banner — GAP-0020: uses brand gradient ===== */}
- <section className="bg-gradient-primary section-padding">
- <div className="max-w-4xl mx-auto px-4 text-center">
- <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-primary-foreground mb-6">Ready to Notarize Your Document?</h2>
- <p className="text-primary-foreground/70 text-lg font-medium mb-8">Join thousands of users who have securely notarized their documents online.</p>
- <Link to="/book">
- <Button size="lg" variant="dark" className="px-10 py-4 rounded-2xl font-bold text-lg">
- Book a Session Now
- </Button>
- </Link>
- </div>
- </section>
+      {/* ===== Final CTA — Navy with yellow + outline buttons ===== */}
+      <section className="relative section-padding bg-secondary text-secondary-foreground overflow-hidden">
+        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.15]">
+          <div className="absolute -top-20 right-10 h-64 w-64 rounded-full border-[16px] border-primary/40" />
+          <div className="absolute bottom-10 left-1/4 h-3 w-3 rounded-full bg-primary" />
+          <div className="absolute inset-0 dot-pattern opacity-40" />
+        </div>
+        <div className="relative z-10 max-w-3xl mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-secondary-foreground mb-5 leading-[1.1]">
+            Ready to notarize<br />your document?
+          </h2>
+          <p className="text-base md:text-lg text-secondary-foreground/70 font-medium mb-8 max-w-xl mx-auto">
+            Skip the lines and the hassle. Connect with a commissioned Ohio notary public online right now.
+          </p>
+          <div className="flex flex-wrap gap-3 justify-center">
+            <Link to="/book?type=ron">
+              <Button size="lg" className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 px-7 py-6 font-bold text-base">
+                Start Notarizing Now
+              </Button>
+            </Link>
+            <Link to="/contact">
+              <Button
+                size="lg"
+                variant="outline"
+                className="rounded-full px-7 py-6 font-bold text-base border-secondary-foreground/30 bg-transparent text-secondary-foreground hover:bg-secondary-foreground/10"
+              >
+                Contact Sales
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
 
  {/* ===== FAQ ===== */}
  <section id="faq" className="border-t border-border bg-card section-padding">
