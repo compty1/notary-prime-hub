@@ -105,7 +105,7 @@ export function Navbar() {
           <Logo size="sm" showText className="[&_img]:h-12 [&_img]:w-12 lg:[&_img]:h-[68px] lg:[&_img]:w-[68px] [&_span]:text-xl lg:[&_span]:text-2xl [&_span]:text-foreground" />
         </Link>
 
-        <div className="hidden items-center gap-1 md:flex">
+        <div className="hidden items-center gap-1 lg:flex">
           {/* Services Dropdown */}
           <DropdownNav label="Services" linkTo="/services">
             <div className="grid grid-cols-2 gap-2">
