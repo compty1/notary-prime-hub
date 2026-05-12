@@ -28,8 +28,8 @@ export const BRAND_CONFIG = {
 
   // Typography
   fonts: {
-    heading: "var(--font-heading, 'Montserrat', sans-serif)",
-    body: "var(--font-body, 'Montserrat', sans-serif)",
+    heading: "var(--font-heading, 'Outfit', sans-serif)",
+    body: "var(--font-body, 'DM Sans', sans-serif)",
     mono: "var(--font-mono, 'DM Mono', monospace)",
   },
 

@@ -68,9 +68,9 @@ export default function Hero3DAnimation() {
     canvas.addEventListener("touchmove", handleTouchMove, { passive: true });
 
     // Brand colors
-    const gold = "#F5C518";
+    const gold = "#FBBF24";
     const goldLight = "#FDE68A";
-    const dark = "#1a1a1a";
+    const dark = "#0F172A";
     const white = "#FFFFFF";
     const blue = "#3B82F6";
     const blueLight = "#60A5FA";
