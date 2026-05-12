@@ -94,7 +94,7 @@ const DEFAULT_SERVICES: ServiceItem[] = [
 const emptyPage: Partial<NotaryPage> = {
   slug: "", display_name: "", title: "", tagline: "", bio: "", phone: "", email: "",
   website_url: "", service_areas: [], services_offered: [], credentials: {},
-  theme_color: "#C9A227", accent_color: "#1e40af", font_family: "Inter",
+  theme_color: "#FBBF24", accent_color: "#3B82F6", font_family: "Inter",
   professional_type: "notary", signing_platform_url: "", use_platform_booking: true,
   external_booking_url: "", social_links: {}, profile_photo_path: null, cover_photo_path: null,
   gallery_photos: [], nav_services: [],
@@ -156,7 +156,7 @@ export default function AdminNotaryPages() {
       setEditPage({
         ...p,
         theme_color: ensureHex(p.theme_color),
-        accent_color: ensureHex(p.accent_color, "#1e40af"),
+        accent_color: ensureHex(p.accent_color, "#3B82F6"),
       });
       await fetchEnrollments(p.user_id);
     } else {
@@ -880,14 +880,14 @@ export default function AdminNotaryPages() {
                   <Label>Primary Color</Label>
                   <div className="flex gap-2">
                     <Input type="color" value={ensureHex(editPage.theme_color)} onChange={e => updateField("theme_color", e.target.value)} className="h-10 w-14 p-1" />
-                    <Input value={editPage.theme_color || "#C9A227"} onChange={e => updateField("theme_color", e.target.value)} className="flex-1 font-mono" />
+                    <Input value={editPage.theme_color || "#FBBF24"} onChange={e => updateField("theme_color", e.target.value)} className="flex-1 font-mono" />
                   </div>
                 </div>
                 <div>
                   <Label>Accent Color</Label>
                   <div className="flex gap-2">
-                    <Input type="color" value={ensureHex(editPage.accent_color, "#1e40af")} onChange={e => updateField("accent_color", e.target.value)} className="h-10 w-14 p-1" />
-                    <Input value={editPage.accent_color || "#1e40af"} onChange={e => updateField("accent_color", e.target.value)} className="flex-1 font-mono" />
+                    <Input type="color" value={ensureHex(editPage.accent_color, "#3B82F6")} onChange={e => updateField("accent_color", e.target.value)} className="h-10 w-14 p-1" />
+                    <Input value={editPage.accent_color || "#3B82F6"} onChange={e => updateField("accent_color", e.target.value)} className="flex-1 font-mono" />
                   </div>
                 </div>
                 <div>
@@ -901,7 +901,7 @@ export default function AdminNotaryPages() {
                 </div>
               </div>
               {/* Live preview swatch */}
-              <div className="rounded-xl border p-4" style={{ background: `linear-gradient(135deg, ${ensureHex(editPage.theme_color)}22, ${ensureHex(editPage.accent_color, "#1e40af")}08)` }}>
+              <div className="rounded-xl border p-4" style={{ background: `linear-gradient(135deg, ${ensureHex(editPage.theme_color)}22, ${ensureHex(editPage.accent_color, "#3B82F6")}08)` }}>
                 <div className="flex items-center gap-3">
                   {editPage.logo_path ? (
                     <div className="h-12 w-auto max-w-[80px] flex items-center">
