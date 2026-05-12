@@ -15,6 +15,7 @@ import { Icon3D, FEATURE_3D_ICON, CATEGORY_3D_ICON, SERVICE_ICON_3D } from "@/li
 import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import heroServices from "@/assets/hero-services.png";
 import { ServicesLoadingSkeleton } from "@/components/ServicesLoadingSkeleton";
 import {
   INTAKE_ONLY_SERVICES, SAAS_LINKS, SUBSCRIPTION_SERVICES,
@@ -157,19 +158,36 @@ export default function Services() {
 
   return (
     <PageShell>
-      {/* Hero — Block Shadow */}
+      {/* Hero — Block Shadow with paper-card illustration */}
       <section className="relative overflow-hidden border-b-2 border-border bg-card py-16 md:py-20">
-        <div className="container relative mx-auto px-4 text-center">
-          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Everything you need</p>
-          <h1 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">
-            Services
-          </h1>
-          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-            Fast, secure notary and document services for individuals and businesses in Ohio.
-            Transparent pricing, secure storage, and business plans available.
-          </p>
+        <div className="container relative mx-auto px-4">
+          <div className="flex flex-col items-center gap-8 md:flex-row md:items-center md:justify-between md:text-left">
+            <div className="text-center md:text-left md:flex-1">
+              <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Everything you need</p>
+              <h1 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">
+                Services
+              </h1>
+              <p className="mx-auto max-w-2xl text-lg text-muted-foreground md:mx-0">
+                Fast, secure notary and document services for individuals and businesses in Ohio.
+                Transparent pricing, secure storage, and business plans available.
+              </p>
+            </div>
+            <div className="flex-shrink-0">
+              <img
+                src={heroServices}
+                alt="Notar services — paper-card illustration of stacked documents, notary stamp, and verification shield"
+                fetchPriority="high"
+                decoding="async"
+                sizes="(max-width: 768px) 60vw, 320px"
+                width={1024}
+                height={1024}
+                className="h-auto w-full max-w-[240px] md:max-w-[320px] drop-shadow-xl"
+              />
+            </div>
+          </div>
         </div>
       </section>
+
 
       <WhatDoINeed />
 
