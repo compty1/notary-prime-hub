@@ -17,7 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
-      contents: write # so the snapshot-bootstrap step can push baseline PNGs
+      contents: write       # bootstrap/regenerate baselines push
+      pull-requests: write  # post diff summary as PR comment
     steps:
       - uses: actions/checkout@v4
         with:
@@ -70,8 +71,63 @@ jobs:
           fi
 
       - name: Run visual regression
+        id: visual
         if: steps.baselines.outputs.missing != 'true'
-        run: bunx playwright test --reporter=list
+        run: bunx playwright test --reporter=list,json
+        continue-on-error: true
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_NAME: playwright-results.json
+
+      - name: Build failure summary
+        if: steps.visual.conclusion == 'failure' || steps.visual.outcome == 'failure'
+        id: summary
+        run: |
+          set +e
+          REPORT=playwright-results.json
+          OUT=visual-failures.md
+          {
+            echo "### 🔴 Visual regression diffs detected"
+            echo ""
+            echo "| Route | Width | Status |"
+            echo "| --- | --- | --- |"
+            if [ -f "$REPORT" ]; then
+              node -e "
+                const r = require('./$REPORT');
+                const rows = [];
+                const walk = (suite) => {
+                  (suite.suites||[]).forEach(walk);
+                  (suite.specs||[]).forEach(spec => {
+                    spec.tests.forEach(t => {
+                      const failed = t.results.some(x => x.status === 'failed' || x.status === 'timedOut');
+                      if (failed) {
+                        const m = spec.title.match(/^(.+?) @ \w+ \((\d+)px\)$/);
+                        const route = m ? m[1] : spec.title;
+                        const width = m ? m[2] + 'px' : '—';
+                        rows.push(\`| \${route} | \${width} | ❌ failed |\`);
+                      }
+                    });
+                  });
+                };
+                walk(r);
+                console.log(rows.join('\n'));
+              " >> "$OUT"
+            else
+              echo "| (results file missing) | — | ❌ |" >> "$OUT"
+            fi
+            echo ""
+            echo "📦 **Diff artifact:** [\`playwright-report\`](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts) — open \`test-results/**/*-diff.png\` to see what shifted."
+            echo ""
+            echo "🔁 To regenerate baselines: run **Actions → Visual Regression → Run workflow** with **update_snapshots** checked, or run \`bun run snapshots:regenerate\` locally."
+          } > "$OUT"
+          cat "$OUT" >> "$GITHUB_STEP_SUMMARY"
+          echo "body_file=$OUT" >> "$GITHUB_OUTPUT"
+
+      - name: Comment on PR
+        if: (steps.visual.conclusion == 'failure' || steps.visual.outcome == 'failure') && github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: visual-regression
+          path: visual-failures.md
 
       - name: Upload Playwright report
         if: always()
@@ -81,4 +137,9 @@ jobs:
           path: |
             playwright-report
             test-results
+            playwright-results.json
           retention-days: 14
+
+      - name: Fail job if visual diffs detected
+        if: steps.visual.conclusion == 'failure' || steps.visual.outcome == 'failure'
+        run: exit 1
