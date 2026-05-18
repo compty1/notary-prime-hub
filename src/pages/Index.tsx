@@ -16,66 +16,29 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import {
- ShieldCheck, Clock, FileCheck2, UploadCloud, Fingerprint, Video, Download,
- Scale, Home, Briefcase, FileText, Smartphone, CheckCircle2, Lock, ChevronRight,
- Phone, Mail, Send, Loader2, ArrowRight, Globe, Car, Copy, UserCheck, Stamp, BookOpen, Star,
- FileSignature, Check
+  ShieldCheck, FileCheck2, Video, Scale, Smartphone, Lock,
+  Send, Loader2, ArrowRight, Globe, Star,
 } from "lucide-react";
-import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
-import { fadeUp, blurIn, scaleReveal } from "@/lib/animations";
-import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
+import { fadeUp, blurIn } from "@/lib/animations";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 import { RonAdvisorWidget } from "@/components/RonAdvisorWidget";
 import { TrustBar } from "@/components/trust";
 import heroDocumentCard from "@/assets/hero-document-card.png";
+import heroDocumentCardWebp from "@/assets/hero-document-card.webp";
+import heroDocumentCardAvif from "@/assets/hero-document-card.avif";
 import heroDocumentCardMobile from "@/assets/hero-document-card-mobile.png";
+import heroDocumentCardMobileWebp from "@/assets/hero-document-card-mobile.webp";
+import heroDocumentCardMobileAvif from "@/assets/hero-document-card-mobile.avif";
 import stepUpload from "@/assets/step-upload.png";
 import stepVerify from "@/assets/step-verify.png";
 import stepSign from "@/assets/step-sign.png";
 import featurePhoneMockup from "@/assets/feature-phone-mockup.png";
 
-const primaryServices = [
- {
- icon3d: FEATURE_3D_ICON.ron,
- title: "Remote Online Notarization",
- badge: "Most Popular",
- desc: "Get documents notarized from anywhere via secure video call. Ohio-authorized under ORC §147.65-.66 with full identity verification, KBA, and tamper-evident seals.",
- cta: "/book?type=ron",
- ctaLabel: "Start RON Session",
- features: ["Available 24/7", "All 50 states accepted", "10-year recording retention"],
- },
- {
- icon3d: FEATURE_3D_ICON.mobile,
- title: "Mobile Notarization",
- badge: "Central Ohio",
- desc: "We come to you — home, office, hospital, or any location within the greater Columbus area. Same-day appointments available for Franklin County.",
- cta: "/book?type=in_person",
- ctaLabel: "Book Mobile Notary",
- features: ["Same-day available", "30-mile radius", "After-hours options"],
- },
-];
-
-const otherServices = [
- { icon3d: FEATURE_3D_ICON.copy, title: "Certified Copy Services", desc: "Certified true copies of original documents", to: "/services?category=notarization" },
- { icon3d: FEATURE_3D_ICON.loan, title: "Loan Signing Agent", desc: "Professional loan document signing services", to: "/loan-signing" },
- { icon3d: FEATURE_3D_ICON.i9, title: "I-9 / Employment Verification", desc: "Authorized agent for Form I-9 completion", to: "/services?category=verification" },
- { icon3d: FEATURE_3D_ICON.apostille, title: "Apostille Facilitation", desc: "Document authentication for international use", to: "/services?category=authentication" },
- { icon3d: FEATURE_3D_ICON.poa, title: "Power of Attorney", desc: "POA notarization with proper witnessing", to: "/services?category=notarization" },
- { icon3d: FEATURE_3D_ICON.oath, title: "Oaths & Affirmations", desc: "Sworn statements, jurats, and affidavits", to: "/services?category=notarization" },
-];
-
 const fallbackTestimonials = [
  { name: "Sarah M.", text: "Notar made our home closing so easy. Professional, punctual, and thorough.", rating: 5 },
  { name: "James R.", text: "Used the remote notarization while traveling. Incredibly convenient and secure.", rating: 5 },
  { name: "Lisa K.", text: "Best notary experience I've had. Will definitely use Notar again for our business documents.", rating: 5 },
-];
-
-const howItWorksSteps = [
- { num: "1", title: "Upload Document", icon3d: FEATURE_3D_ICON.upload, desc: "Formats: PDF, JPEG. Verify text clarity before uploading." },
- { num: "2", title: "Identity Verification", icon3d: FEATURE_3D_ICON.identity, desc: "Secure KBA or biometric scan. Have your government ID ready." },
- { num: "3", title: "Live Notary Session", icon3d: FEATURE_3D_ICON.video, desc: "Connect via video chat with a commissioned Notary Public." },
- { num: "4", title: "Download Doc", icon3d: FEATURE_3D_ICON.download, desc: "Receive your secure, digitally notarized file immediately." },
 ];
 
 const faqs = [
@@ -137,12 +100,19 @@ function HeroIllustration() {
       />
       <motion.div style={{ y }} className="relative w-full max-w-md">
         <picture>
+          {/* Mobile sources (≤640px) — AVIF → WebP → PNG */}
+          <source media="(max-width: 640px)" type="image/avif" srcSet={heroDocumentCardMobileAvif} />
+          <source media="(max-width: 640px)" type="image/webp" srcSet={heroDocumentCardMobileWebp} />
           <source media="(max-width: 640px)" srcSet={heroDocumentCardMobile} />
+          {/* Desktop sources — AVIF → WebP → PNG */}
+          <source type="image/avif" srcSet={heroDocumentCardAvif} />
+          <source type="image/webp" srcSet={heroDocumentCardWebp} />
           <img
             src={heroDocumentCard}
             alt="Notarized document with gold seal, signature, and fountain pen"
             width={1280}
             height={1280}
+            sizes="(max-width: 640px) 90vw, (max-width: 1024px) 50vw, 480px"
             fetchPriority="high"
             decoding="async"
             className="relative w-full h-auto drop-shadow-[0_30px_50px_rgba(0,0,0,0.35)]"
@@ -303,7 +273,7 @@ export default function Index() {
               <motion.h1
                 variants={blurIn}
                 custom={1}
-                className="font-display font-bold tracking-tight leading-[1.05] text-secondary-foreground mb-6 text-5xl md:text-6xl lg:text-7xl"
+                className="font-display font-black tracking-tighter leading-[1.05] text-secondary-foreground mb-6 text-5xl md:text-6xl lg:text-7xl"
               >
                 Legal Online<br />
                 <span className="relative inline-block">
@@ -365,7 +335,7 @@ export default function Index() {
             <span className="inline-flex items-center gap-2 rounded-full bg-primary/15 text-primary-accessible px-3 py-1 text-[10px] font-bold uppercase tracking-widest mb-4">
               Choose your service
             </span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-4">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tighter text-foreground mb-4">
               How can we help you today?
             </h2>
             <p className="text-base md:text-lg text-muted-foreground font-medium max-w-2xl mx-auto">
@@ -410,42 +380,42 @@ export default function Index() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
               >
-                <Card
-                  className={`group h-full relative rounded-3xl shadow-soft transition-all hover:-translate-y-1 ${
-                    s.highlight
-                      ? "border-2 border-primary bg-card shadow-lg ring-4 ring-primary/10"
-                      : "border border-border bg-card"
+                <div
+                  className={`group relative h-full rounded-[14px] border-2 border-foreground bg-card p-7 text-card-foreground transition-all duration-200 shadow-block-lg hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[8px_8px_0_0_hsl(var(--foreground))] ${
+                    s.highlight ? "bg-primary/5" : ""
                   }`}
                 >
                   {s.highlight && (
-                    <span className="absolute -top-3 left-6 inline-flex items-center rounded-full bg-accent text-accent-foreground px-3 py-1 text-[10px] font-bold uppercase tracking-widest shadow-md">
+                    <span className="absolute -top-3 left-6 inline-flex items-center rounded-full border-2 border-foreground bg-accent text-accent-foreground px-3 py-1 text-[10px] font-bold uppercase tracking-widest shadow-[3px_3px_0_0_hsl(var(--foreground))]">
                       Most Popular
                     </span>
                   )}
-                  <CardContent className="p-7">
-                    <div className={`mb-5 inline-flex items-center justify-center h-12 w-12 rounded-2xl ${s.highlight ? "bg-primary text-primary-foreground" : "bg-primary/10 text-primary-accessible"}`}>
-                      <s.icon className="h-6 w-6" />
-                    </div>
-                    <h3 className="text-xl font-bold text-foreground mb-1">{s.title}</h3>
-                    <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
-                      {s.badge}
-                    </p>
-                    <p className="text-sm text-muted-foreground font-medium leading-relaxed mb-6 min-h-[60px]">
-                      {s.desc}
-                    </p>
-                    <Link to={s.cta}>
-                      <Button
-                        className={`w-full rounded-full font-bold ${
-                          s.highlight
-                            ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                            : "bg-secondary text-secondary-foreground hover:bg-secondary/90"
-                        }`}
-                      >
-                        {s.ctaLabel} <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
+                  <div
+                    className={`mb-5 inline-flex items-center justify-center h-14 w-14 rounded-[10px] border-2 border-foreground shadow-[3px_3px_0_0_hsl(var(--foreground))] ${
+                      s.highlight ? "bg-primary text-primary-foreground" : "bg-accent text-accent-foreground"
+                    }`}
+                  >
+                    <s.icon className="h-7 w-7" strokeWidth={2.5} />
+                  </div>
+                  <h3 className="text-2xl font-black tracking-tight text-foreground mb-1">{s.title}</h3>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
+                    {s.badge}
+                  </p>
+                  <p className="text-sm text-muted-foreground font-medium leading-relaxed mb-6 min-h-[60px]">
+                    {s.desc}
+                  </p>
+                  <Link to={s.cta}>
+                    <Button
+                      className={`w-full rounded-[10px] border-2 border-foreground font-bold shadow-[3px_3px_0_0_hsl(var(--foreground))] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_0_hsl(var(--foreground))] transition-all ${
+                        s.highlight
+                          ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                          : "bg-secondary text-secondary-foreground hover:bg-secondary/90"
+                      }`}
+                    >
+                      {s.ctaLabel} <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -456,7 +426,7 @@ export default function Index() {
       <section id="how-it-works" className="section-padding bg-muted/40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-4">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tighter text-foreground mb-4">
               How It Works
             </h2>
             <p className="text-base md:text-lg text-muted-foreground font-medium max-w-2xl mx-auto">
@@ -476,15 +446,15 @@ export default function Index() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.12 }}
-                className="bg-card rounded-3xl border border-border p-7 shadow-soft text-center"
+                className="relative bg-card rounded-[14px] border-2 border-foreground p-7 shadow-block-lg text-center transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[8px_8px_0_0_hsl(var(--foreground))]"
               >
                 <div className="mx-auto mb-5 flex h-40 w-40 items-center justify-center">
-                  <img src={step.img} alt={step.title} loading="lazy" width={512} height={512} className="h-full w-full object-contain" />
+                  <img src={step.img} alt={step.title} loading="lazy" decoding="async" width={512} height={512} className="h-full w-full object-contain" />
                 </div>
-                <span className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
+                <span className="inline-flex items-center rounded-full border-2 border-foreground bg-primary text-primary-foreground px-3 py-1 text-[10px] font-black uppercase tracking-widest mb-3 shadow-[2px_2px_0_0_hsl(var(--foreground))]">
                   {step.num}
                 </span>
-                <h3 className="text-xl font-bold text-foreground mb-2">{step.title}</h3>
+                <h3 className="text-xl font-black tracking-tight text-foreground mb-2">{step.title}</h3>
                 <p className="text-sm text-muted-foreground font-medium leading-relaxed">{step.desc}</p>
               </motion.div>
             ))}
@@ -499,7 +469,7 @@ export default function Index() {
             <span className="inline-flex items-center gap-2 rounded-full bg-primary/15 text-primary-accessible px-3 py-1 text-[10px] font-bold uppercase tracking-widest mb-4">
               Word on the street
             </span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-4">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tighter text-foreground mb-4">
               Trusted by Ohioans
             </h2>
             <p className="text-base md:text-lg text-muted-foreground font-medium max-w-2xl mx-auto">
@@ -517,7 +487,7 @@ export default function Index() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  className="relative bg-card rounded-3xl border border-border p-7 shadow-soft"
+                  className="relative bg-card rounded-[14px] border-2 border-foreground p-7 shadow-block transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-block-lg"
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex gap-0.5">
@@ -577,7 +547,7 @@ export default function Index() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.15 }}
             >
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-6 leading-[1.1]">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tighter text-foreground mb-6 leading-[1.1]">
                 Legal expertise meets modern convenience.
               </h2>
               <p className="text-base md:text-lg text-muted-foreground font-medium leading-relaxed mb-8 max-w-lg">
@@ -603,7 +573,7 @@ export default function Index() {
           <div className="absolute inset-0 dot-pattern opacity-40" />
         </div>
         <div className="relative z-10 max-w-3xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-secondary-foreground mb-5 leading-[1.1]">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tighter text-secondary-foreground mb-5 leading-[1.1]">
             Ready to notarize<br />your document?
           </h2>
           <p className="text-base md:text-lg text-secondary-foreground/70 font-medium mb-8 max-w-xl mx-auto">
