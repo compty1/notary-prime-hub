@@ -24,6 +24,7 @@ import { fadeUp, blurIn } from "@/lib/animations";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 import { RonAdvisorWidget } from "@/components/RonAdvisorWidget";
 import { TrustBar } from "@/components/trust";
+import { Picture } from "@/components/ui/picture";
 import heroDocumentCard from "@/assets/hero-document-card.png";
 import heroDocumentCardWebp from "@/assets/hero-document-card.webp";
 import heroDocumentCardAvif from "@/assets/hero-document-card.avif";
