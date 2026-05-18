@@ -446,15 +446,15 @@ export default function Index() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.12 }}
-                className="bg-card rounded-3xl border border-border p-7 shadow-soft text-center"
+                className="relative bg-card rounded-[14px] border-2 border-foreground p-7 shadow-block-lg text-center transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[8px_8px_0_0_hsl(var(--foreground))]"
               >
                 <div className="mx-auto mb-5 flex h-40 w-40 items-center justify-center">
-                  <img src={step.img} alt={step.title} loading="lazy" width={512} height={512} className="h-full w-full object-contain" />
+                  <img src={step.img} alt={step.title} loading="lazy" decoding="async" width={512} height={512} className="h-full w-full object-contain" />
                 </div>
-                <span className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
+                <span className="inline-flex items-center rounded-full border-2 border-foreground bg-primary text-primary-foreground px-3 py-1 text-[10px] font-black uppercase tracking-widest mb-3 shadow-[2px_2px_0_0_hsl(var(--foreground))]">
                   {step.num}
                 </span>
-                <h3 className="text-xl font-bold text-foreground mb-2">{step.title}</h3>
+                <h3 className="text-xl font-black tracking-tight text-foreground mb-2">{step.title}</h3>
                 <p className="text-sm text-muted-foreground font-medium leading-relaxed">{step.desc}</p>
               </motion.div>
             ))}
