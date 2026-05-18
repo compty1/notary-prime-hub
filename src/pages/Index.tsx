@@ -544,14 +544,20 @@ export default function Index() {
               transition={{ duration: 0.6 }}
               className="relative flex items-center justify-center"
             >
-              <img
-                src={featurePhoneMockup}
-                alt="Notar mobile app showing notarization in progress"
-                loading="lazy"
-                width={1024}
-                height={1024}
-                className="w-full max-w-md h-auto"
-              />
+              <picture>
+                <source type="image/avif" srcSet={featurePhoneMockupAvif} />
+                <source type="image/webp" srcSet={featurePhoneMockupWebp} />
+                <img
+                  src={featurePhoneMockup}
+                  alt="Notar mobile app showing notarization in progress"
+                  loading="lazy"
+                  decoding="async"
+                  width={1024}
+                  height={1024}
+                  sizes="(max-width: 1024px) 90vw, 448px"
+                  className="w-full max-w-md h-auto"
+                />
+              </picture>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, x: 30 }}
