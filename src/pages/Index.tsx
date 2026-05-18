@@ -549,9 +549,12 @@ export default function Index() {
               <p className="text-base md:text-lg text-muted-foreground font-medium leading-relaxed mb-8 max-w-lg">
                 We are a team of Ohio-commissioned notary professionals dedicated to making document authentication simple, secure, and accessible. From remote online notarization (RON) to mobile signings across Central Ohio, we combine legal expertise with modern technology to deliver fast, compliant services you can trust.
               </p>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-3">
                 {["Ohio-Commissioned", "Background Checked", "Insured & Bonded", "NNA Certified"].map((label) => (
-                  <span key={label} className="inline-flex items-center rounded-full bg-secondary text-secondary-foreground px-4 py-2 text-xs font-bold">
+                  <span
+                    key={label}
+                    className="inline-flex items-center rounded-[10px] border-2 border-foreground bg-card text-foreground px-4 py-2 text-xs font-black uppercase tracking-wider shadow-[3px_3px_0_0_hsl(var(--foreground))]"
+                  >
                     {label}
                   </span>
                 ))}
