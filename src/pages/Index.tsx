@@ -444,9 +444,9 @@ export default function Index() {
 
           <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
             {[
-              { num: "Step 1", title: "Upload Document", desc: "Upload your PDF. Our platform ensures it meets legal requirements immediately.", img: stepUpload },
-              { num: "Step 2", title: "Verify & Connect", desc: "Verify your identity (KBA) and connect with a live Ohio notary via secure video.", img: stepVerify },
-              { num: "Step 3", title: "Sign & Download", desc: "Sign electronically. Your fully legalized, tamper-proof document is ready.", img: stepSign },
+              { num: "Step 1", title: "Upload Document", desc: "Upload your PDF. Our platform ensures it meets legal requirements immediately.", img: stepUpload, webp: stepUploadWebp, avif: stepUploadAvif },
+              { num: "Step 2", title: "Verify & Connect", desc: "Verify your identity (KBA) and connect with a live Ohio notary via secure video.", img: stepVerify, webp: stepVerifyWebp, avif: stepVerifyAvif },
+              { num: "Step 3", title: "Sign & Download", desc: "Sign electronically. Your fully legalized, tamper-proof document is ready.", img: stepSign, webp: stepSignWebp, avif: stepSignAvif },
             ].map((step, i) => (
               <motion.div
                 key={step.title}
