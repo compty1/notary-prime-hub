@@ -9,6 +9,10 @@ import { DOCUMENT_ANATOMY } from "@/components/AnatomyDiagram";
 import { ProcessGuide } from "@/components/ProcessGuide";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Picture } from "@/components/ui/picture";
+import heroResourcesPng from "@/assets/hero-resources.png";
+import heroResourcesWebp from "@/assets/hero-resources.webp";
+import heroResourcesAvif from "@/assets/hero-resources.avif";
 
 const resources = [
   {
@@ -97,10 +101,25 @@ export default function Resources() {
     <PageShell>
       <div className="container mx-auto max-w-5xl px-4 py-16">
         <Breadcrumbs />
-        <h1 className="mb-4 font-sans text-3xl font-bold text-foreground">Notary Resources & Guides</h1>
-        <p className="mb-10 max-w-2xl text-muted-foreground">
-          Educational resources to help you understand Ohio notarization requirements, prepare for your appointment, and make informed decisions about your document needs.
-        </p>
+        <div className="mb-12 grid items-center gap-8 md:grid-cols-[1fr_auto]">
+          <div>
+            <h1 className="mb-4 font-heading text-4xl font-black tracking-tight text-foreground md:text-5xl">Notary Resources & Guides</h1>
+            <p className="max-w-2xl text-muted-foreground">
+              Educational resources to help you understand Ohio notarization requirements, prepare for your appointment, and make informed decisions about your document needs.
+            </p>
+          </div>
+          <Picture
+            src={heroResourcesPng}
+            sources={{ avif: heroResourcesAvif, webp: heroResourcesWebp }}
+            alt="Stack of notary reference books with a magnifying glass — paper-card illustration"
+            width={1024}
+            height={1024}
+            sizes="(max-width: 768px) 60vw, 280px"
+            loading="eager"
+            fetchPriority="high"
+            className="mx-auto h-auto w-full max-w-[280px] drop-shadow-xl"
+          />
+        </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {resources.map((r, i) => (

@@ -14,7 +14,8 @@
     "test:visual": "playwright test --reporter=list",
     "test:visual:update": "playwright test --update-snapshots --reporter=list",
     "test:visual:ci": "playwright test --reporter=list",
-    "snapshots:regenerate": "bash scripts/regenerate-snapshots.sh"
+    "snapshots:regenerate": "bash scripts/regenerate-snapshots.sh",
+    "check:assets": "tsx scripts/check-asset-imports.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
