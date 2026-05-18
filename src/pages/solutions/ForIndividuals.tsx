@@ -45,7 +45,7 @@ export default function ForIndividuals() {
               <p className="mb-6 text-lg text-muted-foreground">Wills, vehicle titles, affidavits, immigration forms — whatever you need notarized, we make it easy. In-person in Columbus or remotely from anywhere via RON.</p>
               <div className="flex flex-wrap gap-3">
                 <Link to="/book"><Button size="lg" className="rounded-full px-8">Book Appointment <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
-                <Link to="/ron-check"><Button size="lg" variant="outline">Check RON Eligibility</Button></Link>
+                <Link to="/ron-check"><Button size="lg" variant="outline" className="rounded-full px-8">Check RON Eligibility</Button></Link>
               </div>
               <div className="mt-5 flex flex-wrap items-center gap-2">
                 <OrcChip code="147.65" label="Ohio RON" />
@@ -121,7 +121,7 @@ export default function ForIndividuals() {
           <p className="mx-auto mb-8 max-w-lg text-muted-foreground">Book an in-person appointment in Columbus or start a remote notarization session from anywhere.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link to="/book"><Button size="lg" className="rounded-full px-8">Book Now</Button></Link>
-            <Link to="/fee-calculator"><Button size="lg" variant="outline">View Pricing</Button></Link>
+            <Link to="/fee-calculator"><Button size="lg" variant="outline" className="rounded-full px-8">View Pricing</Button></Link>
           </div>
         </div>
       </section>
