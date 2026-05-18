@@ -9,6 +9,10 @@ import { DOCUMENT_ANATOMY } from "@/components/AnatomyDiagram";
 import { ProcessGuide } from "@/components/ProcessGuide";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Picture } from "@/components/ui/picture";
+import heroResourcesPng from "@/assets/hero-resources.png";
+import heroResourcesWebp from "@/assets/hero-resources.webp";
+import heroResourcesAvif from "@/assets/hero-resources.avif";
 
 const resources = [
   {
