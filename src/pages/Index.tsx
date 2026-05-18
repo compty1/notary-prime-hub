@@ -35,47 +35,10 @@ import stepVerify from "@/assets/step-verify.png";
 import stepSign from "@/assets/step-sign.png";
 import featurePhoneMockup from "@/assets/feature-phone-mockup.png";
 
-const primaryServices = [
- {
- icon3d: FEATURE_3D_ICON.ron,
- title: "Remote Online Notarization",
- badge: "Most Popular",
- desc: "Get documents notarized from anywhere via secure video call. Ohio-authorized under ORC §147.65-.66 with full identity verification, KBA, and tamper-evident seals.",
- cta: "/book?type=ron",
- ctaLabel: "Start RON Session",
- features: ["Available 24/7", "All 50 states accepted", "10-year recording retention"],
- },
- {
- icon3d: FEATURE_3D_ICON.mobile,
- title: "Mobile Notarization",
- badge: "Central Ohio",
- desc: "We come to you — home, office, hospital, or any location within the greater Columbus area. Same-day appointments available for Franklin County.",
- cta: "/book?type=in_person",
- ctaLabel: "Book Mobile Notary",
- features: ["Same-day available", "30-mile radius", "After-hours options"],
- },
-];
-
-const otherServices = [
- { icon3d: FEATURE_3D_ICON.copy, title: "Certified Copy Services", desc: "Certified true copies of original documents", to: "/services?category=notarization" },
- { icon3d: FEATURE_3D_ICON.loan, title: "Loan Signing Agent", desc: "Professional loan document signing services", to: "/loan-signing" },
- { icon3d: FEATURE_3D_ICON.i9, title: "I-9 / Employment Verification", desc: "Authorized agent for Form I-9 completion", to: "/services?category=verification" },
- { icon3d: FEATURE_3D_ICON.apostille, title: "Apostille Facilitation", desc: "Document authentication for international use", to: "/services?category=authentication" },
- { icon3d: FEATURE_3D_ICON.poa, title: "Power of Attorney", desc: "POA notarization with proper witnessing", to: "/services?category=notarization" },
- { icon3d: FEATURE_3D_ICON.oath, title: "Oaths & Affirmations", desc: "Sworn statements, jurats, and affidavits", to: "/services?category=notarization" },
-];
-
 const fallbackTestimonials = [
  { name: "Sarah M.", text: "Notar made our home closing so easy. Professional, punctual, and thorough.", rating: 5 },
  { name: "James R.", text: "Used the remote notarization while traveling. Incredibly convenient and secure.", rating: 5 },
  { name: "Lisa K.", text: "Best notary experience I've had. Will definitely use Notar again for our business documents.", rating: 5 },
-];
-
-const howItWorksSteps = [
- { num: "1", title: "Upload Document", icon3d: FEATURE_3D_ICON.upload, desc: "Formats: PDF, JPEG. Verify text clarity before uploading." },
- { num: "2", title: "Identity Verification", icon3d: FEATURE_3D_ICON.identity, desc: "Secure KBA or biometric scan. Have your government ID ready." },
- { num: "3", title: "Live Notary Session", icon3d: FEATURE_3D_ICON.video, desc: "Connect via video chat with a commissioned Notary Public." },
- { num: "4", title: "Download Doc", icon3d: FEATURE_3D_ICON.download, desc: "Receive your secure, digitally notarized file immediately." },
 ];
 
 const faqs = [
