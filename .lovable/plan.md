@@ -1,79 +1,62 @@
-
 ## Goal
 
-Apply the new Notar visual identity (yellow `#FBBF24` + dark navy `#0F172A` + Outfit/DM Sans + clean rounded cards with subtle paper-style illustrations as in the mockups) **globally and universally** across the entire site — pages, components, and illustrations — not just the homepage.
+Close out the remaining "Block Shadow" homepage work and prove the responsive-image optimization actually moves the needle. Four focused passes, then verification.
 
-## Scope (everything in)
+## Pass 1 — Shared `Picture` component
 
-### A. Landing page composition (`src/pages/Index.tsx`)
-Rebuild to match the two reference screenshots:
-1. **Hero** — full-width navy section, eyebrow chip, H1 "Legal Online **Notarization**" with yellow underline swash, subhead, yellow rounded "Start Notarizing Now" + dark "Contact Sales" CTAs, decorative blue/yellow circles + dot pattern, paper-document illustration on the right, trust strip below CTAs.
-2. **"How can we help you today?"** — 3 service cards (Mobile Notary, Remote Online [highlighted "Most Popular"], Remote Apostille).
-3. **How It Works** — 3 steps (Upload Document → Verify & Connect → Sign & Download), Step pills, paper-style icons.
-4. **Trusted by Ohioans** — 3 testimonial cards with 5 yellow stars, quote-mark icon, circular avatars + city.
-5. **Legal expertise meets modern convenience** — phone mockup with floating stat cards on the left, headline + 4 dark pill badges on the right.
-6. **Final CTA** — navy strip with yellow + dark outline buttons.
+Create `src/components/ui/picture.tsx`:
 
-### B. Universal site-wide theme audit
-For **every** page and component on the site (marketing, auth, portal, admin, services, design studio chrome, enterprise, solutions, shop, academy, etc.):
+- Props: `{ sources: { avif?: string; webp?: string; mobileAvif?: string; mobileWebp?: string }, src, alt, width, height, sizes?, loading?, fetchPriority?, className? }`.
+- Renders a single `<picture>` with `<source type="image/avif">` + `<source type="image/webp">` (mobile variants gated by `media="(max-width: 640px)"` when provided), then a fallback `<img>`.
+- Defaults: `decoding="async"`, `loading="lazy"`, `fetchPriority="auto"`. Hero usage passes `loading="eager"` + `fetchPriority="high"`.
+- Always require `width`/`height` to prevent CLS.
 
-- Replace all hardcoded `bg-[#…]`, `text-[#…]`, `border-[#…]`, raw hex/HSL color literals with semantic tokens (`bg-primary`, `text-foreground`, `border-border`, `bg-secondary`, `bg-accent`, `bg-muted`, etc.).
-- Standardize button styles to the new system (yellow primary rounded-full, dark secondary rounded-full, ghost outline).
-- Standardize card styles (white surface, subtle border, soft shadow, `rounded-card` token).
-- Standardize section eyebrow chips (small uppercase pill with light primary tint).
-- Standardize headings to `font-heading` (Outfit) and body to `font-body` (DM Sans) wherever an inline font-family override exists.
-- Verify dark-mode tokens render correctly on each touched surface.
+Refactor `src/pages/Index.tsx` to use `<Picture>` for:
+- Hero document card (desktop + mobile sources, eager + high priority).
+- `step-upload`, `step-verify`, `step-sign` (lazy, sizes `(max-width: 768px) 80vw, 280px`).
+- `feature-phone-mockup` (lazy, sizes `(max-width: 1024px) 90vw, 448px`).
 
-**Exclusions** — these are user-customizable artifact templates and must keep their literal colors so end-users can change them:
-- `src/components/docudex/**` (DocuDex visual editor — user designs)
-- `src/pages/design/**` (Print Design Studio configurators — user designs)
-- `src/components/InvoicePDFExport.tsx`, `NotarizationCertificate.tsx`, `PrintStylesheet.tsx`, `EmailTemplateDesigner.tsx`, `SignatureGenerator.tsx`, `PaymentForm.tsx` Stripe Elements skin (PDF/email/Stripe artifacts — fixed by spec)
-- `src/components/RevenueByServiceChart.tsx` chart palette (uses semantic tokens already; only adjust if hardcoded)
-- `AdminNotaryPages.tsx` / `AdminAutomatedEmails.tsx` / `PortalNotaryPageTab.tsx` color-picker **defaults** stay literal but seeded to the new brand (`#FBBF24` / `#0F172A` / `#3B82F6`).
+Delete now-unused inline `<picture>` blocks and the per-image `webp`/`avif` import aliases that the component replaces.
 
-In-scope chrome files for hex → token sweep include: `Hero3DAnimation.tsx`, `ProcessGuide.tsx`, `AnatomyDiagram.tsx`, `NotaryPage.tsx`, `Login.tsx`, `SignUp.tsx`, `PortalEmailsTab.tsx`, `ai-tools/ToolRunner.tsx`, `design/ProductScene3D.tsx` (3D scene clear color/lighting only), and any remaining page/component flagged by `rg`.
+## Pass 2 — Audit & fix homepage images / imports
 
-### C. Illustrations & graphics — unified style
-The mockups use a **flat paper-card style with soft drop shadows, subtle yellow + blue accents, and rounded corners**. Replace the existing mismatched 3D rendered illustrations (current `hero-3d-illustration.png`, `about-3d-illustration.png`, etc.) with this consistent set:
+- `rg "src/assets" src/pages/Index.tsx` and `rg "import .* from .*assets" src/pages/Index.tsx`; for each import, confirm the file exists in `src/assets/`. Remove dead imports, fix any mismatched paths.
+- Walk through the rendered homepage in the preview, capture screenshots at 1360px and 390px, look for: broken `<img>` (no src / 404), empty avatar circles in testimonials, missing icon backgrounds, oversized SVG fallbacks.
+- For any avatar / placeholder still using a raw color div, replace with a Block-Shadow framed initials chip (`rounded-[7px] border-2 border-foreground bg-primary/20 shadow-block` + initials).
 
-1. `src/assets/hero-document-card.png` — paper document with signature + yellow check seal (used in hero right column).
-2. `src/assets/step-upload.png` — paper card with upload arrow.
-3. `src/assets/step-verify.png` — paper card with ID + check.
-4. `src/assets/step-sign.png` — paper card with signature line + downward arrow check.
-5. `src/assets/feature-phone-mockup.png` — phone showing notary app with floating stat cards.
-6. `src/assets/about-credentials.png` — replacement for `about-3d-illustration` matching the new flat style.
+## Pass 3 — Block Shadow consistency on remaining sections
 
-Generate via `imagegen` at premium quality, transparent background where appropriate. Keep file slots in `src/assets/` so other pages that import the existing names continue to work; old files are replaced in place where the new style fits, otherwise added alongside and old imports updated.
+Bring the following homepage sections in line with the service-card style (2px `border-foreground`, `rounded-[7px]`, `shadow-block-lg`, `hover:-translate-y-0.5 hover:shadow-[8px_8px_0_0_hsl(var(--foreground))]`, `font-black tracking-tighter` headings, uppercase eyebrow chip):
 
-### D. Shared chrome
-- **Header / Nav** — confirm logo lockup, link colors, and "Start Notarizing" CTA match new brand (yellow rounded-full).
-- **Footer** — confirm navy bg, yellow link hover, semantic tokens.
-- **Auth pages** (`Login.tsx`, `SignUp.tsx`, `ForgotPassword.tsx`) — apply paper-card form on light background, yellow primary submit.
-- **NotFound / Maintenance / ComingSoon / Accessibility / Compliance / Security / SignerRights** — one-pass theme alignment.
-- **Client Portal & Admin shells** — sidebar navy + yellow active state already configured; verify content surfaces use `surface-card` / `bg-card` rather than raw whites.
+- "How It Works" step cards + numbered step pills.
+- "Trusted by Ohioans" testimonial cards (also update `src/components/TestimonialsSection.tsx` so the shared component matches: replace `shadow-lg` + soft border with `border-2 border-foreground shadow-block-lg`, swap `text-accent-warm` stars to `fill-primary text-primary`, wrap the avatar in a Block Shadow chip).
+- "Legal expertise meets modern convenience" feature grid: pill badges become `border-2 border-foreground rounded-[7px] shadow-block bg-card` chips; section eyebrow standardized.
+- Final navy CTA: primary button `bg-primary text-primary-foreground border-2 border-foreground shadow-block-lg`; secondary `bg-card text-foreground border-2 border-foreground shadow-block`.
+- Headlines across all sections: `font-black tracking-tighter` with consistent size ramp (`text-4xl md:text-5xl lg:text-6xl` for section H2, `text-xl md:text-2xl` for card titles).
 
-## Files touched (high-level)
+No logic changes — presentation only.
 
-- `src/pages/Index.tsx` (full rebuild of 6 sections)
-- ~30–45 component & page files in scope-A list above (token sweep + small style normalizations only — **no logic changes**)
-- `src/assets/*.png` (6 new illustrations)
-- `src/components/Hero3DAnimation.tsx` (palette already updated; verify)
-- `src/components/Header.tsx`, `Footer.tsx`, `PageShell.tsx` (nav/footer alignment if hex literals found)
+## Pass 4 — Verification
 
-## Process
-
-Work in 4 passes so the user can see incremental progress:
-1. **Pass 1 — Homepage rebuild** (Index.tsx + new hero/step/feature illustrations).
-2. **Pass 2 — Universal hex → token sweep** across all in-scope chrome pages/components.
-3. **Pass 3 — Auth + utility pages + nav/footer** style alignment.
-4. **Pass 4 — Verification**: `npx tsc --noEmit`, `rg '#[0-9a-fA-F]{6}'` on in-scope files (zero hits expected), spot-check key pages at desktop + mobile.
+1. `bun run build` — must succeed; note bundle size delta for the homepage chunk.
+2. Lighthouse (mobile + desktop) against the preview URL using Chrome headless:
+   ```bash
+   npx -y lighthouse <preview-url> --preset=desktop --quiet --chrome-flags="--headless" --output=json --output-path=/tmp/lh-desktop.json
+   npx -y lighthouse <preview-url> --form-factor=mobile --quiet --chrome-flags="--headless" --output=json --output-path=/tmp/lh-mobile.json
+   ```
+   Extract and report: Performance score, LCP, CLS, Total Byte Weight, "Serve images in next-gen formats" + "Properly size images" audits. Target: ≥ 90 desktop, ≥ 80 mobile; LCP < 2.5s mobile.
+3. Visual QA: browser tool at 1360×915 and 390×844 — screenshot every homepage section, confirm no broken images, no horizontal scroll, Block Shadow style consistent.
+4. `rg "<img " src/pages/Index.tsx` — should return zero hits after Pass 1 (all routed through `<Picture>`).
 
 ## Out of scope
-- Backend, business logic, routing, RLS, edge functions.
-- User-customizable artifact templates (DocuDex, Print Design Studio, PDF/email templates, Stripe Elements skin).
-- New features.
 
-## Verification
-- TypeScript clean.
-- Zero hardcoded hex in in-scope files.
-- Visual diff vs. mockup screenshots on home, login, portal dashboard, admin dashboard, one services page, one solutions page.
+- Non-homepage routes (already covered in earlier passes).
+- Backend / RLS / business logic.
+- New illustrations — reuse current Block Shadow assets.
+
+## Deliverables
+
+- `src/components/ui/picture.tsx` (new)
+- `src/pages/Index.tsx` (refactor)
+- `src/components/TestimonialsSection.tsx` (style alignment)
+- Build + Lighthouse summary posted in chat with before/after numbers where available.
