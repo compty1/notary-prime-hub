@@ -273,7 +273,7 @@ export default function Index() {
               <motion.h1
                 variants={blurIn}
                 custom={1}
-                className="font-display font-bold tracking-tight leading-[1.05] text-secondary-foreground mb-6 text-5xl md:text-6xl lg:text-7xl"
+                className="font-display font-black tracking-tighter leading-[1.05] text-secondary-foreground mb-6 text-5xl md:text-6xl lg:text-7xl"
               >
                 Legal Online<br />
                 <span className="relative inline-block">
@@ -335,7 +335,7 @@ export default function Index() {
             <span className="inline-flex items-center gap-2 rounded-full bg-primary/15 text-primary-accessible px-3 py-1 text-[10px] font-bold uppercase tracking-widest mb-4">
               Choose your service
             </span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-4">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tighter text-foreground mb-4">
               How can we help you today?
             </h2>
             <p className="text-base md:text-lg text-muted-foreground font-medium max-w-2xl mx-auto">
@@ -426,7 +426,7 @@ export default function Index() {
       <section id="how-it-works" className="section-padding bg-muted/40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-4">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tighter text-foreground mb-4">
               How It Works
             </h2>
             <p className="text-base md:text-lg text-muted-foreground font-medium max-w-2xl mx-auto">
@@ -469,7 +469,7 @@ export default function Index() {
             <span className="inline-flex items-center gap-2 rounded-full bg-primary/15 text-primary-accessible px-3 py-1 text-[10px] font-bold uppercase tracking-widest mb-4">
               Word on the street
             </span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-4">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tighter text-foreground mb-4">
               Trusted by Ohioans
             </h2>
             <p className="text-base md:text-lg text-muted-foreground font-medium max-w-2xl mx-auto">
@@ -547,7 +547,7 @@ export default function Index() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.15 }}
             >
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-6 leading-[1.1]">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tighter text-foreground mb-6 leading-[1.1]">
                 Legal expertise meets modern convenience.
               </h2>
               <p className="text-base md:text-lg text-muted-foreground font-medium leading-relaxed mb-8 max-w-lg">
@@ -573,7 +573,7 @@ export default function Index() {
           <div className="absolute inset-0 dot-pattern opacity-40" />
         </div>
         <div className="relative z-10 max-w-3xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-secondary-foreground mb-5 leading-[1.1]">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tighter text-secondary-foreground mb-5 leading-[1.1]">
             Ready to notarize<br />your document?
           </h2>
           <p className="text-base md:text-lg text-secondary-foreground/70 font-medium mb-8 max-w-xl mx-auto">
