@@ -107,6 +107,52 @@ function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: strin
  return <span ref={ref} aria-live="polite" className="font-bold tabular-nums">{count.toLocaleString()}{suffix}</span>;
 }
 
+function HeroIllustration() {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [40, -40]);
+  const penY = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [-20, 25]);
+  const sealRotate = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [-4, 4]);
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, scale: 0.96, y: 24 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+      className="relative flex items-center justify-center"
+    >
+      <div className="absolute inset-0 -m-8 rounded-[40px] bg-primary/15 blur-3xl" aria-hidden />
+      {/* Floating accent shapes (parallax) */}
+      <motion.div
+        aria-hidden
+        style={{ y: penY, rotate: sealRotate }}
+        className="absolute -top-4 -right-2 h-16 w-16 rounded-full bg-primary border-[3px] border-foreground shadow-[6px_6px_0_0_hsl(var(--foreground))] hidden md:block"
+      />
+      <motion.div
+        aria-hidden
+        style={{ y: penY }}
+        className="absolute bottom-4 -left-2 h-12 w-12 rounded-full bg-accent border-[3px] border-foreground shadow-[5px_5px_0_0_hsl(var(--foreground))] hidden md:block"
+      />
+      <motion.div style={{ y }} className="relative w-full max-w-md">
+        <picture>
+          <source media="(max-width: 640px)" srcSet={heroDocumentCardMobile} />
+          <img
+            src={heroDocumentCard}
+            alt="Notarized document with gold seal, signature, and fountain pen"
+            width={1280}
+            height={1280}
+            fetchPriority="high"
+            decoding="async"
+            className="relative w-full h-auto drop-shadow-[0_30px_50px_rgba(0,0,0,0.35)]"
+          />
+        </picture>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export default function Index() {
  usePageMeta({ title: "Ohio Notary & Document Services | Notar", description: "Trusted Ohio notary services — in-person and remote online notarization (RON) in Franklin County, Columbus. Book online, get notarized today.", schema: ORGANIZATION_JSONLD });
  const { toast } = useToast();
