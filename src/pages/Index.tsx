@@ -108,25 +108,23 @@ function HeroIllustration() {
         className="absolute bottom-4 -left-2 h-12 w-12 rounded-full bg-accent border-[3px] border-foreground shadow-[5px_5px_0_0_hsl(var(--foreground))] hidden md:block"
       />
       <motion.div style={{ y }} className="relative w-full max-w-md">
-        <picture>
-          {/* Mobile sources (≤640px) — AVIF → WebP → PNG */}
-          <source media="(max-width: 640px)" type="image/avif" srcSet={heroDocumentCardMobileAvif} />
-          <source media="(max-width: 640px)" type="image/webp" srcSet={heroDocumentCardMobileWebp} />
-          <source media="(max-width: 640px)" srcSet={heroDocumentCardMobile} />
-          {/* Desktop sources — AVIF → WebP → PNG */}
-          <source type="image/avif" srcSet={heroDocumentCardAvif} />
-          <source type="image/webp" srcSet={heroDocumentCardWebp} />
-          <img
-            src={heroDocumentCard}
-            alt="Notarized document with gold seal, signature, and fountain pen"
-            width={1280}
-            height={1280}
-            sizes="(max-width: 640px) 90vw, (max-width: 1024px) 50vw, 480px"
-            fetchPriority="high"
-            decoding="async"
-            className="relative w-full h-auto drop-shadow-[0_30px_50px_rgba(0,0,0,0.35)]"
-          />
-        </picture>
+        <Picture
+          src={heroDocumentCard}
+          alt="Notarized document with gold seal, signature, and fountain pen"
+          width={1280}
+          height={1280}
+          sizes="(max-width: 640px) 90vw, (max-width: 1024px) 50vw, 480px"
+          loading="eager"
+          fetchPriority="high"
+          sources={{
+            avif: heroDocumentCardAvif,
+            webp: heroDocumentCardWebp,
+            mobileAvif: heroDocumentCardMobileAvif,
+            mobileWebp: heroDocumentCardMobileWebp,
+            mobileSrc: heroDocumentCardMobile,
+          }}
+          className="relative w-full h-auto drop-shadow-[0_30px_50px_rgba(0,0,0,0.35)]"
+        />
       </motion.div>
     </motion.div>
   );
