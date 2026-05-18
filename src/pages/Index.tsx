@@ -16,20 +16,20 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import {
- ShieldCheck, Clock, FileCheck2, UploadCloud, Fingerprint, Video, Download,
- Scale, Home, Briefcase, FileText, Smartphone, CheckCircle2, Lock, ChevronRight,
- Phone, Mail, Send, Loader2, ArrowRight, Globe, Car, Copy, UserCheck, Stamp, BookOpen, Star,
- FileSignature, Check
+  ShieldCheck, FileCheck2, Video, Scale, Smartphone, Lock,
+  Send, Loader2, ArrowRight, Globe, Star,
 } from "lucide-react";
-import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
-import { fadeUp, blurIn, scaleReveal } from "@/lib/animations";
-import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
+import { fadeUp, blurIn } from "@/lib/animations";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 import { RonAdvisorWidget } from "@/components/RonAdvisorWidget";
 import { TrustBar } from "@/components/trust";
 import heroDocumentCard from "@/assets/hero-document-card.png";
+import heroDocumentCardWebp from "@/assets/hero-document-card.webp";
+import heroDocumentCardAvif from "@/assets/hero-document-card.avif";
 import heroDocumentCardMobile from "@/assets/hero-document-card-mobile.png";
+import heroDocumentCardMobileWebp from "@/assets/hero-document-card-mobile.webp";
+import heroDocumentCardMobileAvif from "@/assets/hero-document-card-mobile.avif";
 import stepUpload from "@/assets/step-upload.png";
 import stepVerify from "@/assets/step-verify.png";
 import stepSign from "@/assets/step-sign.png";
