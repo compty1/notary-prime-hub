@@ -312,18 +312,6 @@ export default function Index() {
         </div>
       </section>
 
-      {/* end hero */}
-      {false && (<>
-      </>)}
-      {/* spacer-noop */}
-      {/* hidden duplicate marker removed below */}
-      <div className="hidden">
-        <img src={heroDocumentCard} alt="" aria-hidden width={1} height={1} />
-      </div>
-          </div>
-        </div>
-      </section>
-
       {/* ===== How can we help you today? — 3 service cards ===== */}
       <section id="services" className="section-padding bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
