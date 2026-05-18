@@ -306,22 +306,20 @@ export default function Index() {
               </motion.div>
             </motion.div>
 
-            {/* Hero illustration — paper document card */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="relative flex items-center justify-center"
-            >
-              <div className="absolute inset-0 -m-8 rounded-[40px] bg-primary/10 blur-3xl" aria-hidden />
-              <img
-                src={heroDocumentCard}
-                alt="Notarized document with signature and verified seal"
-                width={1024}
-                height={1024}
-                className="relative w-full max-w-md h-auto drop-shadow-[0_30px_50px_rgba(0,0,0,0.35)]"
-              />
-            </motion.div>
+            {/* Hero illustration — Block Shadow document card with subtle parallax */}
+            <HeroIllustration />
+          </div>
+        </div>
+      </section>
+
+      {/* end hero */}
+      {false && (<>
+      </>)}
+      {/* spacer-noop */}
+      {/* hidden duplicate marker removed below */}
+      <div className="hidden">
+        <img src={heroDocumentCard} alt="" aria-hidden width={1} height={1} />
+      </div>
           </div>
         </div>
       </section>
