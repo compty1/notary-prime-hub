@@ -100,12 +100,19 @@ function HeroIllustration() {
       />
       <motion.div style={{ y }} className="relative w-full max-w-md">
         <picture>
+          {/* Mobile sources (≤640px) — AVIF → WebP → PNG */}
+          <source media="(max-width: 640px)" type="image/avif" srcSet={heroDocumentCardMobileAvif} />
+          <source media="(max-width: 640px)" type="image/webp" srcSet={heroDocumentCardMobileWebp} />
           <source media="(max-width: 640px)" srcSet={heroDocumentCardMobile} />
+          {/* Desktop sources — AVIF → WebP → PNG */}
+          <source type="image/avif" srcSet={heroDocumentCardAvif} />
+          <source type="image/webp" srcSet={heroDocumentCardWebp} />
           <img
             src={heroDocumentCard}
             alt="Notarized document with gold seal, signature, and fountain pen"
             width={1280}
             height={1280}
+            sizes="(max-width: 640px) 90vw, (max-width: 1024px) 50vw, 480px"
             fetchPriority="high"
             decoding="async"
             className="relative w-full h-auto drop-shadow-[0_30px_50px_rgba(0,0,0,0.35)]"
