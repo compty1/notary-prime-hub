@@ -58,26 +58,6 @@ const faqs = [
  { q: "Is RON notarization accepted everywhere?", a: "RON notarizations performed under Ohio law are recognized in all 50 states. However, some specific transactions may have unique requirements. Contact us to confirm for your situation." },
 ];
 
-function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: string }) {
- const [count, setCount] = useState(0);
- const ref = useRef<HTMLSpanElement>(null);
- const isInView = useInView(ref, { once: true });
-
- useEffect(() => {
- if (!isInView) return;
- let start = 0;
- const duration = 1500;
- const step = value / (duration / 16);
- const timer = setInterval(() => {
- start += step;
- if (start >= value) { setCount(value); clearInterval(timer); } else
- setCount(Math.floor(start));
- }, 16);
- return () => clearInterval(timer);
- }, [isInView, value]);
-
- return <span ref={ref} aria-live="polite" className="font-bold tabular-nums">{count.toLocaleString()}{suffix}</span>;
-}
 
 function HeroIllustration() {
   const ref = useRef<HTMLDivElement>(null);
