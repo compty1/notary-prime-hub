@@ -31,9 +31,17 @@ import heroDocumentCardMobile from "@/assets/hero-document-card-mobile.png";
 import heroDocumentCardMobileWebp from "@/assets/hero-document-card-mobile.webp";
 import heroDocumentCardMobileAvif from "@/assets/hero-document-card-mobile.avif";
 import stepUpload from "@/assets/step-upload.png";
+import stepUploadWebp from "@/assets/step-upload.webp";
+import stepUploadAvif from "@/assets/step-upload.avif";
 import stepVerify from "@/assets/step-verify.png";
+import stepVerifyWebp from "@/assets/step-verify.webp";
+import stepVerifyAvif from "@/assets/step-verify.avif";
 import stepSign from "@/assets/step-sign.png";
+import stepSignWebp from "@/assets/step-sign.webp";
+import stepSignAvif from "@/assets/step-sign.avif";
 import featurePhoneMockup from "@/assets/feature-phone-mockup.png";
+import featurePhoneMockupWebp from "@/assets/feature-phone-mockup.webp";
+import featurePhoneMockupAvif from "@/assets/feature-phone-mockup.avif";
 
 const fallbackTestimonials = [
  { name: "Sarah M.", text: "Notar made our home closing so easy. Professional, punctual, and thorough.", rating: 5 },
@@ -436,9 +444,9 @@ export default function Index() {
 
           <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
             {[
-              { num: "Step 1", title: "Upload Document", desc: "Upload your PDF. Our platform ensures it meets legal requirements immediately.", img: stepUpload },
-              { num: "Step 2", title: "Verify & Connect", desc: "Verify your identity (KBA) and connect with a live Ohio notary via secure video.", img: stepVerify },
-              { num: "Step 3", title: "Sign & Download", desc: "Sign electronically. Your fully legalized, tamper-proof document is ready.", img: stepSign },
+              { num: "Step 1", title: "Upload Document", desc: "Upload your PDF. Our platform ensures it meets legal requirements immediately.", img: stepUpload, webp: stepUploadWebp, avif: stepUploadAvif },
+              { num: "Step 2", title: "Verify & Connect", desc: "Verify your identity (KBA) and connect with a live Ohio notary via secure video.", img: stepVerify, webp: stepVerifyWebp, avif: stepVerifyAvif },
+              { num: "Step 3", title: "Sign & Download", desc: "Sign electronically. Your fully legalized, tamper-proof document is ready.", img: stepSign, webp: stepSignWebp, avif: stepSignAvif },
             ].map((step, i) => (
               <motion.div
                 key={step.title}
@@ -449,7 +457,11 @@ export default function Index() {
                 className="relative bg-card rounded-[14px] border-2 border-foreground p-7 shadow-block-lg text-center transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[8px_8px_0_0_hsl(var(--foreground))]"
               >
                 <div className="mx-auto mb-5 flex h-40 w-40 items-center justify-center">
-                  <img src={step.img} alt={step.title} loading="lazy" decoding="async" width={512} height={512} className="h-full w-full object-contain" />
+                  <picture>
+                    <source type="image/avif" srcSet={step.avif} />
+                    <source type="image/webp" srcSet={step.webp} />
+                    <img src={step.img} alt={step.title} loading="lazy" decoding="async" width={512} height={512} sizes="160px" className="h-full w-full object-contain" />
+                  </picture>
                 </div>
                 <span className="inline-flex items-center rounded-full border-2 border-foreground bg-primary text-primary-foreground px-3 py-1 text-[10px] font-black uppercase tracking-widest mb-3 shadow-[2px_2px_0_0_hsl(var(--foreground))]">
                   {step.num}
@@ -532,14 +544,20 @@ export default function Index() {
               transition={{ duration: 0.6 }}
               className="relative flex items-center justify-center"
             >
-              <img
-                src={featurePhoneMockup}
-                alt="Notar mobile app showing notarization in progress"
-                loading="lazy"
-                width={1024}
-                height={1024}
-                className="w-full max-w-md h-auto"
-              />
+              <picture>
+                <source type="image/avif" srcSet={featurePhoneMockupAvif} />
+                <source type="image/webp" srcSet={featurePhoneMockupWebp} />
+                <img
+                  src={featurePhoneMockup}
+                  alt="Notar mobile app showing notarization in progress"
+                  loading="lazy"
+                  decoding="async"
+                  width={1024}
+                  height={1024}
+                  sizes="(max-width: 1024px) 90vw, 448px"
+                  className="w-full max-w-md h-auto"
+                />
+              </picture>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, x: 30 }}
