@@ -457,7 +457,11 @@ export default function Index() {
                 className="relative bg-card rounded-[14px] border-2 border-foreground p-7 shadow-block-lg text-center transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[8px_8px_0_0_hsl(var(--foreground))]"
               >
                 <div className="mx-auto mb-5 flex h-40 w-40 items-center justify-center">
-                  <img src={step.img} alt={step.title} loading="lazy" decoding="async" width={512} height={512} className="h-full w-full object-contain" />
+                  <picture>
+                    <source type="image/avif" srcSet={step.avif} />
+                    <source type="image/webp" srcSet={step.webp} />
+                    <img src={step.img} alt={step.title} loading="lazy" decoding="async" width={512} height={512} sizes="160px" className="h-full w-full object-contain" />
+                  </picture>
                 </div>
                 <span className="inline-flex items-center rounded-full border-2 border-foreground bg-primary text-primary-foreground px-3 py-1 text-[10px] font-black uppercase tracking-widest mb-3 shadow-[2px_2px_0_0_hsl(var(--foreground))]">
                   {step.num}
