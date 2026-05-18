@@ -2,7 +2,7 @@ import { usePageMeta } from "@/hooks/usePageMeta";
 import { ORGANIZATION_JSONLD, reviewAggregateJsonLd, setOpenGraphMeta } from "@/lib/seoHelpers";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useSettings } from "@/hooks/useSettings";
 import { submitLead } from "@/lib/submitLead";
@@ -29,6 +29,7 @@ import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 import { RonAdvisorWidget } from "@/components/RonAdvisorWidget";
 import { TrustBar } from "@/components/trust";
 import heroDocumentCard from "@/assets/hero-document-card.png";
+import heroDocumentCardMobile from "@/assets/hero-document-card-mobile.png";
 import stepUpload from "@/assets/step-upload.png";
 import stepVerify from "@/assets/step-verify.png";
 import stepSign from "@/assets/step-sign.png";
@@ -104,6 +105,52 @@ function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: strin
  }, [isInView, value]);
 
  return <span ref={ref} aria-live="polite" className="font-bold tabular-nums">{count.toLocaleString()}{suffix}</span>;
+}
+
+function HeroIllustration() {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [40, -40]);
+  const penY = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [-20, 25]);
+  const sealRotate = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [-4, 4]);
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, scale: 0.96, y: 24 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+      className="relative flex items-center justify-center"
+    >
+      <div className="absolute inset-0 -m-8 rounded-[40px] bg-primary/15 blur-3xl" aria-hidden />
+      {/* Floating accent shapes (parallax) */}
+      <motion.div
+        aria-hidden
+        style={{ y: penY, rotate: sealRotate }}
+        className="absolute -top-4 -right-2 h-16 w-16 rounded-full bg-primary border-[3px] border-foreground shadow-[6px_6px_0_0_hsl(var(--foreground))] hidden md:block"
+      />
+      <motion.div
+        aria-hidden
+        style={{ y: penY }}
+        className="absolute bottom-4 -left-2 h-12 w-12 rounded-full bg-accent border-[3px] border-foreground shadow-[5px_5px_0_0_hsl(var(--foreground))] hidden md:block"
+      />
+      <motion.div style={{ y }} className="relative w-full max-w-md">
+        <picture>
+          <source media="(max-width: 640px)" srcSet={heroDocumentCardMobile} />
+          <img
+            src={heroDocumentCard}
+            alt="Notarized document with gold seal, signature, and fountain pen"
+            width={1280}
+            height={1280}
+            fetchPriority="high"
+            decoding="async"
+            className="relative w-full h-auto drop-shadow-[0_30px_50px_rgba(0,0,0,0.35)]"
+          />
+        </picture>
+      </motion.div>
+    </motion.div>
+  );
 }
 
 export default function Index() {
@@ -305,22 +352,8 @@ export default function Index() {
               </motion.div>
             </motion.div>
 
-            {/* Hero illustration — paper document card */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="relative flex items-center justify-center"
-            >
-              <div className="absolute inset-0 -m-8 rounded-[40px] bg-primary/10 blur-3xl" aria-hidden />
-              <img
-                src={heroDocumentCard}
-                alt="Notarized document with signature and verified seal"
-                width={1024}
-                height={1024}
-                className="relative w-full max-w-md h-auto drop-shadow-[0_30px_50px_rgba(0,0,0,0.35)]"
-              />
-            </motion.div>
+            {/* Hero illustration — Block Shadow document card with subtle parallax */}
+            <HeroIllustration />
           </div>
         </div>
       </section>
