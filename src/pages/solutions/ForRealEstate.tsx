@@ -45,7 +45,7 @@ export default function ForRealEstate() {
               <p className="mb-6 text-lg text-muted-foreground">From purchase agreements to refinance packages, we handle the full spectrum of real estate notarization — on-site at the closing table or remotely via Ohio-authorized RON.</p>
               <div className="flex flex-wrap gap-3">
                 <Link to="/book"><Button size="lg" className="rounded-full px-8">Schedule a Closing <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
-                <Link to="/loan-signing"><Button size="lg" variant="outline">Loan Signing Services</Button></Link>
+                <Link to="/loan-signing"><Button size="lg" variant="outline" className="rounded-full px-8">Loan Signing Services</Button></Link>
               </div>
               <div className="mt-5 flex flex-wrap items-center gap-2">
                 <OrcChip code="147.541" label="NSA fees" />
@@ -121,7 +121,7 @@ export default function ForRealEstate() {
           <p className="mx-auto mb-8 max-w-lg text-muted-foreground">Schedule a closing, request a loan signing agent, or set up a volume account for your title company or brokerage.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link to="/book"><Button size="lg" className="rounded-full px-8">Book a Closing</Button></Link>
-            <Link to="/fee-calculator"><Button size="lg" variant="outline">View Pricing</Button></Link>
+            <Link to="/fee-calculator"><Button size="lg" variant="outline" className="rounded-full px-8">View Pricing</Button></Link>
           </div>
         </div>
       </section>

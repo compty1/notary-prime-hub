@@ -53,7 +53,7 @@ export default function ForLawFirms() {
                   <Button size="lg" className="rounded-full px-8">Schedule Notarization <ArrowRight className="ml-2 h-4 w-4" /></Button>
                 </Link>
                 <Link to="/services">
-                  <Button size="lg" variant="outline">Explore Services</Button>
+                  <Button size="lg" variant="outline" className="rounded-full px-8">Explore Services</Button>
                 </Link>
               </div>
               <div className="mt-5 flex flex-wrap items-center gap-2">
@@ -134,7 +134,7 @@ export default function ForLawFirms() {
           <p className="mx-auto mb-8 max-w-lg text-muted-foreground">Set up a firm account for priority scheduling, volume pricing, and dedicated notary availability for your practice.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link to="/book"><Button size="lg" className="rounded-full px-8">Book Notarization</Button></Link>
-            <Link to="/fee-calculator"><Button size="lg" variant="outline">View Pricing</Button></Link>
+            <Link to="/fee-calculator"><Button size="lg" variant="outline" className="rounded-full px-8">View Pricing</Button></Link>
           </div>
         </div>
       </section>
