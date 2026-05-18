@@ -31,9 +31,17 @@ import heroDocumentCardMobile from "@/assets/hero-document-card-mobile.png";
 import heroDocumentCardMobileWebp from "@/assets/hero-document-card-mobile.webp";
 import heroDocumentCardMobileAvif from "@/assets/hero-document-card-mobile.avif";
 import stepUpload from "@/assets/step-upload.png";
+import stepUploadWebp from "@/assets/step-upload.webp";
+import stepUploadAvif from "@/assets/step-upload.avif";
 import stepVerify from "@/assets/step-verify.png";
+import stepVerifyWebp from "@/assets/step-verify.webp";
+import stepVerifyAvif from "@/assets/step-verify.avif";
 import stepSign from "@/assets/step-sign.png";
+import stepSignWebp from "@/assets/step-sign.webp";
+import stepSignAvif from "@/assets/step-sign.avif";
 import featurePhoneMockup from "@/assets/feature-phone-mockup.png";
+import featurePhoneMockupWebp from "@/assets/feature-phone-mockup.webp";
+import featurePhoneMockupAvif from "@/assets/feature-phone-mockup.avif";
 
 const fallbackTestimonials = [
  { name: "Sarah M.", text: "Notar made our home closing so easy. Professional, punctual, and thorough.", rating: 5 },
