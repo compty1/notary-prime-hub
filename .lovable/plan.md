@@ -1,62 +1,82 @@
-## Goal
+# Implementation plan — final polish pass
 
-Close out the remaining "Block Shadow" homepage work and prove the responsive-image optimization actually moves the needle. Four focused passes, then verification.
+Five focused passes. Each is independently shippable.
 
-## Pass 1 — Shared `Picture` component
+## Pass 1 — Solution-page CTA standardization
 
-Create `src/components/ui/picture.tsx`:
+Audit every CTA across `src/pages/solutions/*` and any other public marketing page (`/services`, `/about`, `/resources`, `/help`, `/glossary`, `/track-*`).
 
-- Props: `{ sources: { avif?: string; webp?: string; mobileAvif?: string; mobileWebp?: string }, src, alt, width, height, sizes?, loading?, fetchPriority?, className? }`.
-- Renders a single `<picture>` with `<source type="image/avif">` + `<source type="image/webp">` (mobile variants gated by `media="(max-width: 640px)"` when provided), then a fallback `<img>`.
-- Defaults: `decoding="async"`, `loading="lazy"`, `fetchPriority="auto"`. Hero usage passes `loading="eager"` + `fetchPriority="high"`.
-- Always require `width`/`height` to prevent CLS.
+- All `<Button size="lg">` (primary + outline) gain: `rounded-full px-8 border-2 border-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black tracking-tight uppercase transition-all`.
+- Primary CTAs: `bg-primary text-primary-foreground` (yellow on navy text).
+- Outline CTAs: `bg-card text-foreground` with same border/shadow stack.
+- Extract into a shared `<HeroCTA variant="primary|outline">` wrapper in `src/components/ui/hero-cta.tsx` so future pages can't drift.
 
-Refactor `src/pages/Index.tsx` to use `<Picture>` for:
-- Hero document card (desktop + mobile sources, eager + high priority).
-- `step-upload`, `step-verify`, `step-sign` (lazy, sizes `(max-width: 768px) 80vw, 280px`).
-- `feature-phone-mockup` (lazy, sizes `(max-width: 1024px) 90vw, 448px`).
+## Pass 2 — Hero illustrations (paper-card / Block Shadow)
 
-Delete now-unused inline `<picture>` blocks and the per-image `webp`/`avif` import aliases that the component replaces.
+Generate four new hero illustrations matching the existing `hero-document-card.png` motif (Block Shadow paper-card, navy background friendly, yellow accents):
 
-## Pass 2 — Audit & fix homepage images / imports
+```
+src/assets/hero-services.png       — stack of stamped documents
+src/assets/hero-about.png          — courthouse + paper card
+src/assets/hero-resources.png      — open book + bookmark tabs
+src/assets/hero-solutions-individuals.png
+src/assets/hero-solutions-real-estate.png
+src/assets/hero-solutions-hospitals.png
+src/assets/hero-solutions-law-firms.png
+src/assets/hero-solutions-small-business.png
+```
 
-- `rg "src/assets" src/pages/Index.tsx` and `rg "import .* from .*assets" src/pages/Index.tsx`; for each import, confirm the file exists in `src/assets/`. Remove dead imports, fix any mismatched paths.
-- Walk through the rendered homepage in the preview, capture screenshots at 1360px and 390px, look for: broken `<img>` (no src / 404), empty avatar circles in testimonials, missing icon backgrounds, oversized SVG fallbacks.
-- For any avatar / placeholder still using a raw color div, replace with a Block-Shadow framed initials chip (`rounded-[7px] border-2 border-foreground bg-primary/20 shadow-block` + initials).
+(`hero-solutions-notaries.png` already exists — reuse.)
 
-## Pass 3 — Block Shadow consistency on remaining sections
+For each, also generate `.webp` + `.avif` desktop variants via `sharp` so they flow through the existing `<Picture>` component. Mobile variants skipped — solution heroes use the same composition at every breakpoint.
 
-Bring the following homepage sections in line with the service-card style (2px `border-foreground`, `rounded-[7px]`, `shadow-block-lg`, `hover:-translate-y-0.5 hover:shadow-[8px_8px_0_0_hsl(var(--foreground))]`, `font-black tracking-tighter` headings, uppercase eyebrow chip):
+Wire each into its page hero, replacing the current lucide-only blocks or stock asset.
 
-- "How It Works" step cards + numbered step pills.
-- "Trusted by Ohioans" testimonial cards (also update `src/components/TestimonialsSection.tsx` so the shared component matches: replace `shadow-lg` + soft border with `border-2 border-foreground shadow-block-lg`, swap `text-accent-warm` stars to `fill-primary text-primary`, wrap the avatar in a Block Shadow chip).
-- "Legal expertise meets modern convenience" feature grid: pill badges become `border-2 border-foreground rounded-[7px] shadow-block bg-card` chips; section eyebrow standardized.
-- Final navy CTA: primary button `bg-primary text-primary-foreground border-2 border-foreground shadow-block-lg`; secondary `bg-card text-foreground border-2 border-foreground shadow-block`.
-- Headlines across all sections: `font-black tracking-tighter` with consistent size ramp (`text-4xl md:text-5xl lg:text-6xl` for section H2, `text-xl md:text-2xl` for card titles).
+## Pass 3 — Build-time asset integrity check
 
-No logic changes — presentation only.
+New script `scripts/check-asset-imports.ts`:
 
-## Pass 4 — Verification
+- Walks `src/**/*.{ts,tsx}` with a regex matching `from "@/assets/..."` and `from ".*/assets/..."`.
+- For each import, resolves the path and confirms the file exists on disk.
+- Exits non-zero with a grouped report of missing files.
 
-1. `bun run build` — must succeed; note bundle size delta for the homepage chunk.
-2. Lighthouse (mobile + desktop) against the preview URL using Chrome headless:
-   ```bash
-   npx -y lighthouse <preview-url> --preset=desktop --quiet --chrome-flags="--headless" --output=json --output-path=/tmp/lh-desktop.json
-   npx -y lighthouse <preview-url> --form-factor=mobile --quiet --chrome-flags="--headless" --output=json --output-path=/tmp/lh-mobile.json
-   ```
-   Extract and report: Performance score, LCP, CLS, Total Byte Weight, "Serve images in next-gen formats" + "Properly size images" audits. Target: ≥ 90 desktop, ≥ 80 mobile; LCP < 2.5s mobile.
-3. Visual QA: browser tool at 1360×915 and 390×844 — screenshot every homepage section, confirm no broken images, no horizontal scroll, Block Shadow style consistent.
-4. `rg "<img " src/pages/Index.tsx` — should return zero hits after Pass 1 (all routed through `<Picture>`).
+Wire into `package.json` as `"check:assets": "tsx scripts/check-asset-imports.ts"` and call it from a new `"prebuild"` hook so the production build fails fast on a missing asset.
+
+## Pass 4 — Visual regression snapshots
+
+Extend `tests/visual/landing-snapshots.spec.ts` (Playwright) with snapshots for:
+
+- `/` desktop 1360×900 + mobile 390×844 (already covered — confirm and refresh).
+- `/solutions/individuals`, `/solutions/real-estate`, `/solutions/law-firms`, `/solutions/small-business`, `/solutions/hospitals`, `/solutions/notaries` — desktop + mobile.
+- `/services`, `/about`, `/resources` — desktop hero only.
+
+Use Playwright's `toHaveScreenshot({ maxDiffPixelRatio: 0.02 })` to flag palette/layout drift without flaking on font sub-pixel rendering. Run via `bunx playwright test tests/visual` and regenerate baselines with `scripts/regenerate-snapshots.sh`.
+
+## Pass 5 — Build + Lighthouse verification
+
+1. `bun run build` — must pass; capture bundle size for the homepage chunk.
+2. Lighthouse headless against the preview URL (mobile + desktop). Extract: Performance, LCP, CLS, Total Byte Weight, "next-gen image formats", "properly size images". Targets: ≥ 90 desktop, ≥ 80 mobile, LCP < 2.5s mobile.
+3. Post the before/after numbers and the bundle delta in chat.
+
+## Technical details
+
+- Image generation: `imagegen` standard tier, `transparent_background: true` against a clean background, then convert to `.webp` (q=82) + `.avif` (q=60) with `sharp` in a one-off script.
+- All hero `<Picture>` calls keep `loading="eager"` + `fetchPriority="high"` for above-the-fold; below-the-fold stays `lazy`.
+- CTA refactor is presentation-only — no router or business-logic changes.
+- Asset check script runs in ~50ms; safe to add to `prebuild`.
+- Playwright visual snapshots are stored under `tests/visual/*-snapshots/` and gitignored where the `.gitkeep` files already sit.
 
 ## Out of scope
 
-- Non-homepage routes (already covered in earlier passes).
-- Backend / RLS / business logic.
-- New illustrations — reuse current Block Shadow assets.
+- Backend / RLS / pricing logic changes.
+- Non-public dashboard routes (already token-clean per the palette audit).
+- Mobile-specific solution-hero variants (composition is already centered + scales).
 
 ## Deliverables
 
-- `src/components/ui/picture.tsx` (new)
-- `src/pages/Index.tsx` (refactor)
-- `src/components/TestimonialsSection.tsx` (style alignment)
-- Build + Lighthouse summary posted in chat with before/after numbers where available.
+- `src/components/ui/hero-cta.tsx` (new)
+- Updated `src/pages/solutions/*.tsx`, `src/pages/Resources.tsx`, etc.
+- 8 new hero PNG + AVIF + WebP under `src/assets/`
+- `scripts/check-asset-imports.ts` + `prebuild` hook
+- Expanded `tests/visual/landing-snapshots.spec.ts`
+- Build + Lighthouse summary posted to chat
