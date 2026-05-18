@@ -50,10 +50,10 @@ export default function ForLawFirms() {
               </p>
               <div className="flex flex-wrap gap-3">
                 <Link to="/book">
-                  <Button size="lg" className="rounded-full px-8">Schedule Notarization <ArrowRight className="ml-2 h-4 w-4" /></Button>
+                  <Button size="lg" className="rounded-full px-8 border-2 border-foreground bg-primary text-primary-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all">Schedule Notarization <ArrowRight className="ml-2 h-4 w-4" /></Button>
                 </Link>
                 <Link to="/services">
-                  <Button size="lg" variant="outline" className="rounded-full px-8">Explore Services</Button>
+                  <Button size="lg" variant="outline" className="rounded-full px-8 border-2 border-foreground bg-card text-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all">Explore Services</Button>
                 </Link>
               </div>
               <div className="mt-5 flex flex-wrap items-center gap-2">
@@ -133,8 +133,8 @@ export default function ForLawFirms() {
           <h2 className="mb-4 font-sans text-3xl font-bold text-foreground">Partner With Us</h2>
           <p className="mx-auto mb-8 max-w-lg text-muted-foreground">Set up a firm account for priority scheduling, volume pricing, and dedicated notary availability for your practice.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link to="/book"><Button size="lg" className="rounded-full px-8">Book Notarization</Button></Link>
-            <Link to="/fee-calculator"><Button size="lg" variant="outline" className="rounded-full px-8">View Pricing</Button></Link>
+            <Link to="/book"><Button size="lg" className="rounded-full px-8 border-2 border-foreground bg-primary text-primary-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all">Book Notarization</Button></Link>
+            <Link to="/fee-calculator"><Button size="lg" variant="outline" className="rounded-full px-8 border-2 border-foreground bg-card text-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all">View Pricing</Button></Link>
           </div>
         </div>
       </section>

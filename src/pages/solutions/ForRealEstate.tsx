@@ -44,8 +44,8 @@ export default function ForRealEstate() {
               <h1 className="mb-4 font-sans text-4xl font-bold text-foreground md:text-5xl">Real Estate Closings & Loan Signings</h1>
               <p className="mb-6 text-lg text-muted-foreground">From purchase agreements to refinance packages, we handle the full spectrum of real estate notarization — on-site at the closing table or remotely via Ohio-authorized RON.</p>
               <div className="flex flex-wrap gap-3">
-                <Link to="/book"><Button size="lg" className="rounded-full px-8">Schedule a Closing <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
-                <Link to="/loan-signing"><Button size="lg" variant="outline" className="rounded-full px-8">Loan Signing Services</Button></Link>
+                <Link to="/book"><Button size="lg" className="rounded-full px-8 border-2 border-foreground bg-primary text-primary-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all">Schedule a Closing <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
+                <Link to="/loan-signing"><Button size="lg" variant="outline" className="rounded-full px-8 border-2 border-foreground bg-card text-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all">Loan Signing Services</Button></Link>
               </div>
               <div className="mt-5 flex flex-wrap items-center gap-2">
                 <OrcChip code="147.541" label="NSA fees" />
@@ -120,8 +120,8 @@ export default function ForRealEstate() {
           <h2 className="mb-4 font-sans text-3xl font-bold text-foreground">Ready to Close?</h2>
           <p className="mx-auto mb-8 max-w-lg text-muted-foreground">Schedule a closing, request a loan signing agent, or set up a volume account for your title company or brokerage.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link to="/book"><Button size="lg" className="rounded-full px-8">Book a Closing</Button></Link>
-            <Link to="/fee-calculator"><Button size="lg" variant="outline" className="rounded-full px-8">View Pricing</Button></Link>
+            <Link to="/book"><Button size="lg" className="rounded-full px-8 border-2 border-foreground bg-primary text-primary-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all">Book a Closing</Button></Link>
+            <Link to="/fee-calculator"><Button size="lg" variant="outline" className="rounded-full px-8 border-2 border-foreground bg-card text-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all">View Pricing</Button></Link>
           </div>
         </div>
       </section>

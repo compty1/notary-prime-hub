@@ -44,8 +44,8 @@ export default function ForIndividuals() {
               <h1 className="mb-4 font-sans text-4xl font-bold text-foreground md:text-5xl">Personal Document Services Made Simple</h1>
               <p className="mb-6 text-lg text-muted-foreground">Wills, vehicle titles, affidavits, immigration forms — whatever you need notarized, we make it easy. In-person in Columbus or remotely from anywhere via RON.</p>
               <div className="flex flex-wrap gap-3">
-                <Link to="/book"><Button size="lg" className="rounded-full px-8">Book Appointment <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
-                <Link to="/ron-check"><Button size="lg" variant="outline" className="rounded-full px-8">Check RON Eligibility</Button></Link>
+                <Link to="/book"><Button size="lg" className="rounded-full px-8 border-2 border-foreground bg-primary text-primary-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all">Book Appointment <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
+                <Link to="/ron-check"><Button size="lg" variant="outline" className="rounded-full px-8 border-2 border-foreground bg-card text-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all">Check RON Eligibility</Button></Link>
               </div>
               <div className="mt-5 flex flex-wrap items-center gap-2">
                 <OrcChip code="147.65" label="Ohio RON" />
@@ -120,8 +120,8 @@ export default function ForIndividuals() {
           <h2 className="mb-4 font-sans text-3xl font-bold text-foreground">Ready to Get Started?</h2>
           <p className="mx-auto mb-8 max-w-lg text-muted-foreground">Book an in-person appointment in Columbus or start a remote notarization session from anywhere.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link to="/book"><Button size="lg" className="rounded-full px-8">Book Now</Button></Link>
-            <Link to="/fee-calculator"><Button size="lg" variant="outline" className="rounded-full px-8">View Pricing</Button></Link>
+            <Link to="/book"><Button size="lg" className="rounded-full px-8 border-2 border-foreground bg-primary text-primary-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all">Book Now</Button></Link>
+            <Link to="/fee-calculator"><Button size="lg" variant="outline" className="rounded-full px-8 border-2 border-foreground bg-card text-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all">View Pricing</Button></Link>
           </div>
         </div>
       </section>

@@ -64,10 +64,10 @@ export default function ForHospitals() {
               </p>
               <div className="flex flex-wrap gap-3">
                 <Link to="/book">
-                  <Button size="lg" className="rounded-full px-8">Schedule Bedside Visit <ArrowRight className="ml-2 h-4 w-4" /></Button>
+                  <Button size="lg" className="rounded-full px-8 border-2 border-foreground bg-primary text-primary-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all">Schedule Bedside Visit <ArrowRight className="ml-2 h-4 w-4" /></Button>
                 </Link>
                 <Link to="/services">
-                  <Button size="lg" variant="outline" className="rounded-full px-8">View All Services</Button>
+                  <Button size="lg" variant="outline" className="rounded-full px-8 border-2 border-foreground bg-card text-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all">View All Services</Button>
                 </Link>
               </div>
               <div className="mt-5 flex flex-wrap items-center gap-2">
@@ -168,8 +168,8 @@ export default function ForHospitals() {
           <h2 className="mb-4 font-sans text-3xl font-bold text-foreground">Need a Notary at Your Facility?</h2>
           <p className="mx-auto mb-8 max-w-lg text-muted-foreground">We work with hospital administration, social workers, and nursing staff to coordinate bedside notarization visits. Contact us to set up a facility account or schedule a visit.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link to="/book"><Button size="lg" className="rounded-full px-8">Book a Bedside Visit</Button></Link>
-            <a href="tel:6143006890"><Button size="lg" variant="outline" className="rounded-full px-8"><Phone className="mr-2 h-4 w-4" /> Call (614) 300-6890</Button></a>
+            <Link to="/book"><Button size="lg" className="rounded-full px-8 border-2 border-foreground bg-primary text-primary-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all">Book a Bedside Visit</Button></Link>
+            <a href="tel:6143006890"><Button size="lg" variant="outline" className="rounded-full px-8 border-2 border-foreground bg-card text-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all"><Phone className="mr-2 h-4 w-4" /> Call (614) 300-6890</Button></a>
           </div>
         </div>
       </section>

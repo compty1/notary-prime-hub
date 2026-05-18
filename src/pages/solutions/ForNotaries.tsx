@@ -44,8 +44,8 @@ export default function ForNotaries() {
               <h1 className="mb-4 font-sans text-4xl font-bold text-foreground md:text-5xl">Built for Modern Notaries</h1>
               <p className="mb-6 text-lg text-muted-foreground">A complete platform for Ohio notaries — RON sessions, digital journals, e-seal verification, scheduling, AI document tools, and revenue tracking. All Ohio ORC §147 compliant.</p>
               <div className="flex flex-wrap gap-3">
-                <Link to="/join"><Button size="lg" className="rounded-full px-8">Join the Platform <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
-                <Link to="/services"><Button size="lg" variant="outline" className="rounded-full px-8">Explore Services</Button></Link>
+                <Link to="/join"><Button size="lg" className="rounded-full px-8 border-2 border-foreground bg-primary text-primary-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all">Join the Platform <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
+                <Link to="/services"><Button size="lg" variant="outline" className="rounded-full px-8 border-2 border-foreground bg-card text-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all">Explore Services</Button></Link>
               </div>
               <div className="mt-5 flex flex-wrap items-center gap-2">
                 <OrcChip code="147.55" label="RON authority" />
@@ -118,8 +118,8 @@ export default function ForNotaries() {
           <h2 className="mb-4 font-sans text-3xl font-bold text-foreground">Ready to Modernize Your Practice?</h2>
           <p className="mx-auto mb-8 max-w-lg text-muted-foreground">Join the platform today. Set up your availability, start accepting RON appointments, and let us handle compliance, scheduling, and document management.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link to="/join"><Button size="lg" className="rounded-full px-8">Apply to Join</Button></Link>
-            <Link to="/ron-info"><Button size="lg" variant="outline" className="rounded-full px-8">Learn About RON</Button></Link>
+            <Link to="/join"><Button size="lg" className="rounded-full px-8 border-2 border-foreground bg-primary text-primary-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all">Apply to Join</Button></Link>
+            <Link to="/ron-info"><Button size="lg" variant="outline" className="rounded-full px-8 border-2 border-foreground bg-card text-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all">Learn About RON</Button></Link>
           </div>
         </div>
       </section>
