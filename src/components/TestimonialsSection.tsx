@@ -55,21 +55,24 @@ export function TestimonialsSection({ testimonials, className }: TestimonialsSec
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.4 }}
             >
-              <Card className="bg-card border-border shadow-lg">
+              <Card className="bg-card border-2 border-foreground shadow-block-lg rounded-[14px]">
                 <CardContent className="p-8 md:p-10 text-center">
-                  <Quote className="h-8 w-8 text-primary/30 mx-auto mb-4" />
+                  <Quote className="h-8 w-8 text-primary/40 mx-auto mb-4" />
                   <div className="flex justify-center gap-1 mb-4">
                     {Array.from({ length: testimonials[current].rating }).map((_, i) => (
-                      <Star key={i} className="h-5 w-5 fill-accent-warm text-accent-warm" />
+                      <Star key={i} className="h-5 w-5 fill-primary text-primary" />
                     ))}
                   </div>
-                  <blockquote className="text-lg md:text-xl text-foreground leading-relaxed mb-6">
+                  <blockquote className="text-lg md:text-xl text-foreground font-medium leading-relaxed mb-6">
                     "{testimonials[current].text}"
                   </blockquote>
-                  <div>
-                    <p className="font-heading font-semibold text-foreground">{testimonials[current].name}</p>
+                  <div className="inline-flex flex-col items-center gap-2">
+                    <div className="h-10 w-10 rounded-[10px] border-2 border-foreground bg-primary/20 text-foreground flex items-center justify-center font-black text-sm shadow-[3px_3px_0_0_hsl(var(--foreground))]">
+                      {testimonials[current].name.charAt(0)}
+                    </div>
+                    <p className="font-heading font-black text-foreground">{testimonials[current].name}</p>
                     {testimonials[current].title && (
-                      <p className="text-sm text-muted-foreground mt-1">{testimonials[current].title}</p>
+                      <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">{testimonials[current].title}</p>
                     )}
                   </div>
                 </CardContent>

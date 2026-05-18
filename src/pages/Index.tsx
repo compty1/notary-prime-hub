@@ -2,7 +2,7 @@ import { usePageMeta } from "@/hooks/usePageMeta";
 import { ORGANIZATION_JSONLD, reviewAggregateJsonLd, setOpenGraphMeta } from "@/lib/seoHelpers";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { motion, useInView, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useSettings } from "@/hooks/useSettings";
 import { submitLead } from "@/lib/submitLead";
@@ -24,6 +24,7 @@ import { fadeUp, blurIn } from "@/lib/animations";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 import { RonAdvisorWidget } from "@/components/RonAdvisorWidget";
 import { TrustBar } from "@/components/trust";
+import { Picture } from "@/components/ui/picture";
 import heroDocumentCard from "@/assets/hero-document-card.png";
 import heroDocumentCardWebp from "@/assets/hero-document-card.webp";
 import heroDocumentCardAvif from "@/assets/hero-document-card.avif";
@@ -57,26 +58,6 @@ const faqs = [
  { q: "Is RON notarization accepted everywhere?", a: "RON notarizations performed under Ohio law are recognized in all 50 states. However, some specific transactions may have unique requirements. Contact us to confirm for your situation." },
 ];
 
-function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: string }) {
- const [count, setCount] = useState(0);
- const ref = useRef<HTMLSpanElement>(null);
- const isInView = useInView(ref, { once: true });
-
- useEffect(() => {
- if (!isInView) return;
- let start = 0;
- const duration = 1500;
- const step = value / (duration / 16);
- const timer = setInterval(() => {
- start += step;
- if (start >= value) { setCount(value); clearInterval(timer); } else
- setCount(Math.floor(start));
- }, 16);
- return () => clearInterval(timer);
- }, [isInView, value]);
-
- return <span ref={ref} aria-live="polite" className="font-bold tabular-nums">{count.toLocaleString()}{suffix}</span>;
-}
 
 function HeroIllustration() {
   const ref = useRef<HTMLDivElement>(null);
@@ -107,25 +88,23 @@ function HeroIllustration() {
         className="absolute bottom-4 -left-2 h-12 w-12 rounded-full bg-accent border-[3px] border-foreground shadow-[5px_5px_0_0_hsl(var(--foreground))] hidden md:block"
       />
       <motion.div style={{ y }} className="relative w-full max-w-md">
-        <picture>
-          {/* Mobile sources (≤640px) — AVIF → WebP → PNG */}
-          <source media="(max-width: 640px)" type="image/avif" srcSet={heroDocumentCardMobileAvif} />
-          <source media="(max-width: 640px)" type="image/webp" srcSet={heroDocumentCardMobileWebp} />
-          <source media="(max-width: 640px)" srcSet={heroDocumentCardMobile} />
-          {/* Desktop sources — AVIF → WebP → PNG */}
-          <source type="image/avif" srcSet={heroDocumentCardAvif} />
-          <source type="image/webp" srcSet={heroDocumentCardWebp} />
-          <img
-            src={heroDocumentCard}
-            alt="Notarized document with gold seal, signature, and fountain pen"
-            width={1280}
-            height={1280}
-            sizes="(max-width: 640px) 90vw, (max-width: 1024px) 50vw, 480px"
-            fetchPriority="high"
-            decoding="async"
-            className="relative w-full h-auto drop-shadow-[0_30px_50px_rgba(0,0,0,0.35)]"
-          />
-        </picture>
+        <Picture
+          src={heroDocumentCard}
+          alt="Notarized document with gold seal, signature, and fountain pen"
+          width={1280}
+          height={1280}
+          sizes="(max-width: 640px) 90vw, (max-width: 1024px) 50vw, 480px"
+          loading="eager"
+          fetchPriority="high"
+          sources={{
+            avif: heroDocumentCardAvif,
+            webp: heroDocumentCardWebp,
+            mobileAvif: heroDocumentCardMobileAvif,
+            mobileWebp: heroDocumentCardMobileWebp,
+            mobileSrc: heroDocumentCardMobile,
+          }}
+          className="relative w-full h-auto drop-shadow-[0_30px_50px_rgba(0,0,0,0.35)]"
+        />
       </motion.div>
     </motion.div>
   );
@@ -457,11 +436,15 @@ export default function Index() {
                 className="relative bg-card rounded-[14px] border-2 border-foreground p-7 shadow-block-lg text-center transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[8px_8px_0_0_hsl(var(--foreground))]"
               >
                 <div className="mx-auto mb-5 flex h-40 w-40 items-center justify-center">
-                  <picture>
-                    <source type="image/avif" srcSet={step.avif} />
-                    <source type="image/webp" srcSet={step.webp} />
-                    <img src={step.img} alt={step.title} loading="lazy" decoding="async" width={512} height={512} sizes="160px" className="h-full w-full object-contain" />
-                  </picture>
+                  <Picture
+                    src={step.img}
+                    alt={step.title}
+                    width={512}
+                    height={512}
+                    sizes="160px"
+                    sources={{ avif: step.avif, webp: step.webp }}
+                    className="h-full w-full object-contain"
+                  />
                 </div>
                 <span className="inline-flex items-center rounded-full border-2 border-foreground bg-primary text-primary-foreground px-3 py-1 text-[10px] font-black uppercase tracking-widest mb-3 shadow-[2px_2px_0_0_hsl(var(--foreground))]">
                   {step.num}
@@ -544,20 +527,15 @@ export default function Index() {
               transition={{ duration: 0.6 }}
               className="relative flex items-center justify-center"
             >
-              <picture>
-                <source type="image/avif" srcSet={featurePhoneMockupAvif} />
-                <source type="image/webp" srcSet={featurePhoneMockupWebp} />
-                <img
-                  src={featurePhoneMockup}
-                  alt="Notar mobile app showing notarization in progress"
-                  loading="lazy"
-                  decoding="async"
-                  width={1024}
-                  height={1024}
-                  sizes="(max-width: 1024px) 90vw, 448px"
-                  className="w-full max-w-md h-auto"
-                />
-              </picture>
+              <Picture
+                src={featurePhoneMockup}
+                alt="Notar mobile app showing notarization in progress"
+                width={1024}
+                height={1024}
+                sizes="(max-width: 1024px) 90vw, 448px"
+                sources={{ avif: featurePhoneMockupAvif, webp: featurePhoneMockupWebp }}
+                className="w-full max-w-md h-auto"
+              />
             </motion.div>
             <motion.div
               initial={{ opacity: 0, x: 30 }}
@@ -571,9 +549,12 @@ export default function Index() {
               <p className="text-base md:text-lg text-muted-foreground font-medium leading-relaxed mb-8 max-w-lg">
                 We are a team of Ohio-commissioned notary professionals dedicated to making document authentication simple, secure, and accessible. From remote online notarization (RON) to mobile signings across Central Ohio, we combine legal expertise with modern technology to deliver fast, compliant services you can trust.
               </p>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-3">
                 {["Ohio-Commissioned", "Background Checked", "Insured & Bonded", "NNA Certified"].map((label) => (
-                  <span key={label} className="inline-flex items-center rounded-full bg-secondary text-secondary-foreground px-4 py-2 text-xs font-bold">
+                  <span
+                    key={label}
+                    className="inline-flex items-center rounded-[10px] border-2 border-foreground bg-card text-foreground px-4 py-2 text-xs font-black uppercase tracking-wider shadow-[3px_3px_0_0_hsl(var(--foreground))]"
+                  >
                     {label}
                   </span>
                 ))}
@@ -597,17 +578,19 @@ export default function Index() {
           <p className="text-base md:text-lg text-secondary-foreground/70 font-medium mb-8 max-w-xl mx-auto">
             Skip the lines and the hassle. Connect with a commissioned Ohio notary public online right now.
           </p>
-          <div className="flex flex-wrap gap-3 justify-center">
+          <div className="flex flex-wrap gap-4 justify-center">
             <Link to="/book?type=ron">
-              <Button size="lg" className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 px-7 py-6 font-bold text-base">
+              <Button
+                size="lg"
+                className="rounded-[12px] border-2 border-foreground bg-primary text-primary-foreground hover:bg-primary/90 px-7 py-6 font-black uppercase tracking-wide text-base shadow-[6px_6px_0_0_hsl(var(--foreground))] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[3px_3px_0_0_hsl(var(--foreground))] transition-all"
+              >
                 Start Notarizing Now
               </Button>
             </Link>
             <Link to="/contact">
               <Button
                 size="lg"
-                variant="outline"
-                className="rounded-full px-7 py-6 font-bold text-base border-secondary-foreground/30 bg-transparent text-secondary-foreground hover:bg-secondary-foreground/10"
+                className="rounded-[12px] border-2 border-foreground bg-card text-foreground hover:bg-card/90 px-7 py-6 font-black uppercase tracking-wide text-base shadow-[6px_6px_0_0_hsl(var(--foreground))] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[3px_3px_0_0_hsl(var(--foreground))] transition-all"
               >
                 Contact Sales
               </Button>
