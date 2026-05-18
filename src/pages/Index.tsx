@@ -578,17 +578,19 @@ export default function Index() {
           <p className="text-base md:text-lg text-secondary-foreground/70 font-medium mb-8 max-w-xl mx-auto">
             Skip the lines and the hassle. Connect with a commissioned Ohio notary public online right now.
           </p>
-          <div className="flex flex-wrap gap-3 justify-center">
+          <div className="flex flex-wrap gap-4 justify-center">
             <Link to="/book?type=ron">
-              <Button size="lg" className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 px-7 py-6 font-bold text-base">
+              <Button
+                size="lg"
+                className="rounded-[12px] border-2 border-foreground bg-primary text-primary-foreground hover:bg-primary/90 px-7 py-6 font-black uppercase tracking-wide text-base shadow-[6px_6px_0_0_hsl(var(--foreground))] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[3px_3px_0_0_hsl(var(--foreground))] transition-all"
+              >
                 Start Notarizing Now
               </Button>
             </Link>
             <Link to="/contact">
               <Button
                 size="lg"
-                variant="outline"
-                className="rounded-full px-7 py-6 font-bold text-base border-secondary-foreground/30 bg-transparent text-secondary-foreground hover:bg-secondary-foreground/10"
+                className="rounded-[12px] border-2 border-foreground bg-card text-foreground hover:bg-card/90 px-7 py-6 font-black uppercase tracking-wide text-base shadow-[6px_6px_0_0_hsl(var(--foreground))] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[3px_3px_0_0_hsl(var(--foreground))] transition-all"
               >
                 Contact Sales
               </Button>
