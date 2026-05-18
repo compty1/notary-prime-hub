@@ -487,7 +487,7 @@ export default function Index() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  className="relative bg-card rounded-3xl border border-border p-7 shadow-soft"
+                  className="relative bg-card rounded-[14px] border-2 border-foreground p-7 shadow-block transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-block-lg"
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex gap-0.5">
