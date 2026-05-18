@@ -380,42 +380,42 @@ export default function Index() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
               >
-                <Card
-                  className={`group h-full relative rounded-3xl shadow-soft transition-all hover:-translate-y-1 ${
-                    s.highlight
-                      ? "border-2 border-primary bg-card shadow-lg ring-4 ring-primary/10"
-                      : "border border-border bg-card"
+                <div
+                  className={`group relative h-full rounded-[14px] border-2 border-foreground bg-card p-7 text-card-foreground transition-all duration-200 shadow-block-lg hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[8px_8px_0_0_hsl(var(--foreground))] ${
+                    s.highlight ? "bg-primary/5" : ""
                   }`}
                 >
                   {s.highlight && (
-                    <span className="absolute -top-3 left-6 inline-flex items-center rounded-full bg-accent text-accent-foreground px-3 py-1 text-[10px] font-bold uppercase tracking-widest shadow-md">
+                    <span className="absolute -top-3 left-6 inline-flex items-center rounded-full border-2 border-foreground bg-accent text-accent-foreground px-3 py-1 text-[10px] font-bold uppercase tracking-widest shadow-[3px_3px_0_0_hsl(var(--foreground))]">
                       Most Popular
                     </span>
                   )}
-                  <CardContent className="p-7">
-                    <div className={`mb-5 inline-flex items-center justify-center h-12 w-12 rounded-2xl ${s.highlight ? "bg-primary text-primary-foreground" : "bg-primary/10 text-primary-accessible"}`}>
-                      <s.icon className="h-6 w-6" />
-                    </div>
-                    <h3 className="text-xl font-bold text-foreground mb-1">{s.title}</h3>
-                    <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
-                      {s.badge}
-                    </p>
-                    <p className="text-sm text-muted-foreground font-medium leading-relaxed mb-6 min-h-[60px]">
-                      {s.desc}
-                    </p>
-                    <Link to={s.cta}>
-                      <Button
-                        className={`w-full rounded-full font-bold ${
-                          s.highlight
-                            ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                            : "bg-secondary text-secondary-foreground hover:bg-secondary/90"
-                        }`}
-                      >
-                        {s.ctaLabel} <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
+                  <div
+                    className={`mb-5 inline-flex items-center justify-center h-14 w-14 rounded-[10px] border-2 border-foreground shadow-[3px_3px_0_0_hsl(var(--foreground))] ${
+                      s.highlight ? "bg-primary text-primary-foreground" : "bg-accent text-accent-foreground"
+                    }`}
+                  >
+                    <s.icon className="h-7 w-7" strokeWidth={2.5} />
+                  </div>
+                  <h3 className="text-2xl font-black tracking-tight text-foreground mb-1">{s.title}</h3>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
+                    {s.badge}
+                  </p>
+                  <p className="text-sm text-muted-foreground font-medium leading-relaxed mb-6 min-h-[60px]">
+                    {s.desc}
+                  </p>
+                  <Link to={s.cta}>
+                    <Button
+                      className={`w-full rounded-[10px] border-2 border-foreground font-bold shadow-[3px_3px_0_0_hsl(var(--foreground))] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_0_hsl(var(--foreground))] transition-all ${
+                        s.highlight
+                          ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                          : "bg-secondary text-secondary-foreground hover:bg-secondary/90"
+                      }`}
+                    >
+                      {s.ctaLabel} <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
               </motion.div>
             ))}
           </div>
