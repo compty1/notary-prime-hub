@@ -671,47 +671,48 @@ export default function AdminCRM() {
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-5">
-            {PIPELINE_STAGES.map(stage => (
-              <Card key={stage.key} className="min-h-[180px]">
-                <CardHeader className="p-3 pb-1">
-                  <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase">
-                    <span className={`h-2 w-2 rounded-full ${stage.color} border`} />
-                    {stage.label}
-                    <Badge variant="secondary" className="ml-auto text-[10px]">
-                      ${(dealsByStage[stage.key] || []).reduce((s, d) => s + (d.value || 0), 0).toLocaleString()}
-                    </Badge>
-                  </CardTitle>
-                  <p className="text-[10px] text-muted-foreground">{STAGE_PROBABILITY[stage.key]}% probability</p>
-                </CardHeader>
-                <CardContent className="max-h-[350px] space-y-2 overflow-y-auto p-2">
-                  {(dealsByStage[stage.key] || []).map(deal => {
-                    const daysInStage = differenceInDays(new Date(), new Date(deal.updated_at || deal.created_at));
-                    return (
-                      <div key={deal.id} className="rounded-md border bg-card p-2 text-xs shadow-sm">
-                        <p className="font-medium truncate">{deal.title || "Untitled"}</p>
-                        <p className="text-muted-foreground">${(deal.value || 0).toLocaleString()}</p>
-                        {deal.expected_close && <p className="text-muted-foreground">Close: {format(new Date(deal.expected_close), "MMM d")}</p>}
-                        <div className="flex items-center gap-1 mt-1">
-                          <Clock className="h-3 w-3 text-muted-foreground" />
-                          <span className={`text-[10px] ${daysInStage > 30 ? "text-destructive" : "text-muted-foreground"}`}>{daysInStage}d</span>
-                        </div>
-                        <Select value={deal.stage} onValueChange={v => updateDealStage.mutate({ id: deal.id, stage: v })}>
-                          <SelectTrigger className="mt-1 h-6 text-[10px]"><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                            {PIPELINE_STAGES.map(s => <SelectItem key={s.key} value={s.key}>{s.label}</SelectItem>)}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    );
-                  })}
-                  {(!dealsByStage[stage.key] || dealsByStage[stage.key].length === 0) && (
-                    <p className="text-center text-[10px] text-muted-foreground py-4">No deals</p>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <p className="text-xs text-muted-foreground">Drag a deal card between columns to update its stage.</p>
+          <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDealDragEnd}>
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-5">
+              {PIPELINE_STAGES.map(stage => {
+                const stageDeals = dealsByStage[stage.key] || [];
+                return (
+                  <Card key={stage.key} className="min-h-[200px]">
+                    <CardHeader className="p-3 pb-1">
+                      <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase">
+                        <span className={`h-2 w-2 rounded-full ${stage.color} border`} />
+                        <span className="truncate">{stage.label}</span>
+                        <Badge variant="secondary" className="ml-auto text-[10px]">
+                          ${stageDeals.reduce((s, d) => s + (d.value || 0), 0).toLocaleString()}
+                        </Badge>
+                      </CardTitle>
+                      <p className="text-[10px] text-muted-foreground">{stageDeals.length} deal{stageDeals.length === 1 ? "" : "s"} · {STAGE_PROBABILITY[stage.key]}% probability</p>
+                    </CardHeader>
+                    <CardContent className="max-h-[380px] overflow-y-auto p-2">
+                      <KanbanDroppable
+                        id={`dealcol-${stage.key}`}
+                        isEmpty={stageDeals.length === 0}
+                        label={`${stage.label} deals`}
+                      >
+                        {stageDeals.map(deal => <DraggableDealCard key={deal.id} deal={deal} />)}
+                      </KanbanDroppable>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+            <DragOverlay>
+              {activeDragId?.startsWith("deal:") ? (() => {
+                const d = deals.find(x => x.id === activeDragId.slice(5));
+                return d ? (
+                  <div className="rounded-md border-2 bg-card p-2 text-xs shadow-lg max-w-[200px]">
+                    <p className="font-medium truncate">{d.title || "Untitled"}</p>
+                    <p className="text-muted-foreground">${(d.value || 0).toLocaleString()}</p>
+                  </div>
+                ) : null;
+              })() : null}
+            </DragOverlay>
+          </DndContext>
         </TabsContent>
 
         {/* ACTIVITIES TAB — CRM-001: Paginated */}
