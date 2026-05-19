@@ -37,10 +37,12 @@ export default function AdminComplianceReport() {
       supabase.from("appointments").select("*").eq("notarization_type", "ron").gte("scheduled_date", startDate).lt("scheduled_date", endDate),
       supabase.from("notary_journal").select("*").gte("created_at", startDate).lt("created_at", endDate),
       supabase.from("e_seal_verifications").select("*").gte("notarized_at", startDate).lt("notarized_at", endDate),
-    ]).then(([apptRes, journalRes, sealRes]) => {
+      supabase.from("refusal_logs").select("*").gte("created_at", startDate).lt("created_at", endDate),
+    ]).then(([apptRes, journalRes, sealRes, refusalRes]) => {
       setAppointments(apptRes.data || []);
       setJournalEntries(journalRes.data || []);
       setSealVerifications(sealRes.data || []);
+      setRefusalLogs((refusalRes as any).data || []);
       setLoading(false);
     });
   }, [selectedMonth]);
