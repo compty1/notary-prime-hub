@@ -1,4 +1,5 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { SOLUTION_SCHEMAS } from "@/lib/solutionSchemas";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -35,7 +36,7 @@ const complianceItems = [
 ];
 
 export default function ForNotaries() {
-  usePageMeta({ title: "For Notaries — Platform & Tools", description: "Join our notary network. Access RON technology, client management tools, and commission-based signing opportunities in Ohio." });
+  usePageMeta({ title: "For Notaries — Platform & Tools", description: "Join our notary network. Access RON technology, client management tools, and commission-based signing opportunities in Ohio.", schema: SOLUTION_SCHEMAS.notaries });
 
   return (
     <PageShell>

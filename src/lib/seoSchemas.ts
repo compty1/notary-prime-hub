@@ -97,6 +97,16 @@ export function faqSchema(faqs: { question: string; answer: string }[]) {
   };
 }
 
+/**
+ * GB-0008/0009 et al — Combine multiple schemas into a single @graph payload
+ * so a route can ship FAQPage + Service (+ Breadcrumb) in one JSON-LD block.
+ */
+export function combineSchemas(...schemas: Array<Record<string, unknown> | null>) {
+  const graph = schemas.filter(Boolean) as Record<string, unknown>[];
+  if (!graph.length) return null;
+  return { "@context": "https://schema.org", "@graph": graph };
+}
+
 export function serviceSchema(service: {
   name: string;
   description: string;

@@ -1,4 +1,5 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { SOLUTION_SCHEMAS } from "@/lib/solutionSchemas";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -35,7 +36,7 @@ const complianceItems = [
 ];
 
 export default function ForLawFirms() {
-  usePageMeta({ title: "For Law Firms — Legal Document Notarization", description: "Professional notarization services for law firms in Ohio. Affidavits, depositions, POA, and court filings. Volume pricing available." });
+  usePageMeta({ title: "For Law Firms — Legal Document Notarization", description: "Professional notarization services for law firms in Ohio. Affidavits, depositions, POA, and court filings. Volume pricing available.", schema: SOLUTION_SCHEMAS["law-firms"] });
 
   return (
     <PageShell>

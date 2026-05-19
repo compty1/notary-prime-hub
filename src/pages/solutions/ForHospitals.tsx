@@ -1,4 +1,5 @@
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { SOLUTION_SCHEMAS } from "@/lib/solutionSchemas";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -48,7 +49,7 @@ const complianceItems = [
 ];
 
 export default function ForHospitals() {
-  usePageMeta({ title: "For Hospitals — Bedside Notary Services", description: "Professional bedside and facility notarization services for hospitals and healthcare facilities in Ohio. HIPAA-aware, ORC §147 compliant." });
+  usePageMeta({ title: "For Hospitals — Bedside Notary Services", description: "Professional bedside and facility notarization services for hospitals and healthcare facilities in Ohio. HIPAA-aware, ORC §147 compliant.", schema: SOLUTION_SCHEMAS.hospitals });
 
   return (
     <PageShell>
