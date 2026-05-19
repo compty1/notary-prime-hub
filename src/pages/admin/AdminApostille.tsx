@@ -12,8 +12,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { Package, Plus, Loader2, Truck, FileText, Pencil, ExternalLink, Globe, Printer, Download, CheckCircle2, Clock, ChevronRight, MessageSquare, X } from "lucide-react";
+import { Package, Plus, Loader2, Truck, FileText, Pencil, ExternalLink, Globe, Printer, Download, CheckCircle2, Clock, ChevronRight, MessageSquare, X, List, LayoutGrid } from "lucide-react";
 import { motion } from "framer-motion";
+import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, useDraggable, useDroppable, useSensor, useSensors } from "@dnd-kit/core";
 
 import { apostilleStatusColors as statusColors } from "@/lib/statusColors";
 import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
@@ -61,6 +62,9 @@ export default function AdminApostille() {
   const [newDestCountry, setNewDestCountry] = useState("");
   const [newDocCount, setNewDocCount] = useState("1");
   const [checklist, setChecklist] = useState<Record<string, boolean>>({});
+  const [viewMode, setViewMode] = useState<"list" | "kanban">("list");
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
   const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -218,6 +222,10 @@ export default function AdminApostille() {
           <p className="text-sm text-muted-foreground">Track apostille requests: intake → processing → delivery</p>
         </div>
         <div className="flex items-center gap-2">
+          <div className="inline-flex rounded-xl border bg-card p-0.5">
+            <Button size="sm" variant={viewMode === "list" ? "default" : "ghost"} className="h-8 gap-1.5 rounded-lg" onClick={() => setViewMode("list")}><List className="h-3.5 w-3.5" /> List</Button>
+            <Button size="sm" variant={viewMode === "kanban" ? "default" : "ghost"} className="h-8 gap-1.5 rounded-lg" onClick={() => setViewMode("kanban")}><LayoutGrid className="h-3.5 w-3.5" /> Kanban</Button>
+          </div>
           <a href="https://www.ohiosos.gov/businesses/apostilles-authentications/" target="_blank" rel="noopener noreferrer">
             <Button size="sm" variant="outline"><ExternalLink className="mr-1 h-3 w-3" /> Ohio SOS Portal</Button>
           </a>
@@ -234,6 +242,35 @@ export default function AdminApostille() {
           <Package className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
           No apostille requests yet
         </CardContent></Card>
+      ) : viewMode === "kanban" ? (
+        <DndContext
+          sensors={sensors}
+          onDragStart={(e: DragStartEvent) => setActiveId(String(e.active.id))}
+          onDragEnd={(e: DragEndEvent) => {
+            setActiveId(null);
+            const { active, over } = e;
+            if (!over) return;
+            const overId = String(over.id);
+            if (!overId.startsWith("apcol-")) return;
+            const newStatus = overId.replace("apcol-", "");
+            const req = requests.find(r => r.id === active.id);
+            if (!req || req.status === newStatus) return;
+            updateStatus(String(active.id), newStatus);
+          }}
+        >
+          <div className="flex gap-4 overflow-x-auto pb-4">
+            {statusFlow.map(s => {
+              const items = requests.filter(r => r.status === s);
+              return <ApostilleColumn key={s} status={s} label={statusLabels[s]} items={items} colorCls={statusColors[s] || ""} onOpen={openDetail} getClientName={getClientName} />;
+            })}
+          </div>
+          <DragOverlay>
+            {activeId ? (() => {
+              const r = requests.find(x => x.id === activeId);
+              return r ? <ApostilleDragCard req={r} clientName={getClientName(r.client_id)} /> : null;
+            })() : null}
+          </DragOverlay>
+        </DndContext>
       ) : (
         <div className="space-y-3">
           {requests.map((req) => {
@@ -443,5 +480,77 @@ export default function AdminApostille() {
       </Dialog>
     </div>
     </DashboardEnhancer>
+  );
+}
+function ApostilleDragCard({ req, clientName }: { req: any; clientName: string }) {
+  return (
+    <div className="rounded-xl border bg-card p-3 shadow-md w-[240px]">
+      <div className="flex items-center gap-2 mb-1">
+        <FileText className="h-4 w-4 text-primary" />
+        <span className="font-medium text-sm truncate">{req.document_description}</span>
+      </div>
+      <div className="text-xs text-muted-foreground space-y-0.5">
+        <div className="truncate">{clientName}</div>
+        <div className="flex items-center justify-between">
+          <span>{req.document_count} doc(s)</span>
+          <span className="font-medium text-foreground">${parseFloat(String(req.fee ?? 0)).toFixed(2)}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DraggableApostilleCard({ req, clientName, onOpen }: { req: any; clientName: string; onOpen: (r: any) => void }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: req.id });
+  return (
+    <div
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      role="button"
+      tabIndex={0}
+      onDoubleClick={() => onOpen(req)}
+      className={`touch-none rounded-xl border bg-card p-3 cursor-grab active:cursor-grabbing hover:border-primary/40 transition-colors ${isDragging ? "opacity-40" : ""}`}
+    >
+      <div className="flex items-center gap-2 mb-1">
+        <FileText className="h-4 w-4 text-primary" />
+        <span className="font-medium text-sm truncate">{req.document_description}</span>
+      </div>
+      <div className="text-xs text-muted-foreground space-y-0.5">
+        <div className="truncate">{clientName}</div>
+        {req.destination_country && <div className="flex items-center gap-1 truncate"><Globe className="h-3 w-3" />{req.destination_country}</div>}
+        <div className="flex items-center justify-between pt-1">
+          <span>{req.document_count} doc(s)</span>
+          <span className="font-medium text-foreground">${parseFloat(String(req.fee ?? 0)).toFixed(2)}</span>
+        </div>
+      </div>
+      <button
+        type="button"
+        className="mt-2 text-[10px] text-primary hover:underline"
+        onClick={(e) => { e.stopPropagation(); onOpen(req); }}
+      >
+        Open details →
+      </button>
+    </div>
+  );
+}
+
+function ApostilleColumn({ status, label, items, colorCls, onOpen, getClientName }: { status: string; label: string; items: any[]; colorCls: string; onOpen: (r: any) => void; getClientName: (id: string) => string; }) {
+  const { setNodeRef, isOver } = useDroppable({ id: `apcol-${status}` });
+  return (
+    <div className="flex flex-col min-w-[260px] w-[260px]">
+      <div className="flex items-center justify-between mb-2 px-1">
+        <Badge className={colorCls}>{label}</Badge>
+        <span className="text-xs text-muted-foreground">{items.length}</span>
+      </div>
+      <div
+        ref={setNodeRef}
+        className={`flex-1 min-h-[400px] rounded-2xl border-2 border-dashed p-2 space-y-2 transition-colors ${isOver ? "bg-primary/5 border-primary/40" : "border-border/50"}`}
+      >
+        {items.length === 0 ? (
+          <div className="flex items-center justify-center h-24 text-xs text-muted-foreground">Drop here</div>
+        ) : items.map(r => <DraggableApostilleCard key={r.id} req={r} clientName={getClientName(r.client_id)} onOpen={onOpen} />)}
+      </div>
+    </div>
   );
 }
