@@ -13,11 +13,15 @@ import { Switch } from "@/components/ui/switch";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, ChevronRight, Eye, Loader2, DollarSign, Plus, Video, ChevronLeft, Filter, Mail, Send, Languages, Shield, LayoutGrid, List, Ban, Download } from "lucide-react";
+import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, ChevronRight, Eye, Loader2, DollarSign, Plus, Video, ChevronLeft, Filter, Mail, Send, Languages, Shield, LayoutGrid, List, Ban, Download, Columns3 } from "lucide-react";
 import { Link } from "react-router-dom";
 import TranslationPanel from "@/components/TranslationPanel";
 import KBAVerification from "@/components/KBAVerification";
 import { lazy, Suspense } from "react";
+import {
+  DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor,
+  useSensor, useSensors, useDraggable, useDroppable,
+} from "@dnd-kit/core";
 
 const FullCalendarView = lazy(() => import("@/components/FullCalendarView"));
 import { AppointmentStatusTimeline } from "@/components/AppointmentStatusTimeline";
