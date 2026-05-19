@@ -12,17 +12,23 @@ export default defineConfig({
   reporter: process.env.CI ? "github" : "list",
   expect: {
     toHaveScreenshot: {
-      maxDiffPixelRatio: 0.01,
+      // GB-0693: Tighter than 0.02 baseline; raise temporarily if snapshots regenerate.
+      maxDiffPixelRatio: 0.005,
     },
   },
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:8080",
     trace: "retain-on-failure",
   },
+  // GB-0691: Desktop + mobile coverage.
   projects: [
     {
-      name: "chromium",
+      name: "chromium-desktop",
       use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "chromium-mobile",
+      use: { ...devices["Pixel 7"] },
     },
   ],
   webServer: process.env.PLAYWRIGHT_BASE_URL

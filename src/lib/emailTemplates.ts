@@ -18,12 +18,14 @@ export interface EmailTemplateVars {
   [key: string]: string | undefined;
 }
 
+// GB-0744: Standardized brand contact. GB-0745: Unsubscribe link in footer.
 const BRAND = {
-  name: "NotaryPrime",
-  supportEmail: "support@notaryprime.com",
+  name: "Notar",
+  legalName: "Notar Notary Services LLC",
+  supportEmail: "contact@notar.com",
   phone: "(614) 555-0100",
   address: "Columbus, OH",
-  website: "https://notaryprime.com",
+  website: "https://notar.com",
 };
 
 function substituteVars(template: string, vars: EmailTemplateVars): string {
@@ -41,9 +43,13 @@ function wrapInLayout(bodyHtml: string): string {
   </td></tr>
   <tr><td style="padding:32px;">${bodyHtml}</td></tr>
   <tr><td style="padding:24px 32px;background:#f4f4f5;text-align:center;font-size:12px;color:#71717a;">
-    <p style="margin:0 0 8px;">${BRAND.name} · ${BRAND.address}</p>
-    <p style="margin:0;">${BRAND.supportEmail} · ${BRAND.phone}</p>
-    <p style="margin:8px 0 0;"><a href="{{portalLink}}" style="color:#6366f1;">Manage your account</a></p>
+    <p style="margin:0 0 8px;">${BRAND.legalName} · ${BRAND.address}</p>
+    <p style="margin:0;"><a href="mailto:${BRAND.supportEmail}" style="color:#6366f1;">${BRAND.supportEmail}</a> · ${BRAND.phone}</p>
+    <p style="margin:8px 0 0;">
+      <a href="{{portalLink}}" style="color:#6366f1;">Manage account</a> ·
+      <a href="${BRAND.website}/unsubscribe?email={{unsubscribeEmail}}" style="color:#6366f1;">Unsubscribe</a> ·
+      <a href="${BRAND.website}/privacy" style="color:#6366f1;">Privacy</a>
+    </p>
   </td></tr>
 </table>
 </body></html>`;
