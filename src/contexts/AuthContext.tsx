@@ -142,13 +142,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setShowTimeoutWarning(false);
         }
 
-        // Token refresh failure handling (item 1907)
+        // GB-0529: exponential backoff on token refresh failure
+        if (event === "TOKEN_REFRESHED" && session) {
+          refreshFailuresRef.current = 0;
+        }
         if (event === "TOKEN_REFRESHED" && !session) {
-          console.error("Token refresh failed — forcing sign out");
-          toast({ title: "Session expired", description: "Your session could not be refreshed. Please sign in again.", variant: "destructive" });
-          setSession(null);
-          setUser(null);
-          setRoles([]);
+          const fails = refreshFailuresRef.current + 1;
+          refreshFailuresRef.current = fails;
+          if (fails >= 5) {
+            console.error("Token refresh failed 5x — forcing sign out");
+            toast({ title: "Session expired", description: "Your session could not be refreshed. Please sign in again.", variant: "destructive" });
+            setSession(null);
+            setUser(null);
+            setRoles([]);
+            supabase.auth.signOut();
+          } else {
+            // 1s, 2s, 4s, 8s, 16s + jitter
+            const base = Math.min(16_000, 2 ** (fails - 1) * 1_000);
+            const delay = base + Math.floor(Math.random() * 500);
+            console.warn(`Token refresh failed (#${fails}); retrying in ${delay}ms`);
+            setTimeout(() => { supabase.auth.refreshSession().catch(() => {}); }, delay);
+          }
         }
 
         // Remember Me: sign out on tab close if session_only flag set
