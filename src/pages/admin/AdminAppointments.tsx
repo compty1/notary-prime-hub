@@ -530,6 +530,49 @@ export default function AdminAppointments() {
         </div>
       )}
 
+      {/* Kanban View — state-machine aware */}
+      {viewMode === "kanban" && !loading && (
+        <div className="mb-6 space-y-3">
+          <p className="text-xs text-muted-foreground">
+            Drag an appointment between columns. Invalid transitions (per Ohio RON workflow) will be rejected.
+          </p>
+          <DndContext
+            sensors={dndSensors}
+            onDragStart={(e: DragStartEvent) => setActiveDragId(String(e.active.id))}
+            onDragEnd={(e: DragEndEvent) => {
+              setActiveDragId(null);
+              if (!e.over) return;
+              const id = String(e.active.id);
+              const overId = String(e.over.id);
+              if (!overId.startsWith("acol-")) return;
+              const targetStatus = overId.slice(5);
+              const appt = appointments.find(a => a.id === id);
+              if (!appt || appt.status === targetStatus) return;
+              updateStatus(id, targetStatus);
+            }}
+          >
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-8">
+              {statuses.map(status => {
+                const items = appointments.filter(a => a.status === status);
+                return <ApptKanbanColumn key={status} status={status} items={items} getClientName={getClientName} />;
+              })}
+            </div>
+            <DragOverlay>
+              {activeDragId ? (() => {
+                const a = appointments.find(x => x.id === activeDragId);
+                return a ? (
+                  <div className="rounded-md border-2 bg-card p-2 text-xs shadow-lg max-w-[220px]">
+                    <p className="font-medium truncate">{getClientName(a.client_id)}</p>
+                    <p className="text-muted-foreground truncate">{a.service_type}</p>
+                  </div>
+                ) : null;
+              })() : null}
+            </DragOverlay>
+          </DndContext>
+        </div>
+      )}
+
+
       {/* Service Requests Section */}
       {showRequests && (
         <div className="mb-6 space-y-3">
