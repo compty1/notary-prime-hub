@@ -27,4 +27,4 @@ Disallow: /mobile-upload
 Disallow: /maintenance
 Disallow: /coming-soon
 
-Sitemap: https://notary-prime-hub.lovable.app/sitemap.xml
+Sitemap: https://notardex.com/sitemap.xml

@@ -4,7 +4,7 @@
 
 const BUSINESS_INFO = {
   name: "NotaryDex",
-  url: "https://notary-prime-hub.lovable.app",
+  url: "https://notardex.com",
   phone: "+16143006890",
   email: "shane@notardex.com",
   address: {
