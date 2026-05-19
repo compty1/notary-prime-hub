@@ -13,11 +13,15 @@ import { Switch } from "@/components/ui/switch";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, ChevronRight, Eye, Loader2, DollarSign, Plus, Video, ChevronLeft, Filter, Mail, Send, Languages, Shield, LayoutGrid, List, Ban, Download } from "lucide-react";
+import { Calendar, Clock, MapPin, Monitor, FileText, Printer, BookMarked, ChevronRight, Eye, Loader2, DollarSign, Plus, Video, ChevronLeft, Filter, Mail, Send, Languages, Shield, LayoutGrid, List, Ban, Download, Columns3 } from "lucide-react";
 import { Link } from "react-router-dom";
 import TranslationPanel from "@/components/TranslationPanel";
 import KBAVerification from "@/components/KBAVerification";
 import { lazy, Suspense } from "react";
+import {
+  DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor,
+  useSensor, useSensors, useDraggable, useDroppable,
+} from "@dnd-kit/core";
 
 const FullCalendarView = lazy(() => import("@/components/FullCalendarView"));
 import { AppointmentStatusTimeline } from "@/components/AppointmentStatusTimeline";
@@ -40,6 +44,63 @@ import { appointmentStatusColors as statusColors, serviceRequestStatusColors } f
 
 import { formatDate, formatTime } from "@/lib/utils";
 
+function DraggableApptCard({ appt, clientName }: { appt: any; clientName: string }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: appt.id });
+  return (
+    <div
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      style={{ opacity: isDragging ? 0.4 : 1 }}
+      className="touch-none"
+      role="button"
+      tabIndex={0}
+      aria-label={`Appointment ${clientName} ${appt.service_type}`}
+    >
+      <div className="cursor-grab active:cursor-grabbing rounded-md border-2 bg-card p-2 text-xs shadow-sm hover:shadow transition-shadow">
+        <p className="font-medium truncate">{clientName}</p>
+        <p className="text-muted-foreground truncate">{appt.service_type}</p>
+        <p className="mt-1 text-[10px] text-muted-foreground">
+          {appt.scheduled_date} · {appt.scheduled_time}
+        </p>
+        {appt.notarization_type === "ron" && (
+          <Badge variant="secondary" className="mt-1 text-[10px]">RON</Badge>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ApptKanbanColumn({
+  status, items, getClientName,
+}: { status: string; items: any[]; getClientName: (id: string) => string }) {
+  const { setNodeRef, isOver } = useDroppable({ id: `acol-${status}` });
+  return (
+    <div
+      ref={setNodeRef}
+      aria-label={`${status} column`}
+      className={`min-w-[180px] rounded-lg p-2 border-2 transition-colors ${
+        isOver ? "bg-primary/5 border-primary/40 border-dashed" : "border-transparent"
+      }`}
+    >
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <Badge className={`text-xs border ${statusColors[status] || ""}`}>{status.replace(/_/g, " ")}</Badge>
+        <span className="text-[11px] text-muted-foreground">{items.length}</span>
+      </div>
+      <div className="space-y-2 min-h-[120px] max-h-[60vh] overflow-y-auto">
+        {items.length === 0 ? (
+          <div className="text-center text-[11px] text-muted-foreground/70 py-6 border-2 border-dashed border-border/50 rounded-md">
+            Drop here
+          </div>
+        ) : items.map(a => (
+          <DraggableApptCard key={a.id} appt={a} clientName={getClientName(a.client_id)} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
 export default function AdminAppointments() {
   usePageMeta({ title: "Appointments", noIndex: true });
   const [appointments, setAppointments] = useState<Record<string, any>[]>([]);
@@ -49,7 +110,9 @@ export default function AdminAppointments() {
   const [dateRange, setDateRange] = useState("all");
   const [serviceTypeFilter, setServiceTypeFilter] = useState("all");
   const [notarizationTypeFilter, setNotarizationTypeFilter] = useState("all");
-  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
+  const [viewMode, setViewMode] = useState<"list" | "calendar" | "kanban">("list");
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
+  const dndSensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
   
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -483,12 +546,15 @@ export default function AdminAppointments() {
               </SelectContent>
             </Select>
           )}
-          <div className="flex rounded-md border border-border">
-            <Button size="sm" variant={viewMode === "list" ? "default" : "ghost"} className="rounded-r-none" onClick={() => setViewMode("list")} aria-label="List view">
+          <div className="flex rounded-md border border-border" role="group" aria-label="View mode">
+            <Button size="sm" variant={viewMode === "list" ? "default" : "ghost"} className="rounded-r-none" onClick={() => setViewMode("list")} aria-label="List view" aria-pressed={viewMode === "list"}>
               <List className="h-4 w-4" />
             </Button>
-            <Button size="sm" variant={viewMode === "calendar" ? "default" : "ghost"} className="rounded-l-none" onClick={() => setViewMode("calendar")} aria-label="Calendar view">
+            <Button size="sm" variant={viewMode === "calendar" ? "default" : "ghost"} className="rounded-none border-x border-border" onClick={() => setViewMode("calendar")} aria-label="Calendar view" aria-pressed={viewMode === "calendar"}>
               <LayoutGrid className="h-4 w-4" />
+            </Button>
+            <Button size="sm" variant={viewMode === "kanban" ? "default" : "ghost"} className="rounded-l-none" onClick={() => setViewMode("kanban")} aria-label="Kanban view" aria-pressed={viewMode === "kanban"}>
+              <Columns3 className="h-4 w-4" />
             </Button>
           </div>
         </div>
@@ -520,6 +586,49 @@ export default function AdminAppointments() {
           </Suspense>
         </div>
       )}
+
+      {/* Kanban View — state-machine aware */}
+      {viewMode === "kanban" && !loading && (
+        <div className="mb-6 space-y-3">
+          <p className="text-xs text-muted-foreground">
+            Drag an appointment between columns. Invalid transitions (per Ohio RON workflow) will be rejected.
+          </p>
+          <DndContext
+            sensors={dndSensors}
+            onDragStart={(e: DragStartEvent) => setActiveDragId(String(e.active.id))}
+            onDragEnd={(e: DragEndEvent) => {
+              setActiveDragId(null);
+              if (!e.over) return;
+              const id = String(e.active.id);
+              const overId = String(e.over.id);
+              if (!overId.startsWith("acol-")) return;
+              const targetStatus = overId.slice(5);
+              const appt = appointments.find(a => a.id === id);
+              if (!appt || appt.status === targetStatus) return;
+              updateStatus(id, targetStatus);
+            }}
+          >
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-8">
+              {statuses.map(status => {
+                const items = appointments.filter(a => a.status === status);
+                return <ApptKanbanColumn key={status} status={status} items={items} getClientName={getClientName} />;
+              })}
+            </div>
+            <DragOverlay>
+              {activeDragId ? (() => {
+                const a = appointments.find(x => x.id === activeDragId);
+                return a ? (
+                  <div className="rounded-md border-2 bg-card p-2 text-xs shadow-lg max-w-[220px]">
+                    <p className="font-medium truncate">{getClientName(a.client_id)}</p>
+                    <p className="text-muted-foreground truncate">{a.service_type}</p>
+                  </div>
+                ) : null;
+              })() : null}
+            </DragOverlay>
+          </DndContext>
+        </div>
+      )}
+
 
       {/* Service Requests Section */}
       {showRequests && (
