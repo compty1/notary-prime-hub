@@ -8,10 +8,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import {
-import { Picture } from "@/components/ui/picture";
   Shield, Award, MapPin, Phone, Mail, ChevronRight, CheckCircle,
   FileText, Monitor, Users, Briefcase
 } from "lucide-react";
+import { Picture } from "@/components/ui/picture";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
