@@ -36,7 +36,7 @@ const complianceItems = [
 ];
 
 export default function ForIndividuals() {
-  usePageMeta({ title: "For Individuals — Personal Document Services", description: "Personal notarization services in Ohio — wills, vehicle titles, affidavits, immigration documents, and RON from home." });
+  usePageMeta({ title: "For Individuals — Personal Document Services", description: "Personal notarization services in Ohio — wills, vehicle titles, affidavits, immigration documents, and RON from home.", schema: SOLUTION_SCHEMAS.individuals });
 
   return (
     <PageShell>
