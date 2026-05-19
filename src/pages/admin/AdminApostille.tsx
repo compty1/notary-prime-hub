@@ -12,8 +12,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { Package, Plus, Loader2, Truck, FileText, Pencil, ExternalLink, Globe, Printer, Download, CheckCircle2, Clock, ChevronRight, MessageSquare, X } from "lucide-react";
+import { Package, Plus, Loader2, Truck, FileText, Pencil, ExternalLink, Globe, Printer, Download, CheckCircle2, Clock, ChevronRight, MessageSquare, X, List, LayoutGrid } from "lucide-react";
 import { motion } from "framer-motion";
+import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, useDraggable, useDroppable, useSensor, useSensors } from "@dnd-kit/core";
 
 import { apostilleStatusColors as statusColors } from "@/lib/statusColors";
 import { DashboardEnhancer } from "@/components/services/DashboardEnhancer";
