@@ -44,6 +44,63 @@ import { appointmentStatusColors as statusColors, serviceRequestStatusColors } f
 
 import { formatDate, formatTime } from "@/lib/utils";
 
+function DraggableApptCard({ appt, clientName }: { appt: any; clientName: string }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: appt.id });
+  return (
+    <div
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      style={{ opacity: isDragging ? 0.4 : 1 }}
+      className="touch-none"
+      role="button"
+      tabIndex={0}
+      aria-label={`Appointment ${clientName} ${appt.service_type}`}
+    >
+      <div className="cursor-grab active:cursor-grabbing rounded-md border-2 bg-card p-2 text-xs shadow-sm hover:shadow transition-shadow">
+        <p className="font-medium truncate">{clientName}</p>
+        <p className="text-muted-foreground truncate">{appt.service_type}</p>
+        <p className="mt-1 text-[10px] text-muted-foreground">
+          {appt.scheduled_date} · {appt.scheduled_time}
+        </p>
+        {appt.notarization_type === "ron" && (
+          <Badge variant="secondary" className="mt-1 text-[10px]">RON</Badge>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ApptKanbanColumn({
+  status, items, getClientName,
+}: { status: string; items: any[]; getClientName: (id: string) => string }) {
+  const { setNodeRef, isOver } = useDroppable({ id: `acol-${status}` });
+  return (
+    <div
+      ref={setNodeRef}
+      aria-label={`${status} column`}
+      className={`min-w-[180px] rounded-lg p-2 border-2 transition-colors ${
+        isOver ? "bg-primary/5 border-primary/40 border-dashed" : "border-transparent"
+      }`}
+    >
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <Badge className={`text-xs border ${statusColors[status] || ""}`}>{status.replace(/_/g, " ")}</Badge>
+        <span className="text-[11px] text-muted-foreground">{items.length}</span>
+      </div>
+      <div className="space-y-2 min-h-[120px] max-h-[60vh] overflow-y-auto">
+        {items.length === 0 ? (
+          <div className="text-center text-[11px] text-muted-foreground/70 py-6 border-2 border-dashed border-border/50 rounded-md">
+            Drop here
+          </div>
+        ) : items.map(a => (
+          <DraggableApptCard key={a.id} appt={a} clientName={getClientName(a.client_id)} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
 export default function AdminAppointments() {
   usePageMeta({ title: "Appointments", noIndex: true });
   const [appointments, setAppointments] = useState<Record<string, any>[]>([]);
