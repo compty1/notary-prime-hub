@@ -1,0 +1,27 @@
+# GB-0721 / GB-0692 / GB-0724: Run unit tests + asset-import check on every push.
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Check asset imports (GB-0724)
+        run: bun run check:assets
+      - name: Lint
+        run: bun run lint || true
+      - name: Unit tests (GB-0721)
+        run: bunx vitest run
+      - name: Build
+        run: bun run build
