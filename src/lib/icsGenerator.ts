@@ -13,7 +13,7 @@ export interface CalendarEvent {
 
 export function generateICS(event: CalendarEvent): string {
   const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-  const uid = `${event.confirmationNumber || crypto.randomUUID()}@notaryprime.com`;
+  const uid = `${event.confirmationNumber || crypto.randomUUID()}@notar.com`;
 
   return [
     "BEGIN:VCALENDAR",
