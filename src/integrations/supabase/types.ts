@@ -3749,6 +3749,39 @@ export type Database = {
         }
         Relationships: []
       }
+      impersonation_sessions: {
+        Row: {
+          admin_user_id: string
+          ended_at: string | null
+          ended_reason: string | null
+          expires_at: string
+          id: string
+          reason: string
+          started_at: string
+          target_user_id: string
+        }
+        Insert: {
+          admin_user_id: string
+          ended_at?: string | null
+          ended_reason?: string | null
+          expires_at?: string
+          id?: string
+          reason: string
+          started_at?: string
+          target_user_id: string
+        }
+        Update: {
+          admin_user_id?: string
+          ended_at?: string | null
+          ended_reason?: string | null
+          expires_at?: string
+          id?: string
+          reason?: string
+          started_at?: string
+          target_user_id?: string
+        }
+        Relationships: []
+      }
       interpreter_sessions: {
         Row: {
           appointment_id: string | null
@@ -3828,6 +3861,7 @@ export type Database = {
           notary_name: string
           notary_user_id: string
           notes: string | null
+          retention_until: string | null
           session_id: string | null
           signer_address: string | null
           signer_name: string
@@ -3856,6 +3890,7 @@ export type Database = {
           notary_name?: string
           notary_user_id: string
           notes?: string | null
+          retention_until?: string | null
           session_id?: string | null
           signer_address?: string | null
           signer_name?: string
@@ -3884,6 +3919,7 @@ export type Database = {
           notary_name?: string
           notary_user_id?: string
           notes?: string | null
+          retention_until?: string | null
           session_id?: string | null
           signer_address?: string | null
           signer_name?: string
@@ -4328,6 +4364,7 @@ export type Database = {
           session_timeout_minutes: number | null
           session_type: Database["public"]["Enums"]["notarization_type"]
           session_unique_id: string | null
+          signature_method: string | null
           signer_email: string | null
           signer_ip: string | null
           signer_location_state: string | null
@@ -4369,6 +4406,7 @@ export type Database = {
           session_timeout_minutes?: number | null
           session_type?: Database["public"]["Enums"]["notarization_type"]
           session_unique_id?: string | null
+          signature_method?: string | null
           signer_email?: string | null
           signer_ip?: string | null
           signer_location_state?: string | null
@@ -4410,6 +4448,7 @@ export type Database = {
           session_timeout_minutes?: number | null
           session_type?: Database["public"]["Enums"]["notarization_type"]
           session_unique_id?: string | null
+          signature_method?: string | null
           signer_email?: string | null
           signer_ip?: string | null
           signer_location_state?: string | null
@@ -6500,6 +6539,53 @@ export type Database = {
           status?: string
         }
         Relationships: []
+      }
+      refusal_logs: {
+        Row: {
+          appointment_id: string | null
+          created_at: string
+          id: string
+          notary_user_id: string
+          notes: string | null
+          refusal_category: string
+          refusal_reason: string
+          retention_until: string | null
+          session_id: string | null
+          signer_name: string | null
+        }
+        Insert: {
+          appointment_id?: string | null
+          created_at?: string
+          id?: string
+          notary_user_id: string
+          notes?: string | null
+          refusal_category: string
+          refusal_reason: string
+          retention_until?: string | null
+          session_id?: string | null
+          signer_name?: string | null
+        }
+        Update: {
+          appointment_id?: string | null
+          created_at?: string
+          id?: string
+          notary_user_id?: string
+          notes?: string | null
+          refusal_category?: string
+          refusal_reason?: string
+          retention_until?: string | null
+          session_id?: string | null
+          signer_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "refusal_logs_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       resumes: {
         Row: {
