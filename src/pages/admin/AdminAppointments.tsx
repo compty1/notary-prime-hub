@@ -489,12 +489,15 @@ export default function AdminAppointments() {
               </SelectContent>
             </Select>
           )}
-          <div className="flex rounded-md border border-border">
-            <Button size="sm" variant={viewMode === "list" ? "default" : "ghost"} className="rounded-r-none" onClick={() => setViewMode("list")} aria-label="List view">
+          <div className="flex rounded-md border border-border" role="group" aria-label="View mode">
+            <Button size="sm" variant={viewMode === "list" ? "default" : "ghost"} className="rounded-r-none" onClick={() => setViewMode("list")} aria-label="List view" aria-pressed={viewMode === "list"}>
               <List className="h-4 w-4" />
             </Button>
-            <Button size="sm" variant={viewMode === "calendar" ? "default" : "ghost"} className="rounded-l-none" onClick={() => setViewMode("calendar")} aria-label="Calendar view">
+            <Button size="sm" variant={viewMode === "calendar" ? "default" : "ghost"} className="rounded-none border-x border-border" onClick={() => setViewMode("calendar")} aria-label="Calendar view" aria-pressed={viewMode === "calendar"}>
               <LayoutGrid className="h-4 w-4" />
+            </Button>
+            <Button size="sm" variant={viewMode === "kanban" ? "default" : "ghost"} className="rounded-l-none" onClick={() => setViewMode("kanban")} aria-label="Kanban view" aria-pressed={viewMode === "kanban"}>
+              <Columns3 className="h-4 w-4" />
             </Button>
           </div>
         </div>
