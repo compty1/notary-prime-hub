@@ -8,8 +8,11 @@ import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 import heroIndividuals from "@/assets/hero-solutions-individuals.png";
+import heroIndividualsAvif from "@/assets/hero-solutions-individuals.avif";
+import heroIndividualsWebp from "@/assets/hero-solutions-individuals.webp";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 import { OrcChip, NotaryOnCall } from "@/components/trust";
+import { Picture } from "@/components/ui/picture";
 
 const features = [
   { icon3d: FEATURE_3D_ICON.wills, title: "Wills & Estate Planning", desc: "Last wills, trusts, healthcare directives, and beneficiary designations notarized with proper witness coordination per Ohio law." },
@@ -56,7 +59,7 @@ export default function ForIndividuals() {
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">
               <div className="relative">
-                <img src={heroIndividuals} alt="Personal notarization — paper-card illustration" fetchPriority="high" decoding="async" sizes="(max-width: 768px) 90vw, 420px" width={1024} height={1024} className="mx-auto h-auto w-full max-w-[420px] drop-shadow-xl" />
+                <Picture src={heroIndividuals} alt="Personal notarization — paper-card illustration" fetchPriority="high" decoding="async" sizes="(max-width: 768px) 90vw, 420px" width={1024} height={1024} className="mx-auto h-auto w-full max-w-[420px] drop-shadow-xl" loading="eager" sources={{ avif: heroIndividualsAvif, webp: heroIndividualsWebp }} />
                 <p className="mt-4 text-center text-lg font-semibold text-foreground">Fast & Affordable</p>
                 <p className="mt-1 text-center text-sm text-muted-foreground">Starting at $5 per notarization</p>
                 <div className="absolute -bottom-1 -right-1 rounded-full bg-accent px-4 py-2 text-xs font-bold text-accent-foreground shadow-lg">In-Person & RON</div>

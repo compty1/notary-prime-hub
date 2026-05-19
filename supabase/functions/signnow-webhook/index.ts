@@ -28,8 +28,9 @@ const WebhookPayloadSchema = z.object({
 async function verifyWebhookSignature(body: string, signature: string | null): Promise<boolean> {
   const secret = Deno.env.get("SIGNNOW_WEBHOOK_SECRET");
   if (!secret) {
-    console.warn("SIGNNOW_WEBHOOK_SECRET not configured — skipping signature verification");
-    return true;
+    // Security: in production we must REJECT unsigned webhooks rather than skip verification.
+    console.error("SIGNNOW_WEBHOOK_SECRET not configured — rejecting webhook");
+    return false;
   }
   if (!signature) return false;
 

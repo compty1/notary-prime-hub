@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import heroAbout from "@/assets/hero-about.png";
+import heroAboutAvif from "@/assets/hero-about.avif";
+import heroAboutWebp from "@/assets/hero-about.webp";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +11,7 @@ import {
   Shield, Award, MapPin, Phone, Mail, ChevronRight, CheckCircle,
   FileText, Monitor, Users, Briefcase
 } from "lucide-react";
+import { Picture } from "@/components/ui/picture";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -66,7 +69,7 @@ export default function About() {
         <div className="container relative mx-auto max-w-4xl px-4">
           <motion.div initial="hidden" animate="visible" className="flex flex-col md:flex-row items-center gap-8">
             <motion.div variants={fadeUp} custom={0} className="flex-shrink-0">
-              <img src={heroAbout} alt="Notar — Ohio commissioned notary illustration" fetchPriority="high" decoding="async" sizes="(max-width: 768px) 70vw, 320px" width={1024} height={1024} className="h-auto w-full max-w-[280px] md:max-w-[320px] drop-shadow-xl" />
+              <Picture src={heroAbout} alt="Notar — Ohio commissioned notary illustration" fetchPriority="high" decoding="async" sizes="(max-width: 768px) 70vw, 320px" width={1024} height={1024} className="h-auto w-full max-w-[280px] md:max-w-[320px] drop-shadow-xl" loading="eager" sources={{ avif: heroAboutAvif, webp: heroAboutWebp }} />
             </motion.div>
             <motion.div variants={fadeUp} custom={1}>
               <Badge className="mb-3 bg-primary/10 text-primary border-primary/20 rounded-lg font-bold">

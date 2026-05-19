@@ -8,8 +8,11 @@ import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 import heroNotaries from "@/assets/hero-solutions-notaries.png";
+import heroNotariesAvif from "@/assets/hero-solutions-notaries.avif";
+import heroNotariesWebp from "@/assets/hero-solutions-notaries.webp";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 import { OrcChip, NotaryOnCall } from "@/components/trust";
+import { Picture } from "@/components/ui/picture";
 
 const features = [
   { icon3d: FEATURE_3D_ICON.ron, title: "Remote Online Notarization", desc: "Conduct RON sessions with any signing platform — SignNow, DocuSign, Pavaso, and more." },
@@ -56,7 +59,7 @@ export default function ForNotaries() {
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">
               <div className="relative">
-                <img src={heroNotaries} alt="Ohio commissioned notary — paper-card illustration" fetchPriority="high" decoding="async" sizes="(max-width: 768px) 90vw, 420px" width={1024} height={1024} className="mx-auto h-auto w-full max-w-[420px] drop-shadow-xl" />
+                <Picture src={heroNotaries} alt="Ohio commissioned notary — paper-card illustration" fetchPriority="high" decoding="async" sizes="(max-width: 768px) 90vw, 420px" width={1024} height={1024} className="mx-auto h-auto w-full max-w-[420px] drop-shadow-xl" loading="eager" sources={{ avif: heroNotariesAvif, webp: heroNotariesWebp }} />
                 <div className="absolute -bottom-1 -right-1 rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-lg">Ohio Commissioned</div>
               </div>
             </motion.div>

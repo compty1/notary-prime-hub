@@ -8,8 +8,11 @@ import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 import heroRealEstate from "@/assets/hero-solutions-real-estate.png";
+import heroRealEstateAvif from "@/assets/hero-solutions-real-estate.avif";
+import heroRealEstateWebp from "@/assets/hero-solutions-real-estate.webp";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 import { OrcChip, NotaryOnCall } from "@/components/trust";
+import { Picture } from "@/components/ui/picture";
 
 const features = [
   { icon3d: FEATURE_3D_ICON.closing, title: "Closing Documents", desc: "Deeds, mortgages, settlement statements, and all closing documents notarized on-site or via RON for seamless transactions." },
@@ -56,7 +59,7 @@ export default function ForRealEstate() {
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">
               <div className="relative">
-                <img src={heroRealEstate} alt="Real estate closing — paper-card illustration" fetchPriority="high" decoding="async" sizes="(max-width: 768px) 90vw, 420px" width={1024} height={1024} className="mx-auto h-auto w-full max-w-[420px] drop-shadow-xl" />
+                <Picture src={heroRealEstate} alt="Real estate closing — paper-card illustration" fetchPriority="high" decoding="async" sizes="(max-width: 768px) 90vw, 420px" width={1024} height={1024} className="mx-auto h-auto w-full max-w-[420px] drop-shadow-xl" loading="eager" sources={{ avif: heroRealEstateAvif, webp: heroRealEstateWebp }} />
                 <p className="mt-4 text-center text-lg font-semibold text-foreground">Closing Table Ready</p>
                 <p className="mt-2 text-center text-sm text-muted-foreground">NNA-certified signing agent</p>
                 <div className="absolute -bottom-3 -right-3 rounded-full bg-accent px-4 py-2 text-xs font-bold text-accent-foreground shadow-lg">Mobile & RON</div>
