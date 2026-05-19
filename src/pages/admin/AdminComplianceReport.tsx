@@ -235,8 +235,30 @@ export default function AdminComplianceReport() {
       {refusalLogs.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <XCircle className="h-5 w-5 text-warning" /> Notarial Act Refusals ({refusalLogs.length})
+            <CardTitle className="text-lg flex items-center justify-between gap-2">
+              <span className="flex items-center gap-2">
+                <XCircle className="h-5 w-5 text-warning" /> Notarial Act Refusals ({refusalLogs.length})
+              </span>
+              <button
+                type="button"
+                className="text-xs underline text-muted-foreground hover:text-foreground"
+                onClick={() => {
+                  // GB-0488: CSV export of refusal logs for compliance audit trail
+                  const header = ["created_at","session_id","appointment_id","refusal_reason","refusal_category","statute_reference","notes"];
+                  const rows = refusalLogs.map((r: any) => header.map((k) => {
+                    const v = r[k] ?? r[k.replace("refusal_","")] ?? "";
+                    return `"${String(v).replace(/"/g, '""')}"`;
+                  }).join(","));
+                  const csv = [header.join(","), ...rows].join("\n");
+                  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url; a.download = `refusal-logs-${new Date().toISOString().slice(0,10)}.csv`;
+                  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+                }}
+              >
+                Export CSV
+              </button>
             </CardTitle>
           </CardHeader>
           <CardContent>
