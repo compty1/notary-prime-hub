@@ -558,38 +558,46 @@ export default function AdminCRM() {
           <TabsTrigger value="reports">Reports</TabsTrigger>
         </TabsList>
 
-        {/* PIPELINE TAB — Lead Kanban */}
+        {/* PIPELINE TAB — Lead Kanban (drag-and-drop) */}
         <TabsContent value="pipeline" className="space-y-4">
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-7">
-            {LEAD_STAGES.map(stage => (
-              <Card key={stage} className="min-h-[200px]">
-                <CardHeader className="p-3 pb-1">
-                  <CardTitle className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider">
-                    {stage.replace("-", " ")}
-                    <Badge variant="secondary" className="text-[10px]">{pipelineStats[stage]?.length || 0}</Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="max-h-[400px] space-y-2 overflow-y-auto p-2">
-                  {(pipelineStats[stage] || []).slice(0, 20).map(lead => (
-                    <div key={lead.id} className="rounded-md border bg-card p-2 text-xs shadow-sm hover:shadow transition-shadow">
-                      <p className="font-medium truncate">{lead.name || lead.email || "Unnamed"}</p>
-                      {lead.service_needed && <p className="text-muted-foreground truncate">{lead.service_needed}</p>}
-                      <div className="mt-1 flex gap-1">
-                        {stage !== "closed-won" && stage !== "closed-lost" && (
-                          <Select value={lead.status} onValueChange={v => updateLeadStatus.mutate({ id: lead.id, status: v })}>
-                            <SelectTrigger className="h-6 text-[10px]"><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                              {LEAD_STAGES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                            </SelectContent>
-                          </Select>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <p className="text-xs text-muted-foreground">Drag a lead card between columns to update its status.</p>
+          <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleLeadDragEnd}>
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-7">
+              {LEAD_STAGES.map(stage => {
+                const stageLeads = (pipelineStats[stage] || []).slice(0, 20);
+                return (
+                  <Card key={stage} className="min-h-[220px]">
+                    <CardHeader className="p-3 pb-1">
+                      <CardTitle className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider">
+                        <span className="truncate">{stage.replace("-", " ")}</span>
+                        <Badge variant="secondary" className="text-[10px]">{pipelineStats[stage]?.length || 0}</Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="max-h-[420px] overflow-y-auto p-2">
+                      <KanbanDroppable
+                        id={`leadcol-${stage}`}
+                        isEmpty={stageLeads.length === 0}
+                        label={`${stage} leads`}
+                      >
+                        {stageLeads.map(lead => <DraggableLeadCard key={lead.id} lead={lead} />)}
+                      </KanbanDroppable>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+            <DragOverlay>
+              {activeDragId?.startsWith("lead:") ? (() => {
+                const l = leads.find(x => x.id === activeDragId.slice(5));
+                return l ? (
+                  <div className="rounded-md border-2 bg-card p-2 text-xs shadow-lg max-w-[180px]">
+                    <p className="font-medium truncate">{l.name || l.email || "Unnamed"}</p>
+                    {l.service_needed && <p className="text-muted-foreground truncate">{l.service_needed}</p>}
+                  </div>
+                ) : null;
+              })() : null}
+            </DragOverlay>
+          </DndContext>
         </TabsContent>
 
         {/* CRM-003: UNIFIED CONTACTS TAB */}
