@@ -62,6 +62,9 @@ export default function AdminApostille() {
   const [newDestCountry, setNewDestCountry] = useState("");
   const [newDocCount, setNewDocCount] = useState("1");
   const [checklist, setChecklist] = useState<Record<string, boolean>>({});
+  const [viewMode, setViewMode] = useState<"list" | "kanban">("list");
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
   const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
