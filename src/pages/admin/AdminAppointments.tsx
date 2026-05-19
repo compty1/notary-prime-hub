@@ -53,7 +53,9 @@ export default function AdminAppointments() {
   const [dateRange, setDateRange] = useState("all");
   const [serviceTypeFilter, setServiceTypeFilter] = useState("all");
   const [notarizationTypeFilter, setNotarizationTypeFilter] = useState("all");
-  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
+  const [viewMode, setViewMode] = useState<"list" | "calendar" | "kanban">("list");
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
+  const dndSensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
   
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
