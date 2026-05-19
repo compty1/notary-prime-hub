@@ -20,8 +20,13 @@ import {
   Plus, Search, Phone, Mail, Calendar, FileText, DollarSign,
   ArrowRight, User, Building2, Target, TrendingUp, Clock,
   MessageSquare, BarChart3, Users, Briefcase, AlertTriangle,
-  Download, ArrowUpDown, ExternalLink, RefreshCw
+  Download, ArrowUpDown, ExternalLink, RefreshCw, Inbox
 } from "lucide-react";
+import {
+  DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor,
+  useSensor, useSensors, useDraggable, useDroppable,
+} from "@dnd-kit/core";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // CRM-004: Unified pipeline stages (matching Lead Portal's 7 stages)
 const PIPELINE_STAGES = [
