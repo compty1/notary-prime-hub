@@ -14,7 +14,7 @@ export interface WidgetConfig {
 
 /** Generate embed code for a notary's booking widget */
 export function generateEmbedCode(config: WidgetConfig): string {
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://notary-prime-hub.lovable.app";
+  const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://notardex.com";
   const params = new URLSearchParams({
     slug: config.notarySlug,
     theme: config.theme || "light",
@@ -31,7 +31,7 @@ export function generateEmbedCode(config: WidgetConfig): string {
 
 /** Generate a direct booking link */
 export function generateBookingLink(notarySlug: string, serviceType?: string): string {
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://notary-prime-hub.lovable.app";
+  const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://notardex.com";
   const params = serviceType ? `?service=${encodeURIComponent(serviceType)}` : "";
   return `${baseUrl}/notary/${notarySlug}/book${params}`;
 }

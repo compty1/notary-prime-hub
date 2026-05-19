@@ -16,7 +16,7 @@ interface SEOHeadProps {
 }
 
 const SITE_NAME = "NotaryDex";
-const BASE_URL = "https://notary-prime-hub.lovable.app";
+const BASE_URL = "https://notardex.com";
 const DEFAULT_OG_IMAGE = "/og-default.png";
 
 function setMeta(name: string, content: string, isProperty = false) {

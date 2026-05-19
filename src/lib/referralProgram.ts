@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 /** Generate a shareable referral link */
 export function generateReferralLink(referralCode: string): string {
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://notary-prime-hub.lovable.app";
+  const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://notardex.com";
   return `${baseUrl}/?ref=${referralCode}`;
 }
 
