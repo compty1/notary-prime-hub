@@ -242,6 +242,35 @@ export default function AdminApostille() {
           <Package className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
           No apostille requests yet
         </CardContent></Card>
+      ) : viewMode === "kanban" ? (
+        <DndContext
+          sensors={sensors}
+          onDragStart={(e: DragStartEvent) => setActiveId(String(e.active.id))}
+          onDragEnd={(e: DragEndEvent) => {
+            setActiveId(null);
+            const { active, over } = e;
+            if (!over) return;
+            const overId = String(over.id);
+            if (!overId.startsWith("apcol-")) return;
+            const newStatus = overId.replace("apcol-", "");
+            const req = requests.find(r => r.id === active.id);
+            if (!req || req.status === newStatus) return;
+            updateStatus(String(active.id), newStatus);
+          }}
+        >
+          <div className="flex gap-4 overflow-x-auto pb-4">
+            {statusFlow.map(s => {
+              const items = requests.filter(r => r.status === s);
+              return <ApostilleColumn key={s} status={s} label={statusLabels[s]} items={items} colorCls={statusColors[s] || ""} onOpen={openDetail} getClientName={getClientName} />;
+            })}
+          </div>
+          <DragOverlay>
+            {activeId ? (() => {
+              const r = requests.find(x => x.id === activeId);
+              return r ? <ApostilleDragCard req={r} clientName={getClientName(r.client_id)} /> : null;
+            })() : null}
+          </DragOverlay>
+        </DndContext>
       ) : (
         <div className="space-y-3">
           {requests.map((req) => {
