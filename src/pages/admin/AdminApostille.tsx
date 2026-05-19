@@ -222,6 +222,10 @@ export default function AdminApostille() {
           <p className="text-sm text-muted-foreground">Track apostille requests: intake → processing → delivery</p>
         </div>
         <div className="flex items-center gap-2">
+          <div className="inline-flex rounded-xl border bg-card p-0.5">
+            <Button size="sm" variant={viewMode === "list" ? "default" : "ghost"} className="h-8 gap-1.5 rounded-lg" onClick={() => setViewMode("list")}><List className="h-3.5 w-3.5" /> List</Button>
+            <Button size="sm" variant={viewMode === "kanban" ? "default" : "ghost"} className="h-8 gap-1.5 rounded-lg" onClick={() => setViewMode("kanban")}><LayoutGrid className="h-3.5 w-3.5" /> Kanban</Button>
+          </div>
           <a href="https://www.ohiosos.gov/businesses/apostilles-authentications/" target="_blank" rel="noopener noreferrer">
             <Button size="sm" variant="outline"><ExternalLink className="mr-1 h-3 w-3" /> Ohio SOS Portal</Button>
           </a>
