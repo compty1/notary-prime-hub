@@ -36,7 +36,7 @@ const complianceItems = [
 ];
 
 export default function ForNotaries() {
-  usePageMeta({ title: "For Notaries — Platform & Tools", description: "Join our notary network. Access RON technology, client management tools, and commission-based signing opportunities in Ohio." });
+  usePageMeta({ title: "For Notaries — Platform & Tools", description: "Join our notary network. Access RON technology, client management tools, and commission-based signing opportunities in Ohio.", schema: SOLUTION_SCHEMAS.notaries });
 
   return (
     <PageShell>
