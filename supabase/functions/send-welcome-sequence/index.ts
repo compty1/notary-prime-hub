@@ -1,6 +1,8 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders, handleCorsOptions, errorResponse, jsonResponse, rateLimitGuard, requireEnvVars } from "../_shared/middleware.ts";
 
+const EMAIL_FOOTER = `<hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0 12px"/><p style="color:#9ca3af;font-size:12px;text-align:center;margin:0">Notar Notary Services LLC · Columbus, OH · <a href="https://notardex.com/unsubscribe" style="color:#9ca3af;text-decoration:underline">Unsubscribe</a> · <a href="https://notardex.com/privacy" style="color:#9ca3af;text-decoration:underline">Privacy</a></p>`;
+
 Deno.serve(async (req: Request) => {
   const start = Date.now();
   if (req.method === "OPTIONS") return handleCorsOptions(req);
@@ -54,7 +56,7 @@ Deno.serve(async (req: Request) => {
           </ul>
           <p><a href="${portalUrl}/book">Book Your First Appointment →</a></p>
           <p>— The NotarDex Team</p>
-        `,
+        ${EMAIL_FOOTER}`,
       },
     });
 
@@ -76,7 +78,7 @@ Deno.serve(async (req: Request) => {
           <p><a href="${portalUrl}/portal">Go to Your Portal →</a></p>
           <p>Questions? Use the chat feature in your portal to reach us anytime.</p>
           <p>— NotarDex Team</p>
-        `,
+        ${EMAIL_FOOTER}`,
         delay_hours: 24,
       },
     });
@@ -99,7 +101,7 @@ Deno.serve(async (req: Request) => {
           </ul>
           <p><a href="${portalUrl}/services">Browse All Services →</a></p>
           <p>— NotarDex Team</p>
-        `,
+        ${EMAIL_FOOTER}`,
         delay_hours: 72,
       },
     });

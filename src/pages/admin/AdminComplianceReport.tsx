@@ -19,6 +19,7 @@ export default function AdminComplianceReport() {
   const [appointments, setAppointments] = useState<Record<string, any>[]>([]);
   const [journalEntries, setJournalEntries] = useState<Record<string, any>[]>([]);
   const [sealVerifications, setSealVerifications] = useState<Record<string, any>[]>([]);
+  const [refusalLogs, setRefusalLogs] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [drillDownAppt, setDrillDownAppt] = useState<Record<string, any> | null>(null);
@@ -36,10 +37,12 @@ export default function AdminComplianceReport() {
       supabase.from("appointments").select("*").eq("notarization_type", "ron").gte("scheduled_date", startDate).lt("scheduled_date", endDate),
       supabase.from("notary_journal").select("*").gte("created_at", startDate).lt("created_at", endDate),
       supabase.from("e_seal_verifications").select("*").gte("notarized_at", startDate).lt("notarized_at", endDate),
-    ]).then(([apptRes, journalRes, sealRes]) => {
+      supabase.from("refusal_logs").select("*").gte("created_at", startDate).lt("created_at", endDate),
+    ]).then(([apptRes, journalRes, sealRes, refusalRes]) => {
       setAppointments(apptRes.data || []);
       setJournalEntries(journalRes.data || []);
       setSealVerifications(sealRes.data || []);
+      setRefusalLogs((refusalRes as any).data || []);
       setLoading(false);
     });
   }, [selectedMonth]);
@@ -184,7 +187,7 @@ export default function AdminComplianceReport() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid gap-4 sm:grid-cols-5">
+      <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
         <Card>
           <CardContent className="p-4 text-center">
             <FileText className="mx-auto mb-2 h-6 w-6 text-primary" />
@@ -213,6 +216,13 @@ export default function AdminComplianceReport() {
             <div className="text-xs text-muted-foreground">Avg Duration</div>
           </CardContent>
         </Card>
+        <Card className={refusalLogs.length > 0 ? "border-warning/30" : ""}>
+          <CardContent className="p-4 text-center">
+            <XCircle className={`mx-auto mb-2 h-6 w-6 ${refusalLogs.length > 0 ? "text-warning" : "text-muted-foreground"}`} />
+            <div className="text-2xl font-bold">{refusalLogs.length}</div>
+            <div className="text-xs text-muted-foreground">Refusals (ORC §147.542)</div>
+          </CardContent>
+        </Card>
         <Card className={report.complianceScore >= 90 ? "border-success/30" : report.complianceScore >= 70 ? "border-warning/30" : "border-destructive/30"}>
           <CardContent className="p-4 text-center">
             <Shield className={`mx-auto mb-2 h-6 w-6 ${report.complianceScore >= 90 ? "text-success" : report.complianceScore >= 70 ? "text-warning" : "text-destructive"}`} />
@@ -221,6 +231,34 @@ export default function AdminComplianceReport() {
           </CardContent>
         </Card>
       </div>
+
+      {refusalLogs.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <XCircle className="h-5 w-5 text-warning" /> Notarial Act Refusals ({refusalLogs.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {refusalLogs.slice(0, 25).map((r) => (
+                <div key={r.id} className="flex items-start justify-between gap-3 rounded-lg border p-3 text-sm">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{r.reason || r.refusal_reason || "Refusal"}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {r.created_at ? formatDate(r.created_at) : ""} · Session {String(r.session_id || r.appointment_id || "").slice(0, 8) || "—"}
+                    </p>
+                  </div>
+                  {r.statute_reference && <Badge variant="outline" className="text-[10px] shrink-0">{r.statute_reference}</Badge>}
+                </div>
+              ))}
+              {refusalLogs.length > 25 && (
+                <p className="text-xs text-muted-foreground text-center">+{refusalLogs.length - 25} more</p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Compliance Gaps */}
       {report.gaps.length > 0 && (

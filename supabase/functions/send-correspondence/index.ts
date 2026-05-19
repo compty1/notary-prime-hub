@@ -2,6 +2,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { z } from "https://esm.sh/zod@3.23.8";
 import { corsHeaders, handleCorsOptions, errorResponse, jsonResponse, rateLimitGuard, requireEnvVars, securityHeaders } from "../_shared/middleware.ts";
 
+const EMAIL_FOOTER = `<hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0 12px"/><p style="color:#9ca3af;font-size:12px;text-align:center;margin:0">Notar Notary Services LLC · Columbus, OH · <a href="https://notardex.com/unsubscribe" style="color:#9ca3af;text-decoration:underline">Unsubscribe</a> · <a href="https://notardex.com/privacy" style="color:#9ca3af;text-decoration:underline">Privacy</a></p>`;
+
 const BodySchema = z.object({
   to_address: z.string().email().max(255),
   subject: z.string().min(1).max(500),
@@ -83,7 +85,7 @@ Deno.serve(async (req) => {
           to: to_address,
           subject,
           content: "auto",
-          html: body,
+          html: body + EMAIL_FOOTER,
         });
         await client.close();
         emailSent = true;
@@ -105,7 +107,7 @@ Deno.serve(async (req) => {
           from: FROM_EMAIL,
           to: [to_address],
           subject,
-          html: body,
+          html: body + EMAIL_FOOTER,
         }),
       });
       if (emailRes.ok) emailSent = true;
