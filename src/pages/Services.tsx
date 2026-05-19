@@ -20,11 +20,11 @@ import heroServicesAvif from "@/assets/hero-services.avif";
 import heroServicesWebp from "@/assets/hero-services.webp";
 import { ServicesLoadingSkeleton } from "@/components/ServicesLoadingSkeleton";
 import {
-import { Picture } from "@/components/ui/picture";
   INTAKE_ONLY_SERVICES, SAAS_LINKS, SUBSCRIPTION_SERVICES,
   PRICING_SUFFIXES, CATEGORY_LABELS, CATEGORY_ORDER,
   SERVICE_ICON_MAP, NOTARY_CATEGORIES,
 } from "@/lib/serviceConstants";
+import { Picture } from "@/components/ui/picture";
 
 const aiTools = [
   { icon3d: FEATURE_3D_ICON.aiTools, title: "AI Tools Hub", description: "50+ professional AI tools — contracts, proposals, reports, analysis, compliance docs, and more.", link: "/ai-tools", cta: "Explore Tools" },
