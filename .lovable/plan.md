@@ -1,82 +1,54 @@
-# Implementation plan — final polish pass
+# Comprehensive Gaps & Bugs CSV — Plan
 
-Five focused passes. Each is independently shippable.
+Produce a single deliverable artifact: `/mnt/documents/gaps_and_bugs.csv` containing up to **800 rows** of every currently-known gap, bug, incomplete implementation, polish item, and compliance/security follow-up across the project, each with a concrete fix.
 
-## Pass 1 — Solution-page CTA standardization
-
-Audit every CTA across `src/pages/solutions/*` and any other public marketing page (`/services`, `/about`, `/resources`, `/help`, `/glossary`, `/track-*`).
-
-- All `<Button size="lg">` (primary + outline) gain: `rounded-full px-8 border-2 border-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black tracking-tight uppercase transition-all`.
-- Primary CTAs: `bg-primary text-primary-foreground` (yellow on navy text).
-- Outline CTAs: `bg-card text-foreground` with same border/shadow stack.
-- Extract into a shared `<HeroCTA variant="primary|outline">` wrapper in `src/components/ui/hero-cta.tsx` so future pages can't drift.
-
-## Pass 2 — Hero illustrations (paper-card / Block Shadow)
-
-Generate four new hero illustrations matching the existing `hero-document-card.png` motif (Block Shadow paper-card, navy background friendly, yellow accents):
+## CSV schema (10 columns)
 
 ```
-src/assets/hero-services.png       — stack of stamped documents
-src/assets/hero-about.png          — courthouse + paper card
-src/assets/hero-resources.png      — open book + bookmark tabs
-src/assets/hero-solutions-individuals.png
-src/assets/hero-solutions-real-estate.png
-src/assets/hero-solutions-hospitals.png
-src/assets/hero-solutions-law-firms.png
-src/assets/hero-solutions-small-business.png
+ID, Category, Area, Route/File, Severity, Status, Title, Description, Recommended Fix, Effort
 ```
 
-(`hero-solutions-notaries.png` already exists — reuse.)
+- **Category**: Bug | Gap | Polish | Compliance | Security | Performance | A11y | SEO | UX | Test | DX | Content
+- **Area**: Homepage, Solutions, Services, Booking, RON, Admin/<sub>, Portal, Shop, Academy, Auth, Backend/Edge, Storage, CMS, AI Tools, Analytics, Notifications, Marketing, Print, etc.
+- **Severity**: P0 / P1 / P2 / P3
+- **Status**: Open | In Progress | Verified Open | Needs Investigation
+- **Effort**: XS (<30m) | S (~1h) | M (~half day) | L (1–2d) | XL (>2d)
 
-For each, also generate `.webp` + `.avif` desktop variants via `sharp` so they flow through the existing `<Picture>` component. Mobile variants skipped — solution heroes use the same composition at every breakpoint.
+## Coverage targets (~800 rows total)
 
-Wire each into its page hero, replacing the current lucide-only blocks or stock asset.
+Synthesized from the project memory index, recent audits, the 5-pass polish plan in `.lovable/plan.md`, route inventory (≈55 public + 80+ admin + 40+ services + 7 solutions), prior audit history, and standard Ohio RON compliance + Block Shadow brand obligations.
 
-## Pass 3 — Build-time asset integrity check
+| Bucket | Rows |
+|---|---|
+| Homepage + marketing routes polish, image/picture wiring, Block Shadow drift | 80 |
+| Solutions pages (×7) — CTA, hero, copy, schema, FAQ, JSON-LD | 70 |
+| Services pages (×40+) — pricing surface, AI tool wiring, FAQ, prerequisites | 120 |
+| Booking + RON flow — state machine edges, KBA, witnesses, retention, e-seal | 80 |
+| Admin suite (CRM, Ops, Financials, Inventory, Automation, Settings, etc.) | 140 |
+| Compliance (ORC §147, UPL, retention, refusal logs, journal) | 60 |
+| Security (RLS, signed URLs, MFA, IDOR, webhook DLQ, PII masking) | 60 |
+| Performance (Picture rollout, bundle, LCP, lazy, prefetch) | 40 |
+| Accessibility (WCAG 2.1 AA gaps, focus order, ARIA, contrast, reduced-motion) | 40 |
+| SEO (titles, meta, JSON-LD, sitemap, canonicals, OG) | 30 |
+| Tests (visual regression coverage, Playwright, vitest gaps) | 30 |
+| DX/build (asset checks, CI, lint, types, docs) | 30 |
+| Content/CMS, email templates, transactional copy | 20 |
 
-New script `scripts/check-asset-imports.ts`:
+## Method
 
-- Walks `src/**/*.{ts,tsx}` with a regex matching `from "@/assets/..."` and `from ".*/assets/..."`.
-- For each import, resolves the path and confirms the file exists on disk.
-- Exits non-zero with a grouped report of missing files.
+1. Walk the memory index (~100 features) and emit 5–10 rows per memory file covering known sub-items.
+2. Cross-reference `src/pages/` route inventory; emit polish + bug rows per route.
+3. Pull the 5 unfinished items from `.lovable/plan.md` (visual snapshots, Lighthouse run, remaining hero illustrations + wiring, CTA verification, asset-import CI hook) as P0/P1 anchors.
+4. Append standing Ohio compliance + security rows from `mem://compliance/*` and `mem://tech/security-*`.
+5. Deduplicate by `(Area, Title)`, cap at 800, write CSV with UTF-8 BOM for Excel.
 
-Wire into `package.json` as `"check:assets": "tsx scripts/check-asset-imports.ts"` and call it from a new `"prebuild"` hook so the production build fails fast on a missing asset.
+## Deliverable
 
-## Pass 4 — Visual regression snapshots
-
-Extend `tests/visual/landing-snapshots.spec.ts` (Playwright) with snapshots for:
-
-- `/` desktop 1360×900 + mobile 390×844 (already covered — confirm and refresh).
-- `/solutions/individuals`, `/solutions/real-estate`, `/solutions/law-firms`, `/solutions/small-business`, `/solutions/hospitals`, `/solutions/notaries` — desktop + mobile.
-- `/services`, `/about`, `/resources` — desktop hero only.
-
-Use Playwright's `toHaveScreenshot({ maxDiffPixelRatio: 0.02 })` to flag palette/layout drift without flaking on font sub-pixel rendering. Run via `bunx playwright test tests/visual` and regenerate baselines with `scripts/regenerate-snapshots.sh`.
-
-## Pass 5 — Build + Lighthouse verification
-
-1. `bun run build` — must pass; capture bundle size for the homepage chunk.
-2. Lighthouse headless against the preview URL (mobile + desktop). Extract: Performance, LCP, CLS, Total Byte Weight, "next-gen image formats", "properly size images". Targets: ≥ 90 desktop, ≥ 80 mobile, LCP < 2.5s mobile.
-3. Post the before/after numbers and the bundle delta in chat.
-
-## Technical details
-
-- Image generation: `imagegen` standard tier, `transparent_background: true` against a clean background, then convert to `.webp` (q=82) + `.avif` (q=60) with `sharp` in a one-off script.
-- All hero `<Picture>` calls keep `loading="eager"` + `fetchPriority="high"` for above-the-fold; below-the-fold stays `lazy`.
-- CTA refactor is presentation-only — no router or business-logic changes.
-- Asset check script runs in ~50ms; safe to add to `prebuild`.
-- Playwright visual snapshots are stored under `tests/visual/*-snapshots/` and gitignored where the `.gitkeep` files already sit.
+- `/mnt/documents/gaps_and_bugs.csv` — surfaced via `<presentation-artifact>`.
+- Short chat summary with row counts per Category + top 10 P0 items.
 
 ## Out of scope
 
-- Backend / RLS / pricing logic changes.
-- Non-public dashboard routes (already token-clean per the palette audit).
-- Mobile-specific solution-hero variants (composition is already centered + scales).
-
-## Deliverables
-
-- `src/components/ui/hero-cta.tsx` (new)
-- Updated `src/pages/solutions/*.tsx`, `src/pages/Resources.tsx`, etc.
-- 8 new hero PNG + AVIF + WebP under `src/assets/`
-- `scripts/check-asset-imports.ts` + `prebuild` hook
-- Expanded `tests/visual/landing-snapshots.spec.ts`
-- Build + Lighthouse summary posted to chat
+- No source code changes in this pass.
+- No backend/RLS migrations.
+- No image generation; assets only referenced by ID.
