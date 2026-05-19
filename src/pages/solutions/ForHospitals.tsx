@@ -125,7 +125,7 @@ export default function ForHospitals() {
               <Badge variant="outline" className="mb-4">Common Use Cases</Badge>
               <h2 className="mb-4 font-sans text-3xl font-bold text-foreground">Documents We Notarize at Healthcare Facilities</h2>
               <p className="mb-6 text-muted-foreground">From emergency advance directives to routine administrative forms, we handle the full range of healthcare-related documents that require notarization under Ohio law.</p>
-              <Link to="/fee-calculator"><Button variant="outline">View Pricing</Button></Link>
+              <Link to="/fee-calculator"><Button variant="outline" className="rounded-full px-6 border-2 border-foreground bg-card text-foreground shadow-block hover:-translate-y-0.5 hover:shadow-block-lg font-black uppercase tracking-tight transition-all">View Pricing</Button></Link>
             </div>
             <div className="grid grid-cols-1 gap-2">
               {useCases.map((item, i) => (
