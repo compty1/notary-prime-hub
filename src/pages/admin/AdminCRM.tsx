@@ -189,6 +189,34 @@ export default function AdminCRM() {
   const [search, setSearch] = useState("");
   const [activityPage, setActivityPage] = useState(0);
   const ACTIVITY_PAGE_SIZE = 50;
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+
+  const handleDragStart = (e: DragStartEvent) => setActiveDragId(String(e.active.id));
+  const handleLeadDragEnd = (e: DragEndEvent) => {
+    setActiveDragId(null);
+    if (!e.over) return;
+    const activeId = String(e.active.id);
+    const overId = String(e.over.id);
+    if (!activeId.startsWith("lead:") || !overId.startsWith("leadcol-")) return;
+    const id = activeId.slice(5);
+    const status = overId.slice(8);
+    const lead = leads.find(l => l.id === id);
+    if (!lead || lead.status === status) return;
+    updateLeadStatus.mutate({ id, status });
+  };
+  const handleDealDragEnd = (e: DragEndEvent) => {
+    setActiveDragId(null);
+    if (!e.over) return;
+    const activeId = String(e.active.id);
+    const overId = String(e.over.id);
+    if (!activeId.startsWith("deal:") || !overId.startsWith("dealcol-")) return;
+    const id = activeId.slice(5);
+    const stage = overId.slice(8);
+    const deal = deals.find(d => d.id === id);
+    if (!deal || deal.stage === stage) return;
+    updateDealStage.mutate({ id, stage });
+  };
 
   // Fetch leads
   const { data: leads = [] } = useQuery<Lead[]>({
