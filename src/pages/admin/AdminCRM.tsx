@@ -20,8 +20,13 @@ import {
   Plus, Search, Phone, Mail, Calendar, FileText, DollarSign,
   ArrowRight, User, Building2, Target, TrendingUp, Clock,
   MessageSquare, BarChart3, Users, Briefcase, AlertTriangle,
-  Download, ArrowUpDown, ExternalLink, RefreshCw
+  Download, ArrowUpDown, ExternalLink, RefreshCw, Inbox
 } from "lucide-react";
+import {
+  DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor,
+  useSensor, useSensors, useDraggable, useDroppable,
+} from "@dnd-kit/core";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // CRM-004: Unified pipeline stages (matching Lead Portal's 7 stages)
 const PIPELINE_STAGES = [
@@ -103,6 +108,79 @@ const STAGE_PROBABILITY: Record<string, number> = {
   negotiation: 75, "closed-won": 100, "closed-lost": 0,
 };
 
+/* ---------- Draggable lead card ---------- */
+function DraggableLeadCard({ lead }: { lead: Lead }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: `lead:${lead.id}` });
+  return (
+    <div
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      style={{ opacity: isDragging ? 0.4 : 1 }}
+      className="touch-none"
+      role="button"
+      tabIndex={0}
+      aria-label={`Lead ${lead.name || lead.email || "unnamed"}`}
+    >
+      <div className="cursor-grab active:cursor-grabbing rounded-md border-2 bg-card p-2 text-xs shadow-sm hover:shadow transition-shadow">
+        <p className="font-medium truncate">{lead.name || lead.email || "Unnamed"}</p>
+        {lead.service_needed && <p className="text-muted-foreground truncate">{lead.service_needed}</p>}
+        {lead.intent_score && (
+          <Badge variant="secondary" className="mt-1 text-[10px]">{lead.intent_score}</Badge>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function DraggableDealCard({ deal }: { deal: Deal }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: `deal:${deal.id}` });
+  const daysInStage = differenceInDays(new Date(), new Date(deal.updated_at || deal.created_at));
+  return (
+    <div
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      style={{ opacity: isDragging ? 0.4 : 1 }}
+      className="touch-none"
+      role="button"
+      tabIndex={0}
+      aria-label={`Deal ${deal.title}`}
+    >
+      <div className="cursor-grab active:cursor-grabbing rounded-md border-2 bg-card p-2 text-xs shadow-sm hover:shadow transition-shadow">
+        <p className="font-medium truncate">{deal.title || "Untitled"}</p>
+        <p className="text-muted-foreground">${(deal.value || 0).toLocaleString()}</p>
+        {deal.expected_close && <p className="text-muted-foreground">Close: {format(new Date(deal.expected_close), "MMM d")}</p>}
+        <div className="mt-1 flex items-center gap-1">
+          <Clock className="h-3 w-3 text-muted-foreground" />
+          <span className={`text-[10px] ${daysInStage > 30 ? "text-destructive" : "text-muted-foreground"}`}>{daysInStage}d in stage</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function KanbanDroppable({
+  id, isEmpty, children, label,
+}: { id: string; isEmpty: boolean; children: React.ReactNode; label: string }) {
+  const { setNodeRef, isOver } = useDroppable({ id });
+  return (
+    <div
+      ref={setNodeRef}
+      aria-label={label}
+      className={`space-y-2 min-h-[120px] rounded-md p-1 border-2 transition-colors ${
+        isOver ? "bg-primary/5 border-primary/40 border-dashed" : "border-transparent"
+      }`}
+    >
+      {isEmpty ? (
+        <div className="text-center text-[10px] text-muted-foreground/70 py-6 border-2 border-dashed border-border/50 rounded-md">
+          Drop here
+        </div>
+      ) : children}
+    </div>
+  );
+}
+
 export default function AdminCRM() {
   usePageMeta({ title: "CRM", noIndex: true });
   const { user } = useAuth();
@@ -111,6 +189,34 @@ export default function AdminCRM() {
   const [search, setSearch] = useState("");
   const [activityPage, setActivityPage] = useState(0);
   const ACTIVITY_PAGE_SIZE = 50;
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+
+  const handleDragStart = (e: DragStartEvent) => setActiveDragId(String(e.active.id));
+  const handleLeadDragEnd = (e: DragEndEvent) => {
+    setActiveDragId(null);
+    if (!e.over) return;
+    const activeId = String(e.active.id);
+    const overId = String(e.over.id);
+    if (!activeId.startsWith("lead:") || !overId.startsWith("leadcol-")) return;
+    const id = activeId.slice(5);
+    const status = overId.slice(8);
+    const lead = leads.find(l => l.id === id);
+    if (!lead || lead.status === status) return;
+    updateLeadStatus.mutate({ id, status });
+  };
+  const handleDealDragEnd = (e: DragEndEvent) => {
+    setActiveDragId(null);
+    if (!e.over) return;
+    const activeId = String(e.active.id);
+    const overId = String(e.over.id);
+    if (!activeId.startsWith("deal:") || !overId.startsWith("dealcol-")) return;
+    const id = activeId.slice(5);
+    const stage = overId.slice(8);
+    const deal = deals.find(d => d.id === id);
+    if (!deal || deal.stage === stage) return;
+    updateDealStage.mutate({ id, stage });
+  };
 
   // Fetch leads
   const { data: leads = [] } = useQuery<Lead[]>({
@@ -452,38 +558,46 @@ export default function AdminCRM() {
           <TabsTrigger value="reports">Reports</TabsTrigger>
         </TabsList>
 
-        {/* PIPELINE TAB — Lead Kanban */}
+        {/* PIPELINE TAB — Lead Kanban (drag-and-drop) */}
         <TabsContent value="pipeline" className="space-y-4">
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-7">
-            {LEAD_STAGES.map(stage => (
-              <Card key={stage} className="min-h-[200px]">
-                <CardHeader className="p-3 pb-1">
-                  <CardTitle className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider">
-                    {stage.replace("-", " ")}
-                    <Badge variant="secondary" className="text-[10px]">{pipelineStats[stage]?.length || 0}</Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="max-h-[400px] space-y-2 overflow-y-auto p-2">
-                  {(pipelineStats[stage] || []).slice(0, 20).map(lead => (
-                    <div key={lead.id} className="rounded-md border bg-card p-2 text-xs shadow-sm hover:shadow transition-shadow">
-                      <p className="font-medium truncate">{lead.name || lead.email || "Unnamed"}</p>
-                      {lead.service_needed && <p className="text-muted-foreground truncate">{lead.service_needed}</p>}
-                      <div className="mt-1 flex gap-1">
-                        {stage !== "closed-won" && stage !== "closed-lost" && (
-                          <Select value={lead.status} onValueChange={v => updateLeadStatus.mutate({ id: lead.id, status: v })}>
-                            <SelectTrigger className="h-6 text-[10px]"><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                              {LEAD_STAGES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                            </SelectContent>
-                          </Select>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <p className="text-xs text-muted-foreground">Drag a lead card between columns to update its status.</p>
+          <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleLeadDragEnd}>
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-7">
+              {LEAD_STAGES.map(stage => {
+                const stageLeads = (pipelineStats[stage] || []).slice(0, 20);
+                return (
+                  <Card key={stage} className="min-h-[220px]">
+                    <CardHeader className="p-3 pb-1">
+                      <CardTitle className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider">
+                        <span className="truncate">{stage.replace("-", " ")}</span>
+                        <Badge variant="secondary" className="text-[10px]">{pipelineStats[stage]?.length || 0}</Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="max-h-[420px] overflow-y-auto p-2">
+                      <KanbanDroppable
+                        id={`leadcol-${stage}`}
+                        isEmpty={stageLeads.length === 0}
+                        label={`${stage} leads`}
+                      >
+                        {stageLeads.map(lead => <DraggableLeadCard key={lead.id} lead={lead} />)}
+                      </KanbanDroppable>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+            <DragOverlay>
+              {activeDragId?.startsWith("lead:") ? (() => {
+                const l = leads.find(x => x.id === activeDragId.slice(5));
+                return l ? (
+                  <div className="rounded-md border-2 bg-card p-2 text-xs shadow-lg max-w-[180px]">
+                    <p className="font-medium truncate">{l.name || l.email || "Unnamed"}</p>
+                    {l.service_needed && <p className="text-muted-foreground truncate">{l.service_needed}</p>}
+                  </div>
+                ) : null;
+              })() : null}
+            </DragOverlay>
+          </DndContext>
         </TabsContent>
 
         {/* CRM-003: UNIFIED CONTACTS TAB */}
@@ -557,47 +671,48 @@ export default function AdminCRM() {
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-5">
-            {PIPELINE_STAGES.map(stage => (
-              <Card key={stage.key} className="min-h-[180px]">
-                <CardHeader className="p-3 pb-1">
-                  <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase">
-                    <span className={`h-2 w-2 rounded-full ${stage.color} border`} />
-                    {stage.label}
-                    <Badge variant="secondary" className="ml-auto text-[10px]">
-                      ${(dealsByStage[stage.key] || []).reduce((s, d) => s + (d.value || 0), 0).toLocaleString()}
-                    </Badge>
-                  </CardTitle>
-                  <p className="text-[10px] text-muted-foreground">{STAGE_PROBABILITY[stage.key]}% probability</p>
-                </CardHeader>
-                <CardContent className="max-h-[350px] space-y-2 overflow-y-auto p-2">
-                  {(dealsByStage[stage.key] || []).map(deal => {
-                    const daysInStage = differenceInDays(new Date(), new Date(deal.updated_at || deal.created_at));
-                    return (
-                      <div key={deal.id} className="rounded-md border bg-card p-2 text-xs shadow-sm">
-                        <p className="font-medium truncate">{deal.title || "Untitled"}</p>
-                        <p className="text-muted-foreground">${(deal.value || 0).toLocaleString()}</p>
-                        {deal.expected_close && <p className="text-muted-foreground">Close: {format(new Date(deal.expected_close), "MMM d")}</p>}
-                        <div className="flex items-center gap-1 mt-1">
-                          <Clock className="h-3 w-3 text-muted-foreground" />
-                          <span className={`text-[10px] ${daysInStage > 30 ? "text-destructive" : "text-muted-foreground"}`}>{daysInStage}d</span>
-                        </div>
-                        <Select value={deal.stage} onValueChange={v => updateDealStage.mutate({ id: deal.id, stage: v })}>
-                          <SelectTrigger className="mt-1 h-6 text-[10px]"><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                            {PIPELINE_STAGES.map(s => <SelectItem key={s.key} value={s.key}>{s.label}</SelectItem>)}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    );
-                  })}
-                  {(!dealsByStage[stage.key] || dealsByStage[stage.key].length === 0) && (
-                    <p className="text-center text-[10px] text-muted-foreground py-4">No deals</p>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <p className="text-xs text-muted-foreground">Drag a deal card between columns to update its stage.</p>
+          <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDealDragEnd}>
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-5">
+              {PIPELINE_STAGES.map(stage => {
+                const stageDeals = dealsByStage[stage.key] || [];
+                return (
+                  <Card key={stage.key} className="min-h-[200px]">
+                    <CardHeader className="p-3 pb-1">
+                      <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase">
+                        <span className={`h-2 w-2 rounded-full ${stage.color} border`} />
+                        <span className="truncate">{stage.label}</span>
+                        <Badge variant="secondary" className="ml-auto text-[10px]">
+                          ${stageDeals.reduce((s, d) => s + (d.value || 0), 0).toLocaleString()}
+                        </Badge>
+                      </CardTitle>
+                      <p className="text-[10px] text-muted-foreground">{stageDeals.length} deal{stageDeals.length === 1 ? "" : "s"} · {STAGE_PROBABILITY[stage.key]}% probability</p>
+                    </CardHeader>
+                    <CardContent className="max-h-[380px] overflow-y-auto p-2">
+                      <KanbanDroppable
+                        id={`dealcol-${stage.key}`}
+                        isEmpty={stageDeals.length === 0}
+                        label={`${stage.label} deals`}
+                      >
+                        {stageDeals.map(deal => <DraggableDealCard key={deal.id} deal={deal} />)}
+                      </KanbanDroppable>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+            <DragOverlay>
+              {activeDragId?.startsWith("deal:") ? (() => {
+                const d = deals.find(x => x.id === activeDragId.slice(5));
+                return d ? (
+                  <div className="rounded-md border-2 bg-card p-2 text-xs shadow-lg max-w-[200px]">
+                    <p className="font-medium truncate">{d.title || "Untitled"}</p>
+                    <p className="text-muted-foreground">${(d.value || 0).toLocaleString()}</p>
+                  </div>
+                ) : null;
+              })() : null}
+            </DragOverlay>
+          </DndContext>
         </TabsContent>
 
         {/* ACTIVITIES TAB — CRM-001: Paginated */}
