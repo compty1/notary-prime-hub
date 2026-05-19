@@ -19,6 +19,7 @@ export default function AdminComplianceReport() {
   const [appointments, setAppointments] = useState<Record<string, any>[]>([]);
   const [journalEntries, setJournalEntries] = useState<Record<string, any>[]>([]);
   const [sealVerifications, setSealVerifications] = useState<Record<string, any>[]>([]);
+  const [refusalLogs, setRefusalLogs] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [drillDownAppt, setDrillDownAppt] = useState<Record<string, any> | null>(null);
