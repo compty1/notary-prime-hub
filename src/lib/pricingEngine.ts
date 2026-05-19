@@ -72,6 +72,7 @@ export interface PricingInput {
   // Add-ons
   needsPOA?: boolean;
   waitTimePeriods?: number; // number of 15-min increments
+  waitTimeWaived?: boolean; // GB-0292: admin/notary may waive wait-time surcharge
   printingSets?: number;
   needsScanback?: boolean;
   needsCourier?: boolean;
