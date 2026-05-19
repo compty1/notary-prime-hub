@@ -16,8 +16,11 @@ import WhatDoINeed from "@/components/WhatDoINeed";
 import { PageShell } from "@/components/PageShell";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import heroServices from "@/assets/hero-services.png";
+import heroServicesAvif from "@/assets/hero-services.avif";
+import heroServicesWebp from "@/assets/hero-services.webp";
 import { ServicesLoadingSkeleton } from "@/components/ServicesLoadingSkeleton";
 import {
+import { Picture } from "@/components/ui/picture";
   INTAKE_ONLY_SERVICES, SAAS_LINKS, SUBSCRIPTION_SERVICES,
   PRICING_SUFFIXES, CATEGORY_LABELS, CATEGORY_ORDER,
   SERVICE_ICON_MAP, NOTARY_CATEGORIES,
@@ -173,16 +176,14 @@ export default function Services() {
               </p>
             </div>
             <div className="flex-shrink-0">
-              <img
-                src={heroServices}
+              <Picture src={heroServices}
                 alt="Notar services — paper-card illustration of stacked documents, notary stamp, and verification shield"
                 fetchPriority="high"
                 decoding="async"
                 sizes="(max-width: 768px) 60vw, 320px"
                 width={1024}
                 height={1024}
-                className="h-auto w-full max-w-[240px] md:max-w-[320px] drop-shadow-xl"
-              />
+                className="h-auto w-full max-w-[240px] md:max-w-[320px] drop-shadow-xl" loading="eager" sources={{ avif: heroServicesAvif, webp: heroServicesWebp }} />
             </div>
           </div>
         </div>

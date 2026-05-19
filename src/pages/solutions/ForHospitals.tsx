@@ -8,8 +8,11 @@ import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle, Phone } from "lucide-react";
 import { Icon3D, FEATURE_3D_ICON } from "@/lib/icon3dMap";
 import heroHospitals from "@/assets/hero-solutions-hospitals.png";
+import heroHospitalsAvif from "@/assets/hero-solutions-hospitals.avif";
+import heroHospitalsWebp from "@/assets/hero-solutions-hospitals.webp";
 import { ZoomConsultCTA } from "@/components/ZoomConsultCTA";
 import { OrcChip, NotaryOnCall } from "@/components/trust";
+import { Picture } from "@/components/ui/picture";
 
 const features = [
   { icon3d: FEATURE_3D_ICON.bedside, title: "Bedside & ICU Notarization", desc: "Mobile notary services directly at the patient's bedside — including ICU, emergency, and recovery rooms. No patient transport required." },
@@ -79,7 +82,7 @@ export default function ForHospitals() {
             </motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex justify-center">
               <div className="relative">
-                <img src={heroHospitals} alt="Healthcare notarization — paper-card illustration" fetchPriority="high" decoding="async" sizes="(max-width: 768px) 90vw, 420px" width={1024} height={1024} className="mx-auto h-auto w-full max-w-[420px] drop-shadow-xl" />
+                <Picture src={heroHospitals} alt="Healthcare notarization — paper-card illustration" fetchPriority="high" decoding="async" sizes="(max-width: 768px) 90vw, 420px" width={1024} height={1024} className="mx-auto h-auto w-full max-w-[420px] drop-shadow-xl" loading="eager" sources={{ avif: heroHospitalsAvif, webp: heroHospitalsWebp }} />
                 <p className="mt-4 text-center text-lg font-semibold text-foreground">Compassionate. Professional. Compliant.</p>
                 <p className="mt-1 text-center text-sm text-muted-foreground">Serving Columbus & Franklin County hospitals</p>
                 <div className="absolute -bottom-1 -right-1 rounded-full bg-accent px-4 py-2 text-xs font-bold text-accent-foreground shadow-lg">
