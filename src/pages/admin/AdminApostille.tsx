@@ -482,3 +482,75 @@ export default function AdminApostille() {
     </DashboardEnhancer>
   );
 }
+function ApostilleDragCard({ req, clientName }: { req: any; clientName: string }) {
+  return (
+    <div className="rounded-xl border bg-card p-3 shadow-md w-[240px]">
+      <div className="flex items-center gap-2 mb-1">
+        <FileText className="h-4 w-4 text-primary" />
+        <span className="font-medium text-sm truncate">{req.document_description}</span>
+      </div>
+      <div className="text-xs text-muted-foreground space-y-0.5">
+        <div className="truncate">{clientName}</div>
+        <div className="flex items-center justify-between">
+          <span>{req.document_count} doc(s)</span>
+          <span className="font-medium text-foreground">${parseFloat(String(req.fee ?? 0)).toFixed(2)}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DraggableApostilleCard({ req, clientName, onOpen }: { req: any; clientName: string; onOpen: (r: any) => void }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: req.id });
+  return (
+    <div
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      role="button"
+      tabIndex={0}
+      onDoubleClick={() => onOpen(req)}
+      className={`touch-none rounded-xl border bg-card p-3 cursor-grab active:cursor-grabbing hover:border-primary/40 transition-colors ${isDragging ? "opacity-40" : ""}`}
+    >
+      <div className="flex items-center gap-2 mb-1">
+        <FileText className="h-4 w-4 text-primary" />
+        <span className="font-medium text-sm truncate">{req.document_description}</span>
+      </div>
+      <div className="text-xs text-muted-foreground space-y-0.5">
+        <div className="truncate">{clientName}</div>
+        {req.destination_country && <div className="flex items-center gap-1 truncate"><Globe className="h-3 w-3" />{req.destination_country}</div>}
+        <div className="flex items-center justify-between pt-1">
+          <span>{req.document_count} doc(s)</span>
+          <span className="font-medium text-foreground">${parseFloat(String(req.fee ?? 0)).toFixed(2)}</span>
+        </div>
+      </div>
+      <button
+        type="button"
+        className="mt-2 text-[10px] text-primary hover:underline"
+        onClick={(e) => { e.stopPropagation(); onOpen(req); }}
+      >
+        Open details →
+      </button>
+    </div>
+  );
+}
+
+function ApostilleColumn({ status, label, items, colorCls, onOpen, getClientName }: { status: string; label: string; items: any[]; colorCls: string; onOpen: (r: any) => void; getClientName: (id: string) => string; }) {
+  const { setNodeRef, isOver } = useDroppable({ id: `apcol-${status}` });
+  return (
+    <div className="flex flex-col min-w-[260px] w-[260px]">
+      <div className="flex items-center justify-between mb-2 px-1">
+        <Badge className={colorCls}>{label}</Badge>
+        <span className="text-xs text-muted-foreground">{items.length}</span>
+      </div>
+      <div
+        ref={setNodeRef}
+        className={`flex-1 min-h-[400px] rounded-2xl border-2 border-dashed p-2 space-y-2 transition-colors ${isOver ? "bg-primary/5 border-primary/40" : "border-border/50"}`}
+      >
+        {items.length === 0 ? (
+          <div className="flex items-center justify-center h-24 text-xs text-muted-foreground">Drop here</div>
+        ) : items.map(r => <DraggableApostilleCard key={r.id} req={r} clientName={getClientName(r.client_id)} onOpen={onOpen} />)}
+      </div>
+    </div>
+  );
+}
